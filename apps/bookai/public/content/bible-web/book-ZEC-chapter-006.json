@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:006",
+  "unit_ordinal": 917,
+  "unit_label": "ZEC 6",
+  "book_code": "ZEC",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:6:1",
+      "sequence": 22949,
+      "chapter_label": "ZEC 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Again I lifted up my eyes, and saw, and behold, four chariots came out from between two mountains; and the mountains were mountains of bronze.",
+      "ko": "내가 또 눈을 들어본즉 네 병거가 두 산 사이에서 나왔는데 그 산은 놋산이더라",
+      "source_text_hash": "7dd9a4714165fb5f71755c169eec5842f09d153513e6099f1dea2648c099e08a",
+      "translation_text_hash": "2558f568671b296269c07066d4a7cc81fe1f0e82ad206d192023ccae16e33364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 눈을 들어본즉 네 병거가 두 산 사이에서 나왔는데 그 산은 놋산이더라"
+      ],
+      "raw_text_hashes": [
+        "2558f568671b296269c07066d4a7cc81fe1f0e82ad206d192023ccae16e33364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:2",
+      "sequence": 22950,
+      "chapter_label": "ZEC 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "In the first chariot were red horses. In the second chariot were black horses.",
+      "ko": "첫째 병거는 홍마들이, 둘째 병거는 흑마들이,",
+      "source_text_hash": "1ec3544625e099e7151bc212f3c95bcbe547e0569d75d2822a58770c0415ac90",
+      "translation_text_hash": "08c4850f0dfacb0d2f1bbc42529dc2f4c914aed5c50fa1188ffad5247ce3b7ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫째 병거는 홍마들이, 둘째 병거는 흑마들이,"
+      ],
+      "raw_text_hashes": [
+        "08c4850f0dfacb0d2f1bbc42529dc2f4c914aed5c50fa1188ffad5247ce3b7ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:3",
+      "sequence": 22951,
+      "chapter_label": "ZEC 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "In the third chariot were white horses. In the fourth chariot were dappled horses, all of them powerful.",
+      "ko": "세째 병거는 백마들이, 네째 병거는 어룽지고 건장한 말들이 메었는지라",
+      "source_text_hash": "336a1ee38050d26f1db36d66e90dc80a6cbef92444e1422be53de1bd5e5778f9",
+      "translation_text_hash": "69a584dec104f05be7efec6e6888b78dea85422bbd1431e64d995aa082d56d13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세째 병거는 백마들이, 네째 병거는 어룽지고 건장한 말들이 메었는지라"
+      ],
+      "raw_text_hashes": [
+        "69a584dec104f05be7efec6e6888b78dea85422bbd1431e64d995aa082d56d13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:4",
+      "sequence": 22952,
+      "chapter_label": "ZEC 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Then I asked the angel who talked with me, “What are these, my lord?”",
+      "ko": "내가 내게 말하는 천사에게 물어 가로되 내 주여 이것들이 무엇이니이까",
+      "source_text_hash": "22a0e57679698473a4824531881fa9947ea348491adcd9cd4466d45f07ea3989",
+      "translation_text_hash": "72e96cb51c0f7d58fc0c838400f9237db934ec44b474463293519af99ee15f94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내게 말하는 천사에게 물어 가로되 내 주여 이것들이 무엇이니이까"
+      ],
+      "raw_text_hashes": [
+        "72e96cb51c0f7d58fc0c838400f9237db934ec44b474463293519af99ee15f94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:5",
+      "sequence": 22953,
+      "chapter_label": "ZEC 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "The angel answered me, “These are the four winds of the sky, which go out from standing before the Lord of all the earth.",
+      "ko": "천사가 대답하여 가로되 이는 하늘의 네 바람인데 온 세상의 주 앞에 모셨다가 나가는 것이라 하더라",
+      "source_text_hash": "05fccbf7ed0975e19322514b847858285f85ab56ec35367affbe4975f2876f71",
+      "translation_text_hash": "431a058e7f29d2e5e105b3319387ec30ac3041a98ca0002e9a639206c174a0b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 대답하여 가로되 이는 하늘의 네 바람인데 온 세상의 주 앞에 모셨다가 나가는 것이라 하더라"
+      ],
+      "raw_text_hashes": [
+        "431a058e7f29d2e5e105b3319387ec30ac3041a98ca0002e9a639206c174a0b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:6",
+      "sequence": 22954,
+      "chapter_label": "ZEC 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "The one with the black horses goes out toward the north country; and the white went out after them; and the dappled went out toward the south country.”",
+      "ko": "흑마는 북편 땅으로 나가매 백마가 그 뒤를 따르고 어룽진 말은 남편 땅으로 나가고",
+      "source_text_hash": "bcb6cbaa60e2942d11653851ad3e59a314a1925c822e9a933f41f0be2814dd80",
+      "translation_text_hash": "e119dbbf0711a574096acd6c45cb5ec6c1d28d92af7d98eb66790c3d8c991d2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흑마는 북편 땅으로 나가매 백마가 그 뒤를 따르고 어룽진 말은 남편 땅으로 나가고"
+      ],
+      "raw_text_hashes": [
+        "e119dbbf0711a574096acd6c45cb5ec6c1d28d92af7d98eb66790c3d8c991d2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:7",
+      "sequence": 22955,
+      "chapter_label": "ZEC 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "The strong went out, and sought to go that they might walk back and forth through the earth. He said, “Go around and through the earth!” So they walked back and forth through the earth.",
+      "ko": "건장한 말은 나가서 땅에 두루 다니고자 하니 그가 이르되 너희는 여기서 나가서 땅에 두루 다니라 하매 곧 땅에 두루 다니더라",
+      "source_text_hash": "c86abc1639223d619c4943942249956a5cff0207f6467eb7e7fc8dd3a24f4dce",
+      "translation_text_hash": "5bec39a5821309317b200cbad7822bc82442492ece0ee08eba5109781c1f054b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "건장한 말은 나가서 땅에 두루 다니고자 하니 그가 이르되 너희는 여기서 나가서 땅에 두루 다니라 하매 곧 땅에 두루 다니더라"
+      ],
+      "raw_text_hashes": [
+        "5bec39a5821309317b200cbad7822bc82442492ece0ee08eba5109781c1f054b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:8",
+      "sequence": 22956,
+      "chapter_label": "ZEC 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "Then he called to me, and spoke to me, saying, “Behold, those who go toward the north country have quieted my spirit in the north country.”",
+      "ko": "그가 외쳐 내게 일러 가로되 북방으로 나간 자들이 북방에서 내 마음을 시원케 하였느니라 하더라",
+      "source_text_hash": "5aaf1c5ceace634f317727bc9f78393adc800f40c9f8b18378b687f0e3d9ac3e",
+      "translation_text_hash": "bea71ffb0aa66ad72660f6a36231c1e5652bb5a282192959558fcc68ab0d864a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 외쳐 내게 일러 가로되 북방으로 나간 자들이 북방에서 내 마음을 시원케 하였느니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "bea71ffb0aa66ad72660f6a36231c1e5652bb5a282192959558fcc68ab0d864a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:9",
+      "sequence": 22957,
+      "chapter_label": "ZEC 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 이르시되",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "b68bc1e5bd880cd364f849c5190aa187d1586b7303a58d18e396d2e4e12ced22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 이르시되"
+      ],
+      "raw_text_hashes": [
+        "b68bc1e5bd880cd364f849c5190aa187d1586b7303a58d18e396d2e4e12ced22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:10",
+      "sequence": 22958,
+      "chapter_label": "ZEC 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "“Take of them of the captivity, even of Heldai, of Tobijah, and of Jedaiah; and come the same day, and go into the house of Josiah the son of Zephaniah, where they have come from Babylon.",
+      "ko": "사로잡힌 자 중 바벨론에서부터 돌아온 헬대와 도비야와 여다야가 스바냐의 아들 요시아의 집에 들었나니 너는 이 날에 그 집에 들어가서 그들에게서 취하되",
+      "source_text_hash": "d5438335398aaae14fe5d2971617969002f174975ce85550c014b35206f6071a",
+      "translation_text_hash": "2d6fe2aebb514d07b54a7eb4f01cfcfb018a37bc9e1bc51a8d5e6e2fab6ec5b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사로잡힌 자 중 바벨론에서부터 돌아온 헬대와 도비야와 여다야가 스바냐의 아들 요시아의 집에 들었나니 너는 이 날에 그 집에 들어가서 그들에게서 취하되"
+      ],
+      "raw_text_hashes": [
+        "2d6fe2aebb514d07b54a7eb4f01cfcfb018a37bc9e1bc51a8d5e6e2fab6ec5b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:11",
+      "sequence": 22959,
+      "chapter_label": "ZEC 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Yes, take silver and gold, and make crowns, and set them on the head of Joshua the son of Jehozadak, the high priest;",
+      "ko": "은과 금을 취하여 면류관을 만들어 여호사닥의 아들 대제사장 여호수아의 머리에 씌우고",
+      "source_text_hash": "50ac43d581b1414b6eb4db8b06916af1b4f8ddbeddb0a09543c386254d75fbb8",
+      "translation_text_hash": "571c918d79bb07d4c614f617547593599b947fb4e3f214afb13f50fb4f8a6c61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은과 금을 취하여 면류관을 만들어 여호사닥의 아들 대제사장 여호수아의 머리에 씌우고"
+      ],
+      "raw_text_hashes": [
+        "571c918d79bb07d4c614f617547593599b947fb4e3f214afb13f50fb4f8a6c61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:12",
+      "sequence": 22960,
+      "chapter_label": "ZEC 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "and speak to him, saying, ‘The LORD of Armies says, “Behold, the man whose name is the Branch! He will grow up out of his place; and he will build the LORD’s temple.",
+      "ko": "고하여 이르기를 만군의 여호와께서 말씀하시되 보라 순이라 이름하는 사람이 자기 곳에서 돋아나서 여호와의 전을 건축하리라",
+      "source_text_hash": "d874128f567cc66a4c97ac58a2204064252a7d5a26def16a58d9cd3c861b3316",
+      "translation_text_hash": "23a152203e994172fb6581b186c94f19648c5db3d9ecb30abcce43594b4b1721",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고하여 이르기를 만군의 여호와께서 말씀하시되 보라 순이라 이름하는 사람이 자기 곳에서 돋아나서 여호와의 전을 건축하리라"
+      ],
+      "raw_text_hashes": [
+        "23a152203e994172fb6581b186c94f19648c5db3d9ecb30abcce43594b4b1721"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:13",
+      "sequence": 22961,
+      "chapter_label": "ZEC 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "He will build the LORD’s temple. He will bear the glory, and will sit and rule on his throne. He will be a priest on his throne. The counsel of peace will be between them both.",
+      "ko": "그가 여호와의 전을 건축하고 영광도 얻고 그 위에 앉아서 다스릴 것이요 또 제사장이 자기 위에 있으리니 이 두 사이에 평화의 의논이 있으리라 하셨다 하고",
+      "source_text_hash": "c395664511d69ce57c5d14ac4d47014cef31e4b943b795772a06ad980f358172",
+      "translation_text_hash": "9b53abf35b4ff39628c1be2a2234e020acf8d89a7d849a23bc855ba7a6d9adf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 여호와의 전을 건축하고 영광도 얻고 그 위에 앉아서 다스릴 것이요 또 제사장이 자기 위에 있으리니 이 두 사이에 평화의 의논이 있으리라 하셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "9b53abf35b4ff39628c1be2a2234e020acf8d89a7d849a23bc855ba7a6d9adf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:14",
+      "sequence": 22962,
+      "chapter_label": "ZEC 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "The crowns shall be to Helem, to Tobijah, to Jedaiah, and to Hen the son of Zephaniah, for a memorial in the LORD’s temple.",
+      "ko": "그 면류관은 헬렘과 도비야와 여다야와 스바냐의 아들 헨을 기념하기 위하여 여호와의 전 안에 두라 하시니라",
+      "source_text_hash": "9f734e6d0f74044fc3263a807a837b0d3dee9491cb9ef24ca8f106953ab9eac8",
+      "translation_text_hash": "e00ff767d4be7ad79594bc1024f860892b8979faf031ef8152c0ddf2a7760691",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 면류관은 헬렘과 도비야와 여다야와 스바냐의 아들 헨을 기념하기 위하여 여호와의 전 안에 두라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "e00ff767d4be7ad79594bc1024f860892b8979faf031ef8152c0ddf2a7760691"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:6:15",
+      "sequence": 22963,
+      "chapter_label": "ZEC 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "Those who are far off shall come and build in the LORD’s temple; and you shall know that the LORD of Armies has sent me to you. This will happen, if you will diligently obey the LORD your God’s voice.”’”",
+      "ko": "먼데 사람이 와서 여호와의 전을 건축하리니 만군의 여호와께서 나를 너희에게 보내신줄을 너희가 알리라 너희가 만일 너희 하나님 여호와의 말씀을 청종할진대 이같이 되리라",
+      "source_text_hash": "a39bb1a56feea66abed3d44e6b797219407cda386912141d68c080aeca627be9",
+      "translation_text_hash": "826dfc6f0825b4412e8ddf78e6395f1a8de2e57622ce01b76049d35f5fe38763",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼데 사람이 와서 여호와의 전을 건축하리니 만군의 여호와께서 나를 너희에게 보내신줄을 너희가 알리라 너희가 만일 너희 하나님 여호와의 말씀을 청종할진대 이같이 되리라"
+      ],
+      "raw_text_hashes": [
+        "826dfc6f0825b4412e8ddf78e6395f1a8de2e57622ce01b76049d35f5fe38763"
+      ]
+    }
+  ]
+}

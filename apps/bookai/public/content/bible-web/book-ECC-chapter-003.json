@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:003",
+  "unit_ordinal": 662,
+  "unit_label": "ECC 3",
+  "book_code": "ECC",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:3:1",
+      "sequence": 17361,
+      "chapter_label": "ECC 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "For everything there is a season, and a time for every purpose under heaven:",
+      "ko": "천하에 범사가 기한이 있고 모든 목적이 이룰 때가 있나니",
+      "source_text_hash": "2bbab6090a3db14378e428ab41105ca74e6afe60f8c85ddd88eac9544069f51b",
+      "translation_text_hash": "e0119fbec15d7ee8c6d92d46b64222835b565043b6a9ec0f6a48068d97369379",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천하에 범사가 기한이 있고 모든 목적이 이룰 때가 있나니"
+      ],
+      "raw_text_hashes": [
+        "e0119fbec15d7ee8c6d92d46b64222835b565043b6a9ec0f6a48068d97369379"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:2",
+      "sequence": 17362,
+      "chapter_label": "ECC 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "a time to be born, and a time to die; a time to plant, and a time to pluck up that which is planted;",
+      "ko": "날 때가 있고 죽을 때가 있으며 심을 때가 있고 심은 것을 뽑을 때가 있으며",
+      "source_text_hash": "a3228b55d62a4a0a15b347f3258f8dbef56a4a4c763388362610d530c4581ed7",
+      "translation_text_hash": "29186d67b5d72c454c4d776602015405c8e34fa2c8ca4384bb970995bb692648",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날 때가 있고 죽을 때가 있으며 심을 때가 있고 심은 것을 뽑을 때가 있으며"
+      ],
+      "raw_text_hashes": [
+        "29186d67b5d72c454c4d776602015405c8e34fa2c8ca4384bb970995bb692648"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:3",
+      "sequence": 17363,
+      "chapter_label": "ECC 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "a time to kill, and a time to heal; a time to break down, and a time to build up;",
+      "ko": "죽일 때가 있고 치료 시킬 때가 있으며 헐 때가 있고 세울 때가 있으며",
+      "source_text_hash": "fc2d5a9d50da9b9414732e215bfd3e22b6c43019be6103436a9bb9740db8b85e",
+      "translation_text_hash": "ca0bb59710290b6ea75dc9664e5626aed911967f9a2c34f37cdd631d8de8fe2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽일 때가 있고 치료 시킬 때가 있으며 헐 때가 있고 세울 때가 있으며"
+      ],
+      "raw_text_hashes": [
+        "ca0bb59710290b6ea75dc9664e5626aed911967f9a2c34f37cdd631d8de8fe2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:4",
+      "sequence": 17364,
+      "chapter_label": "ECC 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "a time to weep, and a time to laugh; a time to mourn, and a time to dance;",
+      "ko": "울 때가 있고 웃을 때가 있으며 슬퍼할 때가 있고 춤출 때가 있으며",
+      "source_text_hash": "798df909f0e2711b7395f577e9165fc6722a8e65f248ce6a9901dce814f386bb",
+      "translation_text_hash": "f60acd2ed831b2fd7f2b644d8d9b8f027067573717b0a124f48d8c43c774a69a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "울 때가 있고 웃을 때가 있으며 슬퍼할 때가 있고 춤출 때가 있으며"
+      ],
+      "raw_text_hashes": [
+        "f60acd2ed831b2fd7f2b644d8d9b8f027067573717b0a124f48d8c43c774a69a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:5",
+      "sequence": 17365,
+      "chapter_label": "ECC 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "a time to cast away stones, and a time to gather stones together; a time to embrace, and a time to refrain from embracing;",
+      "ko": "돌을 던져 버릴 때가 있고 돌을 거둘 때가 있으며 안을 때가 있고 안는 일을 멀리 할 때가 있으며",
+      "source_text_hash": "c1e5e5a63d749d321e9c445926883b3b507ffe402b4c5a76bb994c0954f1791f",
+      "translation_text_hash": "4e5fd4444da5d0d95a1714307313d46c5a7fa0d47254ca866397e667efeedabe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌을 던져 버릴 때가 있고 돌을 거둘 때가 있으며 안을 때가 있고 안는 일을 멀리 할 때가 있으며"
+      ],
+      "raw_text_hashes": [
+        "4e5fd4444da5d0d95a1714307313d46c5a7fa0d47254ca866397e667efeedabe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:6",
+      "sequence": 17366,
+      "chapter_label": "ECC 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "a time to seek, and a time to lose; a time to keep, and a time to cast away;",
+      "ko": "찾을 때가 있고 잃을 때가 있으며 지킬 때가 있고 버릴 때가 있으며",
+      "source_text_hash": "c82f30459d7eca569c0b115c104d3819317197a4a0919779d0aa1bdb28ede901",
+      "translation_text_hash": "49320fbe0a4f37c714d659e4f112656e90a7bece9e8071d7574e17cce9336c2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "찾을 때가 있고 잃을 때가 있으며 지킬 때가 있고 버릴 때가 있으며"
+      ],
+      "raw_text_hashes": [
+        "49320fbe0a4f37c714d659e4f112656e90a7bece9e8071d7574e17cce9336c2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:7",
+      "sequence": 17367,
+      "chapter_label": "ECC 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "a time to tear, and a time to sew; a time to keep silence, and a time to speak;",
+      "ko": "찢을 때가 있고 꿰맬 때가 있으며 잠잠할 때가 있고 말할 때가 있으며",
+      "source_text_hash": "63f4aa44a533e76ba7c3d13ac833f981861a76fbe3a60027c4f377e5fdcac48e",
+      "translation_text_hash": "070f541e27cf13e32440650bf4eb4e728d0e7af197d0b0ff6880ce0d5522c587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "찢을 때가 있고 꿰맬 때가 있으며 잠잠할 때가 있고 말할 때가 있으며"
+      ],
+      "raw_text_hashes": [
+        "070f541e27cf13e32440650bf4eb4e728d0e7af197d0b0ff6880ce0d5522c587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:8",
+      "sequence": 17368,
+      "chapter_label": "ECC 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "a time to love, and a time to hate; a time for war, and a time for peace.",
+      "ko": "사랑할 때가 있고 미워할 때가 있으며 전쟁할 때가 있고 평화할 때가 있느니라",
+      "source_text_hash": "4eed4be0b0b70909d2d588af993c61e9762be3923b7c0c57305b87e63ff42203",
+      "translation_text_hash": "a20e7cd9fe20dc94dcd0efd51f939ecfde332ffbbc37ef057d47dcccec3c3096",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑할 때가 있고 미워할 때가 있으며 전쟁할 때가 있고 평화할 때가 있느니라"
+      ],
+      "raw_text_hashes": [
+        "a20e7cd9fe20dc94dcd0efd51f939ecfde332ffbbc37ef057d47dcccec3c3096"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:9",
+      "sequence": 17369,
+      "chapter_label": "ECC 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "What profit has he who works in that in which he labors?",
+      "ko": "일하는 자가 그 수고로 말미암아 무슨 이익이 있으랴",
+      "source_text_hash": "c6fc1f1a8826fce6837e0b78a5b39fbab3fc4177f8c377b239f769cf4fda17e9",
+      "translation_text_hash": "da524a8ca19d59a758fb66fa8717531a0c712dd3a26046d4c3768237431cd5f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일하는 자가 그 수고로 말미암아 무슨 이익이 있으랴"
+      ],
+      "raw_text_hashes": [
+        "da524a8ca19d59a758fb66fa8717531a0c712dd3a26046d4c3768237431cd5f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:10",
+      "sequence": 17370,
+      "chapter_label": "ECC 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "I have seen the burden which God has given to the sons of men to be afflicted with.",
+      "ko": "하나님이 인생들에게 노고를 주사 애쓰게 하신 것을 내가 보았노라",
+      "source_text_hash": "0c7a79ec2cb06120dbf9a5cd6141a35b8eecce94fa460c976c9488aac0041b95",
+      "translation_text_hash": "7115a12f6b9e9b460b0921f841d65d9e14705f58d87e51e1e5d88881b76db376",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 인생들에게 노고를 주사 애쓰게 하신 것을 내가 보았노라"
+      ],
+      "raw_text_hashes": [
+        "7115a12f6b9e9b460b0921f841d65d9e14705f58d87e51e1e5d88881b76db376"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:11",
+      "sequence": 17371,
+      "chapter_label": "ECC 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "He has made everything beautiful in its time. He has also set eternity in their hearts, yet so that man can’t find out the work that God has done from the beginning even to the end.",
+      "ko": "하나님이 모든 것을 지으시되 때를 따라 아름답게 하셨고 또 사람에게 영원을 사모하는 마음을 주셨느니라 그러나 하나님의 하시는 일의 시종을 사람으로 측량할 수 없게 하셨도다",
+      "source_text_hash": "897dd30bd16f92120c6d9dd288dcdfb79555f97877472990f840dcac1a527ff2",
+      "translation_text_hash": "76b99647d4da12a1d7c5a82e96ca55ff7935a90a72a7d365fd3a5ea8fabbd756",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 모든 것을 지으시되 때를 따라 아름답게 하셨고 또 사람에게 영원을 사모하는 마음을 주셨느니라 그러나 하나님의 하시는 일의 시종을 사람으로 측량할 수 없게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "76b99647d4da12a1d7c5a82e96ca55ff7935a90a72a7d365fd3a5ea8fabbd756"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:12",
+      "sequence": 17372,
+      "chapter_label": "ECC 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "I know that there is nothing better for them than to rejoice, and to do good as long as they live.",
+      "ko": "사람이 사는 동안에 기뻐하며 선을 행하는 것보다 나은 것이 없는 줄을 내가 알았고",
+      "source_text_hash": "571f3a894fdc0cf36dc598da7d5af1675ad3c51c90d1c21327adf86a52ceb489",
+      "translation_text_hash": "cf31a9eb28e89cf20bf45d601bf178847d03862d38d264ea3df340b341b6f4d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 사는 동안에 기뻐하며 선을 행하는 것보다 나은 것이 없는 줄을 내가 알았고"
+      ],
+      "raw_text_hashes": [
+        "cf31a9eb28e89cf20bf45d601bf178847d03862d38d264ea3df340b341b6f4d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:13",
+      "sequence": 17373,
+      "chapter_label": "ECC 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Also that every man should eat and drink, and enjoy good in all his labor, is the gift of God.",
+      "ko": "사람마다 먹고 마시는 것과 수고함으로 낙을 누리는 것이 하나님의 선물인 줄을 또한 알았도다",
+      "source_text_hash": "220bf6e7931befc7daa155f3e5cef7d87ff9717b295f89fbe335c3151eedbdf6",
+      "translation_text_hash": "c67b4874e22e8a1235ad5766ee23d3dcff12741e401f3dc2ab3f3a4ae68d292b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람마다 먹고 마시는 것과 수고함으로 낙을 누리는 것이 하나님의 선물인 줄을 또한 알았도다"
+      ],
+      "raw_text_hashes": [
+        "c67b4874e22e8a1235ad5766ee23d3dcff12741e401f3dc2ab3f3a4ae68d292b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:14",
+      "sequence": 17374,
+      "chapter_label": "ECC 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "I know that whatever God does, it shall be forever. Nothing can be added to it, nor anything taken from it; and God has done it, that men should fear before him.",
+      "ko": "무릇 하나님의 행하시는 것은 영원히 있을 것이라 더 할 수도 없고 덜 할 수도 없나니 하나님이 이같이 행하심은 사람으로 그 앞에서 경외하게 하려 하심인 줄을 내가 알았도다",
+      "source_text_hash": "9c903841971f35a34b4507405696a9b6479b43c65043f8174692a8079955ec9e",
+      "translation_text_hash": "f19e264f1acb3fafa50dae969e9001f259aa0d2ec35673f32f48ed8264d60bd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 하나님의 행하시는 것은 영원히 있을 것이라 더 할 수도 없고 덜 할 수도 없나니 하나님이 이같이 행하심은 사람으로 그 앞에서 경외하게 하려 하심인 줄을 내가 알았도다"
+      ],
+      "raw_text_hashes": [
+        "f19e264f1acb3fafa50dae969e9001f259aa0d2ec35673f32f48ed8264d60bd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:15",
+      "sequence": 17375,
+      "chapter_label": "ECC 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "That which is has been long ago, and that which is to be has been long ago. God seeks again that which is passed away.",
+      "ko": "이제 있는 것이 옛적에 있었고 장래에 있을 것도 옛적에 있었나니 하나님은 이미 지난 것을 다시 찾으시느니라",
+      "source_text_hash": "96da95dacf83b216a6a94270f53f00e68ea38c80dc36a66528d0c848e7fe07ef",
+      "translation_text_hash": "fdcc1378d08adc44174d74474c50512abc3307e6f0756595a26d21bb698f5b6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 있는 것이 옛적에 있었고 장래에 있을 것도 옛적에 있었나니 하나님은 이미 지난 것을 다시 찾으시느니라"
+      ],
+      "raw_text_hashes": [
+        "fdcc1378d08adc44174d74474c50512abc3307e6f0756595a26d21bb698f5b6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:16",
+      "sequence": 17376,
+      "chapter_label": "ECC 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Moreover I saw under the sun, in the place of justice, that wickedness was there; and in the place of righteousness, that wickedness was there.",
+      "ko": "내가 해 아래서 또 보건대 재판하는 곳에 악이 있고 공의를 행하는 곳에도 악이 있도다",
+      "source_text_hash": "a36932edb3806fcc193d08c6985e2620a1c0117249849b02479ff1c9e2ede09c",
+      "translation_text_hash": "eb838f994c488b3c7f33f5a290695995b91f32c7ece0e5d8145ddd3fb11b2600",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 해 아래서 또 보건대 재판하는 곳에 악이 있고 공의를 행하는 곳에도 악이 있도다"
+      ],
+      "raw_text_hashes": [
+        "eb838f994c488b3c7f33f5a290695995b91f32c7ece0e5d8145ddd3fb11b2600"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:17",
+      "sequence": 17377,
+      "chapter_label": "ECC 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "I said in my heart, “God will judge the righteous and the wicked; for there is a time there for every purpose and for every work.”",
+      "ko": "내가 심중에 이르기를 의인과 악인을 하나님이 심판하시리니 이는 모든 목적과 모든 일이 이룰 때가 있음이라 하였으며",
+      "source_text_hash": "35220bd15254c2ff8f1b8d76b96df33d5167f7483617d6c78e3a9b7c4298f189",
+      "translation_text_hash": "aa2a901346b6b746b60dfb03cd65f7ac6a479aa696e78945d6249611aab7ec7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 심중에 이르기를 의인과 악인을 하나님이 심판하시리니 이는 모든 목적과 모든 일이 이룰 때가 있음이라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "aa2a901346b6b746b60dfb03cd65f7ac6a479aa696e78945d6249611aab7ec7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:18",
+      "sequence": 17378,
+      "chapter_label": "ECC 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "I said in my heart, “As for the sons of men, God tests them, so that they may see that they themselves are like animals.",
+      "ko": "내가 심중에 이르기를 인생의 일에 대하여 하나님이 저희를 시험하시리니 저희로 자기가 짐승보다 다름이 없는 줄을 깨닫게 하려 하심이라 하였노라",
+      "source_text_hash": "cc879433e6dd7bb9c0e7b5338d92d4d631a3a0d0cbba0eec2ac985982eddb0d8",
+      "translation_text_hash": "09a6128fb91b1fd844c6ce74677a2b9b3b01d2e3be3e076c34704fc2fd318ce2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 심중에 이르기를 인생의 일에 대하여 하나님이 저희를 시험하시리니 저희로 자기가 짐승보다 다름이 없는 줄을 깨닫게 하려 하심이라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "09a6128fb91b1fd844c6ce74677a2b9b3b01d2e3be3e076c34704fc2fd318ce2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:19",
+      "sequence": 17379,
+      "chapter_label": "ECC 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "For that which happens to the sons of men happens to animals. Even one thing happens to them. As the one dies, so the other dies. Yes, they have all one breath; and man has no advantage over the animals, for all is vanity.",
+      "ko": "인생에게 임하는 일이 짐승에게도 임하나니 이 둘에게 임하는 일이 일반이라 다 동일한 호흡이 있어서 이의 죽음 같이 저도 죽으니 사람이 짐승보다 뛰어남이 없음은 모든것이 헛됨이로다",
+      "source_text_hash": "5d98536d35fb5f84f38aa4279b275cc89b5ef46f5336fb655a027ba17c5410be",
+      "translation_text_hash": "e9b0249fc14007c4779d3410988ea814e30de14631231c747d39dd0bbce6db6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인생에게 임하는 일이 짐승에게도 임하나니 이 둘에게 임하는 일이 일반이라 다 동일한 호흡이 있어서 이의 죽음 같이 저도 죽으니 사람이 짐승보다 뛰어남이 없음은 모든것이 헛됨이로다"
+      ],
+      "raw_text_hashes": [
+        "e9b0249fc14007c4779d3410988ea814e30de14631231c747d39dd0bbce6db6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:20",
+      "sequence": 17380,
+      "chapter_label": "ECC 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "All go to one place. All are from the dust, and all turn to dust again.",
+      "ko": "다 흙으로 말미암았으므로 다 흙으로 돌아가나니 다 한 곳으로 가거니와",
+      "source_text_hash": "b95905a43cfb9dda68a1c8efc87c632456a02f38ddaafe314bbca5c7fd5e5d7b",
+      "translation_text_hash": "290a36865dcae8793ccd3a10c6ecd61394bf4c2fe90295b160637bbe172d8d57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 흙으로 말미암았으므로 다 흙으로 돌아가나니 다 한 곳으로 가거니와"
+      ],
+      "raw_text_hashes": [
+        "290a36865dcae8793ccd3a10c6ecd61394bf4c2fe90295b160637bbe172d8d57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:21",
+      "sequence": 17381,
+      "chapter_label": "ECC 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "Who knows the spirit of man, whether it goes upward, and the spirit of the animal, whether it goes downward to the earth?”",
+      "ko": "인생의 혼은 위로 올라가고 짐승의 혼은 아래 곧 땅으로 내려가는 줄을 누가 알랴",
+      "source_text_hash": "d95d1ff5fbaf7eccaa3b6557c3fed9a527cbb582df3c9959d075fbe6938d74d6",
+      "translation_text_hash": "36310d38be0353503775825baf5e16318df9fdf4af5edff7bdf3d031aca521af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인생의 혼은 위로 올라가고 짐승의 혼은 아래 곧 땅으로 내려가는 줄을 누가 알랴"
+      ],
+      "raw_text_hashes": [
+        "36310d38be0353503775825baf5e16318df9fdf4af5edff7bdf3d031aca521af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:3:22",
+      "sequence": 17382,
+      "chapter_label": "ECC 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "ECC",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "Therefore I saw that there is nothing better than that a man should rejoice in his works, for that is his portion; for who can bring him to see what will be after him?",
+      "ko": "그러므로 내 소견에는 사람이 자기 일에 즐거워하는 것보다 나은 것이 없나니 이는 그의 분복이라 그 신후사를 보게 하려고 저를 도로 데리고 올 자가 누구이랴",
+      "source_text_hash": "833b32cdbed1e1083f8295c361a764be8de87ce56d7db412dd730695ee6e8451",
+      "translation_text_hash": "7e38cee42ce454853f2d3f9fe0db8252919bba3b400899b9984e828452450e8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내 소견에는 사람이 자기 일에 즐거워하는 것보다 나은 것이 없나니 이는 그의 분복이라 그 신후사를 보게 하려고 저를 도로 데리고 올 자가 누구이랴"
+      ],
+      "raw_text_hashes": [
+        "7e38cee42ce454853f2d3f9fe0db8252919bba3b400899b9984e828452450e8b"
+      ]
+    }
+  ]
+}

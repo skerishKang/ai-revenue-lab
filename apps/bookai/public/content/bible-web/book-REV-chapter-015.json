@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:015",
+  "unit_ordinal": 1182,
+  "unit_label": "REV 15",
+  "book_code": "REV",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:15:1",
+      "sequence": 30944,
+      "chapter_label": "REV 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "I saw another great and marvelous sign in the sky: seven angels having the seven last plagues, for in them God’s wrath is finished.",
+      "ko": "또 하늘에 크고 이상한 다른 이적을 보매 일곱 천사가 일곱 재앙을 가졌으니 곧 마지막 재앙이라 하나님의 진노가 이것으로 마치리로다",
+      "source_text_hash": "4b0530c99d1e12f43603b2762df585f23795e4bda3d06ab70fc68b8ef8f0b0c5",
+      "translation_text_hash": "244e966884c77baf029e9d6c1fcfa7914baee239823fd8d1c4e51825686c207b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하늘에 크고 이상한 다른 이적을 보매 일곱 천사가 일곱 재앙을 가졌으니 곧 마지막 재앙이라 하나님의 진노가 이것으로 마치리로다"
+      ],
+      "raw_text_hashes": [
+        "244e966884c77baf029e9d6c1fcfa7914baee239823fd8d1c4e51825686c207b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:15:2",
+      "sequence": 30945,
+      "chapter_label": "REV 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "I saw something like a sea of glass mixed with fire, and those who overcame the beast, his image, and the number of his name, standing on the sea of glass, having harps of God.",
+      "ko": "또 내가 보니 불이 섞인 유리 바다 같은 것이 있고 짐승과 그의 우상과 그의 이름의 수를 이기고 벗어난 자들이 유리바다 가에 서서 하나님의 거문고를 가지고",
+      "source_text_hash": "cf7981cbd8e27f092728069381ea7a0965de0374edae4d9217dea6221f374021",
+      "translation_text_hash": "8e24241093a0ab45f04e932809f0d7b9911a3a62d026ee7d760fa93528a43396",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 보니 불이 섞인 유리 바다 같은 것이 있고 짐승과 그의 우상과 그의 이름의 수를 이기고 벗어난 자들이 유리바다 가에 서서 하나님의 거문고를 가지고"
+      ],
+      "raw_text_hashes": [
+        "8e24241093a0ab45f04e932809f0d7b9911a3a62d026ee7d760fa93528a43396"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:15:3",
+      "sequence": 30946,
+      "chapter_label": "REV 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "They sang the song of Moses, the servant of God, and the song of the Lamb, saying, “Great and marvelous are your works, Lord God, the Almighty! Righteous and true are your ways, you King of the nations.",
+      "ko": "하나님의 종 모세의 노래, 어린 양의 노래를 불러 가로되 주 하나님 곧 전능하신이시여 하시는 일이 크고 기이하시도다 만국의 왕이시여 주의 길이 의롭고 참되시도다",
+      "source_text_hash": "a5128f25430582846fa4b5d6843aec476894927eb871a4f7f249eea4c10f6aae",
+      "translation_text_hash": "6af2c2a87a50c8da175006310fce3cbf38f10fafa62d696a2453cfa6aeb25ee6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 종 모세의 노래, 어린 양의 노래를 불러 가로되 주 하나님 곧 전능하신이시여 하시는 일이 크고 기이하시도다 만국의 왕이시여 주의 길이 의롭고 참되시도다"
+      ],
+      "raw_text_hashes": [
+        "6af2c2a87a50c8da175006310fce3cbf38f10fafa62d696a2453cfa6aeb25ee6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:15:4",
+      "sequence": 30947,
+      "chapter_label": "REV 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "Who wouldn’t fear you, Lord, and glorify your name? For you only are holy. For all the nations will come and worship before you. For your righteous acts have been revealed.”",
+      "ko": "주여 누가 주의 이름을 두려워하지 아니하며 영화롭게 하지 아니하오리이까 오직 주만 거룩하시니이다 주의 의로우신 일이 나타났으매 만국이 와서 주께 경배하리이다 하더라",
+      "source_text_hash": "a8c6f06997a06ca4824c79adca19309ac25a3c43734fcd8d4cc63133db377caf",
+      "translation_text_hash": "cedda51f69b551c4442dc11296d9e6fb1fea249b7daa68b760bb05fb60862d79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 누가 주의 이름을 두려워하지 아니하며 영화롭게 하지 아니하오리이까 오직 주만 거룩하시니이다 주의 의로우신 일이 나타났으매 만국이 와서 주께 경배하리이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "cedda51f69b551c4442dc11296d9e6fb1fea249b7daa68b760bb05fb60862d79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:15:5",
+      "sequence": 30948,
+      "chapter_label": "REV 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "After these things I looked, and the temple of the tabernacle of the testimony in heaven was opened.",
+      "ko": "또 이 일 후에 내가 보니 하늘에 증거 장막의 성전이 열리며",
+      "source_text_hash": "499866427a410944cf879e3102910965c06a17494351ac6b64f21f41376d720f",
+      "translation_text_hash": "f0c9145f6cb706aeda57afddc140d199f5e4853ff1c7951c7f0ce46071166279",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이 일 후에 내가 보니 하늘에 증거 장막의 성전이 열리며"
+      ],
+      "raw_text_hashes": [
+        "f0c9145f6cb706aeda57afddc140d199f5e4853ff1c7951c7f0ce46071166279"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:15:6",
+      "sequence": 30949,
+      "chapter_label": "REV 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "The seven angels who had the seven plagues came out, clothed with pure, bright linen, and wearing golden sashes around their chests.",
+      "ko": "일곱 재앙을 가진 일곱 천사가 성전으로부터 나와 맑고 빛난 세마포 옷을 입고 가슴에 금띠를 띠고",
+      "source_text_hash": "6e65b65eb263ddbf143a808dbd377c51585e20d51c6780b37bb950feb67355d8",
+      "translation_text_hash": "1eac794148d9ad3f76e908d27197f9d2a1cf948623a7d217a3421e1174311b58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱 재앙을 가진 일곱 천사가 성전으로부터 나와 맑고 빛난 세마포 옷을 입고 가슴에 금띠를 띠고"
+      ],
+      "raw_text_hashes": [
+        "1eac794148d9ad3f76e908d27197f9d2a1cf948623a7d217a3421e1174311b58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:15:7",
+      "sequence": 30950,
+      "chapter_label": "REV 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "One of the four living creatures gave to the seven angels seven golden bowls full of the wrath of God, who lives forever and ever.",
+      "ko": "네 생물 중에 하나가 세세에 계신 하나님의 진노를 가득히 담은 금대접 일곱을 그 일곱 천사에게 주니",
+      "source_text_hash": "1ecaad0983de8321191293d8d3a72cdcf4d1ffacf563a9bf39b9da45ab7db2e5",
+      "translation_text_hash": "05b5ebf9290659bd69bec0921a9488fe588bcac727765a7d54d78cb69b48d7fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 생물 중에 하나가 세세에 계신 하나님의 진노를 가득히 담은 금대접 일곱을 그 일곱 천사에게 주니"
+      ],
+      "raw_text_hashes": [
+        "05b5ebf9290659bd69bec0921a9488fe588bcac727765a7d54d78cb69b48d7fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:15:8",
+      "sequence": 30951,
+      "chapter_label": "REV 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "The temple was filled with smoke from the glory of God and from his power. No one was able to enter into the temple until the seven plagues of the seven angels would be finished.",
+      "ko": "하나님의 영광과 능력을 인하여 성전에 연기가 차게 되매 일곱 천사의 일곱 재앙이 마치기까지는 성전에 능히 들어갈 자가 없더라",
+      "source_text_hash": "54c28ad2ccea7acaeef6b47e6a0efcaa352a720ad04809c077b81e838df858d0",
+      "translation_text_hash": "62be37dde5d51530e8e4fed065a6dbb9339e1a075cbaef1392a28efa8ce4a2f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 영광과 능력을 인하여 성전에 연기가 차게 되매 일곱 천사의 일곱 재앙이 마치기까지는 성전에 능히 들어갈 자가 없더라"
+      ],
+      "raw_text_hashes": [
+        "62be37dde5d51530e8e4fed065a6dbb9339e1a075cbaef1392a28efa8ce4a2f6"
+      ]
+    }
+  ]
+}

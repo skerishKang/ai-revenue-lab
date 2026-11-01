@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:003",
+  "unit_ordinal": 439,
+  "unit_label": "JOB 3",
+  "book_code": "JOB",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:3:1",
+      "sequence": 12906,
+      "chapter_label": "JOB 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "After this Job opened his mouth, and cursed the day of his birth.",
+      "ko": "그 후에 욥이 입을 열어 자기의 생일을 저주하니라",
+      "source_text_hash": "1f613aba1284bf7032f573e785f0b3068e6542bacb72d2a5f9a764b65c5843c3",
+      "translation_text_hash": "2d695d27faa8e4e584f285eeb42ebfbd2a5d1badc89461d9219fd7cb9c6bd054",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 욥이 입을 열어 자기의 생일을 저주하니라"
+      ],
+      "raw_text_hashes": [
+        "2d695d27faa8e4e584f285eeb42ebfbd2a5d1badc89461d9219fd7cb9c6bd054"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:2",
+      "sequence": 12907,
+      "chapter_label": "JOB 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Job answered:",
+      "ko": "욥이 말을 내어 가로되",
+      "source_text_hash": "68e08415297294f13c89bfa10f045dac07513e7510039594543a9b555de5c818",
+      "translation_text_hash": "82647255abd1344c836b9300ddeb8f7f55f62d0613c63496e1a79a256b01bcbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 말을 내어 가로되"
+      ],
+      "raw_text_hashes": [
+        "82647255abd1344c836b9300ddeb8f7f55f62d0613c63496e1a79a256b01bcbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:3",
+      "sequence": 12908,
+      "chapter_label": "JOB 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "“Let the day perish in which I was born, the night which said, ‘There is a boy conceived.’",
+      "ko": "나의 난 날이 멸망하였었더라면, 남아를 배었다 하던 그 밤도 그러하였었더라면,",
+      "source_text_hash": "0a6b0ccee021880b8236cc8ba646e8958820341d3fe814952963a40834f59a41",
+      "translation_text_hash": "578bb0113ace8b0a3775fe1b42a46730a17e91999481fb1e75c68c3ea0d5ca02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 난 날이 멸망하였었더라면, 남아를 배었다 하던 그 밤도 그러하였었더라면,"
+      ],
+      "raw_text_hashes": [
+        "578bb0113ace8b0a3775fe1b42a46730a17e91999481fb1e75c68c3ea0d5ca02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:4",
+      "sequence": 12909,
+      "chapter_label": "JOB 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Let that day be darkness. Don’t let God from above seek for it, neither let the light shine on it.",
+      "ko": "그 날이 캄캄하였었더라면, 하나님이 위에서 돌아보지 마셨더라면, 빛도 그 날을 비취지 말았었더라면,",
+      "source_text_hash": "98dd6f5c0fb2ec848aaa45f5fa4626d3ff82644b991ac142c951f2d05092dff0",
+      "translation_text_hash": "7472d3b1b9f74732e04f7f43fcaeeda7d243bce54d52f1d4887ce57f5cc822e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날이 캄캄하였었더라면, 하나님이 위에서 돌아보지 마셨더라면, 빛도 그 날을 비취지 말았었더라면,"
+      ],
+      "raw_text_hashes": [
+        "7472d3b1b9f74732e04f7f43fcaeeda7d243bce54d52f1d4887ce57f5cc822e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:5",
+      "sequence": 12910,
+      "chapter_label": "JOB 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Let darkness and the shadow of death claim it for their own. Let a cloud dwell on it. Let all that makes the day black terrify it.",
+      "ko": "유암과 사망의 그늘이 그 날을 자기 것이라 주장하였었더라면, 구름이 그 위에 덮였었더라면, 낮을 캄캄하게 하는 것이 그 날을 두렵게 하였었더라면,",
+      "source_text_hash": "edc55d4891ce8080ad998042bf6cf18d18c55f9508fe7b04e8a18e804bc9c6dc",
+      "translation_text_hash": "9a32291ed95fc758504d4a2e4421df30252f6d223fde8aec23d4ae3f27e8181f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유암과 사망의 그늘이 그 날을 자기 것이라 주장하였었더라면, 구름이 그 위에 덮였었더라면, 낮을 캄캄하게 하는 것이 그 날을 두렵게 하였었더라면,"
+      ],
+      "raw_text_hashes": [
+        "9a32291ed95fc758504d4a2e4421df30252f6d223fde8aec23d4ae3f27e8181f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:6",
+      "sequence": 12911,
+      "chapter_label": "JOB 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "As for that night, let thick darkness seize on it. Let it not rejoice among the days of the year. Let it not come into the number of the months.",
+      "ko": "그 밤이 심한 어두움에 잡혔었더라면, 해의 날 수 가운데 기쁨이 되지 말았었더라면, 달의 수에 들지 말았었더라면,",
+      "source_text_hash": "3d78c99460ee945dd86b250ff8c430c6b81eb7289a5e862cdeef4d5c4e342a16",
+      "translation_text_hash": "37ee0476cdb5f18207bb92e534a58af3070214dfdc02a3ea7b4a33213a057eb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤이 심한 어두움에 잡혔었더라면, 해의 날 수 가운데 기쁨이 되지 말았었더라면, 달의 수에 들지 말았었더라면,"
+      ],
+      "raw_text_hashes": [
+        "37ee0476cdb5f18207bb92e534a58af3070214dfdc02a3ea7b4a33213a057eb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:7",
+      "sequence": 12912,
+      "chapter_label": "JOB 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, let that night be barren. Let no joyful voice come therein.",
+      "ko": "그 밤이 적막하였었더라면, 그 가운데서 즐거운 소리가 일어나지 말았었더라면,",
+      "source_text_hash": "aec1f4c8ac35294814169b9aa64877e3821d0c59cc2f7de89e43a0677ac367f7",
+      "translation_text_hash": "e27b251db5c7a6c28e27ca3568187898ace6355b68da1f664f7e94f2c77162f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤이 적막하였었더라면, 그 가운데서 즐거운 소리가 일어나지 말았었더라면,"
+      ],
+      "raw_text_hashes": [
+        "e27b251db5c7a6c28e27ca3568187898ace6355b68da1f664f7e94f2c77162f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:8",
+      "sequence": 12913,
+      "chapter_label": "JOB 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Let them curse it who curse the day, who are ready to rouse up leviathan.",
+      "ko": "날을 저주하는 자 곧 큰 악어를 격동시키기에 익숙한 자가 그 밤을 저주하였었더라면,",
+      "source_text_hash": "82c745c73ce492cd66e14fdabf5b8ba88d7c73dfc87a414ca1b11b0589fd4393",
+      "translation_text_hash": "22ed4d55247b9b0e6bd98b170bea4bf5a055304e93b14f1150e7d636279a1cdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날을 저주하는 자 곧 큰 악어를 격동시키기에 익숙한 자가 그 밤을 저주하였었더라면,"
+      ],
+      "raw_text_hashes": [
+        "22ed4d55247b9b0e6bd98b170bea4bf5a055304e93b14f1150e7d636279a1cdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:9",
+      "sequence": 12914,
+      "chapter_label": "JOB 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Let the stars of its twilight be dark. Let it look for light, but have none, neither let it see the eyelids of the morning,",
+      "ko": "그 밤에 새벽 별들이 어두웠었더라면, 그 밤이 광명을 바랄찌라도 얻지 못하며 동틈을 보지 못하였었더라면 좋았을 것을,",
+      "source_text_hash": "6b64cf4cef51eb213d66474f3c99c83815fa6f983d41346fa1114e5c48c545cd",
+      "translation_text_hash": "c26cc1265d4f270b72894f70031c374e5e51441aeba9ef189b5503c7abf67cb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤에 새벽 별들이 어두웠었더라면, 그 밤이 광명을 바랄찌라도 얻지 못하며 동틈을 보지 못하였었더라면 좋았을 것을,"
+      ],
+      "raw_text_hashes": [
+        "c26cc1265d4f270b72894f70031c374e5e51441aeba9ef189b5503c7abf67cb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:10",
+      "sequence": 12915,
+      "chapter_label": "JOB 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "because it didn’t shut up the doors of my mother’s womb, nor did it hide trouble from my eyes.",
+      "ko": "이는 내 모태의 문을 닫지 아니하였고 내 눈으로 환난을 보지 않도록 하지 아니하였음이로구나",
+      "source_text_hash": "ae074203eacf6449cf6f2bda03e202d1efb130ad9307c4655d64630690733a4f",
+      "translation_text_hash": "ef757021ac35b91eacaf0d55cc260ee7fdfd564a7cf225e744ac1cc5dd1b2f59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내 모태의 문을 닫지 아니하였고 내 눈으로 환난을 보지 않도록 하지 아니하였음이로구나"
+      ],
+      "raw_text_hashes": [
+        "ef757021ac35b91eacaf0d55cc260ee7fdfd564a7cf225e744ac1cc5dd1b2f59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:11",
+      "sequence": 12916,
+      "chapter_label": "JOB 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "“Why didn’t I die from the womb? Why didn’t I give up the spirit when my mother bore me?",
+      "ko": "어찌하여 내가 태에서 죽어 나오지 아니하였었던가 어찌하여 내 어미가 낳을 때에 내가 숨지지 아니하였던가",
+      "source_text_hash": "cfd1c12e97eb36cd14b99859053fdd17abf8d087e49d3e5f35fc7b0863ee2f63",
+      "translation_text_hash": "b15a97c3015192c38ec81cd63ae000755f1c59f12162be347180381ceb817ccf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 내가 태에서 죽어 나오지 아니하였었던가 어찌하여 내 어미가 낳을 때에 내가 숨지지 아니하였던가"
+      ],
+      "raw_text_hashes": [
+        "b15a97c3015192c38ec81cd63ae000755f1c59f12162be347180381ceb817ccf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:12",
+      "sequence": 12917,
+      "chapter_label": "JOB 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Why did the knees receive me? Or why the breast, that I should nurse?",
+      "ko": "어찌하여 무릎이 나를 받았던가 어찌하여 유방이 나로 빨게 하였던가",
+      "source_text_hash": "2fd149794405bf8b212a7e487fe3e692e6de1e6bb7fc8acb694d2392d2431efd",
+      "translation_text_hash": "d1ae1ad7a6928d9161579a0d8219502a79cf27cd73d22e05ba8e0128d69c6e9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 무릎이 나를 받았던가 어찌하여 유방이 나로 빨게 하였던가"
+      ],
+      "raw_text_hashes": [
+        "d1ae1ad7a6928d9161579a0d8219502a79cf27cd73d22e05ba8e0128d69c6e9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:13",
+      "sequence": 12918,
+      "chapter_label": "JOB 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "For now I should have lain down and been quiet. I should have slept, then I would have been at rest,",
+      "ko": "그렇지 아니하였던들 이제는 내가 평안히 누워서 자고 쉬었을 것이니",
+      "source_text_hash": "1cb63e8f2ab2e2073157e86c5da9ddf55c11d3abeb0b4cb343c65e5a6c4e8a92",
+      "translation_text_hash": "ce05f91fd59e106966c8df9e4d33c65f3378f1a0d1716e1c8fd3075483dd7aa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그렇지 아니하였던들 이제는 내가 평안히 누워서 자고 쉬었을 것이니"
+      ],
+      "raw_text_hashes": [
+        "ce05f91fd59e106966c8df9e4d33c65f3378f1a0d1716e1c8fd3075483dd7aa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:14",
+      "sequence": 12919,
+      "chapter_label": "JOB 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "with kings and counselors of the earth, who built up waste places for themselves;",
+      "ko": "자기를 위하여 거친 터를 수축한 세상 임금들과 의사들과 함께 있었을 것이요",
+      "source_text_hash": "9f79feaf4a0ff18d3cf23c08fc1cd4b8d55cf231743a954e045d198a195eff34",
+      "translation_text_hash": "91e3313f37644d942ced247d5025e26661c5e09c0217137ad9b4b82a17535743",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기를 위하여 거친 터를 수축한 세상 임금들과 의사들과 함께 있었을 것이요"
+      ],
+      "raw_text_hashes": [
+        "91e3313f37644d942ced247d5025e26661c5e09c0217137ad9b4b82a17535743"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:15",
+      "sequence": 12920,
+      "chapter_label": "JOB 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "or with princes who had gold, who filled their houses with silver;",
+      "ko": "혹시 금을 가지며 은으로 집에 채운 목백들과 함께 있었을 것이며",
+      "source_text_hash": "a93bab6f1337902822ceb0068d7bfa755878a22b0193b87927cbb8fc215c18ff",
+      "translation_text_hash": "2c2e67eccf3ef53d6ed32d083d87f8a04160583cd2c651378dfeb7d5933ee32f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 금을 가지며 은으로 집에 채운 목백들과 함께 있었을 것이며"
+      ],
+      "raw_text_hashes": [
+        "2c2e67eccf3ef53d6ed32d083d87f8a04160583cd2c651378dfeb7d5933ee32f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:16",
+      "sequence": 12921,
+      "chapter_label": "JOB 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "or as a hidden untimely birth I had not been, as infants who never saw light.",
+      "ko": "또 부지중에 낙태한 아이 같아서 세상에 있지 않았겠고 빛을 보지못한 아이들 같았었을 것이라",
+      "source_text_hash": "4c7874cf1618bc1d5ddc9788bbd137d4620e79ae598f3f76cf947326f338b211",
+      "translation_text_hash": "f737cd8a3942e0baae4b563acd5fcebf05bbb9fe18bea27fba7ce60a91111d85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 부지중에 낙태한 아이 같아서 세상에 있지 않았겠고 빛을 보지못한 아이들 같았었을 것이라"
+      ],
+      "raw_text_hashes": [
+        "f737cd8a3942e0baae4b563acd5fcebf05bbb9fe18bea27fba7ce60a91111d85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:17",
+      "sequence": 12922,
+      "chapter_label": "JOB 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "There the wicked cease from troubling. There the weary are at rest.",
+      "ko": "거기서는 악한 자가 소요를 그치며 거기서는 곤비한 자가 평강을 얻으며",
+      "source_text_hash": "6d574d969e00835b57a5471fd493e450fc79ceed09553595443509c9b4dc924e",
+      "translation_text_hash": "c39adc2e683a58ac7194ab8a5d6b46bec405af1cf767e3e64cda09b2acdd2638",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서는 악한 자가 소요를 그치며 거기서는 곤비한 자가 평강을 얻으며"
+      ],
+      "raw_text_hashes": [
+        "c39adc2e683a58ac7194ab8a5d6b46bec405af1cf767e3e64cda09b2acdd2638"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:18",
+      "sequence": 12923,
+      "chapter_label": "JOB 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "There the prisoners are at ease together. They don’t hear the voice of the taskmaster.",
+      "ko": "거기서는 갇힌 자가 다 함께 평안히 있어 감독자의 소리를 듣지 아니하며",
+      "source_text_hash": "bd0f224251f6c6122c5743cc871171199b9050eeb2fc37ff720d29ed44bc46b9",
+      "translation_text_hash": "abf5508953c734c56e623844dd0faf59cf5e9a1d2fc86bd82997f52c581e91b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서는 갇힌 자가 다 함께 평안히 있어 감독자의 소리를 듣지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "abf5508953c734c56e623844dd0faf59cf5e9a1d2fc86bd82997f52c581e91b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:19",
+      "sequence": 12924,
+      "chapter_label": "JOB 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "The small and the great are there. The servant is free from his master.",
+      "ko": "거기서는 작은 자나 큰 자나 일반으로 있고 종이 상전에게서 놓이느니라",
+      "source_text_hash": "c128aba4216e7cb015b150dc686f022e09d2b2ee85c6a0360ff0d4ae42ff2bde",
+      "translation_text_hash": "73be8983b831f2dd12f9efb81725cdfbb3bc73518585ec4bf855ce23a16d4d5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서는 작은 자나 큰 자나 일반으로 있고 종이 상전에게서 놓이느니라"
+      ],
+      "raw_text_hashes": [
+        "73be8983b831f2dd12f9efb81725cdfbb3bc73518585ec4bf855ce23a16d4d5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:20",
+      "sequence": 12925,
+      "chapter_label": "JOB 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "“Why is light given to him who is in misery, life to the bitter in soul,",
+      "ko": "어찌하여 곤고한 자에게 빛을 주셨으며 마음이 번뇌한 자에게 생명을 주셨는고",
+      "source_text_hash": "141af67cff65306bdbc78e46db8d84d97276033deecfa0a69967042968ebbddb",
+      "translation_text_hash": "b9daeea2dcd463afb55bdb332466cf3f03885101a0b49ea8303d0dc089a6e0f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 곤고한 자에게 빛을 주셨으며 마음이 번뇌한 자에게 생명을 주셨는고"
+      ],
+      "raw_text_hashes": [
+        "b9daeea2dcd463afb55bdb332466cf3f03885101a0b49ea8303d0dc089a6e0f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:21",
+      "sequence": 12926,
+      "chapter_label": "JOB 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "who long for death, but it doesn’t come; and dig for it more than for hidden treasures,",
+      "ko": "이러한 자는 죽기를 바라도 오지 아니하니 그것을 구하기를 땅을 파고 숨긴 보배를 찾음보다 더하다가",
+      "source_text_hash": "1e4aab7851e46acfa2239e10318690a1511d5f483da2904ba8513a62a35cdcf5",
+      "translation_text_hash": "ce33376e875b8357cbf83932841418f1257d5eeaf9ad56feb22ed3af2c06f621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러한 자는 죽기를 바라도 오지 아니하니 그것을 구하기를 땅을 파고 숨긴 보배를 찾음보다 더하다가"
+      ],
+      "raw_text_hashes": [
+        "ce33376e875b8357cbf83932841418f1257d5eeaf9ad56feb22ed3af2c06f621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:22",
+      "sequence": 12927,
+      "chapter_label": "JOB 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "who rejoice exceedingly, and are glad, when they can find the grave?",
+      "ko": "무덤을 찾아 얻으면 심히 기뻐하고 즐거워하나니",
+      "source_text_hash": "3f6c12b45665b9fef4882cfcd22c0566e062ed8a52dfbde1f319314117403269",
+      "translation_text_hash": "66ce61aa34df99b19ca2985c0de679b012c8edaffd233dda9d342989440931dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무덤을 찾아 얻으면 심히 기뻐하고 즐거워하나니"
+      ],
+      "raw_text_hashes": [
+        "66ce61aa34df99b19ca2985c0de679b012c8edaffd233dda9d342989440931dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:23",
+      "sequence": 12928,
+      "chapter_label": "JOB 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "Why is light given to a man whose way is hidden, whom God has hedged in?",
+      "ko": "하나님에게 둘러 싸여 길이 아득한 사람에게 어찌하여 빛을 주셨는고",
+      "source_text_hash": "5f14bd7f22a32a746d5fbb43f38cf5eb6e421bb1be1043dd807e140111efe4ed",
+      "translation_text_hash": "f7504f756dc9aad4b780d31f7b674217c6bc97028ea5b390ed1340e49943a92a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님에게 둘러 싸여 길이 아득한 사람에게 어찌하여 빛을 주셨는고"
+      ],
+      "raw_text_hashes": [
+        "f7504f756dc9aad4b780d31f7b674217c6bc97028ea5b390ed1340e49943a92a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:24",
+      "sequence": 12929,
+      "chapter_label": "JOB 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "For my sighing comes before I eat. My groanings are poured out like water.",
+      "ko": "나는 먹기 전에 탄식이 나며 나의 앓는 소리는 물이 쏟아지는것 같구나",
+      "source_text_hash": "8a3c19c0e33c5a7b92217ed30ae5161c8c9a4aca49d6f36ba641f7848be4e8af",
+      "translation_text_hash": "d53e409c3980980733b9296997dc846584ada0dac85a357af43e789fef0c9be4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 먹기 전에 탄식이 나며 나의 앓는 소리는 물이 쏟아지는것 같구나"
+      ],
+      "raw_text_hashes": [
+        "d53e409c3980980733b9296997dc846584ada0dac85a357af43e789fef0c9be4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:25",
+      "sequence": 12930,
+      "chapter_label": "JOB 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "For the thing which I fear comes on me, that which I am afraid of comes to me.",
+      "ko": "나의 두려워하는 그것이 내게 임하고 나의 무서워하는 그것이 내 몸에 미쳤구나",
+      "source_text_hash": "f3a304ccd1e09300de93a1bd74abd29381d97a1fdd03c3eb4c05cd64fec63e7d",
+      "translation_text_hash": "cb43c741c46df84e57ed6dd738f9537b3c04cc04f93343807176a5351432a99c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 두려워하는 그것이 내게 임하고 나의 무서워하는 그것이 내 몸에 미쳤구나"
+      ],
+      "raw_text_hashes": [
+        "cb43c741c46df84e57ed6dd738f9537b3c04cc04f93343807176a5351432a99c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:3:26",
+      "sequence": 12931,
+      "chapter_label": "JOB 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "I am not at ease, neither am I quiet, neither do I have rest; but trouble comes.”",
+      "ko": "평강도 없고 안온도 없고 안식도 없고 고난만 임하였구나",
+      "source_text_hash": "292237463e9b905ef320ec5e4ceb0013e5015d8dec42c73d4d3a9f535800085b",
+      "translation_text_hash": "fda6065db30df4994ce33f5157ce4239a94c1cf2c1741dea909a97f81f85c015",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평강도 없고 안온도 없고 안식도 없고 고난만 임하였구나"
+      ],
+      "raw_text_hashes": [
+        "fda6065db30df4994ce33f5157ce4239a94c1cf2c1741dea909a97f81f85c015"
+      ]
+    }
+  ]
+}

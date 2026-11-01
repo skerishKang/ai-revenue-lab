@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:039",
+  "unit_ordinal": 517,
+  "unit_label": "PSA 39",
+  "book_code": "PSA",
+  "chapter_number": 39,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:39:1",
+      "sequence": 14514,
+      "chapter_label": "PSA 39",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 1
+        }
+      ],
+      "en": "I said, “I will watch my ways, so that I don’t sin with my tongue. I will keep my mouth with a bridle while the wicked is before me.”",
+      "ko": "내가 말하기를 나의 행위를 조심하여 내 혀로 범죄치 아니하리니 악인이 내 앞에 있을 때에 내가 내 입에 자갈을 먹이리라 하였도다",
+      "source_text_hash": "4554179505ed2c5e29f94f83752787b55ecc5757a3ff49ab4700788c65bf3933",
+      "translation_text_hash": "45d2e651dad31b833dd50384c1c9aaaa48a91eb6d4ef954a5a696f9635d74345",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하기를 나의 행위를 조심하여 내 혀로 범죄치 아니하리니 악인이 내 앞에 있을 때에 내가 내 입에 자갈을 먹이리라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "45d2e651dad31b833dd50384c1c9aaaa48a91eb6d4ef954a5a696f9635d74345"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:2",
+      "sequence": 14515,
+      "chapter_label": "PSA 39",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 2
+        }
+      ],
+      "en": "I was mute with silence. I held my peace, even from good. My sorrow was stirred.",
+      "ko": "내가 잠잠하여 선한 말도 발하지 아니하니 나의 근심이 더 심하도다",
+      "source_text_hash": "514ad0c47dc458208f0e5a7e3fac38004ffe0774cfb34c3ba34b9d478bcdd36c",
+      "translation_text_hash": "8cb56f2f99d3dfaa598043ecedaff68d649c74231818eff2059ac7cdee238cdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 잠잠하여 선한 말도 발하지 아니하니 나의 근심이 더 심하도다"
+      ],
+      "raw_text_hashes": [
+        "8cb56f2f99d3dfaa598043ecedaff68d649c74231818eff2059ac7cdee238cdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:3",
+      "sequence": 14516,
+      "chapter_label": "PSA 39",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 3
+        }
+      ],
+      "en": "My heart was hot within me. While I meditated, the fire burned. I spoke with my tongue:",
+      "ko": "내 마음이 내 속에서 뜨거워서 묵상할 때에 화가 발하니 나의 혀로 말하기를",
+      "source_text_hash": "af4399e5445be90cd65a92e3983704e329c2a2fffb4a1a61bea0d4855df493a4",
+      "translation_text_hash": "9102cb1cb7140ce08b1c2601fea8470c4e2c801b78d2e2853ef532e8ec66c5f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음이 내 속에서 뜨거워서 묵상할 때에 화가 발하니 나의 혀로 말하기를"
+      ],
+      "raw_text_hashes": [
+        "9102cb1cb7140ce08b1c2601fea8470c4e2c801b78d2e2853ef532e8ec66c5f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:4",
+      "sequence": 14517,
+      "chapter_label": "PSA 39",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 4
+        }
+      ],
+      "en": "“LORD, show me my end, what is the measure of my days. Let me know how frail I am.",
+      "ko": "여호와여 나의 종말과 연한의 어떠함을 알게 하사 나로 나의 연약함을 알게 하소서",
+      "source_text_hash": "120f7bb2b2e194ed7338f8126b58caad7c94ada4db3de2567840ce00f990d592",
+      "translation_text_hash": "ab62f611acf4dd745e17e8e233b7adef4f151796536ffe8546b95353aaa41434",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나의 종말과 연한의 어떠함을 알게 하사 나로 나의 연약함을 알게 하소서"
+      ],
+      "raw_text_hashes": [
+        "ab62f611acf4dd745e17e8e233b7adef4f151796536ffe8546b95353aaa41434"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:5",
+      "sequence": 14518,
+      "chapter_label": "PSA 39",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 5
+        }
+      ],
+      "en": "Behold, you have made my days hand widths. My lifetime is as nothing before you. Surely every man stands as a breath.” Selah.",
+      "ko": "주께서 나의 날을 손 넓이 만큼 되게 하시매 나의 일생이 주의 앞에는 없는 것 같사오니 사람마다 그 든든히 선 때도 진실로 허사 뿐이니이다(셀라)",
+      "source_text_hash": "1c5b27bac84916784a7880bd54a33a9c411f310b158f84e36cd72ee12d7a0cc8",
+      "translation_text_hash": "7053e33686f1a87709b2f48235b6bbf9199e34fcfad75bc275cb8ee152c639ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나의 날을 손 넓이 만큼 되게 하시매 나의 일생이 주의 앞에는 없는 것 같사오니 사람마다 그 든든히 선 때도 진실로 허사 뿐이니이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "7053e33686f1a87709b2f48235b6bbf9199e34fcfad75bc275cb8ee152c639ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:6",
+      "sequence": 14519,
+      "chapter_label": "PSA 39",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 6
+        }
+      ],
+      "en": "“Surely every man walks like a shadow. Surely they busy themselves in vain. He heaps up, and doesn’t know who shall gather.",
+      "ko": "진실로 각 사람은 그림자 같이 다니고 헛된 일에 분요하며 재물을 쌓으나 누가 취할는지 알지 못하나이다",
+      "source_text_hash": "6b2b7d67548dc62a8a4b155935f854a4bce56606712401e895098d7851b87676",
+      "translation_text_hash": "310169a5718f3d38f47a47161b63ba5e8407ede4b3b90ccb40b396c2e9fd709e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 각 사람은 그림자 같이 다니고 헛된 일에 분요하며 재물을 쌓으나 누가 취할는지 알지 못하나이다"
+      ],
+      "raw_text_hashes": [
+        "310169a5718f3d38f47a47161b63ba5e8407ede4b3b90ccb40b396c2e9fd709e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:7",
+      "sequence": 14520,
+      "chapter_label": "PSA 39",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 7
+        }
+      ],
+      "en": "Now, Lord, what do I wait for? My hope is in you.",
+      "ko": "주여 내가 무엇을 바라리요 나의 소망은 주께 있나이다",
+      "source_text_hash": "0344f33f9074bbec93a7764370fd5d1cbb97360b4bb288e1d9a32dbe99287680",
+      "translation_text_hash": "8537b57f02004e86ec6e1763ef97b6a35acd526d9aa6c01220c0de60df9e7ea0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 내가 무엇을 바라리요 나의 소망은 주께 있나이다"
+      ],
+      "raw_text_hashes": [
+        "8537b57f02004e86ec6e1763ef97b6a35acd526d9aa6c01220c0de60df9e7ea0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:8",
+      "sequence": 14521,
+      "chapter_label": "PSA 39",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 8
+        }
+      ],
+      "en": "Deliver me from all my transgressions. Don’t make me the reproach of the foolish.",
+      "ko": "나를 모든 죄과에서 건지시며 우매한 자에게 욕을 보지 않게 하소서",
+      "source_text_hash": "e0a5ccf15b103ea58017ee2d182c9907c75a965f414b21b1546a53cc4f339bd1",
+      "translation_text_hash": "16cec6d229fd7af5b7b2361dd2a879d55de6681ecad04e3a128adad1dcf6e6de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 모든 죄과에서 건지시며 우매한 자에게 욕을 보지 않게 하소서"
+      ],
+      "raw_text_hashes": [
+        "16cec6d229fd7af5b7b2361dd2a879d55de6681ecad04e3a128adad1dcf6e6de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:9",
+      "sequence": 14522,
+      "chapter_label": "PSA 39",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 9
+        }
+      ],
+      "en": "I was mute. I didn’t open my mouth, because you did it.",
+      "ko": "내가 잠잠하고 입을 열지 아니하옴은 주께서 이를 행하신 연고니이다",
+      "source_text_hash": "85e899770ff315846b7bd6953a5aa0322971a9e643c9496867b2bfacd4ba87c2",
+      "translation_text_hash": "61dd046950641d62aa367d52bc7dc2de66b6e81afa998490f1f9cb5e789e294e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 잠잠하고 입을 열지 아니하옴은 주께서 이를 행하신 연고니이다"
+      ],
+      "raw_text_hashes": [
+        "61dd046950641d62aa367d52bc7dc2de66b6e81afa998490f1f9cb5e789e294e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:10",
+      "sequence": 14523,
+      "chapter_label": "PSA 39",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 10
+        }
+      ],
+      "en": "Remove your scourge away from me. I am overcome by the blow of your hand.",
+      "ko": "주의 징책을 나에게서 옮기소서 주의 손이 치심으로 내가 쇠망하였나이다",
+      "source_text_hash": "95472db341b2b0890ac3c748acd92749cec287de83fc598a99cc22cfbb9a6cac",
+      "translation_text_hash": "59de7bebc804e1159079aaac4a5613528ded46054f1dd411c68c82a7c2add0d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 징책을 나에게서 옮기소서 주의 손이 치심으로 내가 쇠망하였나이다"
+      ],
+      "raw_text_hashes": [
+        "59de7bebc804e1159079aaac4a5613528ded46054f1dd411c68c82a7c2add0d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:11",
+      "sequence": 14524,
+      "chapter_label": "PSA 39",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 11
+        }
+      ],
+      "en": "When you rebuke and correct man for iniquity, you consume his wealth like a moth. Surely every man is but a breath.” Selah.",
+      "ko": "주께서 죄악을 견책하사 사람을 징계하실 때에 그 영화를 좀 먹음 같이 소멸하게 하시니 참으로 각 사람은 허사 뿐이니이다(셀라)",
+      "source_text_hash": "4c45b0fcd267b823a6e940bcc80793b1a8b58e88b3b0aa4d7974b895f5b09fdd",
+      "translation_text_hash": "0b41797a046673b64932cf743ec4196801b1bed4cd0fa1e7398e593bf57d374a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 죄악을 견책하사 사람을 징계하실 때에 그 영화를 좀 먹음 같이 소멸하게 하시니 참으로 각 사람은 허사 뿐이니이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "0b41797a046673b64932cf743ec4196801b1bed4cd0fa1e7398e593bf57d374a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:12",
+      "sequence": 14525,
+      "chapter_label": "PSA 39",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 12
+        }
+      ],
+      "en": "“Hear my prayer, LORD, and give ear to my cry. Don’t be silent at my tears. For I am a stranger with you, a foreigner, as all my fathers were.",
+      "ko": "여호와여 나의 기도를 들으시며 나의 부르짖음에 귀를 기울이소서 내가 눈물 흘릴 때에 잠잠하지 마옵소서 대저 나는 주께 객이 되고 거류자가 됨이 나의 모든 열조 같으니이다",
+      "source_text_hash": "7662f4944fabfa2f9cfa53286692d9573a2d96d68fc2508f81129f7005f11a13",
+      "translation_text_hash": "396e96989fef69a37581e9a30f77e9349abc9231313501dbd211fb53fc7834a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나의 기도를 들으시며 나의 부르짖음에 귀를 기울이소서 내가 눈물 흘릴 때에 잠잠하지 마옵소서 대저 나는 주께 객이 되고 거류자가 됨이 나의 모든 열조 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "396e96989fef69a37581e9a30f77e9349abc9231313501dbd211fb53fc7834a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:39:13",
+      "sequence": 14526,
+      "chapter_label": "PSA 39",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 39,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 39,
+          "verse": 13
+        }
+      ],
+      "en": "Oh spare me, that I may recover strength, before I go away and exist no more.”",
+      "ko": "주는 나를 용서하사 내가 떠나 없어지기 전에 나의 건강을 회복시키소서",
+      "source_text_hash": "4e32a57c3c0bea5df82698179bd09f3ff8f98593f7a18462a96e57576db2521a",
+      "translation_text_hash": "a796bc5e431d57ff94ac2200ed6bff1affe055858a903fd95fae107579bb9777",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나를 용서하사 내가 떠나 없어지기 전에 나의 건강을 회복시키소서"
+      ],
+      "raw_text_hashes": [
+        "a796bc5e431d57ff94ac2200ed6bff1affe055858a903fd95fae107579bb9777"
+      ]
+    }
+  ]
+}

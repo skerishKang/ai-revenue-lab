@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:010",
+  "unit_ordinal": 446,
+  "unit_label": "JOB 10",
+  "book_code": "JOB",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:10:1",
+      "sequence": 13088,
+      "chapter_label": "JOB 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "“My soul is weary of my life. I will give free course to my complaint. I will speak in the bitterness of my soul.",
+      "ko": "내 영혼이 살기에 곤비하니 내 원통함을 발설하고 내 마음의 괴로운대로 말하리라",
+      "source_text_hash": "bb430cf0db5e66dd5a7bb96ab8a632913ca0c98b6670a6f3c674f6fe65b415b4",
+      "translation_text_hash": "a40a1931b6e9c1f5163e886effad4e3d41d8b29eee51800399df001c5a06e34e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼이 살기에 곤비하니 내 원통함을 발설하고 내 마음의 괴로운대로 말하리라"
+      ],
+      "raw_text_hashes": [
+        "a40a1931b6e9c1f5163e886effad4e3d41d8b29eee51800399df001c5a06e34e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:2",
+      "sequence": 13089,
+      "chapter_label": "JOB 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "I will tell God, ‘Do not condemn me. Show me why you contend with me.",
+      "ko": "내가 하나님께 아뢰오리니 나를 정죄하지 마옵시고 무슨 연고로 나로 더불어 쟁변하시는지 나로 알게 하옵소서",
+      "source_text_hash": "5963d9c17e442806e3bae4c1f8579743bfa97e4501b44db2fdd994945ae6a512",
+      "translation_text_hash": "c43704607ee0e0f752316dcf81550e0b96e56d866ae4a4e5ebc350eda24d79ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하나님께 아뢰오리니 나를 정죄하지 마옵시고 무슨 연고로 나로 더불어 쟁변하시는지 나로 알게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "c43704607ee0e0f752316dcf81550e0b96e56d866ae4a4e5ebc350eda24d79ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:3",
+      "sequence": 13090,
+      "chapter_label": "JOB 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Is it good to you that you should oppress, that you should despise the work of your hands, and smile on the counsel of the wicked?",
+      "ko": "주께서 주의 손으로 지으신 것을 학대하시며 멸시하시고 악인의 꾀에 빛을 비취시기를 선히 여기시나이까",
+      "source_text_hash": "8bb15f3b0e27f3e4fb2540e3988b3ccb30ee020aa025fc3664efcc8df84d4e2b",
+      "translation_text_hash": "18ff30d4f582d23d8b2408959799389695cdd8b93b28db3035e8777bd4d08f7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 손으로 지으신 것을 학대하시며 멸시하시고 악인의 꾀에 빛을 비취시기를 선히 여기시나이까"
+      ],
+      "raw_text_hashes": [
+        "18ff30d4f582d23d8b2408959799389695cdd8b93b28db3035e8777bd4d08f7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:4",
+      "sequence": 13091,
+      "chapter_label": "JOB 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "Do you have eyes of flesh? Or do you see as man sees?",
+      "ko": "주의 눈이 육신의 눈이니이까 주께서 사람의 보는 것처럼 보시리이까",
+      "source_text_hash": "d8f4a34cbea46d8181598054024c9a576e0a329c6d49fa8ee699fe164513bf1d",
+      "translation_text_hash": "0b9921c2175d81e6b6e9683cde0ed01b95ba18fa24e77e26144430e927b64b64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 눈이 육신의 눈이니이까 주께서 사람의 보는 것처럼 보시리이까"
+      ],
+      "raw_text_hashes": [
+        "0b9921c2175d81e6b6e9683cde0ed01b95ba18fa24e77e26144430e927b64b64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:5",
+      "sequence": 13092,
+      "chapter_label": "JOB 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "Are your days as the days of mortals, or your years as man’s years,",
+      "ko": "주의 날이 어찌 인생의 날과 같으며 주의 해가 어찌 인생의 날과 같기로",
+      "source_text_hash": "b215067e60ebc18d7b4245a788f36c70490760323299c8ac826a36766637d3e3",
+      "translation_text_hash": "3a51b2f055830c35042f5f0d200f7ac0a1a782079fa839182792964425f32d0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 날이 어찌 인생의 날과 같으며 주의 해가 어찌 인생의 날과 같기로"
+      ],
+      "raw_text_hashes": [
+        "3a51b2f055830c35042f5f0d200f7ac0a1a782079fa839182792964425f32d0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:6",
+      "sequence": 13093,
+      "chapter_label": "JOB 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "that you inquire after my iniquity, and search after my sin?",
+      "ko": "나의 허물을 찾으시며 나의 죄를 사실하시나이까",
+      "source_text_hash": "ba37cb6fbec59c278ff87659a79b65b6174af3728e85113859d81076cb609e74",
+      "translation_text_hash": "91265a51b58891fcacb61ea42405e94d2e662247af0299dd6852ab636b672505",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 허물을 찾으시며 나의 죄를 사실하시나이까"
+      ],
+      "raw_text_hashes": [
+        "91265a51b58891fcacb61ea42405e94d2e662247af0299dd6852ab636b672505"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:7",
+      "sequence": 13094,
+      "chapter_label": "JOB 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "Although you know that I am not wicked, there is no one who can deliver out of your hand.",
+      "ko": "주께서는 내가 악하지 않은 줄을 아시나이다 주의 손에서 나를 벗어나게 할 자도 없나이다",
+      "source_text_hash": "2aefeae913ac0cf65bbc2f25a285c74639ae48399fe89b6e605b85eca037cf0a",
+      "translation_text_hash": "5e3fa6a4426ec6406918032f1b24798c5cc9dfdeca3ed1f68fd149732a73b7e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서는 내가 악하지 않은 줄을 아시나이다 주의 손에서 나를 벗어나게 할 자도 없나이다"
+      ],
+      "raw_text_hashes": [
+        "5e3fa6a4426ec6406918032f1b24798c5cc9dfdeca3ed1f68fd149732a73b7e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:8",
+      "sequence": 13095,
+      "chapter_label": "JOB 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "“‘Your hands have framed me and fashioned me altogether, yet you destroy me.",
+      "ko": "주의 손으로 나를 만드사 백체를 이루셨거늘 이제 나를 멸하시나이다",
+      "source_text_hash": "aae5b4c5374ae6334508af4086d0e127fd6f41a8b3d55de4512b5d653766fe31",
+      "translation_text_hash": "9da422ca0dfeaf5546e4d1ad407f827a9c853b24fd26e6e1617fb873c030cfde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 손으로 나를 만드사 백체를 이루셨거늘 이제 나를 멸하시나이다"
+      ],
+      "raw_text_hashes": [
+        "9da422ca0dfeaf5546e4d1ad407f827a9c853b24fd26e6e1617fb873c030cfde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:9",
+      "sequence": 13096,
+      "chapter_label": "JOB 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Remember, I beg you, that you have fashioned me as clay. Will you bring me into dust again?",
+      "ko": "기억하옵소서 주께서 내 몸 지으시기를 흙을 뭉치듯 하셨거늘 다시 나를 티끌로 돌려 보내려 하시나이까",
+      "source_text_hash": "08ac1fa53c3f523030eb91e67a4d439a32577cc00e02690c6d0de785798cb324",
+      "translation_text_hash": "a4780cab307952a1afbbb0beff868607c104044420f64b3f194625ff7d99c1ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기억하옵소서 주께서 내 몸 지으시기를 흙을 뭉치듯 하셨거늘 다시 나를 티끌로 돌려 보내려 하시나이까"
+      ],
+      "raw_text_hashes": [
+        "a4780cab307952a1afbbb0beff868607c104044420f64b3f194625ff7d99c1ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:10",
+      "sequence": 13097,
+      "chapter_label": "JOB 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "Haven’t you poured me out like milk, and curdled me like cheese?",
+      "ko": "주께서 나를 젖과 같이 쏟으셨으며 엉긴 젖처럼 엉기게 하지 아니하셨나이까",
+      "source_text_hash": "a43e2f44f023e09e439e8de55b650e57e5451c705551b22dc47a3a179586947e",
+      "translation_text_hash": "e26d48fb6fb865acaddabecc923ab9364f7620849a1b9d97f5b21d635d085f16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나를 젖과 같이 쏟으셨으며 엉긴 젖처럼 엉기게 하지 아니하셨나이까"
+      ],
+      "raw_text_hashes": [
+        "e26d48fb6fb865acaddabecc923ab9364f7620849a1b9d97f5b21d635d085f16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:11",
+      "sequence": 13098,
+      "chapter_label": "JOB 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "You have clothed me with skin and flesh, and knit me together with bones and sinews.",
+      "ko": "가죽과 살로 내게 입히시며 뼈와 힘줄로 나를 뭉치시고",
+      "source_text_hash": "4392cac9a26b274cff832aff612e716f85c710067f018c733e30fb9a5f4218b2",
+      "translation_text_hash": "e1436bbd8a12a0efc646f58f9b6ae25467e692d98e3485ba150d6029a9283139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가죽과 살로 내게 입히시며 뼈와 힘줄로 나를 뭉치시고"
+      ],
+      "raw_text_hashes": [
+        "e1436bbd8a12a0efc646f58f9b6ae25467e692d98e3485ba150d6029a9283139"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:12",
+      "sequence": 13099,
+      "chapter_label": "JOB 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "You have granted me life and loving kindness. Your visitation has preserved my spirit.",
+      "ko": "생명과 은혜를 내게 주시고 권고하심으로 내 영을 지키셨나이다",
+      "source_text_hash": "60a1b0c7623a7f32b59283ab92c4f8f46712acc3c8e75b058e00b582f76ba73e",
+      "translation_text_hash": "a60da2662c8aeb6950cb700bae0e438bb312b1868249f35277df1e7430883bba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생명과 은혜를 내게 주시고 권고하심으로 내 영을 지키셨나이다"
+      ],
+      "raw_text_hashes": [
+        "a60da2662c8aeb6950cb700bae0e438bb312b1868249f35277df1e7430883bba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:13",
+      "sequence": 13100,
+      "chapter_label": "JOB 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "Yet you hid these things in your heart. I know that this is with you:",
+      "ko": "그러한데 주께서 이것들을 마음에 품으셨나이다 이 뜻이 주께 있은 줄을 내가 아나이다",
+      "source_text_hash": "3063049a636d261ca044925f8bcddd2582d43be6f91603c0d2695afd07d26827",
+      "translation_text_hash": "74740a9448084d142ee45aee6bc33b4ff3f6b8f9589f0a53114a3c1768ed08dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러한데 주께서 이것들을 마음에 품으셨나이다 이 뜻이 주께 있은 줄을 내가 아나이다"
+      ],
+      "raw_text_hashes": [
+        "74740a9448084d142ee45aee6bc33b4ff3f6b8f9589f0a53114a3c1768ed08dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:14",
+      "sequence": 13101,
+      "chapter_label": "JOB 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "if I sin, then you mark me. You will not acquit me from my iniquity.",
+      "ko": "내가 범죄하면 주께서 나를 죄인으로 인정하시고 내 죄악을 사유치 아니하시나이다",
+      "source_text_hash": "a2b51560758ac2f69df31b5b7f21e7eabecb34116ac8c7b2e0f5cc1bbb9a1033",
+      "translation_text_hash": "9b4a016ca1752f202169df4411b8e5e1cf30c83ca2b888e32054d37d6860a203",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 범죄하면 주께서 나를 죄인으로 인정하시고 내 죄악을 사유치 아니하시나이다"
+      ],
+      "raw_text_hashes": [
+        "9b4a016ca1752f202169df4411b8e5e1cf30c83ca2b888e32054d37d6860a203"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:15",
+      "sequence": 13102,
+      "chapter_label": "JOB 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "If I am wicked, woe to me. If I am righteous, I still will not lift up my head, being filled with disgrace, and conscious of my affliction.",
+      "ko": "내가 악하면 화가 있을 것이오며 내가 의로울찌라도 머리를 들지 못하올 것은 내 속에 부끄러움이 가득하고 내 환난을 목도함이니이다",
+      "source_text_hash": "11cf6dfd360ecea2c76800f59fa26b65502239c29f99f565adbcb5a1b27256ab",
+      "translation_text_hash": "d71d56d7f402f7bfae8dcb4904c733569e9b2da04efd48595cdcdae090396ea5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 악하면 화가 있을 것이오며 내가 의로울찌라도 머리를 들지 못하올 것은 내 속에 부끄러움이 가득하고 내 환난을 목도함이니이다"
+      ],
+      "raw_text_hashes": [
+        "d71d56d7f402f7bfae8dcb4904c733569e9b2da04efd48595cdcdae090396ea5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:16",
+      "sequence": 13103,
+      "chapter_label": "JOB 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "If my head is held high, you hunt me like a lion. Again you show yourself powerful to me.",
+      "ko": "내가 머리를 높이 들면 주께서 사자처럼 나를 사냥하시며 내게 주의 기이한 능력을 다시 나타내시나이다",
+      "source_text_hash": "a2bf3fb1e880e5c504151c6dbcaaa903c69dc330a807f06b0a4ff2a24ace40cb",
+      "translation_text_hash": "3d50a6754d13dbfd888a87c964b3b3076156b6e8a688996a48faf825f6b13393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 머리를 높이 들면 주께서 사자처럼 나를 사냥하시며 내게 주의 기이한 능력을 다시 나타내시나이다"
+      ],
+      "raw_text_hashes": [
+        "3d50a6754d13dbfd888a87c964b3b3076156b6e8a688996a48faf825f6b13393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:17",
+      "sequence": 13104,
+      "chapter_label": "JOB 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "You renew your witnesses against me, and increase your indignation on me. Changes and warfare are with me.",
+      "ko": "주께서 자주자주 증거하는 자를 갈마들여 나를 치시며 나를 향하여 진노를 더하시니 군대가 갈마들어 치는것 같으니이다",
+      "source_text_hash": "0d833c2d9478f38a618d7194d33f92510d3540450a239c8565a37aaba0e6a49a",
+      "translation_text_hash": "567ec232c5267fbdbb04d4ccf4d1fc60dddf963b2b845e7706b21c679c615ac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 자주자주 증거하는 자를 갈마들여 나를 치시며 나를 향하여 진노를 더하시니 군대가 갈마들어 치는것 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "567ec232c5267fbdbb04d4ccf4d1fc60dddf963b2b845e7706b21c679c615ac5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:18",
+      "sequence": 13105,
+      "chapter_label": "JOB 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "“‘Why, then, have you brought me out of the womb? I wish I had given up the spirit, and no eye had seen me.",
+      "ko": "주께서 나를 태에서 나오게 하셨음은 어찜이니이까 그렇지 아니하였더면 내가 기운이 끊어져 아무 눈에도 보이지 아니하였을 것이라",
+      "source_text_hash": "68ab03eaece5bd9281973b049b28f68ac20bf9bede1850cf0e7ec007a53ac79f",
+      "translation_text_hash": "a9c51333b2732a21629a94c72721e892c88d0274262888565e3df8a362e2260f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나를 태에서 나오게 하셨음은 어찜이니이까 그렇지 아니하였더면 내가 기운이 끊어져 아무 눈에도 보이지 아니하였을 것이라"
+      ],
+      "raw_text_hashes": [
+        "a9c51333b2732a21629a94c72721e892c88d0274262888565e3df8a362e2260f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:19",
+      "sequence": 13106,
+      "chapter_label": "JOB 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "I should have been as though I had not been. I should have been carried from the womb to the grave.",
+      "ko": "있어도 없던것 같이 되어서 태에서 바로 무덤으로 옮겼으리이다",
+      "source_text_hash": "7bb7c1774bd2bf49566cbb21c3778722603f715670b7ccdc21b182408eb85270",
+      "translation_text_hash": "99d873667b24ad93132e25f3cbbfc8bc357bdd3b0c46c3438d21966a69165cb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "있어도 없던것 같이 되어서 태에서 바로 무덤으로 옮겼으리이다"
+      ],
+      "raw_text_hashes": [
+        "99d873667b24ad93132e25f3cbbfc8bc357bdd3b0c46c3438d21966a69165cb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:20",
+      "sequence": 13107,
+      "chapter_label": "JOB 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "Aren’t my days few? Stop! Leave me alone, that I may find a little comfort,",
+      "ko": "내 날은 적지 아니하니이까 그런즉 그치시고 나를 버려두사 저으기 평안하게 하옵시되",
+      "source_text_hash": "fa762f35b0a1c0cea36a779203799b509dc0d93693251a5abbff3164996de8c7",
+      "translation_text_hash": "794895bed72a32236ca97d2e607e0e087eff46707b0696af097d9f65dd1de10c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 날은 적지 아니하니이까 그런즉 그치시고 나를 버려두사 저으기 평안하게 하옵시되"
+      ],
+      "raw_text_hashes": [
+        "794895bed72a32236ca97d2e607e0e087eff46707b0696af097d9f65dd1de10c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:21",
+      "sequence": 13108,
+      "chapter_label": "JOB 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "before I go where I will not return from, to the land of darkness and of the shadow of death;",
+      "ko": "내가 돌아오지 못할 땅 곧 어둡고 죽음의 그늘진 땅으로 가기 전에 그리하옵소서",
+      "source_text_hash": "20a2fa56a138bd84593acaaedec200d0968a93a5b3b526dfd4cc0cf327399ac1",
+      "translation_text_hash": "ec940fa8091ff7c771891ce0d6e5133e5ffc3730831f5d8f8ce46f283d2ca4b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌아오지 못할 땅 곧 어둡고 죽음의 그늘진 땅으로 가기 전에 그리하옵소서"
+      ],
+      "raw_text_hashes": [
+        "ec940fa8091ff7c771891ce0d6e5133e5ffc3730831f5d8f8ce46f283d2ca4b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:10:22",
+      "sequence": 13109,
+      "chapter_label": "JOB 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "the land dark as midnight, of the shadow of death, without any order, where the light is as midnight.’”",
+      "ko": "이 땅은 어두워서 흑암 같고 죽음의 그늘이 져서 아무 구별이 없고 광명도 흑암 같으니이다",
+      "source_text_hash": "6d1cb2d5cb68e1534f733b2ea2cab9077bed5ddaf7fb2eb7d0640fbd58c9422a",
+      "translation_text_hash": "89880c1eff74910d9f30a26bcf7c126795a11636f8cf9c0ae9143bf94d1d9b8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅은 어두워서 흑암 같고 죽음의 그늘이 져서 아무 구별이 없고 광명도 흑암 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "89880c1eff74910d9f30a26bcf7c126795a11636f8cf9c0ae9143bf94d1d9b8b"
+      ]
+    }
+  ]
+}

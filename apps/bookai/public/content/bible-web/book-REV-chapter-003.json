@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:003",
+  "unit_ordinal": 1170,
+  "unit_label": "REV 3",
+  "book_code": "REV",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:3:1",
+      "sequence": 30744,
+      "chapter_label": "REV 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "“And to the angel of the assembly in Sardis write:“He who has the seven Spirits of God and the seven stars says these things: “I know your works, that you have a reputation of being alive, but you are dead.",
+      "ko": "사데 교회의 사자에게 편지하기를 하나님의 일곱 영과 일곱 별을 가진이가 가라사대 내가 네 행위를 아노니 네가 살았다 하는 이름은 가졌으나 죽은 자로다",
+      "source_text_hash": "a1e6599c6511cb32295be719fa2e40939743ce44b2c0a1302c83d9d74261fcb2",
+      "translation_text_hash": "ca872399227438374106065e3049111ffbca31dcb90f63b84d220ab2d3e326b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사데 교회의 사자에게 편지하기를 하나님의 일곱 영과 일곱 별을 가진이가 가라사대 내가 네 행위를 아노니 네가 살았다 하는 이름은 가졌으나 죽은 자로다"
+      ],
+      "raw_text_hashes": [
+        "ca872399227438374106065e3049111ffbca31dcb90f63b84d220ab2d3e326b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:2",
+      "sequence": 30745,
+      "chapter_label": "REV 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Wake up and strengthen the things that remain, which you were about to throw away,for I have found no works of yours perfected before my God.",
+      "ko": "너는 일깨워 그 남은바 죽게 된 것을 굳게 하라 내 하나님 앞에 네 행위의 온전한 것을 찾지 못하였노니",
+      "source_text_hash": "f2c2ab9a296a42653e23a8b316875483adf4b26482a3d9c12a0b7bb900b3c632",
+      "translation_text_hash": "6cdda89cdae0b4399a8c8d6938c3f3a9d10c7c2329ef9147171df953e1a1094b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 일깨워 그 남은바 죽게 된 것을 굳게 하라 내 하나님 앞에 네 행위의 온전한 것을 찾지 못하였노니"
+      ],
+      "raw_text_hashes": [
+        "6cdda89cdae0b4399a8c8d6938c3f3a9d10c7c2329ef9147171df953e1a1094b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:3",
+      "sequence": 30746,
+      "chapter_label": "REV 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Remember therefore how you have received and heard. Keep it and repent. If therefore you won’t watch, I will come as a thief, and you won’t know what hour I will come upon you.",
+      "ko": "그러므로 네가 어떻게 받았으며 어떻게 들었는지 생각하고 지키어 회개하라 만일 일깨지 아니하면 내가 도적 같이 이르리니 어느 시에 네게 임할는지 네가 알지 못하리라",
+      "source_text_hash": "03e91d96fbcdc38d9142010915d024d76dc1a56502d732f2544c25d085cc1f44",
+      "translation_text_hash": "8d7ed70af8e5ed7348d021c358b7964cca4e705dec7071c555c38bc4c6bde311",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 네가 어떻게 받았으며 어떻게 들었는지 생각하고 지키어 회개하라 만일 일깨지 아니하면 내가 도적 같이 이르리니 어느 시에 네게 임할는지 네가 알지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "8d7ed70af8e5ed7348d021c358b7964cca4e705dec7071c555c38bc4c6bde311"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:4",
+      "sequence": 30747,
+      "chapter_label": "REV 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Nevertheless you have a few names in Sardis that didn’t defile their garments. They will walk with me in white, for they are worthy.",
+      "ko": "그러나 사데에 그 옷을 더럽히지 아니한 자 몇명이 네게 있어 흰 옷을 입고 나와 함께 다니리니 그들은 합당한 자인 연고라",
+      "source_text_hash": "01b809679caef0a30d4ee7fe1ad75043d8b29d94d618afa9e138ac37b6cf844a",
+      "translation_text_hash": "8a9673f2a7471a06f24b29ae1e886e68c552c6e42a9359a712e82b98bf44b1f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 사데에 그 옷을 더럽히지 아니한 자 몇명이 네게 있어 흰 옷을 입고 나와 함께 다니리니 그들은 합당한 자인 연고라"
+      ],
+      "raw_text_hashes": [
+        "8a9673f2a7471a06f24b29ae1e886e68c552c6e42a9359a712e82b98bf44b1f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:5",
+      "sequence": 30748,
+      "chapter_label": "REV 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "He who overcomes will be arrayed in white garments, and I will in no way blot his name out of the book of life, and I will confess his name before my Father, and before his angels.",
+      "ko": "이기는 자는 이와 같이 흰 옷을 입을 것이요 내가 그 이름을 생명책에서 반드시 흐리지 아니하고 그 이름을 내 아버지 앞과 그 천사들 앞에서 시인하리라",
+      "source_text_hash": "d2d468c6aafeac68f30457c7acbb963a1c5f8558a9999d025e6d9aee5475f9cb",
+      "translation_text_hash": "02e28158df78bb15f4485ada8816bacd9a763db8ec86186bda1e53bfda411c4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이기는 자는 이와 같이 흰 옷을 입을 것이요 내가 그 이름을 생명책에서 반드시 흐리지 아니하고 그 이름을 내 아버지 앞과 그 천사들 앞에서 시인하리라"
+      ],
+      "raw_text_hashes": [
+        "02e28158df78bb15f4485ada8816bacd9a763db8ec86186bda1e53bfda411c4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:6",
+      "sequence": 30749,
+      "chapter_label": "REV 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "He who has an ear, let him hear what the Spirit says to the assemblies.",
+      "ko": "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다",
+      "source_text_hash": "41efec26bd2928dedbfc339464fd23c8bf79b9600f81c52a8d9ece8417f24924",
+      "translation_text_hash": "5fe2cef06aab47bca7ac7e99cf1ac8d0af5607c0b869a621793ef8936ea855b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "5fe2cef06aab47bca7ac7e99cf1ac8d0af5607c0b869a621793ef8936ea855b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:7",
+      "sequence": 30750,
+      "chapter_label": "REV 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "“To the angel of the assembly in Philadelphia write:“He who is holy, he who is true, he who has the key of David, he who opens and no one can shut, and who shuts and no one opens, says these things:",
+      "ko": "빌라델비아 교회의 사자에게 편지하기를 거룩하고 진실하사 다윗의 열쇠를 가지신 이 곧 열면 닫을 사람이 없고 닫으면 열 사람이 없는 그이가 가라사대",
+      "source_text_hash": "14e75e064f80bca9ff4f6eb92c1880072a22e0f1a955a14a1f051306dbaabbf0",
+      "translation_text_hash": "c74952482b33885280bb695aee309f3123dee89f5054ba8bd65ae78d55e2df71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라델비아 교회의 사자에게 편지하기를 거룩하고 진실하사 다윗의 열쇠를 가지신 이 곧 열면 닫을 사람이 없고 닫으면 열 사람이 없는 그이가 가라사대"
+      ],
+      "raw_text_hashes": [
+        "c74952482b33885280bb695aee309f3123dee89f5054ba8bd65ae78d55e2df71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:8",
+      "sequence": 30751,
+      "chapter_label": "REV 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "“I know your works (behold, I have set before you an open door, which no one can shut), that you have a little power, and kept my word, and didn’t deny my name.",
+      "ko": "볼찌어다 내가 네 앞에 열린 문을 두었으되 능히 닫을 사람이 없으리라 내가 네 행위를 아노니 네가 적은 능력을 가지고도 내 말을 지키며 내 이름을 배반치 아니하였도다",
+      "source_text_hash": "177fb9003a298f07b5d2de71f632b2b8a827bf527874a987a1ffd90445fadb8d",
+      "translation_text_hash": "8885a376af8cc8a3799342fedab6bd8cd4c96b13e8d42ef46be52643c8257f7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "볼찌어다 내가 네 앞에 열린 문을 두었으되 능히 닫을 사람이 없으리라 내가 네 행위를 아노니 네가 적은 능력을 가지고도 내 말을 지키며 내 이름을 배반치 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "8885a376af8cc8a3799342fedab6bd8cd4c96b13e8d42ef46be52643c8257f7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:9",
+      "sequence": 30752,
+      "chapter_label": "REV 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Behold, I make some of the synagogue of Satan, of those who say they are Jews, and they are not, but lie—behold, I will make them to come and worship before your feet, and to know that I have loved you.",
+      "ko": "보라 사단의 회 곧 자칭 유대인이라 하나 그렇지 않고 거짓말 하는 자들 중에서 몇을 네게 주어 저희로 와서 네 발앞에 절하게 하고 내가 너를 사랑하는 줄을 알게 하리라",
+      "source_text_hash": "f3ddaf4a713c0cca2e10094a5cd1e9ed1bfb9c05eb491544973784ecb9c493e3",
+      "translation_text_hash": "2f08cd85ecc8e36bb70a34516e29c1fcfd29e7f8f974852258c0accf607406d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 사단의 회 곧 자칭 유대인이라 하나 그렇지 않고 거짓말 하는 자들 중에서 몇을 네게 주어 저희로 와서 네 발앞에 절하게 하고 내가 너를 사랑하는 줄을 알게 하리라"
+      ],
+      "raw_text_hashes": [
+        "2f08cd85ecc8e36bb70a34516e29c1fcfd29e7f8f974852258c0accf607406d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:10",
+      "sequence": 30753,
+      "chapter_label": "REV 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Because you kept my command to endure, I also will keep you from the hour of testing which is to come on the whole world, to test those who dwell on the earth.",
+      "ko": "네가 나의 인내의 말씀을 지켰은즉 내가 또한 너를 지키어 시험의 때를 면하게 하리니 이는 장차 온 세상에 임하여 땅에 거하는 자들을 시험할 때라",
+      "source_text_hash": "2d464d1edfb29aed8b88c964ab39c11a211331a8ef7f82435f6bd966bca6e744",
+      "translation_text_hash": "6898e276d7e4f9cb01cfccc1c3cee61a469b549ee1734ed152107361eb69ec69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 나의 인내의 말씀을 지켰은즉 내가 또한 너를 지키어 시험의 때를 면하게 하리니 이는 장차 온 세상에 임하여 땅에 거하는 자들을 시험할 때라"
+      ],
+      "raw_text_hashes": [
+        "6898e276d7e4f9cb01cfccc1c3cee61a469b549ee1734ed152107361eb69ec69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:11",
+      "sequence": 30754,
+      "chapter_label": "REV 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "I am coming quickly! Hold firmly that which you have, so that no one takes your crown.",
+      "ko": "내가 속히 임하리니 네가 가진 것을 굳게 잡아 아무나 네 면류관을 빼앗지 못하게 하라",
+      "source_text_hash": "495590e98ca4c45e25d2c994428bd76f9305f4a405e76e470a50c1f75f6e7360",
+      "translation_text_hash": "cfbb968fae0a07fa27f3efc8194f75ba4f97ee36bc43b3d57c0166cd19eb9725",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 속히 임하리니 네가 가진 것을 굳게 잡아 아무나 네 면류관을 빼앗지 못하게 하라"
+      ],
+      "raw_text_hashes": [
+        "cfbb968fae0a07fa27f3efc8194f75ba4f97ee36bc43b3d57c0166cd19eb9725"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:12",
+      "sequence": 30755,
+      "chapter_label": "REV 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "He who overcomes, I will make him a pillar in the temple of my God, and he will go out from there no more. I will write on him the name of my God and the name of the city of my God, the new Jerusalem, which comes down out of heaven from my God, and my own new name.",
+      "ko": "이기는 자는 내 하나님 성전에 기둥이 되게 하리니 그가 결코 다시 나가지 아니하리라 내가 하나님의 이름과 하나님의 성 곧 하늘에서 내 하나님께로부터 내려 오는 새 예루살렘의 이름과 나의 새 이름을 그이 위에 기록하리라",
+      "source_text_hash": "6d1146adac856638d42dae66b9a1a3d70e678dbbaf8c4610b74ff348f7d84a33",
+      "translation_text_hash": "5af844a37235d358175a9d7ae08db544f5dfaff8f86d2ad47760f5b7c84c89d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이기는 자는 내 하나님 성전에 기둥이 되게 하리니 그가 결코 다시 나가지 아니하리라 내가 하나님의 이름과 하나님의 성 곧 하늘에서 내 하나님께로부터 내려 오는 새 예루살렘의 이름과 나의 새 이름을 그이 위에 기록하리라"
+      ],
+      "raw_text_hashes": [
+        "5af844a37235d358175a9d7ae08db544f5dfaff8f86d2ad47760f5b7c84c89d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:13",
+      "sequence": 30756,
+      "chapter_label": "REV 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "He who has an ear, let him hear what the Spirit says to the assemblies.",
+      "ko": "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다",
+      "source_text_hash": "41efec26bd2928dedbfc339464fd23c8bf79b9600f81c52a8d9ece8417f24924",
+      "translation_text_hash": "5fe2cef06aab47bca7ac7e99cf1ac8d0af5607c0b869a621793ef8936ea855b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "5fe2cef06aab47bca7ac7e99cf1ac8d0af5607c0b869a621793ef8936ea855b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:14",
+      "sequence": 30757,
+      "chapter_label": "REV 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "“To the angel of the assembly in Laodicea write:“The Amen, the Faithful and True Witness, the Beginningof God’s creation, says these things:",
+      "ko": "라오디게아 교회의 사자에게 편지하기를 아멘이시요 충성되고 참된 증인이시요 하나님의 창조의 근본이신 이가 가라사대",
+      "source_text_hash": "a750a5df6acf06cd0d1c3e7aa7d42d2afbd69c90318aa322df81e56bc35ce369",
+      "translation_text_hash": "ae65bd5d5846a1bd95df1e4c713a1c787c1b5c7c0b1eebe1e170a3e096a084f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라오디게아 교회의 사자에게 편지하기를 아멘이시요 충성되고 참된 증인이시요 하나님의 창조의 근본이신 이가 가라사대"
+      ],
+      "raw_text_hashes": [
+        "ae65bd5d5846a1bd95df1e4c713a1c787c1b5c7c0b1eebe1e170a3e096a084f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:15",
+      "sequence": 30758,
+      "chapter_label": "REV 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "“I know your works, that you are neither cold nor hot. I wish you were cold or hot.",
+      "ko": "내가 네 행위를 아노니 네가 차지도 아니하고 더웁지도 아니하도다 네가 차든지 더웁든지 하기를 원하노라",
+      "source_text_hash": "843cec85d3079f4e75386bc51c60b214dd2fe7902c669a3e20bdb4fa76f5f2a9",
+      "translation_text_hash": "55a3f2d0a4367c68935c5872312b69f4feed8b6867227b7bd8cff733791635a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 행위를 아노니 네가 차지도 아니하고 더웁지도 아니하도다 네가 차든지 더웁든지 하기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "55a3f2d0a4367c68935c5872312b69f4feed8b6867227b7bd8cff733791635a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:16",
+      "sequence": 30759,
+      "chapter_label": "REV 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "So, because you are lukewarm, and neither hot nor cold, I will vomit you out of my mouth.",
+      "ko": "네가 이같이 미지근하여 더웁지도 아니하고 차지도 아니하니 내 입에서 너를 토하여 내치리라",
+      "source_text_hash": "d584f999ce410fb36f8f9840100a29b97d1febfe57483399f22fe82b6eb121e8",
+      "translation_text_hash": "eea159722ed8ae131d3c551616b5acf4b90e21f7fa6329586cae944d5968d077",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이같이 미지근하여 더웁지도 아니하고 차지도 아니하니 내 입에서 너를 토하여 내치리라"
+      ],
+      "raw_text_hashes": [
+        "eea159722ed8ae131d3c551616b5acf4b90e21f7fa6329586cae944d5968d077"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:17",
+      "sequence": 30760,
+      "chapter_label": "REV 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "Because you say, ‘I am rich, and have gotten riches, and have need of nothing,’ and don’t know that you are the wretched one, miserable, poor, blind, and naked;",
+      "ko": "네가 말하기를 나는 부자라 부요하여 부족한 것이 없다 하나 네 곤고한 것과 가련한 것과 가난한 것과 눈 먼것과 벌거벗은 것을 알지 못하도다",
+      "source_text_hash": "ed6bffb85aa0ab6334a91020c57a3b543f6414c604e39ce51f3013cdee403b8f",
+      "translation_text_hash": "abbdc51df7ce96c105315178510f986c9408e026b999cd071f439c612d15f21b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 말하기를 나는 부자라 부요하여 부족한 것이 없다 하나 네 곤고한 것과 가련한 것과 가난한 것과 눈 먼것과 벌거벗은 것을 알지 못하도다"
+      ],
+      "raw_text_hashes": [
+        "abbdc51df7ce96c105315178510f986c9408e026b999cd071f439c612d15f21b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:18",
+      "sequence": 30761,
+      "chapter_label": "REV 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "I counsel you to buy from me gold refined by fire, that you may become rich; and white garments, that you may clothe yourself, and that the shame of your nakedness may not be revealed; and eye salve to anoint your eyes, that you may see.",
+      "ko": "내가 너를 권하노니 내게서 불로 연단한 금을 사서 부요하게 하고 흰 옷을 사서 입어 벌거벗은 수치를 보이지 않게 하고 안약을 사서 눈에 발라 보게 하라",
+      "source_text_hash": "0007024e734d7a1488e86ea4e51552b9a36e0303df708a99202fd4626f359732",
+      "translation_text_hash": "aa1547ee4e259f0c8933adfda60df69749c0325223a4053fb238bc1c87648b6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 권하노니 내게서 불로 연단한 금을 사서 부요하게 하고 흰 옷을 사서 입어 벌거벗은 수치를 보이지 않게 하고 안약을 사서 눈에 발라 보게 하라"
+      ],
+      "raw_text_hashes": [
+        "aa1547ee4e259f0c8933adfda60df69749c0325223a4053fb238bc1c87648b6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:19",
+      "sequence": 30762,
+      "chapter_label": "REV 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "As many as I love, I reprove and chasten. Be zealous therefore, and repent.",
+      "ko": "무릇 내가 사랑하는 자를 책망하여 징계하노니 그러므로 네가 열심을 내라 회개하라",
+      "source_text_hash": "27f679430f0bd5a9e0ef1875cfb5e65b21233c2823fee01480e46d80b7cea5d8",
+      "translation_text_hash": "0b1a9f03173eb2787e76de6f17d63f6cb085ebefdd25787468c5b310e399d8d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 내가 사랑하는 자를 책망하여 징계하노니 그러므로 네가 열심을 내라 회개하라"
+      ],
+      "raw_text_hashes": [
+        "0b1a9f03173eb2787e76de6f17d63f6cb085ebefdd25787468c5b310e399d8d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:20",
+      "sequence": 30763,
+      "chapter_label": "REV 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "Behold, I stand at the door and knock. If anyone hears my voice and opens the door, then I will come in to him and will dine with him, and he with me.",
+      "ko": "볼찌어다 내가 문밖에 서서 두드리노니 누구든지 내 음성을 듣고 문을 열면 내가 그에게로 들어가 그로 더불어 먹고 그는 나로 더불어 먹으리라",
+      "source_text_hash": "3a520526e0d1a322bc35d33b8ed236ce167a95c1d20a3733980355119d5d3bd5",
+      "translation_text_hash": "1a1c03571f657440c5ac04cfa6063f10ff2199afc3cd93a222ec24d04d1b4898",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "볼찌어다 내가 문밖에 서서 두드리노니 누구든지 내 음성을 듣고 문을 열면 내가 그에게로 들어가 그로 더불어 먹고 그는 나로 더불어 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "1a1c03571f657440c5ac04cfa6063f10ff2199afc3cd93a222ec24d04d1b4898"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:21",
+      "sequence": 30764,
+      "chapter_label": "REV 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "He who overcomes, I will give to him to sit down with me on my throne, as I also overcame and sat down with my Father on his throne.",
+      "ko": "이기는 그에게는 내가 내 보좌에 함께 앉게 하여주기를 내가 이기고 아버지 보좌에 함께 앉은 것과 같이 하리라",
+      "source_text_hash": "4a138b85e59bb108013f38cd1069c4480930548c8aad48281d08bf5ee70c923a",
+      "translation_text_hash": "92e037e1dda1991b5062d76a60dd68cdac35fbbde43cab147641874844c4078f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이기는 그에게는 내가 내 보좌에 함께 앉게 하여주기를 내가 이기고 아버지 보좌에 함께 앉은 것과 같이 하리라"
+      ],
+      "raw_text_hashes": [
+        "92e037e1dda1991b5062d76a60dd68cdac35fbbde43cab147641874844c4078f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:3:22",
+      "sequence": 30765,
+      "chapter_label": "REV 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "REV",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "He who has an ear, let him hear what the Spirit says to the assemblies.”",
+      "ko": "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다",
+      "source_text_hash": "8d1a4bdb5655bd7af40959fa80dec12213beae643a6d1087592d5d7a474b3e6e",
+      "translation_text_hash": "5fe2cef06aab47bca7ac7e99cf1ac8d0af5607c0b869a621793ef8936ea855b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "5fe2cef06aab47bca7ac7e99cf1ac8d0af5607c0b869a621793ef8936ea855b2"
+      ]
+    }
+  ]
+}

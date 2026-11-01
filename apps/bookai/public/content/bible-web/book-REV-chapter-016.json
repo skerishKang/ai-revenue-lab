@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:016",
+  "unit_ordinal": 1183,
+  "unit_label": "REV 16",
+  "book_code": "REV",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:16:1",
+      "sequence": 30952,
+      "chapter_label": "REV 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "I heard a loud voice out of the temple, saying to the seven angels, “Go and pour out the seven bowls of the wrath of God on the earth!”",
+      "ko": "또 내가 들으니 성전에서 큰 음성이 나서 일곱 천사에게 말하되 너희는 가서 하나님의 진노의 일곱 대접을 땅에 쏟으라 하더라",
+      "source_text_hash": "046417cf8e42017896014e2faf6f2e4563428dc3685bc73131d7032f7f946edc",
+      "translation_text_hash": "46ca6f02fbcd19098f81006e0c558cbe398ff9d18c9084238854ea1a08747fcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 들으니 성전에서 큰 음성이 나서 일곱 천사에게 말하되 너희는 가서 하나님의 진노의 일곱 대접을 땅에 쏟으라 하더라"
+      ],
+      "raw_text_hashes": [
+        "46ca6f02fbcd19098f81006e0c558cbe398ff9d18c9084238854ea1a08747fcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:2",
+      "sequence": 30953,
+      "chapter_label": "REV 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "The first went, and poured out his bowl into the earth, and it became a harmful and painful sore on the people who had the mark of the beast, and who worshiped his image.",
+      "ko": "첫째가 가서 그 대접을 땅에 쏟으매 악하고 독한 헌데가 짐승의 표를 받은 사람들과 그 우상에게 경배하는 자들에게 나더라",
+      "source_text_hash": "270964407650df7a882b42b7026efdaf732801f3f6364b24d8339097413fddee",
+      "translation_text_hash": "ef57a678046dac5a5e42fd2d05a92fb9db892ac8d7dcd78bffaa0acac5982475",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫째가 가서 그 대접을 땅에 쏟으매 악하고 독한 헌데가 짐승의 표를 받은 사람들과 그 우상에게 경배하는 자들에게 나더라"
+      ],
+      "raw_text_hashes": [
+        "ef57a678046dac5a5e42fd2d05a92fb9db892ac8d7dcd78bffaa0acac5982475"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:3",
+      "sequence": 30954,
+      "chapter_label": "REV 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "The second angel poured out his bowl into the sea, and it became blood as of a dead man. Every living thing in the sea died.",
+      "ko": "둘째가 그 대접을 바다에 쏟으매 바다가 곧 죽은 자의 피 같이 되니 바다 가운데 모든 생물이 죽더라",
+      "source_text_hash": "6158063ab15b34adbf26444822d21a3653094cdbdf81a744575c50d7ede1ca89",
+      "translation_text_hash": "3dec1020f7b5b16b841adf95d32b9e2c3f108c521566ef30174a21028d9e92a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째가 그 대접을 바다에 쏟으매 바다가 곧 죽은 자의 피 같이 되니 바다 가운데 모든 생물이 죽더라"
+      ],
+      "raw_text_hashes": [
+        "3dec1020f7b5b16b841adf95d32b9e2c3f108c521566ef30174a21028d9e92a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:4",
+      "sequence": 30955,
+      "chapter_label": "REV 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "The third poured out his bowl into the rivers and springs of water, and they became blood.",
+      "ko": "세째가 그 대접을 강과 물 근원에 쏟으매 피가 되더라",
+      "source_text_hash": "58248651851b8c21110d1692cad0978d6613244e8b207870ffe2cf3446e7250d",
+      "translation_text_hash": "7f5ae94c20896eed84e88117f711580c158a6c7f52b13c320b3086acefba5a7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세째가 그 대접을 강과 물 근원에 쏟으매 피가 되더라"
+      ],
+      "raw_text_hashes": [
+        "7f5ae94c20896eed84e88117f711580c158a6c7f52b13c320b3086acefba5a7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:5",
+      "sequence": 30956,
+      "chapter_label": "REV 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "I heard the angel of the waters saying, “You are righteous, who are and who were, O Holy One, because you have judged these things.",
+      "ko": "내가 들으니 물을 차지한 천사가 가로되 전에도 계셨고 시방도 계신 거룩하신 이여 이렇게 심판하시니 의로우시도다",
+      "source_text_hash": "068f3520bb50764c409bb1841dfd007122d0c312e651807a9642563ed7c00136",
+      "translation_text_hash": "da3130577d3bfcec3759a36b60c18c8750f738c637abadb5c561374604c9ae36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 들으니 물을 차지한 천사가 가로되 전에도 계셨고 시방도 계신 거룩하신 이여 이렇게 심판하시니 의로우시도다"
+      ],
+      "raw_text_hashes": [
+        "da3130577d3bfcec3759a36b60c18c8750f738c637abadb5c561374604c9ae36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:6",
+      "sequence": 30957,
+      "chapter_label": "REV 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "For they poured out the blood of saints and prophets, and you have given them blood to drink. They deserve this.”",
+      "ko": "저희가 성도들과 선지자들의 피를 흘렸으므로 저희로 피를 마시게 하신 것이 합당하니이다 하더라",
+      "source_text_hash": "236103e9e01f7295e3f72a7a2a4464e168bef0f7c1cb7eea2d61a52529c13432",
+      "translation_text_hash": "d53871446c45dd9a2306c5e88d80db166f572781949d07c8fd38bdb020e041d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 성도들과 선지자들의 피를 흘렸으므로 저희로 피를 마시게 하신 것이 합당하니이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "d53871446c45dd9a2306c5e88d80db166f572781949d07c8fd38bdb020e041d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:7",
+      "sequence": 30958,
+      "chapter_label": "REV 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "I heard the altar saying, “Yes, Lord God, the Almighty, true and righteous are your judgments.”",
+      "ko": "또 내가 들으니 제단이 말하기를 그러하다 주 하나님 곧 전능하신 이시여 심판하시는 것이 참되시고 의로우시도다 하더라",
+      "source_text_hash": "4f07795acd0d2b2df26dda8d7ab41a1bd7d36f0354cff144b15f1d80c84dcd02",
+      "translation_text_hash": "272f1da5e36f841569c2e49693cd206c5e330b30d8f5642b67c8fff592cb5629",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 들으니 제단이 말하기를 그러하다 주 하나님 곧 전능하신 이시여 심판하시는 것이 참되시고 의로우시도다 하더라"
+      ],
+      "raw_text_hashes": [
+        "272f1da5e36f841569c2e49693cd206c5e330b30d8f5642b67c8fff592cb5629"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:8",
+      "sequence": 30959,
+      "chapter_label": "REV 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "The fourth poured out his bowl on the sun, and it was given to him to scorch men with fire.",
+      "ko": "네째가 그 대접을 해에 쏟으매 해가 권세를 받아 불로 사람들을 태우니",
+      "source_text_hash": "0d4f949ecefe9109e5b647431fba6f635ddfbacf67ce1b69a7eb3e2da48a04f0",
+      "translation_text_hash": "9105db9c963e86190ee839b3c2d7f75e1d080a6b08779f451e8ace29d1b8ce99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째가 그 대접을 해에 쏟으매 해가 권세를 받아 불로 사람들을 태우니"
+      ],
+      "raw_text_hashes": [
+        "9105db9c963e86190ee839b3c2d7f75e1d080a6b08779f451e8ace29d1b8ce99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:9",
+      "sequence": 30960,
+      "chapter_label": "REV 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "People were scorched with great heat, and people blasphemed the name of God who has the power over these plagues. They didn’t repent and give him glory.",
+      "ko": "사람들이 크게 태움에 태워진지라 이 재앙들을 행하는 권세를 가지신 하나님의 이름을 훼방하며 또 회개하여 영광을 주께 돌리지 아니하더라",
+      "source_text_hash": "bb3b238509f48349ab62f1fb44730469431b3e3236f6829fed1757cb7cf4bdfe",
+      "translation_text_hash": "2098024e0a2d49e66de35e9882f632b89a7f8c0e085c6d4cbe46f0ce99264729",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 크게 태움에 태워진지라 이 재앙들을 행하는 권세를 가지신 하나님의 이름을 훼방하며 또 회개하여 영광을 주께 돌리지 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "2098024e0a2d49e66de35e9882f632b89a7f8c0e085c6d4cbe46f0ce99264729"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:10",
+      "sequence": 30961,
+      "chapter_label": "REV 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "The fifth poured out his bowl on the throne of the beast, and his kingdom was darkened. They gnawed their tongues because of the pain,",
+      "ko": "또 다섯째가 그 대접을 짐승의 보좌에 쏟으니 그 나라가 곧 어두워지며 사람들이 아파서 자기 혀를 깨물고",
+      "source_text_hash": "9ed03d913eb956c3e9bc0437dcb2e8332b9b54b253ceb78cd4e3c91858f00606",
+      "translation_text_hash": "6b3332e5b3520fbc8472b62bd6b65d8ea45ffa71ffd7711cfa52603ac1660c9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다섯째가 그 대접을 짐승의 보좌에 쏟으니 그 나라가 곧 어두워지며 사람들이 아파서 자기 혀를 깨물고"
+      ],
+      "raw_text_hashes": [
+        "6b3332e5b3520fbc8472b62bd6b65d8ea45ffa71ffd7711cfa52603ac1660c9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:11",
+      "sequence": 30962,
+      "chapter_label": "REV 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "and they blasphemed the God of heaven because of their pains and their sores. They still didn’t repent of their works.",
+      "ko": "아픈 것과 종기로 인하여 하늘의 하나님을 훼방하고 저희 행위를 회개치 아니하더라",
+      "source_text_hash": "bf2eaa2b4e466cf4f81ddbe8649d92b8b30cf80332d2463d8d929d8a32af04eb",
+      "translation_text_hash": "e5e53631efb754d215c55564b82079bc5211dac02f93c45e3503440ab01579b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아픈 것과 종기로 인하여 하늘의 하나님을 훼방하고 저희 행위를 회개치 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "e5e53631efb754d215c55564b82079bc5211dac02f93c45e3503440ab01579b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:12",
+      "sequence": 30963,
+      "chapter_label": "REV 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "The sixth poured out his bowl on the great river, the Euphrates. Its water was dried up, that the way might be prepared for the kings that come from the sunrise.",
+      "ko": "또 여섯째가 그 대접을 큰 강 유브라데에 쏟으매 강물이 말라서 동방에서 오는 왕들의 길이 예비되더라",
+      "source_text_hash": "2a14fdf9f23bb57a0b644b4ab66e32559730d65c33faa61d147132d0159c2848",
+      "translation_text_hash": "2d9c54bfc5a961d208d5f377851cb06f94ce907c2665fc956f1847011bedd5a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여섯째가 그 대접을 큰 강 유브라데에 쏟으매 강물이 말라서 동방에서 오는 왕들의 길이 예비되더라"
+      ],
+      "raw_text_hashes": [
+        "2d9c54bfc5a961d208d5f377851cb06f94ce907c2665fc956f1847011bedd5a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:13",
+      "sequence": 30964,
+      "chapter_label": "REV 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "I saw coming out of the mouth of the dragon, and out of the mouth of the beast, and out of the mouth of the false prophet, three unclean spirits, something like frogs;",
+      "ko": "또 내가 보매 개구리 같은 세 더러운 영이 용의 입과 짐승의 입과 거짓 선지자의 입에서 나오니",
+      "source_text_hash": "d330e89c9aa317451bfba00896d365566c162006ec782336350c5dfb4d837327",
+      "translation_text_hash": "843386ad4f88028d61ca438bce0873cad13ce4c0f2b113f9e47ac7e20bc69a3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 보매 개구리 같은 세 더러운 영이 용의 입과 짐승의 입과 거짓 선지자의 입에서 나오니"
+      ],
+      "raw_text_hashes": [
+        "843386ad4f88028d61ca438bce0873cad13ce4c0f2b113f9e47ac7e20bc69a3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:14",
+      "sequence": 30965,
+      "chapter_label": "REV 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "for they are spirits of demons, performing signs, which go out to the kings of the whole inhabited earth, to gather them together for the war of that great day of God the Almighty.",
+      "ko": "저희는 귀신의 영이라 이적을 행하여 온 천하 임금들에게 가서 하나님 곧 전능하신이의 큰 날에 전쟁을 위하여 그들을 모으더라",
+      "source_text_hash": "e2ebe4a7e3313d0f93c85b7ed37b7a31a5818197bfdfcaec5fd8fb797e05195e",
+      "translation_text_hash": "a9801fedc1d3f6f9112339b6e234ac37cb41504729831c4ff6788172935d816f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 귀신의 영이라 이적을 행하여 온 천하 임금들에게 가서 하나님 곧 전능하신이의 큰 날에 전쟁을 위하여 그들을 모으더라"
+      ],
+      "raw_text_hashes": [
+        "a9801fedc1d3f6f9112339b6e234ac37cb41504729831c4ff6788172935d816f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:15",
+      "sequence": 30966,
+      "chapter_label": "REV 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "“Behold, I come like a thief. Blessed is he who watches, and keeps his clothes, so that he doesn’t walk naked, and they see his shame.”",
+      "ko": "보라 내가 도적 같이 오리니 누구든지 깨어 자기 옷을 지켜 벌거벗고 다니지 아니하며 자기의 부끄러움을 보이지 아니하는 자가 복이 있도다",
+      "source_text_hash": "f4abda4667c9121c6f4fd75f28d77609fe341cbb1761d00b2d8a24d0274a195c",
+      "translation_text_hash": "e81549bae8f6cbcb41d37c89e8dc6c9071d5e45dc372ba2fb75a6b7134dee9ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 도적 같이 오리니 누구든지 깨어 자기 옷을 지켜 벌거벗고 다니지 아니하며 자기의 부끄러움을 보이지 아니하는 자가 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "e81549bae8f6cbcb41d37c89e8dc6c9071d5e45dc372ba2fb75a6b7134dee9ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:16",
+      "sequence": 30967,
+      "chapter_label": "REV 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "He gathered them together into the place which is called in Hebrew, “Harmagedon”.",
+      "ko": "세 영이 히브리 음으로 아마겟돈이라 하는 곳으로 왕들을 모으더라",
+      "source_text_hash": "6bf112d62dfca41938cefec88f6d08b58cca7567bf16868997208362aecfa102",
+      "translation_text_hash": "459099e5692b888b0dc124cbd70f7593a2cb43ca348890db97dec96fda5592d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세 영이 히브리 음으로 아마겟돈이라 하는 곳으로 왕들을 모으더라"
+      ],
+      "raw_text_hashes": [
+        "459099e5692b888b0dc124cbd70f7593a2cb43ca348890db97dec96fda5592d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:17",
+      "sequence": 30968,
+      "chapter_label": "REV 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "The seventh poured out his bowl into the air. A loud voice came out of the temple of heaven, from the throne, saying, “It is done!”",
+      "ko": "일곱째가 그 대접을 공기 가운데 쏟으매 큰 음성이 성전에서 보좌로부터 나서 가로되 되었다 하니",
+      "source_text_hash": "c4535ea27b55ad15ea67afc4d0e8b343e308b64869ee4879e759d7c118f029f9",
+      "translation_text_hash": "b642ef7f9204a7f0d155c35ae77261efe7df970e678f640beda579cfb9e2a867",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱째가 그 대접을 공기 가운데 쏟으매 큰 음성이 성전에서 보좌로부터 나서 가로되 되었다 하니"
+      ],
+      "raw_text_hashes": [
+        "b642ef7f9204a7f0d155c35ae77261efe7df970e678f640beda579cfb9e2a867"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:18",
+      "sequence": 30969,
+      "chapter_label": "REV 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "There were lightnings, sounds, and thunders; and there was a great earthquake such as has not happened since there were men on the earth—so great an earthquake and so mighty.",
+      "ko": "번개와 음성들과 뇌성이 있고 또 큰 지진이 있어 어찌 큰지 사람이 땅에 있어 옴으로 이같이 큰 지진이 없었더라",
+      "source_text_hash": "6196992274eeed26e16cfdbddb29b6ef4e907ffcac5558d0bbf62188c46398a3",
+      "translation_text_hash": "7fcabd1e6d0f42c350e297b224324aa06bb625fd84a4b50eb0d7708bc807f206",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번개와 음성들과 뇌성이 있고 또 큰 지진이 있어 어찌 큰지 사람이 땅에 있어 옴으로 이같이 큰 지진이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "7fcabd1e6d0f42c350e297b224324aa06bb625fd84a4b50eb0d7708bc807f206"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:19",
+      "sequence": 30970,
+      "chapter_label": "REV 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "The great city was divided into three parts, and the cities of the nations fell. Babylon the great was remembered in the sight of God, to give to her the cup of the wine of the fierceness of his wrath.",
+      "ko": "큰 성이 세 갈래로 갈라지고 만국의 성들도 무너지니 큰 성 바벨론이 하나님 앞에 기억하신바 되어 그의 맹렬한 진노의 포도주 잔을 받으매",
+      "source_text_hash": "a97110603777b16e79d0e6ead960148c6cc5f70e53653e65acdbf32d9bd85fea",
+      "translation_text_hash": "e144f92dad22f60a1c253b5a66f98cf29c7ebe7b210a86e3406a0943f37f6f6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 성이 세 갈래로 갈라지고 만국의 성들도 무너지니 큰 성 바벨론이 하나님 앞에 기억하신바 되어 그의 맹렬한 진노의 포도주 잔을 받으매"
+      ],
+      "raw_text_hashes": [
+        "e144f92dad22f60a1c253b5a66f98cf29c7ebe7b210a86e3406a0943f37f6f6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:20",
+      "sequence": 30971,
+      "chapter_label": "REV 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "Every island fled away, and the mountains were not found.",
+      "ko": "각 섬도 없어지고 산악도 간데 없더라",
+      "source_text_hash": "cfe789fc5522d1d6ac42cb9da620378eb41eb9baa4475051ffd3c7bd9f9246bc",
+      "translation_text_hash": "a5903690391f3da964b710105130591a596f0e26ff1d8b2769936f1dd40c4dbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 섬도 없어지고 산악도 간데 없더라"
+      ],
+      "raw_text_hashes": [
+        "a5903690391f3da964b710105130591a596f0e26ff1d8b2769936f1dd40c4dbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:16:21",
+      "sequence": 30972,
+      "chapter_label": "REV 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "REV",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "Great hailstones, about the weight of a talent, came down out of the sky on people. People blasphemed God because of the plague of the hail, for this plague was exceedingly severe.",
+      "ko": "또 중수가 한 달란트나 되는 큰 우박이 하늘로부터 사람들에게 내리매 사람들이 그 박재로 인하여 하나님을 훼방하니 그 재앙이 심히 큼이러라",
+      "source_text_hash": "2ee7f1c48f9629abf18da56a66b1cc58e11b91932b354e1eb36d440d84581405",
+      "translation_text_hash": "49a8a8f3467896a289f6a9b9983b8f72b07680749c3e85589f1c5d3615a52902",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 중수가 한 달란트나 되는 큰 우박이 하늘로부터 사람들에게 내리매 사람들이 그 박재로 인하여 하나님을 훼방하니 그 재앙이 심히 큼이러라"
+      ],
+      "raw_text_hashes": [
+        "49a8a8f3467896a289f6a9b9983b8f72b07680749c3e85589f1c5d3615a52902"
+      ]
+    }
+  ]
+}

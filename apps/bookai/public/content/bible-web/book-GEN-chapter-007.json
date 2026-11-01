@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:007",
+  "unit_ordinal": 7,
+  "unit_label": "GEN 7",
+  "book_code": "GEN",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:7:1",
+      "sequence": 161,
+      "chapter_label": "GEN 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Noah, “Come with all of your household into the ship, for I have seen your righteousness before me in this generation.",
+      "ko": "여호와께서 노아에게 이르시되 너와 네 온 집은 방주로 들어가라 네가 이 세대에 내 앞에서 의로움을 내가 보았음이니라",
+      "source_text_hash": "c1f5482bd261175acb152f90a064ad409bfd0405f3c1aa73613dbe7b1b212fbb",
+      "translation_text_hash": "ff3e441c7bcf32f68984c41a9bbbcc72aaabe3e6ae1907cd8ac2bab02e26d36a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 노아에게 이르시되 너와 네 온 집은 방주로 들어가라 네가 이 세대에 내 앞에서 의로움을 내가 보았음이니라"
+      ],
+      "raw_text_hashes": [
+        "ff3e441c7bcf32f68984c41a9bbbcc72aaabe3e6ae1907cd8ac2bab02e26d36a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:2",
+      "sequence": 162,
+      "chapter_label": "GEN 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "You shall take seven pairs of every clean animal with you, the male and his female. Of the animals that are not clean, take two, the male and his female.",
+      "ko": "너는 모든 정결한 짐승은 암 수 일곱씩, 부정한 것은 암 수 둘씩을 네게로 취하며",
+      "source_text_hash": "f9701848a183d331191afaec630f36d016bcea62304ecc8987a7ffdafe6c212f",
+      "translation_text_hash": "5d26e32450cf8f04d718a6e8ee24e700ad04e6b1df4761f369926623563ef3b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 모든 정결한 짐승은 암 수 일곱씩, 부정한 것은 암 수 둘씩을 네게로 취하며"
+      ],
+      "raw_text_hashes": [
+        "5d26e32450cf8f04d718a6e8ee24e700ad04e6b1df4761f369926623563ef3b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:3",
+      "sequence": 163,
+      "chapter_label": "GEN 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Also of the birds of the sky, seven and seven, male and female, to keep seed alive on the surface of all the earth.",
+      "ko": "공중의 새도 암 수 일곱씩을 취하여 그 씨를 온 지면에 유전케 하라",
+      "source_text_hash": "8da8a08a5e964c87a572a3f54afb9850b0df014abf816859aeffaaeed01f3785",
+      "translation_text_hash": "e443d585d4e141bdba2247bf9c6f61cbdf70270d722820573297976d928af40b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공중의 새도 암 수 일곱씩을 취하여 그 씨를 온 지면에 유전케 하라"
+      ],
+      "raw_text_hashes": [
+        "e443d585d4e141bdba2247bf9c6f61cbdf70270d722820573297976d928af40b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:4",
+      "sequence": 164,
+      "chapter_label": "GEN 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "In seven days, I will cause it to rain on the earth for forty days and forty nights. I will destroy every living thing that I have made from the surface of the ground.”",
+      "ko": "지금부터 칠일이면 내가 사십 주야를 땅에 비를 내려 나의 지은 모든 생물을 지면에서 쓸어 버리리라",
+      "source_text_hash": "2406461840ecd70ba90c446027c1142c302520b4c58d6d518811cb0f8f972c9a",
+      "translation_text_hash": "e97df3135a0016f495fcd2ce13fbff05c8c0e5fa2560328846e22f6f65e36313",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금부터 칠일이면 내가 사십 주야를 땅에 비를 내려 나의 지은 모든 생물을 지면에서 쓸어 버리리라"
+      ],
+      "raw_text_hashes": [
+        "e97df3135a0016f495fcd2ce13fbff05c8c0e5fa2560328846e22f6f65e36313"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:5",
+      "sequence": 165,
+      "chapter_label": "GEN 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "Noah did everything that the LORD commanded him.",
+      "ko": "노아가 여호와께서 자기에게 명하신대로 다 준행하였더라",
+      "source_text_hash": "c796c204a56ba8e6d12d666c2926377e8de00637f1c0171b15c8e7416dc78a59",
+      "translation_text_hash": "5e59d70498b4cd7d9effc2cf260cc74c631d4f477421937eae0ad658154f8c59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아가 여호와께서 자기에게 명하신대로 다 준행하였더라"
+      ],
+      "raw_text_hashes": [
+        "5e59d70498b4cd7d9effc2cf260cc74c631d4f477421937eae0ad658154f8c59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:6",
+      "sequence": 166,
+      "chapter_label": "GEN 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "Noah was six hundred years old when the flood of waters came on the earth.",
+      "ko": "홍수가 땅에 있을 때에 노아가 육백세라",
+      "source_text_hash": "fe1700aedd9eb6c070f8e7b30ce254af25d22f5f443e02c357fa903fcb6f82ba",
+      "translation_text_hash": "2df629d2a329be62a85b7916a0df54b5ab7f7c39a15fa9d996058e1a481200e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홍수가 땅에 있을 때에 노아가 육백세라"
+      ],
+      "raw_text_hashes": [
+        "2df629d2a329be62a85b7916a0df54b5ab7f7c39a15fa9d996058e1a481200e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:7",
+      "sequence": 167,
+      "chapter_label": "GEN 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Noah went into the ship with his sons, his wife, and his sons’ wives, because of the floodwaters.",
+      "ko": "노아가 아들들과 아내와 자부들과 함께 홍수를 피하여 방주에 들어갔고",
+      "source_text_hash": "944fa33b4cfba1444eead3fb6a87c15b17512f373e33a037cdf0d094553a2bed",
+      "translation_text_hash": "9b4f8658c8d7436be77d182d4a813e2eced00a43218dc645acabc0361c13053c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아가 아들들과 아내와 자부들과 함께 홍수를 피하여 방주에 들어갔고"
+      ],
+      "raw_text_hashes": [
+        "9b4f8658c8d7436be77d182d4a813e2eced00a43218dc645acabc0361c13053c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:8",
+      "sequence": 168,
+      "chapter_label": "GEN 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "Clean animals, unclean animals, birds, and everything that creeps on the ground",
+      "ko": "정결한 짐승과 부정한 짐승과 새와 땅에 기는 모든 것이",
+      "source_text_hash": "a0eb9c1997865c6b3bdbb1af1cd492e2efc370aa06668be61e63b4eb04318971",
+      "translation_text_hash": "36e68b2e541343ad9c34c2eef644b1ba3ff3d9c0984bc374b96cbf24f18f9847",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정결한 짐승과 부정한 짐승과 새와 땅에 기는 모든 것이"
+      ],
+      "raw_text_hashes": [
+        "36e68b2e541343ad9c34c2eef644b1ba3ff3d9c0984bc374b96cbf24f18f9847"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:9",
+      "sequence": 169,
+      "chapter_label": "GEN 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "went by pairs to Noah into the ship, male and female, as God commanded Noah.",
+      "ko": "하나님이 노아에게 명하신대로 암 수 둘씩 노아에게 나아와 방주로 들어갔더니",
+      "source_text_hash": "380a4529df6c8bb73c37da45a6838dacba82d4d6a8bec6f417d3b6dfb25760b1",
+      "translation_text_hash": "e30bd33b4c4b4aebf096448b374557dae0504d5fda0a7e862213aecc0a1ea619",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 노아에게 명하신대로 암 수 둘씩 노아에게 나아와 방주로 들어갔더니"
+      ],
+      "raw_text_hashes": [
+        "e30bd33b4c4b4aebf096448b374557dae0504d5fda0a7e862213aecc0a1ea619"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:10",
+      "sequence": 170,
+      "chapter_label": "GEN 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "After the seven days, the floodwaters came on the earth.",
+      "ko": "칠일 후에 홍수가 땅에 덮이니",
+      "source_text_hash": "c64df101bf6cdf82b6057891d12f8b25224f96314db6ab9128e4ae942cd6a64a",
+      "translation_text_hash": "caa01c009df2b3456f34181cd77d51cfdda95e42c93c0f6ab217374521d67ebc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일 후에 홍수가 땅에 덮이니"
+      ],
+      "raw_text_hashes": [
+        "caa01c009df2b3456f34181cd77d51cfdda95e42c93c0f6ab217374521d67ebc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:11",
+      "sequence": 171,
+      "chapter_label": "GEN 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "In the six hundredth year of Noah’s life, in the second month, on the seventeenth day of the month, on that day all the fountains of the great deep burst open, and the sky’s windows opened.",
+      "ko": "노아 육백세 되던 해 이월 곧 그 달 십칠일이라 그 날에 큰 깊음의 샘들이 터지며 하늘의 창들이 열려",
+      "source_text_hash": "7fca337fec180fc2ab3bcca71c1cc5f4ee44cdfd39d04cd36afff1e2f4c6309f",
+      "translation_text_hash": "59c5aee351515346c63c991c14fd5fba38426ee267161bcf62c0f36ff5ccf1d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아 육백세 되던 해 이월 곧 그 달 십칠일이라 그 날에 큰 깊음의 샘들이 터지며 하늘의 창들이 열려"
+      ],
+      "raw_text_hashes": [
+        "59c5aee351515346c63c991c14fd5fba38426ee267161bcf62c0f36ff5ccf1d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:12",
+      "sequence": 172,
+      "chapter_label": "GEN 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "It rained on the earth forty days and forty nights.",
+      "ko": "사십 주야를 비가 땅에 쏟아졌더라",
+      "source_text_hash": "9c819592e8262eeea9849d7f435bf877c6d1fb95b4d19c30a3d79f0f24858bb4",
+      "translation_text_hash": "b006028e98e89048b3aa11de115ac69011aa27de98de65538b6c6d08cc65dad3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사십 주야를 비가 땅에 쏟아졌더라"
+      ],
+      "raw_text_hashes": [
+        "b006028e98e89048b3aa11de115ac69011aa27de98de65538b6c6d08cc65dad3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:13",
+      "sequence": 173,
+      "chapter_label": "GEN 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "In the same day Noah, and Shem, Ham, and Japheth—the sons of Noah—and Noah’s wife and the three wives of his sons with them, entered into the ship—",
+      "ko": "곧 그 날에 노아와 그의 아들 셈, 함, 야벳과 노아의 처와 세 자부가 다 방주로 들어갔고",
+      "source_text_hash": "70c355f7b6e32bdbefd54f1ebd44600319fbc524763eed06bc229040cae4cd5f",
+      "translation_text_hash": "714b3b7e9d66d2a0720c818f7f16abb5025fb15f0c930dcae2d22307e59a75a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 날에 노아와 그의 아들 셈, 함, 야벳과 노아의 처와 세 자부가 다 방주로 들어갔고"
+      ],
+      "raw_text_hashes": [
+        "714b3b7e9d66d2a0720c818f7f16abb5025fb15f0c930dcae2d22307e59a75a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:14",
+      "sequence": 174,
+      "chapter_label": "GEN 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "they, and every animal after its kind, all the livestock after their kind, every creeping thing that creeps on the earth after its kind, and every bird after its kind, every bird of every sort.",
+      "ko": "그들과 모든 들짐승이 그 종류대로, 모든 육축이 그 종류대로, 땅에 기는 모든 것이 그 종류대로, 모든 새 곧 각양의 새가 그 종류대로",
+      "source_text_hash": "232f34f565f8c39e7181404f548a084c88c0b20b3e053c6e86360682b009f7d4",
+      "translation_text_hash": "4d770802768f345411d24881719567c5c712d108b0ae1c5e7fa0a0835248bd51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들과 모든 들짐승이 그 종류대로, 모든 육축이 그 종류대로, 땅에 기는 모든 것이 그 종류대로, 모든 새 곧 각양의 새가 그 종류대로"
+      ],
+      "raw_text_hashes": [
+        "4d770802768f345411d24881719567c5c712d108b0ae1c5e7fa0a0835248bd51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:15",
+      "sequence": 175,
+      "chapter_label": "GEN 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "Pairs from all flesh with the breath of life in them went into the ship to Noah.",
+      "ko": "무릇 기식이 있는 육체가 둘씩 노아에게 나아와 방주로 들어갔으니",
+      "source_text_hash": "48caf15202122906b538c0eb25a9a70e8528c6094276901a886d299a80472c00",
+      "translation_text_hash": "9b8d3c5d351a9f9ad59a6da445aba57c37f2435c4ff5b4af30c07ace944bbff1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 기식이 있는 육체가 둘씩 노아에게 나아와 방주로 들어갔으니"
+      ],
+      "raw_text_hashes": [
+        "9b8d3c5d351a9f9ad59a6da445aba57c37f2435c4ff5b4af30c07ace944bbff1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:16",
+      "sequence": 176,
+      "chapter_label": "GEN 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "Those who went in, went in male and female of all flesh, as God commanded him; then the LORD shut him in.",
+      "ko": "들어간 것들은 모든 것의 암 수라 하나님이 그에게 명하신대로 들어가매 여호와께서 그를 닫아 넣으시니라",
+      "source_text_hash": "ddfa4339201112970ba448b83432511d39b800a6c1dfd56daa16ced37fbc3ca7",
+      "translation_text_hash": "fad6ee11568fa4dc848408049386eea568cc6416f9815afb9542855e392a92f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들어간 것들은 모든 것의 암 수라 하나님이 그에게 명하신대로 들어가매 여호와께서 그를 닫아 넣으시니라"
+      ],
+      "raw_text_hashes": [
+        "fad6ee11568fa4dc848408049386eea568cc6416f9815afb9542855e392a92f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:17",
+      "sequence": 177,
+      "chapter_label": "GEN 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "The flood was forty days on the earth. The waters increased, and lifted up the ship, and it was lifted up above the earth.",
+      "ko": "홍수가 땅에 사십일을 있었는지라 물이 많아져 방주가 땅에서 떠 올랐고",
+      "source_text_hash": "464967463cc614107af388a73dc040fa265c2497cbcbff1a8dcc65924c16ea27",
+      "translation_text_hash": "8c4bd468c5736df83718e23b8f70e740e2f126934553a5dc97049967f9efff53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홍수가 땅에 사십일을 있었는지라 물이 많아져 방주가 땅에서 떠 올랐고"
+      ],
+      "raw_text_hashes": [
+        "8c4bd468c5736df83718e23b8f70e740e2f126934553a5dc97049967f9efff53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:18",
+      "sequence": 178,
+      "chapter_label": "GEN 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "The waters rose, and increased greatly on the earth; and the ship floated on the surface of the waters.",
+      "ko": "물이 더 많아져 땅에 창일하매 방주가 물위에 떠 다녔으며",
+      "source_text_hash": "ee882f2be4230b43ebd23fe1e0298d0b42192a8fb33a939f8c6495edbc6c4ea6",
+      "translation_text_hash": "55203c86c8e9aab6d491fef31a00ea96562a6fc5f602f60f2d14058b69bddd7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물이 더 많아져 땅에 창일하매 방주가 물위에 떠 다녔으며"
+      ],
+      "raw_text_hashes": [
+        "55203c86c8e9aab6d491fef31a00ea96562a6fc5f602f60f2d14058b69bddd7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:19",
+      "sequence": 179,
+      "chapter_label": "GEN 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "The waters rose very high on the earth. All the high mountains that were under the whole sky were covered.",
+      "ko": "물이 땅에 더욱 창일하매 천하에 높은 산이 다 덮였더니",
+      "source_text_hash": "c44d5cd1f5266d65682fad441e846f7257723941475f3b32dec43c908f36d06d",
+      "translation_text_hash": "3e8a5e4fee2e90289835cbdd081f9f53de2249d1acd9b1a01549441ede0f37a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물이 땅에 더욱 창일하매 천하에 높은 산이 다 덮였더니"
+      ],
+      "raw_text_hashes": [
+        "3e8a5e4fee2e90289835cbdd081f9f53de2249d1acd9b1a01549441ede0f37a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:20",
+      "sequence": 180,
+      "chapter_label": "GEN 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "The waters rose fifteen cubits higher, and the mountains were covered.",
+      "ko": "물이 불어서 십 오 규빗이 오르매 산들이 덮인지라",
+      "source_text_hash": "a8f6efa7f4cfae3d42423791ad02c2b9861856042b932cf4cc33dfe0bd37582d",
+      "translation_text_hash": "9404834ed5c4fcff3e412b132b8036419d67d36f1a8f4c78dcbce5e786b12682",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물이 불어서 십 오 규빗이 오르매 산들이 덮인지라"
+      ],
+      "raw_text_hashes": [
+        "9404834ed5c4fcff3e412b132b8036419d67d36f1a8f4c78dcbce5e786b12682"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:21",
+      "sequence": 181,
+      "chapter_label": "GEN 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "All flesh died that moved on the earth, including birds, livestock, animals, every creeping thing that creeps on the earth, and every man.",
+      "ko": "땅위에 움직이는 생물이 다 죽었으니 곧 새와 육축과 들짐승과 땅에 기는 모든 것과 모든 사람이라",
+      "source_text_hash": "2b5b2c0388bb49af40ddcb080f84e2933b63d1c4e1b650c3c12f460cd28055d4",
+      "translation_text_hash": "9b5c044b0cbacf7f80ad6709c9aa082fb55fa2e4d2a655ee6e3c6ccd913be6cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅위에 움직이는 생물이 다 죽었으니 곧 새와 육축과 들짐승과 땅에 기는 모든 것과 모든 사람이라"
+      ],
+      "raw_text_hashes": [
+        "9b5c044b0cbacf7f80ad6709c9aa082fb55fa2e4d2a655ee6e3c6ccd913be6cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:22",
+      "sequence": 182,
+      "chapter_label": "GEN 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "All on the dry land, in whose nostrils was the breath of the spirit of life, died.",
+      "ko": "육지에 있어 코로 생물의 기식을 호흡하는 것은 다 죽었더라",
+      "source_text_hash": "0ea1c60ed7689cd1059e6dead1a17e1c9a75cdb4f8c068d516724343ae258cf7",
+      "translation_text_hash": "744b8bf988904b91c5db3a79e911758f9685b6098b5cca1ab118823493d057c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육지에 있어 코로 생물의 기식을 호흡하는 것은 다 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "744b8bf988904b91c5db3a79e911758f9685b6098b5cca1ab118823493d057c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:23",
+      "sequence": 183,
+      "chapter_label": "GEN 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "Every living thing was destroyed that was on the surface of the ground, including man, livestock, creeping things, and birds of the sky. They were destroyed from the earth. Only Noah was left, and those who were with him in the ship.",
+      "ko": "지면의 모든 생물을 쓸어버리시니 곧 사람과 짐승과 기는 것과 공중의 새까지라 이들은 땅에서 쓸어버림을 당하였으되 홀로 노아와 그와 함께 방주에 있던 자만 남았더라",
+      "source_text_hash": "d912441c3721066b3aa2fb324a746fce3bf3022b97529df1885dddfc050827ad",
+      "translation_text_hash": "324f772a40a7de689308f0ec8051df2cc6993adf24296297145eb66f3ad76911",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지면의 모든 생물을 쓸어버리시니 곧 사람과 짐승과 기는 것과 공중의 새까지라 이들은 땅에서 쓸어버림을 당하였으되 홀로 노아와 그와 함께 방주에 있던 자만 남았더라"
+      ],
+      "raw_text_hashes": [
+        "324f772a40a7de689308f0ec8051df2cc6993adf24296297145eb66f3ad76911"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:7:24",
+      "sequence": 184,
+      "chapter_label": "GEN 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "The waters flooded the earth one hundred fifty days.",
+      "ko": "물이 일백 오십일을 땅에 창일하였더라",
+      "source_text_hash": "12a2779019052c5c048eb536b47e6aa0d15b9d48d27615badaef40dd279c634c",
+      "translation_text_hash": "d932676ae02809a6bba859f1b516a4bc20bb25ba90b9356b974fe3884f20920f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물이 일백 오십일을 땅에 창일하였더라"
+      ],
+      "raw_text_hashes": [
+        "d932676ae02809a6bba859f1b516a4bc20bb25ba90b9356b974fe3884f20920f"
+      ]
+    }
+  ]
+}

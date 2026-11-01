@@ -1,0 +1,1677 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:010",
+  "unit_ordinal": 967,
+  "unit_label": "MRK 10",
+  "book_code": "MRK",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:10:1",
+      "sequence": 24590,
+      "chapter_label": "MRK 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "He arose from there and came into the borders of Judea and beyond the Jordan. Multitudes came together to him again. As he usually did, he was again teaching them.",
+      "ko": "예수께서 거기서 떠나 유대 지경과 요단강 건너편으로 가시니 무리가 다시 모여들거늘 예수께서 다시 전례대로 가르치시더니",
+      "source_text_hash": "5744bfc3282dadb695518ff7e70c9df2ed76eab5eb4228c92b7a000c5a65b487",
+      "translation_text_hash": "333873ca93b03a7fb0aca13681b53732dbf2501739017ae2a8027e7d153ef9ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 거기서 떠나 유대 지경과 요단강 건너편으로 가시니 무리가 다시 모여들거늘 예수께서 다시 전례대로 가르치시더니"
+      ],
+      "raw_text_hashes": [
+        "333873ca93b03a7fb0aca13681b53732dbf2501739017ae2a8027e7d153ef9ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:2",
+      "sequence": 24591,
+      "chapter_label": "MRK 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "Pharisees came to him testing him, and asked him, “Is it lawful for a man to divorce his wife?”",
+      "ko": "바리새인들이 예수께 나아와 그를 시험하여 묻되 사람이 아내를 내어버리는 것이 옳으니이까",
+      "source_text_hash": "61a28165631e82f6ccf040fe9f7cd853f62d9a50a1e1be96bfa373e2a23ca768",
+      "translation_text_hash": "c4c078a0561edec3c5be0e22a1ab42c7a1b07f52b504f87118f63cbacbea9494",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 예수께 나아와 그를 시험하여 묻되 사람이 아내를 내어버리는 것이 옳으니이까"
+      ],
+      "raw_text_hashes": [
+        "c4c078a0561edec3c5be0e22a1ab42c7a1b07f52b504f87118f63cbacbea9494"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:3",
+      "sequence": 24592,
+      "chapter_label": "MRK 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "He answered, “What did Moses command you?”",
+      "ko": "대답하여 가라사대 모세가 어떻게 너희에게 명하였느냐",
+      "source_text_hash": "1508ac60a44908625b25ccabcadcce78a6a580ff7024bec5f79616f5392d17e1",
+      "translation_text_hash": "ff1cfac2a881f78cf0da40d953005adafca92a828bdd5b203c98098f687bb71e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 모세가 어떻게 너희에게 명하였느냐"
+      ],
+      "raw_text_hashes": [
+        "ff1cfac2a881f78cf0da40d953005adafca92a828bdd5b203c98098f687bb71e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:4",
+      "sequence": 24593,
+      "chapter_label": "MRK 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "They said, “Moses allowed a certificate of divorce to be written, and to divorce her.”",
+      "ko": "가로되 모세는 이혼 증서를 써주어 내어버리기를 허락하였나이다",
+      "source_text_hash": "08967ba0b0b3c420a74254614032dd3ec4eaf43bc05abd5bd7cdddae56ff37fb",
+      "translation_text_hash": "8bb8b302607c7e64c2f327c25388bbbe3b294f482bb2b270314456b22ac3a4a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 모세는 이혼 증서를 써주어 내어버리기를 허락하였나이다"
+      ],
+      "raw_text_hashes": [
+        "8bb8b302607c7e64c2f327c25388bbbe3b294f482bb2b270314456b22ac3a4a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:5",
+      "sequence": 24594,
+      "chapter_label": "MRK 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "But Jesus said to them, “For your hardness of heart, he wrote you this commandment.",
+      "ko": "예수께서 저희에게 이르시되 너희 마음의 완악함을 인하여 이 명령을 기록하였거니와",
+      "source_text_hash": "0b09fbea58bbebd8de8684d6c79d1fbfe894387711f250e8542d7891a61c321c",
+      "translation_text_hash": "02112767b82d08ebb0cedfba5af8c80b26447c07944115edbe1e7d1f1c9ad733",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 이르시되 너희 마음의 완악함을 인하여 이 명령을 기록하였거니와"
+      ],
+      "raw_text_hashes": [
+        "02112767b82d08ebb0cedfba5af8c80b26447c07944115edbe1e7d1f1c9ad733"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:6",
+      "sequence": 24595,
+      "chapter_label": "MRK 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "But from the beginning of the creation, God made them male and female.",
+      "ko": "창조시로부터 저희를 남자와 여자로 만드셨으니",
+      "source_text_hash": "e3dc2eb06d702737e54678d8263c9302515734c66c9687f48d20faeb1af9a3fc",
+      "translation_text_hash": "6d01adec8249d18aed33e519ca5920287631fefa216328ff4304ecd41a66ef31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "창조시로부터 저희를 남자와 여자로 만드셨으니"
+      ],
+      "raw_text_hashes": [
+        "6d01adec8249d18aed33e519ca5920287631fefa216328ff4304ecd41a66ef31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:7",
+      "sequence": 24596,
+      "chapter_label": "MRK 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "For this cause a man will leave his father and mother, and will join to his wife,",
+      "ko": "이러므로 사람이 그 부모를 떠나서",
+      "source_text_hash": "afed44d1cbf3889fbc4ced41e75576dc0445269a4d5b50d1fc739343a077eb56",
+      "translation_text_hash": "de005fc8216e0554beddf1942a75656ff263d0c54479abbdeaf55641127f76d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 사람이 그 부모를 떠나서"
+      ],
+      "raw_text_hashes": [
+        "de005fc8216e0554beddf1942a75656ff263d0c54479abbdeaf55641127f76d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:8",
+      "sequence": 24597,
+      "chapter_label": "MRK 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "and the two will become one flesh,so that they are no longer two, but one flesh.",
+      "ko": "그 둘이 한몸이 될찌니라 이러한즉 이제 둘이 아니요 한몸이니",
+      "source_text_hash": "0267c1e4c237b838a081f2756101e46d12da2e9fd37bdade9abe85e3d3e86f33",
+      "translation_text_hash": "1f50666e151d9a117fe276d53d0253d9b74209c3af5863ea314ebfe5fcf8b438",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 둘이 한몸이 될찌니라 이러한즉 이제 둘이 아니요 한몸이니"
+      ],
+      "raw_text_hashes": [
+        "1f50666e151d9a117fe276d53d0253d9b74209c3af5863ea314ebfe5fcf8b438"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:9",
+      "sequence": 24598,
+      "chapter_label": "MRK 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "What therefore God has joined together, let no man separate.”",
+      "ko": "그러므로 하나님이 짝지어 주신 것을 사람이 나누지 못할찌니라 하시더라",
+      "source_text_hash": "fefa1383d479f8d1e6f65e44a19da8bd7ced60db0de81064254001204ac85e1c",
+      "translation_text_hash": "618e6671839b4eca9183ef94c098fd1f17f7c5829a7dc7fdee9f91768fa4eab6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하나님이 짝지어 주신 것을 사람이 나누지 못할찌니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "618e6671839b4eca9183ef94c098fd1f17f7c5829a7dc7fdee9f91768fa4eab6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:10",
+      "sequence": 24599,
+      "chapter_label": "MRK 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "In the house, his disciples asked him again about the same matter.",
+      "ko": "집에서 제자들이 다시 이 일을 묻자온대",
+      "source_text_hash": "b0dd9d3eab0ea753c2b6fc0c9d1028077ad46a6dab19b0b87d65719be3ce6f62",
+      "translation_text_hash": "ba00e8153d73faa6a55ef1fff28a54383bca980734b1a49180908ab4e8c7d651",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집에서 제자들이 다시 이 일을 묻자온대"
+      ],
+      "raw_text_hashes": [
+        "ba00e8153d73faa6a55ef1fff28a54383bca980734b1a49180908ab4e8c7d651"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:11",
+      "sequence": 24600,
+      "chapter_label": "MRK 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "He said to them, “Whoever divorces his wife and marries another commits adultery against her.",
+      "ko": "이르시되 누구든지 그 아내를 내어버리고 다른데 장가드는 자는 본처에게 간음을 행함이요",
+      "source_text_hash": "b3d480da6deac5bbbd69243749512ff5727fb4e8efe82fb5d4486c947a39d67d",
+      "translation_text_hash": "907283b588428a0d8c20c438877ce32377d272cb21d2775bed25d3a612baee4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 누구든지 그 아내를 내어버리고 다른데 장가드는 자는 본처에게 간음을 행함이요"
+      ],
+      "raw_text_hashes": [
+        "907283b588428a0d8c20c438877ce32377d272cb21d2775bed25d3a612baee4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:12",
+      "sequence": 24601,
+      "chapter_label": "MRK 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "If a woman herself divorces her husband and marries another, she commits adultery.”",
+      "ko": "또 아내가 남편을 버리고 다른데로 시집가면 간음을 행함이니라",
+      "source_text_hash": "4eaa593b02b2ee7a404cfd2b89d35cf4a7f19b92effbcfe9f7fbcdbe5e160c83",
+      "translation_text_hash": "5f47710e0c962735d5624a9a82ac1b2e5c9eb43f1b9afbf3bad6c311849c9641",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아내가 남편을 버리고 다른데로 시집가면 간음을 행함이니라"
+      ],
+      "raw_text_hashes": [
+        "5f47710e0c962735d5624a9a82ac1b2e5c9eb43f1b9afbf3bad6c311849c9641"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:13",
+      "sequence": 24602,
+      "chapter_label": "MRK 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "They were bringing to him little children, that he should touch them, but the disciples rebuked those who were bringing them.",
+      "ko": "사람들이 예수의 만져주심을 바라고 어린 아이들을 데리고 오매 제자들이 꾸짖거늘",
+      "source_text_hash": "86edc0eb545c1e8c0e61f456d463833f55cffae744ec55b0db807e6556dd5f42",
+      "translation_text_hash": "61fd181bdec5caf2567b376d485a769d2cbd14f3abf60277cfc8d244afef63e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 예수의 만져주심을 바라고 어린 아이들을 데리고 오매 제자들이 꾸짖거늘"
+      ],
+      "raw_text_hashes": [
+        "61fd181bdec5caf2567b376d485a769d2cbd14f3abf60277cfc8d244afef63e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:14",
+      "sequence": 24603,
+      "chapter_label": "MRK 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "But when Jesus saw it, he was moved with indignation and said to them, “Allow the little children to come to me! Don’t forbid them, for God’s Kingdom belongs to such as these.",
+      "ko": "예수께서 보시고 분히 여겨 이르시되 어린 아이들의 내게 오는 것을 용납하고 금하지 말라 하나님의 나라가 이런 자의 것이니라",
+      "source_text_hash": "19431484c6a7d7e0b9034dea658ac14f34a92e159fdb799df46b40530f127980",
+      "translation_text_hash": "ad061d9364c59fe725ff66e89c50c888e1a2575313f680696d314294a8fa4cfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 보시고 분히 여겨 이르시되 어린 아이들의 내게 오는 것을 용납하고 금하지 말라 하나님의 나라가 이런 자의 것이니라"
+      ],
+      "raw_text_hashes": [
+        "ad061d9364c59fe725ff66e89c50c888e1a2575313f680696d314294a8fa4cfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:15",
+      "sequence": 24604,
+      "chapter_label": "MRK 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "Most certainly I tell you, whoever will not receive God’s Kingdom like a little child, he will in no way enter into it.”",
+      "ko": "내가 진실로 너희에게 이르노니 누구든지 하나님의 나라를 어린 아이와 같이 받들지 않는 자는 결단코 들어가지 못하리라 하시고",
+      "source_text_hash": "fc442b022badeba349f52c2b776e317160f87e32bb2fd19c7de9d2b086448574",
+      "translation_text_hash": "59a567a2f8ee1b39af7b1358742804f8eb0bf932879ec35533b32c0d321b015a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 이르노니 누구든지 하나님의 나라를 어린 아이와 같이 받들지 않는 자는 결단코 들어가지 못하리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "59a567a2f8ee1b39af7b1358742804f8eb0bf932879ec35533b32c0d321b015a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:16",
+      "sequence": 24605,
+      "chapter_label": "MRK 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "He took them in his arms and blessed them, laying his hands on them.",
+      "ko": "그 어린 아이들을 안고 저희 위에 안수하시고 축복하시니라",
+      "source_text_hash": "7ab3f79b13bf6bbed9a53e5dd05e4d1748981410d66e00c8e70e2b1d7314c210",
+      "translation_text_hash": "29c3705c78aaf955999d42cc539f0bec637a4f016469f7a287de0ec5b91af940",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 어린 아이들을 안고 저희 위에 안수하시고 축복하시니라"
+      ],
+      "raw_text_hashes": [
+        "29c3705c78aaf955999d42cc539f0bec637a4f016469f7a287de0ec5b91af940"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:17",
+      "sequence": 24606,
+      "chapter_label": "MRK 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "As he was going out into the way, one ran to him, knelt before him, and asked him, “Good Teacher, what shall I do that I may inherit eternal life?”",
+      "ko": "예수께서 길에 나가실쌔 한 사람이 달려와서 꿇어 앉아 묻자오되 선한 선생님이여 내가 무엇을 하여야 영생을 얻으리이까",
+      "source_text_hash": "72cb6536ef6cfc3f92e73906cba3e1e24bbeee963cb5f4ae891ea2a932fcb986",
+      "translation_text_hash": "a12cd5c50b58f839110afb70c2a6728ec9289f4f6d4625536ebc04681c307d4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 길에 나가실쌔 한 사람이 달려와서 꿇어 앉아 묻자오되 선한 선생님이여 내가 무엇을 하여야 영생을 얻으리이까"
+      ],
+      "raw_text_hashes": [
+        "a12cd5c50b58f839110afb70c2a6728ec9289f4f6d4625536ebc04681c307d4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:18",
+      "sequence": 24607,
+      "chapter_label": "MRK 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "Jesus said to him, “Why do you call me good? No one is good except one—God.",
+      "ko": "예수께서 이르시되 네가 어찌하여 나를 선하다 일컫느냐 하나님 한분 외에는 선한 이가 없느니라",
+      "source_text_hash": "a88eee6f0d095a265f911d4743b1d44746d33f0b874a40752e62d5fca3db96e2",
+      "translation_text_hash": "dff823b9cccdced17bfe82124e27c80b95320e1f56bf5c2a97699744dc7aa34d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 네가 어찌하여 나를 선하다 일컫느냐 하나님 한분 외에는 선한 이가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "dff823b9cccdced17bfe82124e27c80b95320e1f56bf5c2a97699744dc7aa34d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:19",
+      "sequence": 24608,
+      "chapter_label": "MRK 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "You know the commandments: ‘Do not murder,’ ‘Do not commit adultery,’ ‘Do not steal,’ ‘Do not give false testimony,’ ‘Do not defraud,’ ‘Honor your father and mother.’”",
+      "ko": "네가 계명을 아나니 살인하지 말라, 간음하지 말라, 도적질하지 말라, 거짓 증거하지 말라, 속여 취하지 말라, 네 부모를 공경하라 하였느니라",
+      "source_text_hash": "5ed6a5987d2c019bef85eae8c24d37b7822aeab0f335c8aaf6023bff3923db6d",
+      "translation_text_hash": "4397d85b817c83200792f795d96444051014e7e5ce9a908b98d88cdc1c483dce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 계명을 아나니 살인하지 말라, 간음하지 말라, 도적질하지 말라, 거짓 증거하지 말라, 속여 취하지 말라, 네 부모를 공경하라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "4397d85b817c83200792f795d96444051014e7e5ce9a908b98d88cdc1c483dce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:20",
+      "sequence": 24609,
+      "chapter_label": "MRK 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "He said to him, “Teacher, I have observed all these things from my youth.”",
+      "ko": "여짜오되 선생님이여 이것은 내가 어려서부터 다 지키었나이다",
+      "source_text_hash": "7f47585d0bc9285a59bb0f58a771901ce742f7b29d3e875d8717787b1c604877",
+      "translation_text_hash": "f889e38ced6b6c67ddc37b58bf98fde6987b52fdbb05c907db5e8c70d405c511",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여짜오되 선생님이여 이것은 내가 어려서부터 다 지키었나이다"
+      ],
+      "raw_text_hashes": [
+        "f889e38ced6b6c67ddc37b58bf98fde6987b52fdbb05c907db5e8c70d405c511"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:21",
+      "sequence": 24610,
+      "chapter_label": "MRK 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "Jesus looking at him loved him, and said to him, “One thing you lack. Go, sell whatever you have and give to the poor, and you will have treasure in heaven; and come, follow me, taking up the cross.”",
+      "ko": "예수께서 그를 보시고 사랑하사 가라사대 네게 오히려 한 가지 부족한 것이 있으니 가서 네 있는 것을 다 팔아 가난한 자들을 주라 그리하면 하늘에서 보화가 네게 있으리라 그리고 와서 나를 좇으라 하시니",
+      "source_text_hash": "0e2071eb8d9894d0b8844feaa984bdb09a4ea0194193d78dcb3f219f5069fdeb",
+      "translation_text_hash": "67d1c7696c6a66d9921a5633d976d96a06eb29507d53f20010b62f37b66e6b10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그를 보시고 사랑하사 가라사대 네게 오히려 한 가지 부족한 것이 있으니 가서 네 있는 것을 다 팔아 가난한 자들을 주라 그리하면 하늘에서 보화가 네게 있으리라 그리고 와서 나를 좇으라 하시니"
+      ],
+      "raw_text_hashes": [
+        "67d1c7696c6a66d9921a5633d976d96a06eb29507d53f20010b62f37b66e6b10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:22",
+      "sequence": 24611,
+      "chapter_label": "MRK 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "But his face fell at that saying, and he went away sorrowful, for he was one who had great possessions.",
+      "ko": "그 사람은 재물이 많은고로 이 말씀을 인하여 슬픈 기색을 띠고 근심하며 가니라",
+      "source_text_hash": "3eba8cf5d9625871915bcb708b102f34308964d603b4cf56241f7982efe66f30",
+      "translation_text_hash": "85d892b6def170ca8cec9d7573143dc27695b4373036af188b35813ddaceafb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람은 재물이 많은고로 이 말씀을 인하여 슬픈 기색을 띠고 근심하며 가니라"
+      ],
+      "raw_text_hashes": [
+        "85d892b6def170ca8cec9d7573143dc27695b4373036af188b35813ddaceafb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:23",
+      "sequence": 24612,
+      "chapter_label": "MRK 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "Jesus looked around and said to his disciples, “How difficult it is for those who have riches to enter into God’s Kingdom!”",
+      "ko": "예수께서 둘러 보시고 제자들에게 이르시되 재물이 있는 자는 하나님의 나라에 들어가기가 심히 어렵도다 하시니",
+      "source_text_hash": "bff0f1665ffc94426f792a4c62c88a535d4894f2741f635b09e8f3ebccbac9c6",
+      "translation_text_hash": "1ed7e6821919e76281bfd739bade2b17c399d4caf4e20e0fd22c66de26d86820",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 둘러 보시고 제자들에게 이르시되 재물이 있는 자는 하나님의 나라에 들어가기가 심히 어렵도다 하시니"
+      ],
+      "raw_text_hashes": [
+        "1ed7e6821919e76281bfd739bade2b17c399d4caf4e20e0fd22c66de26d86820"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:24",
+      "sequence": 24613,
+      "chapter_label": "MRK 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "The disciples were amazed at his words. But Jesus answered again, “Children, how hard it is for those who trust in riches to enter into God’s Kingdom!",
+      "ko": "제자들이 그 말씀에 놀라는지라 예수께서 다시 대답하여 가라사대 얘들아 하나님의 나라에 들어가기가 어떻게 어려운지",
+      "source_text_hash": "a4f48e84d13aa33b2cdad1b1bbd0b6ca0b18de425ef87510bfb1be59f0f651f5",
+      "translation_text_hash": "4ffa0e7b4bf6f2f34913e0a9c3bb5cc50aa22e2bebd6b296e7972d0bda5d92f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 그 말씀에 놀라는지라 예수께서 다시 대답하여 가라사대 얘들아 하나님의 나라에 들어가기가 어떻게 어려운지"
+      ],
+      "raw_text_hashes": [
+        "4ffa0e7b4bf6f2f34913e0a9c3bb5cc50aa22e2bebd6b296e7972d0bda5d92f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:25",
+      "sequence": 24614,
+      "chapter_label": "MRK 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "It is easier for a camel to go through a needle’s eye than for a rich man to enter into God’s Kingdom.”",
+      "ko": "약대가 바늘귀로 나가는 것이 부자가 하나님의 나라에 들어가는 것보다 쉬우니라 하신대",
+      "source_text_hash": "1db918db93efb0f6f04f57e2011beb079ac9cda5bd788ed6a939a08b7dda55f1",
+      "translation_text_hash": "d2596044fe71f990288d88372cb785bc74093aedf76e54605928caf13b9f2c8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "약대가 바늘귀로 나가는 것이 부자가 하나님의 나라에 들어가는 것보다 쉬우니라 하신대"
+      ],
+      "raw_text_hashes": [
+        "d2596044fe71f990288d88372cb785bc74093aedf76e54605928caf13b9f2c8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:26",
+      "sequence": 24615,
+      "chapter_label": "MRK 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "They were exceedingly astonished, saying to him, “Then who can be saved?”",
+      "ko": "제자들이 심히 놀라 서로 말하되 그런즉 누가 구원을 얻을 수 있는가 하니",
+      "source_text_hash": "a9d8b263c42bfe52ebaa8f709347f45541c16999082e06235fbfc98cf41248cc",
+      "translation_text_hash": "db301027f7f5e24ef87df07eea1472d4f1336bcb6565e9e7255674eb99c2f631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 심히 놀라 서로 말하되 그런즉 누가 구원을 얻을 수 있는가 하니"
+      ],
+      "raw_text_hashes": [
+        "db301027f7f5e24ef87df07eea1472d4f1336bcb6565e9e7255674eb99c2f631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:27",
+      "sequence": 24616,
+      "chapter_label": "MRK 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "Jesus, looking at them, said, “With men it is impossible, but not with God, for all things are possible with God.”",
+      "ko": "예수께서 저희를 보시며 가라사대 사람으로는 할 수 없으되 하나님으로는 그렇지 아니하니 하나님으로서는 다 하실 수 있느니라",
+      "source_text_hash": "868118085443c02cf58ef43478ec7f2b8b0950ee1cbbaf80a67718b3a673ebe8",
+      "translation_text_hash": "90bd9941ea1e3add2e8994f550a97662f9d2a5c227b70393f7a18341e78e406b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희를 보시며 가라사대 사람으로는 할 수 없으되 하나님으로는 그렇지 아니하니 하나님으로서는 다 하실 수 있느니라"
+      ],
+      "raw_text_hashes": [
+        "90bd9941ea1e3add2e8994f550a97662f9d2a5c227b70393f7a18341e78e406b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:28",
+      "sequence": 24617,
+      "chapter_label": "MRK 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "Peter began to tell him, “Behold, we have left all and have followed you.”",
+      "ko": "베드로가 여짜와 가로되 보소서 우리가 모든 것을 버리고 주를 좇았나이다",
+      "source_text_hash": "2408934e3f9be25fe09995c0c98762da55322b0644cebd9ccba74022a7a0645b",
+      "translation_text_hash": "68ef92f75283f64cdb4afa48cc0541f70c78ecb0fb27098a1b4258f237def29e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 여짜와 가로되 보소서 우리가 모든 것을 버리고 주를 좇았나이다"
+      ],
+      "raw_text_hashes": [
+        "68ef92f75283f64cdb4afa48cc0541f70c78ecb0fb27098a1b4258f237def29e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:29",
+      "sequence": 24618,
+      "chapter_label": "MRK 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "Jesus said, “Most certainly I tell you, there is no one who has left house, or brothers, or sisters, or father, or mother, or wife, or children, or land, for my sake, and for the sake of the Good News,",
+      "ko": "예수께서 가라사대 내가 진실로 너희에게 이르노니 나와 및 복음을 위하여 집이나 형제나 자매나 어미나 아비나 자식이나 전토를 버린 자는",
+      "source_text_hash": "38d3791dcfe680ae07ee6459fa802dcf5cd58968ed6f856f7fd1cde17f66d878",
+      "translation_text_hash": "7c41d8f8d6ce2e16f955981c7133b0fc8aec05350997f5a1725212e4d2f441e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내가 진실로 너희에게 이르노니 나와 및 복음을 위하여 집이나 형제나 자매나 어미나 아비나 자식이나 전토를 버린 자는"
+      ],
+      "raw_text_hashes": [
+        "7c41d8f8d6ce2e16f955981c7133b0fc8aec05350997f5a1725212e4d2f441e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:30",
+      "sequence": 24619,
+      "chapter_label": "MRK 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "but he will receive one hundred times more now in this time: houses, brothers, sisters, mothers, children, and land, with persecutions; and in the age to come eternal life.",
+      "ko": "금세에 있어 집과 형제와 자매와 모친과 자식과 전토를 백배나 받되 핍박을 겸하여 받고 내세에 영생을 받지 못할 자가 없느니라",
+      "source_text_hash": "76f1dd4892e6f1f3b32ce9423c0c86fce29382057abf3f95fb75a5a3f0f31ff5",
+      "translation_text_hash": "beff7631d89d491e4d934a33e58eea91baa16cd3699a4d6ab4e2ed64afe4d4b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금세에 있어 집과 형제와 자매와 모친과 자식과 전토를 백배나 받되 핍박을 겸하여 받고 내세에 영생을 받지 못할 자가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "beff7631d89d491e4d934a33e58eea91baa16cd3699a4d6ab4e2ed64afe4d4b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:31",
+      "sequence": 24620,
+      "chapter_label": "MRK 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "But many who are first will be last, and the last first.”",
+      "ko": "그러나 먼저 된 자로서 나중 되고 나중 된 자로서 먼저 될 자가 많으니라",
+      "source_text_hash": "4e1157aab77d51970d4490a2b54a1d6f41557381b09f92472ead37b98dc5cfb7",
+      "translation_text_hash": "c22aa7668650accdb9f170a58980164cb7a41d6dc599991eac18b7a55ef700cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 먼저 된 자로서 나중 되고 나중 된 자로서 먼저 될 자가 많으니라"
+      ],
+      "raw_text_hashes": [
+        "c22aa7668650accdb9f170a58980164cb7a41d6dc599991eac18b7a55ef700cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:32",
+      "sequence": 24621,
+      "chapter_label": "MRK 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "They were on the way, going up to Jerusalem; and Jesus was going in front of them, and they were amazed; and those who followed were afraid. He again took the twelve, and began to tell them the things that were going to happen to him.",
+      "ko": "예루살렘으로 올라가는 길에 예수께서 제자들 앞에 서서 가시는데 저희가 놀라고 좇는 자들은 두려워하더라 이에 다시 열 두 제자를 데리시고 자기의 당할 일을 일러 가라사대",
+      "source_text_hash": "76369dcde868dc78999e6b1b8bef9b642f21d4dba166c29267f3fe0bab9167d2",
+      "translation_text_hash": "89b2f983b2c9d803f95292301d302e585125532af799c4105134379975acc105",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘으로 올라가는 길에 예수께서 제자들 앞에 서서 가시는데 저희가 놀라고 좇는 자들은 두려워하더라 이에 다시 열 두 제자를 데리시고 자기의 당할 일을 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "89b2f983b2c9d803f95292301d302e585125532af799c4105134379975acc105"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:33",
+      "sequence": 24622,
+      "chapter_label": "MRK 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "“Behold, we are going up to Jerusalem. The Son of Man will be delivered to the chief priests and the scribes. They will condemn him to death, and will deliver him to the Gentiles.",
+      "ko": "보라 우리가 예루살렘에 올라가노니 인자가 대제사장들과 서기관들에게 넘기우매 저희가 죽이기로 결안하고 이방인들에게 넘겨주겠고",
+      "source_text_hash": "67f983bbc848ed3990d6c65ba8c92ce0115d734a7211b3634f9cbd5ed1a98489",
+      "translation_text_hash": "8c3ec9926654609663d9ab72429c3fb70fbdf93aec6ec5b7542a6e976a062995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 우리가 예루살렘에 올라가노니 인자가 대제사장들과 서기관들에게 넘기우매 저희가 죽이기로 결안하고 이방인들에게 넘겨주겠고"
+      ],
+      "raw_text_hashes": [
+        "8c3ec9926654609663d9ab72429c3fb70fbdf93aec6ec5b7542a6e976a062995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:34",
+      "sequence": 24623,
+      "chapter_label": "MRK 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "They will mock him, spit on him, scourge him, and kill him. On the third day he will rise again.”",
+      "ko": "그들은 능욕하며 침 뱉으며 채찍질하고 죽일 것이니 저는 삼 일만에 살아나리라 하시니라",
+      "source_text_hash": "b7c08e9d4d0853ea2cc9709aabb609a938bf04b3cab27a7bae2a12ac15a50cf4",
+      "translation_text_hash": "390e5a6177cf49660fb2c05392489c4d2342fce293d8b0c16cc1d0c073f30637",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 능욕하며 침 뱉으며 채찍질하고 죽일 것이니 저는 삼 일만에 살아나리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "390e5a6177cf49660fb2c05392489c4d2342fce293d8b0c16cc1d0c073f30637"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:35",
+      "sequence": 24624,
+      "chapter_label": "MRK 10",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 35
+        }
+      ],
+      "en": "James and John, the sons of Zebedee, came near to him, saying, “Teacher, we want you to do for us whatever we will ask.”",
+      "ko": "세베대의 아들 야고보와 요한이 주께 나아와 여짜오되 선생님이여 무엇이든지 우리의 구하는 바를 우리에게 하여주시기를 원하옵나이다",
+      "source_text_hash": "a870982e5393a4602f683471d8540eaf6fbfab5186c17085e7d05635f71103f6",
+      "translation_text_hash": "422e21671c8ea3dc19251a62ea57ca364bb9283576af16457308c966291b17bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세베대의 아들 야고보와 요한이 주께 나아와 여짜오되 선생님이여 무엇이든지 우리의 구하는 바를 우리에게 하여주시기를 원하옵나이다"
+      ],
+      "raw_text_hashes": [
+        "422e21671c8ea3dc19251a62ea57ca364bb9283576af16457308c966291b17bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:36",
+      "sequence": 24625,
+      "chapter_label": "MRK 10",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 36
+        }
+      ],
+      "en": "He said to them, “What do you want me to do for you?”",
+      "ko": "이르시되 너희에게 무엇을 하여주기를 원하느냐",
+      "source_text_hash": "5aedb0f42d923a719ca3dde9361dd104682d0a461924978f8727d99f763475ae",
+      "translation_text_hash": "90590c254c8600bdfe3139606483b8d3a3855d8423bfd6ad28a6ef544c1326e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 너희에게 무엇을 하여주기를 원하느냐"
+      ],
+      "raw_text_hashes": [
+        "90590c254c8600bdfe3139606483b8d3a3855d8423bfd6ad28a6ef544c1326e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:37",
+      "sequence": 24626,
+      "chapter_label": "MRK 10",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 37
+        }
+      ],
+      "en": "They said to him, “Grant to us that we may sit, one at your right hand and one at your left hand, in your glory.”",
+      "ko": "여짜오되 주의 영광 중에서 우리를 하나는 주의 우편에, 하나는 좌편에 앉게 하여 주옵소서",
+      "source_text_hash": "225cf5d7f6fb7647eed7bb487ed9fff1e8a947071e35d9a1232fedee11c88877",
+      "translation_text_hash": "bb3915f04d9d09f4d1db8172a02885d075fbfe21360403df2afe8bb3e477ca8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여짜오되 주의 영광 중에서 우리를 하나는 주의 우편에, 하나는 좌편에 앉게 하여 주옵소서"
+      ],
+      "raw_text_hashes": [
+        "bb3915f04d9d09f4d1db8172a02885d075fbfe21360403df2afe8bb3e477ca8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:38",
+      "sequence": 24627,
+      "chapter_label": "MRK 10",
+      "verse_label": "38",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 38
+        }
+      ],
+      "en": "But Jesus said to them, “You don’t know what you are asking. Are you able to drink the cup that I drink, and to be baptized with the baptism that I am baptized with?”",
+      "ko": "예수께서 가라사대 너희 구하는 것을 너희가 알지 못하는도다 너희가 나의 마시는 잔을 마시며 나의 받는 세례를 받을 수 있느냐",
+      "source_text_hash": "a1ca400201977c583f07219a05560149a12497267006d684ba41d46208b9a1fb",
+      "translation_text_hash": "93bfd07cb714c0e56e6a60c3dd5c8c45abe6755ee96f7651f841a55319a10b6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너희 구하는 것을 너희가 알지 못하는도다 너희가 나의 마시는 잔을 마시며 나의 받는 세례를 받을 수 있느냐"
+      ],
+      "raw_text_hashes": [
+        "93bfd07cb714c0e56e6a60c3dd5c8c45abe6755ee96f7651f841a55319a10b6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:39",
+      "sequence": 24628,
+      "chapter_label": "MRK 10",
+      "verse_label": "39",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 39
+        }
+      ],
+      "en": "They said to him, “We are able.” Jesus said to them, “You shall indeed drink the cup that I drink, and you shall be baptized with the baptism that I am baptized with;",
+      "ko": "저희가 말하되 할 수 있나이다 예수께서 이르시되 너희가 나의 마시는 잔을 마시며 나의 받는 세례를 받으려니와",
+      "source_text_hash": "afb8ebb5b37310d0afac216e6075858101b971055dac90e1943bab0edf7da9df",
+      "translation_text_hash": "d17ab07ddd803e1a19ed310d9a2c263ad4fb9b9f23e704bab7c59ac183b15f54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 말하되 할 수 있나이다 예수께서 이르시되 너희가 나의 마시는 잔을 마시며 나의 받는 세례를 받으려니와"
+      ],
+      "raw_text_hashes": [
+        "d17ab07ddd803e1a19ed310d9a2c263ad4fb9b9f23e704bab7c59ac183b15f54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:40",
+      "sequence": 24629,
+      "chapter_label": "MRK 10",
+      "verse_label": "40",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 40
+        }
+      ],
+      "en": "but to sit at my right hand and at my left hand is not mine to give, but for whom it has been prepared.”",
+      "ko": "내 좌우편에 앉는 것은 나의 줄 것이 아니라 누구를 위하여 예비되었든지 그들이 얻을 것이니라",
+      "source_text_hash": "06d27367971892abd43a83cb14f1020fde21b80b2b289411b026824c03113e67",
+      "translation_text_hash": "a18814b2d41c674c96af7b6e1871a8a9dab227f5c75b22cc09b63cb2ccb13ca4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 좌우편에 앉는 것은 나의 줄 것이 아니라 누구를 위하여 예비되었든지 그들이 얻을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "a18814b2d41c674c96af7b6e1871a8a9dab227f5c75b22cc09b63cb2ccb13ca4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:41",
+      "sequence": 24630,
+      "chapter_label": "MRK 10",
+      "verse_label": "41",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 41
+        }
+      ],
+      "en": "When the ten heard it, they began to be indignant toward James and John.",
+      "ko": "열 제자가 듣고 야고보와 요한에 대하여 분히 여기거늘",
+      "source_text_hash": "a53c7adebb9302203d8740356c1037aa1277d21249fdc3e551990ab3ea9d03ec",
+      "translation_text_hash": "0c08c04a76b90e91b25b93b618fad29a87eb9d870d18e3b4525ddbcd69bc0eae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 제자가 듣고 야고보와 요한에 대하여 분히 여기거늘"
+      ],
+      "raw_text_hashes": [
+        "0c08c04a76b90e91b25b93b618fad29a87eb9d870d18e3b4525ddbcd69bc0eae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:42",
+      "sequence": 24631,
+      "chapter_label": "MRK 10",
+      "verse_label": "42",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 42
+        }
+      ],
+      "en": "Jesus summoned them and said to them, “You know that they who are recognized as rulers over the nations lord it over them, and their great ones exercise authority over them.",
+      "ko": "예수께서 불러다가 이르시되 이방인의 소위 집권자들이 저희를 임의로 주관하고 그 대인들이 저희에게 권세를 부리는 줄을 너희가 알거니와",
+      "source_text_hash": "36ba4a82be87001b01e0fa9515cee868d10711aeb94177b5a2a677cadf8a117b",
+      "translation_text_hash": "a3cd626517b74b58b6bb295f9ee0e834c10259ae20726df5fd9a04cacf0114f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 불러다가 이르시되 이방인의 소위 집권자들이 저희를 임의로 주관하고 그 대인들이 저희에게 권세를 부리는 줄을 너희가 알거니와"
+      ],
+      "raw_text_hashes": [
+        "a3cd626517b74b58b6bb295f9ee0e834c10259ae20726df5fd9a04cacf0114f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:43",
+      "sequence": 24632,
+      "chapter_label": "MRK 10",
+      "verse_label": "43",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 43
+        }
+      ],
+      "en": "But it shall not be so among you, but whoever wants to become great among you shall be your servant.",
+      "ko": "너희 중에는 그렇지 아니하니 너희 중에 누구든지 크고자 하는 자는 너희를 섬기는 자가 되고",
+      "source_text_hash": "109ffb95dd1ab32f5d07c3a3d8e832e2e33b3566174fd37bdadaddb4cf58aa03",
+      "translation_text_hash": "809bef12bfc9eb6f7c4f2ad67f032a749192bd59771fb7e58340d3e66b1261fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에는 그렇지 아니하니 너희 중에 누구든지 크고자 하는 자는 너희를 섬기는 자가 되고"
+      ],
+      "raw_text_hashes": [
+        "809bef12bfc9eb6f7c4f2ad67f032a749192bd59771fb7e58340d3e66b1261fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:44",
+      "sequence": 24633,
+      "chapter_label": "MRK 10",
+      "verse_label": "44",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 44
+        }
+      ],
+      "en": "Whoever of you wants to become first among you shall be bondservant of all.",
+      "ko": "너희 중에 누구든지 으뜸이 되고자 하는 자는 모든 사람의 종이 되어야 하리라",
+      "source_text_hash": "d2381e02548ce2c6ef94a973c35c7dc23512a821526c2975d8b46ffc9793b6d1",
+      "translation_text_hash": "3231f0d63152cabc10921eaf89e68a0656672a792f0d6e618f1172a58d65883e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누구든지 으뜸이 되고자 하는 자는 모든 사람의 종이 되어야 하리라"
+      ],
+      "raw_text_hashes": [
+        "3231f0d63152cabc10921eaf89e68a0656672a792f0d6e618f1172a58d65883e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:45",
+      "sequence": 24634,
+      "chapter_label": "MRK 10",
+      "verse_label": "45",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 45
+        }
+      ],
+      "en": "For the Son of Man also came not to be served but to serve, and to give his life as a ransom for many.”",
+      "ko": "인자의 온 것은 섬김을 받으려 함이 아니라 도리어 섬기려 하고 자기 목숨을 많은 사람의 대속물로 주려 함이니라",
+      "source_text_hash": "37a05aea53fdb2130cf3d693a4ead0e59cba13989120702900ff64294740fa77",
+      "translation_text_hash": "11eda7c7a1f17102b65f39c74302d2bc04973a4d117d6995757ac5a8afeb455c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자의 온 것은 섬김을 받으려 함이 아니라 도리어 섬기려 하고 자기 목숨을 많은 사람의 대속물로 주려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "11eda7c7a1f17102b65f39c74302d2bc04973a4d117d6995757ac5a8afeb455c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:46",
+      "sequence": 24635,
+      "chapter_label": "MRK 10",
+      "verse_label": "46",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 46
+        }
+      ],
+      "en": "They came to Jericho. As he went out from Jericho with his disciples and a great multitude, the son of Timaeus, Bartimaeus, a blind beggar, was sitting by the road.",
+      "ko": "저희가 여리고에 이르렀더니 예수께서 제자들과 허다한 무리와 함께 여리고에서 나가실 때에 디매오의 아들인 소경 거지 바디매오가 길가에 앉았다가",
+      "source_text_hash": "9ca69e07ce0099e55a61127b6ed96127b31f25f0525a69fa8f55588ffd4da12d",
+      "translation_text_hash": "d6699617ac3c7fa6a8cee2a67bbbe284955032be486d8eb5a1eb1210b1af6656",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 여리고에 이르렀더니 예수께서 제자들과 허다한 무리와 함께 여리고에서 나가실 때에 디매오의 아들인 소경 거지 바디매오가 길가에 앉았다가"
+      ],
+      "raw_text_hashes": [
+        "d6699617ac3c7fa6a8cee2a67bbbe284955032be486d8eb5a1eb1210b1af6656"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:47",
+      "sequence": 24636,
+      "chapter_label": "MRK 10",
+      "verse_label": "47",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 47
+        }
+      ],
+      "en": "When he heard that it was Jesus the Nazarene, he began to cry out and say, “Jesus, you son of David, have mercy on me!”",
+      "ko": "나사렛 예수시란 말을 듣고 소리질러 가로되 다윗의 자손 예수여 나를 불쌍히 여기소서 하거늘",
+      "source_text_hash": "5e4ca26901694af06c3a139578d9ac7dce626324aed6d904d429f585bdea8e02",
+      "translation_text_hash": "c0328767a59ea667d91a542137783ae1fd24445995def4bfdf2f601541ccce71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나사렛 예수시란 말을 듣고 소리질러 가로되 다윗의 자손 예수여 나를 불쌍히 여기소서 하거늘"
+      ],
+      "raw_text_hashes": [
+        "c0328767a59ea667d91a542137783ae1fd24445995def4bfdf2f601541ccce71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:48",
+      "sequence": 24637,
+      "chapter_label": "MRK 10",
+      "verse_label": "48",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 48
+        }
+      ],
+      "en": "Many rebuked him, that he should be quiet, but he cried out much more, “You son of David, have mercy on me!”",
+      "ko": "많은 사람이 꾸짖어 잠잠하라 하되 그가 더욱 심히 소리질러 가로되 다윗의 자손이여 나를 불쌍히 여기소서 하는지라",
+      "source_text_hash": "ed9339cb5835efe12b5ecf9f4cbae1b6310315f52af0bf1cfcc0403835d700a2",
+      "translation_text_hash": "05828733e177d17f0753628ad5a8ca8a55c984579245ff02e20b60505df00244",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 사람이 꾸짖어 잠잠하라 하되 그가 더욱 심히 소리질러 가로되 다윗의 자손이여 나를 불쌍히 여기소서 하는지라"
+      ],
+      "raw_text_hashes": [
+        "05828733e177d17f0753628ad5a8ca8a55c984579245ff02e20b60505df00244"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:49",
+      "sequence": 24638,
+      "chapter_label": "MRK 10",
+      "verse_label": "49",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 49
+        }
+      ],
+      "en": "Jesus stood still and said, “Call him.”They called the blind man, saying to him, “Cheer up! Get up. He is calling you!”",
+      "ko": "예수께서 머물러 서서 저를 부르라 하시니 저희가 그 소경을 부르며 이르되 안심하고 일어나라 너를 부르신다 하매",
+      "source_text_hash": "62019a464f8cbee575547685c10672ee5002249a5a8d0309b342ce583343bf88",
+      "translation_text_hash": "64485979085f5c8d0e25fd9fc4aca35794ff49048749ec70da8986dda3dc263a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 머물러 서서 저를 부르라 하시니 저희가 그 소경을 부르며 이르되 안심하고 일어나라 너를 부르신다 하매"
+      ],
+      "raw_text_hashes": [
+        "64485979085f5c8d0e25fd9fc4aca35794ff49048749ec70da8986dda3dc263a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:50",
+      "sequence": 24639,
+      "chapter_label": "MRK 10",
+      "verse_label": "50",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 50
+        }
+      ],
+      "en": "He, casting away his cloak, sprang up, and came to Jesus.",
+      "ko": "소경이 겉옷을 내어버리고 뛰어 일어나 예수께 나아오거늘",
+      "source_text_hash": "023ed476cbcdab69b76d8012134d7bc6fe3004bf97e2025fac5c0de910c03ef4",
+      "translation_text_hash": "447734ca239049bb8edff0802a6f217489e6a88c5112de3814d9447d6399fa4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경이 겉옷을 내어버리고 뛰어 일어나 예수께 나아오거늘"
+      ],
+      "raw_text_hashes": [
+        "447734ca239049bb8edff0802a6f217489e6a88c5112de3814d9447d6399fa4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:51",
+      "sequence": 24640,
+      "chapter_label": "MRK 10",
+      "verse_label": "51",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 51
+        }
+      ],
+      "en": "Jesus asked him, “What do you want me to do for you?”The blind man said to him, “Rabboni, that I may see again.”",
+      "ko": "예수께서 일러 가라사대 네게 무엇을 하여주기를 원하느냐 소경이 가로되 선생님이여 보기를 원하나이다",
+      "source_text_hash": "78924222e8dc739979884526dcf5851b0fabfd7c74cd985bec7247b1cd0540e2",
+      "translation_text_hash": "34b024b2def5ba43f162502af389f70d98972d9cf49e8e6e151fd442713ce53c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 일러 가라사대 네게 무엇을 하여주기를 원하느냐 소경이 가로되 선생님이여 보기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "34b024b2def5ba43f162502af389f70d98972d9cf49e8e6e151fd442713ce53c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:10:52",
+      "sequence": 24641,
+      "chapter_label": "MRK 10",
+      "verse_label": "52",
+      "locator": {
+        "book": "MRK",
+        "chapter": 10,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 10,
+          "verse": 52
+        }
+      ],
+      "en": "Jesus said to him, “Go your way. Your faith has made you well.” Immediately he received his sight and followed Jesus on the way.",
+      "ko": "예수께서 이르시되 가라 네 믿음이 너를 구원하였느니라 하시니 저가 곧 보게 되어 예수를 길에서 좇으니라",
+      "source_text_hash": "9a7aaf6c1c7149a8fc62fda1addcedd0b1b3303d798eabc5616c5452bc7c1521",
+      "translation_text_hash": "b7fd63e288fd5d2db9f7f160a0592518b852caa98b245fac627f52aa420950ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 가라 네 믿음이 너를 구원하였느니라 하시니 저가 곧 보게 되어 예수를 길에서 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "b7fd63e288fd5d2db9f7f160a0592518b852caa98b245fac627f52aa420950ed"
+      ]
+    }
+  ]
+}

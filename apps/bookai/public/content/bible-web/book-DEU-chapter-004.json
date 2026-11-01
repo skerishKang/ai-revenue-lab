@@ -1,0 +1,1581 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:004",
+  "unit_ordinal": 157,
+  "unit_label": "DEU 4",
+  "book_code": "DEU",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:4:1",
+      "sequence": 5006,
+      "chapter_label": "DEU 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Now, Israel, listen to the statutes and to the ordinances which I teach you, to do them, that you may live and go in and possess the land which the LORD, the God of your fathers, gives you.",
+      "ko": "이스라엘아 이제 내가 너희에게 가르치는 규례와 법도를 듣고 준행하라 그리하면 너희가 살 것이요 너희의 열조의 하나님 여호와께서 너희에게 주시는 땅에 들어가서 그것을 얻게 되리라",
+      "source_text_hash": "530ae4739fcbedcd2be537b1af1b7f94a89f2f3e387db7e24b3a308f16e11221",
+      "translation_text_hash": "595eaafbe89a0ecde4e367dd0725a52fe97bcbe5398c2d516ddd5c9c1a02193c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 이제 내가 너희에게 가르치는 규례와 법도를 듣고 준행하라 그리하면 너희가 살 것이요 너희의 열조의 하나님 여호와께서 너희에게 주시는 땅에 들어가서 그것을 얻게 되리라"
+      ],
+      "raw_text_hashes": [
+        "595eaafbe89a0ecde4e367dd0725a52fe97bcbe5398c2d516ddd5c9c1a02193c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:2",
+      "sequence": 5007,
+      "chapter_label": "DEU 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "You shall not add to the word which I command you, neither shall you take away from it, that you may keep the commandments of the LORD your God which I command you.",
+      "ko": "내가 너희에게 명하는 말을 너희는 가감하지 말고 내가 너희에게 명하는 너희 하나님 여호와의 명령을 지키라",
+      "source_text_hash": "30d4cf4ed0584c174b30194cdba08bddd866496486fae167a7b60933c7599108",
+      "translation_text_hash": "27ccb002d154477caa5ef7789fa7b1816070d906086b252b4ae7fa8861d624dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 명하는 말을 너희는 가감하지 말고 내가 너희에게 명하는 너희 하나님 여호와의 명령을 지키라"
+      ],
+      "raw_text_hashes": [
+        "27ccb002d154477caa5ef7789fa7b1816070d906086b252b4ae7fa8861d624dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:3",
+      "sequence": 5008,
+      "chapter_label": "DEU 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Your eyes have seen what the LORD did because of Baal Peor; for the LORD your God has destroyed all the men who followed Baal Peor from among you.",
+      "ko": "여호와께서 바알브올의 일을 인하여 행하신 바를 너희가 목도하였거니와 바알브올을 좇은 모든 사람을 너의 하나님 여호와께서 너의 중에서 진멸하셨으되",
+      "source_text_hash": "5de469eb90d3995ee407d2dd5badd5b070a7d103190006eee30674b54e7ea5a0",
+      "translation_text_hash": "5c2ab6a2c216356b67c7b94a6503bba9af4b6526c413a842f152ff84c270aeba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 바알브올의 일을 인하여 행하신 바를 너희가 목도하였거니와 바알브올을 좇은 모든 사람을 너의 하나님 여호와께서 너의 중에서 진멸하셨으되"
+      ],
+      "raw_text_hashes": [
+        "5c2ab6a2c216356b67c7b94a6503bba9af4b6526c413a842f152ff84c270aeba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:4",
+      "sequence": 5009,
+      "chapter_label": "DEU 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "But you who were faithful to the LORD your God are all alive today.",
+      "ko": "오직 너희의 하나님 여호와께 붙어 떠나지 않은 너희는 오늘까지 다 생존하였느니라",
+      "source_text_hash": "24cd189a1b3483759facd8d241eb85ce8014200c9bd9c458f74624328931af53",
+      "translation_text_hash": "1da19c0ac0ce94fa3d88a3c38c54951c5df939f59351196984da87a4147f6a69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희의 하나님 여호와께 붙어 떠나지 않은 너희는 오늘까지 다 생존하였느니라"
+      ],
+      "raw_text_hashes": [
+        "1da19c0ac0ce94fa3d88a3c38c54951c5df939f59351196984da87a4147f6a69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:5",
+      "sequence": 5010,
+      "chapter_label": "DEU 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Behold, I have taught you statutes and ordinances, even as the LORD my God commanded me, that you should do so in the middle of the land where you go in to possess it.",
+      "ko": "내가 나의 하나님 여호와의 명하신대로 규례와 법도를 너희에게 가르쳤나니 이는 너희로 들어가서 기업으로 얻을 땅에서 그대로 행하게 하려 함인즉",
+      "source_text_hash": "46a58863aeb5fb7aa46dd827a82604651e15d6f9296764442c0b4652df664b1f",
+      "translation_text_hash": "6120072062c56e5d44bc48753574fa97d7d282c15b03c753c0be0807effcdaf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 하나님 여호와의 명하신대로 규례와 법도를 너희에게 가르쳤나니 이는 너희로 들어가서 기업으로 얻을 땅에서 그대로 행하게 하려 함인즉"
+      ],
+      "raw_text_hashes": [
+        "6120072062c56e5d44bc48753574fa97d7d282c15b03c753c0be0807effcdaf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:6",
+      "sequence": 5011,
+      "chapter_label": "DEU 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Keep therefore and do them; for this is your wisdom and your understanding in the sight of the peoples who shall hear all these statutes and say, “Surely this great nation is a wise and understanding people.”",
+      "ko": "너희는 지켜 행하라 그리함은 열국 앞에 너희의 지혜요 너희의 지식이라 그들이 이 모든 규례를 듣고 이르기를 이 큰 나라 사람은 과연 지혜와 지식이 있는 백성이로다 하리라",
+      "source_text_hash": "26d7c1e814feabbb4ae464badeef66a87fc51fc4c86249ae66ae8515b4180f98",
+      "translation_text_hash": "52f1fd1868112beeab8699ae93223b7cb582a8ce1213e8bf3b487141f7d94be1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 지켜 행하라 그리함은 열국 앞에 너희의 지혜요 너희의 지식이라 그들이 이 모든 규례를 듣고 이르기를 이 큰 나라 사람은 과연 지혜와 지식이 있는 백성이로다 하리라"
+      ],
+      "raw_text_hashes": [
+        "52f1fd1868112beeab8699ae93223b7cb582a8ce1213e8bf3b487141f7d94be1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:7",
+      "sequence": 5012,
+      "chapter_label": "DEU 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "For what great nation is there that has a god so near to them as the LORD our God is whenever we call on him?",
+      "ko": "우리 하나님 여호와께서 우리가 그에게 기도할 때마다 우리에게 가까이 하심과 같이 그 신의 가까이 함을 얻은 나라가 어디 있느냐",
+      "source_text_hash": "68ff6681cb39fb85235f8d0bf0c098be0484f0d4a9151b67bf4b77e76409d76c",
+      "translation_text_hash": "140de8c317452a77c4da7addad807ba4fba203e87a13fc4ca246014f165871ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와께서 우리가 그에게 기도할 때마다 우리에게 가까이 하심과 같이 그 신의 가까이 함을 얻은 나라가 어디 있느냐"
+      ],
+      "raw_text_hashes": [
+        "140de8c317452a77c4da7addad807ba4fba203e87a13fc4ca246014f165871ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:8",
+      "sequence": 5013,
+      "chapter_label": "DEU 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "What great nation is there that has statutes and ordinances so righteous as all this law which I set before you today?",
+      "ko": "오늘 내가 너희에게 선포하는 이 율법과 같이 그 규례와 법도가 공의로운 큰 나라가 어디 있느냐",
+      "source_text_hash": "7868a1838a6e980b5c712716fd82fa1ee63498dacbbece6594261c7d7c99d9bf",
+      "translation_text_hash": "6899b2258b9041ef9d8329f92188e27f3e0602551b14d91f8af7a69c846b844b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘 내가 너희에게 선포하는 이 율법과 같이 그 규례와 법도가 공의로운 큰 나라가 어디 있느냐"
+      ],
+      "raw_text_hashes": [
+        "6899b2258b9041ef9d8329f92188e27f3e0602551b14d91f8af7a69c846b844b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:9",
+      "sequence": 5014,
+      "chapter_label": "DEU 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Only be careful, and keep your soul diligently, lest you forget the things which your eyes saw, and lest they depart from your heart all the days of your life; but make them known to your children and your children’s children—",
+      "ko": "오직 너는 스스로 삼가며 네 마음을 힘써 지키라 두렵건대 네가 그 목도한 일을 잊어버릴까 하노라 두렵건대 네 생존하는 날 동안에 그 일들이 네 마음에서 떠날까 하노라 너는 그 일들을 네 아들들과 네 손자들에게 알게 하라",
+      "source_text_hash": "ffb4f17bfee49bf9021463ff51ce02daf174332fcaae43b6d28759b631998570",
+      "translation_text_hash": "cabeaf23123818836bce3f41c26eac25057ab74ba5b8995c54f2daa98069b30e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너는 스스로 삼가며 네 마음을 힘써 지키라 두렵건대 네가 그 목도한 일을 잊어버릴까 하노라 두렵건대 네 생존하는 날 동안에 그 일들이 네 마음에서 떠날까 하노라 너는 그 일들을 네 아들들과 네 손자들에게 알게 하라"
+      ],
+      "raw_text_hashes": [
+        "cabeaf23123818836bce3f41c26eac25057ab74ba5b8995c54f2daa98069b30e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:10",
+      "sequence": 5015,
+      "chapter_label": "DEU 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "the day that you stood before the LORD your God in Horeb, when the LORD said to me, “Assemble the people to me, and I will make them hear my words, that they may learn to fear me all the days that they live on the earth, and that they may teach their children.”",
+      "ko": "네가 호렙산에서 네 하나님 여호와 앞에 섰던 날에 여호와께서 내게 이르시기를 나를 위하여 백성을 모으라 내가 그들에게 내 말을 들려서 그들로 세상에 사는 날 동안 나 경외함을 배우게 하며 그 자녀에게 가르치게 하려 하노라 하시매",
+      "source_text_hash": "538d92bc36957175b67fb9c5619fec30ae3e61f990bd596717c27f59d2796955",
+      "translation_text_hash": "79f7f74700127876972be2623011b935b302aad4350b6beca685736f647f5420",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 호렙산에서 네 하나님 여호와 앞에 섰던 날에 여호와께서 내게 이르시기를 나를 위하여 백성을 모으라 내가 그들에게 내 말을 들려서 그들로 세상에 사는 날 동안 나 경외함을 배우게 하며 그 자녀에게 가르치게 하려 하노라 하시매"
+      ],
+      "raw_text_hashes": [
+        "79f7f74700127876972be2623011b935b302aad4350b6beca685736f647f5420"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:11",
+      "sequence": 5016,
+      "chapter_label": "DEU 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "You came near and stood under the mountain. The mountain burned with fire to the heart of the sky, with darkness, cloud, and thick darkness.",
+      "ko": "너희가 가까이 나아와서 산 아래 서니 그 산에 불이 붙어 화염이 충천하고 유암과 구름과 흑암이 덮였는데",
+      "source_text_hash": "833b7f7e69dda796dbffc26df89912a1aea3bd720a9bbe1db62aa53542af6300",
+      "translation_text_hash": "fc63d36405a0cfa4c47a8e1354f74ea70f9f132f61b7a37430d64d70514c233c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 가까이 나아와서 산 아래 서니 그 산에 불이 붙어 화염이 충천하고 유암과 구름과 흑암이 덮였는데"
+      ],
+      "raw_text_hashes": [
+        "fc63d36405a0cfa4c47a8e1354f74ea70f9f132f61b7a37430d64d70514c233c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:12",
+      "sequence": 5017,
+      "chapter_label": "DEU 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD spoke to you out of the middle of the fire: you heard the voice of words, but you saw no form; you only heard a voice.",
+      "ko": "여호와께서 화염 중에서 너희에게 말씀하시되 음성 뿐이므로 너희가 그 말소리만 듣고 형상은 보지 못하였느니라",
+      "source_text_hash": "5e3c2bcb44a762852da1c884e87647dfaa24023b55121376388b674b7969a623",
+      "translation_text_hash": "687eee825d9af4a9b2a7ca83b1fa853dffc81432d0a88dce4b31f6cbf4608aeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 화염 중에서 너희에게 말씀하시되 음성 뿐이므로 너희가 그 말소리만 듣고 형상은 보지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "687eee825d9af4a9b2a7ca83b1fa853dffc81432d0a88dce4b31f6cbf4608aeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:13",
+      "sequence": 5018,
+      "chapter_label": "DEU 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "He declared to you his covenant, which he commanded you to perform, even the ten commandments. He wrote them on two stone tablets.",
+      "ko": "여호와께서 그 언약을 너희에게 반포하시고 너희로 지키라 명하셨으니 곧 십계명이며 두 돌판에 친히 쓰신 것이라",
+      "source_text_hash": "a3cae999ffcdd01c7d439017ea7bb5a25d21fa536988a91476da50abc5db1e1f",
+      "translation_text_hash": "618e3d380fa3ec5a149cc12c7b5a767e0bbf64b7993020a6c03050f53b6284e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 언약을 너희에게 반포하시고 너희로 지키라 명하셨으니 곧 십계명이며 두 돌판에 친히 쓰신 것이라"
+      ],
+      "raw_text_hashes": [
+        "618e3d380fa3ec5a149cc12c7b5a767e0bbf64b7993020a6c03050f53b6284e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:14",
+      "sequence": 5019,
+      "chapter_label": "DEU 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD commanded me at that time to teach you statutes and ordinances, that you might do them in the land where you go over to possess it.",
+      "ko": "그 때에 여호와께서 내게 명하사 너희에게 규례와 법도를 교훈하게 하셨나니 이는 너희로 건너가서 얻을 땅에서 행하게 하려 하심이니라",
+      "source_text_hash": "d7d3faeed9755b4542a90e83ea1a48e9d07fae0fd227dc0016fdabfdd3cfddea",
+      "translation_text_hash": "eb9f33635154a6143575756295ff49036351fafed8f46f16a87e19019a54c37a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호와께서 내게 명하사 너희에게 규례와 법도를 교훈하게 하셨나니 이는 너희로 건너가서 얻을 땅에서 행하게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "eb9f33635154a6143575756295ff49036351fafed8f46f16a87e19019a54c37a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:15",
+      "sequence": 5020,
+      "chapter_label": "DEU 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Be very careful, for you saw no kind of form on the day that the LORD spoke to you in Horeb out of the middle of the fire,",
+      "ko": "여호와께서 호렙산 화염 중에서 너희에게 말씀하시던 날에 너희가 아무 형상도 보지 못하였은즉 너희는 깊이 삼가라",
+      "source_text_hash": "8cf1fec9851f80171be65967990371cccd3f49dc9835906d2c592603fa65a516",
+      "translation_text_hash": "e90b234c50d31fe7542d3b22cc24821de1d594579fe74591beca0d699b189aa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 호렙산 화염 중에서 너희에게 말씀하시던 날에 너희가 아무 형상도 보지 못하였은즉 너희는 깊이 삼가라"
+      ],
+      "raw_text_hashes": [
+        "e90b234c50d31fe7542d3b22cc24821de1d594579fe74591beca0d699b189aa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:16",
+      "sequence": 5021,
+      "chapter_label": "DEU 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "lest you corrupt yourselves, and make yourself a carved image in the form of any figure, the likeness of male or female,",
+      "ko": "두렵건대 스스로 부패하여 자기를 위하여 아무 형상대로든지 우상을 새겨 만들되 남자의 형상이라든지, 여자의 형상이라든지,",
+      "source_text_hash": "f2b32616856448453726128dd0edf78829238ecb3087a2bb17af6abfac7a675b",
+      "translation_text_hash": "879fe3810df7be42146dc491422ba751f5efcbca00797271859701db7124c7b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두렵건대 스스로 부패하여 자기를 위하여 아무 형상대로든지 우상을 새겨 만들되 남자의 형상이라든지, 여자의 형상이라든지,"
+      ],
+      "raw_text_hashes": [
+        "879fe3810df7be42146dc491422ba751f5efcbca00797271859701db7124c7b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:17",
+      "sequence": 5022,
+      "chapter_label": "DEU 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "the likeness of any animal that is on the earth, the likeness of any winged bird that flies in the sky,",
+      "ko": "땅 위에 있는 아무 짐승의 형상이라든지, 하늘에 나는 아무 새의 형상이라든지,",
+      "source_text_hash": "6b9c60581889303821ecb2f621b54099869bcafc32112b039ef6559e59254052",
+      "translation_text_hash": "c66ce8b0ae4d3656ccb29380e56970ff09465ce2dd6b7a9d666a97eceb092a7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅 위에 있는 아무 짐승의 형상이라든지, 하늘에 나는 아무 새의 형상이라든지,"
+      ],
+      "raw_text_hashes": [
+        "c66ce8b0ae4d3656ccb29380e56970ff09465ce2dd6b7a9d666a97eceb092a7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:18",
+      "sequence": 5023,
+      "chapter_label": "DEU 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "the likeness of anything that creeps on the ground, the likeness of any fish that is in the water under the earth;",
+      "ko": "땅 위에 기는 아무 곤충의 형상이라든지, 땅 아래 물 속에 있는 아무 어족의 형상이라든지 만들까 하노라",
+      "source_text_hash": "7e343dccee81afe64ba6dd0f91e22d26036986194ee3e2ba595bf7f1fd6e538d",
+      "translation_text_hash": "1357914dd7684cf92b6f51470277e1b52c1671dbb9a0ab46eba91f293ffa30d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅 위에 기는 아무 곤충의 형상이라든지, 땅 아래 물 속에 있는 아무 어족의 형상이라든지 만들까 하노라"
+      ],
+      "raw_text_hashes": [
+        "1357914dd7684cf92b6f51470277e1b52c1671dbb9a0ab46eba91f293ffa30d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:19",
+      "sequence": 5024,
+      "chapter_label": "DEU 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "and lest you lift up your eyes to the sky, and when you see the sun and the moon and the stars, even all the army of the sky, you are drawn away and worship them, and serve them, which the LORD your God has allotted to all the peoples under the whole sky.",
+      "ko": "또 두렵건대 네가 하늘을 향하여 눈을 들어 일월 성신 하늘 위의 군중 곧 너희 하나님 여호와께서 천하 만민을 위하여 분정하신 것을 보고 미혹하여 그것에 경배하며 섬길까 하노라",
+      "source_text_hash": "fd0df17d018d850e5efe426877cae932399a67202b7dd1b5ad2b0463b8acb299",
+      "translation_text_hash": "75cc7cfa19e9061fdf62f39e3049f8f16a73270d5362c2632bb8cc93b18134ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 두렵건대 네가 하늘을 향하여 눈을 들어 일월 성신 하늘 위의 군중 곧 너희 하나님 여호와께서 천하 만민을 위하여 분정하신 것을 보고 미혹하여 그것에 경배하며 섬길까 하노라"
+      ],
+      "raw_text_hashes": [
+        "75cc7cfa19e9061fdf62f39e3049f8f16a73270d5362c2632bb8cc93b18134ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:20",
+      "sequence": 5025,
+      "chapter_label": "DEU 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "But the LORD has taken you, and brought you out of the iron furnace, out of Egypt, to be to him a people of inheritance, as it is today.",
+      "ko": "여호와께서 너희를 택하시고 너희를 쇠풀무 곧 애굽에서 인도하여 내사 자기 기업의 백성을 삼으신 것이 오늘과 같아도",
+      "source_text_hash": "53c5f1ef9ba106ea27067c2832783d11bf3d23a440f20d647a5586e873e0b768",
+      "translation_text_hash": "5b3331a8094ed5220aa2fe15f64a9e1b206d1a2a9e45942d11337d59d60648a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희를 택하시고 너희를 쇠풀무 곧 애굽에서 인도하여 내사 자기 기업의 백성을 삼으신 것이 오늘과 같아도"
+      ],
+      "raw_text_hashes": [
+        "5b3331a8094ed5220aa2fe15f64a9e1b206d1a2a9e45942d11337d59d60648a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:21",
+      "sequence": 5026,
+      "chapter_label": "DEU 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Furthermore the LORD was angry with me for your sakes, and swore that I should not go over the Jordan, and that I should not go in to that good land which the LORD your God gives you for an inheritance;",
+      "ko": "여호와께서 너희로 인하여 내게 진노하사 나로 요단을 건너지 못하며 네 하나님 여호와께서 네게 기업으로 주신 그 아름다운 땅에 들어가지 못하게 하리라고 맹세하셨은즉",
+      "source_text_hash": "8cf4589c1c6c0205d94d46295c5b2b29f3ea079bf6cac537a0fdba7a3c6af855",
+      "translation_text_hash": "dce8675c8cef8a4563583f238a26a80ff47e10b44843f0ca872969f48b323b12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희로 인하여 내게 진노하사 나로 요단을 건너지 못하며 네 하나님 여호와께서 네게 기업으로 주신 그 아름다운 땅에 들어가지 못하게 하리라고 맹세하셨은즉"
+      ],
+      "raw_text_hashes": [
+        "dce8675c8cef8a4563583f238a26a80ff47e10b44843f0ca872969f48b323b12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:22",
+      "sequence": 5027,
+      "chapter_label": "DEU 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "but I must die in this land. I must not go over the Jordan, but you shall go over and possess that good land.",
+      "ko": "나는 이 땅에서 죽고 요단을 건너지 못하려니와 너희는 건너가서 그 아름다운 땅을 얻으리니",
+      "source_text_hash": "bd83a7828986eee4e9fb1d2b0cfd23b4566e1d7dcdd01b47829278634ed7ef94",
+      "translation_text_hash": "d6d5f04e55b5a8a59ae645d5e30d4da3f1f476705c7a1fc45ca9693caecce040",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 이 땅에서 죽고 요단을 건너지 못하려니와 너희는 건너가서 그 아름다운 땅을 얻으리니"
+      ],
+      "raw_text_hashes": [
+        "d6d5f04e55b5a8a59ae645d5e30d4da3f1f476705c7a1fc45ca9693caecce040"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:23",
+      "sequence": 5028,
+      "chapter_label": "DEU 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "Be careful, lest you forget the covenant of the LORD your God, which he made with you, and make yourselves a carved image in the form of anything which the LORD your God has forbidden you.",
+      "ko": "너희는 스스로 삼가서 너희 하나님 여호와께서 너희와 세우신 언약을 잊어버려서 네 하나님 여호와께서 금하신 아무 형상의 우상이든지 조각하지 말라",
+      "source_text_hash": "16c39f9ef2e61706fe085aa75b5b2724d76ec5880826caf5e98fb6112e0b9e8a",
+      "translation_text_hash": "1aaacee46da8b8afc90dad7b50c3cdcc085917639702efdab05364301e9a0aef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 스스로 삼가서 너희 하나님 여호와께서 너희와 세우신 언약을 잊어버려서 네 하나님 여호와께서 금하신 아무 형상의 우상이든지 조각하지 말라"
+      ],
+      "raw_text_hashes": [
+        "1aaacee46da8b8afc90dad7b50c3cdcc085917639702efdab05364301e9a0aef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:24",
+      "sequence": 5029,
+      "chapter_label": "DEU 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "For the LORD your God is a devouring fire, a jealous God.",
+      "ko": "네 하나님 여호와는 소멸하는 불이시요 질투하는 하나님이시니라",
+      "source_text_hash": "cfddd83b519f9727186b69401e937f695492a09873557fd9ea4c256aac6d11bf",
+      "translation_text_hash": "b5eecd6411b812f0ff628c209a16a1c67e10a1144804d7734968320b83fa8f68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와는 소멸하는 불이시요 질투하는 하나님이시니라"
+      ],
+      "raw_text_hashes": [
+        "b5eecd6411b812f0ff628c209a16a1c67e10a1144804d7734968320b83fa8f68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:25",
+      "sequence": 5030,
+      "chapter_label": "DEU 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "When you father children and children’s children, and you have been long in the land, and then corrupt yourselves, and make a carved image in the form of anything, and do that which is evil in the LORD your God’s sight to provoke him to anger,",
+      "ko": "네가 그 땅에서 아들을 낳고 손자를 얻으며 오래 살 때에 만일 스스로 부패하여 무슨 형상의 우상이든지 조각하여 네 하나님 여호와 앞에 악을 행함으로 그의 노를 격발하면",
+      "source_text_hash": "fde921b96098ff32f34ad610a668f315b8438b2a0c418278cb9f9ab52f863170",
+      "translation_text_hash": "276fdb87776efb30a5602a315649a1c1f060a8368973bda09338e817d97ba7e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그 땅에서 아들을 낳고 손자를 얻으며 오래 살 때에 만일 스스로 부패하여 무슨 형상의 우상이든지 조각하여 네 하나님 여호와 앞에 악을 행함으로 그의 노를 격발하면"
+      ],
+      "raw_text_hashes": [
+        "276fdb87776efb30a5602a315649a1c1f060a8368973bda09338e817d97ba7e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:26",
+      "sequence": 5031,
+      "chapter_label": "DEU 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "I call heaven and earth to witness against you today, that you will soon utterly perish from off the land which you go over the Jordan to possess it. You will not prolong your days on it, but will utterly be destroyed.",
+      "ko": "내가 오늘날 천지를 불러 증거를 삼노니 너희가 요단을 건너가서 얻는 땅에서 속히 망할 것이라 너희가 거기서 너희 날이 길지 못하고 전멸될 것이니라",
+      "source_text_hash": "397e35a3376c3b86029ab72f002c78c0424e1e3e9fe1018ed44434813981ea7b",
+      "translation_text_hash": "2830eb013c434223e2489c4a0e7ce4a872be7e45de330753c270273de7e05c2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오늘날 천지를 불러 증거를 삼노니 너희가 요단을 건너가서 얻는 땅에서 속히 망할 것이라 너희가 거기서 너희 날이 길지 못하고 전멸될 것이니라"
+      ],
+      "raw_text_hashes": [
+        "2830eb013c434223e2489c4a0e7ce4a872be7e45de330753c270273de7e05c2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:27",
+      "sequence": 5032,
+      "chapter_label": "DEU 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "The LORD will scatter you among the peoples, and you will be left few in number among the nations where the LORD will lead you away.",
+      "ko": "여호와께서 너희를 열국 중에 흩으실 것이요 여호와께서 너희를 쫓아보내실 그 열국 중에 너희의 남은 수가 많지 못할 것이며",
+      "source_text_hash": "bd90bb5fa9f670df41779547d8dddde60870462d76537d20e30351b14c9cbc6b",
+      "translation_text_hash": "eb88c677b05ac197c6dc25f62e2f9f2f65e7645906bb2acac354006a3a61c22e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희를 열국 중에 흩으실 것이요 여호와께서 너희를 쫓아보내실 그 열국 중에 너희의 남은 수가 많지 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "eb88c677b05ac197c6dc25f62e2f9f2f65e7645906bb2acac354006a3a61c22e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:28",
+      "sequence": 5033,
+      "chapter_label": "DEU 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "There you will serve gods, the work of men’s hands, wood and stone, which neither see, nor hear, nor eat, nor smell.",
+      "ko": "너희는 거기서 사람의 손으로 만든바 보지도 못하며 듣지도 못하며 먹지도 못하며 냄새도 맡지 못하는 목석의 신들을 섬기리라",
+      "source_text_hash": "6881fc6c12f8d2e1cae8347557df5176348c49e188dedefd6d81c77e3d1988b2",
+      "translation_text_hash": "11adf08371d705f7de083cd84404980aac0c1698d12a6d9ec1fcb108747b3986",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 거기서 사람의 손으로 만든바 보지도 못하며 듣지도 못하며 먹지도 못하며 냄새도 맡지 못하는 목석의 신들을 섬기리라"
+      ],
+      "raw_text_hashes": [
+        "11adf08371d705f7de083cd84404980aac0c1698d12a6d9ec1fcb108747b3986"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:29",
+      "sequence": 5034,
+      "chapter_label": "DEU 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "But from there you shall seek the LORD your God, and you will find him when you search after him with all your heart and with all your soul.",
+      "ko": "그러나 네가 거기서 네 하나님 여호와를 구하게 되리니 만일 마음을 다하고 성품을 다하여 그를 구하면 만나리라",
+      "source_text_hash": "da9607902eb84cd4495dc58d1737b76fc0f7cf7d0633f0a81ef94a461820e104",
+      "translation_text_hash": "ced4633ce131de36a88d13a60fbfd7cf23803c8a505460892c87cc7a4a113f99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네가 거기서 네 하나님 여호와를 구하게 되리니 만일 마음을 다하고 성품을 다하여 그를 구하면 만나리라"
+      ],
+      "raw_text_hashes": [
+        "ced4633ce131de36a88d13a60fbfd7cf23803c8a505460892c87cc7a4a113f99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:30",
+      "sequence": 5035,
+      "chapter_label": "DEU 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "When you are in oppression, and all these things have come on you, in the latter days you shall return to the LORD your God and listen to his voice.",
+      "ko": "이 모든 일이 네게 임하여 환난을 당하다가 끝날에 네가 네 하나님 여호와께로 돌아와서 그 말씀을 청종하리니",
+      "source_text_hash": "7655f4819c90868521b561dafcbc6d2754ed3100a45b945ac7adaea3285628e7",
+      "translation_text_hash": "f00c0ad766cade1db082c97171fb3c256684c8e7053ccc768f5f9e2d93a8d326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일이 네게 임하여 환난을 당하다가 끝날에 네가 네 하나님 여호와께로 돌아와서 그 말씀을 청종하리니"
+      ],
+      "raw_text_hashes": [
+        "f00c0ad766cade1db082c97171fb3c256684c8e7053ccc768f5f9e2d93a8d326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:31",
+      "sequence": 5036,
+      "chapter_label": "DEU 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "For the LORD your God is a merciful God. He will not fail you nor destroy you, nor forget the covenant of your fathers which he swore to them.",
+      "ko": "네 하나님 여호와는 자비하신 하나님이심이라 그가 너를 버리지 아니하시며 너를 멸하지 아니하시며 네 열조에게 맹세하신 언약을 잊지 아니하시리라",
+      "source_text_hash": "9a181c12b45b90dccccd3384a0a62d6aad684999c6ccef709c2da1bd1658d5a2",
+      "translation_text_hash": "66027cb17d28632ed256a1f7b8f665ff4f8d641612d0223b173756648627835d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와는 자비하신 하나님이심이라 그가 너를 버리지 아니하시며 너를 멸하지 아니하시며 네 열조에게 맹세하신 언약을 잊지 아니하시리라"
+      ],
+      "raw_text_hashes": [
+        "66027cb17d28632ed256a1f7b8f665ff4f8d641612d0223b173756648627835d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:32",
+      "sequence": 5037,
+      "chapter_label": "DEU 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "For ask now of the days that are past, which were before you, since the day that God created man on the earth, and from the one end of the sky to the other, whether there has been anything as great as this thing is, or has been heard like it?",
+      "ko": "네가 있기 전 하나님이 사람을 세상에 창조하신 날부터 지금까지 지나간 날을 상고하여 보라 하늘 이 끝에서 저 끝까지 이런 큰 일이 있었느냐 이런 일을 들은 적이 있었느냐",
+      "source_text_hash": "9ea249c1d45efa733fdd92bf43b63d958c7225607fd21c3647a9066d6abc45f5",
+      "translation_text_hash": "27c991d4f61e549f4265febc2b142cf6b863507fb50245872b6276def05563b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 있기 전 하나님이 사람을 세상에 창조하신 날부터 지금까지 지나간 날을 상고하여 보라 하늘 이 끝에서 저 끝까지 이런 큰 일이 있었느냐 이런 일을 들은 적이 있었느냐"
+      ],
+      "raw_text_hashes": [
+        "27c991d4f61e549f4265febc2b142cf6b863507fb50245872b6276def05563b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:33",
+      "sequence": 5038,
+      "chapter_label": "DEU 4",
+      "verse_label": "33",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 33
+        }
+      ],
+      "en": "Did a people ever hear the voice of God speaking out of the middle of the fire, as you have heard, and live?",
+      "ko": "어떤 국민이 불 가운데서 말씀하시는 하나님의 음성을 너처럼 듣고 생존하였었느냐",
+      "source_text_hash": "1d2a5b9ac9ef41054039319767ab433d92e364c52d3d9ea8d053125e4d4f3236",
+      "translation_text_hash": "1045621eea7000d491811ff785c031d22f51c05dd868dc05ec8924add9bb4145",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 국민이 불 가운데서 말씀하시는 하나님의 음성을 너처럼 듣고 생존하였었느냐"
+      ],
+      "raw_text_hashes": [
+        "1045621eea7000d491811ff785c031d22f51c05dd868dc05ec8924add9bb4145"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:34",
+      "sequence": 5039,
+      "chapter_label": "DEU 4",
+      "verse_label": "34",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 34
+        }
+      ],
+      "en": "Or has God tried to go and take a nation for himself from among another nation, by trials, by signs, by wonders, by war, by a mighty hand, by an outstretched arm, and by great terrors, according to all that the LORD your God did for you in Egypt before your eyes?",
+      "ko": "어떤 신이 와서 시험과 이적과 기사와 전쟁과 강한 손과 편 팔과 크게 두려운 일로 한 민족을 다른 민족에게서 인도하여 낸 일이 있느냐 이는 다 너희 하나님 여호와께서 애굽에서 너희를 위하여 너희의 목전에서 행하신 일이라",
+      "source_text_hash": "52fa8ea9debb18d6c67b5853a084080e2c87c31415ba42b200c6da634a352516",
+      "translation_text_hash": "b1acd481e29de721eabc296b03269de59f296b3206bc0c56aad4a3d0081ea0a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 신이 와서 시험과 이적과 기사와 전쟁과 강한 손과 편 팔과 크게 두려운 일로 한 민족을 다른 민족에게서 인도하여 낸 일이 있느냐 이는 다 너희 하나님 여호와께서 애굽에서 너희를 위하여 너희의 목전에서 행하신 일이라"
+      ],
+      "raw_text_hashes": [
+        "b1acd481e29de721eabc296b03269de59f296b3206bc0c56aad4a3d0081ea0a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:35",
+      "sequence": 5040,
+      "chapter_label": "DEU 4",
+      "verse_label": "35",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 35
+        }
+      ],
+      "en": "It was shown to you so that you might know that the LORD is God. There is no one else besides him.",
+      "ko": "이것을 네게 나타내심은 여호와는 하나님이시요 그 외에는 다른 신이 없음을 네게 알게 하려 하심이니라",
+      "source_text_hash": "593aa8acb7be60d9e04c6cefae42b60a95586e48c6619bcfb88be069731287d6",
+      "translation_text_hash": "e792ac912ebc801d4b219f63fc324c83835389decc933e0aadfcdba617be7697",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것을 네게 나타내심은 여호와는 하나님이시요 그 외에는 다른 신이 없음을 네게 알게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "e792ac912ebc801d4b219f63fc324c83835389decc933e0aadfcdba617be7697"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:36",
+      "sequence": 5041,
+      "chapter_label": "DEU 4",
+      "verse_label": "36",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 36
+        }
+      ],
+      "en": "Out of heaven he made you to hear his voice, that he might instruct you. On earth he made you to see his great fire; and you heard his words out of the middle of the fire.",
+      "ko": "여호와께서 너를 교훈하시려고 하늘에서부터 그 음성을 너로 듣게 하시며 땅에서는 그 큰 불을 네게 보이시고 너로 불 가운데서 나오는 그 말씀을 듣게 하셨느니라",
+      "source_text_hash": "e934ef984e9316b5f620c210b1afe5c11a053966c36c3ec8e23bd779dc5ce853",
+      "translation_text_hash": "b4fbe7b19431f4a263f6b4da842d6d46afe4036fb46b46b47fcb89f374206758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너를 교훈하시려고 하늘에서부터 그 음성을 너로 듣게 하시며 땅에서는 그 큰 불을 네게 보이시고 너로 불 가운데서 나오는 그 말씀을 듣게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "b4fbe7b19431f4a263f6b4da842d6d46afe4036fb46b46b47fcb89f374206758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:37",
+      "sequence": 5042,
+      "chapter_label": "DEU 4",
+      "verse_label": "37",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 37
+        }
+      ],
+      "en": "Because he loved your fathers, therefore he chose their offspring after them, and brought you out with his presence, with his great power, out of Egypt;",
+      "ko": "여호와께서 네 열조를 사랑하신고로 그 후손 너를 택하시고 큰 권능으로 친히 인도하여 애굽에서 나오게 하시며",
+      "source_text_hash": "9d78e2ab4be4b2df2494fe90ff84d48749317ef8b2ee81de9a6d4d9781c0e29c",
+      "translation_text_hash": "ba2fddd7f1519978054f4c0caed560b085ccf6eab668b319c009e37eea1abb95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 네 열조를 사랑하신고로 그 후손 너를 택하시고 큰 권능으로 친히 인도하여 애굽에서 나오게 하시며"
+      ],
+      "raw_text_hashes": [
+        "ba2fddd7f1519978054f4c0caed560b085ccf6eab668b319c009e37eea1abb95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:38",
+      "sequence": 5043,
+      "chapter_label": "DEU 4",
+      "verse_label": "38",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 38
+        }
+      ],
+      "en": "to drive out nations from before you greater and mightier than you, to bring you in, to give you their land for an inheritance, as it is today.",
+      "ko": "너보다 강대한 열국을 네 앞에서 쫓아내고 너를 그들의 땅으로 인도하여 들여서 그것을 네게 기업으로 주려 하심이 오늘날과 같으니라",
+      "source_text_hash": "f822a2c8a9d02d54fdd6a6fedc14ad67ea642623d1051cce7e56a884c6d438a6",
+      "translation_text_hash": "4b1bfade008e0193984ff1a7f7247c49156a47747e60b27a20dcbea61db8714a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너보다 강대한 열국을 네 앞에서 쫓아내고 너를 그들의 땅으로 인도하여 들여서 그것을 네게 기업으로 주려 하심이 오늘날과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "4b1bfade008e0193984ff1a7f7247c49156a47747e60b27a20dcbea61db8714a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:39",
+      "sequence": 5044,
+      "chapter_label": "DEU 4",
+      "verse_label": "39",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 39
+        }
+      ],
+      "en": "Know therefore today, and take it to heart, that the LORD himself is God in heaven above and on the earth beneath. There is no one else.",
+      "ko": "그런즉 너는 오늘날 상천 하지에 오직 여호와는 하나님이시요 다른 신이 없는 줄을 알아 명심하고",
+      "source_text_hash": "37e5c55c6b7cf6b2ad9c85270026db9426b3161cf8ec3ef1fc9394ce30beefb2",
+      "translation_text_hash": "db5b417b5cebd3964edc6ee324be378b972c963a04b709f83e6122a3b4d0e49b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 오늘날 상천 하지에 오직 여호와는 하나님이시요 다른 신이 없는 줄을 알아 명심하고"
+      ],
+      "raw_text_hashes": [
+        "db5b417b5cebd3964edc6ee324be378b972c963a04b709f83e6122a3b4d0e49b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:40",
+      "sequence": 5045,
+      "chapter_label": "DEU 4",
+      "verse_label": "40",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 40
+        }
+      ],
+      "en": "You shall keep his statutes and his commandments which I command you today, that it may go well with you and with your children after you, and that you may prolong your days in the land which the LORD your God gives you for all time.",
+      "ko": "오늘 내가 네게 명하는 여호와의 규례와 명령을 지키라 너와 네 후손이 복을 받아 네 하나님 여호와께서 네게 주시는 땅에서 한 없이 오래 살리라",
+      "source_text_hash": "11b84c9299601636f8085ad56e889075eaa4979a0b19ac97dd13e1490db9fe32",
+      "translation_text_hash": "8ba4f11073d152fb10eac4d99e111ca7450156e16141c2892ee905eeb45e6181",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘 내가 네게 명하는 여호와의 규례와 명령을 지키라 너와 네 후손이 복을 받아 네 하나님 여호와께서 네게 주시는 땅에서 한 없이 오래 살리라"
+      ],
+      "raw_text_hashes": [
+        "8ba4f11073d152fb10eac4d99e111ca7450156e16141c2892ee905eeb45e6181"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:41",
+      "sequence": 5046,
+      "chapter_label": "DEU 4",
+      "verse_label": "41",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 41
+        }
+      ],
+      "en": "Then Moses set apart three cities beyond the Jordan toward the sunrise,",
+      "ko": "때에 모세가 요단 이편 해 돋는 편에서 세 성읍을 구별하였으니",
+      "source_text_hash": "51f4d4a57b33272447c57f302d072e5277803d34d0882e7b8f1c58dd08046c41",
+      "translation_text_hash": "525246600da5d03bcf1ae934364812f27b7527fb803a7af96770a2fd84c5cc3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 모세가 요단 이편 해 돋는 편에서 세 성읍을 구별하였으니"
+      ],
+      "raw_text_hashes": [
+        "525246600da5d03bcf1ae934364812f27b7527fb803a7af96770a2fd84c5cc3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:42",
+      "sequence": 5047,
+      "chapter_label": "DEU 4",
+      "verse_label": "42",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 42
+        }
+      ],
+      "en": "that the man slayer might flee there, who kills his neighbor unintentionally and didn’t hate him in time past, and that fleeing to one of these cities he might live:",
+      "ko": "이는 과거에 원혐이 없이 부지중에 오살한 자로 그곳으로 도피케 하기 위함이며 그 한 성읍으로 도피한 자로 그 생명을 보전케 하기 위함이라",
+      "source_text_hash": "176a9be58447a109718a9880772b26643097bb95342a9a4c311bb4c9b75a0515",
+      "translation_text_hash": "98d88170b7a6daa5531e6f8c2fd924fd37623a7fea807a7a5678360c57a2cfff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 과거에 원혐이 없이 부지중에 오살한 자로 그곳으로 도피케 하기 위함이며 그 한 성읍으로 도피한 자로 그 생명을 보전케 하기 위함이라"
+      ],
+      "raw_text_hashes": [
+        "98d88170b7a6daa5531e6f8c2fd924fd37623a7fea807a7a5678360c57a2cfff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:43",
+      "sequence": 5048,
+      "chapter_label": "DEU 4",
+      "verse_label": "43",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 43
+        }
+      ],
+      "en": "Bezer in the wilderness, in the plain country, for the Reubenites; and Ramoth in Gilead for the Gadites; and Golan in Bashan for the Manassites.",
+      "ko": "하나는 광야 평원에 있는 베셀이라 르우벤 지파를 위한 것이요 하나는 길르앗 라못이라 갓 지파를 위한 것이요 하나는 바산 골란이라 므낫세 지파를 위한 것이었더라",
+      "source_text_hash": "f50f561d4a6cd105059d6e68570c3d655f10b49a54b0d75a76c68851b53bcdb5",
+      "translation_text_hash": "20bd000cbfe638b480d0a613318249e95b59983eef76dc02a9d3a52c5bfb3e6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나는 광야 평원에 있는 베셀이라 르우벤 지파를 위한 것이요 하나는 길르앗 라못이라 갓 지파를 위한 것이요 하나는 바산 골란이라 므낫세 지파를 위한 것이었더라"
+      ],
+      "raw_text_hashes": [
+        "20bd000cbfe638b480d0a613318249e95b59983eef76dc02a9d3a52c5bfb3e6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:44",
+      "sequence": 5049,
+      "chapter_label": "DEU 4",
+      "verse_label": "44",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 44
+        }
+      ],
+      "en": "This is the law which Moses set before the children of Israel.",
+      "ko": "모세가 이스라엘 자손에게 선포한 율법이 이러하니라",
+      "source_text_hash": "ca076255b852766a6315752275eeb1e70a7d9e3f236b550b9f75a8356b596c9e",
+      "translation_text_hash": "73ab03fe819aa7394cde9315b460e2864a7f3e72cb180c3c77d1c79c29577f3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 자손에게 선포한 율법이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "73ab03fe819aa7394cde9315b460e2864a7f3e72cb180c3c77d1c79c29577f3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:45",
+      "sequence": 5050,
+      "chapter_label": "DEU 4",
+      "verse_label": "45",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 45
+        }
+      ],
+      "en": "These are the testimonies, and the statutes, and the ordinances which Moses spoke to the children of Israel when they came out of Egypt,",
+      "ko": "이스라엘 자손이 애굽에서 나온 후에 증거하신 것과 규례와 법도를 모세가 선포하였으니",
+      "source_text_hash": "9829359bebd082ca838b1bdc5e541438361898097e77b26be31505dbb646a19d",
+      "translation_text_hash": "d0ee6e30890fe6c434fa7c6da995babdce68f394ae6b7e9fcae6890b6c52733e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 애굽에서 나온 후에 증거하신 것과 규례와 법도를 모세가 선포하였으니"
+      ],
+      "raw_text_hashes": [
+        "d0ee6e30890fe6c434fa7c6da995babdce68f394ae6b7e9fcae6890b6c52733e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:46",
+      "sequence": 5051,
+      "chapter_label": "DEU 4",
+      "verse_label": "46",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 46
+        }
+      ],
+      "en": "beyond the Jordan, in the valley opposite Beth Peor, in the land of Sihon king of the Amorites, who lived at Heshbon, whom Moses and the children of Israel struck when they came out of Egypt.",
+      "ko": "요단 동편 벳브올 맞은편 골짜기에서라 이 땅은 헤스본에 거하는 아모리 족속의 왕 시혼에게 속하였더니 모세와 이스라엘 자손이 애굽에서 나온 후에 그를 쳐서 멸하고",
+      "source_text_hash": "96516e3f70fe95da77427ce95df2ec3b0130338dfce7902dee660ca040723c21",
+      "translation_text_hash": "5adf2fbeb03f8e37bd6f87d5521a01fff4203db64077cf706efa75af0574040d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요단 동편 벳브올 맞은편 골짜기에서라 이 땅은 헤스본에 거하는 아모리 족속의 왕 시혼에게 속하였더니 모세와 이스라엘 자손이 애굽에서 나온 후에 그를 쳐서 멸하고"
+      ],
+      "raw_text_hashes": [
+        "5adf2fbeb03f8e37bd6f87d5521a01fff4203db64077cf706efa75af0574040d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:47",
+      "sequence": 5052,
+      "chapter_label": "DEU 4",
+      "verse_label": "47",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 47
+        }
+      ],
+      "en": "They took possession of his land and the land of Og king of Bashan, the two kings of the Amorites, who were beyond the Jordan toward the sunrise;",
+      "ko": "그 땅을 기업으로 얻었고 또 바산 왕 옥의 땅을 얻었으니 그 두 사람은 아모리 족속의 왕으로서 요단 이편 해 돋는 편에 거하였었으며",
+      "source_text_hash": "407696297a754f3ec97e1ed395cc47b9f676c86154f012290aa1452e6d4d1625",
+      "translation_text_hash": "4bd4ff0dc0497a6246a2a5fe349417b9cc6bd350b2dd98797ab10be7f4733c8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅을 기업으로 얻었고 또 바산 왕 옥의 땅을 얻었으니 그 두 사람은 아모리 족속의 왕으로서 요단 이편 해 돋는 편에 거하였었으며"
+      ],
+      "raw_text_hashes": [
+        "4bd4ff0dc0497a6246a2a5fe349417b9cc6bd350b2dd98797ab10be7f4733c8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:48",
+      "sequence": 5053,
+      "chapter_label": "DEU 4",
+      "verse_label": "48",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 48
+        }
+      ],
+      "en": "from Aroer, which is on the edge of the valley of the Arnon, even to Mount Siyon (also called Hermon),",
+      "ko": "그 얻은 땅은 아르논 골짜기 가의 아로엘에서부터 시온산 곧 헤르몬산까지요",
+      "source_text_hash": "b816fb6641e433b13e77ff040d437042cacf9f4fdcd0eb5df38f989dc496c957",
+      "translation_text_hash": "9f268d2b3fbe01e0ef2e91ab71ae66346660f037eb69527457bcd8676a835c4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 얻은 땅은 아르논 골짜기 가의 아로엘에서부터 시온산 곧 헤르몬산까지요"
+      ],
+      "raw_text_hashes": [
+        "9f268d2b3fbe01e0ef2e91ab71ae66346660f037eb69527457bcd8676a835c4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:4:49",
+      "sequence": 5054,
+      "chapter_label": "DEU 4",
+      "verse_label": "49",
+      "locator": {
+        "book": "DEU",
+        "chapter": 4,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 4,
+          "verse": 49
+        }
+      ],
+      "en": "and all the Arabah beyond the Jordan eastward, even to the sea of the Arabah, under the slopes of Pisgah.",
+      "ko": "요단 이편 곧 그 동편 온 아라바니 비스가 산록 아래 아라바의 바다까지니라",
+      "source_text_hash": "918ece2aff1b43eb199a6ba7f806f2ead9a7185ad4e8b687f69242fdb4ba975e",
+      "translation_text_hash": "8f152edf6495119dabd1b74511ada0ee5c515983f12c83478dfb7d61e6b8444f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요단 이편 곧 그 동편 온 아라바니 비스가 산록 아래 아라바의 바다까지니라"
+      ],
+      "raw_text_hashes": [
+        "8f152edf6495119dabd1b74511ada0ee5c515983f12c83478dfb7d61e6b8444f"
+      ]
+    }
+  ]
+}

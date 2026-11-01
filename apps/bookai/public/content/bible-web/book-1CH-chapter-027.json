@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:027",
+  "unit_ordinal": 365,
+  "unit_label": "1CH 27",
+  "book_code": "1CH",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:27:1",
+      "sequence": 11111,
+      "chapter_label": "1CH 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "Now the children of Israel after their number, the heads of fathers’ households and the captains of thousands and of hundreds, and their officers who served the king in any matter of the divisions which came in and went out month by month throughout all the months of the year—of every division were twenty-four thousand.",
+      "ko": "이스라엘 자손의 모든 족장과 천부장과 백부장과 왕을 섬기는 유사들이 그 인수대로 반차가 나누이니 각 반열이 이만 사천명씩이라 일년 동안 달마다 체번하여 들어가며 나왔으니",
+      "source_text_hash": "fd30c9043cd2491652999b1dfbf8d07f7a252dab74683fcb5b880b040473b98c",
+      "translation_text_hash": "dc3b784a18015bd172dd5ad2596abe8d2e0369d3aa8985099716335b2f1fb099",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 모든 족장과 천부장과 백부장과 왕을 섬기는 유사들이 그 인수대로 반차가 나누이니 각 반열이 이만 사천명씩이라 일년 동안 달마다 체번하여 들어가며 나왔으니"
+      ],
+      "raw_text_hashes": [
+        "dc3b784a18015bd172dd5ad2596abe8d2e0369d3aa8985099716335b2f1fb099"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:2",
+      "sequence": 11112,
+      "chapter_label": "1CH 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "Over the first division for the first month was Jashobeam the son of Zabdiel. In his division were twenty-four thousand.",
+      "ko": "정월 첫반의 반장은 삽디엘의 아들 야소브암이요 그 반열에 이만 사천명이라",
+      "source_text_hash": "1f89a5aa3fb08b6f31674bc7d7d926584aa3aac91e30ce4ecefca6efde1c0bed",
+      "translation_text_hash": "682000c94a9d9a5cfa7e85bd53405f63948cb2709f81024664d0d68bf17b3c85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월 첫반의 반장은 삽디엘의 아들 야소브암이요 그 반열에 이만 사천명이라"
+      ],
+      "raw_text_hashes": [
+        "682000c94a9d9a5cfa7e85bd53405f63948cb2709f81024664d0d68bf17b3c85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:3",
+      "sequence": 11113,
+      "chapter_label": "1CH 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "He was of the children of Perez, the chief of all the captains of the army for the first month.",
+      "ko": "저는 베레스의 자손으로서 정월반의 모든 장관의 두목이 되었고",
+      "source_text_hash": "800c4aacfb319b31b91fdeda2e75a9bf487036818deaf21e1a2084ca39089c89",
+      "translation_text_hash": "08e79bcdcb360fda4d08a5b74f28ccdd4b888d2223d42ba5898cb1d0eb69ad09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 베레스의 자손으로서 정월반의 모든 장관의 두목이 되었고"
+      ],
+      "raw_text_hashes": [
+        "08e79bcdcb360fda4d08a5b74f28ccdd4b888d2223d42ba5898cb1d0eb69ad09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:4",
+      "sequence": 11114,
+      "chapter_label": "1CH 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "Over the division of the second month was Dodai the Ahohite and his division, and Mikloth the ruler; and in his division were twenty-four thousand.",
+      "ko": "이월반의 반장은 아호아 사람 도대요 또 미글롯이 그 반의 주장이 되었으니 그 반열에 이만 사천명이요",
+      "source_text_hash": "89bf40a33fef592c74723167766cb05919659a3defe791b8765053f50373ab4a",
+      "translation_text_hash": "48b62d72bc0b5408ccfd6e4079046564e33791914ff630ce165a5c6e816c12d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이월반의 반장은 아호아 사람 도대요 또 미글롯이 그 반의 주장이 되었으니 그 반열에 이만 사천명이요"
+      ],
+      "raw_text_hashes": [
+        "48b62d72bc0b5408ccfd6e4079046564e33791914ff630ce165a5c6e816c12d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:5",
+      "sequence": 11115,
+      "chapter_label": "1CH 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "The third captain of the army for the third month was Benaiah, the son of Jehoiada the chief priest. In his division were twenty-four thousand.",
+      "ko": "삼월 군대의 세째 장관은 대제사장 여호야다의 아들 브나야요 그 반열에 이만 사천명이라",
+      "source_text_hash": "b67907426507db361ea0f1a2c60f8faaba311f6d42478b4cc9a2fa96ce7bf745",
+      "translation_text_hash": "205050673b20d1f25dc10e22e91feaad0025af05495eaef8deb7c198ada5b3e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼월 군대의 세째 장관은 대제사장 여호야다의 아들 브나야요 그 반열에 이만 사천명이라"
+      ],
+      "raw_text_hashes": [
+        "205050673b20d1f25dc10e22e91feaad0025af05495eaef8deb7c198ada5b3e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:6",
+      "sequence": 11116,
+      "chapter_label": "1CH 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "This is that Benaiah who was the mighty man of the thirty and over the thirty. Of his division was Ammizabad his son.",
+      "ko": "이 브나야는 삼십인 중에 용사요 삼십인 위에 있으며 그 반열 중에 그 아들 암미사밧이 있으며",
+      "source_text_hash": "77e4e083d86436e9e83b21c67c982edc167c34562fe5b01ee32e5833f3d94e9d",
+      "translation_text_hash": "0be476f85ec16a9250ff42a243cae3342966bbb9aaf24c94313c241748f9f307",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 브나야는 삼십인 중에 용사요 삼십인 위에 있으며 그 반열 중에 그 아들 암미사밧이 있으며"
+      ],
+      "raw_text_hashes": [
+        "0be476f85ec16a9250ff42a243cae3342966bbb9aaf24c94313c241748f9f307"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:7",
+      "sequence": 11117,
+      "chapter_label": "1CH 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "The fourth captain for the fourth month was Asahel the brother of Joab, and Zebadiah his son after him. In his division were twenty-four thousand.",
+      "ko": "사월 네째 장관은 요압의 아우 아사헬이요 그 다음은 그 아들 스바댜니 그 반열에 이만 사천명이요",
+      "source_text_hash": "b86cc48678db3f9eaf9967364abe0a8241e504f16c622b4fde7234cd398c6528",
+      "translation_text_hash": "d8a517765c680da2fada459065ffc4239fd0119a36fbd6caaffb4dc3408245bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사월 네째 장관은 요압의 아우 아사헬이요 그 다음은 그 아들 스바댜니 그 반열에 이만 사천명이요"
+      ],
+      "raw_text_hashes": [
+        "d8a517765c680da2fada459065ffc4239fd0119a36fbd6caaffb4dc3408245bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:8",
+      "sequence": 11118,
+      "chapter_label": "1CH 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "The fifth captain for the fifth month was Shamhuth the Izrahite. In his division were twenty-four thousand.",
+      "ko": "오월 다섯째 장관은 이스라 사람 삼훗이니 그 반열에 이만 사천명이요",
+      "source_text_hash": "a9b51652165f026e70f4d46a6a022d5b2fdcece4e737c678817d4dccfca3f515",
+      "translation_text_hash": "c4fdb6e003767c0fc9c33de2b3b195a47fc0b10b0d631a4308234db8dc475b08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오월 다섯째 장관은 이스라 사람 삼훗이니 그 반열에 이만 사천명이요"
+      ],
+      "raw_text_hashes": [
+        "c4fdb6e003767c0fc9c33de2b3b195a47fc0b10b0d631a4308234db8dc475b08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:9",
+      "sequence": 11119,
+      "chapter_label": "1CH 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "The sixth captain for the sixth month was Ira the son of Ikkesh the Tekoite. In his division were twenty-four thousand.",
+      "ko": "유월 여섯째 장관은 드고아 사람 익게스의 아들 이라니 그 반열에 이만 사천명이요",
+      "source_text_hash": "17c3a0cdd8e5c91499537b179a8be2257aaa23fb15a342617b0aca933636c08f",
+      "translation_text_hash": "ac83362e52421294f25cf402f6b3fb539207cda2919863db2417fea65813db3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유월 여섯째 장관은 드고아 사람 익게스의 아들 이라니 그 반열에 이만 사천명이요"
+      ],
+      "raw_text_hashes": [
+        "ac83362e52421294f25cf402f6b3fb539207cda2919863db2417fea65813db3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:10",
+      "sequence": 11120,
+      "chapter_label": "1CH 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "The seventh captain for the seventh month was Helez the Pelonite, of the children of Ephraim. In his division were twenty-four thousand.",
+      "ko": "칠월 일곱째 장관은 에브라임 자손에 속한 발론 사람 헬레스니 그 반열에 이만 사천명이요",
+      "source_text_hash": "599043448e818c9d2ef137d2521ea615aea9346cfe04c6c1f94ea674b0774712",
+      "translation_text_hash": "9ff06592c1ce5fe76e1a93708f9f7b0fe3a61a4d31531d8bb06a67df25eb864d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠월 일곱째 장관은 에브라임 자손에 속한 발론 사람 헬레스니 그 반열에 이만 사천명이요"
+      ],
+      "raw_text_hashes": [
+        "9ff06592c1ce5fe76e1a93708f9f7b0fe3a61a4d31531d8bb06a67df25eb864d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:11",
+      "sequence": 11121,
+      "chapter_label": "1CH 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "The eighth captain for the eighth month was Sibbecai the Hushathite, of the Zerahites. In his division were twenty-four thousand.",
+      "ko": "팔월 여덟째 장관은 세라 족속 후사 사람 십브개니 그 반열에 이만 사천명이요",
+      "source_text_hash": "3a7b0043089e9ce9fd92d3f9359f7951433be2aae1d86e751e578195605f7cef",
+      "translation_text_hash": "f668fed87f70269798b7568dbcef299ca948429ad11d956270d0fc7cab804a14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "팔월 여덟째 장관은 세라 족속 후사 사람 십브개니 그 반열에 이만 사천명이요"
+      ],
+      "raw_text_hashes": [
+        "f668fed87f70269798b7568dbcef299ca948429ad11d956270d0fc7cab804a14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:12",
+      "sequence": 11122,
+      "chapter_label": "1CH 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "The ninth captain for the ninth month was Abiezer the Anathothite, of the Benjamites. In his division were twenty-four thousand.",
+      "ko": "구월 아홉째 장관은 베냐민 자손 아나돗 사람 아비에셀이니 그 반열에 이만 사천명이요",
+      "source_text_hash": "697040a01d0b3fc1f48a58f6da2e4b6cfe8541b5357e4af3741fe8117820f43e",
+      "translation_text_hash": "e869db8223677a272960d93606055a5cd5d037c0f4be3a411b9d1ae5552821be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구월 아홉째 장관은 베냐민 자손 아나돗 사람 아비에셀이니 그 반열에 이만 사천명이요"
+      ],
+      "raw_text_hashes": [
+        "e869db8223677a272960d93606055a5cd5d037c0f4be3a411b9d1ae5552821be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:13",
+      "sequence": 11123,
+      "chapter_label": "1CH 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "The tenth captain for the tenth month was Maharai the Netophathite, of the Zerahites. In his division were twenty-four thousand.",
+      "ko": "시월 열째 장관은 세라 족속 느도바 사람 마하래니 그 반열에 이만 사천명이요",
+      "source_text_hash": "a2525cc01bb1fbb4cf9f362f3c065608927444b49f632e15f37fea8bf7b18a78",
+      "translation_text_hash": "347f1d711a5e971c3904cf6b4d8248d14ec246bec536b19fc44ebf94a9294b26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시월 열째 장관은 세라 족속 느도바 사람 마하래니 그 반열에 이만 사천명이요"
+      ],
+      "raw_text_hashes": [
+        "347f1d711a5e971c3904cf6b4d8248d14ec246bec536b19fc44ebf94a9294b26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:14",
+      "sequence": 11124,
+      "chapter_label": "1CH 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "The eleventh captain for the eleventh month was Benaiah the Pirathonite, of the children of Ephraim. In his division were twenty-four thousand.",
+      "ko": "십일월 열 한째 장관은 에브라임 자손에 속한 비라돈 사람 브나야니 그 반열에 이만 사천명이요",
+      "source_text_hash": "4ba103d9975e98a7ce9ec0d9179ff1651c4faf66cfa01ab7482c3b3270063a82",
+      "translation_text_hash": "98e2885f2f7f4c11e4cc178e94f277038ce6218ab018db9a3306a97fc4997ceb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십일월 열 한째 장관은 에브라임 자손에 속한 비라돈 사람 브나야니 그 반열에 이만 사천명이요"
+      ],
+      "raw_text_hashes": [
+        "98e2885f2f7f4c11e4cc178e94f277038ce6218ab018db9a3306a97fc4997ceb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:15",
+      "sequence": 11125,
+      "chapter_label": "1CH 27",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 15
+        }
+      ],
+      "en": "The twelfth captain for the twelfth month was Heldai the Netophathite, of Othniel. In his division were twenty-four thousand.",
+      "ko": "십이월 열 둘째 장관은 옷니엘 자손에 속한 느도바 사람 헬대니 그 반열에 이만 사천명이었더라",
+      "source_text_hash": "565d82d384a7a73f3d9f6145a7f52ee72ba5b624c9fe72bd3dbf00df238aeb8f",
+      "translation_text_hash": "16b68c89de1128f5318519b0d78c02c17021c8f90ce868c474c43cdeeda41a16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십이월 열 둘째 장관은 옷니엘 자손에 속한 느도바 사람 헬대니 그 반열에 이만 사천명이었더라"
+      ],
+      "raw_text_hashes": [
+        "16b68c89de1128f5318519b0d78c02c17021c8f90ce868c474c43cdeeda41a16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:16",
+      "sequence": 11126,
+      "chapter_label": "1CH 27",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 16
+        }
+      ],
+      "en": "Furthermore over the tribes of Israel: of the Reubenites, Eliezer the son of Zichri was the ruler; of the Simeonites, Shephatiah the son of Maacah;",
+      "ko": "이스라엘 지파를 관할하는 자는 이러하니라 르우벤 사람의 관장은 시그리의 아들 엘리에셀이요 시므온 사람의 관장은 마아가의 아들 스바댜요",
+      "source_text_hash": "2808d37ba2f1c519280b58da32f2116f1f92d9984cd4bbcf71cd245bd0500c9a",
+      "translation_text_hash": "5b6a5abc32e454357af4975453b7039bd4a358b27ff5eac818aabff6aa4e6d9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 지파를 관할하는 자는 이러하니라 르우벤 사람의 관장은 시그리의 아들 엘리에셀이요 시므온 사람의 관장은 마아가의 아들 스바댜요"
+      ],
+      "raw_text_hashes": [
+        "5b6a5abc32e454357af4975453b7039bd4a358b27ff5eac818aabff6aa4e6d9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:17",
+      "sequence": 11127,
+      "chapter_label": "1CH 27",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 17
+        }
+      ],
+      "en": "of Levi, Hashabiah the son of Kemuel; of Aaron, Zadok;",
+      "ko": "레위 사람의 관장은 그무엘의 아들 하사뱌요 아론 자손의 관장은 사독이요",
+      "source_text_hash": "c4fe368bf84d3ce49b0b3a4afe2e35543494be177cc2b395dbbe59a744e2bf6f",
+      "translation_text_hash": "225301bcded91701b5dd12d8f7e2ea93fcd411ff68af657f0d496d48a2b64bb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람의 관장은 그무엘의 아들 하사뱌요 아론 자손의 관장은 사독이요"
+      ],
+      "raw_text_hashes": [
+        "225301bcded91701b5dd12d8f7e2ea93fcd411ff68af657f0d496d48a2b64bb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:18",
+      "sequence": 11128,
+      "chapter_label": "1CH 27",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 18
+        }
+      ],
+      "en": "of Judah, Elihu, one of the brothers of David; of Issachar, Omri the son of Michael;",
+      "ko": "유다의 관장은 다윗의 형 엘리후요 잇사갈의 관장은 미가엘의 아들 오므리요",
+      "source_text_hash": "0b924afca9931dc4ebb7ac05f24cf5352957434def2be1716782b5d008a6f382",
+      "translation_text_hash": "b2c164150ac4a67c8f23c2ee3efbbc987cd195a72379ec2373458c506cae712a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 관장은 다윗의 형 엘리후요 잇사갈의 관장은 미가엘의 아들 오므리요"
+      ],
+      "raw_text_hashes": [
+        "b2c164150ac4a67c8f23c2ee3efbbc987cd195a72379ec2373458c506cae712a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:19",
+      "sequence": 11129,
+      "chapter_label": "1CH 27",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 19
+        }
+      ],
+      "en": "of Zebulun, Ishmaiah the son of Obadiah; of Naphtali, Jeremoth the son of Azriel;",
+      "ko": "스불론의 관장은 오바댜의 아들 이스마야요 납달리의 관장은 아스리엘의 아들 여레못이요",
+      "source_text_hash": "6d5db523c06c51a157a4ba7123406ef3b5b12bdaef8b72a5083f9c856a48ff08",
+      "translation_text_hash": "842d5e929ff4ffab7f21afa34ddfae7780af9340dcc55bac37a7b28cd5b8a78e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론의 관장은 오바댜의 아들 이스마야요 납달리의 관장은 아스리엘의 아들 여레못이요"
+      ],
+      "raw_text_hashes": [
+        "842d5e929ff4ffab7f21afa34ddfae7780af9340dcc55bac37a7b28cd5b8a78e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:20",
+      "sequence": 11130,
+      "chapter_label": "1CH 27",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 20
+        }
+      ],
+      "en": "of the children of Ephraim, Hoshea the son of Azaziah; of the half-tribe of Manasseh, Joel the son of Pedaiah;",
+      "ko": "에브라임 자손의 관장은 아사시야의 아들 호세아요 므낫세 반 지파의 관장은 브다야의 아들 요엘이요",
+      "source_text_hash": "77aaf285cab15e5baa26205565c7c4434120b802c1cc179bb41aea3d734062e6",
+      "translation_text_hash": "a55b9d7a6063f59f355c89e0263eda44074debd14ebd2fd737afd7b224984085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 자손의 관장은 아사시야의 아들 호세아요 므낫세 반 지파의 관장은 브다야의 아들 요엘이요"
+      ],
+      "raw_text_hashes": [
+        "a55b9d7a6063f59f355c89e0263eda44074debd14ebd2fd737afd7b224984085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:21",
+      "sequence": 11131,
+      "chapter_label": "1CH 27",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 21
+        }
+      ],
+      "en": "of the half-tribe of Manasseh in Gilead, Iddo the son of Zechariah; of Benjamin, Jaasiel the son of Abner;",
+      "ko": "길르앗에 있는 므낫세 반 지파의 관장은 스가랴의 아들 잇도요 베냐민의 관장은 아브넬의 아들 야아시엘이요",
+      "source_text_hash": "cccda50a2701cce17d8b45bb0d4a1d2291cb7bc6767566448e166297e385ab76",
+      "translation_text_hash": "ab51da1b0b89d8cfe0a04b0a5364fa1e942b621b8f4a29e368def3b4881f142b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗에 있는 므낫세 반 지파의 관장은 스가랴의 아들 잇도요 베냐민의 관장은 아브넬의 아들 야아시엘이요"
+      ],
+      "raw_text_hashes": [
+        "ab51da1b0b89d8cfe0a04b0a5364fa1e942b621b8f4a29e368def3b4881f142b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:22",
+      "sequence": 11132,
+      "chapter_label": "1CH 27",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 22
+        }
+      ],
+      "en": "of Dan, Azarel the son of Jeroham. These were the captains of the tribes of Israel.",
+      "ko": "단의 관장은 여로함의 아들 아사렐이니 이스라엘 지파의 관장이 이러하며",
+      "source_text_hash": "8c90cc5542fdda5a21742a93ecd48263118de0496628057989c1a75a1d2161af",
+      "translation_text_hash": "1982fbf34bc7c7f3b41e7b02477a35b9e42466f0c37e6e0441beb4c42283cfa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단의 관장은 여로함의 아들 아사렐이니 이스라엘 지파의 관장이 이러하며"
+      ],
+      "raw_text_hashes": [
+        "1982fbf34bc7c7f3b41e7b02477a35b9e42466f0c37e6e0441beb4c42283cfa0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:23",
+      "sequence": 11133,
+      "chapter_label": "1CH 27",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 23
+        }
+      ],
+      "en": "But David didn’t take the number of them from twenty years old and under, because the LORD had said he would increase Israel like the stars of the sky.",
+      "ko": "이스라엘 사람의 이십세 이하의 수효는 다윗이 조사하지 아니하였으니 이는 여호와께서 전에 말씀하시기를 이스라엘 사람을 하늘의 별 같이 많게 하리라 하셨음이라",
+      "source_text_hash": "16a06996db2aa72264236b0e3ce3babe448ad0c9a6cfa6bb17390a8505589eac",
+      "translation_text_hash": "65670e1514457f7202a6341cc30620c3b2bc63900de02054a9026b88f0c7decc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람의 이십세 이하의 수효는 다윗이 조사하지 아니하였으니 이는 여호와께서 전에 말씀하시기를 이스라엘 사람을 하늘의 별 같이 많게 하리라 하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "65670e1514457f7202a6341cc30620c3b2bc63900de02054a9026b88f0c7decc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:24",
+      "sequence": 11134,
+      "chapter_label": "1CH 27",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 24
+        }
+      ],
+      "en": "Joab the son of Zeruiah began to take a census, but didn’t finish; and wrath came on Israel for this. The number wasn’t put into the account in the chronicles of King David.",
+      "ko": "스루야의 아들 요압이 조사하기를 시작하고 끝내지 못하여서 그 일로 인하여 진노가 이스라엘에게 임한지라 그 수효를 다윗왕의 역대지략에 기록하지 아니하였더라",
+      "source_text_hash": "e97bfc32c7ab8238129e711937e1cbf5c823d0d82902fd4aa16598fc7f415fcf",
+      "translation_text_hash": "751dc5873525cc8aa291931a021e426acae16911f35d5b80d0d95e97676ac035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스루야의 아들 요압이 조사하기를 시작하고 끝내지 못하여서 그 일로 인하여 진노가 이스라엘에게 임한지라 그 수효를 다윗왕의 역대지략에 기록하지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "751dc5873525cc8aa291931a021e426acae16911f35d5b80d0d95e97676ac035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:25",
+      "sequence": 11135,
+      "chapter_label": "1CH 27",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 25
+        }
+      ],
+      "en": "Over the king’s treasures was Azmaveth the son of Adiel. Over the treasures in the fields, in the cities, in the villages, and in the towers was Jonathan the son of Uzziah;",
+      "ko": "아디엘의 아들 아스마웻은 왕의 곳간을 맡았고 웃시야의 아들 요나단은 밭과 성읍과 촌과 산성의 곳간을 맡았고",
+      "source_text_hash": "0e7a1660e322a5253e31bd26fedc296ff2fb1e0f7292605f812fece379240026",
+      "translation_text_hash": "de6eaca680d6d55764a24a6f6127e1f5a3a5adc07813f42f7e08ed63e3c589fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아디엘의 아들 아스마웻은 왕의 곳간을 맡았고 웃시야의 아들 요나단은 밭과 성읍과 촌과 산성의 곳간을 맡았고"
+      ],
+      "raw_text_hashes": [
+        "de6eaca680d6d55764a24a6f6127e1f5a3a5adc07813f42f7e08ed63e3c589fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:26",
+      "sequence": 11136,
+      "chapter_label": "1CH 27",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 26
+        }
+      ],
+      "en": "Over those who did the work of the field for tillage of the ground was Ezri the son of Chelub.",
+      "ko": "글룹의 아들 에스리는 밭가는 농부를 거느렸고",
+      "source_text_hash": "634c0657864279ae15870d0f0f1944a2829488986512c96a4dc68dff5bca3ce0",
+      "translation_text_hash": "d242c818bc949e00b4c50e8710876e1a7ec23c494b8e6c69627ecb2df0c3c70b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "글룹의 아들 에스리는 밭가는 농부를 거느렸고"
+      ],
+      "raw_text_hashes": [
+        "d242c818bc949e00b4c50e8710876e1a7ec23c494b8e6c69627ecb2df0c3c70b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:27",
+      "sequence": 11137,
+      "chapter_label": "1CH 27",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 27
+        }
+      ],
+      "en": "Over the vineyards was Shimei the Ramathite. Over the increase of the vineyards for the wine cellars was Zabdi the Shiphmite.",
+      "ko": "라마 사람 시므이는 포도원을 맡았고 스밤 사람 삽디는 포도원의 소산 포도주 곳간을 맡았고",
+      "source_text_hash": "7ef8d4dc56b770c7a48ae53ff6795e7ccdf1d3aafba818e123083b4a81935ca4",
+      "translation_text_hash": "dc8300e598fbba40d3e0b6d4ef6dcfae9b48f41ef99f14188218481f89bcd7fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라마 사람 시므이는 포도원을 맡았고 스밤 사람 삽디는 포도원의 소산 포도주 곳간을 맡았고"
+      ],
+      "raw_text_hashes": [
+        "dc8300e598fbba40d3e0b6d4ef6dcfae9b48f41ef99f14188218481f89bcd7fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:28",
+      "sequence": 11138,
+      "chapter_label": "1CH 27",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 28
+        }
+      ],
+      "en": "Over the olive trees and the sycamore trees that were in the lowland was Baal Hanan the Gederite. Over the cellars of oil was Joash.",
+      "ko": "게델 사람 바알하난은 평야의 감람나무와 뽕나무를 맡았고 요아스는 기름 곳간을 맡았고",
+      "source_text_hash": "11af33e3d5f0848bd5b5fcd149698da99b2b8845a711cabfc858954a69ee15e4",
+      "translation_text_hash": "622246b1a3ab1774f42bd3f845023d836a19492bb7dea9b1e8dc890a6e0c5e44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게델 사람 바알하난은 평야의 감람나무와 뽕나무를 맡았고 요아스는 기름 곳간을 맡았고"
+      ],
+      "raw_text_hashes": [
+        "622246b1a3ab1774f42bd3f845023d836a19492bb7dea9b1e8dc890a6e0c5e44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:29",
+      "sequence": 11139,
+      "chapter_label": "1CH 27",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 29
+        }
+      ],
+      "en": "Over the herds that fed in Sharon was Shitrai the Sharonite. Over the herds that were in the valleys was Shaphat the son of Adlai.",
+      "ko": "사론 사람 시드래는 사론에서 먹이는 소떼를 맡았고 아들래의 아들 사밧은 골짜기에 있는 소떼를 맡았고",
+      "source_text_hash": "d87a161c180cb58b24787178b5ddc3dd4f56e47ff9f17ae15419cbb4cd4102dc",
+      "translation_text_hash": "6f01afaf761a6d428e2f80ebd17b3e125d597f28f5118003a5c052c2d14a02b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사론 사람 시드래는 사론에서 먹이는 소떼를 맡았고 아들래의 아들 사밧은 골짜기에 있는 소떼를 맡았고"
+      ],
+      "raw_text_hashes": [
+        "6f01afaf761a6d428e2f80ebd17b3e125d597f28f5118003a5c052c2d14a02b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:30",
+      "sequence": 11140,
+      "chapter_label": "1CH 27",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 30
+        }
+      ],
+      "en": "Over the camels was Obil the Ishmaelite. Over the donkeys was Jehdeiah the Meronothite. Over the flocks was Jaziz the Hagrite.",
+      "ko": "이스마엘 사람 오빌은 약대를 맡았고 메로놋 사람 예드야는 나귀를 맡았고 하갈 사람 야시스는 양떼를 맡았으니",
+      "source_text_hash": "5be88ded012c2955ad2a8e491b0e65754be34f3a1b5fca94112aae5471344728",
+      "translation_text_hash": "c4726959eaa7e27b8616abf94d4ee3252e7de522c5c83dd75e4a97ae20af6992",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스마엘 사람 오빌은 약대를 맡았고 메로놋 사람 예드야는 나귀를 맡았고 하갈 사람 야시스는 양떼를 맡았으니"
+      ],
+      "raw_text_hashes": [
+        "c4726959eaa7e27b8616abf94d4ee3252e7de522c5c83dd75e4a97ae20af6992"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:31",
+      "sequence": 11141,
+      "chapter_label": "1CH 27",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 31
+        }
+      ],
+      "en": "All these were the rulers of the property which was King David’s.",
+      "ko": "다윗왕의 재산을 맡은 자들이 이러하였더라",
+      "source_text_hash": "40cf74f5aa2591c1420a4f69f48b412fbe51067538e3bfa1bc169ddb6d0c6719",
+      "translation_text_hash": "e763c6742b2f64a52a49c2bee7f8d055e34cff05586c1d4f714b72f9fc342525",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗왕의 재산을 맡은 자들이 이러하였더라"
+      ],
+      "raw_text_hashes": [
+        "e763c6742b2f64a52a49c2bee7f8d055e34cff05586c1d4f714b72f9fc342525"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:32",
+      "sequence": 11142,
+      "chapter_label": "1CH 27",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 32
+        }
+      ],
+      "en": "Also Jonathan, David’s uncle, was a counselor, a man of understanding, and a scribe. Jehiel the son of Hachmoni was with the king’s sons.",
+      "ko": "다윗의 아자비 요나단은 지혜가 있어서 모사가 되며 서기관도 되었고 학모니의 아들 여히엘은 왕의 아들들의 배종이 되었고",
+      "source_text_hash": "18be2c6aed2b0a595abc5c22625ba52f87d275efe44a5edf8553bd31e3bd3829",
+      "translation_text_hash": "2232b6ae843f31b0cb9c27bf66f2e13ceecd41f5449b6bc085deb84303a1e708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 아자비 요나단은 지혜가 있어서 모사가 되며 서기관도 되었고 학모니의 아들 여히엘은 왕의 아들들의 배종이 되었고"
+      ],
+      "raw_text_hashes": [
+        "2232b6ae843f31b0cb9c27bf66f2e13ceecd41f5449b6bc085deb84303a1e708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:33",
+      "sequence": 11143,
+      "chapter_label": "1CH 27",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 33
+        }
+      ],
+      "en": "Ahithophel was the king’s counselor. Hushai the Archite was the king’s friend.",
+      "ko": "아히도벨은 왕의 모사가 되었고 아렉 사람 후새는 왕의 벗이 되었고",
+      "source_text_hash": "25eaf98404efa79ccea1c9e628f8770c9767a8a99e4a9f7906f8c76a595a5fbf",
+      "translation_text_hash": "575133fbaeb92c353e05b6d5e56ea34297024bb817e0b3b893021b7aee43f247",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히도벨은 왕의 모사가 되었고 아렉 사람 후새는 왕의 벗이 되었고"
+      ],
+      "raw_text_hashes": [
+        "575133fbaeb92c353e05b6d5e56ea34297024bb817e0b3b893021b7aee43f247"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:27:34",
+      "sequence": 11144,
+      "chapter_label": "1CH 27",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CH",
+        "chapter": 27,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 27,
+          "verse": 34
+        }
+      ],
+      "en": "After Ahithophel was Jehoiada the son of Benaiah, and Abiathar. Joab was the captain of the king’s army.",
+      "ko": "브나야의 아들 여호야다와 아비아달은 아히도벨의 다음이 되었고 요압은 왕의 군대 장관이 되었더라",
+      "source_text_hash": "a93398c465c15c2b13cf19c70a901792af9279aec3a4454431c5414945ea3861",
+      "translation_text_hash": "ad7aef66c7b19a504230a926189f78ab97e9a01292b10e42a294fde6c6f185d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브나야의 아들 여호야다와 아비아달은 아히도벨의 다음이 되었고 요압은 왕의 군대 장관이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "ad7aef66c7b19a504230a926189f78ab97e9a01292b10e42a294fde6c6f185d2"
+      ]
+    }
+  ]
+}

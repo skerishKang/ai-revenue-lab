@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:001",
+  "unit_ordinal": 1,
+  "unit_label": "GEN 1",
+  "book_code": "GEN",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:1:1",
+      "sequence": 1,
+      "chapter_label": "GEN 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "In the beginning, God created the heavens and the earth.",
+      "ko": "태초에 하나님이 천지를 창조하시니라",
+      "source_text_hash": "e1e1f5e1738c9f78a106da32b1b203168c41b74d4a4f8d3e0ef4d1f7759ea766",
+      "translation_text_hash": "d80eb2daccbe92a2375c91a3bdd866400cf1d01fc7fa374fbdb83666bbd69444",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "태초에 하나님이 천지를 창조하시니라"
+      ],
+      "raw_text_hashes": [
+        "d80eb2daccbe92a2375c91a3bdd866400cf1d01fc7fa374fbdb83666bbd69444"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:2",
+      "sequence": 2,
+      "chapter_label": "GEN 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "The earth was formless and empty. Darkness was on the surface of the deep and God’s Spirit was hovering over the surface of the waters.",
+      "ko": "땅이 혼돈하고 공허하며 흑암이 깊음 위에 있고 하나님의 신은 수면에 운행하시니라",
+      "source_text_hash": "9d91d29443beddc745b58a90073f1a3a72a256fb74589ed13227eaed540642e7",
+      "translation_text_hash": "35a5d7fa4e866c4a4f5b8e039ac7d5eb7c74bcff60520e1152da052246f75df1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 혼돈하고 공허하며 흑암이 깊음 위에 있고 하나님의 신은 수면에 운행하시니라"
+      ],
+      "raw_text_hashes": [
+        "35a5d7fa4e866c4a4f5b8e039ac7d5eb7c74bcff60520e1152da052246f75df1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:3",
+      "sequence": 3,
+      "chapter_label": "GEN 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "God said, “Let there be light,” and there was light.",
+      "ko": "하나님이 가라사대 빛이 있으라 하시매 빛이 있었고",
+      "source_text_hash": "cb4a1430431bea285e7b033d04f804b09c7668deadba586d3626b0683ad7441c",
+      "translation_text_hash": "8ae8d6523f39d9503f39615eb946d9107ee540d9ab6f223990a4193014454fd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 빛이 있으라 하시매 빛이 있었고"
+      ],
+      "raw_text_hashes": [
+        "8ae8d6523f39d9503f39615eb946d9107ee540d9ab6f223990a4193014454fd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:4",
+      "sequence": 4,
+      "chapter_label": "GEN 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "God saw the light, and saw that it was good. God divided the light from the darkness.",
+      "ko": "그 빛이 하나님의 보시기에 좋았더라 하나님이 빛과 어두움을 나누사",
+      "source_text_hash": "3c41138c7007002504deb57c0b6eb993af328252c61ee2fd39937123e1be71f6",
+      "translation_text_hash": "3ce3a39463975cba499b3db7dd086b5511049bb935ae43daaadcde7046561c45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 빛이 하나님의 보시기에 좋았더라 하나님이 빛과 어두움을 나누사"
+      ],
+      "raw_text_hashes": [
+        "3ce3a39463975cba499b3db7dd086b5511049bb935ae43daaadcde7046561c45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:5",
+      "sequence": 5,
+      "chapter_label": "GEN 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "God called the light “day”, and the darkness he called “night”. There was evening and there was morning, the first day.",
+      "ko": "빛을 낮이라 칭하시고 어두움을 밤이라 칭하시니라 저녁이 되며 아침이 되니 이는 첫째 날이니라",
+      "source_text_hash": "0dce18f172a1a967fd2892300f6e619c8c25fb12e77ad233243170498c5aa9aa",
+      "translation_text_hash": "489f92d655b9cfd8230194f8d1c85e35a85c9cd2a7affe247949062f3a809f43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빛을 낮이라 칭하시고 어두움을 밤이라 칭하시니라 저녁이 되며 아침이 되니 이는 첫째 날이니라"
+      ],
+      "raw_text_hashes": [
+        "489f92d655b9cfd8230194f8d1c85e35a85c9cd2a7affe247949062f3a809f43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:6",
+      "sequence": 6,
+      "chapter_label": "GEN 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "God said, “Let there be an expanse in the middle of the waters, and let it divide the waters from the waters.”",
+      "ko": "하나님이 가라사대 물 가운데 궁창이 있어 물과 물로 나뉘게 하리라 하시고",
+      "source_text_hash": "1a09781f4a36790638ee0ccccf97702e940d4c62599a829f8624d1c4267cc444",
+      "translation_text_hash": "ad67a256b5feac3f7166d24d8d2cdd9ce8262b8d416f1d9673c20c60d569cf5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 물 가운데 궁창이 있어 물과 물로 나뉘게 하리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "ad67a256b5feac3f7166d24d8d2cdd9ce8262b8d416f1d9673c20c60d569cf5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:7",
+      "sequence": 7,
+      "chapter_label": "GEN 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "God made the expanse, and divided the waters which were under the expanse from the waters which were above the expanse; and it was so.",
+      "ko": "하나님이 궁창을 만드사 궁창 아래의 물과 궁창 위의 물로 나뉘게 하시매 그대로 되니라",
+      "source_text_hash": "d4c4e54ff5126daefa9e922e47d2e28a571affaa99f8dccf90b4d16658ae1370",
+      "translation_text_hash": "775493a6c513023e51e0e7eac2a9ac5972242b14e900b8604485c150b88fc073",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 궁창을 만드사 궁창 아래의 물과 궁창 위의 물로 나뉘게 하시매 그대로 되니라"
+      ],
+      "raw_text_hashes": [
+        "775493a6c513023e51e0e7eac2a9ac5972242b14e900b8604485c150b88fc073"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:8",
+      "sequence": 8,
+      "chapter_label": "GEN 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "God called the expanse “sky”. There was evening and there was morning, a second day.",
+      "ko": "하나님이 궁창을 하늘이라 칭하시니라 저녁이 되며 아침이 되니 이는 둘째 날이니라",
+      "source_text_hash": "17d461567661ae09dec4ccd27051147422a9d54964622b2b273c2e6001175fcc",
+      "translation_text_hash": "74bbe4410b052439de90ee7524ea5375d2a8be055c709ee03475b860910c56e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 궁창을 하늘이라 칭하시니라 저녁이 되며 아침이 되니 이는 둘째 날이니라"
+      ],
+      "raw_text_hashes": [
+        "74bbe4410b052439de90ee7524ea5375d2a8be055c709ee03475b860910c56e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:9",
+      "sequence": 9,
+      "chapter_label": "GEN 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "God said, “Let the waters under the sky be gathered together to one place, and let the dry land appear;” and it was so.",
+      "ko": "하나님이 가라사대 천하의 물이 한곳으로 모이고 뭍이 드러나라 하시매 그대로 되니라",
+      "source_text_hash": "e16388ee6b4f40f740649e00fc6bc63cb96c284bc67039e5be4e9f7230ee6f9d",
+      "translation_text_hash": "501409009f8035204b4a3f3a098e90187ef9b0c251441a1a8eba000a4290fa63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 천하의 물이 한곳으로 모이고 뭍이 드러나라 하시매 그대로 되니라"
+      ],
+      "raw_text_hashes": [
+        "501409009f8035204b4a3f3a098e90187ef9b0c251441a1a8eba000a4290fa63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:10",
+      "sequence": 10,
+      "chapter_label": "GEN 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "God called the dry land “earth”, and the gathering together of the waters he called “seas”. God saw that it was good.",
+      "ko": "하나님이 뭍을 땅이라 칭하시고 모인 물을 바다라 칭하시니라 하나님의 보시기에 좋았더라",
+      "source_text_hash": "ee8b26c604c3b462226eeea8a648106f7cb7d3ee7f9d06260b21010af7aa5aef",
+      "translation_text_hash": "05056c070943cfd920a279eda22c5470288219fe1547f903e4e8e8becf1e50ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 뭍을 땅이라 칭하시고 모인 물을 바다라 칭하시니라 하나님의 보시기에 좋았더라"
+      ],
+      "raw_text_hashes": [
+        "05056c070943cfd920a279eda22c5470288219fe1547f903e4e8e8becf1e50ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:11",
+      "sequence": 11,
+      "chapter_label": "GEN 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "God said, “Let the earth yield grass, herbs yielding seeds, and fruit trees bearing fruit after their kind, with their seeds in it, on the earth;” and it was so.",
+      "ko": "하나님이 가라사대 땅은 풀과 씨 맺는 채소와 각기 종류대로 씨 가진 열매 맺는 과목을 내라 하시매 그대로 되어",
+      "source_text_hash": "fd63ed83beab088fbc4a39926f29f2e5b7b0bee2163da93e7b5ff6678deb20d3",
+      "translation_text_hash": "b602e0f636b3df0207c4cbf36fc95dbbf2c94e82b18c154aa1a6a211bc8d25e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 땅은 풀과 씨 맺는 채소와 각기 종류대로 씨 가진 열매 맺는 과목을 내라 하시매 그대로 되어"
+      ],
+      "raw_text_hashes": [
+        "b602e0f636b3df0207c4cbf36fc95dbbf2c94e82b18c154aa1a6a211bc8d25e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:12",
+      "sequence": 12,
+      "chapter_label": "GEN 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "The earth yielded grass, herbs yielding seed after their kind, and trees bearing fruit, with their seeds in it, after their kind; and God saw that it was good.",
+      "ko": "땅이 풀과 각기 종류대로 씨 맺는 채소와 각기 종류대로 씨 가진 열매 맺는 나무를 내니 하나님의 보시기에 좋았더라",
+      "source_text_hash": "f12ab3db5d82e47379e7e01dd2fc5e565bd57be8cf511642a1986e4fa3d19819",
+      "translation_text_hash": "d3097220031c774c611a8a644b40111914224c78370a9413e9b692467c13637f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 풀과 각기 종류대로 씨 맺는 채소와 각기 종류대로 씨 가진 열매 맺는 나무를 내니 하나님의 보시기에 좋았더라"
+      ],
+      "raw_text_hashes": [
+        "d3097220031c774c611a8a644b40111914224c78370a9413e9b692467c13637f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:13",
+      "sequence": 13,
+      "chapter_label": "GEN 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "There was evening and there was morning, a third day.",
+      "ko": "저녁이 되며 아침이 되니 이는 세째 날이니라",
+      "source_text_hash": "8b620e78609124414fdd8a82a353f68faab4001e542a456b7787df2b1a6aee4c",
+      "translation_text_hash": "785dac7b8ea3b237cc275bf86324316af616890e850e62bed7c16c0f24af4611",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁이 되며 아침이 되니 이는 세째 날이니라"
+      ],
+      "raw_text_hashes": [
+        "785dac7b8ea3b237cc275bf86324316af616890e850e62bed7c16c0f24af4611"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:14",
+      "sequence": 14,
+      "chapter_label": "GEN 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "God said, “Let there be lights in the expanse of the sky to divide the day from the night; and let them be for signs to mark seasons, days, and years;",
+      "ko": "하나님이 가라사대 하늘의 궁창에 광명이 있어 주야를 나뉘게 하라 또 그 광명으로 하여 징조와 사시와 일자와 연한이 이루라",
+      "source_text_hash": "dfa30e898605ad6ded03d5e2e3c6a3caa00a2ff3208c44f594c5ce340186fb16",
+      "translation_text_hash": "84229f061c1e323963ac57cace3d7096e1bdedb22ec61c2af4af186cd43d6538",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 하늘의 궁창에 광명이 있어 주야를 나뉘게 하라 또 그 광명으로 하여 징조와 사시와 일자와 연한이 이루라"
+      ],
+      "raw_text_hashes": [
+        "84229f061c1e323963ac57cace3d7096e1bdedb22ec61c2af4af186cd43d6538"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:15",
+      "sequence": 15,
+      "chapter_label": "GEN 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "and let them be for lights in the expanse of the sky to give light on the earth;” and it was so.",
+      "ko": "또 그 광명이 하늘의 궁창에 있어 땅에 비취라 하시고 (그대로 되니라)",
+      "source_text_hash": "313b40cd238466a504f28994df52c89317aac4d21962d3d0eeed304c989b9d41",
+      "translation_text_hash": "54c8d07a4c29c3b36f01516dd92642863be929e4ad94bc0326c891ec6d5db289",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 광명이 하늘의 궁창에 있어 땅에 비취라 하시고 (그대로 되니라)"
+      ],
+      "raw_text_hashes": [
+        "54c8d07a4c29c3b36f01516dd92642863be929e4ad94bc0326c891ec6d5db289"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:16",
+      "sequence": 16,
+      "chapter_label": "GEN 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "God made the two great lights: the greater light to rule the day, and the lesser light to rule the night. He also made the stars.",
+      "ko": "하나님이 두 큰 광명을 만드사 큰 광명으로 낮을 주관하게 하시고 작은 광명으로 밤을 주관하게 하시며 또 별들을 만드시고",
+      "source_text_hash": "f94df4c41ab3d51c5a0efe812cbab138ed9c75c23ab357d250cd564fcc2a3331",
+      "translation_text_hash": "1dd3985326d0ebad468e996f7cc2fb45326e9573e3c6a182e7e5f8d656a043c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 두 큰 광명을 만드사 큰 광명으로 낮을 주관하게 하시고 작은 광명으로 밤을 주관하게 하시며 또 별들을 만드시고"
+      ],
+      "raw_text_hashes": [
+        "1dd3985326d0ebad468e996f7cc2fb45326e9573e3c6a182e7e5f8d656a043c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:17",
+      "sequence": 17,
+      "chapter_label": "GEN 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "God set them in the expanse of the sky to give light to the earth,",
+      "ko": "하나님이 그것들을 하늘의 궁창에 두어 땅에 비취게 하시며",
+      "source_text_hash": "e35391d6a46cd671d1b9099cda0c7b3463055dc3fd64e36d657f3b3fcbdcd646",
+      "translation_text_hash": "ba81584f79f564a258d542f75f4d5f231740bd7c9a991eed5cb50a2011b20de7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그것들을 하늘의 궁창에 두어 땅에 비취게 하시며"
+      ],
+      "raw_text_hashes": [
+        "ba81584f79f564a258d542f75f4d5f231740bd7c9a991eed5cb50a2011b20de7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:18",
+      "sequence": 18,
+      "chapter_label": "GEN 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "and to rule over the day and over the night, and to divide the light from the darkness. God saw that it was good.",
+      "ko": "주야를 주관하게 하시며 빛과 어두움을 나뉘게 하시니라 하나님의 보시기에 좋았더라",
+      "source_text_hash": "2f11e02e74bef5a8849be476de1ebead263d940bdb08a058ba229a1be272f631",
+      "translation_text_hash": "ace8542aac0125fa7fe9236b870c80e9e0d67ce80e9f2e64373cbe2f219afdaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주야를 주관하게 하시며 빛과 어두움을 나뉘게 하시니라 하나님의 보시기에 좋았더라"
+      ],
+      "raw_text_hashes": [
+        "ace8542aac0125fa7fe9236b870c80e9e0d67ce80e9f2e64373cbe2f219afdaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:19",
+      "sequence": 19,
+      "chapter_label": "GEN 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "There was evening and there was morning, a fourth day.",
+      "ko": "저녁이 되며 아침이 되니 이는 네째 날이니라",
+      "source_text_hash": "6481f93e0dedd680ed467207af68e906d080039c43818f34c62132c4893c191d",
+      "translation_text_hash": "50291d77497487ce5cc02e18cff2e2feae0ddcbfcf9207fa813ec2da0ee62c7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁이 되며 아침이 되니 이는 네째 날이니라"
+      ],
+      "raw_text_hashes": [
+        "50291d77497487ce5cc02e18cff2e2feae0ddcbfcf9207fa813ec2da0ee62c7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:20",
+      "sequence": 20,
+      "chapter_label": "GEN 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "God said, “Let the waters abound with living creatures, and let birds fly above the earth in the open expanse of the sky.”",
+      "ko": "하나님이 가라사대 물들은 생물로 번성케 하라 땅위 하늘의 궁창에는 새가 날으라 하시고",
+      "source_text_hash": "806a25f1130f4f0d3baf88402baf559057481884d08ea0b3a44613b4351a1a5d",
+      "translation_text_hash": "2b8b671cf0596f92693723b01cdb7fd0abc875032d1fbb6f715baf9db8e5b38c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 물들은 생물로 번성케 하라 땅위 하늘의 궁창에는 새가 날으라 하시고"
+      ],
+      "raw_text_hashes": [
+        "2b8b671cf0596f92693723b01cdb7fd0abc875032d1fbb6f715baf9db8e5b38c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:21",
+      "sequence": 21,
+      "chapter_label": "GEN 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "God created the large sea creatures and every living creature that moves, with which the waters swarmed, after their kind, and every winged bird after its kind. God saw that it was good.",
+      "ko": "하나님이 큰 물고기와 물에서 번성하여 움직이는 모든 생물을 그 종류대로, 날개 있는 모든 새를 그 종류대로 창조하시니 하나님의 보시기에 좋았더라",
+      "source_text_hash": "3be75aac28ddb619af9f8a0d2e6363b901b9fc6eb0613a3af2500f37ef1ae937",
+      "translation_text_hash": "f53f90f17b3714a8b63971436392e207857f3ec23a13225e93ddcbc9e56c4605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 큰 물고기와 물에서 번성하여 움직이는 모든 생물을 그 종류대로, 날개 있는 모든 새를 그 종류대로 창조하시니 하나님의 보시기에 좋았더라"
+      ],
+      "raw_text_hashes": [
+        "f53f90f17b3714a8b63971436392e207857f3ec23a13225e93ddcbc9e56c4605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:22",
+      "sequence": 22,
+      "chapter_label": "GEN 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "God blessed them, saying, “Be fruitful, and multiply, and fill the waters in the seas, and let birds multiply on the earth.”",
+      "ko": "하나님이 그들에게 복을 주어 가라사대 생육하고 번성하여 여러 바다 물에 충만하라 새들도 땅에 번성하라 하시니라",
+      "source_text_hash": "51d5aa6f24769252cd65c116d43b1aadcc7371093efa27eaafc5a5e940194ce1",
+      "translation_text_hash": "86d5b9a39f910527b4d1a06b2cef72cd2c540b95525a125365ba3b7fe6e54479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그들에게 복을 주어 가라사대 생육하고 번성하여 여러 바다 물에 충만하라 새들도 땅에 번성하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "86d5b9a39f910527b4d1a06b2cef72cd2c540b95525a125365ba3b7fe6e54479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:23",
+      "sequence": 23,
+      "chapter_label": "GEN 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "There was evening and there was morning, a fifth day.",
+      "ko": "저녁이 되며 아침이 되니 이는 다섯째 날이니라",
+      "source_text_hash": "ece50165416e6e15ba95462c8460be45b416fab5a8a012438a583ee547118e77",
+      "translation_text_hash": "78b173cf9c9a46efc571169814834eebb834753ecfe41b4a1918335bf08c82e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁이 되며 아침이 되니 이는 다섯째 날이니라"
+      ],
+      "raw_text_hashes": [
+        "78b173cf9c9a46efc571169814834eebb834753ecfe41b4a1918335bf08c82e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:24",
+      "sequence": 24,
+      "chapter_label": "GEN 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "God said, “Let the earth produce living creatures after their kind, livestock, creeping things, and animals of the earth after their kind;” and it was so.",
+      "ko": "하나님이 가라사대 땅은 생물을 그 종류대로 내되 육축과 기는 것과 땅의 짐승을 종류대로 내라 하시고 (그대로 되니라)",
+      "source_text_hash": "f78d7db2401173b77db62006f85a17ca16f328f8e48898bdd05c676ff13ba758",
+      "translation_text_hash": "b7b288b62f71c309aea2cbe728e5d065ca29aede06bf778d392e399d9ad56e59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 땅은 생물을 그 종류대로 내되 육축과 기는 것과 땅의 짐승을 종류대로 내라 하시고 (그대로 되니라)"
+      ],
+      "raw_text_hashes": [
+        "b7b288b62f71c309aea2cbe728e5d065ca29aede06bf778d392e399d9ad56e59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:25",
+      "sequence": 25,
+      "chapter_label": "GEN 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "God made the animals of the earth after their kind, and the livestock after their kind, and everything that creeps on the ground after its kind. God saw that it was good.",
+      "ko": "하나님이 땅의 짐승을 그 종류대로, 육축을 그 종류대로, 땅에 기는 모든 것을 그 종류대로 만드시니 하나님의 보시기에 좋았더라",
+      "source_text_hash": "3bad1c0b945e1508f3438525dcc9df16cff4dbade55d978dd9e26c3e339c6d47",
+      "translation_text_hash": "34a038ce994a6f1fc2b914b678782c5596e14fb88ac48a6dfb81d41de20b80bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 땅의 짐승을 그 종류대로, 육축을 그 종류대로, 땅에 기는 모든 것을 그 종류대로 만드시니 하나님의 보시기에 좋았더라"
+      ],
+      "raw_text_hashes": [
+        "34a038ce994a6f1fc2b914b678782c5596e14fb88ac48a6dfb81d41de20b80bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:26",
+      "sequence": 26,
+      "chapter_label": "GEN 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "God said, “Let’s make man in our image, after our likeness. Let them have dominion over the fish of the sea, and over the birds of the sky, and over the livestock, and over all the earth, and over every creeping thing that creeps on the earth.”",
+      "ko": "하나님이 가라사대 우리의 형상을 따라 우리의 모양대로 우리가 사람을 만들고 그로 바다의 고기와 공중의 새와 육축과 온 땅과 땅에 기는 모든 것을 다스리게 하자 하시고",
+      "source_text_hash": "973db03ae1d955f6320c3829b6338872e68d932e364a37528bcfdd3e06953a4d",
+      "translation_text_hash": "5d0b4db1db716e6323ac7163550843e3a9cc408a48334c8213943f061a1b1051",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 우리의 형상을 따라 우리의 모양대로 우리가 사람을 만들고 그로 바다의 고기와 공중의 새와 육축과 온 땅과 땅에 기는 모든 것을 다스리게 하자 하시고"
+      ],
+      "raw_text_hashes": [
+        "5d0b4db1db716e6323ac7163550843e3a9cc408a48334c8213943f061a1b1051"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:27",
+      "sequence": 27,
+      "chapter_label": "GEN 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "God created man in his own image. In God’s image he created him; male and female he created them.",
+      "ko": "하나님이 자기 형상 곧 하나님의 형상대로 사람을 창조하시되 남자와 여자를 창조하시고",
+      "source_text_hash": "0887ac5f6e71332daf0b2104d32cf16bba238d9b62ebac6de244b9c7b534f9fe",
+      "translation_text_hash": "c01c808e21c365c0edc8ad9774d355c3e4a04c7ad4f949540e76d91cda11cf3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 자기 형상 곧 하나님의 형상대로 사람을 창조하시되 남자와 여자를 창조하시고"
+      ],
+      "raw_text_hashes": [
+        "c01c808e21c365c0edc8ad9774d355c3e4a04c7ad4f949540e76d91cda11cf3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:28",
+      "sequence": 28,
+      "chapter_label": "GEN 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "God blessed them. God said to them, “Be fruitful, multiply, fill the earth, and subdue it. Have dominion over the fish of the sea, over the birds of the sky, and over every living thing that moves on the earth.”",
+      "ko": "하나님이 그들에게 복을 주시며 그들에게 이르시되 생육하고 번성하여 땅에 충만하라, 땅을 정복하라, 바다의 고기와 공중의 새와 땅에 움직이는 모든 생물을 다스리라 하시니라",
+      "source_text_hash": "e7ea9268ed6fa33279a83c91397e494abc251432ecb1d3f69223dca303c211f2",
+      "translation_text_hash": "a82fffef1da14be7c31b81f1ac344e5a3e555c78bd77f6be3428f3b626a388ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그들에게 복을 주시며 그들에게 이르시되 생육하고 번성하여 땅에 충만하라, 땅을 정복하라, 바다의 고기와 공중의 새와 땅에 움직이는 모든 생물을 다스리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "a82fffef1da14be7c31b81f1ac344e5a3e555c78bd77f6be3428f3b626a388ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:29",
+      "sequence": 29,
+      "chapter_label": "GEN 1",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 29
+        }
+      ],
+      "en": "God said, “Behold, I have given you every herb yielding seed, which is on the surface of all the earth, and every tree, which bears fruit yielding seed. It will be your food.",
+      "ko": "하나님이 가라사대 내가 온 지면의 씨 맺는 모든 채소와 씨 가진 열매 맺는 모든 나무를 너희에게 주노니 너희 식물이 되리라",
+      "source_text_hash": "f6f7759d75d3867d4c8053a9a63dd26f11d15ad377e484d225030efb0e58db8d",
+      "translation_text_hash": "fe06c79104d8ef22f4471a42d6f194b9eef72c3d39e024c62eb49595c81f7253",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 내가 온 지면의 씨 맺는 모든 채소와 씨 가진 열매 맺는 모든 나무를 너희에게 주노니 너희 식물이 되리라"
+      ],
+      "raw_text_hashes": [
+        "fe06c79104d8ef22f4471a42d6f194b9eef72c3d39e024c62eb49595c81f7253"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:30",
+      "sequence": 30,
+      "chapter_label": "GEN 1",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 30
+        }
+      ],
+      "en": "To every animal of the earth, and to every bird of the sky, and to everything that creeps on the earth, in which there is life, I have given every green herb for food;” and it was so.",
+      "ko": "또 땅의 모든 짐승과 공중의 모든 새와 생명이 있어 땅에 기는 모든 것에게는 내가 모든 푸른 풀을 식물로 주노라 하시니 그대로 되니라",
+      "source_text_hash": "7d89a6edf5f63f87e9b2a884fc0e29cd516c2dc3f549b99919900ad966ca3251",
+      "translation_text_hash": "a2ccf9771701ddfdd7c975abe87e6694ee4cbc6346bae9c81eba440ae975e1bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 땅의 모든 짐승과 공중의 모든 새와 생명이 있어 땅에 기는 모든 것에게는 내가 모든 푸른 풀을 식물로 주노라 하시니 그대로 되니라"
+      ],
+      "raw_text_hashes": [
+        "a2ccf9771701ddfdd7c975abe87e6694ee4cbc6346bae9c81eba440ae975e1bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:1:31",
+      "sequence": 31,
+      "chapter_label": "GEN 1",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 1,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 1,
+          "verse": 31
+        }
+      ],
+      "en": "God saw everything that he had made, and, behold, it was very good. There was evening and there was morning, a sixth day.",
+      "ko": "하나님이 그 지으신 모든 것을 보시니 보시기에 심히 좋았더라 저녁이 되며 아침이 되니 이는 여섯째 날이니라",
+      "source_text_hash": "b9dabbe63dc223776af6e73e209bde13521c8bc1531ca0173fdb25c2938b65e8",
+      "translation_text_hash": "91a7cb77827f2e76a6a91a910b1bbc6b9c793d58496dd6b2f0a93f2d75028076",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 지으신 모든 것을 보시니 보시기에 심히 좋았더라 저녁이 되며 아침이 되니 이는 여섯째 날이니라"
+      ],
+      "raw_text_hashes": [
+        "91a7cb77827f2e76a6a91a910b1bbc6b9c793d58496dd6b2f0a93f2d75028076"
+      ]
+    }
+  ]
+}

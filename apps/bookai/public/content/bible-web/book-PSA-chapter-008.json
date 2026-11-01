@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:008",
+  "unit_ordinal": 486,
+  "unit_label": "PSA 8",
+  "book_code": "PSA",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:8:1",
+      "sequence": 14014,
+      "chapter_label": "PSA 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "LORD, our Lord, how majestic is your name in all the earth! You have set your glory above the heavens!",
+      "ko": "여호와 우리 주여 주의 이름이 온 땅에 어찌 그리 아름다운지요 주의 영광을 하늘 위에 두셨나이다",
+      "source_text_hash": "b5d890099a31158a69b96cd0b9f68d2e7eec0192b5b6abcad3e88fa5c3021c3f",
+      "translation_text_hash": "05bc3de2f4779ba0059c6600fb3cd9a4e7469310ec5511b0b2d5c5405febc0e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 우리 주여 주의 이름이 온 땅에 어찌 그리 아름다운지요 주의 영광을 하늘 위에 두셨나이다"
+      ],
+      "raw_text_hashes": [
+        "05bc3de2f4779ba0059c6600fb3cd9a4e7469310ec5511b0b2d5c5405febc0e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:8:2",
+      "sequence": 14015,
+      "chapter_label": "PSA 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "From the lips of babes and infants you have established strength, because of your adversaries, that you might silence the enemy and the avenger.",
+      "ko": "주의 대적을 인하여 어린 아이와 젖먹이의 입으로 말미암아 권능을 세우심이여 이는 원수와 보수자로 잠잠케 하려 하심이니이다",
+      "source_text_hash": "d124d1c4fa1ebca575ebc481e3425bf3a1d0df9bb45787e10be59ec7ec727183",
+      "translation_text_hash": "5cbc8c65a117221b0d140f234144e2585b57b53f43fdcd90129d89480cf92707",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 대적을 인하여 어린 아이와 젖먹이의 입으로 말미암아 권능을 세우심이여 이는 원수와 보수자로 잠잠케 하려 하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "5cbc8c65a117221b0d140f234144e2585b57b53f43fdcd90129d89480cf92707"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:8:3",
+      "sequence": 14016,
+      "chapter_label": "PSA 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "When I consider your heavens, the work of your fingers, the moon and the stars, which you have ordained,",
+      "ko": "주의 손가락으로 만드신 주의 하늘과 주의 베풀어 두신 달과 별들을 내가 보오니",
+      "source_text_hash": "addf303205702b3ddf230c379fb318bd803cb18005b03f7d114ec340e38af877",
+      "translation_text_hash": "f8991532da0b63ae987ef58d22c25b7b1deddd0bf6e73758607a1f487a47c9e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 손가락으로 만드신 주의 하늘과 주의 베풀어 두신 달과 별들을 내가 보오니"
+      ],
+      "raw_text_hashes": [
+        "f8991532da0b63ae987ef58d22c25b7b1deddd0bf6e73758607a1f487a47c9e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:8:4",
+      "sequence": 14017,
+      "chapter_label": "PSA 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "what is man, that you think of him? What is the son of man, that you care for him?",
+      "ko": "사람이 무엇이관대 주께서 저를 생각하시며 인자가 무엇이관대 주께서 저를 권고하시나이까",
+      "source_text_hash": "a8522ff9e185654995a48267de225656d25503439cf9e2a6ec3a3016f4284127",
+      "translation_text_hash": "6098367d4fa58883f29e40bd731edc039281401d92993992e312246c89a4dee3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 무엇이관대 주께서 저를 생각하시며 인자가 무엇이관대 주께서 저를 권고하시나이까"
+      ],
+      "raw_text_hashes": [
+        "6098367d4fa58883f29e40bd731edc039281401d92993992e312246c89a4dee3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:8:5",
+      "sequence": 14018,
+      "chapter_label": "PSA 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "For you have made him a little lower than the angels, and crowned him with glory and honor.",
+      "ko": "저를 천사보다 조금 못하게 하시고 영화와 존귀로 관을 씌우셨나이다",
+      "source_text_hash": "f980b1d599a8479156417b8ebe4bfb85097f3ce9166a028f863a7c9c4b3e289d",
+      "translation_text_hash": "184c54ebb05c92fc032edc0c16c51af3f2a681e04dcb39eaf5f59ba5123f1632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저를 천사보다 조금 못하게 하시고 영화와 존귀로 관을 씌우셨나이다"
+      ],
+      "raw_text_hashes": [
+        "184c54ebb05c92fc032edc0c16c51af3f2a681e04dcb39eaf5f59ba5123f1632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:8:6",
+      "sequence": 14019,
+      "chapter_label": "PSA 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "You make him ruler over the works of your hands. You have put all things under his feet:",
+      "ko": "주의 손으로 만드신 것을 다스리게 하시고 만물을 그 발 아래 두셨으니",
+      "source_text_hash": "bf2aa0556ccc1a37424c5c147069e8e9001d198dcb13e17a3001af9691d6d5a8",
+      "translation_text_hash": "14f17e03123e7cfb6e90078c87d99dd43d50c205f8d1b01493e81f7ed5c08f3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 손으로 만드신 것을 다스리게 하시고 만물을 그 발 아래 두셨으니"
+      ],
+      "raw_text_hashes": [
+        "14f17e03123e7cfb6e90078c87d99dd43d50c205f8d1b01493e81f7ed5c08f3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:8:7",
+      "sequence": 14020,
+      "chapter_label": "PSA 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "All sheep and cattle, yes, and the animals of the field,",
+      "ko": "곧 모든 우양과 들짐승이며",
+      "source_text_hash": "4c935c6d15f90bb5469498191d39131913eb2a05a96d17a491104993b3af6e6c",
+      "translation_text_hash": "b8286411f87db567a2c7be82b5f0d2e99cf99c868e277409e245bf34d0fa86da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 모든 우양과 들짐승이며"
+      ],
+      "raw_text_hashes": [
+        "b8286411f87db567a2c7be82b5f0d2e99cf99c868e277409e245bf34d0fa86da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:8:8",
+      "sequence": 14021,
+      "chapter_label": "PSA 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "the birds of the sky, the fish of the sea, and whatever passes through the paths of the seas.",
+      "ko": "공중의 새와 바다의 어족과 해로에 다니는 것이니이다",
+      "source_text_hash": "c67e8271feeec0f6baa780314d0ccf59a2a82f1c127f691014ce3da0a167b9ab",
+      "translation_text_hash": "0617c55cb43e97c4492115d6ba947cb99dfdf5cd4122b48555b63d99289159e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공중의 새와 바다의 어족과 해로에 다니는 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "0617c55cb43e97c4492115d6ba947cb99dfdf5cd4122b48555b63d99289159e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:8:9",
+      "sequence": 14022,
+      "chapter_label": "PSA 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "LORD, our Lord, how majestic is your name in all the earth!",
+      "ko": "여호와 우리 주여 주의 이름이 온 땅에 어찌 그리 아름다운지요",
+      "source_text_hash": "9cd369be3f8066acca930ee8ddff671912de7d54f7bceb25e57ed394c76d6f43",
+      "translation_text_hash": "1ec01eb42904b044152f9d41911263afe9ad93e77b5fb3a25bc5d8e55e139fc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 우리 주여 주의 이름이 온 땅에 어찌 그리 아름다운지요"
+      ],
+      "raw_text_hashes": [
+        "1ec01eb42904b044152f9d41911263afe9ad93e77b5fb3a25bc5d8e55e139fc7"
+      ]
+    }
+  ]
+}

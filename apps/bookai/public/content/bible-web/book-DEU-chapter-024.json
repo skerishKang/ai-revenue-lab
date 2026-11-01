@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:024",
+  "unit_ordinal": 177,
+  "unit_label": "DEU 24",
+  "book_code": "DEU",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:24:1",
+      "sequence": 5527,
+      "chapter_label": "DEU 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "When a man takes a wife and marries her, then it shall be, if she finds no favor in his eyes because he has found some unseemly thing in her, that he shall write her a certificate of divorce, put it in her hand, and send her out of his house.",
+      "ko": "사람이 아내를 취하여 데려온 후에 수치되는 일이 그에게 있음을 발견하고 그를 기뻐하지 아니하거든 이혼 증서를 써서 그 손에 주고 그를 자기 집에서 내어 보낼 것이요",
+      "source_text_hash": "4aee7ae05f8cc46eada31f5c07929c9ef5c9779425456a13c036f4cc218e3da3",
+      "translation_text_hash": "d1b81e6494ccb31a903b36cbdc36360e24edfbff14f8bf9b531596b026244829",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 아내를 취하여 데려온 후에 수치되는 일이 그에게 있음을 발견하고 그를 기뻐하지 아니하거든 이혼 증서를 써서 그 손에 주고 그를 자기 집에서 내어 보낼 것이요"
+      ],
+      "raw_text_hashes": [
+        "d1b81e6494ccb31a903b36cbdc36360e24edfbff14f8bf9b531596b026244829"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:2",
+      "sequence": 5528,
+      "chapter_label": "DEU 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "When she has departed out of his house, she may go and be another man’s wife.",
+      "ko": "그 여자는 그 집에서 나가서 다른 사람의 아내가 되려니와",
+      "source_text_hash": "97a815120eae781ceb14345faa1432c28b318c4de94eb2e7346271fd92858847",
+      "translation_text_hash": "48361fe4fe0855190c5a9a6593670d968496b16f47f941011611c3a877e5867f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자는 그 집에서 나가서 다른 사람의 아내가 되려니와"
+      ],
+      "raw_text_hashes": [
+        "48361fe4fe0855190c5a9a6593670d968496b16f47f941011611c3a877e5867f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:3",
+      "sequence": 5529,
+      "chapter_label": "DEU 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "If the latter husband hates her, and writes her a certificate of divorce, puts it in her hand, and sends her out of his house; or if the latter husband dies, who took her to be his wife;",
+      "ko": "그 후부도 그를 미워하여 이혼 증서를 써서 그 손에 주고 그를 자기 집에서 내어 보내었거나 혹시 그를 아내로 취한 후부가 죽었다 하자",
+      "source_text_hash": "76a7f82a24cfad86ceafa6b36b7383212c2178ced13b337a4614a737a3319128",
+      "translation_text_hash": "fa9851ff26ab112e34523cb79335f6072cbc179953af01333d12926906c3579d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후부도 그를 미워하여 이혼 증서를 써서 그 손에 주고 그를 자기 집에서 내어 보내었거나 혹시 그를 아내로 취한 후부가 죽었다 하자"
+      ],
+      "raw_text_hashes": [
+        "fa9851ff26ab112e34523cb79335f6072cbc179953af01333d12926906c3579d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:4",
+      "sequence": 5530,
+      "chapter_label": "DEU 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "her former husband, who sent her away, may not take her again to be his wife after she is defiled; for that would be an abomination to the LORD. You shall not cause the land to sin, which the LORD your God gives you for an inheritance.",
+      "ko": "그 여자가 이미 몸을 더럽혔은즉 그를 내어 보낸 전부가 그를 다시 아내로 취하지 말찌니 이 일은 여호와 앞에 가증한 것이라 네 하나님 여호와께서 네게 기업으로 주시는 땅으로 너는 범죄케 하지 말찌니라",
+      "source_text_hash": "eaab8a6bd2a4453947114ebd2abb00643616e51b0bd391ca3c5319d1373db0a6",
+      "translation_text_hash": "337318d6c31a819b22539e9c9375b9dd348527abae8ba6a05e35c8d69219dd56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자가 이미 몸을 더럽혔은즉 그를 내어 보낸 전부가 그를 다시 아내로 취하지 말찌니 이 일은 여호와 앞에 가증한 것이라 네 하나님 여호와께서 네게 기업으로 주시는 땅으로 너는 범죄케 하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "337318d6c31a819b22539e9c9375b9dd348527abae8ba6a05e35c8d69219dd56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:5",
+      "sequence": 5531,
+      "chapter_label": "DEU 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "When a man takes a new wife, he shall not go out in the army, neither shall he be assigned any business. He shall be free at home one year, and shall cheer his wife whom he has taken.",
+      "ko": "사람이 새로이 아내를 취하였거든 그를 군대로 내어 보내지 말 것이요 무슨 직무든지 그에게 맡기지 말것이며 그는 일년 동안 집에 한가히 거하여 그 취한 아내를 즐겁게 할찌니라",
+      "source_text_hash": "32784a58bd86dcb806954fc7af7da4c18545a9cf0735cdda06d7d0ee94fed811",
+      "translation_text_hash": "472086d4f390fbc4e43d719ad6ace4e9d2c9366e4e4ef03c8ae4143bcfa1c2c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 새로이 아내를 취하였거든 그를 군대로 내어 보내지 말 것이요 무슨 직무든지 그에게 맡기지 말것이며 그는 일년 동안 집에 한가히 거하여 그 취한 아내를 즐겁게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "472086d4f390fbc4e43d719ad6ace4e9d2c9366e4e4ef03c8ae4143bcfa1c2c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:6",
+      "sequence": 5532,
+      "chapter_label": "DEU 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "No man shall take the mill or the upper millstone as a pledge, for he takes a life in pledge.",
+      "ko": "사람이 맷돌의 전부나 그 위짝만이나 전집하지 말찌니 이는 그 생명을 전집함이니라",
+      "source_text_hash": "ab44789dffc659a4af6fe6266f3ed90fdcc1587482020883b93d2ddd277f8639",
+      "translation_text_hash": "02f7e6c8398b515a1f6b68a002142f1dc3d4495aa2a89e8bef278ed9b33200f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 맷돌의 전부나 그 위짝만이나 전집하지 말찌니 이는 그 생명을 전집함이니라"
+      ],
+      "raw_text_hashes": [
+        "02f7e6c8398b515a1f6b68a002142f1dc3d4495aa2a89e8bef278ed9b33200f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:7",
+      "sequence": 5533,
+      "chapter_label": "DEU 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "If a man is found stealing any of his brothers of the children of Israel, and he deals with him as a slave, or sells him, then that thief shall die. So you shall remove the evil from among you.",
+      "ko": "사람이 자기 형제 곧 이스라엘 자손 중 한 사람을 후려다가 그를 부리거나 판 것이 발견되거든 그 후린 자를 죽일찌니 이같이 하여 너의 중에 악을 제할찌니라",
+      "source_text_hash": "caff3c20d5c5cf3d37e76b50b46e0caaa4785d47a5572d1abebb9b6a094d2fe4",
+      "translation_text_hash": "642921c21affeb2eec6d4c0a66d79dd59b06fc3d1763e345ded570816598c323",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 자기 형제 곧 이스라엘 자손 중 한 사람을 후려다가 그를 부리거나 판 것이 발견되거든 그 후린 자를 죽일찌니 이같이 하여 너의 중에 악을 제할찌니라"
+      ],
+      "raw_text_hashes": [
+        "642921c21affeb2eec6d4c0a66d79dd59b06fc3d1763e345ded570816598c323"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:8",
+      "sequence": 5534,
+      "chapter_label": "DEU 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "Be careful in the plague of leprosy, that you observe diligently and do according to all that the Levitical priests teach you. As I commanded them, so you shall observe to do.",
+      "ko": "너는 문둥병에 대하여 삼가서 레위 사람 제사장들이 너희에게 가르치는 대로 네가 힘써 다 행하되 곧 내가 그들에게 명한대로 너희는 주의하여 행하라",
+      "source_text_hash": "13553f6e021f39eb8e50f03d8fcc0a821c81cf63a17465ef8413c261e6e74adf",
+      "translation_text_hash": "78cbf389de3cd4d746abeeb4a5f06b2f60f0924e22ef80fa1ed3318945b83828",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 문둥병에 대하여 삼가서 레위 사람 제사장들이 너희에게 가르치는 대로 네가 힘써 다 행하되 곧 내가 그들에게 명한대로 너희는 주의하여 행하라"
+      ],
+      "raw_text_hashes": [
+        "78cbf389de3cd4d746abeeb4a5f06b2f60f0924e22ef80fa1ed3318945b83828"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:9",
+      "sequence": 5535,
+      "chapter_label": "DEU 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "Remember what the LORD your God did to Miriam, by the way as you came out of Egypt.",
+      "ko": "너희가 애굽에서 나오는 길에서 네 하나님 여호와께서 미리암에게 행하신 일을 기억할찌니라",
+      "source_text_hash": "b1cafc020fc88fea906d5ab1e3bb7d8cfd9b9d6534c33f5bcf9f694f535acb6f",
+      "translation_text_hash": "dba0e9d53c2440217c4335a0fdcbfd6bb9f8fef33763ee92c021228eccfe4ee6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 애굽에서 나오는 길에서 네 하나님 여호와께서 미리암에게 행하신 일을 기억할찌니라"
+      ],
+      "raw_text_hashes": [
+        "dba0e9d53c2440217c4335a0fdcbfd6bb9f8fef33763ee92c021228eccfe4ee6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:10",
+      "sequence": 5536,
+      "chapter_label": "DEU 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "When you lend your neighbor any kind of loan, you shall not go into his house to get his pledge.",
+      "ko": "무릇 네 이웃에게 꾸어줄 때에 네가 그 집에 들어가서 전집물을 취하지 말고",
+      "source_text_hash": "3344a1d81173d0e5bed83b719b0d7fc83a4f96620717d2435f62684625381ac5",
+      "translation_text_hash": "2b4748b1abcde765c8d1b89f16953c5da97f5c4811f8594013757051c0f828dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 네 이웃에게 꾸어줄 때에 네가 그 집에 들어가서 전집물을 취하지 말고"
+      ],
+      "raw_text_hashes": [
+        "2b4748b1abcde765c8d1b89f16953c5da97f5c4811f8594013757051c0f828dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:11",
+      "sequence": 5537,
+      "chapter_label": "DEU 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "You shall stand outside, and the man to whom you lend shall bring the pledge outside to you.",
+      "ko": "너는 밖에 섰고 네게 꾸는 자가 전집물을 가지고 나와서 네게 줄 것이며",
+      "source_text_hash": "121de881e90af35e8884d8a4e155dec7d541d3e79e522b74568b341ad10981c3",
+      "translation_text_hash": "f430361190feae6f0377b390eed6f9e4e109d24a407825de913605d9055bfe74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 밖에 섰고 네게 꾸는 자가 전집물을 가지고 나와서 네게 줄 것이며"
+      ],
+      "raw_text_hashes": [
+        "f430361190feae6f0377b390eed6f9e4e109d24a407825de913605d9055bfe74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:12",
+      "sequence": 5538,
+      "chapter_label": "DEU 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "If he is a poor man, you shall not sleep with his pledge.",
+      "ko": "그가 가난한 자여든 너는 그의 전집물을 가지고 자지 말고",
+      "source_text_hash": "93530d955fe610152ce77bcca1d03ee62e4ba323f159464faf99714c6cd82153",
+      "translation_text_hash": "d988225f1b85a9997d202049162339c5700a149da32abd117683e8f19bc0704c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가난한 자여든 너는 그의 전집물을 가지고 자지 말고"
+      ],
+      "raw_text_hashes": [
+        "d988225f1b85a9997d202049162339c5700a149da32abd117683e8f19bc0704c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:13",
+      "sequence": 5539,
+      "chapter_label": "DEU 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "You shall surely restore to him the pledge when the sun goes down, that he may sleep in his garment and bless you. It shall be righteousness to you before the LORD your God.",
+      "ko": "해 질 때에 그 전집물을 반드시 그에게 돌릴 것이라 그리하면 그가 그 옷을 입고 자며 너를 위하여 축복하리니 그 일이 네 하나님 여호와 앞에서 네 의로움이 되리라",
+      "source_text_hash": "9260545f2970881b2ed4e203bacb3e26ff8d8436f216a88125b6040aec6db6f6",
+      "translation_text_hash": "f1dc3577a3859d65ea9bd084245c5118fd2cccfd3294bcf326b50c30c2c3eaa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해 질 때에 그 전집물을 반드시 그에게 돌릴 것이라 그리하면 그가 그 옷을 입고 자며 너를 위하여 축복하리니 그 일이 네 하나님 여호와 앞에서 네 의로움이 되리라"
+      ],
+      "raw_text_hashes": [
+        "f1dc3577a3859d65ea9bd084245c5118fd2cccfd3294bcf326b50c30c2c3eaa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:14",
+      "sequence": 5540,
+      "chapter_label": "DEU 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "You shall not oppress a hired servant who is poor and needy, whether he is one of your brothers or one of the foreigners who are in your land within your gates.",
+      "ko": "곤궁하고 빈한한 품군은 너의 형제든지 네 땅 성문 안에 우거하는 객이든지 그를 학대하지 말며",
+      "source_text_hash": "44a6d0bd2d7d329f82838f72a93d59a68bad7276d305cc14527872cceeeff0f8",
+      "translation_text_hash": "4e922402658f7f3a52a462f40fb62461c47667a9b327b2be92880fb6b2b2a452",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곤궁하고 빈한한 품군은 너의 형제든지 네 땅 성문 안에 우거하는 객이든지 그를 학대하지 말며"
+      ],
+      "raw_text_hashes": [
+        "4e922402658f7f3a52a462f40fb62461c47667a9b327b2be92880fb6b2b2a452"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:15",
+      "sequence": 5541,
+      "chapter_label": "DEU 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "In his day you shall give him his wages, neither shall the sun go down on it, for he is poor and sets his heart on it, lest he cry against you to the LORD, and it be sin to you.",
+      "ko": "그 품삯을 당일에 주고 해진 후까지 끌지 말라 이는 그가 빈궁하므로 마음에 품삯을 사모함이라 두렵건대 그가 너를 여호와께 호소하면 죄가 네게로 돌아갈까 하노라",
+      "source_text_hash": "144a6c2f0f511171d5a12026b78a74bace65b1c86e4cefb4a2807d02d4ba8ce1",
+      "translation_text_hash": "0e2fe9f8e748e86f962a9f916c42474d22dcf4d8d56e3b867e5fc9a98f0acbea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 품삯을 당일에 주고 해진 후까지 끌지 말라 이는 그가 빈궁하므로 마음에 품삯을 사모함이라 두렵건대 그가 너를 여호와께 호소하면 죄가 네게로 돌아갈까 하노라"
+      ],
+      "raw_text_hashes": [
+        "0e2fe9f8e748e86f962a9f916c42474d22dcf4d8d56e3b867e5fc9a98f0acbea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:16",
+      "sequence": 5542,
+      "chapter_label": "DEU 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "The fathers shall not be put to death for the children, neither shall the children be put to death for the fathers. Every man shall be put to death for his own sin.",
+      "ko": "아비는 그 자식들을 인하여 죽임을 당치 않을 것이요 자식들은 그 아비를 인하여 죽임을 당치 않을 것이라 각 사람은 자기 죄에 죽임을 당할 것이니라",
+      "source_text_hash": "44af262473e445641c25b5ebbd471483b3846f9c8039073ead1645b28c39cbfd",
+      "translation_text_hash": "0cef63c8e630bc2561512d643cb3d548a8baddb7df24be6434b60aab3b0b2247",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비는 그 자식들을 인하여 죽임을 당치 않을 것이요 자식들은 그 아비를 인하여 죽임을 당치 않을 것이라 각 사람은 자기 죄에 죽임을 당할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "0cef63c8e630bc2561512d643cb3d548a8baddb7df24be6434b60aab3b0b2247"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:17",
+      "sequence": 5543,
+      "chapter_label": "DEU 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "You shall not deprive the foreigner or the fatherless of justice, nor take a widow’s clothing in pledge;",
+      "ko": "너는 객이나 고아의 송사를 억울하게 말며 과부의 옷을 전집하지 말라",
+      "source_text_hash": "cf50795df0024ecf784346abe8d809619fa77cde22b431ad67057f2b8e617a0f",
+      "translation_text_hash": "6648f74e0c159d1d6127929614e1583f8e9a0d760012b6cfea978e39a9faa284",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 객이나 고아의 송사를 억울하게 말며 과부의 옷을 전집하지 말라"
+      ],
+      "raw_text_hashes": [
+        "6648f74e0c159d1d6127929614e1583f8e9a0d760012b6cfea978e39a9faa284"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:18",
+      "sequence": 5544,
+      "chapter_label": "DEU 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "but you shall remember that you were a slave in Egypt, and the LORD your God redeemed you there. Therefore I command you to do this thing.",
+      "ko": "너는 애굽에서 종이 되었던 일과 네 하나님 여호와께서 너를 거기서 속량하신 것을 기억하라 이러므로 내가 네게 이 일을 행하라 명하노라",
+      "source_text_hash": "1e9ee6347523cd6bc4b03a9b860897b9e9685aa6ea11e5cf6b1d0a4561a9d03f",
+      "translation_text_hash": "231b17b28df2e7fadabcedbfc563975554aeb165c56ebb4c3838c1ff8793ed7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 애굽에서 종이 되었던 일과 네 하나님 여호와께서 너를 거기서 속량하신 것을 기억하라 이러므로 내가 네게 이 일을 행하라 명하노라"
+      ],
+      "raw_text_hashes": [
+        "231b17b28df2e7fadabcedbfc563975554aeb165c56ebb4c3838c1ff8793ed7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:19",
+      "sequence": 5545,
+      "chapter_label": "DEU 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "When you reap your harvest in your field, and have forgotten a sheaf in the field, you shall not go again to get it. It shall be for the foreigner, for the fatherless, and for the widow, that the LORD your God may bless you in all the work of your hands.",
+      "ko": "네가 밭에서 곡식을 벨 때에 그 한 뭇을 밭에 잊어버렸거든 다시 가서 취하지 말고 객과 고아와 과부를 위하여 버려두라 그리하면 네 하나님 여호와께서 네 손으로 하는 범사에 복을 내리시리라",
+      "source_text_hash": "a264d2e52258ea54fa08cfec9556a8c2d274fb5d4f0b960238d3bf21fa0b9ccc",
+      "translation_text_hash": "3febaf48e7e690b3c1333d6bff7723fe54410eec6bd6855cd24d3d0c5eff8973",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 밭에서 곡식을 벨 때에 그 한 뭇을 밭에 잊어버렸거든 다시 가서 취하지 말고 객과 고아와 과부를 위하여 버려두라 그리하면 네 하나님 여호와께서 네 손으로 하는 범사에 복을 내리시리라"
+      ],
+      "raw_text_hashes": [
+        "3febaf48e7e690b3c1333d6bff7723fe54410eec6bd6855cd24d3d0c5eff8973"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:20",
+      "sequence": 5546,
+      "chapter_label": "DEU 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "When you beat your olive tree, you shall not go over the boughs again. It shall be for the foreigner, for the fatherless, and for the widow.",
+      "ko": "네가 네 감람나무를 떤 후에 그 가지를 다시 살피지 말고 그 남은 것은 객과 고아와 과부를 위하여 버려두며",
+      "source_text_hash": "4550772f3029560cccacc8baa3eca965eac284d65d05feb4c2a88bdb98c10a34",
+      "translation_text_hash": "a6a00c8a4f4de0ee003bdb44af80e656b406b4394f27faeab73c8ea8fdc192a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 감람나무를 떤 후에 그 가지를 다시 살피지 말고 그 남은 것은 객과 고아와 과부를 위하여 버려두며"
+      ],
+      "raw_text_hashes": [
+        "a6a00c8a4f4de0ee003bdb44af80e656b406b4394f27faeab73c8ea8fdc192a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:21",
+      "sequence": 5547,
+      "chapter_label": "DEU 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "When you harvest your vineyard, you shall not glean it after yourselves. It shall be for the foreigner, for the fatherless, and for the widow.",
+      "ko": "네가 네 포도원의 포도를 딴 후에 그 남은 것을 다시 따지 말고 객과 고아와 과부를 위하여 버려두라",
+      "source_text_hash": "a546a37eb4d7ec83506b941d9de89db53aba5e1b102806884ef4b618ae91b815",
+      "translation_text_hash": "4b32a0ae696742797ee861a31873f7136f5f75ee4bcf6945ba5fcc533a3d0713",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 포도원의 포도를 딴 후에 그 남은 것을 다시 따지 말고 객과 고아와 과부를 위하여 버려두라"
+      ],
+      "raw_text_hashes": [
+        "4b32a0ae696742797ee861a31873f7136f5f75ee4bcf6945ba5fcc533a3d0713"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:24:22",
+      "sequence": 5548,
+      "chapter_label": "DEU 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "You shall remember that you were a slave in the land of Egypt. Therefore I command you to do this thing.",
+      "ko": "너는 애굽 땅에서 종 되었던 것을 기억하라 이러므로 내가 네게 이 일을 행하라 명하노라",
+      "source_text_hash": "539c3071493e8e42b86252b75e0034e4139685fe07b7f1c7df74aad5b18f6897",
+      "translation_text_hash": "e717acb47a60df2a76d096ded46412a8027fd640d698a5035bf1144ffaaa4b36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 애굽 땅에서 종 되었던 것을 기억하라 이러므로 내가 네게 이 일을 행하라 명하노라"
+      ],
+      "raw_text_hashes": [
+        "e717acb47a60df2a76d096ded46412a8027fd640d698a5035bf1144ffaaa4b36"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:146",
+  "unit_ordinal": 624,
+  "unit_label": "PSA 146",
+  "book_code": "PSA",
+  "chapter_number": 146,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:146:1",
+      "sequence": 16343,
+      "chapter_label": "PSA 146",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 146,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 146,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD! Praise the LORD, my soul.",
+      "ko": "할렐루야 내 영혼아 여호와를 찬양하라",
+      "source_text_hash": "a83ccab12eb1a7aeb53722223c10df370693a271ae2d7ea3c64e5a2e964cacad",
+      "translation_text_hash": "e5abdca7b543452aef293981463901c8edd9da7f1f146d1191448ca2e4f3ed88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할렐루야 내 영혼아 여호와를 찬양하라"
+      ],
+      "raw_text_hashes": [
+        "e5abdca7b543452aef293981463901c8edd9da7f1f146d1191448ca2e4f3ed88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:146:2",
+      "sequence": 16344,
+      "chapter_label": "PSA 146",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 146,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 146,
+          "verse": 2
+        }
+      ],
+      "en": "While I live, I will praise the LORD. I will sing praises to my God as long as I exist.",
+      "ko": "나의 생전에 여호와를 찬양하며 나의 평생에 내 하나님을 찬송하리로다",
+      "source_text_hash": "124e61510624fceeb787a4f56b50f3f3d875aa8712998a1ba45bd91f077fb6da",
+      "translation_text_hash": "7a8b30b8d6a0b71dce08868ea7f54f7d338ee0d593a51a2d934a7f7cb8977b87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 생전에 여호와를 찬양하며 나의 평생에 내 하나님을 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "7a8b30b8d6a0b71dce08868ea7f54f7d338ee0d593a51a2d934a7f7cb8977b87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:146:3",
+      "sequence": 16345,
+      "chapter_label": "PSA 146",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 146,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 146,
+          "verse": 3
+        }
+      ],
+      "en": "Don’t put your trust in princes, in a son of man in whom there is no help.",
+      "ko": "방백들을 의지하지 말며 도울 힘이 없는 인생도 의지하지 말찌니",
+      "source_text_hash": "9c392ef748d2222eac3a3616c032590b0b1d35e4c5c1d311118f8e9955c15173",
+      "translation_text_hash": "83c111d0f975aa15b4c6db8520e2df5951432d56eef7d29635e2495efe5a59ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들을 의지하지 말며 도울 힘이 없는 인생도 의지하지 말찌니"
+      ],
+      "raw_text_hashes": [
+        "83c111d0f975aa15b4c6db8520e2df5951432d56eef7d29635e2495efe5a59ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:146:4",
+      "sequence": 16346,
+      "chapter_label": "PSA 146",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 146,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 146,
+          "verse": 4
+        }
+      ],
+      "en": "His spirit departs, and he returns to the earth. In that very day, his thoughts perish.",
+      "ko": "그 호흡이 끊어지면 흙으로 돌아가서 당일에 그 도모가 소멸하리로다",
+      "source_text_hash": "288bd2da3abb78aeb6197365b60043bdbac818e9a9edf2df9ddd3c363b361349",
+      "translation_text_hash": "9c94e091c51c58f1e5c61ca4654770dd0aa62d412d6b53f85e258a0772a52ec6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 호흡이 끊어지면 흙으로 돌아가서 당일에 그 도모가 소멸하리로다"
+      ],
+      "raw_text_hashes": [
+        "9c94e091c51c58f1e5c61ca4654770dd0aa62d412d6b53f85e258a0772a52ec6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:146:5",
+      "sequence": 16347,
+      "chapter_label": "PSA 146",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 146,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 146,
+          "verse": 5
+        }
+      ],
+      "en": "Happy is he who has the God of Jacob for his help, whose hope is in the LORD, his God,",
+      "ko": "야곱의 하나님으로 자기 도움을 삼으며 여호와 자기 하나님에게 그 소망을 두는 자는 복이 있도다",
+      "source_text_hash": "86116cdc15a44f8946c732a294da35d6acab815e241439a584b5063077025022",
+      "translation_text_hash": "b28faddb2633b5a4d4e2311b20fa7b4c130e3890638f552a2d148b5bb3afc838",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 하나님으로 자기 도움을 삼으며 여호와 자기 하나님에게 그 소망을 두는 자는 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "b28faddb2633b5a4d4e2311b20fa7b4c130e3890638f552a2d148b5bb3afc838"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:146:6",
+      "sequence": 16348,
+      "chapter_label": "PSA 146",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 146,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 146,
+          "verse": 6
+        }
+      ],
+      "en": "who made heaven and earth, the sea, and all that is in them; who keeps truth forever;",
+      "ko": "여호와는 천지와 바다와 그 중의 만물을 지으시며 영원히 진실함을 지키시며",
+      "source_text_hash": "4bfa0905a0b0e15d1b03de05fc3c4b3bb44993c8618fa5f37447ca2ddd553754",
+      "translation_text_hash": "5f1c186cc173ef0921440cb3b7558763c3f36803c931db2907b4348f959f3080",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 천지와 바다와 그 중의 만물을 지으시며 영원히 진실함을 지키시며"
+      ],
+      "raw_text_hashes": [
+        "5f1c186cc173ef0921440cb3b7558763c3f36803c931db2907b4348f959f3080"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:146:7",
+      "sequence": 16349,
+      "chapter_label": "PSA 146",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 146,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 146,
+          "verse": 7
+        }
+      ],
+      "en": "who executes justice for the oppressed; who gives food to the hungry. The LORD frees the prisoners.",
+      "ko": "압박 당하는 자를 위하여 공의로 판단하시며 주린 자에게 식물을 주시는 자시로다 여호와께서 갇힌 자를 해방하시며",
+      "source_text_hash": "865721298cf1debdc54d41e32a4dbb68f9e927ee20f18f4baa7a609e35395c2f",
+      "translation_text_hash": "a4f5fc45b5db354569db1285f944b18c43829f7b11039ecaebbceca365025abb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압박 당하는 자를 위하여 공의로 판단하시며 주린 자에게 식물을 주시는 자시로다 여호와께서 갇힌 자를 해방하시며"
+      ],
+      "raw_text_hashes": [
+        "a4f5fc45b5db354569db1285f944b18c43829f7b11039ecaebbceca365025abb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:146:8",
+      "sequence": 16350,
+      "chapter_label": "PSA 146",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 146,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 146,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD opens the eyes of the blind. The LORD raises up those who are bowed down. The LORD loves the righteous.",
+      "ko": "여호와께서 소경의 눈을 여시며 여호와께서 비굴한 자를 일으키시며 여호와께서 의인을 사랑하시며",
+      "source_text_hash": "51ce8191a0032514c29e983218fb7b8f6c650a9211978e6edcb3ebac8828e514",
+      "translation_text_hash": "75ea5c50eeac5d8cc1f903811f3241cca9af3f795100b7ac3fc8803b6bea5dbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 소경의 눈을 여시며 여호와께서 비굴한 자를 일으키시며 여호와께서 의인을 사랑하시며"
+      ],
+      "raw_text_hashes": [
+        "75ea5c50eeac5d8cc1f903811f3241cca9af3f795100b7ac3fc8803b6bea5dbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:146:9",
+      "sequence": 16351,
+      "chapter_label": "PSA 146",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 146,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 146,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD preserves the foreigners. He upholds the fatherless and widow, but he turns the way of the wicked upside down.",
+      "ko": "여호와께서 객을 보호하시며 고아와 과부를 붙드시고 악인의 길은 굽게 하시는도다",
+      "source_text_hash": "be33b4269821ee8a061d001837b4328d5d5cc86958a151c8dd4609fe43bf7213",
+      "translation_text_hash": "0663e2a82e8ff731fdf6313b29f17d9f8fcde014877097e2c1fe73d995e715f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 객을 보호하시며 고아와 과부를 붙드시고 악인의 길은 굽게 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "0663e2a82e8ff731fdf6313b29f17d9f8fcde014877097e2c1fe73d995e715f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:146:10",
+      "sequence": 16352,
+      "chapter_label": "PSA 146",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 146,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 146,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD will reign forever; your God, O Zion, to all generations. Praise the LORD!",
+      "ko": "시온아 여호와 네 하나님은 영원히 대대에 통치하시리로다 할렐루야",
+      "source_text_hash": "0ab172c0a9f6967b9af74791e782ae5c1c53a9a1585b458a43826eebfce127cb",
+      "translation_text_hash": "8bab3a1077494a66540aa6db3ebc1be8a2635a1d3b0281e5948aec329f513d51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온아 여호와 네 하나님은 영원히 대대에 통치하시리로다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "8bab3a1077494a66540aa6db3ebc1be8a2635a1d3b0281e5948aec329f513d51"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NEH:chapter:008",
+  "unit_ordinal": 421,
+  "unit_label": "NEH 8",
+  "book_code": "NEH",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NEH:8:1",
+      "sequence": 12495,
+      "chapter_label": "NEH 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "All the people gathered themselves together as one man into the wide place that was in front of the water gate; and they spoke to Ezra the scribe to bring the book of the law of Moses, which the LORD had commanded to Israel.",
+      "ko": "이스라엘 자손이 그 본성에 거하였더니 칠월에 이르러는 모든 백성이 일제히 수문 앞 광장에 모여 학사 에스라에게 여호와께서 이스라엘에게 명하신 모세의 율법책을 가지고 오기를 청하매",
+      "source_text_hash": "be0367cc76bb273c19e79874a2a3749cf1c6a4217eae727aca0c6ab35921142f",
+      "translation_text_hash": "a1cefe38b28ffe427d181779b65411b13e86bb6e8cf0b40ff51ae7849341c157",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 그 본성에 거하였더니 칠월에 이르러는 모든 백성이 일제히 수문 앞 광장에 모여 학사 에스라에게 여호와께서 이스라엘에게 명하신 모세의 율법책을 가지고 오기를 청하매"
+      ],
+      "raw_text_hashes": [
+        "a1cefe38b28ffe427d181779b65411b13e86bb6e8cf0b40ff51ae7849341c157"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:2",
+      "sequence": 12496,
+      "chapter_label": "NEH 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "Ezra the priest brought the law before the assembly, both men and women, and all who could hear with understanding, on the first day of the seventh month.",
+      "ko": "칠월 일일에 제사장 에스라가 율법책을 가지고 남자, 여자 무릇 알아 들을만한 회중 앞에 이르러",
+      "source_text_hash": "0d7c7f33e2b88412099554bc570daebbd64b848f9ec72193c67b599923961c8a",
+      "translation_text_hash": "422b2a1e39f16e18801ffe5892be3498ee5cb80d8f595fcda8562ef6258a24e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠월 일일에 제사장 에스라가 율법책을 가지고 남자, 여자 무릇 알아 들을만한 회중 앞에 이르러"
+      ],
+      "raw_text_hashes": [
+        "422b2a1e39f16e18801ffe5892be3498ee5cb80d8f595fcda8562ef6258a24e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:3",
+      "sequence": 12497,
+      "chapter_label": "NEH 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "He read from it before the wide place that was in front of the water gate from early morning until midday, in the presence of the men and the women, and of those who could understand. The ears of all the people were attentive to the book of the law.",
+      "ko": "수문 앞 광장에서 새벽부터 오정까지 남자, 여자 무릇 알아 들을만한 자의 앞에서 읽으매 뭇백성이 그 율법책에 귀를 기울였는데",
+      "source_text_hash": "46f145cc1fb89e5a842c15286ce180bb694b86aca9ce2dc27c76033dd988094f",
+      "translation_text_hash": "11788a5aa61b39669701e7fa9027f33e3ab7030e7260e4c15e1398c9fcd61f0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수문 앞 광장에서 새벽부터 오정까지 남자, 여자 무릇 알아 들을만한 자의 앞에서 읽으매 뭇백성이 그 율법책에 귀를 기울였는데"
+      ],
+      "raw_text_hashes": [
+        "11788a5aa61b39669701e7fa9027f33e3ab7030e7260e4c15e1398c9fcd61f0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:4",
+      "sequence": 12498,
+      "chapter_label": "NEH 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Ezra the scribe stood on a pulpit of wood, which they had made for the purpose; and beside him stood Mattithiah, Shema, Anaiah, Uriah, Hilkiah, and Maaseiah, on his right hand; and on his left hand, Pedaiah, Mishael, Malchijah, Hashum, Hashbaddanah, Zechariah, and Meshullam.",
+      "ko": "때에 학사 에스라가 특별히 지은 나무 강단에 서매 그 우편에 선 자는 맛디댜와 스마와 아나야와 우리야와 힐기야와 마아세야요 그 좌편에 선 자는 브다야와 미사엘과 말기야와 하숨과 하스밧다나와 스가랴와 므술람이라",
+      "source_text_hash": "ecc072431e8f0de444d53929332b27036776fb94131f88c26848301e79614c70",
+      "translation_text_hash": "492bc8650ccf187c77ab85776ad6403d74e6efc2c1cd37ea55a8f81493384d7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 학사 에스라가 특별히 지은 나무 강단에 서매 그 우편에 선 자는 맛디댜와 스마와 아나야와 우리야와 힐기야와 마아세야요 그 좌편에 선 자는 브다야와 미사엘과 말기야와 하숨과 하스밧다나와 스가랴와 므술람이라"
+      ],
+      "raw_text_hashes": [
+        "492bc8650ccf187c77ab85776ad6403d74e6efc2c1cd37ea55a8f81493384d7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:5",
+      "sequence": 12499,
+      "chapter_label": "NEH 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Ezra opened the book in the sight of all the people (for he was above all the people), and when he opened it, all the people stood up.",
+      "ko": "학사 에스라가 모든 백성 위에 서서 저희 목전에 책을 펴니 책을 펼 때에 모든 백성이 일어서니라",
+      "source_text_hash": "0dc26b4b067bb27048cdc1bf67b3fc6e1bfe213851df5b0bc7d8f1eb577b3a2f",
+      "translation_text_hash": "2992375a6ce46c0afd5a0bfdf925e1d0e703bbb33494c7080d14d9e6834c6f64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "학사 에스라가 모든 백성 위에 서서 저희 목전에 책을 펴니 책을 펼 때에 모든 백성이 일어서니라"
+      ],
+      "raw_text_hashes": [
+        "2992375a6ce46c0afd5a0bfdf925e1d0e703bbb33494c7080d14d9e6834c6f64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:6",
+      "sequence": 12500,
+      "chapter_label": "NEH 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "Then Ezra blessed the LORD, the great God. All the people answered, “Amen, Amen,” with the lifting up of their hands. They bowed their heads, and worshiped the LORD with their faces to the ground.",
+      "ko": "에스라가 광대하신 하나님 여호와를 송축하매 모든 백성이 손을 들고 아멘 아멘 응답하고 몸을 굽혀 얼굴을 땅에 대고 여호와께 경배하였느니라",
+      "source_text_hash": "009fbb17b0e149607dd2a97d348000c39d801a8a35b0f9d05634239d4ed244b6",
+      "translation_text_hash": "1985ab444c3160558dca3229bbf30f13e129212e1226c7b8fd2beb8df4c8dff2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스라가 광대하신 하나님 여호와를 송축하매 모든 백성이 손을 들고 아멘 아멘 응답하고 몸을 굽혀 얼굴을 땅에 대고 여호와께 경배하였느니라"
+      ],
+      "raw_text_hashes": [
+        "1985ab444c3160558dca3229bbf30f13e129212e1226c7b8fd2beb8df4c8dff2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:7",
+      "sequence": 12501,
+      "chapter_label": "NEH 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Also Jeshua, Bani, Sherebiah, Jamin, Akkub, Shabbethai, Hodiah, Maaseiah, Kelita, Azariah, Jozabad, Hanan, Pelaiah, and the Levites, caused the people to understand the law; and the people stayed in their place.",
+      "ko": "예수아와 바니와 세레뱌와 야민과 악굽과 사브대와 호디야와 마아세야와 그리다와 아사랴와 요사밧과 하난과 블라야와 레위 사람들이 다 그 처소에 섰는 백성에게 율법을 깨닫게 하는데",
+      "source_text_hash": "b058d3a7f8d3785758cfe3dc31ff35623e5a780df0ed11129f69bacfecea9e44",
+      "translation_text_hash": "5f82fe50e0a84d87c1044d29b7593246ce5cdc5f5fe0818c432450551868ef19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수아와 바니와 세레뱌와 야민과 악굽과 사브대와 호디야와 마아세야와 그리다와 아사랴와 요사밧과 하난과 블라야와 레위 사람들이 다 그 처소에 섰는 백성에게 율법을 깨닫게 하는데"
+      ],
+      "raw_text_hashes": [
+        "5f82fe50e0a84d87c1044d29b7593246ce5cdc5f5fe0818c432450551868ef19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:8",
+      "sequence": 12502,
+      "chapter_label": "NEH 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "They read in the book, in the law of God, distinctly; and they gave the sense, so that they understood the reading.",
+      "ko": "하나님의 율법책을 낭독하고 그 뜻을 해석하여 백성으로 그 낭독하는 것을 다 깨닫게 하매",
+      "source_text_hash": "8aca107b55f269097278719cc92844fe6e75c4743c201560ea8f17f906a88649",
+      "translation_text_hash": "f623de993e261d1a654951b11b82f239923c86c2343c061034c3cf586fc67f0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 율법책을 낭독하고 그 뜻을 해석하여 백성으로 그 낭독하는 것을 다 깨닫게 하매"
+      ],
+      "raw_text_hashes": [
+        "f623de993e261d1a654951b11b82f239923c86c2343c061034c3cf586fc67f0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:9",
+      "sequence": 12503,
+      "chapter_label": "NEH 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "Nehemiah, who was the governor, Ezra the priest and scribe, and the Levites who taught the people said to all the people, “Today is holy to the LORD your God. Don’t mourn, nor weep.” For all the people wept when they heard the words of the law.",
+      "ko": "백성이 율법의 말씀을 듣고 다 우는지라 총독 느헤미야와 제사장겸 학사 에스라와 백성을 가르치는 레위 사람들이 모든 백성에게 이르기를 오늘은 너희 하나님 여호와의 성일이니 슬퍼하지 말며 울지 말라 하고",
+      "source_text_hash": "f6d710eb67d0f71601cf866fa9e373d3b87a1f37de1c2c4cae6bbdc531d9105b",
+      "translation_text_hash": "1ff8e8b0f41319d9588d938ecc59b4e9a16dea73260e62e2afb46f22f90a8dcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 율법의 말씀을 듣고 다 우는지라 총독 느헤미야와 제사장겸 학사 에스라와 백성을 가르치는 레위 사람들이 모든 백성에게 이르기를 오늘은 너희 하나님 여호와의 성일이니 슬퍼하지 말며 울지 말라 하고"
+      ],
+      "raw_text_hashes": [
+        "1ff8e8b0f41319d9588d938ecc59b4e9a16dea73260e62e2afb46f22f90a8dcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:10",
+      "sequence": 12504,
+      "chapter_label": "NEH 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Then he said to them, “Go your way. Eat the fat, drink the sweet, and send portions to him for whom nothing is prepared, for today is holy to our Lord. Don’t be grieved, for the joy of the LORD is your strength.”",
+      "ko": "느헤미야가 또 이르기를 너희는 가서 살진 것을 먹고 단 것을 마시되 예비치 못한 자에게는 너희가 나누어 주라 이 날은 우리 주의 성일이니 근심하지 말라 여호와를 기뻐하는 것이 너희의 힘이니라 하고",
+      "source_text_hash": "abe85c12e4e4e0e0075a5caa0570a52f64f8cd910cfadd1287dbe435f1a44f3e",
+      "translation_text_hash": "be49bf073d1a02eac468badecf50e195673a5b79557b5c4dee9da2b7eff8c050",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느헤미야가 또 이르기를 너희는 가서 살진 것을 먹고 단 것을 마시되 예비치 못한 자에게는 너희가 나누어 주라 이 날은 우리 주의 성일이니 근심하지 말라 여호와를 기뻐하는 것이 너희의 힘이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "be49bf073d1a02eac468badecf50e195673a5b79557b5c4dee9da2b7eff8c050"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:11",
+      "sequence": 12505,
+      "chapter_label": "NEH 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "So the Levites calmed all the people, saying, “Hold your peace, for the day is holy. Don’t be grieved.”",
+      "ko": "레위 사람들도 모든 백성을 정숙케 하여 이르기를 오늘은 성일이니 마땅히 종용하고 근심하지 말라 하매",
+      "source_text_hash": "f3370fa383eccfc0ddcc3ccf0c0d989bd1fd58af7a713ba04a94f0528c8b296d",
+      "translation_text_hash": "4dde911589dfa0637e4e09e9360bcddc4cdc1389c36a4e2a79ac6674fd3465c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람들도 모든 백성을 정숙케 하여 이르기를 오늘은 성일이니 마땅히 종용하고 근심하지 말라 하매"
+      ],
+      "raw_text_hashes": [
+        "4dde911589dfa0637e4e09e9360bcddc4cdc1389c36a4e2a79ac6674fd3465c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:12",
+      "sequence": 12506,
+      "chapter_label": "NEH 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "All the people went their way to eat, to drink, to send portions, and to celebrate, because they had understood the words that were declared to them.",
+      "ko": "모든 백성이 곧 가서 먹고 마시며 나누어 주고 크게 즐거워하였으니 이는 그 읽어 들린 말을 밝히 앎이니라",
+      "source_text_hash": "c4757ef5cf8cf24c3c004bfd29e5c44a4109eb773fe5a00118a253a9f60f4607",
+      "translation_text_hash": "1e4bb76ad7a9e181fe35664f7faa6930ea61959290e116e8fc51b3cb9df6e590",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 곧 가서 먹고 마시며 나누어 주고 크게 즐거워하였으니 이는 그 읽어 들린 말을 밝히 앎이니라"
+      ],
+      "raw_text_hashes": [
+        "1e4bb76ad7a9e181fe35664f7faa6930ea61959290e116e8fc51b3cb9df6e590"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:13",
+      "sequence": 12507,
+      "chapter_label": "NEH 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "On the second day, the heads of fathers’ households of all the people, the priests, and the Levites were gathered together to Ezra the scribe, to study the words of the law.",
+      "ko": "그 이튿날 뭇백성의 족장들과 제사장들과 레위 사람들이 율법의 말씀을 밝히 알고자 하여 학사 에스라의 곳에 모여서",
+      "source_text_hash": "8b9cb8713e3abbae571886b8d77ea3092f1fdbdd994bf2c99b741911b5a8e589",
+      "translation_text_hash": "243a088132b1e871817226e717e3b1373a9e27385db362f5d132f0311703a254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이튿날 뭇백성의 족장들과 제사장들과 레위 사람들이 율법의 말씀을 밝히 알고자 하여 학사 에스라의 곳에 모여서"
+      ],
+      "raw_text_hashes": [
+        "243a088132b1e871817226e717e3b1373a9e27385db362f5d132f0311703a254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:14",
+      "sequence": 12508,
+      "chapter_label": "NEH 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "They found written in the law how the LORD had commanded by Moses that the children of Israel should dwell in booths in the feast of the seventh month;",
+      "ko": "율법책을 본즉 여호와께서 모세로 명하시기를 이스라엘 자손은 칠월 절기에 초막에 거할찌니라 하였고",
+      "source_text_hash": "153e80bf252d6ed61621a8adb93107c7203024381b5aabc704f9553ffc0e25ee",
+      "translation_text_hash": "7c0ee84b136ac386251684499f27959d941720df3a68ae7e95e19c87bc2ddfe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법책을 본즉 여호와께서 모세로 명하시기를 이스라엘 자손은 칠월 절기에 초막에 거할찌니라 하였고"
+      ],
+      "raw_text_hashes": [
+        "7c0ee84b136ac386251684499f27959d941720df3a68ae7e95e19c87bc2ddfe4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:15",
+      "sequence": 12509,
+      "chapter_label": "NEH 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "and that they should publish and proclaim in all their cities and in Jerusalem, saying, “Go out to the mountain, and get olive branches, branches of wild olive, myrtle branches, palm branches, and branches of thick trees, to make temporary shelters, as it is written.”",
+      "ko": "또 일렀으되 모든 성읍과 예루살렘에 공포하여 이르기를 너희는 산에 가서 감람나무 가지와 들 감람나무 가지와 화석류나무 가지와 종려나무 가지와 기타 무성한 나무 가지를 취하여 기록한바를 따라 초막을 지으라 하라 하였는지라",
+      "source_text_hash": "448b968dbcf3bcf04b06b8add0390a6e6f5ec612841c1e58f39fa9adb75c3707",
+      "translation_text_hash": "77931264b4f88382fa2e38170067d59a8fdf6af4661e5a4b6113ef1d4ad5ba1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 일렀으되 모든 성읍과 예루살렘에 공포하여 이르기를 너희는 산에 가서 감람나무 가지와 들 감람나무 가지와 화석류나무 가지와 종려나무 가지와 기타 무성한 나무 가지를 취하여 기록한바를 따라 초막을 지으라 하라 하였는지라"
+      ],
+      "raw_text_hashes": [
+        "77931264b4f88382fa2e38170067d59a8fdf6af4661e5a4b6113ef1d4ad5ba1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:16",
+      "sequence": 12510,
+      "chapter_label": "NEH 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "So the people went out and brought them, and made themselves temporary shelters, everyone on the roof of his house, in their courts, in the courts of God’s house, in the wide place of the water gate, and in the wide place of Ephraim’s gate.",
+      "ko": "백성이 이에 나가서 나무 가지를 취하여 혹은 지붕 위에, 혹은 뜰 안에, 혹은 하나님의 전 뜰에, 혹은 수문 광장에, 혹은 에브라임 문 광장에 초막을 짓되",
+      "source_text_hash": "66907ccd090f38ac87fb4196265cd7733fa77ce59ed8b4d88399773841948956",
+      "translation_text_hash": "e471ef4481f7ede10dff89877fdd7c007bdd160cbd357e978f28c13466e55ad6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 이에 나가서 나무 가지를 취하여 혹은 지붕 위에, 혹은 뜰 안에, 혹은 하나님의 전 뜰에, 혹은 수문 광장에, 혹은 에브라임 문 광장에 초막을 짓되"
+      ],
+      "raw_text_hashes": [
+        "e471ef4481f7ede10dff89877fdd7c007bdd160cbd357e978f28c13466e55ad6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:17",
+      "sequence": 12511,
+      "chapter_label": "NEH 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "All the assembly of those who had come back out of the captivity made temporary shelters and lived in the temporary shelters, for since the days of Joshua the son of Nun to that day the children of Israel had not done so. There was very great gladness.",
+      "ko": "사로잡혔다가 돌아온 회 무리가 다 초막을 짓고 그 안에 거하니 눈의 아들 여호수아 때로부터 그 날까지 이스라엘 자손이 이같이 행함이 없었으므로 이에 크게 즐거워하며",
+      "source_text_hash": "128b36f087c42bfc82eb9097df1bfb326504aaf1250a2d56d23792466df4cdae",
+      "translation_text_hash": "a9962f4f8283b2a83616c1d36aca042898b3a22d83528a4099c425b9c88cc0cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사로잡혔다가 돌아온 회 무리가 다 초막을 짓고 그 안에 거하니 눈의 아들 여호수아 때로부터 그 날까지 이스라엘 자손이 이같이 행함이 없었으므로 이에 크게 즐거워하며"
+      ],
+      "raw_text_hashes": [
+        "a9962f4f8283b2a83616c1d36aca042898b3a22d83528a4099c425b9c88cc0cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:8:18",
+      "sequence": 12512,
+      "chapter_label": "NEH 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "NEH",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Also day by day, from the first day to the last day, he read in the book of the law of God. They kept the feast seven days; and on the eighth day was a solemn assembly, according to the ordinance.",
+      "ko": "에스라는 첫날부터 끝날까지 날마다 하나님의 율법책을 낭독하고 무리가 칠일 동안 절기를 지키고 제 팔일에 규례를 따라 성회를 열었느니라",
+      "source_text_hash": "33ecaa19e8197ce9a0f7b95f04bcedfe98544ac3349b5db58833e8eb4fc3f23c",
+      "translation_text_hash": "8d628d9a23b2a339a2b20441bf3853e1c0849f53be98fbe665fcb58ce5f96efe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스라는 첫날부터 끝날까지 날마다 하나님의 율법책을 낭독하고 무리가 칠일 동안 절기를 지키고 제 팔일에 규례를 따라 성회를 열었느니라"
+      ],
+      "raw_text_hashes": [
+        "8d628d9a23b2a339a2b20441bf3853e1c0849f53be98fbe665fcb58ce5f96efe"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "storymemory-precision-pack-1.0.schema.json",
+  "title": "StoryMemory Precision Pack 1.0",
+  "type": "object",
+  "required": ["schema", "id", "kind", "version", "compatibility", "payload"],
+  "properties": {
+    "schema": {"const": "storymemory-precision-pack-1.0"},
+    "id": {"type": "string", "minLength": 1},
+    "name": {"type": "string"},
+    "kind": {"enum": ["knowledge", "harness", "search", "companion"]},
+    "version": {"type": "string", "minLength": 1},
+    "priority": {"type": "number"},
+    "creator": {"type": "string"},
+    "trustTier": {"type": "string"},
+    "verificationScope": {"type": "string"},
+    "artifactFingerprint": {"type": "string"},
+    "compatibility": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": {"enum": ["exact-fingerprint", "source-id", "work-revision"]},
+        "sourceFingerprint": {"type": "string"},
+        "sourceId": {"type": "string"},
+        "sourceRevision": {"type": "string"},
+        "workKey": {"type": "string"},
+        "language": {"type": "string"},
+        "locatorScheme": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "rights": {"type": "object"},
+    "payload": {
+      "type": "object",
+      "properties": {
+        "aliases": {"type": "array"},
+        "knowledge": {"type": "array"},
+        "searchHints": {"type": "array"},
+        "policies": {"type": "object"}
+      },
+      "additionalProperties": true
+    },
+    "metadata": {"type": "object"}
+  },
+  "additionalProperties": true
+}

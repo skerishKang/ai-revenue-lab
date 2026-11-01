@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:SNG:chapter:001",
+  "unit_ordinal": 672,
+  "unit_label": "SNG 1",
+  "book_code": "SNG",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:SNG:1:1",
+      "sequence": 17539,
+      "chapter_label": "SNG 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The Song of songs, which is Solomon’s. Beloved",
+      "ko": "솔로몬의 아가라",
+      "source_text_hash": "b714c53c116e247a42733580bdc8413ecaf9967a207f09189372337b483bb741",
+      "translation_text_hash": "4e8ab35b5df42999ebbef019c869407f00d4c0a0ae1ab34b7d33282b51d79d46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 아가라"
+      ],
+      "raw_text_hashes": [
+        "4e8ab35b5df42999ebbef019c869407f00d4c0a0ae1ab34b7d33282b51d79d46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:2",
+      "sequence": 17540,
+      "chapter_label": "SNG 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Let him kiss me with the kisses of his mouth; for your love is better than wine.",
+      "ko": "내게 입맞추기를 원하니 네 사랑이 포도주보다 나음이로구나",
+      "source_text_hash": "b40571e0bf0f475d71e76e7a36c152000df15cbcb4e34c24218b84c2e866f740",
+      "translation_text_hash": "b216a48c66b2f273b78191c94bf46c81168d9fb5726d6acce41632b8f54280cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 입맞추기를 원하니 네 사랑이 포도주보다 나음이로구나"
+      ],
+      "raw_text_hashes": [
+        "b216a48c66b2f273b78191c94bf46c81168d9fb5726d6acce41632b8f54280cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:3",
+      "sequence": 17541,
+      "chapter_label": "SNG 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Your oils have a pleasing fragrance. Your name is oil poured out, therefore the virgins love you.",
+      "ko": "네 기름이 향기로와 아름답고 네 이름이 쏟은 향기름 같으므로 처녀들이 너를 사랑하는구나",
+      "source_text_hash": "3365d13e26cededd3d73f30b8996e58e179998bf99d01ff24863bff2052f9f24",
+      "translation_text_hash": "5560c3dd9c9603a4567359efa3dbf15bad6ac910127c8fd9138a4ccd1fd2a4b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 기름이 향기로와 아름답고 네 이름이 쏟은 향기름 같으므로 처녀들이 너를 사랑하는구나"
+      ],
+      "raw_text_hashes": [
+        "5560c3dd9c9603a4567359efa3dbf15bad6ac910127c8fd9138a4ccd1fd2a4b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:4",
+      "sequence": 17542,
+      "chapter_label": "SNG 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Take me away with you. Let’s hurry. The king has brought me into his rooms. Friends We will be glad and rejoice in you. We will praise your love more than wine! Beloved They are right to love you.",
+      "ko": "왕이 나를 침궁으로 이끌어 들이시니 너는 나를 인도하라 우리가 너를 따라 달려가리라 우리가 너를 인하여 기뻐하며 즐거워하니 네 사랑이 포도주에서 지남이라 처녀들이 너를 사랑함이 마땅하니라",
+      "source_text_hash": "169cbb83acc980f42e0451053c2d58cb141f61e7ea1228d4ec897c3882446d00",
+      "translation_text_hash": "1d1258069802da378d00e3766be0becb759e026d654d14618dce801cd3957565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 나를 침궁으로 이끌어 들이시니 너는 나를 인도하라 우리가 너를 따라 달려가리라 우리가 너를 인하여 기뻐하며 즐거워하니 네 사랑이 포도주에서 지남이라 처녀들이 너를 사랑함이 마땅하니라"
+      ],
+      "raw_text_hashes": [
+        "1d1258069802da378d00e3766be0becb759e026d654d14618dce801cd3957565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:5",
+      "sequence": 17543,
+      "chapter_label": "SNG 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "I am dark, but lovely, you daughters of Jerusalem, like Kedar’s tents, like Solomon’s curtains.",
+      "ko": "예루살렘 여자들아 내가 비록 검으나 아름다우니 게달의 장막 같을찌라도 솔로몬의 휘장과도 같구나",
+      "source_text_hash": "b4d30d43655ed4ccf16a430f90c0bde3197c8f3fd0d0de4c0f63668963411444",
+      "translation_text_hash": "adf9e75b18f1b236e6ab4bc3e739ee62a003a14dab92833ff512d7356ab98abf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 여자들아 내가 비록 검으나 아름다우니 게달의 장막 같을찌라도 솔로몬의 휘장과도 같구나"
+      ],
+      "raw_text_hashes": [
+        "adf9e75b18f1b236e6ab4bc3e739ee62a003a14dab92833ff512d7356ab98abf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:6",
+      "sequence": 17544,
+      "chapter_label": "SNG 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Don’t stare at me because I am dark, because the sun has scorched me. My mother’s sons were angry with me. They made me keeper of the vineyards. I haven’t kept my own vineyard.",
+      "ko": "내가 일광에 쬐어서 거무스름할찌라도 흘겨보지 말 것은 내 어미의 아들들이 나를 노하여 포도원지기를 삼았음이라 나의 포도원은 내가 지키지 못하였구나",
+      "source_text_hash": "c58db0471a54870664af3392b5518d7dfc61eca9a56458876409ce51681d9904",
+      "translation_text_hash": "76ed3d1405c8ac624be62f154f51bd35cc45965b4aabecd8ced0132f5798a75e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 일광에 쬐어서 거무스름할찌라도 흘겨보지 말 것은 내 어미의 아들들이 나를 노하여 포도원지기를 삼았음이라 나의 포도원은 내가 지키지 못하였구나"
+      ],
+      "raw_text_hashes": [
+        "76ed3d1405c8ac624be62f154f51bd35cc45965b4aabecd8ced0132f5798a75e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:7",
+      "sequence": 17545,
+      "chapter_label": "SNG 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Tell me, you whom my soul loves, where you graze your flock, where you rest them at noon; for why should I be as one who is veiled beside the flocks of your companions? Lover",
+      "ko": "내 마음에 사랑하는 자야 너의 양떼 먹이는 곳과 오정에 쉬게 하는 곳을 내게 고하라 내가 네 동무 양떼 곁에서 어찌 얼굴을 가리운 자 같이 되랴",
+      "source_text_hash": "6604c76b529cc2868789252a48899d9e9e8393c0b609cfc5cacb2e2f0913440d",
+      "translation_text_hash": "b7d7ecdf8b7ba51e6c7fee01eea9dba4eb7f89b13982972c3ff41f351fc68e00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음에 사랑하는 자야 너의 양떼 먹이는 곳과 오정에 쉬게 하는 곳을 내게 고하라 내가 네 동무 양떼 곁에서 어찌 얼굴을 가리운 자 같이 되랴"
+      ],
+      "raw_text_hashes": [
+        "b7d7ecdf8b7ba51e6c7fee01eea9dba4eb7f89b13982972c3ff41f351fc68e00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:8",
+      "sequence": 17546,
+      "chapter_label": "SNG 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "If you don’t know, most beautiful among women, follow the tracks of the sheep. Graze your young goats beside the shepherds’ tents.",
+      "ko": "여인 중에 어여쁜 자야 네가 알지 못하겠거든 양떼의 발자취를 따라 목자들의 장막 곁에서 너의 염소 새끼를 먹일찌니라",
+      "source_text_hash": "a041dbc569924b358a5991259da549b4f649e52c9bbaefd295a578201ef6adaf",
+      "translation_text_hash": "09ad8073d16254372aac7b832678ea54136a7d1af4c494c11203a849c355d7ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인 중에 어여쁜 자야 네가 알지 못하겠거든 양떼의 발자취를 따라 목자들의 장막 곁에서 너의 염소 새끼를 먹일찌니라"
+      ],
+      "raw_text_hashes": [
+        "09ad8073d16254372aac7b832678ea54136a7d1af4c494c11203a849c355d7ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:9",
+      "sequence": 17547,
+      "chapter_label": "SNG 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "I have compared you, my love, to a steed in Pharaoh’s chariots.",
+      "ko": "내 사랑아 내가 너를 바로의 병거의 준마에 비하였구나",
+      "source_text_hash": "1fc833d596a5d2ac828d82a60a3f73182f6a2e537a77e95b547d4768d8b66b29",
+      "translation_text_hash": "60d523dbe0bcd0ca2389fed5ebe39acb81be86e050227bf0b5890c7fa9dcaddf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 사랑아 내가 너를 바로의 병거의 준마에 비하였구나"
+      ],
+      "raw_text_hashes": [
+        "60d523dbe0bcd0ca2389fed5ebe39acb81be86e050227bf0b5890c7fa9dcaddf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:10",
+      "sequence": 17548,
+      "chapter_label": "SNG 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Your cheeks are beautiful with earrings, your neck with strings of jewels. Friends",
+      "ko": "네 두 뺨은 땋은 머리털로, 네 목은 구슬 꿰미로 아름답구나",
+      "source_text_hash": "c2bd8bca0189d89060462731d0046fd4a7a7f6409e2c09e51aa3e04f98dfdda7",
+      "translation_text_hash": "bf0568d2e561647bf675ca68204da3a77ee4ff2105b0afd3116c7307a1423805",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 두 뺨은 땋은 머리털로, 네 목은 구슬 꿰미로 아름답구나"
+      ],
+      "raw_text_hashes": [
+        "bf0568d2e561647bf675ca68204da3a77ee4ff2105b0afd3116c7307a1423805"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:11",
+      "sequence": 17549,
+      "chapter_label": "SNG 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "We will make you earrings of gold, with studs of silver. Beloved",
+      "ko": "우리가 너를 위하여 금사슬을 은을 박아 만들리라",
+      "source_text_hash": "97845e540ebf5eb88fe4243564bcf1a6c251d19ff9dedf02158b5bf0fab417b0",
+      "translation_text_hash": "7adeb89c59624d0546b6e832a9663ccc27ce93d42bdb54c18949b04907735c47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 너를 위하여 금사슬을 은을 박아 만들리라"
+      ],
+      "raw_text_hashes": [
+        "7adeb89c59624d0546b6e832a9663ccc27ce93d42bdb54c18949b04907735c47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:12",
+      "sequence": 17550,
+      "chapter_label": "SNG 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "While the king sat at his table, my perfume spread its fragrance.",
+      "ko": "왕이 상에 앉았을 때에 나의 나도 기름이 향기를 토하였구나",
+      "source_text_hash": "7318c6bce9e10ceea254c4003d0f3de7b0e7472dbca0feafd62cc04c9c34d2d4",
+      "translation_text_hash": "d326b161d85882dc3933fe64a092b1435b3d491a0c338061d9901ad5457f9bb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 상에 앉았을 때에 나의 나도 기름이 향기를 토하였구나"
+      ],
+      "raw_text_hashes": [
+        "d326b161d85882dc3933fe64a092b1435b3d491a0c338061d9901ad5457f9bb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:13",
+      "sequence": 17551,
+      "chapter_label": "SNG 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "My beloved is to me a sachet of myrrh, that lies between my breasts.",
+      "ko": "나의 사랑하는 자는 내 품 가운데 몰약 향낭이요",
+      "source_text_hash": "7288686a64ba33a5c19f9f8330ab23f9f1b3911b0c1d9444577d3520a92fe84e",
+      "translation_text_hash": "2765651dfd91b4f8530617215a437c0d6df4954624873c68dc490891e6b44765",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자는 내 품 가운데 몰약 향낭이요"
+      ],
+      "raw_text_hashes": [
+        "2765651dfd91b4f8530617215a437c0d6df4954624873c68dc490891e6b44765"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:14",
+      "sequence": 17552,
+      "chapter_label": "SNG 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "My beloved is to me a cluster of henna blossoms from the vineyards of En Gedi. Lover",
+      "ko": "나의 사랑하는 자는 내게 엔게디 포도원의 고벨화 송이로구나",
+      "source_text_hash": "0cb040061e8b064755ca321b201f2ba4c7460b9a8c980c3402906c02052b1551",
+      "translation_text_hash": "2f7d9da18b0b477ad4df8f5cc2e1410bc838d3aade098d24199ad6d6ce8e6e2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자는 내게 엔게디 포도원의 고벨화 송이로구나"
+      ],
+      "raw_text_hashes": [
+        "2f7d9da18b0b477ad4df8f5cc2e1410bc838d3aade098d24199ad6d6ce8e6e2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:15",
+      "sequence": 17553,
+      "chapter_label": "SNG 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "Behold, you are beautiful, my love. Behold, you are beautiful. Your eyes are like doves. Beloved",
+      "ko": "내 사랑아 너는 어여쁘고 어여쁘다 네 눈이 비둘기 같구나",
+      "source_text_hash": "460ef609a2379a2e4c4818459b275d2a94cce74b8cb6083c65f51744bae623dd",
+      "translation_text_hash": "ebfdd279fcfe8bce7c911ec62bbd62e8d8fee81fbea60124db8520dbdc32389c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 사랑아 너는 어여쁘고 어여쁘다 네 눈이 비둘기 같구나"
+      ],
+      "raw_text_hashes": [
+        "ebfdd279fcfe8bce7c911ec62bbd62e8d8fee81fbea60124db8520dbdc32389c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:16",
+      "sequence": 17554,
+      "chapter_label": "SNG 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Behold, you are beautiful, my beloved, yes, pleasant; and our couch is verdant. Lover",
+      "ko": "나의 사랑하는 자야 너는 어여쁘고 화창하다 우리의 침상은 푸르고",
+      "source_text_hash": "f06803c77ad399a0335fa3927f4aa3039e4f5b8a8d481cd452c1e943d9d64c92",
+      "translation_text_hash": "8103290e69f9328b0d3cbcd8b45e67b46ebda1e21495dfaaf45448053d3ab18c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자야 너는 어여쁘고 화창하다 우리의 침상은 푸르고"
+      ],
+      "raw_text_hashes": [
+        "8103290e69f9328b0d3cbcd8b45e67b46ebda1e21495dfaaf45448053d3ab18c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:1:17",
+      "sequence": 17555,
+      "chapter_label": "SNG 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "SNG",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "The beams of our house are cedars. Our rafters are firs.",
+      "ko": "우리 집은 백향목 들보, 잣나무 석가래로구나",
+      "source_text_hash": "0e8c7c7b079bbb004a5e71daae5373d69e71b09dd79fd79be22d1b0117a7257b",
+      "translation_text_hash": "9c83481ada2507bcba32bcf91e17897fdc62a12ea96e2444412a3ef6bb7d7326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 집은 백향목 들보, 잣나무 석가래로구나"
+      ],
+      "raw_text_hashes": [
+        "9c83481ada2507bcba32bcf91e17897fdc62a12ea96e2444412a3ef6bb7d7326"
+      ]
+    }
+  ]
+}

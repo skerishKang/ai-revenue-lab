@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:030",
+  "unit_ordinal": 397,
+  "unit_label": "2CH 30",
+  "book_code": "2CH",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:30:1",
+      "sequence": 11829,
+      "chapter_label": "2CH 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "Hezekiah sent to all Israel and Judah, and wrote letters also to Ephraim and Manasseh, that they should come to the LORD’s house at Jerusalem, to keep the Passover to the LORD, the God of Israel.",
+      "ko": "히스기야가 온 이스라엘과 유다에 보내고 또 에브라임과 므낫세에 편지를 보내어 예루살렘 여호와의 전에 와서 이스라엘 하나님 여호와를 위하여 유월절을 지키라 하니라",
+      "source_text_hash": "cc0979fe01f66aea02c0dfae5bd744d9ffb2381c8d3a1250cf8f721298bb44d7",
+      "translation_text_hash": "529d7b8492845244e6c3c7cf64b54d1c63c5f304ad42c6c8143e23b02ab91184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 온 이스라엘과 유다에 보내고 또 에브라임과 므낫세에 편지를 보내어 예루살렘 여호와의 전에 와서 이스라엘 하나님 여호와를 위하여 유월절을 지키라 하니라"
+      ],
+      "raw_text_hashes": [
+        "529d7b8492845244e6c3c7cf64b54d1c63c5f304ad42c6c8143e23b02ab91184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:2",
+      "sequence": 11830,
+      "chapter_label": "2CH 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "For the king had taken counsel with his princes and all the assembly in Jerusalem to keep the Passover in the second month.",
+      "ko": "왕이 방백들과 예루살렘 온 회중으로 더불어 의논하고 이월에 유월절을 지키려 하였으니",
+      "source_text_hash": "1a3c985e462eb40fa004cf2fe4b2916c677e6ff1bd4fe94810326c6684cbcb45",
+      "translation_text_hash": "2bbabbd6f638b11f24b3bc26cb77eb453ec9ca6803322c5bcd7f3f06dd9dbb84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 방백들과 예루살렘 온 회중으로 더불어 의논하고 이월에 유월절을 지키려 하였으니"
+      ],
+      "raw_text_hashes": [
+        "2bbabbd6f638b11f24b3bc26cb77eb453ec9ca6803322c5bcd7f3f06dd9dbb84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:3",
+      "sequence": 11831,
+      "chapter_label": "2CH 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "For they could not keep it at that time, because the priests had not sanctified themselves in sufficient number, and the people had not gathered themselves together to Jerusalem.",
+      "ko": "이는 성결케한 제사장이 부족하고 백성도 예루살렘에 모이지 못한고로 그 정한 때에 지킬수 없었음이라",
+      "source_text_hash": "9d041b466b4cc792e3f43ab5fdfb218e15bdd92b597a6157eb3c9501697a5f37",
+      "translation_text_hash": "c383c9e7e0222408beb589f6383f5d39e11ca985ebdb23b488b08a461c1ba8ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 성결케한 제사장이 부족하고 백성도 예루살렘에 모이지 못한고로 그 정한 때에 지킬수 없었음이라"
+      ],
+      "raw_text_hashes": [
+        "c383c9e7e0222408beb589f6383f5d39e11ca985ebdb23b488b08a461c1ba8ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:4",
+      "sequence": 11832,
+      "chapter_label": "2CH 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "The thing was right in the eyes of the king and of all the assembly.",
+      "ko": "왕과 온회중이 이 일을 선히 여기고",
+      "source_text_hash": "fd26900a25adb531ca3d1a7be55a77db9c749e29b62023beeed6ae4b4d44369b",
+      "translation_text_hash": "b06eb20d31881193ba51fbf4e5c8d261068c20f7b0ebaff65537fa51ff04d96d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕과 온회중이 이 일을 선히 여기고"
+      ],
+      "raw_text_hashes": [
+        "b06eb20d31881193ba51fbf4e5c8d261068c20f7b0ebaff65537fa51ff04d96d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:5",
+      "sequence": 11833,
+      "chapter_label": "2CH 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "So they established a decree to make proclamation throughout all Israel, from Beersheba even to Dan, that they should come to keep the Passover to the LORD, the God of Israel, at Jerusalem, for they had not kept it in great numbers in the way it is written.",
+      "ko": "드디어 명을 발하여 브엘세바에서부터 단까지 온 이스라엘에 반포하여 일제히 예루살렘으로 와서 이스라엘 하나님 여호와의 유월절을 지키라 하니 이는 기록한 규례대로 오래동안 지키지 못하였음이더라",
+      "source_text_hash": "1f40763e5115aed7f9284f6b8e89a934f7bb352b493d49b8a66be3a89a21239e",
+      "translation_text_hash": "3f2031a34e08d206f0c91d95a5a953f4e4cd83c38a4b72a9cc7a232fefe8714f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드디어 명을 발하여 브엘세바에서부터 단까지 온 이스라엘에 반포하여 일제히 예루살렘으로 와서 이스라엘 하나님 여호와의 유월절을 지키라 하니 이는 기록한 규례대로 오래동안 지키지 못하였음이더라"
+      ],
+      "raw_text_hashes": [
+        "3f2031a34e08d206f0c91d95a5a953f4e4cd83c38a4b72a9cc7a232fefe8714f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:6",
+      "sequence": 11834,
+      "chapter_label": "2CH 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "So the couriers went with the letters from the king and his princes throughout all Israel and Judah, according to the commandment of the king, saying, “You children of Israel, turn again to the LORD, the God of Abraham, Isaac, and Israel, that he may return to the remnant of you that have escaped out of the hand of the kings of Assyria.",
+      "ko": "보발군들이 왕과 방백들의 편지를 받아가지고 왕의 명을 좇아 온 이스라엘과 유다에 두루 다니며 전하니 일렀으되 이스라엘 자손들아 너희는 아브라함과 이삭과 이스라엘의 하나님 여호와께로 돌아 오라 그리하면 저가 너희 남은자 곧 앗수르 왕의 손에서 벗어난 자에게로 돌아오시리라",
+      "source_text_hash": "8f2398af67bed4ee16a160aa9e75cab896beb28820a9ed44a2e9b81551da5bd8",
+      "translation_text_hash": "403513db3d1e7f005d17c01aa04e362b49e326c2a0ac251ab5dc3ef3374ec145",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보발군들이 왕과 방백들의 편지를 받아가지고 왕의 명을 좇아 온 이스라엘과 유다에 두루 다니며 전하니 일렀으되 이스라엘 자손들아 너희는 아브라함과 이삭과 이스라엘의 하나님 여호와께로 돌아 오라 그리하면 저가 너희 남은자 곧 앗수르 왕의 손에서 벗어난 자에게로 돌아오시리라"
+      ],
+      "raw_text_hashes": [
+        "403513db3d1e7f005d17c01aa04e362b49e326c2a0ac251ab5dc3ef3374ec145"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:7",
+      "sequence": 11835,
+      "chapter_label": "2CH 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "Don’t be like your fathers and like your brothers, who trespassed against the LORD, the God of their fathers, so that he gave them up to desolation, as you see.",
+      "ko": "너희 열조와 너희 형제 같이 하지 말라 저희가 그 열조의 하나님 여호와께 범죄한고로 여호와께서 멸망에 붙이신 것을 너희가 목도하는 바니라",
+      "source_text_hash": "6e993aa2b6fd5444385dee8f6003a21dff6a96a1632829b382b28b1983b34901",
+      "translation_text_hash": "223d3da4549053446044dd83a592fdb50b8a43781309649dc816767570106936",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 열조와 너희 형제 같이 하지 말라 저희가 그 열조의 하나님 여호와께 범죄한고로 여호와께서 멸망에 붙이신 것을 너희가 목도하는 바니라"
+      ],
+      "raw_text_hashes": [
+        "223d3da4549053446044dd83a592fdb50b8a43781309649dc816767570106936"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:8",
+      "sequence": 11836,
+      "chapter_label": "2CH 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "Now don’t be stiff-necked, as your fathers were, but yield yourselves to the LORD, and enter into his sanctuary, which he has sanctified forever, and serve the LORD your God, that his fierce anger may turn away from you.",
+      "ko": "그런즉 너희 열조 같이 목을 곧게 하지 말고 여호와께 귀순하여 영원히 거룩케 하신 전에 들어가서 너희 하나님 여호와를 섬겨 그 진노가 너희에게서 떠나게 하라",
+      "source_text_hash": "d5c1d97acf5293424fa9251d51185e1e167cfd6134a6cca074418669b2c0b551",
+      "translation_text_hash": "a68bf06e9dbf72a9435c9e7f68df6ac98fd374739434fe406f43849404b863c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희 열조 같이 목을 곧게 하지 말고 여호와께 귀순하여 영원히 거룩케 하신 전에 들어가서 너희 하나님 여호와를 섬겨 그 진노가 너희에게서 떠나게 하라"
+      ],
+      "raw_text_hashes": [
+        "a68bf06e9dbf72a9435c9e7f68df6ac98fd374739434fe406f43849404b863c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:9",
+      "sequence": 11837,
+      "chapter_label": "2CH 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "For if you turn again to the LORD, your brothers and your children will find compassion with those who led them captive, and will come again into this land, because the LORD your God is gracious and merciful, and will not turn away his face from you if you return to him.”",
+      "ko": "너희가 만일 여호와께 돌아오면 너희 형제와 너희 자녀가 사로잡은 자에게서 자비를 입어 다시 이 땅으로 돌아오리라 너희 하나님 여호와는 은혜로우시고 자비하신지라 너희가 그에게로 돌아오면 그 얼굴을 너희에게서 돌이키지 아니하시리라 하였더라",
+      "source_text_hash": "aefab01b10a22a409378bf0a8524c63a39b93c5c4ac7b7f66d890a09fe3f204a",
+      "translation_text_hash": "c74c243cf578494239bac90800f97465a10a53f15d624911b174ca65b3c340f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 여호와께 돌아오면 너희 형제와 너희 자녀가 사로잡은 자에게서 자비를 입어 다시 이 땅으로 돌아오리라 너희 하나님 여호와는 은혜로우시고 자비하신지라 너희가 그에게로 돌아오면 그 얼굴을 너희에게서 돌이키지 아니하시리라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "c74c243cf578494239bac90800f97465a10a53f15d624911b174ca65b3c340f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:10",
+      "sequence": 11838,
+      "chapter_label": "2CH 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "So the couriers passed from city to city through the country of Ephraim and Manasseh, even to Zebulun, but people ridiculed them and mocked them.",
+      "ko": "보발군이 에브라임과 므낫세 지방 각 성에 두루 다녀 스불론까지 이르렀으나 사람들이 저희를 조롱하며 비웃었더라",
+      "source_text_hash": "62d3976a0bed16314469729676f251f50ff7c16cc04396ee3568f541c7c2b189",
+      "translation_text_hash": "10d1264f07bca720310893ca59f0ef710c57eb58e0f96ce708c5faab682f2444",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보발군이 에브라임과 므낫세 지방 각 성에 두루 다녀 스불론까지 이르렀으나 사람들이 저희를 조롱하며 비웃었더라"
+      ],
+      "raw_text_hashes": [
+        "10d1264f07bca720310893ca59f0ef710c57eb58e0f96ce708c5faab682f2444"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:11",
+      "sequence": 11839,
+      "chapter_label": "2CH 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "Nevertheless some men of Asher, Manasseh, and Zebulun humbled themselves and came to Jerusalem.",
+      "ko": "그러나 아셀과 므낫세와 스불론 중에서 몇사람이 스스로 겸비하여 예루살렘에 이르렀고",
+      "source_text_hash": "2f595c976e19346b37e03550317f603f62e1913149b2af800acbcbd3e76e666f",
+      "translation_text_hash": "15f825c8d915746b1c876eab19bed414a7fb30f8719461d5162656644a095b52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 아셀과 므낫세와 스불론 중에서 몇사람이 스스로 겸비하여 예루살렘에 이르렀고"
+      ],
+      "raw_text_hashes": [
+        "15f825c8d915746b1c876eab19bed414a7fb30f8719461d5162656644a095b52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:12",
+      "sequence": 11840,
+      "chapter_label": "2CH 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "Also the hand of God came on Judah to give them one heart, to do the commandment of the king and of the princes by the LORD’s word.",
+      "ko": "하나님이 또한 유다 사람들을 감동시키사 저희로 왕과 방백들이 여호와의 말씀대로 전한 명령을 일심으로 준행하게 하셨더라",
+      "source_text_hash": "4a30dd55ada5086f57c9594999b86afb34abdebc8cf3b5ca6bed6efcecdaa0df",
+      "translation_text_hash": "f7ff2578e5ee2805f44d13281aed7166a00adb958e5abdf91604c3309ad7bc76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 또한 유다 사람들을 감동시키사 저희로 왕과 방백들이 여호와의 말씀대로 전한 명령을 일심으로 준행하게 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "f7ff2578e5ee2805f44d13281aed7166a00adb958e5abdf91604c3309ad7bc76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:13",
+      "sequence": 11841,
+      "chapter_label": "2CH 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "Many people assembled at Jerusalem to keep the feast of unleavened bread in the second month, a very great assembly.",
+      "ko": "이월에 백성이 무교절을 지키려 하여 예루살렘에 많이 모이니 심히 큰 회라",
+      "source_text_hash": "c6c0ec5b9d730d8e7d26cfe7e0741e24af8739264af1ab80e1312bc5ba937a47",
+      "translation_text_hash": "c18c035e2349af08d384d0db881d8048e89ff91e2bf223a8632bb662adc4f73a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이월에 백성이 무교절을 지키려 하여 예루살렘에 많이 모이니 심히 큰 회라"
+      ],
+      "raw_text_hashes": [
+        "c18c035e2349af08d384d0db881d8048e89ff91e2bf223a8632bb662adc4f73a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:14",
+      "sequence": 11842,
+      "chapter_label": "2CH 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "They arose and took away the altars that were in Jerusalem, and they took away all the altars for incense and threw them into the brook Kidron.",
+      "ko": "무리가 일어나 예루살렘에 있는 제단과 향단들을 모두 제하여 기드론 시내에 던지고",
+      "source_text_hash": "9f4dcf9e047233bdbede486fbab04f1a55813aa0ba952ceb66340613417cd5b6",
+      "translation_text_hash": "f3e4392631850ea7ac6d5a144501dba42e16e3f228a36646ce677406b3d3783c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 일어나 예루살렘에 있는 제단과 향단들을 모두 제하여 기드론 시내에 던지고"
+      ],
+      "raw_text_hashes": [
+        "f3e4392631850ea7ac6d5a144501dba42e16e3f228a36646ce677406b3d3783c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:15",
+      "sequence": 11843,
+      "chapter_label": "2CH 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "Then they killed the Passover on the fourteenth day of the second month. The priests and the Levites were ashamed, and sanctified themselves, and brought burnt offerings into the LORD’s house.",
+      "ko": "이월 십 사일에 유월절 양을 잡으니 제사장과 레위 사람이 부끄러워하여 성결케 하고 번제물을 가지고 여호와의 전에 이르러",
+      "source_text_hash": "3f991232c2c95a1561c553b612ace5f0c581f992392c9483a044192fd789bcfc",
+      "translation_text_hash": "c31b13af7c5f751c706324cd7c69d34b032d750dc2b41685258bce23c9aaff4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이월 십 사일에 유월절 양을 잡으니 제사장과 레위 사람이 부끄러워하여 성결케 하고 번제물을 가지고 여호와의 전에 이르러"
+      ],
+      "raw_text_hashes": [
+        "c31b13af7c5f751c706324cd7c69d34b032d750dc2b41685258bce23c9aaff4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:16",
+      "sequence": 11844,
+      "chapter_label": "2CH 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "They stood in their place after their order, according to the law of Moses the man of God. The priests sprinkled the blood which they received of the hand of the Levites.",
+      "ko": "규례대로 각각 자기 처소에 서고 하나님의 사람 모세의 율법을 좇아 제사장이 레위 사람의 손에서 피를 받아 뿌리니라",
+      "source_text_hash": "f9a349478012d77b0318cc2adf77c7270aeaf9532fa1cf7f42f48b550b481bca",
+      "translation_text_hash": "b26925ead3e1de8a03a335c9861e1b46c0c228343e2b45a8c2c3d116c7a00ee0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "규례대로 각각 자기 처소에 서고 하나님의 사람 모세의 율법을 좇아 제사장이 레위 사람의 손에서 피를 받아 뿌리니라"
+      ],
+      "raw_text_hashes": [
+        "b26925ead3e1de8a03a335c9861e1b46c0c228343e2b45a8c2c3d116c7a00ee0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:17",
+      "sequence": 11845,
+      "chapter_label": "2CH 30",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 17
+        }
+      ],
+      "en": "For there were many in the assembly who had not sanctified themselves; therefore the Levites were in charge of killing the Passovers for everyone who was not clean, to sanctify them to the LORD.",
+      "ko": "회중에 많은 사람이 성결케 하지 못한고로 레위 사람들이 모든 부정한 사람을 위하여 유월절 양을 잡아 저희로 여호와 앞에서 성결케 하였으나",
+      "source_text_hash": "4cbd5b28b5b85a80aca5b68cf5a6b38d1a8340aacc6546248059eef9c235bd70",
+      "translation_text_hash": "48e8a8647e698d771fe47db64fbb0c5b1bdb6c302a3d52fdf1985c138288523d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회중에 많은 사람이 성결케 하지 못한고로 레위 사람들이 모든 부정한 사람을 위하여 유월절 양을 잡아 저희로 여호와 앞에서 성결케 하였으나"
+      ],
+      "raw_text_hashes": [
+        "48e8a8647e698d771fe47db64fbb0c5b1bdb6c302a3d52fdf1985c138288523d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:18",
+      "sequence": 11846,
+      "chapter_label": "2CH 30",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 18
+        }
+      ],
+      "en": "For a multitude of the people, even many of Ephraim, Manasseh, Issachar, and Zebulun, had not cleansed themselves, yet they ate the Passover other than the way it is written. For Hezekiah had prayed for them, saying, “May the good LORD pardon everyone",
+      "ko": "에브라임과 므낫세와 잇사갈과 스불론의 많은 무리는 자기를 깨끗케 하지 아니하고 유월절 양을 먹어 기록한 규례에 어긴지라 히스기야가 위하여 기도하여 가로되 선하신 여호와여 사하옵소서",
+      "source_text_hash": "25353cf239dbda42390d8a0600e8a996b705069bd35a3f3b3bbdf3d21e5c91b7",
+      "translation_text_hash": "28740aa0bba4508201bcfff3767b47e466fe432c31a6c1dc0593f85efd53cea8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임과 므낫세와 잇사갈과 스불론의 많은 무리는 자기를 깨끗케 하지 아니하고 유월절 양을 먹어 기록한 규례에 어긴지라 히스기야가 위하여 기도하여 가로되 선하신 여호와여 사하옵소서"
+      ],
+      "raw_text_hashes": [
+        "28740aa0bba4508201bcfff3767b47e466fe432c31a6c1dc0593f85efd53cea8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:19",
+      "sequence": 11847,
+      "chapter_label": "2CH 30",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 19
+        }
+      ],
+      "en": "who sets his heart to seek God, the LORD, the God of his fathers, even if they aren’t clean according to the purification of the sanctuary.”",
+      "ko": "결심하고 하나님 곧 그 열조의 하나님 여호와를 구하는 아무 사람이든지 비록 성소의 결례대로 스스로 깨끗케 못하였을찌라도 사하옵소서 하였더니",
+      "source_text_hash": "3a4fc22c05ed22ea34ded3ddeba660271a3eea5d8226b65b9668f6cfedc4bb21",
+      "translation_text_hash": "58e03ac9b7eb5d81903302084133c1720ec164af1f6c3ea873429ac017d0212a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "결심하고 하나님 곧 그 열조의 하나님 여호와를 구하는 아무 사람이든지 비록 성소의 결례대로 스스로 깨끗케 못하였을찌라도 사하옵소서 하였더니"
+      ],
+      "raw_text_hashes": [
+        "58e03ac9b7eb5d81903302084133c1720ec164af1f6c3ea873429ac017d0212a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:20",
+      "sequence": 11848,
+      "chapter_label": "2CH 30",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD listened to Hezekiah, and healed the people.",
+      "ko": "여호와께서 히스기야의 기도를 들으시고 백성을 고치셨더라",
+      "source_text_hash": "123bd8a77a5e73e6232228698b92d48adcd5c7634007e7e21ae652bf53268ce4",
+      "translation_text_hash": "b5c21bd26e75892aff8f5b95c6a305db628ec5e0bc89a2d7ab8b26d14076a073",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 히스기야의 기도를 들으시고 백성을 고치셨더라"
+      ],
+      "raw_text_hashes": [
+        "b5c21bd26e75892aff8f5b95c6a305db628ec5e0bc89a2d7ab8b26d14076a073"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:21",
+      "sequence": 11849,
+      "chapter_label": "2CH 30",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 21
+        }
+      ],
+      "en": "The children of Israel who were present at Jerusalem kept the feast of unleavened bread seven days with great gladness. The Levites and the priests praised the LORD day by day, singing with loud instruments to the LORD.",
+      "ko": "예루살렘에 모인 이스라엘 자손이 크게 즐거워하며 칠일 동안 무교절을 지켰고 레위 사람들과 제사장들은 날마다 여호와를 칭송하며 큰 소리나는 악기를 울려 여호와를 찬양하였으며",
+      "source_text_hash": "14b4fbd882f9538e0b940911425867c0ce334947300cebb2a7c01f9436b95ea4",
+      "translation_text_hash": "f394e6c0f23b59fa859f846262cfa392f6a4fd970256d8d1e9a73f125870de61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 모인 이스라엘 자손이 크게 즐거워하며 칠일 동안 무교절을 지켰고 레위 사람들과 제사장들은 날마다 여호와를 칭송하며 큰 소리나는 악기를 울려 여호와를 찬양하였으며"
+      ],
+      "raw_text_hashes": [
+        "f394e6c0f23b59fa859f846262cfa392f6a4fd970256d8d1e9a73f125870de61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:22",
+      "sequence": 11850,
+      "chapter_label": "2CH 30",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 22
+        }
+      ],
+      "en": "Hezekiah spoke encouragingly to all the Levites who had good understanding in the service of the LORD. So they ate throughout the feast for the seven days, offering sacrifices of peace offerings and making confession to the LORD, the God of their fathers.",
+      "ko": "히스기야는 여호와를 섬기는 일에 통달한 모든 레위 사람에게 위로하였더라 이와 같이 절기 칠일 동안에 무리가 먹으며 화목제를 드리고 그 열조의 하나님 여호와께 감사하였더라",
+      "source_text_hash": "6a7e27152233b1b6a69daa69bcd4e55ceb5a8f95175167733762375e930aabc2",
+      "translation_text_hash": "23979357eb36167210c3d9d5f4c3400087fb3979d5215aece76996d5e6001c40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야는 여호와를 섬기는 일에 통달한 모든 레위 사람에게 위로하였더라 이와 같이 절기 칠일 동안에 무리가 먹으며 화목제를 드리고 그 열조의 하나님 여호와께 감사하였더라"
+      ],
+      "raw_text_hashes": [
+        "23979357eb36167210c3d9d5f4c3400087fb3979d5215aece76996d5e6001c40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:23",
+      "sequence": 11851,
+      "chapter_label": "2CH 30",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 23
+        }
+      ],
+      "en": "The whole assembly took counsel to keep another seven days, and they kept another seven days with gladness.",
+      "ko": "온 회가 다시 칠일을 지키기로 결의하고 이에 또 칠일을 즐거이 지켰더라",
+      "source_text_hash": "aaf23fd2c41ddea74c276a381fb48f6e1de1a0a1c53c7554da48d1b66f57d9fe",
+      "translation_text_hash": "545287e830c60fba5ca7c76e9b038f4029df8f62c20d5cac25e1fef518d208c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 회가 다시 칠일을 지키기로 결의하고 이에 또 칠일을 즐거이 지켰더라"
+      ],
+      "raw_text_hashes": [
+        "545287e830c60fba5ca7c76e9b038f4029df8f62c20d5cac25e1fef518d208c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:24",
+      "sequence": 11852,
+      "chapter_label": "2CH 30",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 24
+        }
+      ],
+      "en": "For Hezekiah king of Judah gave to the assembly for offerings one thousand bulls and seven thousand sheep; and the princes gave to the assembly a thousand bulls and ten thousand sheep; and a great number of priests sanctified themselves.",
+      "ko": "유다 왕 히스기야가 수송아지 일천과 양 칠천을 회중에게 주었고 방백들은 수송아지 일천과 양 일만을 회중에게 주었으며 성결케 한 제사장도 많았는지라",
+      "source_text_hash": "61980f53e8dc6fedf7af9909a5a40aa1bea972ec0b05f2489fba8dc38dce6bbf",
+      "translation_text_hash": "1482d3c3cb0760385082c2405dcba0ca5dd6a1944443d9ec8054fa783bb4c5ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 히스기야가 수송아지 일천과 양 칠천을 회중에게 주었고 방백들은 수송아지 일천과 양 일만을 회중에게 주었으며 성결케 한 제사장도 많았는지라"
+      ],
+      "raw_text_hashes": [
+        "1482d3c3cb0760385082c2405dcba0ca5dd6a1944443d9ec8054fa783bb4c5ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:25",
+      "sequence": 11853,
+      "chapter_label": "2CH 30",
+      "verse_label": "25",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 25
+        }
+      ],
+      "en": "All the assembly of Judah, with the priests and the Levites, and all the assembly who came out of Israel, and the foreigners who came out of the land of Israel and who lived in Judah, rejoiced.",
+      "ko": "유다 온 회중과 제사장들과 레위 사람들과 이스라엘에서 온 온 회중과 이스라엘 땅에서 나온 나그네와 유다에 거한 나그네가 다 즐거워 하였으므로",
+      "source_text_hash": "23879ed97082efe9cc3f095501e0e593729ce89294e7ef2835815c8a4bda7bc7",
+      "translation_text_hash": "3ccf9d606fd580a53164712ad39f3f8068c16e3581362827da5817e5378e7cdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 온 회중과 제사장들과 레위 사람들과 이스라엘에서 온 온 회중과 이스라엘 땅에서 나온 나그네와 유다에 거한 나그네가 다 즐거워 하였으므로"
+      ],
+      "raw_text_hashes": [
+        "3ccf9d606fd580a53164712ad39f3f8068c16e3581362827da5817e5378e7cdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:26",
+      "sequence": 11854,
+      "chapter_label": "2CH 30",
+      "verse_label": "26",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 26
+        }
+      ],
+      "en": "So there was great joy in Jerusalem; for since the time of Solomon the son of David king of Israel there was nothing like this in Jerusalem.",
+      "ko": "예루살렘에 큰 희락이 있었으니 이스라엘 왕 다윗의 아들 솔로몬 때로부터 이러한 희락이 예루살렘에 없었더라",
+      "source_text_hash": "ebdbc598234c273e2e0457c874f3aae19ec467fc746381f65b8353be134b0bf2",
+      "translation_text_hash": "dca12ef41305082f8f187a1d7216a069aba73f8300acf047cfcb27c8f5b35ec2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 큰 희락이 있었으니 이스라엘 왕 다윗의 아들 솔로몬 때로부터 이러한 희락이 예루살렘에 없었더라"
+      ],
+      "raw_text_hashes": [
+        "dca12ef41305082f8f187a1d7216a069aba73f8300acf047cfcb27c8f5b35ec2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:30:27",
+      "sequence": 11855,
+      "chapter_label": "2CH 30",
+      "verse_label": "27",
+      "locator": {
+        "book": "2CH",
+        "chapter": 30,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 30,
+          "verse": 27
+        }
+      ],
+      "en": "Then the Levitical priests arose and blessed the people. Their voice was heard, and their prayer came up to his holy habitation, even to heaven.",
+      "ko": "그 때에 제사장들과 레위 사람들이 일어나서 백성을 위하여 축복하였으니 그 소리가 들으신바 되고 그 기도가 여호와의 거룩한 처소 하늘에 상달하였더라",
+      "source_text_hash": "ad89cf8b97e1fcdf62450a947e2d6e5d4433e9ebd2e3918e346cde04c3583a9e",
+      "translation_text_hash": "7be7ad4a3ff55305363b89068d18efe280381493df743e7bc75923e50515fb03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 제사장들과 레위 사람들이 일어나서 백성을 위하여 축복하였으니 그 소리가 들으신바 되고 그 기도가 여호와의 거룩한 처소 하늘에 상달하였더라"
+      ],
+      "raw_text_hashes": [
+        "7be7ad4a3ff55305363b89068d18efe280381493df743e7bc75923e50515fb03"
+      ]
+    }
+  ]
+}

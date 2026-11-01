@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:003",
+  "unit_ordinal": 805,
+  "unit_label": "EZK 3",
+  "book_code": "EZK",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:3:1",
+      "sequence": 20504,
+      "chapter_label": "EZK 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "He said to me, “Son of man, eat what you find. Eat this scroll, and go, speak to the house of Israel.”",
+      "ko": "그가 또 내게 이르시되 인자야 너는 받는 것을 먹으라 너는 이 두루마리를 먹고 가서 이스라엘 족속에게 고하라 하시기로",
+      "source_text_hash": "421e0c2f32c0ed54257c7dc97916e14a9dace7ad6dd987c6c8d1e2244791bf27",
+      "translation_text_hash": "5488cd4d31deddc861a6189313c09dd40425ad0e93b35d25fc1caa5f26c0983a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 내게 이르시되 인자야 너는 받는 것을 먹으라 너는 이 두루마리를 먹고 가서 이스라엘 족속에게 고하라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "5488cd4d31deddc861a6189313c09dd40425ad0e93b35d25fc1caa5f26c0983a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:2",
+      "sequence": 20505,
+      "chapter_label": "EZK 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "So I opened my mouth, and he caused me to eat the scroll.",
+      "ko": "내가 입을 벌리니 그가 그 두루마리를 내게 먹이시며",
+      "source_text_hash": "a13f83b9b9acd3fe98abd055235bfc8103b4370fc4b9898cd9f56a09eada73be",
+      "translation_text_hash": "f8f7121d66ef9c48e3f2f50f0776b9f290092991502420da34286b223083299b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 입을 벌리니 그가 그 두루마리를 내게 먹이시며"
+      ],
+      "raw_text_hashes": [
+        "f8f7121d66ef9c48e3f2f50f0776b9f290092991502420da34286b223083299b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:3",
+      "sequence": 20506,
+      "chapter_label": "EZK 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "He said to me, “Son of man, eat this scroll that I give you and fill your belly and your bowels with it.” Then I ate it. It was as sweet as honey in my mouth.",
+      "ko": "내게 이르시되 인자야 내가 네게 주는 이 두루마리로 네 배에 넣으며 네 창자에 채우라 하시기에 내가 먹으니 그것이 내 입에서 달기가 꿀 같더라",
+      "source_text_hash": "6770cc7765d45b5ac7a02834cd4218e4c815b423344166aa10a5c9d97cbda9f7",
+      "translation_text_hash": "9a458f4d45f1f94f8064f0e85e2a7cf4cfc10907a43c755ebb43aa23ee0c5471",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르시되 인자야 내가 네게 주는 이 두루마리로 네 배에 넣으며 네 창자에 채우라 하시기에 내가 먹으니 그것이 내 입에서 달기가 꿀 같더라"
+      ],
+      "raw_text_hashes": [
+        "9a458f4d45f1f94f8064f0e85e2a7cf4cfc10907a43c755ebb43aa23ee0c5471"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:4",
+      "sequence": 20507,
+      "chapter_label": "EZK 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "He said to me, “Son of man, go to the house of Israel, and speak my words to them.",
+      "ko": "그가 또 내게 이르시되 인자야 이스라엘 족속에게 가서 내 말로 그들에게 고하라",
+      "source_text_hash": "d0d54c6141a77d138c393e4eb760030c2cf730953923ddaa7dc060a910630c31",
+      "translation_text_hash": "c1d71fee24ef357376d9eced5357093c14ecb6e00ad5df148e44353d011649f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 내게 이르시되 인자야 이스라엘 족속에게 가서 내 말로 그들에게 고하라"
+      ],
+      "raw_text_hashes": [
+        "c1d71fee24ef357376d9eced5357093c14ecb6e00ad5df148e44353d011649f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:5",
+      "sequence": 20508,
+      "chapter_label": "EZK 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "For you are not sent to a people of a strange speech and of a hard language, but to the house of Israel—",
+      "ko": "너를 방언이 다르거나 말이 어려운 백성에게 보내는 것이 아니요 이스라엘 족속에게 보내는 것이라",
+      "source_text_hash": "e6738f92ac199c3f38176a9f3559baff00786dc4407b228d8b697709829d786e",
+      "translation_text_hash": "44c84d5a6c44c6b3f76a83c0dba067f900a1d57254ad624f2faaef8afa08d8b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 방언이 다르거나 말이 어려운 백성에게 보내는 것이 아니요 이스라엘 족속에게 보내는 것이라"
+      ],
+      "raw_text_hashes": [
+        "44c84d5a6c44c6b3f76a83c0dba067f900a1d57254ad624f2faaef8afa08d8b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:6",
+      "sequence": 20509,
+      "chapter_label": "EZK 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "not to many peoples of a strange speech and of a hard language, whose words you can’t understand. Surely, if I sent you to them, they would listen to you.",
+      "ko": "너를 방언이 다르거나 말이 어려워 네가 알아듣지 못할 열국에 보내는 것이 아니니라 내가 너를 그들에게 보내었더면 그들은 정녕 네 말을 들었으리라",
+      "source_text_hash": "1b20ab25efdfa195ba73ce3696953f90c03c4ab0123db0d389a84bbaba076538",
+      "translation_text_hash": "cb6bbc884c1ddb70fc5513c98839c16da10f06fb31b0a996cda7ad070c0ce80f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 방언이 다르거나 말이 어려워 네가 알아듣지 못할 열국에 보내는 것이 아니니라 내가 너를 그들에게 보내었더면 그들은 정녕 네 말을 들었으리라"
+      ],
+      "raw_text_hashes": [
+        "cb6bbc884c1ddb70fc5513c98839c16da10f06fb31b0a996cda7ad070c0ce80f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:7",
+      "sequence": 20510,
+      "chapter_label": "EZK 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "But the house of Israel will not listen to you, for they will not listen to me; for all the house of Israel are obstinate and hard-hearted.",
+      "ko": "그러나 이스라엘 족속은 이마가 굳고 마음이 강퍅하여 네 말을 듣고자 아니하리니 이는 내 말을 듣고자 아니함이니라",
+      "source_text_hash": "f2a104d1db8364cced5be9be3208c6014b7eb3b789f5f4cb7a249f2c17229dbf",
+      "translation_text_hash": "b1a7dbacc1f0068448d2e70094a6ae640c2d6cf7d185d186fd69f965967609a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이스라엘 족속은 이마가 굳고 마음이 강퍅하여 네 말을 듣고자 아니하리니 이는 내 말을 듣고자 아니함이니라"
+      ],
+      "raw_text_hashes": [
+        "b1a7dbacc1f0068448d2e70094a6ae640c2d6cf7d185d186fd69f965967609a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:8",
+      "sequence": 20511,
+      "chapter_label": "EZK 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Behold, I have made your face hard against their faces, and your forehead hard against their foreheads.",
+      "ko": "내가 그들의 얼굴을 대하도록 네 얼굴을 굳게 하였고 그들의 이마를 대하도록 네 이마를 굳게 하였으되",
+      "source_text_hash": "055da846b6f62fb2047e5d07c6ad727dec6e5b95afaee79023342559798d5631",
+      "translation_text_hash": "95f3ca803895e388aab221e3c4d8eb4304861edc7facf18e038b9d3ec2ddafe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들의 얼굴을 대하도록 네 얼굴을 굳게 하였고 그들의 이마를 대하도록 네 이마를 굳게 하였으되"
+      ],
+      "raw_text_hashes": [
+        "95f3ca803895e388aab221e3c4d8eb4304861edc7facf18e038b9d3ec2ddafe1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:9",
+      "sequence": 20512,
+      "chapter_label": "EZK 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "I have made your forehead as a diamond, harder than flint. Don’t be afraid of them, neither be dismayed at their looks, though they are a rebellious house.”",
+      "ko": "네 이마로 화석보다 굳은 금강석 같이 하였으니 그들이 비록 패역한 족속이라도 두려워 말며 그 얼굴을 무서워 말라 하시고",
+      "source_text_hash": "8879502ee7ae2cad79c08c74b34254d530b5c3ff789c30c0f573faa1fbe9c059",
+      "translation_text_hash": "f3821623eb09dbbc1800285338a1f87483057d9a96c811d7b50751a47a139ab8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 이마로 화석보다 굳은 금강석 같이 하였으니 그들이 비록 패역한 족속이라도 두려워 말며 그 얼굴을 무서워 말라 하시고"
+      ],
+      "raw_text_hashes": [
+        "f3821623eb09dbbc1800285338a1f87483057d9a96c811d7b50751a47a139ab8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:10",
+      "sequence": 20513,
+      "chapter_label": "EZK 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Moreover he said to me, “Son of man, receive in your heart and hear with your ears all my words that I speak to you.",
+      "ko": "또 내게 이르시되 인자야 내가 네게 이를 모든 말을 너는 마음으로 받으며 귀로 듣고",
+      "source_text_hash": "2bfe3e4df8f87b408958bf04436c11c17c6d681d018adce7641346f240157cc1",
+      "translation_text_hash": "c2a9298be7fb05b2881b0b8e096a0b24606134571bc0013d4956f90ac011fbf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르시되 인자야 내가 네게 이를 모든 말을 너는 마음으로 받으며 귀로 듣고"
+      ],
+      "raw_text_hashes": [
+        "c2a9298be7fb05b2881b0b8e096a0b24606134571bc0013d4956f90ac011fbf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:11",
+      "sequence": 20514,
+      "chapter_label": "EZK 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Go to them of the captivity, to the children of your people, and speak to them, and tell them, ‘This is what the Lord GOD says,’ whether they will hear, or whether they will refuse.”",
+      "ko": "사로잡힌 네 민족에게로 가서 그들이 듣든지 아니 듣든지 그들에게 고하여 이르기를 주 여호와의 말씀이 이러하시다 하라 하시더라",
+      "source_text_hash": "1202b12c9ca1296dad5a3787a68797e9ba949301921031df5c95020f53848ef2",
+      "translation_text_hash": "36a233c14494f897c89047aab779201e03f038beb43f91427c51fa8aaa6a7c3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사로잡힌 네 민족에게로 가서 그들이 듣든지 아니 듣든지 그들에게 고하여 이르기를 주 여호와의 말씀이 이러하시다 하라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "36a233c14494f897c89047aab779201e03f038beb43f91427c51fa8aaa6a7c3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:12",
+      "sequence": 20515,
+      "chapter_label": "EZK 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Then the Spirit lifted me up, and I heard behind me the voice of a great rushing, saying, “Blessed be the LORD’s glory from his place.”",
+      "ko": "때에 주의 신이 나를 들어 올리시는데 내 뒤에 크게 울리는 소리가 들려 이르기를 여호와의 처소에서 나는 영광을 찬송할찌어다 하니",
+      "source_text_hash": "e8bfe1247c735c7ac9417d21ccd6b1ace69663bf5b1df6b4e9da6258ac318b56",
+      "translation_text_hash": "6cbabbb1992d4826c76c2377b5ba311d4ffabaf92a08fd21d37d4afbb20463b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 주의 신이 나를 들어 올리시는데 내 뒤에 크게 울리는 소리가 들려 이르기를 여호와의 처소에서 나는 영광을 찬송할찌어다 하니"
+      ],
+      "raw_text_hashes": [
+        "6cbabbb1992d4826c76c2377b5ba311d4ffabaf92a08fd21d37d4afbb20463b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:13",
+      "sequence": 20516,
+      "chapter_label": "EZK 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "I heard the noise of the wings of the living creatures as they touched one another, and the noise of the wheels beside them, even the noise of a great rushing.",
+      "ko": "이는 생물들의 날개가 서로 부딪히는 소리와 생물 곁에 바퀴 소리라 크게 울리는 소리더라",
+      "source_text_hash": "b48ae087c51898bfb77bcdf0090973016cf4ab25e28dc09d2225146a39b1d310",
+      "translation_text_hash": "df5a6d3d1badb7d2de3ed3e5454f1d92e00aa9dea320a806c553d8a802c11756",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 생물들의 날개가 서로 부딪히는 소리와 생물 곁에 바퀴 소리라 크게 울리는 소리더라"
+      ],
+      "raw_text_hashes": [
+        "df5a6d3d1badb7d2de3ed3e5454f1d92e00aa9dea320a806c553d8a802c11756"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:14",
+      "sequence": 20517,
+      "chapter_label": "EZK 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "So the Spirit lifted me up, and took me away; and I went in bitterness, in the heat of my spirit; and the LORD’s hand was strong on me.",
+      "ko": "주의 신이 나를 들어올려 데리고 가시는데 내가 근심하고 분한 마음으로 행하니 여호와의 권능이 힘있게 나를 감동하시더라",
+      "source_text_hash": "20b2affa1be4e625817298966b410d703b579d268211e633cc9fb41e1c7140b7",
+      "translation_text_hash": "e993ba7dff756313c9874041dcc4a2261bfb66327fcdceb19c8a575d39bb80c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 신이 나를 들어올려 데리고 가시는데 내가 근심하고 분한 마음으로 행하니 여호와의 권능이 힘있게 나를 감동하시더라"
+      ],
+      "raw_text_hashes": [
+        "e993ba7dff756313c9874041dcc4a2261bfb66327fcdceb19c8a575d39bb80c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:15",
+      "sequence": 20518,
+      "chapter_label": "EZK 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Then I came to them of the captivity at Tel Aviv who lived by the river Chebar, and to where they lived; and I sat there overwhelmed among them seven days.",
+      "ko": "이에 내가 델아빕에 이르러 그 사로잡힌 백성 곧 그발강 가에 거하는 자들에게 나아가 그 중에서 민답히 칠일을 지내니라",
+      "source_text_hash": "ea143663908f9a69c64576b7e6b6e45b3c28a1a1b047b9b4847fcae1a6152be3",
+      "translation_text_hash": "29389beffc7ecc4e5400cde667001ac7dca7604b454be5a41f26473aedf69874",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 델아빕에 이르러 그 사로잡힌 백성 곧 그발강 가에 거하는 자들에게 나아가 그 중에서 민답히 칠일을 지내니라"
+      ],
+      "raw_text_hashes": [
+        "29389beffc7ecc4e5400cde667001ac7dca7604b454be5a41f26473aedf69874"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:16",
+      "sequence": 20519,
+      "chapter_label": "EZK 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "At the end of seven days, the LORD’s word came to me, saying,",
+      "ko": "칠일 후에 여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "69b343b4d6c4465ecd699374fb6ecb5965f05214c523e206affb097038934ff4",
+      "translation_text_hash": "c1081aa53744d65b571adae5a60756bab72f694f108cac0cfcfc17749b82c122",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일 후에 여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "c1081aa53744d65b571adae5a60756bab72f694f108cac0cfcfc17749b82c122"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:17",
+      "sequence": 20520,
+      "chapter_label": "EZK 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "“Son of man, I have made you a watchman to the house of Israel. Therefore hear the word from my mouth, and warn them from me.",
+      "ko": "인자야 내가 너를 이스라엘 족속의 파숫군으로 세웠으니 너는 내 입의 말을 듣고 나를 대신하여 그들을 깨우치라",
+      "source_text_hash": "021bd2443a98ac241294f2b4f2a5bb8cb13095e54c97fd886a005073baf7addb",
+      "translation_text_hash": "649c5646e3b1a506420a5dd27ecf697a7c1c57af24109870f890fc42254d9b1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 내가 너를 이스라엘 족속의 파숫군으로 세웠으니 너는 내 입의 말을 듣고 나를 대신하여 그들을 깨우치라"
+      ],
+      "raw_text_hashes": [
+        "649c5646e3b1a506420a5dd27ecf697a7c1c57af24109870f890fc42254d9b1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:18",
+      "sequence": 20521,
+      "chapter_label": "EZK 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "When I tell the wicked, ‘You will surely die;’ and you give him no warning, nor speak to warn the wicked from his wicked way, to save his life, that wicked man will die in his iniquity; but I will require his blood at your hand.",
+      "ko": "가령 내가 악인에게 말하기를 너는 꼭 죽으리라 할 때에 네가 깨우치지 아니하거나 말로 악인에게 일러서 그 악한 길을 떠나 생명을 구원케 하지 아니하면 그 악인은 그 죄악 중에서 죽으려니와 내가 그 피 값을 네 손에서 찾을 것이고",
+      "source_text_hash": "bd8222e73a6b51947ec84bbc3bdb8cbcdedb3b329f1908356a3fa676a530efff",
+      "translation_text_hash": "cb0908d19dcaa2a23fff5e2c2a1e0358b3f679ca698a5268d44208c71734bd97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 악인에게 말하기를 너는 꼭 죽으리라 할 때에 네가 깨우치지 아니하거나 말로 악인에게 일러서 그 악한 길을 떠나 생명을 구원케 하지 아니하면 그 악인은 그 죄악 중에서 죽으려니와 내가 그 피 값을 네 손에서 찾을 것이고"
+      ],
+      "raw_text_hashes": [
+        "cb0908d19dcaa2a23fff5e2c2a1e0358b3f679ca698a5268d44208c71734bd97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:19",
+      "sequence": 20522,
+      "chapter_label": "EZK 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "Yet if you warn the wicked, and he doesn’t turn from his wickedness, nor from his wicked way, he will die in his iniquity; but you have delivered your soul.”",
+      "ko": "네가 악인을 깨우치되 그가 그 악한 마음과 악한 행위에서 돌이키지 아니하면 그는 그 죄악 중에서 죽으려니와 너는 네 생명을 보존하리라",
+      "source_text_hash": "d071fe7fbcde61434353d96a5f10192b829dc7459613a9424d2239948856abe4",
+      "translation_text_hash": "62aa340c06cc1c187443db958e4714ae83b7cd4f4f8b5108335088e7b0ce9606",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 악인을 깨우치되 그가 그 악한 마음과 악한 행위에서 돌이키지 아니하면 그는 그 죄악 중에서 죽으려니와 너는 네 생명을 보존하리라"
+      ],
+      "raw_text_hashes": [
+        "62aa340c06cc1c187443db958e4714ae83b7cd4f4f8b5108335088e7b0ce9606"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:20",
+      "sequence": 20523,
+      "chapter_label": "EZK 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "“Again, when a righteous man turns from his righteousness and commits iniquity, and I lay a stumbling block before him, he will die. Because you have not given him warning, he will die in his sin, and his righteous deeds which he has done will not be remembered; but I will require his blood at your hand.",
+      "ko": "또 의인이 그 의에서 돌이켜 악을 행할 때에는 이미 행한 그 의는 기억할바 아니라 내가 그 앞에 거치는 것을 두면 그가 죽을찌니 이는 네가 그를 깨우치지 않음이라 그가 그 죄 중에서 죽으려니와 그 피 값은 내가 네 손에서 찾으리라",
+      "source_text_hash": "11fbadc61f2a10282a58b4ff7587f50355b790f5c11ba0de64d4e9be40f240da",
+      "translation_text_hash": "e2c1d9010a8f77eb51f9da54afc75e2344763af266a551b27cdf7def359f7024",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 의인이 그 의에서 돌이켜 악을 행할 때에는 이미 행한 그 의는 기억할바 아니라 내가 그 앞에 거치는 것을 두면 그가 죽을찌니 이는 네가 그를 깨우치지 않음이라 그가 그 죄 중에서 죽으려니와 그 피 값은 내가 네 손에서 찾으리라"
+      ],
+      "raw_text_hashes": [
+        "e2c1d9010a8f77eb51f9da54afc75e2344763af266a551b27cdf7def359f7024"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:21",
+      "sequence": 20524,
+      "chapter_label": "EZK 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "Nevertheless if you warn the righteous man, that the righteous not sin, and he does not sin, he will surely live, because he took warning; and you have delivered your soul.”",
+      "ko": "그러나 네가 그 의인을 깨우쳐 범죄치 않게 하므로 그가 범죄치 아니하면 정녕 살리니 이는 깨우침을 받음이며 너도 네 영혼을 보존하리라",
+      "source_text_hash": "ee9cd24862a9d334e01de0971e83c7df693699bc39552aebf45e774f5cdc6dd0",
+      "translation_text_hash": "860efddf62ba5f541c6b641a17046ef4c36353bd76a3fc50af04eadae6e64dbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네가 그 의인을 깨우쳐 범죄치 않게 하므로 그가 범죄치 아니하면 정녕 살리니 이는 깨우침을 받음이며 너도 네 영혼을 보존하리라"
+      ],
+      "raw_text_hashes": [
+        "860efddf62ba5f541c6b641a17046ef4c36353bd76a3fc50af04eadae6e64dbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:22",
+      "sequence": 20525,
+      "chapter_label": "EZK 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD’s hand was there on me; and he said to me, “Arise, go out into the plain, and I will talk with you there.”",
+      "ko": "여호와께서 권능으로 거기서 내게 임하시고 또 내게 이르시되 일어나 들로 나아가라 내가 거기서 너와 말하리라 하시기로",
+      "source_text_hash": "4e778c642dc086dda09a0e0fd7f4fd183f061c5afc566034e053bc22eec95e81",
+      "translation_text_hash": "7a9de034263f60642cb9e6c007b325c590d256f2451451df5ca116780e545c54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 권능으로 거기서 내게 임하시고 또 내게 이르시되 일어나 들로 나아가라 내가 거기서 너와 말하리라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "7a9de034263f60642cb9e6c007b325c590d256f2451451df5ca116780e545c54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:23",
+      "sequence": 20526,
+      "chapter_label": "EZK 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "Then I arose, and went out into the plain, and behold, the LORD’s glory stood there, like the glory which I saw by the river Chebar. Then I fell on my face.",
+      "ko": "내가 일어나 들로 나아가니 여호와의 영광이 거기 머물렀는데 내가 전에 그발강 가에서 보던 영광과 같은지라 내가 곧 엎드리니",
+      "source_text_hash": "a9f96c69e2c7c2c0340def858495811e1dd0a69a550b14165baaab9ab51a0c40",
+      "translation_text_hash": "7e1648de38cea5369481a95d0d481223324877c7459808b36ea3d3b8ea752082",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 일어나 들로 나아가니 여호와의 영광이 거기 머물렀는데 내가 전에 그발강 가에서 보던 영광과 같은지라 내가 곧 엎드리니"
+      ],
+      "raw_text_hashes": [
+        "7e1648de38cea5369481a95d0d481223324877c7459808b36ea3d3b8ea752082"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:24",
+      "sequence": 20527,
+      "chapter_label": "EZK 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "Then the Spirit entered into me and set me on my feet. He spoke with me, and said to me, “Go, shut yourself inside your house.",
+      "ko": "주의 신이 내게 임하사 나를 일으켜 세우시고 내게 말씀하여 가라사대 너는 가서 네 집에 들어가 문을 닫으라",
+      "source_text_hash": "03ef7cc8ffa7a92105d77a58ce26b3f3618b95b30ce17c3e18ad179ecb460208",
+      "translation_text_hash": "663a24ed502113e8cada2ad92926756d6cbf095235bc527e08d7eded71928643",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 신이 내게 임하사 나를 일으켜 세우시고 내게 말씀하여 가라사대 너는 가서 네 집에 들어가 문을 닫으라"
+      ],
+      "raw_text_hashes": [
+        "663a24ed502113e8cada2ad92926756d6cbf095235bc527e08d7eded71928643"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:25",
+      "sequence": 20528,
+      "chapter_label": "EZK 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "But you, son of man, behold, they will put ropes on you, and will bind you with them, and you will not go out among them.",
+      "ko": "인자야 무리가 줄로 너를 동여매리니 네가 그들 가운데서 나오지 못할 것이라",
+      "source_text_hash": "c0e0d89e638b24ad861489f6204d6b4aca85e296ddc7b2128be322a15bdccab4",
+      "translation_text_hash": "80bebef6f50b2a982c8f7fb93605e3379de0b897fc944a068864d243cb872e6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 무리가 줄로 너를 동여매리니 네가 그들 가운데서 나오지 못할 것이라"
+      ],
+      "raw_text_hashes": [
+        "80bebef6f50b2a982c8f7fb93605e3379de0b897fc944a068864d243cb872e6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:26",
+      "sequence": 20529,
+      "chapter_label": "EZK 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "I will make your tongue stick to the roof of your mouth so that you will be mute and will not be able to correct them, for they are a rebellious house.",
+      "ko": "내가 네 혀로 네 입천장에 붙게 하여 너로 벙어리 되어 그들의 책망자가 되지 못하게 하리니 그들은 패역한 족속임이니라",
+      "source_text_hash": "3047da9243adf5263e035525b3a59bd7846ee3b06a5aa7d2232e07f491ec44c5",
+      "translation_text_hash": "e089cbf00b3b148bf6a930138fc983f59477a12c8530aadfabafb71c5a63d11c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 혀로 네 입천장에 붙게 하여 너로 벙어리 되어 그들의 책망자가 되지 못하게 하리니 그들은 패역한 족속임이니라"
+      ],
+      "raw_text_hashes": [
+        "e089cbf00b3b148bf6a930138fc983f59477a12c8530aadfabafb71c5a63d11c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:3:27",
+      "sequence": 20530,
+      "chapter_label": "EZK 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "But when I speak with you, I will open your mouth, and you shall tell them, ‘This is what the Lord GOD says.’ He who hears, let him hear; and he who refuses, let him refuse; for they are a rebellious house.”",
+      "ko": "그러나 내가 너와 말할 때에 네 입을 열리니 너는 그들에게 이르기를 주 여호와의 말씀이 이러하시다 하라 들을 자는 들을 것이요 듣기 싫은 자는 듣지 아니하리니 그들은 패역한 족속임이니라",
+      "source_text_hash": "8e5727354707c9df00bdfc5e6455af64ed1333a36ed7d63b7e162f5d24b16b04",
+      "translation_text_hash": "b7b7fc30f3a8fa1ec4bbba635559ea6e1b21dfbbf85a45bb245abc416e4270ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 너와 말할 때에 네 입을 열리니 너는 그들에게 이르기를 주 여호와의 말씀이 이러하시다 하라 들을 자는 들을 것이요 듣기 싫은 자는 듣지 아니하리니 그들은 패역한 족속임이니라"
+      ],
+      "raw_text_hashes": [
+        "b7b7fc30f3a8fa1ec4bbba635559ea6e1b21dfbbf85a45bb245abc416e4270ee"
+      ]
+    }
+  ]
+}

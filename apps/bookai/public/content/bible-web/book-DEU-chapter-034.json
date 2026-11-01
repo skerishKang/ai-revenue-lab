@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:034",
+  "unit_ordinal": 187,
+  "unit_label": "DEU 34",
+  "book_code": "DEU",
+  "chapter_number": 34,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:34:1",
+      "sequence": 5841,
+      "chapter_label": "DEU 34",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 1
+        }
+      ],
+      "en": "Moses went up from the plains of Moab to Mount Nebo, to the top of Pisgah, that is opposite Jericho. The LORD showed him all the land of Gilead to Dan,",
+      "ko": "모세가 모압 평지에서 느보산에 올라 여리고 맞은편 비스가산 꼭대기에 이르매 여호와께서 길르앗 온 땅을 단까지 보이시고",
+      "source_text_hash": "d328a2f1679e805a13573271124cd03d894d45f1bb92fc161dc320eb9d198850",
+      "translation_text_hash": "34fe3cd73254ed297b624e485aaf407958fccbe43caf6486c60e4ffff3ddfba1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 모압 평지에서 느보산에 올라 여리고 맞은편 비스가산 꼭대기에 이르매 여호와께서 길르앗 온 땅을 단까지 보이시고"
+      ],
+      "raw_text_hashes": [
+        "34fe3cd73254ed297b624e485aaf407958fccbe43caf6486c60e4ffff3ddfba1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:2",
+      "sequence": 5842,
+      "chapter_label": "DEU 34",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 2
+        }
+      ],
+      "en": "and all Naphtali, and the land of Ephraim and Manasseh, and all the land of Judah, to the Western Sea,",
+      "ko": "또 온 납달리와 에브라임과 므낫세의 땅과 서해까지의 유다 온 땅과",
+      "source_text_hash": "b7b812fb43fc4469010d59d2b8ef2c857c595b932920c0cd9a66fa2b7f56bfed",
+      "translation_text_hash": "f22372a0578976d71ad9c5fd100140a561904ad05c77da5d14aa3be9c6440e1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 온 납달리와 에브라임과 므낫세의 땅과 서해까지의 유다 온 땅과"
+      ],
+      "raw_text_hashes": [
+        "f22372a0578976d71ad9c5fd100140a561904ad05c77da5d14aa3be9c6440e1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:3",
+      "sequence": 5843,
+      "chapter_label": "DEU 34",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 3
+        }
+      ],
+      "en": "and the south, and the Plain of the valley of Jericho the city of palm trees, to Zoar.",
+      "ko": "남방과 종려의 성읍 여리고 골짜기 평지를 소알까지 보이시고",
+      "source_text_hash": "3c52bc6bc5d831cc38182334b9ca8d0cc90d9686d6cf0aaae9bc2a073da42b04",
+      "translation_text_hash": "03adb49e2030f26b8860c8b4373b50b8fc1ce0e47248d764cf39564c1472e840",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남방과 종려의 성읍 여리고 골짜기 평지를 소알까지 보이시고"
+      ],
+      "raw_text_hashes": [
+        "03adb49e2030f26b8860c8b4373b50b8fc1ce0e47248d764cf39564c1472e840"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:4",
+      "sequence": 5844,
+      "chapter_label": "DEU 34",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD said to him, “This is the land which I swore to Abraham, to Isaac, and to Jacob, saying, ‘I will give it to your offspring.’ I have caused you to see it with your eyes, but you shall not go over there.”",
+      "ko": "여호와께서 그에게 이르시되 이는 내가 아브라함과 이삭과 야곱에게 맹세하여 그 후손에게 주리라 한 땅이라 내가 네 눈으로 보게 하였거니와 너는 그리로 건너가지 못하리라 하시매",
+      "source_text_hash": "76255c88c946c53c533c412afe23766d1e4c92a6bdb34a4c0c09c7e01e035dfb",
+      "translation_text_hash": "a9850078864b478058947a75231afa74981b55bfeb9016ef2fb73b6b36a552a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그에게 이르시되 이는 내가 아브라함과 이삭과 야곱에게 맹세하여 그 후손에게 주리라 한 땅이라 내가 네 눈으로 보게 하였거니와 너는 그리로 건너가지 못하리라 하시매"
+      ],
+      "raw_text_hashes": [
+        "a9850078864b478058947a75231afa74981b55bfeb9016ef2fb73b6b36a552a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:5",
+      "sequence": 5845,
+      "chapter_label": "DEU 34",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 5
+        }
+      ],
+      "en": "So Moses the servant of the LORD died there in the land of Moab, according to the LORD’s word.",
+      "ko": "이에 여호와의 종 모세가 여호와의 말씀대로 모압 땅에서 죽어",
+      "source_text_hash": "8d7a722a3af5da8f54161e92b657127fe8beb52f6ed2457cfc915b34efed58b8",
+      "translation_text_hash": "7bb6545f19085750cc18f69d4d7e16fabc9cb9cad188b6839758cb22eec93ebc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호와의 종 모세가 여호와의 말씀대로 모압 땅에서 죽어"
+      ],
+      "raw_text_hashes": [
+        "7bb6545f19085750cc18f69d4d7e16fabc9cb9cad188b6839758cb22eec93ebc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:6",
+      "sequence": 5846,
+      "chapter_label": "DEU 34",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 6
+        }
+      ],
+      "en": "He buried him in the valley in the land of Moab opposite Beth Peor, but no man knows where his tomb is to this day.",
+      "ko": "벧브올 맞은편 모압 땅에 있는 골짜기에 장사되었고 오늘까지 그 묘를 아는 자 없으니라",
+      "source_text_hash": "151be28236adfe623e2ed2a966a480606dbfce30026482915a10c0ea51e6bc24",
+      "translation_text_hash": "fdcce550191525c6c93217449d0645fba9e31c95c6a6e34766a5857524dabe14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧브올 맞은편 모압 땅에 있는 골짜기에 장사되었고 오늘까지 그 묘를 아는 자 없으니라"
+      ],
+      "raw_text_hashes": [
+        "fdcce550191525c6c93217449d0645fba9e31c95c6a6e34766a5857524dabe14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:7",
+      "sequence": 5847,
+      "chapter_label": "DEU 34",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 7
+        }
+      ],
+      "en": "Moses was one hundred twenty years old when he died. His eye was not dim, nor his strength gone.",
+      "ko": "모세의 죽을 때 나이 일백 이십세나 그 눈이 흐리지 아니하였고 기력이 쇠하지 아니하였더라",
+      "source_text_hash": "d766642749356261389e06dc8b48e79fd2c388c8f728f217f0259bf99c318d38",
+      "translation_text_hash": "2ba6a1137bb00cbab2dd5e9ead5e15e174831cde48a084c167d072b3cb170106",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 죽을 때 나이 일백 이십세나 그 눈이 흐리지 아니하였고 기력이 쇠하지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "2ba6a1137bb00cbab2dd5e9ead5e15e174831cde48a084c167d072b3cb170106"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:8",
+      "sequence": 5848,
+      "chapter_label": "DEU 34",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 8
+        }
+      ],
+      "en": "The children of Israel wept for Moses in the plains of Moab thirty days, until the days of weeping in the mourning for Moses were ended.",
+      "ko": "이스라엘 자손이 모압 평지에서 애곡하는 기한이 맟도록 모세를 위하여 삼십일을 애곡하니라",
+      "source_text_hash": "b0e3697bed10fe4db6eff470260a61f3c67a2ad7d54b3b187a093dd8d6e86594",
+      "translation_text_hash": "f2b0216a25c12e6ec2f0d1cc548720324118fa3dc290e8e51362bd94c264e668",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 모압 평지에서 애곡하는 기한이 맟도록 모세를 위하여 삼십일을 애곡하니라"
+      ],
+      "raw_text_hashes": [
+        "f2b0216a25c12e6ec2f0d1cc548720324118fa3dc290e8e51362bd94c264e668"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:9",
+      "sequence": 5849,
+      "chapter_label": "DEU 34",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 9
+        }
+      ],
+      "en": "Joshua the son of Nun was full of the spirit of wisdom, for Moses had laid his hands on him. The children of Israel listened to him, and did as the LORD commanded Moses.",
+      "ko": "모세가 눈의 아들 여호수아에게 안수하였으므로 그에게 지혜의 신이 충만하니 이스라엘 자손이 여호와께서 모세에게 명하신대로 여호수아의 말을 순종하였더라",
+      "source_text_hash": "d01b0d6426e2a61f9d96b1032404976da20cb6ea9d8059c14bfe64ed2f6e9abe",
+      "translation_text_hash": "36115f9b803b077a3d3652487ca69c75579a09564782d983731938e739ca2d66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 눈의 아들 여호수아에게 안수하였으므로 그에게 지혜의 신이 충만하니 이스라엘 자손이 여호와께서 모세에게 명하신대로 여호수아의 말을 순종하였더라"
+      ],
+      "raw_text_hashes": [
+        "36115f9b803b077a3d3652487ca69c75579a09564782d983731938e739ca2d66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:10",
+      "sequence": 5850,
+      "chapter_label": "DEU 34",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 10
+        }
+      ],
+      "en": "Since then, there has not arisen a prophet in Israel like Moses, whom the LORD knew face to face,",
+      "ko": "그 후에는 이스라엘에 모세와 같은 선지자가 일어나지 못하였나니 모세는 여호와께서 대면하여 아시던 자요",
+      "source_text_hash": "68798131f6b764529300044471a006c17285673733e7eabed327cc8339420bbf",
+      "translation_text_hash": "c53b0e4566cf3b43b7898f13f4c1faabd6a780e7dfa26559940f312a08a8e3f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에는 이스라엘에 모세와 같은 선지자가 일어나지 못하였나니 모세는 여호와께서 대면하여 아시던 자요"
+      ],
+      "raw_text_hashes": [
+        "c53b0e4566cf3b43b7898f13f4c1faabd6a780e7dfa26559940f312a08a8e3f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:11",
+      "sequence": 5851,
+      "chapter_label": "DEU 34",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 11
+        }
+      ],
+      "en": "in all the signs and the wonders which the LORD sent him to do in the land of Egypt, to Pharaoh, and to all his servants, and to all his land,",
+      "ko": "여호와께서 그를 애굽 땅에 보내사 바로와 그 모든 신하와 그 온 땅에 모든 이적과 기사와",
+      "source_text_hash": "2188d47c34b9c7e7738a967e73d7a5eff42d9e4d66b2ac9706e1cbe93f382872",
+      "translation_text_hash": "5b5639d4d73591cdff1735ca8e16bfc57194a15acf686fe75fa34666e3d5abbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그를 애굽 땅에 보내사 바로와 그 모든 신하와 그 온 땅에 모든 이적과 기사와"
+      ],
+      "raw_text_hashes": [
+        "5b5639d4d73591cdff1735ca8e16bfc57194a15acf686fe75fa34666e3d5abbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:34:12",
+      "sequence": 5852,
+      "chapter_label": "DEU 34",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 34,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 34,
+          "verse": 12
+        }
+      ],
+      "en": "and in all the mighty hand, and in all the awesome deeds, which Moses did in the sight of all Israel.",
+      "ko": "모든 큰 권능과 위엄을 행하게 하시매 온 이스라엘 목전에서 그것을 행한 자더라",
+      "source_text_hash": "cdab53b0af9309d5f3c00c2e868e36c02b2284ffb365796172b244eed1e4b195",
+      "translation_text_hash": "c9b2d3d5e046af9dc997f370a3aa1774ba948df8e08fb733afbca10f7bda7527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 큰 권능과 위엄을 행하게 하시매 온 이스라엘 목전에서 그것을 행한 자더라"
+      ],
+      "raw_text_hashes": [
+        "c9b2d3d5e046af9dc997f370a3aa1774ba948df8e08fb733afbca10f7bda7527"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:028",
+  "unit_ordinal": 957,
+  "unit_label": "MAT 28",
+  "book_code": "MAT",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:28:1",
+      "sequence": 24197,
+      "chapter_label": "MAT 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "Now after the Sabbath, as it began to dawn on the first day of the week, Mary Magdalene and the other Mary came to see the tomb.",
+      "ko": "안식일이 다하여가고 안식 후 첫날이 되려는 미명에 막달라 마리아와 다른 마리아가 무덤을 보려고 왔더니",
+      "source_text_hash": "7eaadf2074d3262e5cecdc73ca06280115d5e2dd7071b31844220517e1987e96",
+      "translation_text_hash": "a6e8fbac00025b456436c4b51e0c5f0d9fcd3cc34e09065fb9b6f278757eaaa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일이 다하여가고 안식 후 첫날이 되려는 미명에 막달라 마리아와 다른 마리아가 무덤을 보려고 왔더니"
+      ],
+      "raw_text_hashes": [
+        "a6e8fbac00025b456436c4b51e0c5f0d9fcd3cc34e09065fb9b6f278757eaaa7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:2",
+      "sequence": 24198,
+      "chapter_label": "MAT 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, there was a great earthquake, for an angel of the Lord descended from the sky and came and rolled away the stone from the door and sat on it.",
+      "ko": "큰 지진이 나며 주의 천사가 하늘로서 내려와 돌을 굴려 내고 그 위에 앉았는데",
+      "source_text_hash": "1295f517ea1517545bd9ee679d205bc753eed17b2e1b661aba10aa4553d16888",
+      "translation_text_hash": "38877246bbf20017828ca19ce06fb9a9c239813dfec7e6661bb82415bec2208b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 지진이 나며 주의 천사가 하늘로서 내려와 돌을 굴려 내고 그 위에 앉았는데"
+      ],
+      "raw_text_hashes": [
+        "38877246bbf20017828ca19ce06fb9a9c239813dfec7e6661bb82415bec2208b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:3",
+      "sequence": 24199,
+      "chapter_label": "MAT 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "His appearance was like lightning, and his clothing white as snow.",
+      "ko": "그 형상이 번개 같고 그 옷은 눈 같이 희거늘",
+      "source_text_hash": "1e7aba004528c1839d06d0e99b14d485a2acaec3795c8da753918e906e53febb",
+      "translation_text_hash": "aa73bb109f84aaeebe99a93e2aae2dfb781745becbf23d53b6c2bb2749407d86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형상이 번개 같고 그 옷은 눈 같이 희거늘"
+      ],
+      "raw_text_hashes": [
+        "aa73bb109f84aaeebe99a93e2aae2dfb781745becbf23d53b6c2bb2749407d86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:4",
+      "sequence": 24200,
+      "chapter_label": "MAT 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "For fear of him, the guards shook, and became like dead men.",
+      "ko": "수직하던 자들이 저를 무서워하여 떨며 죽은 사람과 같이 되었더라",
+      "source_text_hash": "8d7dd8384c70717ca9793e65a2e7cf1c09196c38b02e59b8dcf5493bd21fec0c",
+      "translation_text_hash": "e082b932e10c30a457c0a241f3e901c7b91b9b86f379f152933a744cf7285370",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수직하던 자들이 저를 무서워하여 떨며 죽은 사람과 같이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "e082b932e10c30a457c0a241f3e901c7b91b9b86f379f152933a744cf7285370"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:5",
+      "sequence": 24201,
+      "chapter_label": "MAT 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "The angel answered the women, “Don’t be afraid, for I know that you seek Jesus, who has been crucified.",
+      "ko": "천사가 여자들에게 일러 가로되 너희는 무서워 말라 십자가에 못 박히신 예수를 너희가 찾는 줄을 내가 아노라",
+      "source_text_hash": "7f9297470d21e1c75b320ea3c7edf9354067cfc4067c97845e617f70f5dc5dfd",
+      "translation_text_hash": "03b033e3e03c7bc7ed6be9c65ee0e9681df262a200e72809475e75c31c0355d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 여자들에게 일러 가로되 너희는 무서워 말라 십자가에 못 박히신 예수를 너희가 찾는 줄을 내가 아노라"
+      ],
+      "raw_text_hashes": [
+        "03b033e3e03c7bc7ed6be9c65ee0e9681df262a200e72809475e75c31c0355d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:6",
+      "sequence": 24202,
+      "chapter_label": "MAT 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "He is not here, for he has risen, just like he said. Come, see the place where the Lord was lying.",
+      "ko": "그가 여기 계시지 않고 그의 말씀하시던대로 살아나셨느니라 와서 그의 누우셨던 곳을 보라",
+      "source_text_hash": "9f34479a80782fe0480f3044c60e5f89f072e44fba798813d327f1933a4251ff",
+      "translation_text_hash": "0e6568de41dda27689bc73b18028996f5d500f95f1067790865d2a5034e597df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 여기 계시지 않고 그의 말씀하시던대로 살아나셨느니라 와서 그의 누우셨던 곳을 보라"
+      ],
+      "raw_text_hashes": [
+        "0e6568de41dda27689bc73b18028996f5d500f95f1067790865d2a5034e597df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:7",
+      "sequence": 24203,
+      "chapter_label": "MAT 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "Go quickly and tell his disciples, ‘He has risen from the dead, and behold, he goes before you into Galilee; there you will see him.’ Behold, I have told you.”",
+      "ko": "또 빨리 가서 그의 제자들에게 이르되 그가 죽은 자 가운데서 살아나셨고 너희보다 먼저 갈릴리로 가시나니 거기서 너희가 뵈오리라 하라 보라 내가 너희에게 일렀느니라 하거늘",
+      "source_text_hash": "df46e6a81a43507c86ac760658b7bb3c9c39295cda1fb098731b7bdf5717facc",
+      "translation_text_hash": "537e0b54e36d7f3108e4d1fe3e5294236d596e07b6521843d7b8a5a80c1b03f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 빨리 가서 그의 제자들에게 이르되 그가 죽은 자 가운데서 살아나셨고 너희보다 먼저 갈릴리로 가시나니 거기서 너희가 뵈오리라 하라 보라 내가 너희에게 일렀느니라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "537e0b54e36d7f3108e4d1fe3e5294236d596e07b6521843d7b8a5a80c1b03f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:8",
+      "sequence": 24204,
+      "chapter_label": "MAT 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "They departed quickly from the tomb with fear and great joy, and ran to bring his disciples word.",
+      "ko": "그 여자들이 무서움과 큰 기쁨으로 무덤을 빨리 떠나 제자들에게 알게 하려고 달음질할쌔",
+      "source_text_hash": "9d873c5eb3246d6f128eec3d68ef2784353463ad6c16e64418978c1c9e6ca7ee",
+      "translation_text_hash": "defda54216d5a66bbf9f38cff4f78a35d0f23b7708f8385f917a9ee5ef405c03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자들이 무서움과 큰 기쁨으로 무덤을 빨리 떠나 제자들에게 알게 하려고 달음질할쌔"
+      ],
+      "raw_text_hashes": [
+        "defda54216d5a66bbf9f38cff4f78a35d0f23b7708f8385f917a9ee5ef405c03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:9",
+      "sequence": 24205,
+      "chapter_label": "MAT 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "As they went to tell his disciples, behold, Jesus met them, saying, “Rejoice!”They came and took hold of his feet, and worshiped him.",
+      "ko": "예수께서 저희를 만나 가라사대 평안하뇨 하시거늘 여자들이 나아가 그 발을 붙잡고 경배하니",
+      "source_text_hash": "6431fa7667cc0e6c17e486344c970bf49fc0ef960bc3396e074cb71fdf153ebb",
+      "translation_text_hash": "5f8f13d297167fd3522fc2882bb2904f26c1dddd3cf23d9c5d47285ee7c49326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희를 만나 가라사대 평안하뇨 하시거늘 여자들이 나아가 그 발을 붙잡고 경배하니"
+      ],
+      "raw_text_hashes": [
+        "5f8f13d297167fd3522fc2882bb2904f26c1dddd3cf23d9c5d47285ee7c49326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:10",
+      "sequence": 24206,
+      "chapter_label": "MAT 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "Then Jesus said to them, “Don’t be afraid. Go tell my brothers that they should go into Galilee, and there they will see me.”",
+      "ko": "이에 예수께서 가라사대 무서워 말라 가서 내 형제들에게 갈릴리로 가라 하라 거기서 나를 보리라 하시니라",
+      "source_text_hash": "809bdb62ca695922a1d09a467133486eb4afd46611811e87541adb1b4db0cf2d",
+      "translation_text_hash": "645940c5f9e748fa87f235971f8c3f362ab854a501ea5b78ad8d85ffb019acd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 가라사대 무서워 말라 가서 내 형제들에게 갈릴리로 가라 하라 거기서 나를 보리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "645940c5f9e748fa87f235971f8c3f362ab854a501ea5b78ad8d85ffb019acd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:11",
+      "sequence": 24207,
+      "chapter_label": "MAT 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "Now while they were going, behold, some of the guards came into the city and told the chief priests all the things that had happened.",
+      "ko": "여자들이 갈제 파숫군 중 몇이 성에 들어가 모든 된 일을 대제사장들에게 고하니",
+      "source_text_hash": "d6317d7767ee1b3d3da05ed1ba4d39a96924913e12edefe228eb0cb3fb6c81ce",
+      "translation_text_hash": "f9ebbfbc4eba9193b8528b6687fa3d7ceb6ca33e2c8552d17c437d89c3f218e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자들이 갈제 파숫군 중 몇이 성에 들어가 모든 된 일을 대제사장들에게 고하니"
+      ],
+      "raw_text_hashes": [
+        "f9ebbfbc4eba9193b8528b6687fa3d7ceb6ca33e2c8552d17c437d89c3f218e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:12",
+      "sequence": 24208,
+      "chapter_label": "MAT 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "When they were assembled with the elders and had taken counsel, they gave a large amount of silver to the soldiers,",
+      "ko": "그들이 장로들과 함께 모여 의논하고 군병들에게 돈을 많이 주며",
+      "source_text_hash": "1860f7bdf6920e9fed6f879365aa84a3a7df4bde8a88307f795bbd34d97c84b5",
+      "translation_text_hash": "13bc60e6999dce32d802cbbce81002ed77b7f465c8bc67d07815627b5bb1f4f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 장로들과 함께 모여 의논하고 군병들에게 돈을 많이 주며"
+      ],
+      "raw_text_hashes": [
+        "13bc60e6999dce32d802cbbce81002ed77b7f465c8bc67d07815627b5bb1f4f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:13",
+      "sequence": 24209,
+      "chapter_label": "MAT 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "saying, “Say that his disciples came by night and stole him away while we slept.",
+      "ko": "가로되 너희는 말하기를 그의 제자들이 밤에 와서 우리가 잘 때에 그를 도적질하여 갔다 하라",
+      "source_text_hash": "9171dce6838a32488671190d08e37dd9c54e85ea9a2da90fd37ae7e2b947cfaa",
+      "translation_text_hash": "3de6c349aae3b0f807bffa5471d70d220cbcbbcedf68097d43939b8f1f5996ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 너희는 말하기를 그의 제자들이 밤에 와서 우리가 잘 때에 그를 도적질하여 갔다 하라"
+      ],
+      "raw_text_hashes": [
+        "3de6c349aae3b0f807bffa5471d70d220cbcbbcedf68097d43939b8f1f5996ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:14",
+      "sequence": 24210,
+      "chapter_label": "MAT 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "If this comes to the governor’s ears, we will persuade him and make you free of worry.”",
+      "ko": "만일 이 말이 총독에게 들리면 우리가 권하여 너희로 근심되지 않게 하리라 하니",
+      "source_text_hash": "5e502cdf039e11b4a27c800cb48f32a99a3bc904c36dad1f420b320560a9e60b",
+      "translation_text_hash": "28d65bbb846b5bc2215e408ab5161e6ac70aeb379967f7562d606fc0581dc035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 이 말이 총독에게 들리면 우리가 권하여 너희로 근심되지 않게 하리라 하니"
+      ],
+      "raw_text_hashes": [
+        "28d65bbb846b5bc2215e408ab5161e6ac70aeb379967f7562d606fc0581dc035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:15",
+      "sequence": 24211,
+      "chapter_label": "MAT 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "So they took the money and did as they were told. This saying was spread abroad among the Jews, and continues until today.",
+      "ko": "군병들이 돈을 받고 가르친대로 하였으니 이 말이 오늘날까지 유대인 가운데 두루 퍼지니라",
+      "source_text_hash": "a803604d1dd7d2ba2616156edf32602382f1a33285a35b63f367038e397eee64",
+      "translation_text_hash": "1d9d9314d0adc2254b2fe2e83d285d0f0a98382239fd55be47ed14f7ec6ea987",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군병들이 돈을 받고 가르친대로 하였으니 이 말이 오늘날까지 유대인 가운데 두루 퍼지니라"
+      ],
+      "raw_text_hashes": [
+        "1d9d9314d0adc2254b2fe2e83d285d0f0a98382239fd55be47ed14f7ec6ea987"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:16",
+      "sequence": 24212,
+      "chapter_label": "MAT 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "But the eleven disciples went into Galilee, to the mountain where Jesus had sent them.",
+      "ko": "열 한 제자가 갈릴리에 가서 예수의 명하시던 산에 이르러",
+      "source_text_hash": "41b72ccdf4264d3b82e17fc31e141367b4c19294d7e441fea5a4af35bc58dd60",
+      "translation_text_hash": "216c64d10c947e9f3ea3e415f7f640eeef0d99c1c384eab96b2e29810418043e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 한 제자가 갈릴리에 가서 예수의 명하시던 산에 이르러"
+      ],
+      "raw_text_hashes": [
+        "216c64d10c947e9f3ea3e415f7f640eeef0d99c1c384eab96b2e29810418043e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:17",
+      "sequence": 24213,
+      "chapter_label": "MAT 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "When they saw him, they bowed down to him; but some doubted.",
+      "ko": "예수를 뵈옵고 경배하나 오히려 의심하는 자도 있더라",
+      "source_text_hash": "5a737f756184a32f371a66077e6af2a8076ca20b9002b9ce9ee3b3c70f4b79ce",
+      "translation_text_hash": "088308afb0a200e34ada6bda2a0262029299017f8654a99d1ad6ac8e997fb1c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 뵈옵고 경배하나 오히려 의심하는 자도 있더라"
+      ],
+      "raw_text_hashes": [
+        "088308afb0a200e34ada6bda2a0262029299017f8654a99d1ad6ac8e997fb1c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:18",
+      "sequence": 24214,
+      "chapter_label": "MAT 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "Jesus came to them and spoke to them, saying, “All authority has been given to me in heaven and on earth.",
+      "ko": "예수께서 나아와 일러 가라사대 하늘과 땅의 모든 권세를 내게 주셨으니",
+      "source_text_hash": "c752c8e00b595530ccf56875275e0ffac338e4508a822319d7bfcb9817d6466a",
+      "translation_text_hash": "0faa0d8ab0d42a4e5874cb4f6212b332c6dddfb433bb511edae3c143060cda9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 나아와 일러 가라사대 하늘과 땅의 모든 권세를 내게 주셨으니"
+      ],
+      "raw_text_hashes": [
+        "0faa0d8ab0d42a4e5874cb4f6212b332c6dddfb433bb511edae3c143060cda9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:19",
+      "sequence": 24215,
+      "chapter_label": "MAT 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "Goand make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit,",
+      "ko": "그러므로 너희는 가서 모든 족속으로 제자를 삼아 아버지와 아들과 성령의 이름으로 세례를 주고",
+      "source_text_hash": "f4dfc69c25c9bf32123c0111db8efe5c37b56fc56cac08cebc85bdde6b2c25f9",
+      "translation_text_hash": "9e95af23ad2ccf339cc0d1596c9377ae02d30f8a66acc604631e6907e454a94e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 가서 모든 족속으로 제자를 삼아 아버지와 아들과 성령의 이름으로 세례를 주고"
+      ],
+      "raw_text_hashes": [
+        "9e95af23ad2ccf339cc0d1596c9377ae02d30f8a66acc604631e6907e454a94e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:28:20",
+      "sequence": 24216,
+      "chapter_label": "MAT 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "teaching them to observe all things that I commanded you. Behold, I am with you always, even to the end of the age.”Amen.",
+      "ko": "내가 너희에게 분부한 모든 것을 가르쳐 지키게 하라 볼찌어다 내가 세상 끝날까지 너희와 항상 함께 있으리라 하시니라",
+      "source_text_hash": "3100b07fe1bc1031ed3fa2d9b373f28ed9826cd849474127a97f8b51734cafb6",
+      "translation_text_hash": "dc82e85d5d4b02aed9c2d7ffdee734c1b380c17df326068a3946826e55690bb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 분부한 모든 것을 가르쳐 지키게 하라 볼찌어다 내가 세상 끝날까지 너희와 항상 함께 있으리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "dc82e85d5d4b02aed9c2d7ffdee734c1b380c17df326068a3946826e55690bb3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:003",
+  "unit_ordinal": 481,
+  "unit_label": "PSA 3",
+  "book_code": "PSA",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:3:1",
+      "sequence": 13959,
+      "chapter_label": "PSA 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "LORD, how my adversaries have increased! Many are those who rise up against me.",
+      "ko": "여호와여 나의 대적이 어찌 그리 많은지요 일어나 나를 치는 자가 많소이다",
+      "source_text_hash": "3f8961617faeff9616684aada69e103930846936359fb62dd2032b8bd3c3c942",
+      "translation_text_hash": "1e7f060390572f6920df2de8f0ecc31d7f72b43de7ec9aa8081da061e8b17605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나의 대적이 어찌 그리 많은지요 일어나 나를 치는 자가 많소이다"
+      ],
+      "raw_text_hashes": [
+        "1e7f060390572f6920df2de8f0ecc31d7f72b43de7ec9aa8081da061e8b17605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:3:2",
+      "sequence": 13960,
+      "chapter_label": "PSA 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Many there are who say of my soul, “There is no help for him in God.” Selah.",
+      "ko": "많은 사람이 있어 나를 가리켜 말하기를 저는 하나님께 도움을 얻지 못한다 하나이다(셀라)",
+      "source_text_hash": "3b72048b90bc549c8e362e1768caf9e671c3207a16fbbea51ca6aa12a6b22dfd",
+      "translation_text_hash": "68f08f13605425f3f46a0783643235dd230154a6cdf08ea4335d1441c3d69082",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 사람이 있어 나를 가리켜 말하기를 저는 하나님께 도움을 얻지 못한다 하나이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "68f08f13605425f3f46a0783643235dd230154a6cdf08ea4335d1441c3d69082"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:3:3",
+      "sequence": 13961,
+      "chapter_label": "PSA 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "But you, LORD, are a shield around me, my glory, and the one who lifts up my head.",
+      "ko": "여호와여 주는 나의 방패시요 나의 영광이시요 나의 머리를 드시는 자니이다",
+      "source_text_hash": "363c637b5f4a29184d1c1f33b87c2a2f555c539c96393c6f91828ab99cd0a209",
+      "translation_text_hash": "8773374c744bb0eef9c289694db51d3d8e5cd3b5aaee28b3d567476c2547d865",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주는 나의 방패시요 나의 영광이시요 나의 머리를 드시는 자니이다"
+      ],
+      "raw_text_hashes": [
+        "8773374c744bb0eef9c289694db51d3d8e5cd3b5aaee28b3d567476c2547d865"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:3:4",
+      "sequence": 13962,
+      "chapter_label": "PSA 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "I cry to the LORD with my voice, and he answers me out of his holy hill. Selah.",
+      "ko": "내가 나의 목소리로 여호와께 부르짖으니 그 성산에서 응답하시는도다(셀라)",
+      "source_text_hash": "dcaa635f4dc481a4f30bf3a9b987eba7dd99de3c1b35aa1515329e3811e608c6",
+      "translation_text_hash": "5d8feed957afe8f52ab6c7aa5c3e9750aee41d78d5851c18411585e256411dfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 목소리로 여호와께 부르짖으니 그 성산에서 응답하시는도다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "5d8feed957afe8f52ab6c7aa5c3e9750aee41d78d5851c18411585e256411dfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:3:5",
+      "sequence": 13963,
+      "chapter_label": "PSA 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "I laid myself down and slept. I awakened, for the LORD sustains me.",
+      "ko": "내가 누워 자고 깨었으니 여호와께서 나를 붙드심이로다",
+      "source_text_hash": "2647d90f8b1f0d206d4dc4f12d2537524eb18fd20f46957ffe6c7be6e567e03b",
+      "translation_text_hash": "03917229f6aa479fdc19a1c090d90a162ac0f3250f5c935ebae51bfad2c25637",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 누워 자고 깨었으니 여호와께서 나를 붙드심이로다"
+      ],
+      "raw_text_hashes": [
+        "03917229f6aa479fdc19a1c090d90a162ac0f3250f5c935ebae51bfad2c25637"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:3:6",
+      "sequence": 13964,
+      "chapter_label": "PSA 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "I will not be afraid of tens of thousands of people who have set themselves against me on every side.",
+      "ko": "천만인이 나를 둘러치려 하여도 나는 두려워 아니하리이다",
+      "source_text_hash": "141d479b298b8339beda13f31ba5a745955fec8f447c1439170506023100f5c5",
+      "translation_text_hash": "d4740eb1fce8332f405133098bd8ebe3db1867a800874f0380774603e806e401",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천만인이 나를 둘러치려 하여도 나는 두려워 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "d4740eb1fce8332f405133098bd8ebe3db1867a800874f0380774603e806e401"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:3:7",
+      "sequence": 13965,
+      "chapter_label": "PSA 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Arise, LORD! Save me, my God! For you have struck all of my enemies on the cheek bone. You have broken the teeth of the wicked.",
+      "ko": "여호와여 일어나소서 나의 하나님이여 나를 구원하소서 주께서 나의 모든 원수의 뺨을 치시며 악인의 이를 꺾으셨나이다",
+      "source_text_hash": "2c8e68e65b403564f544da0b7c126595b1009d11f101c86de06e558dfec20bd8",
+      "translation_text_hash": "4b3f29b7dd4b7abe50b6aa348958954f5c97a85acb8ee07aa753f7b67d1a98c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 일어나소서 나의 하나님이여 나를 구원하소서 주께서 나의 모든 원수의 뺨을 치시며 악인의 이를 꺾으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "4b3f29b7dd4b7abe50b6aa348958954f5c97a85acb8ee07aa753f7b67d1a98c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:3:8",
+      "sequence": 13966,
+      "chapter_label": "PSA 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Salvation belongs to the LORD. May your blessing be on your people. Selah.",
+      "ko": "구원은 여호와께 있사오니 주의 복을 주의 백성에게 내리소서(셀라)",
+      "source_text_hash": "c6e2fdf946fd689f5c7220b9ddc755fa344a03abe5c24ebc86650e6fe28bc4da",
+      "translation_text_hash": "53bdf3b26454fe895a3f89be072ada37305252691f723328303ac43efd0c2008",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구원은 여호와께 있사오니 주의 복을 주의 백성에게 내리소서(셀라)"
+      ],
+      "raw_text_hashes": [
+        "53bdf3b26454fe895a3f89be072ada37305252691f723328303ac43efd0c2008"
+      ]
+    }
+  ]
+}

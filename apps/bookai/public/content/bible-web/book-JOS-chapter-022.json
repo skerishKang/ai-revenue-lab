@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:022",
+  "unit_ordinal": 209,
+  "unit_label": "JOS 22",
+  "book_code": "JOS",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:22:1",
+      "sequence": 6428,
+      "chapter_label": "JOS 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "Then Joshua called the Reubenites, the Gadites, and the half-tribe of Manasseh,",
+      "ko": "그 때에 여호수아가 르우벤 사람과 갓 사람과 므낫세 반 지파를 불러서",
+      "source_text_hash": "c9032474c06c55e39c10475b78a841b905deeaf53704d653eb4f072bcd99d974",
+      "translation_text_hash": "1b98bdca6e7204ffd98a7269b93e68db81c5854eaa734d1a9f678d0dd2bbdb54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호수아가 르우벤 사람과 갓 사람과 므낫세 반 지파를 불러서"
+      ],
+      "raw_text_hashes": [
+        "1b98bdca6e7204ffd98a7269b93e68db81c5854eaa734d1a9f678d0dd2bbdb54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:2",
+      "sequence": 6429,
+      "chapter_label": "JOS 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "and said to them, “You have kept all that Moses the servant of the LORD commanded you, and have listened to my voice in all that I commanded you.",
+      "ko": "그들에게 이르되 여호와의 종 모세가 너희에게 명한 것을 너희가 다 지키며 또 내가 너희에게 명한 모든 일에 내 말을 너희가 청종하여",
+      "source_text_hash": "138e103324be84e8f4f1d6cb111da3447b2a92b84ad6a741166e049cdfd38e82",
+      "translation_text_hash": "5942800d31696f33c01fd4dfb7719d6a33f8abd4c2f4071740e02a0c602a6b3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르되 여호와의 종 모세가 너희에게 명한 것을 너희가 다 지키며 또 내가 너희에게 명한 모든 일에 내 말을 너희가 청종하여"
+      ],
+      "raw_text_hashes": [
+        "5942800d31696f33c01fd4dfb7719d6a33f8abd4c2f4071740e02a0c602a6b3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:3",
+      "sequence": 6430,
+      "chapter_label": "JOS 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "You have not left your brothers these many days to this day, but have performed the duty of the commandment of the LORD your God.",
+      "ko": "오늘날까지 날이 오래도록 너희가 너희 형제를 떠나지 아니하고 오직 너희 하나님 여호와의 명하신 그 책임을 지키도다",
+      "source_text_hash": "f314e5e135cf2e61f4a12ad84ccc83215ec89eeaa000e699a37afcc4026e8f6a",
+      "translation_text_hash": "00890e5ea161dee15a3f5c2737315f999194a123d0d741a4abf5201b7d5ae139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날까지 날이 오래도록 너희가 너희 형제를 떠나지 아니하고 오직 너희 하나님 여호와의 명하신 그 책임을 지키도다"
+      ],
+      "raw_text_hashes": [
+        "00890e5ea161dee15a3f5c2737315f999194a123d0d741a4abf5201b7d5ae139"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:4",
+      "sequence": 6431,
+      "chapter_label": "JOS 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "Now the LORD your God has given rest to your brothers, as he spoke to them. Therefore now return and go to your tents, to the land of your possession, which Moses the servant of the LORD gave you beyond the Jordan.",
+      "ko": "이제는 너희 하나님 여호와께서 이미 말씀하신대로 너희 형제에게 안식을 주셨으니 그런즉 이제 너희는 여호와의 종 모세가 요단 저편에서 너희에게 준 소유지로 가서 너희의 장막으로 돌아가되",
+      "source_text_hash": "768ebde8dd5d2013f39314db4e64e4a1fed2b2cd0fee474a86b7954fd214c29b",
+      "translation_text_hash": "4768e9a437f481a6f37861fb6f2a0e1fc0f2241acea6a629e2c6cf58530f9057",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 너희 하나님 여호와께서 이미 말씀하신대로 너희 형제에게 안식을 주셨으니 그런즉 이제 너희는 여호와의 종 모세가 요단 저편에서 너희에게 준 소유지로 가서 너희의 장막으로 돌아가되"
+      ],
+      "raw_text_hashes": [
+        "4768e9a437f481a6f37861fb6f2a0e1fc0f2241acea6a629e2c6cf58530f9057"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:5",
+      "sequence": 6432,
+      "chapter_label": "JOS 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "Only take diligent heed to do the commandment and the law which Moses the servant of the LORD commanded you, to love the LORD your God, to walk in all his ways, to keep his commandments, to hold fast to him, and to serve him with all your heart and with all your soul.”",
+      "ko": "크게 삼가 여호와의 종 모세가 너희에게 명한 명령과 율법을 행하여 너희 하나님 여호와를 사랑하고 그 모든 길로 행하며 그 계명을 지켜 그에게 친근히 하고 너희의 마음을 다하며 성품을 다하여 그를 섬길찌니라 하고",
+      "source_text_hash": "dff3f66f5cd9d8f35477bb4fc485fbd3f6a705b2f6ac6a0e3b69ddafe0a9c4a5",
+      "translation_text_hash": "533b002aeca72eaf54c915fc3b23c992902aa0cc0878dcd40e34eda14245f938",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "크게 삼가 여호와의 종 모세가 너희에게 명한 명령과 율법을 행하여 너희 하나님 여호와를 사랑하고 그 모든 길로 행하며 그 계명을 지켜 그에게 친근히 하고 너희의 마음을 다하며 성품을 다하여 그를 섬길찌니라 하고"
+      ],
+      "raw_text_hashes": [
+        "533b002aeca72eaf54c915fc3b23c992902aa0cc0878dcd40e34eda14245f938"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:6",
+      "sequence": 6433,
+      "chapter_label": "JOS 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "So Joshua blessed them, and sent them away; and they went to their tents.",
+      "ko": "여호수아가 그들에게 축복하여 보내매 그들이 자기 장막으로 갔더라",
+      "source_text_hash": "efe7bac3bd40b67ba19a4d136ff4ee3581b68492d0c5122f5dedb2cbd8c2088d",
+      "translation_text_hash": "ccebca4b069a2937ca0a6698ac02d02788d6fba5466baabc753e9540d33b3354",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 그들에게 축복하여 보내매 그들이 자기 장막으로 갔더라"
+      ],
+      "raw_text_hashes": [
+        "ccebca4b069a2937ca0a6698ac02d02788d6fba5466baabc753e9540d33b3354"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:7",
+      "sequence": 6434,
+      "chapter_label": "JOS 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "Now to the one half-tribe of Manasseh Moses had given inheritance in Bashan; but Joshua gave to the other half among their brothers beyond the Jordan westward. Moreover when Joshua sent them away to their tents, he blessed them,",
+      "ko": "므낫세 반 지파에게는 모세가 바산에서 기업을 주었고 기타 반 지파에게는 여호수아가 요단 이편 서편에서 그 형제 중에서 기업을 준지라 여호수아가 그들을 그 장막으로 돌려보낼 때에 그들에게 축복하고",
+      "source_text_hash": "c95d6f8ba2ff61828b0f639fa80766e4a29f0b37fe644fbe85372d13afb7c7b5",
+      "translation_text_hash": "4c2e3889361a677cf36d803279a7b6cda1a7895c6db5959034e9cbe9a32b137b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세 반 지파에게는 모세가 바산에서 기업을 주었고 기타 반 지파에게는 여호수아가 요단 이편 서편에서 그 형제 중에서 기업을 준지라 여호수아가 그들을 그 장막으로 돌려보낼 때에 그들에게 축복하고"
+      ],
+      "raw_text_hashes": [
+        "4c2e3889361a677cf36d803279a7b6cda1a7895c6db5959034e9cbe9a32b137b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:8",
+      "sequence": 6435,
+      "chapter_label": "JOS 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "and spoke to them, saying, “Return with much wealth to your tents, with very much livestock, with silver, with gold, with bronze, with iron, and with very much clothing. Divide the plunder of your enemies with your brothers.”",
+      "ko": "일러 가로되 너희는 많은 재산과 심히 많은 가축과 은, 금, 동, 철과 심히 많은 의복을 가지고 너희의 장막으로 돌아가서 너희의 대적에게서 탈취한 것을 너희의 형제와 나눌찌니라 하매",
+      "source_text_hash": "25e294ab155ff9eb63f27f764ca119e7074f7ec44d46333ae53ede0b82f415cc",
+      "translation_text_hash": "0cd33ab0134df3b2372ddb2bc8520d3e9231d8747934cc0ecaf81c233a0cf591",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일러 가로되 너희는 많은 재산과 심히 많은 가축과 은, 금, 동, 철과 심히 많은 의복을 가지고 너희의 장막으로 돌아가서 너희의 대적에게서 탈취한 것을 너희의 형제와 나눌찌니라 하매"
+      ],
+      "raw_text_hashes": [
+        "0cd33ab0134df3b2372ddb2bc8520d3e9231d8747934cc0ecaf81c233a0cf591"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:9",
+      "sequence": 6436,
+      "chapter_label": "JOS 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "The children of Reuben and the children of Gad and the half-tribe of Manasseh returned, and departed from the children of Israel out of Shiloh, which is in the land of Canaan, to go to the land of Gilead, to the land of their possession, which they owned, according to the commandment of the LORD by Moses.",
+      "ko": "르우벤 자손과 갓 자손과 므낫세 반 지파가 가나안 땅 실로에서 이스라엘 자손을 떠나 여호와께서 모세로 명하신대로 얻은 땅 곧 그 소유지 길르앗으로 가니라",
+      "source_text_hash": "025089b99fbf1c9389e53115b5a24b213f07e10c36e52175341fdcabb3f0f033",
+      "translation_text_hash": "21b1a5745ec65880e5b8cba9e2f83be3ae8f94e1c515c55ad0314a8404e680a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손과 갓 자손과 므낫세 반 지파가 가나안 땅 실로에서 이스라엘 자손을 떠나 여호와께서 모세로 명하신대로 얻은 땅 곧 그 소유지 길르앗으로 가니라"
+      ],
+      "raw_text_hashes": [
+        "21b1a5745ec65880e5b8cba9e2f83be3ae8f94e1c515c55ad0314a8404e680a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:10",
+      "sequence": 6437,
+      "chapter_label": "JOS 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "When they came to the region near the Jordan, that is in the land of Canaan, the children of Reuben and the children of Gad and the half-tribe of Manasseh built an altar there by the Jordan, a great altar to look at.",
+      "ko": "르우벤 자손과 므낫세 반 지파가 가나안 땅 요단 언덕 가에 이르자 거기서 요단 가에 단을 쌓았는데 볼만한 큰 단이었더라",
+      "source_text_hash": "1ea9eb0e4f2b489beab2e740ef68329a136999c546c7201be727ef65769951b6",
+      "translation_text_hash": "9be2bc2859d048e6131b738fd7965b322e41f3950d869f5887bdd00c3671fcde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손과 므낫세 반 지파가 가나안 땅 요단 언덕 가에 이르자 거기서 요단 가에 단을 쌓았는데 볼만한 큰 단이었더라"
+      ],
+      "raw_text_hashes": [
+        "9be2bc2859d048e6131b738fd7965b322e41f3950d869f5887bdd00c3671fcde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:11",
+      "sequence": 6438,
+      "chapter_label": "JOS 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "The children of Israel heard this, “Behold, the children of Reuben and the children of Gad and the half-tribe of Manasseh have built an altar along the border of the land of Canaan, in the region around the Jordan, on the side that belongs to the children of Israel.”",
+      "ko": "이스라엘 자손이 들은즉 이르기를 르우벤 자손과 갓 자손과 므낫세 반지파가 가나안 땅의 맨 앞편 요단 언덕 가 이스라엘 자손에게 속한 편에 단을 쌓았다 하는지라",
+      "source_text_hash": "f116b93d26d5f519ef4567fc00f69311dff189d891583c4a4dc39a0d09cabbbd",
+      "translation_text_hash": "64f138902096392ccf652895e08a7eda3981008b0cdc837cd89662a30b10069d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 들은즉 이르기를 르우벤 자손과 갓 자손과 므낫세 반지파가 가나안 땅의 맨 앞편 요단 언덕 가 이스라엘 자손에게 속한 편에 단을 쌓았다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "64f138902096392ccf652895e08a7eda3981008b0cdc837cd89662a30b10069d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:12",
+      "sequence": 6439,
+      "chapter_label": "JOS 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "When the children of Israel heard of it, the whole congregation of the children of Israel gathered themselves together at Shiloh, to go up against them to war.",
+      "ko": "이스라엘 자손이 이를 듣자 곧 이스라엘 자손의 온 회중이 실로에 모여서 그들과 싸우러 가려하니라",
+      "source_text_hash": "8c2d40c1b6e7bafbe5011022a71cf97af66e40e84918d150c4ba716724fc95bd",
+      "translation_text_hash": "db610e0770d716f3d85351818d403be39fbc4de2ee50c962960690da0cd00811",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 이를 듣자 곧 이스라엘 자손의 온 회중이 실로에 모여서 그들과 싸우러 가려하니라"
+      ],
+      "raw_text_hashes": [
+        "db610e0770d716f3d85351818d403be39fbc4de2ee50c962960690da0cd00811"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:13",
+      "sequence": 6440,
+      "chapter_label": "JOS 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "The children of Israel sent to the children of Reuben, and to the children of Gad, and to the half-tribe of Manasseh, into the land of Gilead, Phinehas the son of Eleazar the priest.",
+      "ko": "이스라엘 자손이 제사장 엘르아살의 아들 비느하스를 길르앗 땅으로 보내어 르우벤 자손과 갓 자손과 므낫세 반 지파를 보게 하되",
+      "source_text_hash": "c9b598685470cf39800b2393fd614db58f3201c98d47060e0882980d0ffd9283",
+      "translation_text_hash": "0171f6021d48700d75704f0789d4af4d080012fc71895714196c2ecf0f644987",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 제사장 엘르아살의 아들 비느하스를 길르앗 땅으로 보내어 르우벤 자손과 갓 자손과 므낫세 반 지파를 보게 하되"
+      ],
+      "raw_text_hashes": [
+        "0171f6021d48700d75704f0789d4af4d080012fc71895714196c2ecf0f644987"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:14",
+      "sequence": 6441,
+      "chapter_label": "JOS 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "With him were ten princes, one prince of a fathers’ house for each of the tribes of Israel; and they were each head of their fathers’ houses among the thousands of Israel.",
+      "ko": "이스라엘 각 지파에서 한 방백씩 열 방백을 그와 함께 하게 하니 그들은 각기 이스라엘 천만인 중 족속의 두령이라",
+      "source_text_hash": "2efbd251c72d848802dd206dd2ef7583cb268456292d29489b5375429b2ef2c2",
+      "translation_text_hash": "be09d94a6c2a85dc6f490b8177197f139943437eeee131180792e6306ea08021",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 각 지파에서 한 방백씩 열 방백을 그와 함께 하게 하니 그들은 각기 이스라엘 천만인 중 족속의 두령이라"
+      ],
+      "raw_text_hashes": [
+        "be09d94a6c2a85dc6f490b8177197f139943437eeee131180792e6306ea08021"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:15",
+      "sequence": 6442,
+      "chapter_label": "JOS 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "They came to the children of Reuben, and to the children of Gad, and to the half-tribe of Manasseh, to the land of Gilead, and they spoke with them, saying,",
+      "ko": "그들이 길르앗 땅에 이르러 르우벤 자손과 갓 자손과 므낫세 반 지파에게 나아가서 그들에게 말하여 가로되",
+      "source_text_hash": "cde4be4db4ab833378ea73d41dbae6e60d9307c34d73d8aca7c2c99115f7cfa8",
+      "translation_text_hash": "2c145f0961a87d828ac0ce173be0eb65f734cc382203d6ef212c3a09d84dbd24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 길르앗 땅에 이르러 르우벤 자손과 갓 자손과 므낫세 반 지파에게 나아가서 그들에게 말하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "2c145f0961a87d828ac0ce173be0eb65f734cc382203d6ef212c3a09d84dbd24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:16",
+      "sequence": 6443,
+      "chapter_label": "JOS 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "“The whole congregation of the LORD says, ‘What trespass is this that you have committed against the God of Israel, to turn away today from following the LORD, in that you have built yourselves an altar, to rebel today against the LORD?",
+      "ko": "여호와의 온 회중이 말하기를 너희가 어찌하여 이스라엘 하나님께 범죄하여 오늘날 여호와를 좇는데서 떠나서 자기를 위하여 단을 쌓아 여호와를 거역하고자 하느냐",
+      "source_text_hash": "0cf0693fe42a7afd9d98422a75130ce2ab53ca6117260687c7b460abe0e40142",
+      "translation_text_hash": "acb15a712ef0d8f994e86dfc937a8cb911933447d089d9fcc611aad3860b106d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 온 회중이 말하기를 너희가 어찌하여 이스라엘 하나님께 범죄하여 오늘날 여호와를 좇는데서 떠나서 자기를 위하여 단을 쌓아 여호와를 거역하고자 하느냐"
+      ],
+      "raw_text_hashes": [
+        "acb15a712ef0d8f994e86dfc937a8cb911933447d089d9fcc611aad3860b106d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:17",
+      "sequence": 6444,
+      "chapter_label": "JOS 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "Is the iniquity of Peor too little for us, from which we have not cleansed ourselves to this day, although there came a plague on the congregation of the LORD,",
+      "ko": "브올의 죄악으로 인하여 여호와의 회중에 재앙이 내렸으나 오늘날까지 우리가 그 죄에서 정결함을 얻지 못하였거늘 그 죄악이 우리에게 부족하여서",
+      "source_text_hash": "e012950c09f895b0e1ac19926802fe107d7604351a7bf7857c447f5e0a178694",
+      "translation_text_hash": "dbf247634183e07855481aaac516dbc7b3909b66ab9e9c4b6cf13c7fb069438e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브올의 죄악으로 인하여 여호와의 회중에 재앙이 내렸으나 오늘날까지 우리가 그 죄에서 정결함을 얻지 못하였거늘 그 죄악이 우리에게 부족하여서"
+      ],
+      "raw_text_hashes": [
+        "dbf247634183e07855481aaac516dbc7b3909b66ab9e9c4b6cf13c7fb069438e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:18",
+      "sequence": 6445,
+      "chapter_label": "JOS 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "that you must turn away today from following the LORD? It will be, since you rebel today against the LORD, that tomorrow he will be angry with the whole congregation of Israel.",
+      "ko": "오늘날 너희가 돌이켜 여호와를 좇지 않고자 하느냐 너희가 오늘날 여호와를 배역하면 내일은 그가 이스라엘 온 회중에게 진노하시리라",
+      "source_text_hash": "f2c51c43e023ff88f64fe8742363aff6be3c6c0fc3bf9a9a5740ce038f1fd498",
+      "translation_text_hash": "bcd7ae7296db99232e022f607ffb6262acb7a9c5efcca116cf89d79c03d033ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날 너희가 돌이켜 여호와를 좇지 않고자 하느냐 너희가 오늘날 여호와를 배역하면 내일은 그가 이스라엘 온 회중에게 진노하시리라"
+      ],
+      "raw_text_hashes": [
+        "bcd7ae7296db99232e022f607ffb6262acb7a9c5efcca116cf89d79c03d033ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:19",
+      "sequence": 6446,
+      "chapter_label": "JOS 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "However, if the land of your possession is unclean, then pass over to the land of the possession of the LORD, in which the LORD’s tabernacle dwells, and take possession among us; but don’t rebel against the LORD, nor rebel against us, in building an altar other than the LORD our God’s altar.",
+      "ko": "그런데 너희 소유지가 만일 깨끗지 아니하거든 여호와의 성막이 있는 여호와의 소유지로 건너와 우리 중에서 소유를 취할 것이니라 오직 우리 하나님 여호와의 단 외에 다른 단을 쌓음으로 여호와께 패역하지 말며 우리에게도 패역하지 말라",
+      "source_text_hash": "27bea183f28fbf6fabd36981007ce9e11085f0726acfbf088b23a0cda06d6c9b",
+      "translation_text_hash": "7710ee04a6379a2145c78ae249b41f598b3f3913aee7463c017796e2579da4eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 너희 소유지가 만일 깨끗지 아니하거든 여호와의 성막이 있는 여호와의 소유지로 건너와 우리 중에서 소유를 취할 것이니라 오직 우리 하나님 여호와의 단 외에 다른 단을 쌓음으로 여호와께 패역하지 말며 우리에게도 패역하지 말라"
+      ],
+      "raw_text_hashes": [
+        "7710ee04a6379a2145c78ae249b41f598b3f3913aee7463c017796e2579da4eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:20",
+      "sequence": 6447,
+      "chapter_label": "JOS 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "Didn’t Achan the son of Zerah commit a trespass in the devoted thing, and wrath fell on all the congregation of Israel? That man didn’t perish alone in his iniquity.’”",
+      "ko": "세라의 아들 아간이 바친 물건에 대하여 범죄하므로 이스라엘 온 회중에 진노가 임하지 아니하였었느냐 그 죄악으로 망한 자가 그 사람 뿐이 아니었느니라",
+      "source_text_hash": "80869865713cc91a22de347c165eaf955d2aebbf9a356092b6ab6151b600d2fa",
+      "translation_text_hash": "cf6018fddfa533d929ee808c800cbcbbe265e608b00a3246216d5df9966619f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세라의 아들 아간이 바친 물건에 대하여 범죄하므로 이스라엘 온 회중에 진노가 임하지 아니하였었느냐 그 죄악으로 망한 자가 그 사람 뿐이 아니었느니라"
+      ],
+      "raw_text_hashes": [
+        "cf6018fddfa533d929ee808c800cbcbbe265e608b00a3246216d5df9966619f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:21",
+      "sequence": 6448,
+      "chapter_label": "JOS 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "Then the children of Reuben and the children of Gad and the half-tribe of Manasseh answered, and spoke to the heads of the thousands of Israel,",
+      "ko": "르우벤 자손과 갓 자손과 므낫세 반 지파가 이스라엘 천만인의 두령에게 대답하여 가로되",
+      "source_text_hash": "107f3d26cea80a8eaa448b794eb2dae53b065222c2af8d73c168810229e64375",
+      "translation_text_hash": "c8aa8e9311fb4615a62da8f3e17ed73d6a0237b708976619a634dd12ed05450d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손과 갓 자손과 므낫세 반 지파가 이스라엘 천만인의 두령에게 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "c8aa8e9311fb4615a62da8f3e17ed73d6a0237b708976619a634dd12ed05450d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:22",
+      "sequence": 6449,
+      "chapter_label": "JOS 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "“The Mighty One, God, the LORD, the Mighty One, God, the LORD, he knows; and Israel shall know: if it was in rebellion, or if in trespass against the LORD (don’t save us today),",
+      "ko": "전능하신 자 하나님 여호와, 전능하신 자 하나님 여호와께서 아시나니 이스라엘도 장차 알리라 이 일이 만일 여호와께 패역함이거나 범죄함이거든 주는 오늘날 우리를 구원치 마시옵소서",
+      "source_text_hash": "87f1d56fe2869bd42b6dfc86adf83f668434e293fb962d3d1bb8ebb6fcf8a6a1",
+      "translation_text_hash": "98eea6a86506aea460840c0303c0047a5dc1c1d8e1e6c2d870f0dbe6f1d0a3ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전능하신 자 하나님 여호와, 전능하신 자 하나님 여호와께서 아시나니 이스라엘도 장차 알리라 이 일이 만일 여호와께 패역함이거나 범죄함이거든 주는 오늘날 우리를 구원치 마시옵소서"
+      ],
+      "raw_text_hashes": [
+        "98eea6a86506aea460840c0303c0047a5dc1c1d8e1e6c2d870f0dbe6f1d0a3ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:23",
+      "sequence": 6450,
+      "chapter_label": "JOS 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "that we have built us an altar to turn away from following the LORD; or if to offer burnt offering or meal offering, or if to offer sacrifices of peace offerings, let the LORD himself require it.",
+      "ko": "우리가 단을 쌓은 것이 돌이켜 여호와를 좇지 아니하려 함이거나 혹시 그 위에 번제나 소제를 드리려 함이거나 혹시 화목제물을 드리려 함이어든 여호와는 친히 벌하시옵소서",
+      "source_text_hash": "4e6d2dba70aed19e2ba5fb198286c3b22f594c8d1b2c90908cf3ef1ad118c009",
+      "translation_text_hash": "aae9c70691ddf3323b3563064d3d1dc57e41107707fcc6499b6cb7e36048f738",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 단을 쌓은 것이 돌이켜 여호와를 좇지 아니하려 함이거나 혹시 그 위에 번제나 소제를 드리려 함이거나 혹시 화목제물을 드리려 함이어든 여호와는 친히 벌하시옵소서"
+      ],
+      "raw_text_hashes": [
+        "aae9c70691ddf3323b3563064d3d1dc57e41107707fcc6499b6cb7e36048f738"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:24",
+      "sequence": 6451,
+      "chapter_label": "JOS 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "“If we have not out of concern done this, and for a reason, saying, ‘In time to come your children might speak to our children, saying, “What have you to do with the LORD, the God of Israel?",
+      "ko": "우리가 목적이 있어서 주의하고 이같이 하였노라 곧 생각하기를 후일에 너희 자손이 우리 자손에게 말하여 이르기를 너희가 이스라엘 하나님 여호와와 무슨 상관이 있느냐",
+      "source_text_hash": "f12e2aa47c763985f76844b82c202a37365af4fbc32a04de93cded39dbb35c31",
+      "translation_text_hash": "9d9704025eb712996fbab78574860a5b566817906ce8a20f709d702e6244d993",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 목적이 있어서 주의하고 이같이 하였노라 곧 생각하기를 후일에 너희 자손이 우리 자손에게 말하여 이르기를 너희가 이스라엘 하나님 여호와와 무슨 상관이 있느냐"
+      ],
+      "raw_text_hashes": [
+        "9d9704025eb712996fbab78574860a5b566817906ce8a20f709d702e6244d993"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:25",
+      "sequence": 6452,
+      "chapter_label": "JOS 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "For the LORD has made the Jordan a border between us and you, you children of Reuben and children of Gad. You have no portion in the LORD.”’ So your children might make our children cease from fearing the LORD.",
+      "ko": "너희 르우벤 자손 갓 자손아 여호와께서 우리와 너희 사이에 요단으로 경계를 삼으셨나니 너희는 여호와께 분의가 없느니라 하여 너희 자손이 우리 자손으로 여호와 경외하기를 그치게 할까 하여",
+      "source_text_hash": "3b94439f21c757c7002c5a18cc63ef53bf68754a73364e4bf70bf61574a9cdfb",
+      "translation_text_hash": "3de1a2e91943eab005ca198dade0f4c5bb12527d1d88ef59e012e32d6753dc18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 르우벤 자손 갓 자손아 여호와께서 우리와 너희 사이에 요단으로 경계를 삼으셨나니 너희는 여호와께 분의가 없느니라 하여 너희 자손이 우리 자손으로 여호와 경외하기를 그치게 할까 하여"
+      ],
+      "raw_text_hashes": [
+        "3de1a2e91943eab005ca198dade0f4c5bb12527d1d88ef59e012e32d6753dc18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:26",
+      "sequence": 6453,
+      "chapter_label": "JOS 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "“Therefore we said, ‘Let’s now prepare to build ourselves an altar, not for burnt offering, nor for sacrifice;",
+      "ko": "우리가 말하기를 우리가 이제 한 단 쌓기를 예비하자 하였노니 이는 번제를 위함도 아니요 다른 제사를 위함도 아니라",
+      "source_text_hash": "fd71c71f7cf9bf4bf5004f917b85f0168fba1e188d29fb6a2329a63e74237c91",
+      "translation_text_hash": "1de970eaa0a87f83d120a127230f93bbf439958e87ad851bda3eb5998d7cc577",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 말하기를 우리가 이제 한 단 쌓기를 예비하자 하였노니 이는 번제를 위함도 아니요 다른 제사를 위함도 아니라"
+      ],
+      "raw_text_hashes": [
+        "1de970eaa0a87f83d120a127230f93bbf439958e87ad851bda3eb5998d7cc577"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:27",
+      "sequence": 6454,
+      "chapter_label": "JOS 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "but it will be a witness between us and you, and between our generations after us, that we may perform the service of the LORD before him with our burnt offerings, with our sacrifices, and with our peace offerings;’ that your children may not tell our children in time to come, ‘You have no portion in the LORD.’",
+      "ko": "우리가 여호와 앞에서 우리 번제와 우리 다른 제사와 우리 화목제로 섬기는 것을 우리와 너희 사이와 우리의 후대 사이에 증거가 되게 할뿐으로서 너희 자손으로 후일에 우리 자손에게 이르기를 너희는 여호와께 분의가 없다 못하게 하려 함이로라",
+      "source_text_hash": "66cffc681d005b876e0f2310644922a433790410ec744338abb366078c503fde",
+      "translation_text_hash": "6294f69dbe1366b56e154a4e0684a07de3c864880a010811c1187ee84302f179",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 여호와 앞에서 우리 번제와 우리 다른 제사와 우리 화목제로 섬기는 것을 우리와 너희 사이와 우리의 후대 사이에 증거가 되게 할뿐으로서 너희 자손으로 후일에 우리 자손에게 이르기를 너희는 여호와께 분의가 없다 못하게 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "6294f69dbe1366b56e154a4e0684a07de3c864880a010811c1187ee84302f179"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:28",
+      "sequence": 6455,
+      "chapter_label": "JOS 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "“Therefore we said, ‘It shall be, when they tell us or our generations this in time to come, that we shall say, “Behold the pattern of the LORD’s altar, which our fathers made, not for burnt offering, nor for sacrifice; but it is a witness between us and you.”’",
+      "ko": "우리가 말하였거니와 만일 그들이 후일에 우리에게나 우리 후대에게 이 같이 말하면 우리가 말하기를 우리 열조가 지은 여호와의 단 모형을 보라 이는 번제를 위한 것도 아니요 다른 제사를 위한 것도 아니라 오직 우리와 너희 사이에 증거만 되게 할뿐이라",
+      "source_text_hash": "f8dc4dd9427c2bed13e38a42baa13a58ec0094b68d7cd783bc2bd98b2e0cab19",
+      "translation_text_hash": "38d81e25b73598f5bd036038bf933863e1099fc6f83c4579679ff18d90f14ace",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 말하였거니와 만일 그들이 후일에 우리에게나 우리 후대에게 이 같이 말하면 우리가 말하기를 우리 열조가 지은 여호와의 단 모형을 보라 이는 번제를 위한 것도 아니요 다른 제사를 위한 것도 아니라 오직 우리와 너희 사이에 증거만 되게 할뿐이라"
+      ],
+      "raw_text_hashes": [
+        "38d81e25b73598f5bd036038bf933863e1099fc6f83c4579679ff18d90f14ace"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:29",
+      "sequence": 6456,
+      "chapter_label": "JOS 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "“Far be it from us that we should rebel against the LORD, and turn away today from following the LORD, to build an altar for burnt offering, for meal offering, or for sacrifice, besides the LORD our God’s altar that is before his tabernacle!”",
+      "ko": "우리가 번제나 소제나 다른 제사를 위하여 우리 하나님 여호와의 성막 앞에 있는 단 외에 단을 쌓음으로 여호와께 패역하고 오늘날 여호와를 좇음에서 떠나려 함은 결단코 아니니라 하리라",
+      "source_text_hash": "c490d9589d8020aeb8bd9917edb0d8f60038ce60be81ebe28ad0192cdf40b8ea",
+      "translation_text_hash": "561cfd81155fbe2b1464bbd5de8a3f342e3827905e2d975046198698776fcc30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 번제나 소제나 다른 제사를 위하여 우리 하나님 여호와의 성막 앞에 있는 단 외에 단을 쌓음으로 여호와께 패역하고 오늘날 여호와를 좇음에서 떠나려 함은 결단코 아니니라 하리라"
+      ],
+      "raw_text_hashes": [
+        "561cfd81155fbe2b1464bbd5de8a3f342e3827905e2d975046198698776fcc30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:30",
+      "sequence": 6457,
+      "chapter_label": "JOS 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "When Phinehas the priest, and the princes of the congregation, even the heads of the thousands of Israel that were with him, heard the words that the children of Reuben and the children of Gad and the children of Manasseh spoke, it pleased them well.",
+      "ko": "제사장 비느하스와 그와 함께한 회중의 방백 곧 이스라엘 천만인의 두령들이 르우벤 자손과 갓 자손과 므낫세 자손의 말을 듣고 좋게 여긴지라",
+      "source_text_hash": "ee2f59d2c37f0c1a21261b63b94fa7a802b23e88e1fb2533fa2ff87a3af02669",
+      "translation_text_hash": "4facfef88a894a4072c2b1209f8b15ef046602ee4580b93712ccc3744664e43e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 비느하스와 그와 함께한 회중의 방백 곧 이스라엘 천만인의 두령들이 르우벤 자손과 갓 자손과 므낫세 자손의 말을 듣고 좋게 여긴지라"
+      ],
+      "raw_text_hashes": [
+        "4facfef88a894a4072c2b1209f8b15ef046602ee4580b93712ccc3744664e43e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:31",
+      "sequence": 6458,
+      "chapter_label": "JOS 22",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 31
+        }
+      ],
+      "en": "Phinehas the son of Eleazar the priest said to the children of Reuben, to the children of Gad, and to the children of Manasseh, “Today we know that the LORD is among us, because you have not committed this trespass against the LORD. Now you have delivered the children of Israel out of the LORD’s hand.”",
+      "ko": "제사장 엘르아살의 아들 비느하스가 르우벤 자손과 갓 자손과 므낫세 자손에게 이르되 우리가 오늘날 여호와께서 우리 중에 계신 줄을 아노니 이는 너희가 이 죄를 여호와께 범치 아니하였음이라 너희가 이제 이스라엘 자손을 여호와의 손에서 건져내었느니라 하고",
+      "source_text_hash": "07a5342944effe631a8c972b6d2299fc0538aaba8208b3c8573c6a37692971c4",
+      "translation_text_hash": "79d351a4c324ac3725eef3cff5cdf9ed0228e5a48ba58b0ca7de14cdf8762b0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 엘르아살의 아들 비느하스가 르우벤 자손과 갓 자손과 므낫세 자손에게 이르되 우리가 오늘날 여호와께서 우리 중에 계신 줄을 아노니 이는 너희가 이 죄를 여호와께 범치 아니하였음이라 너희가 이제 이스라엘 자손을 여호와의 손에서 건져내었느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "79d351a4c324ac3725eef3cff5cdf9ed0228e5a48ba58b0ca7de14cdf8762b0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:32",
+      "sequence": 6459,
+      "chapter_label": "JOS 22",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 32
+        }
+      ],
+      "en": "Phinehas the son of Eleazar the priest, and the princes, returned from the children of Reuben, and from the children of Gad, out of the land of Gilead, to the land of Canaan, to the children of Israel, and brought them word again.",
+      "ko": "제사장 엘르아살의 아들 비느하스와 방백들이 르우벤 자손과 갓 자손을 떠나 길르앗 땅에서 가나안 땅에 돌아와 이스라엘 자손에게 이르러 회보하매",
+      "source_text_hash": "0ec0df35e59b22b2ada7f89205586a642972b324ddce2463a1f2b19a4e2d5ae5",
+      "translation_text_hash": "30d7adee4e11a785e7987b571b9d8f8f772c8e22f35583a4230dcd047c424d46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 엘르아살의 아들 비느하스와 방백들이 르우벤 자손과 갓 자손을 떠나 길르앗 땅에서 가나안 땅에 돌아와 이스라엘 자손에게 이르러 회보하매"
+      ],
+      "raw_text_hashes": [
+        "30d7adee4e11a785e7987b571b9d8f8f772c8e22f35583a4230dcd047c424d46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:33",
+      "sequence": 6460,
+      "chapter_label": "JOS 22",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 33
+        }
+      ],
+      "en": "The thing pleased the children of Israel; and the children of Israel blessed God, and spoke no more of going up against them to war, to destroy the land in which the children of Reuben and the children of Gad lived.",
+      "ko": "그 일이 이스라엘 자손을 즐겁게 한지라 이스라엘 자손이 하나님을 찬송하고 르우벤 자손과 갓 자손의 거하는 땅에 가서 싸와 그것을 멸하자 하는 말을 다시 하지 아니 하였더라",
+      "source_text_hash": "2bb54e702b3777fae2dac0c39627b5888b6ecddf67ca208ef11e33a6e038a6e8",
+      "translation_text_hash": "0e2a8aa40391b54d0b9db7ec96b39b006ab9f521c18c68daefd7163fb969abd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 일이 이스라엘 자손을 즐겁게 한지라 이스라엘 자손이 하나님을 찬송하고 르우벤 자손과 갓 자손의 거하는 땅에 가서 싸와 그것을 멸하자 하는 말을 다시 하지 아니 하였더라"
+      ],
+      "raw_text_hashes": [
+        "0e2a8aa40391b54d0b9db7ec96b39b006ab9f521c18c68daefd7163fb969abd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:22:34",
+      "sequence": 6461,
+      "chapter_label": "JOS 22",
+      "verse_label": "34",
+      "locator": {
+        "book": "JOS",
+        "chapter": 22,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 22,
+          "verse": 34
+        }
+      ],
+      "en": "The children of Reuben and the children of Gad named the altar “A Witness Between Us that the LORD is God.”",
+      "ko": "르우벤 자손과 갓 자손이 그 단을 엣이라 칭하였으니 우리 사이에 이 단은 여호와께서 하나님이 되시는 증거라 함이었더라",
+      "source_text_hash": "b3f56f3b3d291cfaa79557426a5d3c9786e589ca565d5c59f897930730fbb061",
+      "translation_text_hash": "892c005a8292ea4a2e23669b80fc859b42865bcbb8668b15776e871038b35b10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손과 갓 자손이 그 단을 엣이라 칭하였으니 우리 사이에 이 단은 여호와께서 하나님이 되시는 증거라 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "892c005a8292ea4a2e23669b80fc859b42865bcbb8668b15776e871038b35b10"
+      ]
+    }
+  ]
+}

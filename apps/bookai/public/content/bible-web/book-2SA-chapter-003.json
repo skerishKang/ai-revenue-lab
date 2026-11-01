@@ -1,0 +1,1261 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:003",
+  "unit_ordinal": 270,
+  "unit_label": "2SA 3",
+  "book_code": "2SA",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:3:1",
+      "sequence": 8083,
+      "chapter_label": "2SA 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Now there was a long war between Saul’s house and David’s house. David grew stronger and stronger, but Saul’s house grew weaker and weaker.",
+      "ko": "사울의 집과 다윗의 집 사이에 전쟁이 오래매 다윗은 점점 강하여가고 사울의 집은 점점 약하여 가니라",
+      "source_text_hash": "0f63b8c003a7ababc05b44d8dd6746b26c5583583bffbf1a48fb7c821d83ae3c",
+      "translation_text_hash": "c2084c2689e116559e8bb6dca90687918a9d48ecd3fabaa0ad10a28dab0212e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 집과 다윗의 집 사이에 전쟁이 오래매 다윗은 점점 강하여가고 사울의 집은 점점 약하여 가니라"
+      ],
+      "raw_text_hashes": [
+        "c2084c2689e116559e8bb6dca90687918a9d48ecd3fabaa0ad10a28dab0212e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:2",
+      "sequence": 8084,
+      "chapter_label": "2SA 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Sons were born to David in Hebron. His firstborn was Amnon, of Ahinoam the Jezreelitess;",
+      "ko": "다윗이 헤브론에서 아들들을 낳았으되 맏아들은 암논이라 이스르엘 여인 아히노암의 소생이요",
+      "source_text_hash": "47999b32b209478a6da1ed838a0c917a399a260586c6a02ba0b891ffc2ccf8a5",
+      "translation_text_hash": "5eccc81ca7df4f22ee680001b46f8908cde8ff8b5ba55c6cb0c49f9f2a4b110f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 헤브론에서 아들들을 낳았으되 맏아들은 암논이라 이스르엘 여인 아히노암의 소생이요"
+      ],
+      "raw_text_hashes": [
+        "5eccc81ca7df4f22ee680001b46f8908cde8ff8b5ba55c6cb0c49f9f2a4b110f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:3",
+      "sequence": 8085,
+      "chapter_label": "2SA 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "and his second, Chileab, of Abigail the wife of Nabal the Carmelite; and the third, Absalom the son of Maacah the daughter of Talmai king of Geshur;",
+      "ko": "둘째는 길르압이라 갈멜 사람 나발의 아내 되었던 아비가일의 소생이요 세째는 압살롬이라 그술 왕 달매의 딸 마아가의 아들이요",
+      "source_text_hash": "ab55d0fec2d5e06f2931054899566dd5f92da7b28c2b58a3b4fca5759d37430a",
+      "translation_text_hash": "7fca1a1d9c458d40eacac4ea2b10fb517f1b1ac4578780e0272daf1e68b0586f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째는 길르압이라 갈멜 사람 나발의 아내 되었던 아비가일의 소생이요 세째는 압살롬이라 그술 왕 달매의 딸 마아가의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "7fca1a1d9c458d40eacac4ea2b10fb517f1b1ac4578780e0272daf1e68b0586f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:4",
+      "sequence": 8086,
+      "chapter_label": "2SA 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "and the fourth, Adonijah the son of Haggith; and the fifth, Shephatiah the son of Abital;",
+      "ko": "네째는 아도니야라 학깃의 아들이요 다섯째는 스바댜라 아비달의 아들이요",
+      "source_text_hash": "f3dcae40ef3ac85c412ba27c5d6fa826f6d71bf6ae85d98b90129cbf8bb98355",
+      "translation_text_hash": "e988c7397c95728a6716135ec6c74115553da9c1b4a821f176af8546d88f9bfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째는 아도니야라 학깃의 아들이요 다섯째는 스바댜라 아비달의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "e988c7397c95728a6716135ec6c74115553da9c1b4a821f176af8546d88f9bfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:5",
+      "sequence": 8087,
+      "chapter_label": "2SA 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "and the sixth, Ithream, of Eglah, David’s wife. These were born to David in Hebron.",
+      "ko": "여섯째는 이드르암이라 다윗의 아내 에글라의 소생이니 이는 다윗이 헤브론에서 낳은 자들이더라",
+      "source_text_hash": "d4afcb56baa83dc33c9fca955d07b6e4725536dcd8a6f4605dfe62556323a9a5",
+      "translation_text_hash": "555cb6779768667b7c80db06ca3ee4644c78d0bf3833f2d3012c831bc8764f09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여섯째는 이드르암이라 다윗의 아내 에글라의 소생이니 이는 다윗이 헤브론에서 낳은 자들이더라"
+      ],
+      "raw_text_hashes": [
+        "555cb6779768667b7c80db06ca3ee4644c78d0bf3833f2d3012c831bc8764f09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:6",
+      "sequence": 8088,
+      "chapter_label": "2SA 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "While there was war between Saul’s house and David’s house, Abner made himself strong in Saul’s house.",
+      "ko": "사울의 집과 다윗의 집 사이에 전쟁이 있는 동안에 아브넬이 사울의 집에서 점점 권세를 잡으니라",
+      "source_text_hash": "e9aababebbf0102334291a3e9da1f610cb0fd0a4a2812f2bce79850e0f9276df",
+      "translation_text_hash": "1cd7cc44ac5c6c6f92a26207332762711df5928c74d10c98912ad23ebb2b4364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 집과 다윗의 집 사이에 전쟁이 있는 동안에 아브넬이 사울의 집에서 점점 권세를 잡으니라"
+      ],
+      "raw_text_hashes": [
+        "1cd7cc44ac5c6c6f92a26207332762711df5928c74d10c98912ad23ebb2b4364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:7",
+      "sequence": 8089,
+      "chapter_label": "2SA 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Now Saul had a concubine, whose name was Rizpah, the daughter of Aiah; and Ishbosheth said to Abner, “Why have you gone in to my father’s concubine?”",
+      "ko": "사울에게 첩이 있었으니 이름은 리스바요 아야의 딸이더라 이스보셋이 아브넬에게 이르되 네가 어찌하여 내 아버지의 첩을 통간하였느냐",
+      "source_text_hash": "99312aa4c2c59a699318f41cb9888a2ccda2437541e7a9a0a41f8c8118177901",
+      "translation_text_hash": "df215ee934470c5bda47103ae872375ba6740441da1fe09f0f1db08805ae6308",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울에게 첩이 있었으니 이름은 리스바요 아야의 딸이더라 이스보셋이 아브넬에게 이르되 네가 어찌하여 내 아버지의 첩을 통간하였느냐"
+      ],
+      "raw_text_hashes": [
+        "df215ee934470c5bda47103ae872375ba6740441da1fe09f0f1db08805ae6308"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:8",
+      "sequence": 8090,
+      "chapter_label": "2SA 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Then Abner was very angry about Ishbosheth’s words, and said, “Am I a dog’s head that belongs to Judah? Today I show kindness to your father Saul’s house, to his brothers, and to his friends, and have not delivered you into the hand of David; and yet you charge me today with a fault concerning this woman!",
+      "ko": "아브넬이 이스보셋의 말을 매우 분히 여겨 가로되 내가 유다의 개 대강이뇨 내가 오늘날 당신의 아버지 사울의 집과 그 형제와 그 친구에게 은혜를 베풀어서 당신을 다윗의 손에 내어주지 아니하였거늘 당신이 오늘날 이 여인에게 관한 허물을 내게 돌리는도다",
+      "source_text_hash": "db5fd85ed38661ba3cd412eb779da8d030d59a7fa6d6c517ca8217cb32dc52b8",
+      "translation_text_hash": "0964680c10fadb02a200b9cafc7fbdbb99b6d0798bcbda6a301a834d902def49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 이스보셋의 말을 매우 분히 여겨 가로되 내가 유다의 개 대강이뇨 내가 오늘날 당신의 아버지 사울의 집과 그 형제와 그 친구에게 은혜를 베풀어서 당신을 다윗의 손에 내어주지 아니하였거늘 당신이 오늘날 이 여인에게 관한 허물을 내게 돌리는도다"
+      ],
+      "raw_text_hashes": [
+        "0964680c10fadb02a200b9cafc7fbdbb99b6d0798bcbda6a301a834d902def49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:9",
+      "sequence": 8091,
+      "chapter_label": "2SA 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "God do so to Abner, and more also, if, as the LORD has sworn to David, I don’t do even so to him:",
+      "ko": "여호와께서 다윗에게 맹세하신대로 내가 이루게 아니하면 하나님이 아브넬에게 벌 위에 벌을 내리심이 마땅하니라",
+      "source_text_hash": "0e78dfbf46676c462fe9ec7112017b5267bbb905e24a69195d49cf37e3e6af7b",
+      "translation_text_hash": "9edefe852ae1f4defd7f1f30da06ea99acf3377d309a15cd292cc7a790316242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 다윗에게 맹세하신대로 내가 이루게 아니하면 하나님이 아브넬에게 벌 위에 벌을 내리심이 마땅하니라"
+      ],
+      "raw_text_hashes": [
+        "9edefe852ae1f4defd7f1f30da06ea99acf3377d309a15cd292cc7a790316242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:10",
+      "sequence": 8092,
+      "chapter_label": "2SA 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "to transfer the kingdom from Saul’s house, and to set up David’s throne over Israel and over Judah, from Dan even to Beersheba.”",
+      "ko": "그 맹세는 곧 이 나라를 사울의 집에서 다윗에게 옮겨서 그 위를 단에서 브엘세바까지 이스라엘과 유다에 세우리라 하신 것이니라 하매",
+      "source_text_hash": "9ca239fd88adf0719399bc789a01227475f094e9794e63bd5450518f3a424fee",
+      "translation_text_hash": "cd3db18db9ef72b06f46420ac2da820aa70ac7b49e92f8121eca626dc9896529",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 맹세는 곧 이 나라를 사울의 집에서 다윗에게 옮겨서 그 위를 단에서 브엘세바까지 이스라엘과 유다에 세우리라 하신 것이니라 하매"
+      ],
+      "raw_text_hashes": [
+        "cd3db18db9ef72b06f46420ac2da820aa70ac7b49e92f8121eca626dc9896529"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:11",
+      "sequence": 8093,
+      "chapter_label": "2SA 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "He could not answer Abner another word, because he was afraid of him.",
+      "ko": "이스보셋이 아브넬을 두려워하여 감히 한 말도 대답지 못하니라",
+      "source_text_hash": "72a5388e83917381cf364900382b551ef9d6d12b2cd1cf3da01f2e70c1f10197",
+      "translation_text_hash": "d75e673eacb2aae42471660d71e7922866d9adc0d3a61159c4c80cb6be95513b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스보셋이 아브넬을 두려워하여 감히 한 말도 대답지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "d75e673eacb2aae42471660d71e7922866d9adc0d3a61159c4c80cb6be95513b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:12",
+      "sequence": 8094,
+      "chapter_label": "2SA 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Abner sent messengers to David on his behalf, saying, “Whose is the land?” and saying, “Make your alliance with me, and behold, my hand will be with you to bring all Israel around to you.”",
+      "ko": "아브넬이 자기를 대신하여 사자들을 다윗에게 보내어 가로되 이 땅이 뉘 것이니이까 또 가로되 당신은 나로 더불어 언약하사이다 내 손이 당신을 도와 온 이스라엘로 당신에게 돌아가게 하리이다",
+      "source_text_hash": "1959219c9aecb15d63c628c6f760dfe22ab9bf00c120124ce95737815ed4136e",
+      "translation_text_hash": "aa4090a5fa7575452645764025263a7e57e33f6116532fa8c0338fe3e104cc0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 자기를 대신하여 사자들을 다윗에게 보내어 가로되 이 땅이 뉘 것이니이까 또 가로되 당신은 나로 더불어 언약하사이다 내 손이 당신을 도와 온 이스라엘로 당신에게 돌아가게 하리이다"
+      ],
+      "raw_text_hashes": [
+        "aa4090a5fa7575452645764025263a7e57e33f6116532fa8c0338fe3e104cc0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:13",
+      "sequence": 8095,
+      "chapter_label": "2SA 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "David said, “Good. I will make a treaty with you, but one thing I require of you. That is, you will not see my face unless you first bring Michal, Saul’s daughter, when you come to see my face.”",
+      "ko": "다윗이 가로되 좋다 내가 너와 언약하려니와 내가 네게 한가지 일을 요구하노니 나를 보러 올 때에 위선 사울의 딸 미갈을 데리고 오라 그렇지 않으면 내 얼굴을 보지 못하리라 하고",
+      "source_text_hash": "3861efe2b88ebb0259f6544ccacb6fd345a678be403c7884dc2506721892f730",
+      "translation_text_hash": "48ecc600ae55a4fdd36389bc86552fc39c5e0bb70ca567d90c5a6955b174118b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 좋다 내가 너와 언약하려니와 내가 네게 한가지 일을 요구하노니 나를 보러 올 때에 위선 사울의 딸 미갈을 데리고 오라 그렇지 않으면 내 얼굴을 보지 못하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "48ecc600ae55a4fdd36389bc86552fc39c5e0bb70ca567d90c5a6955b174118b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:14",
+      "sequence": 8096,
+      "chapter_label": "2SA 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "David sent messengers to Ishbosheth, Saul’s son, saying, “Deliver me my wife Michal, whom I was given to marry for one hundred foreskins of the Philistines.”",
+      "ko": "사울의 아들 이스보셋에게 사자들을 보내어 이르되 내 처 미갈을 내게로 돌리라 저는 내가 전에 블레셋 사람의 양피 일백으로 정혼한 자니라",
+      "source_text_hash": "b2c4fec0504e4ad5d5704f5888f6997b59ff7ea0f826e875fae7b24c432b879b",
+      "translation_text_hash": "43cf9a7391c73bd9d5fc3941bfba6e266b8299d29128f1f8ff09e192bab99050",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 아들 이스보셋에게 사자들을 보내어 이르되 내 처 미갈을 내게로 돌리라 저는 내가 전에 블레셋 사람의 양피 일백으로 정혼한 자니라"
+      ],
+      "raw_text_hashes": [
+        "43cf9a7391c73bd9d5fc3941bfba6e266b8299d29128f1f8ff09e192bab99050"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:15",
+      "sequence": 8097,
+      "chapter_label": "2SA 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Ishbosheth sent and took her from her husband, Paltiel the son of Laish.",
+      "ko": "이스보셋이 보내어 그 남편 라이스의 아들 발디엘에게서 취하매",
+      "source_text_hash": "01e0c7cb55a59536f86eff34de0f105cdc52560b03846d7b9075fdeb9eb19491",
+      "translation_text_hash": "0ed7a0fea4ebfb1d6e5f70e573246dd966ee96cb036561f294acbf5e08b3ec33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스보셋이 보내어 그 남편 라이스의 아들 발디엘에게서 취하매"
+      ],
+      "raw_text_hashes": [
+        "0ed7a0fea4ebfb1d6e5f70e573246dd966ee96cb036561f294acbf5e08b3ec33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:16",
+      "sequence": 8098,
+      "chapter_label": "2SA 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Her husband went with her, weeping as he went, and followed her to Bahurim. Then Abner said to him, “Go! Return!” and he returned.",
+      "ko": "그 남편이 저와 함께 오되 울며 바후림까지 따라 왔더니 아브넬이 저에게 돌아가라 하매 돌아가니라",
+      "source_text_hash": "dafd62033d390fffd4b82b25dfe7cfc184df9688cd86fb61f67b49598fa4c986",
+      "translation_text_hash": "e570337ee0e965d2785fc01248c2906b682b1faa2b6fce69e9fbde97d4ea0e67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편이 저와 함께 오되 울며 바후림까지 따라 왔더니 아브넬이 저에게 돌아가라 하매 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "e570337ee0e965d2785fc01248c2906b682b1faa2b6fce69e9fbde97d4ea0e67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:17",
+      "sequence": 8099,
+      "chapter_label": "2SA 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "Abner had communication with the elders of Israel, saying, “In times past, you sought for David to be king over you.",
+      "ko": "아브넬이 이스라엘 장로들에게 말하여 가로되 너희가 여러번 다윗으로 너희 임금 삼기를 구하였으니",
+      "source_text_hash": "0d32e791cfe613fd644d4c4600bbae6331b04da9476ef3b15c585176a3a08c4e",
+      "translation_text_hash": "643ea3f704a163b87a5708bbf0f26f2b59e4534c6c6a79f7748a96bb730acaf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 이스라엘 장로들에게 말하여 가로되 너희가 여러번 다윗으로 너희 임금 삼기를 구하였으니"
+      ],
+      "raw_text_hashes": [
+        "643ea3f704a163b87a5708bbf0f26f2b59e4534c6c6a79f7748a96bb730acaf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:18",
+      "sequence": 8100,
+      "chapter_label": "2SA 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Now then do it! For the LORD has spoken of David, saying, ‘By the hand of my servant David, I will save my people Israel out of the hand of the Philistines, and out of the hand of all their enemies.’”",
+      "ko": "이제 그대로 하라 여호와께서 이미 다윗에 대하여 말씀하시기를 내가 내 종 다윗의 손으로 내 백성 이스라엘을 구원하여 블레셋 사람의 손과 모든 대적의 손에서 벗어나게 하리라 하셨음이니라 하고",
+      "source_text_hash": "e5fcf4817212233ce0c2ba0646b84616ea2881f69706526b1b64be0a0f5fc738",
+      "translation_text_hash": "f4bde37fcf942719e0d5f3825c6ed1ca368ef05392cb87e7d2e0d182da0f57af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 그대로 하라 여호와께서 이미 다윗에 대하여 말씀하시기를 내가 내 종 다윗의 손으로 내 백성 이스라엘을 구원하여 블레셋 사람의 손과 모든 대적의 손에서 벗어나게 하리라 하셨음이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "f4bde37fcf942719e0d5f3825c6ed1ca368ef05392cb87e7d2e0d182da0f57af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:19",
+      "sequence": 8101,
+      "chapter_label": "2SA 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "Abner also spoke in the ears of Benjamin; and Abner went also to speak in the ears of David in Hebron all that seemed good to Israel and to the whole house of Benjamin.",
+      "ko": "아브넬이 또 베냐민 사람의 귀에 말하고 이스라엘과 베냐민의 온 집이 선히 여기는 모든 것을 다윗의 귀에 고하려고 헤브론으로 가니라",
+      "source_text_hash": "2f5aa5c874a1935340a77274ba408cb731c9b26b0f47162579d88bfd84efcbf5",
+      "translation_text_hash": "75e4b2afa15f30c09d552bfee5d6dea0b71444bcdc6c0a1c24a7ffe79a14ce47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 또 베냐민 사람의 귀에 말하고 이스라엘과 베냐민의 온 집이 선히 여기는 모든 것을 다윗의 귀에 고하려고 헤브론으로 가니라"
+      ],
+      "raw_text_hashes": [
+        "75e4b2afa15f30c09d552bfee5d6dea0b71444bcdc6c0a1c24a7ffe79a14ce47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:20",
+      "sequence": 8102,
+      "chapter_label": "2SA 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "So Abner came to David to Hebron, and twenty men with him. David made Abner and the men who were with him a feast.",
+      "ko": "아브넬이 종자 이십인으로 더불어 헤브론에 이르러 다윗에게 나아가니 다윗이 아브넬과 그 함께한 사람을 위하여 잔치를 배설하였더라",
+      "source_text_hash": "37b655103703e0e4d66b1f475653b59fef4f8eb933a848b63992e438b1a8d035",
+      "translation_text_hash": "c4f1945a0c0711973a3b551fb2dfb6e570c79572a787e80da4673eb20b8b7994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 종자 이십인으로 더불어 헤브론에 이르러 다윗에게 나아가니 다윗이 아브넬과 그 함께한 사람을 위하여 잔치를 배설하였더라"
+      ],
+      "raw_text_hashes": [
+        "c4f1945a0c0711973a3b551fb2dfb6e570c79572a787e80da4673eb20b8b7994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:21",
+      "sequence": 8103,
+      "chapter_label": "2SA 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "Abner said to David, “I will arise and go, and will gather all Israel to my lord the king, that they may make a covenant with you, and that you may reign over all that your soul desires.” David sent Abner away; and he went in peace.",
+      "ko": "아브넬이 다윗에게 고하되 내가 일어나 가서 온 이스라엘 무리를 내 주 왕의 앞에 모아 더불어 언약하게 하고 마음의 원하시는대로 모든 것을 다스리시게 하리이다 이에 다윗이 아브넬을 보내매 저가 평안히 가니라",
+      "source_text_hash": "141f22299d918c346a7f2a952a07c3dd14de086fcefd871ac9110aa0084c3987",
+      "translation_text_hash": "0c57aacc8e5c4e3d09c45d3bbaba3559a6ce2a09892218e5288f2d1d36fe9ec6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 다윗에게 고하되 내가 일어나 가서 온 이스라엘 무리를 내 주 왕의 앞에 모아 더불어 언약하게 하고 마음의 원하시는대로 모든 것을 다스리시게 하리이다 이에 다윗이 아브넬을 보내매 저가 평안히 가니라"
+      ],
+      "raw_text_hashes": [
+        "0c57aacc8e5c4e3d09c45d3bbaba3559a6ce2a09892218e5288f2d1d36fe9ec6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:22",
+      "sequence": 8104,
+      "chapter_label": "2SA 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "Behold, David’s servants and Joab came from a raid and brought in a great plunder with them; but Abner was not with David in Hebron, for he had sent him away, and he had gone in peace.",
+      "ko": "다윗의 신복들과 요압이 적군을 치고 크게 노략한 물건을 가지고 돌아오니 아브넬은 이미 보냄을 받아 평안히 갔고 다윗과 함께 헤브론에 있지 아니한 때라",
+      "source_text_hash": "5c7d8933b3322ed201356fa4c02d2ed754409b6598eb5399b970967a331fa6cb",
+      "translation_text_hash": "538fe6f33f2b958fd6fec9d29bdc1eba1b27de74308baa94b05dc016f5b1ec43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 신복들과 요압이 적군을 치고 크게 노략한 물건을 가지고 돌아오니 아브넬은 이미 보냄을 받아 평안히 갔고 다윗과 함께 헤브론에 있지 아니한 때라"
+      ],
+      "raw_text_hashes": [
+        "538fe6f33f2b958fd6fec9d29bdc1eba1b27de74308baa94b05dc016f5b1ec43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:23",
+      "sequence": 8105,
+      "chapter_label": "2SA 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "When Joab and all the army who was with him had come, they told Joab, “Abner the son of Ner came to the king, and he has sent him away, and he has gone in peace.”",
+      "ko": "요압과 그 함께한 모든 군사가 돌아오매 혹이 요압에게 고하여 가로되 넬의 아들 아브넬이 왕에게 왔더니 왕이 보내매 저가 평안히 갔나이다",
+      "source_text_hash": "78e1b1fb4a261edf8317eead11bbdbf58a13e95cad1ecdb4be6a76ed02c7e4a1",
+      "translation_text_hash": "8f3476da46772b1d0c9a485a46ef453b4910e2381fb94810bff5cecee6ebb0fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압과 그 함께한 모든 군사가 돌아오매 혹이 요압에게 고하여 가로되 넬의 아들 아브넬이 왕에게 왔더니 왕이 보내매 저가 평안히 갔나이다"
+      ],
+      "raw_text_hashes": [
+        "8f3476da46772b1d0c9a485a46ef453b4910e2381fb94810bff5cecee6ebb0fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:24",
+      "sequence": 8106,
+      "chapter_label": "2SA 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "Then Joab came to the king and said, “What have you done? Behold, Abner came to you. Why is it that you have sent him away, and he is already gone?",
+      "ko": "요압이 왕에게 나아가 가로되 어찌 하심이니이까 아브넬이 왕에게 나아왔거늘 어찌하여 저를 보내어 잘 가게 하셨나이까",
+      "source_text_hash": "70a1ac7991d39657a88e6268b8bae842c0a622caacbab36a748d849bc1b46459",
+      "translation_text_hash": "1c0698c80b346cf1bbad6f34c9056584d9dab423990bfd05136cd76f5629db64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 왕에게 나아가 가로되 어찌 하심이니이까 아브넬이 왕에게 나아왔거늘 어찌하여 저를 보내어 잘 가게 하셨나이까"
+      ],
+      "raw_text_hashes": [
+        "1c0698c80b346cf1bbad6f34c9056584d9dab423990bfd05136cd76f5629db64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:25",
+      "sequence": 8107,
+      "chapter_label": "2SA 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "You know Abner the son of Ner. He came to deceive you, and to know your going out and your coming in, and to know all that you do.”",
+      "ko": "왕도 아시려니와 넬의 아들 아브넬의 온 것은 왕을 속임이라 왕의 출입하는 것을 알고 모든 하시는 것을 알려 함이니이다 하고",
+      "source_text_hash": "6606cea16818eaceb8cb05f2fa90897f2c8c45fe08798bd210ad2bdd43603e7e",
+      "translation_text_hash": "145aa3019356f0f99bfe2def6fa9380a9e4251180c87b32e817946e6a0b65461",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕도 아시려니와 넬의 아들 아브넬의 온 것은 왕을 속임이라 왕의 출입하는 것을 알고 모든 하시는 것을 알려 함이니이다 하고"
+      ],
+      "raw_text_hashes": [
+        "145aa3019356f0f99bfe2def6fa9380a9e4251180c87b32e817946e6a0b65461"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:26",
+      "sequence": 8108,
+      "chapter_label": "2SA 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "When Joab had come out from David, he sent messengers after Abner, and they brought him back from the well of Sirah; but David didn’t know it.",
+      "ko": "이에 다윗에게서 나와서 사자들을 보내어 아브넬을 쫓아가게 하였더니 시라 우물 가에서 저를 데리고 돌아왔으나 다윗은 알지 못하였더라",
+      "source_text_hash": "7fd0f5fd2d4f88215ef8ab84c32863fb20effe52d0474415ac4e2fa43523f3a6",
+      "translation_text_hash": "d1a0886778fd197b7b6b6069481ca50e64fda11cd6850c84cdf3fbefc3195fb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗에게서 나와서 사자들을 보내어 아브넬을 쫓아가게 하였더니 시라 우물 가에서 저를 데리고 돌아왔으나 다윗은 알지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "d1a0886778fd197b7b6b6069481ca50e64fda11cd6850c84cdf3fbefc3195fb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:27",
+      "sequence": 8109,
+      "chapter_label": "2SA 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "When Abner had returned to Hebron, Joab took him aside into the middle of the gate to speak with him quietly, and struck him there in the body, so that he died for the blood of Asahel his brother.",
+      "ko": "아브넬이 헤브론으로 돌아 오매 요압이 더불어 종용히 말하려는 듯이 저를 데리고 성문으로 들어가서 거기서 배를 찔러 죽이니 이는 자기의 동생 아사헬의 피를 인함이더라",
+      "source_text_hash": "c8478b9db5ae15b8eb4008f62534deba9c6c0d1f90706693c6fd4af5bf5b459a",
+      "translation_text_hash": "cae53df849d2a4d59a9bc04f4f7debd63dfd9c198e36f1ae8a480bc0b01c4a62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 헤브론으로 돌아 오매 요압이 더불어 종용히 말하려는 듯이 저를 데리고 성문으로 들어가서 거기서 배를 찔러 죽이니 이는 자기의 동생 아사헬의 피를 인함이더라"
+      ],
+      "raw_text_hashes": [
+        "cae53df849d2a4d59a9bc04f4f7debd63dfd9c198e36f1ae8a480bc0b01c4a62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:28",
+      "sequence": 8110,
+      "chapter_label": "2SA 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "Afterward, when David heard it, he said, “I and my kingdom are guiltless before the LORD forever of the blood of Abner the son of Ner.",
+      "ko": "그 후에 다윗이 듣고 이르되 넬의 아들 아브넬의 피에 대하여 나와 내 나라는 여호와 앞에 영원히 무죄하니",
+      "source_text_hash": "e6297fe300870478ba8b48f82b2309b486bd95c347029dfe0f276c5eafc76dc6",
+      "translation_text_hash": "83432134fbdc6e8b3b243a163f04b1c27d14b14829a8720cc4712ff457dfaa5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 다윗이 듣고 이르되 넬의 아들 아브넬의 피에 대하여 나와 내 나라는 여호와 앞에 영원히 무죄하니"
+      ],
+      "raw_text_hashes": [
+        "83432134fbdc6e8b3b243a163f04b1c27d14b14829a8720cc4712ff457dfaa5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:29",
+      "sequence": 8111,
+      "chapter_label": "2SA 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "Let it fall on the head of Joab and on all his father’s house. Let there not fail from the house of Joab one who has a discharge, or who is a leper, or who leans on a staff, or who falls by the sword, or who lacks bread.”",
+      "ko": "그 죄가 요압의 머리와 그 아비의 온 집으로 돌아갈찌어다 또 요압의 집에서 백탁병자나 문둥병자나 지팡이를 의지하는 자나 칼에 죽는 자나 양식이 핍절한 자가 끊어지지 아니할찌로다 하니라",
+      "source_text_hash": "91d1497ab1a01e69e6546c8132e375ae22f243684c1c16ddc73bce916d91401c",
+      "translation_text_hash": "f49de3eb74fb0d56f8b4b2b68f7f8ed1fcaaf399424274fff1c6f55bcd9b15a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 죄가 요압의 머리와 그 아비의 온 집으로 돌아갈찌어다 또 요압의 집에서 백탁병자나 문둥병자나 지팡이를 의지하는 자나 칼에 죽는 자나 양식이 핍절한 자가 끊어지지 아니할찌로다 하니라"
+      ],
+      "raw_text_hashes": [
+        "f49de3eb74fb0d56f8b4b2b68f7f8ed1fcaaf399424274fff1c6f55bcd9b15a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:30",
+      "sequence": 8112,
+      "chapter_label": "2SA 3",
+      "verse_label": "30",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 30
+        }
+      ],
+      "en": "So Joab and Abishai his brother killed Abner, because he had killed their brother Asahel at Gibeon in the battle.",
+      "ko": "요압과 그 동생 아비새가 아브넬을 죽인 것은 저가 기브온 전쟁에서 자기 동생 아사헬을 죽인 까닭이었더라",
+      "source_text_hash": "b58a867f00cadb14d9f3e6d3a7bb0c4ff5c809550914c5cf0fa07450130b6f73",
+      "translation_text_hash": "39baf578ee5842df5a768a675bf06030ad3ef68361eac3da2b51869b366430f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압과 그 동생 아비새가 아브넬을 죽인 것은 저가 기브온 전쟁에서 자기 동생 아사헬을 죽인 까닭이었더라"
+      ],
+      "raw_text_hashes": [
+        "39baf578ee5842df5a768a675bf06030ad3ef68361eac3da2b51869b366430f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:31",
+      "sequence": 8113,
+      "chapter_label": "2SA 3",
+      "verse_label": "31",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 31
+        }
+      ],
+      "en": "David said to Joab and to all the people who were with him, “Tear your clothes, and clothe yourselves with sackcloth, and mourn in front of Abner.” King David followed the bier.",
+      "ko": "다윗이 요압과 및 자기와 함께 있는 모든 백성에게 이르되 너희는 옷을 찢고 굵은 베를 띠고 아브넬 앞에서 애통하라 하니라 다윗왕이 상여를 따라 가서",
+      "source_text_hash": "1572986067663af1d9a09cb6134241d5b169ecdee613a444af710c8e60856750",
+      "translation_text_hash": "60415bd113afd73dac0cef60e77ec22b101a42dec992ad18c72c2c1d0dcf08ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 요압과 및 자기와 함께 있는 모든 백성에게 이르되 너희는 옷을 찢고 굵은 베를 띠고 아브넬 앞에서 애통하라 하니라 다윗왕이 상여를 따라 가서"
+      ],
+      "raw_text_hashes": [
+        "60415bd113afd73dac0cef60e77ec22b101a42dec992ad18c72c2c1d0dcf08ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:32",
+      "sequence": 8114,
+      "chapter_label": "2SA 3",
+      "verse_label": "32",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 32
+        }
+      ],
+      "en": "They buried Abner in Hebron; and the king lifted up his voice and wept at Abner’s grave; and all the people wept.",
+      "ko": "아브넬을 헤브론에 장사하고 아브넬의 무덤에서 소리를 높여 울고 백성도 다 우니라",
+      "source_text_hash": "25b343849fc46ad997c0ed3b8ce69f85cc2b16033580245f296da489508afb43",
+      "translation_text_hash": "6a4552272d56e27b4fd186a21442804f418e246de1493ffdbe6385bd5fdd0cd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬을 헤브론에 장사하고 아브넬의 무덤에서 소리를 높여 울고 백성도 다 우니라"
+      ],
+      "raw_text_hashes": [
+        "6a4552272d56e27b4fd186a21442804f418e246de1493ffdbe6385bd5fdd0cd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:33",
+      "sequence": 8115,
+      "chapter_label": "2SA 3",
+      "verse_label": "33",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 33
+        }
+      ],
+      "en": "The king lamented for Abner, and said, “Should Abner die as a fool dies?",
+      "ko": "왕이 아브넬을 위하여 애가를 지어 가로되 아브넬의 죽음이 어찌하여 미련한 자의 죽음 같은고",
+      "source_text_hash": "8b567b3f4153503b1eb7c1dba47c396253d5a3834b4164d5de19571900a4abd5",
+      "translation_text_hash": "9383a13aee622972f7382b6571cec17008d633a39b9f484be35468264120f208",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 아브넬을 위하여 애가를 지어 가로되 아브넬의 죽음이 어찌하여 미련한 자의 죽음 같은고"
+      ],
+      "raw_text_hashes": [
+        "9383a13aee622972f7382b6571cec17008d633a39b9f484be35468264120f208"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:34",
+      "sequence": 8116,
+      "chapter_label": "2SA 3",
+      "verse_label": "34",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 34
+        }
+      ],
+      "en": "Your hands weren’t bound, and your feet weren’t put into fetters. As a man falls before the children of iniquity, so you fell.” All the people wept again over him.",
+      "ko": "네 손이 결박되지 아니하였고 네 발이 착고에 채이지 아니하였거늘 불의한 자식의 앞에 엎드러짐 같이 네가 엎드러졌도다 하매 온 백성이 다시 그를 슬퍼하여 우니라",
+      "source_text_hash": "0f067fe9e25a33cef031fc3b1bb934f2e338dd9228f0d762f95f39eedc23736e",
+      "translation_text_hash": "0bc0b213e44e3c22db09fb93ec330b613a3457ef7f0e420a3e40054b90d5bcf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 손이 결박되지 아니하였고 네 발이 착고에 채이지 아니하였거늘 불의한 자식의 앞에 엎드러짐 같이 네가 엎드러졌도다 하매 온 백성이 다시 그를 슬퍼하여 우니라"
+      ],
+      "raw_text_hashes": [
+        "0bc0b213e44e3c22db09fb93ec330b613a3457ef7f0e420a3e40054b90d5bcf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:35",
+      "sequence": 8117,
+      "chapter_label": "2SA 3",
+      "verse_label": "35",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 35
+        }
+      ],
+      "en": "All the people came to urge David to eat bread while it was yet day; but David swore, saying, “God do so to me, and more also, if I taste bread or anything else, until the sun goes down.”",
+      "ko": "석양에 뭇 백성이 나아와 다윗에게 음식을 권하니 다윗이 맹세하여 가로되 내가 해 지기 전에 떡이나 다른 것을 맛보면 하나님이 내게 벌 위에 벌을 내리심이 마땅하니라 하매",
+      "source_text_hash": "39f51395f88880be9abf96aad11482ef10ad014a67369003e0b9d4a157b0efa8",
+      "translation_text_hash": "63bec378c6e9621fc4c54b4d957a42aee0bdfb060a994a90f8f13b5a67764341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "석양에 뭇 백성이 나아와 다윗에게 음식을 권하니 다윗이 맹세하여 가로되 내가 해 지기 전에 떡이나 다른 것을 맛보면 하나님이 내게 벌 위에 벌을 내리심이 마땅하니라 하매"
+      ],
+      "raw_text_hashes": [
+        "63bec378c6e9621fc4c54b4d957a42aee0bdfb060a994a90f8f13b5a67764341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:36",
+      "sequence": 8118,
+      "chapter_label": "2SA 3",
+      "verse_label": "36",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 36
+        }
+      ],
+      "en": "All the people took notice of it, and it pleased them, as whatever the king did pleased all the people.",
+      "ko": "온 백성이 보고 기뻐하며 왕이 무슨 일을 하든지 무리가 다 기뻐하므로",
+      "source_text_hash": "e79abb6198a26b4af2f85cb36455a768090a98d244c1afa95f81de5885bc4261",
+      "translation_text_hash": "0c2a90f9627ebbcb974dce550a29c5b0027602b8056f65ddba809f4a3f5e6546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 백성이 보고 기뻐하며 왕이 무슨 일을 하든지 무리가 다 기뻐하므로"
+      ],
+      "raw_text_hashes": [
+        "0c2a90f9627ebbcb974dce550a29c5b0027602b8056f65ddba809f4a3f5e6546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:37",
+      "sequence": 8119,
+      "chapter_label": "2SA 3",
+      "verse_label": "37",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 37
+        }
+      ],
+      "en": "So all the people and all Israel understood that day that it was not of the king to kill Abner the son of Ner.",
+      "ko": "이 날에야 온 백성과 온 이스라엘이 넬의 아들 아브넬을 죽인 것이 왕의 한바가 아닌줄을 아니라",
+      "source_text_hash": "e06852fbed46b9126eb9edc153ef7c24383d719aadb8e5f27ed6f0f56e368ec6",
+      "translation_text_hash": "4ac2c7e39593b0bbd2244664286f0ffbc1be383d7891b6ef4669921dad13bb86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에야 온 백성과 온 이스라엘이 넬의 아들 아브넬을 죽인 것이 왕의 한바가 아닌줄을 아니라"
+      ],
+      "raw_text_hashes": [
+        "4ac2c7e39593b0bbd2244664286f0ffbc1be383d7891b6ef4669921dad13bb86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:38",
+      "sequence": 8120,
+      "chapter_label": "2SA 3",
+      "verse_label": "38",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 38
+        }
+      ],
+      "en": "The king said to his servants, “Don’t you know that a prince and a great man has fallen today in Israel?",
+      "ko": "왕이 그 신복에게 이르되 오늘 이스라엘의 방백이요 또는 대인이 죽은 것을 알지 못하느냐",
+      "source_text_hash": "2bc26adbee5e5aa1c8e26592aa0555f3579b8d2928ac41dc9f021421b68e1379",
+      "translation_text_hash": "fbb76c9ed6cfa30f599a4b1e0e750cee65341a979743e7d30780a49609c34e92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그 신복에게 이르되 오늘 이스라엘의 방백이요 또는 대인이 죽은 것을 알지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "fbb76c9ed6cfa30f599a4b1e0e750cee65341a979743e7d30780a49609c34e92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:3:39",
+      "sequence": 8121,
+      "chapter_label": "2SA 3",
+      "verse_label": "39",
+      "locator": {
+        "book": "2SA",
+        "chapter": 3,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 3,
+          "verse": 39
+        }
+      ],
+      "en": "I am weak today, though anointed king. These men, the sons of Zeruiah are too hard for me. May the LORD reward the evildoer according to his wickedness.”",
+      "ko": "내가 기름 부음을 받은 왕이 되었으나 오늘날 약하여서 스루야의 아들인 이 사람들을 제어하기가 너무 어려우니 여호와는 악행한 자에게 그 악한대로 갚으실찌로다 하니라",
+      "source_text_hash": "015576a1e4e8b4ff07bfbaf801d64738c826024d48c8a0e0adb1c9aa6fa94d72",
+      "translation_text_hash": "6ed1d905bac3a3118509fb00e9bd5529d6af63d5be52a4c800ee4d895bd54853",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 기름 부음을 받은 왕이 되었으나 오늘날 약하여서 스루야의 아들인 이 사람들을 제어하기가 너무 어려우니 여호와는 악행한 자에게 그 악한대로 갚으실찌로다 하니라"
+      ],
+      "raw_text_hashes": [
+        "6ed1d905bac3a3118509fb00e9bd5529d6af63d5be52a4c800ee4d895bd54853"
+      ]
+    }
+  ]
+}

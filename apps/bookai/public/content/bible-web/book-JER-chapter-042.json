@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:042",
+  "unit_ordinal": 787,
+  "unit_label": "JER 42",
+  "book_code": "JER",
+  "chapter_number": 42,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:42:1",
+      "sequence": 19977,
+      "chapter_label": "JER 42",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 1
+        }
+      ],
+      "en": "Then all the captains of the forces, and Johanan the son of Kareah, and Jezaniah the son of Hoshaiah, and all the people from the least even to the greatest, came near,",
+      "ko": "이에 모든 군대의 장관과 가레아의 아들 요하난과 호사야의 아들 여사냐와 백성의 작은 자로부터 큰 자까지 다 나아와",
+      "source_text_hash": "8a32c71c05bba9c9eeb13142699890cb9d3b953ea83cb1af9bab87059eb9ab94",
+      "translation_text_hash": "a2db8cecfb918c392722e6431b1a4286a2fb3fa962f5f35d27369fa6636bc572",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모든 군대의 장관과 가레아의 아들 요하난과 호사야의 아들 여사냐와 백성의 작은 자로부터 큰 자까지 다 나아와"
+      ],
+      "raw_text_hashes": [
+        "a2db8cecfb918c392722e6431b1a4286a2fb3fa962f5f35d27369fa6636bc572"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:2",
+      "sequence": 19978,
+      "chapter_label": "JER 42",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 2
+        }
+      ],
+      "en": "and said to Jeremiah the prophet, “Please let our supplication be presented before you, and pray for us to the LORD your God, even for all this remnant, for we are left but a few of many, as your eyes see us,",
+      "ko": "선지자 예레미야에게 이르되 당신은 우리의 간구를 들으시고 이 남아 있는 모든 자를 위하여 당신의 하나님 여호와께 기도하소서 당신이 목도하시거니와 우리는 많은 중에서 조금만 남았사오니",
+      "source_text_hash": "fb5b9a2f999ee4522b9395ff8d661e34904f3163109b8d321d9106b6f9668646",
+      "translation_text_hash": "f077b7997e33968556c1f738a7fcf1cb3fdbf034ca0adbdcd13606c0b0c2b42b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 예레미야에게 이르되 당신은 우리의 간구를 들으시고 이 남아 있는 모든 자를 위하여 당신의 하나님 여호와께 기도하소서 당신이 목도하시거니와 우리는 많은 중에서 조금만 남았사오니"
+      ],
+      "raw_text_hashes": [
+        "f077b7997e33968556c1f738a7fcf1cb3fdbf034ca0adbdcd13606c0b0c2b42b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:3",
+      "sequence": 19979,
+      "chapter_label": "JER 42",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 3
+        }
+      ],
+      "en": "that the LORD your God may show us the way in which we should walk, and the things that we should do.”",
+      "ko": "당신의 하나님 여호와께서 우리의 마땅히 갈 길과 할 일을 보이시기를 원하나이다",
+      "source_text_hash": "8930974e5936d33e5da1c7578764989d5b933b09905d5e7bfa0a346027b04c49",
+      "translation_text_hash": "23e93c5ae118541d6cb82de70efa0dd5bd8e1900fa80e68c16c74d3315b53f87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신의 하나님 여호와께서 우리의 마땅히 갈 길과 할 일을 보이시기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "23e93c5ae118541d6cb82de70efa0dd5bd8e1900fa80e68c16c74d3315b53f87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:4",
+      "sequence": 19980,
+      "chapter_label": "JER 42",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 4
+        }
+      ],
+      "en": "Then Jeremiah the prophet said to them, “I have heard you. Behold, I will pray to the LORD your God according to your words; and it will happen that whatever thing the LORD answers you, I will declare it to you. I will keep nothing back from you.”",
+      "ko": "선지자 예레미야가 그들에게 이르되 내가 너희 말을 들었은즉 너희 말대로 너희 하나님 여호와께 기도하고 무릇 여호와께서 너희에게 응답하시는 것을 숨김이 없이 너희에게 고하리라",
+      "source_text_hash": "5d35aa2780bb5e57b1ea016736d4238dd636c07055af4c6a22f115137b30654e",
+      "translation_text_hash": "92ea85ec75dce7bc52548be5b3e98b79814814295f4a91d5059e97935765b885",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 예레미야가 그들에게 이르되 내가 너희 말을 들었은즉 너희 말대로 너희 하나님 여호와께 기도하고 무릇 여호와께서 너희에게 응답하시는 것을 숨김이 없이 너희에게 고하리라"
+      ],
+      "raw_text_hashes": [
+        "92ea85ec75dce7bc52548be5b3e98b79814814295f4a91d5059e97935765b885"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:5",
+      "sequence": 19981,
+      "chapter_label": "JER 42",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 5
+        }
+      ],
+      "en": "Then they said to Jeremiah, “May the LORD be a true and faithful witness among us, if we don’t do according to all the word with which the LORD your God sends you to tell us.",
+      "ko": "그들이 예레미야에게 이르되 우리가 당신의 하나님 여호와께서 당신을 보내사 우리에게 이르시는 모든 말씀대로 행하리이다 여호와는 우리 중에 진실무망한 증인이 되시옵소서",
+      "source_text_hash": "f12586e8017c74bedbd44bb40f92c304e4eba07e85dabe88d3ff00554d83aea3",
+      "translation_text_hash": "ff6c5493e2f341d7cf2f38994d2ab44669129008e3211ab9fab552848c2244aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 예레미야에게 이르되 우리가 당신의 하나님 여호와께서 당신을 보내사 우리에게 이르시는 모든 말씀대로 행하리이다 여호와는 우리 중에 진실무망한 증인이 되시옵소서"
+      ],
+      "raw_text_hashes": [
+        "ff6c5493e2f341d7cf2f38994d2ab44669129008e3211ab9fab552848c2244aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:6",
+      "sequence": 19982,
+      "chapter_label": "JER 42",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 6
+        }
+      ],
+      "en": "Whether it is good, or whether it is bad, we will obey the voice of the LORD our God, to whom we send you; that it may be well with us, when we obey the voice of the LORD our God.”",
+      "ko": "우리가 당신을 우리 하나님 여호와께 보냄은 그의 목소리가 우리에게 좋고 좋지 아니함을 물론하고 청종하려 함이라 우리가 우리 하나님 여호와의 목소리를 청종하면 우리에게 복이 있으리이다",
+      "source_text_hash": "a199d6b8dd6859d39c8ab0d8a81040c2180a255e51790648332b38831c91aa46",
+      "translation_text_hash": "3383d86d02c76bc663db8615383205fa6049dcfdc935dd78816ecbc73fc12849",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 당신을 우리 하나님 여호와께 보냄은 그의 목소리가 우리에게 좋고 좋지 아니함을 물론하고 청종하려 함이라 우리가 우리 하나님 여호와의 목소리를 청종하면 우리에게 복이 있으리이다"
+      ],
+      "raw_text_hashes": [
+        "3383d86d02c76bc663db8615383205fa6049dcfdc935dd78816ecbc73fc12849"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:7",
+      "sequence": 19983,
+      "chapter_label": "JER 42",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 7
+        }
+      ],
+      "en": "After ten days, the LORD’s word came to Jeremiah.",
+      "ko": "십일 후에 여호와의 말씀이 예레미야에게 임하니",
+      "source_text_hash": "bca3d1f3b7c629f43f88e24d5750e1c4b9e57498f39e0cf2da44b94e9a91e8c8",
+      "translation_text_hash": "ea0836e670a9da75994c902fa62e9a43e997f95f4f784759ac5254734e6bcbad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십일 후에 여호와의 말씀이 예레미야에게 임하니"
+      ],
+      "raw_text_hashes": [
+        "ea0836e670a9da75994c902fa62e9a43e997f95f4f784759ac5254734e6bcbad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:8",
+      "sequence": 19984,
+      "chapter_label": "JER 42",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 8
+        }
+      ],
+      "en": "Then he called Johanan the son of Kareah, and all the captains of the forces who were with him, and all the people from the least even to the greatest,",
+      "ko": "그가 가레아의 아들 요하난과 그와 함께 있는 모든 군대장관과 백성의 작은 자로부터 큰 자까지 다 부르고",
+      "source_text_hash": "d3832dc82bb024f24f0c4785c2503c4c653e51b598e7d9c709cc9516de2f13f7",
+      "translation_text_hash": "0d1429dd39bd0e795ad64ada4ea608baf70b1bad4cbf73705acd5396300e925d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가레아의 아들 요하난과 그와 함께 있는 모든 군대장관과 백성의 작은 자로부터 큰 자까지 다 부르고"
+      ],
+      "raw_text_hashes": [
+        "0d1429dd39bd0e795ad64ada4ea608baf70b1bad4cbf73705acd5396300e925d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:9",
+      "sequence": 19985,
+      "chapter_label": "JER 42",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 9
+        }
+      ],
+      "en": "and said to them, “The LORD, the God of Israel, to whom you sent me to present your supplication before him, says:",
+      "ko": "그들에게 이르되 너희가 나를 보내어 너희의 간구를 이스라엘의 하나님 여호와께 드리게 하지 아니하였느냐 그가 가라사대",
+      "source_text_hash": "2a199a1b5f548f6f4e62f1b2765900434e1a9138b75c071a9b1b0e547074d63c",
+      "translation_text_hash": "1abe239516e7a1a15edfb392b3162f023de57d61b528da60ba1cfb175ecf7785",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르되 너희가 나를 보내어 너희의 간구를 이스라엘의 하나님 여호와께 드리게 하지 아니하였느냐 그가 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1abe239516e7a1a15edfb392b3162f023de57d61b528da60ba1cfb175ecf7785"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:10",
+      "sequence": 19986,
+      "chapter_label": "JER 42",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 10
+        }
+      ],
+      "en": "‘If you will still live in this land, then I will build you, and not pull you down, and I will plant you, and not pluck you up; for I grieve over the distress that I have brought on you.",
+      "ko": "너희가 이 땅에 여전히 거하면 내가 너희를 세우고 헐지 아니하며 너희를 심고 뽑지 아니하리니 이는 내가 너희에게 내린 재앙에 대하여 뜻을 돌이킴이니라",
+      "source_text_hash": "e15f564e9bd9bd2bc7e0caa1d4aeda27a353722254be18a1e0277b9dc938cfaa",
+      "translation_text_hash": "23b581994a51383aa3bc5c14a4e8b310854c35a42e6004d99185a1cceb21bb58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이 땅에 여전히 거하면 내가 너희를 세우고 헐지 아니하며 너희를 심고 뽑지 아니하리니 이는 내가 너희에게 내린 재앙에 대하여 뜻을 돌이킴이니라"
+      ],
+      "raw_text_hashes": [
+        "23b581994a51383aa3bc5c14a4e8b310854c35a42e6004d99185a1cceb21bb58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:11",
+      "sequence": 19987,
+      "chapter_label": "JER 42",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 11
+        }
+      ],
+      "en": "Don’t be afraid of the king of Babylon, of whom you are afraid. Don’t be afraid of him,’ says the LORD, ‘for I am with you to save you, and to deliver you from his hand.",
+      "ko": "나 여호와가 말하노라 너희는 그 두려워하는 바벨론 왕을 두려워 말라 내가 너희와 함께 하여 너희를 구원하며 그의 손에서 너희를 건지리니 두려워 말라",
+      "source_text_hash": "53cb1b4056bc39bca4ede1cdcdd39646aff47fb508c35f0bb3b7f6985cd0abe7",
+      "translation_text_hash": "2b2a54248cc81b18dca1d2d919837ec3d525230c4be499e65b359fe77940e035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 너희는 그 두려워하는 바벨론 왕을 두려워 말라 내가 너희와 함께 하여 너희를 구원하며 그의 손에서 너희를 건지리니 두려워 말라"
+      ],
+      "raw_text_hashes": [
+        "2b2a54248cc81b18dca1d2d919837ec3d525230c4be499e65b359fe77940e035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:12",
+      "sequence": 19988,
+      "chapter_label": "JER 42",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 12
+        }
+      ],
+      "en": "I will grant you mercy, that he may have mercy on you, and cause you to return to your own land.",
+      "ko": "내가 너희를 긍휼히 여기리니 그로도 너희를 긍휼히 여기게 하여 너희를 너희 본향으로 돌려보내게 하리라 하셨느니라",
+      "source_text_hash": "93e0d3888dc3baef9252f3cc91a8e7c3f70be80941edbaf017f7b5800ea2ddc7",
+      "translation_text_hash": "efc81bd265cca47c7db9e06f93d790b2fd588f4fab560a1c5066d15417ea082f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 긍휼히 여기리니 그로도 너희를 긍휼히 여기게 하여 너희를 너희 본향으로 돌려보내게 하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "efc81bd265cca47c7db9e06f93d790b2fd588f4fab560a1c5066d15417ea082f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:13",
+      "sequence": 19989,
+      "chapter_label": "JER 42",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 13
+        }
+      ],
+      "en": "“‘But if you say, “We will not dwell in this land,” so that you don’t obey the LORD your God’s voice,",
+      "ko": "그러나 만일 너희가 너희 하나님 여호와의 말씀을 순복지 아니하고 말하기를 우리는 이 땅에 거하지 아니하리라 하며",
+      "source_text_hash": "60f78fca8f5a086aadcd55f0d4f9656a9d11122bf156e83d741e2ebeaaf332c8",
+      "translation_text_hash": "3497beb54e850ded45146f167475501f3ddd2b8146ac409ecc5fa12a4d66b351",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 만일 너희가 너희 하나님 여호와의 말씀을 순복지 아니하고 말하기를 우리는 이 땅에 거하지 아니하리라 하며"
+      ],
+      "raw_text_hashes": [
+        "3497beb54e850ded45146f167475501f3ddd2b8146ac409ecc5fa12a4d66b351"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:14",
+      "sequence": 19990,
+      "chapter_label": "JER 42",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 14
+        }
+      ],
+      "en": "saying, “No, but we will go into the land of Egypt, where we will see no war, nor hear the sound of the trumpet, nor have hunger of bread; and there we will dwell;”’",
+      "ko": "또 말하기를 우리는 전쟁도 보이지 아니하며 나팔소리도 들리지 아니하며 식물의 핍절도 당치 아니하는 애굽 땅으로 결단코 들어가 거하리라 하면 잘못 되리라",
+      "source_text_hash": "dd7526eaab795c6de4fdd78de1bcb7c8e197e02832f7d264538160d5d08db49b",
+      "translation_text_hash": "4021e127e7ae6a3079313b365cbe06f283f713f8da07eb0743e7ec01f0e708b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 말하기를 우리는 전쟁도 보이지 아니하며 나팔소리도 들리지 아니하며 식물의 핍절도 당치 아니하는 애굽 땅으로 결단코 들어가 거하리라 하면 잘못 되리라"
+      ],
+      "raw_text_hashes": [
+        "4021e127e7ae6a3079313b365cbe06f283f713f8da07eb0743e7ec01f0e708b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:15",
+      "sequence": 19991,
+      "chapter_label": "JER 42",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 15
+        }
+      ],
+      "en": "now therefore hear the LORD’s word, O remnant of Judah! The LORD of Armies, the God of Israel, says, ‘If you indeed set your faces to enter into Egypt, and go to live there,",
+      "ko": "너희 유다의 남은 자여 이제 여호와의 말씀을 들으라 만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 너희가 만일 애굽에 들어가서 거기 거하기로 고집하면",
+      "source_text_hash": "f0a875ebf25618a06f7f904a2c17d45a9381b6b91cd59c0d7b2a83bf7a6ea3ea",
+      "translation_text_hash": "d25569778443f4c80cf2e8071d1cea1fa2aeb4182cda45197e4590df882031cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 유다의 남은 자여 이제 여호와의 말씀을 들으라 만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 너희가 만일 애굽에 들어가서 거기 거하기로 고집하면"
+      ],
+      "raw_text_hashes": [
+        "d25569778443f4c80cf2e8071d1cea1fa2aeb4182cda45197e4590df882031cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:16",
+      "sequence": 19992,
+      "chapter_label": "JER 42",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 16
+        }
+      ],
+      "en": "then it will happen that the sword, which you fear, will overtake you there in the land of Egypt; and the famine, about which you are afraid, will follow close behind you there in Egypt; and you will die there.",
+      "ko": "너희의 두려워하는 칼이 애굽 땅으로 따라가서 너희에게 미칠 것이요 너희의 두려워하는 기근이 애굽으로 급히 따라가서 너희에게 임하리니 너희가 거기서 죽을 것이라",
+      "source_text_hash": "9ad9b519f6cb26e26cfbf7da7306615c0cdaf4917927f32a2d411ed5ca3393ba",
+      "translation_text_hash": "a90b3caf1ef23f09abce48c2de154c16bc57745608a55e7db11397af60f5db1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 두려워하는 칼이 애굽 땅으로 따라가서 너희에게 미칠 것이요 너희의 두려워하는 기근이 애굽으로 급히 따라가서 너희에게 임하리니 너희가 거기서 죽을 것이라"
+      ],
+      "raw_text_hashes": [
+        "a90b3caf1ef23f09abce48c2de154c16bc57745608a55e7db11397af60f5db1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:17",
+      "sequence": 19993,
+      "chapter_label": "JER 42",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 17
+        }
+      ],
+      "en": "So will it be with all the men who set their faces to go into Egypt to live there. They will die by the sword, by the famine, and by the pestilence. None of them will remain or escape from the evil that I will bring on them.’",
+      "ko": "무릇 애굽으로 들어가서 거기 우거하기로 고집하는 모든 사람은 이같이 되리니 곧 칼과 기근과 염병에 죽을 것인즉 내가 그들에게 내리는 재앙을 벗어나서 남을 자 없으리라",
+      "source_text_hash": "493dbefc347038909c93c0acf914d50731e9f3e7d7badde108877dd890126daf",
+      "translation_text_hash": "448d12ad9aa47b41e63d742576b66417b2acc9125ad1920a41b156bb5c2f8fb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 애굽으로 들어가서 거기 우거하기로 고집하는 모든 사람은 이같이 되리니 곧 칼과 기근과 염병에 죽을 것인즉 내가 그들에게 내리는 재앙을 벗어나서 남을 자 없으리라"
+      ],
+      "raw_text_hashes": [
+        "448d12ad9aa47b41e63d742576b66417b2acc9125ad1920a41b156bb5c2f8fb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:18",
+      "sequence": 19994,
+      "chapter_label": "JER 42",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 18
+        }
+      ],
+      "en": "For the LORD of Armies, the God of Israel, says: ‘As my anger and my wrath has been poured out on the inhabitants of Jerusalem, so my wrath will be poured out on you, when you enter into Egypt; and you will be an object of horror, an astonishment, a curse, and a reproach; and you will see this place no more.’",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 나의 노와 분을 예루살렘 거민에게 부은 것 같이 너희가 애굽에 이른 때에 나의 분을 너희에게 부으리니 너희가 가증함과 놀램과 저주와 치욕거리가 될 것이라 너희가 다시는 이 땅을 보지 못하리라 하시도다",
+      "source_text_hash": "c90e4ff0ae42f5b186056fd673c166df25337f97aef0139192854ebfed02cf5e",
+      "translation_text_hash": "9cc6dfbe9cf277bb9a4fd19d1f53c64843f04b02830bedaaa5e0f56681845dba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 나의 노와 분을 예루살렘 거민에게 부은 것 같이 너희가 애굽에 이른 때에 나의 분을 너희에게 부으리니 너희가 가증함과 놀램과 저주와 치욕거리가 될 것이라 너희가 다시는 이 땅을 보지 못하리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "9cc6dfbe9cf277bb9a4fd19d1f53c64843f04b02830bedaaa5e0f56681845dba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:19",
+      "sequence": 19995,
+      "chapter_label": "JER 42",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 19
+        }
+      ],
+      "en": "“The LORD has spoken concerning you, remnant of Judah, ‘Don’t go into Egypt!’ Know certainly that I have testified to you today.",
+      "ko": "유다의 남은 자들아 여호와께서 너희 일로 하신 말씀에 너희는 애굽으로 가지 말라 하셨고 나도 오늘날 너희에게 경계한 것을 너희는 분명히 알라",
+      "source_text_hash": "0a4544a2ea68110c54bac033fdd857ffae8c34c29cce2be35f3ff2bdb6b02475",
+      "translation_text_hash": "a65f7d4e0657ca9ba6a1af9add66b32e80446c2d07d5846340e96faf7af019e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 남은 자들아 여호와께서 너희 일로 하신 말씀에 너희는 애굽으로 가지 말라 하셨고 나도 오늘날 너희에게 경계한 것을 너희는 분명히 알라"
+      ],
+      "raw_text_hashes": [
+        "a65f7d4e0657ca9ba6a1af9add66b32e80446c2d07d5846340e96faf7af019e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:20",
+      "sequence": 19996,
+      "chapter_label": "JER 42",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 20
+        }
+      ],
+      "en": "For you have dealt deceitfully against your own souls; for you sent me to the LORD your God, saying, ‘Pray for us to the LORD our God; and according to all that the LORD our God says, so declare to us, and we will do it.’",
+      "ko": "너희가 나를 너희 하나님 여호와께 보내며 이르기를 우리를 위하여 우리 하나님 여호와께 기도하고 우리 하나님 여호와께서 말씀하신대로 우리에게 고하라 우리가 이를 행하리라 하여 너희 마음을 속였느니라",
+      "source_text_hash": "0fd5e50571f38ccca103f475b69323630877ec5f201c8947a7693a3219e4bbb6",
+      "translation_text_hash": "7658ab3158ffa7821fd7dae0e2b881d0358834cdd22701034596459bcb7db389",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나를 너희 하나님 여호와께 보내며 이르기를 우리를 위하여 우리 하나님 여호와께 기도하고 우리 하나님 여호와께서 말씀하신대로 우리에게 고하라 우리가 이를 행하리라 하여 너희 마음을 속였느니라"
+      ],
+      "raw_text_hashes": [
+        "7658ab3158ffa7821fd7dae0e2b881d0358834cdd22701034596459bcb7db389"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:21",
+      "sequence": 19997,
+      "chapter_label": "JER 42",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 21
+        }
+      ],
+      "en": "I have declared it to you today; but you have not obeyed the LORD your God’s voice in anything for which he has sent me to you.",
+      "ko": "너희 하나님 여호와께서 나를 보내사 너희에게 명하신 말씀을 내가 오늘날 너희에게 고하였어도 너희가 그 목소리를 도무지 순종치 아니하였은즉",
+      "source_text_hash": "0fc92b3444b1188197ecee60aced9159f86adefaa443900a21868ec4a16152b9",
+      "translation_text_hash": "fc3f64f61fec86439d865f21b3fac45e35483435504f4b568f405407c83cb167",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와께서 나를 보내사 너희에게 명하신 말씀을 내가 오늘날 너희에게 고하였어도 너희가 그 목소리를 도무지 순종치 아니하였은즉"
+      ],
+      "raw_text_hashes": [
+        "fc3f64f61fec86439d865f21b3fac45e35483435504f4b568f405407c83cb167"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:42:22",
+      "sequence": 19998,
+      "chapter_label": "JER 42",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 42,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 42,
+          "verse": 22
+        }
+      ],
+      "en": "Now therefore know certainly that you will die by the sword, by the famine, and by the pestilence in the place where you desire to go to live.”",
+      "ko": "너희가 가서 우거하려 하는 곳에서 칼과 기근과 염병에 죽을줄 분명히 알찌니라",
+      "source_text_hash": "801aa107136c9b153cb913b7c2e8daffc8c443b7cb4f26a5db34699ae7c48013",
+      "translation_text_hash": "b2846249ac9907781f1d0966b57119ef9f7959304d648b0fb5ca56d4b6bd9135",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 가서 우거하려 하는 곳에서 칼과 기근과 염병에 죽을줄 분명히 알찌니라"
+      ],
+      "raw_text_hashes": [
+        "b2846249ac9907781f1d0966b57119ef9f7959304d648b0fb5ca56d4b6bd9135"
+      ]
+    }
+  ]
+}

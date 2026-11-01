@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:028",
+  "unit_ordinal": 78,
+  "unit_label": "EXO 28",
+  "book_code": "EXO",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:28:1",
+      "sequence": 2295,
+      "chapter_label": "EXO 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "“Bring Aaron your brother, and his sons with him, near to you from among the children of Israel, that he may minister to me in the priest’s office: Aaron, with Nadab, Abihu, Eleazar, and Ithamar, Aaron’s sons.",
+      "ko": "너는 이스라엘 자손 중 네 형 아론과 그 아들들 곧 나답과 아비후와 엘르아살과 이다말을 그와 함께 네게로 나아오게 하여 나를 섬기는 제사장 직분을 행하게 하되",
+      "source_text_hash": "ddb6066d160a973226e4b2f24abf8bdffe2d93da0ecc703a3f7725c213b6a6c4",
+      "translation_text_hash": "671b9661a6e0b8cec023909b64dc810d203ca415f03091169e091436880673a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 자손 중 네 형 아론과 그 아들들 곧 나답과 아비후와 엘르아살과 이다말을 그와 함께 네게로 나아오게 하여 나를 섬기는 제사장 직분을 행하게 하되"
+      ],
+      "raw_text_hashes": [
+        "671b9661a6e0b8cec023909b64dc810d203ca415f03091169e091436880673a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:2",
+      "sequence": 2296,
+      "chapter_label": "EXO 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "You shall make holy garments for Aaron your brother, for glory and for beauty.",
+      "ko": "네 형 아론을 위하여 거룩한 옷을 지어서 영화롭고 아름답게 할찌니",
+      "source_text_hash": "b170b876e4c021b826df3f1d76b77cba9813f18f7ca5d04c1d6166e1641255a6",
+      "translation_text_hash": "ba3ed045cfcbdb4c3f44e259e13b0bfdfb245958108ed4762af9317370ffc751",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 형 아론을 위하여 거룩한 옷을 지어서 영화롭고 아름답게 할찌니"
+      ],
+      "raw_text_hashes": [
+        "ba3ed045cfcbdb4c3f44e259e13b0bfdfb245958108ed4762af9317370ffc751"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:3",
+      "sequence": 2297,
+      "chapter_label": "EXO 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "You shall speak to all who are wise-hearted, whom I have filled with the spirit of wisdom, that they make Aaron’s garments to sanctify him, that he may minister to me in the priest’s office.",
+      "ko": "너는 무릇 마음에 지혜 있는 자 곧 내가 지혜로운 영으로 채운 자들에게 말하여 아론의 옷을 지어 그를 거룩하게하여 내게 제사장 직분을 행하게 하라",
+      "source_text_hash": "2905d32dfaf36f2f793f8308d55428dfadcd94463c8d89b83ae55cbfa4e62201",
+      "translation_text_hash": "b83d8280c5bbe0cfc269a3c764f505ac03b8b759d131769695bb320dfc2e6623",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 무릇 마음에 지혜 있는 자 곧 내가 지혜로운 영으로 채운 자들에게 말하여 아론의 옷을 지어 그를 거룩하게하여 내게 제사장 직분을 행하게 하라"
+      ],
+      "raw_text_hashes": [
+        "b83d8280c5bbe0cfc269a3c764f505ac03b8b759d131769695bb320dfc2e6623"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:4",
+      "sequence": 2298,
+      "chapter_label": "EXO 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "These are the garments which they shall make: a breastplate, an ephod, a robe, a fitted tunic, a turban, and a sash. They shall make holy garments for Aaron your brother and his sons, that he may minister to me in the priest’s office.",
+      "ko": "그들의 지을 옷은 이러하니 곧 흉패와 에봇과 겉옷과 반포 속옷과 관과 띠라 그들이 네 형 아론과 그 아들들을 위하여 거룩한 옷을 지어 아론으로 내게 제사장 직분을 행하게 할찌며",
+      "source_text_hash": "1f197ed5bb6bdfefdbce69a9b1d1800de951c320635ae544c2371e2e0854f71d",
+      "translation_text_hash": "d3c02b24466781845002073d983d10e2324ee25db8490cece2a0dbe0ba235770",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 지을 옷은 이러하니 곧 흉패와 에봇과 겉옷과 반포 속옷과 관과 띠라 그들이 네 형 아론과 그 아들들을 위하여 거룩한 옷을 지어 아론으로 내게 제사장 직분을 행하게 할찌며"
+      ],
+      "raw_text_hashes": [
+        "d3c02b24466781845002073d983d10e2324ee25db8490cece2a0dbe0ba235770"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:5",
+      "sequence": 2299,
+      "chapter_label": "EXO 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "They shall use the gold, and the blue, and the purple, and the scarlet, and the fine linen.",
+      "ko": "그들의 쓸 것은 금실과 청색 자색 홍색실과 가늘게 꼰 베실이니라",
+      "source_text_hash": "d8839dd2fb05527385714d208b7362def21a6386574dd0e2849eb33599aae60a",
+      "translation_text_hash": "eb52000cb9fc83061818ed85b3cdff30510ddb591112234ea8b97e43c0027253",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 쓸 것은 금실과 청색 자색 홍색실과 가늘게 꼰 베실이니라"
+      ],
+      "raw_text_hashes": [
+        "eb52000cb9fc83061818ed85b3cdff30510ddb591112234ea8b97e43c0027253"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:6",
+      "sequence": 2300,
+      "chapter_label": "EXO 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "“They shall make the ephod of gold, blue, purple, scarlet, and fine twined linen, the work of the skillful workman.",
+      "ko": "그들이 금실과 청색 자색 홍색실과 가늘게 꼰 베실로 공교히 짜서 에봇을 짓되",
+      "source_text_hash": "8a36ac1928ea4deeeddea5709111377652f0c9c4a76467ee61a8b8b3b7ea5765",
+      "translation_text_hash": "e9d3e6d32216cd25028ab99ddf8a95cf51fc165d76a5619e7a229b5e74af2f5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 금실과 청색 자색 홍색실과 가늘게 꼰 베실로 공교히 짜서 에봇을 짓되"
+      ],
+      "raw_text_hashes": [
+        "e9d3e6d32216cd25028ab99ddf8a95cf51fc165d76a5619e7a229b5e74af2f5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:7",
+      "sequence": 2301,
+      "chapter_label": "EXO 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "It shall have two shoulder straps joined to the two ends of it, that it may be joined together.",
+      "ko": "그것에 견대 둘을 달아 그 두 끝을 연하게 하고",
+      "source_text_hash": "317dfcd869f773dc718744bfcf361ec91af60aef717e2cbb4e7667b59f90a7ee",
+      "translation_text_hash": "c6f9498f144ba03d489624cb0d37fdef11252378e5f537ae7e99f6ed3396bf9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것에 견대 둘을 달아 그 두 끝을 연하게 하고"
+      ],
+      "raw_text_hashes": [
+        "c6f9498f144ba03d489624cb0d37fdef11252378e5f537ae7e99f6ed3396bf9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:8",
+      "sequence": 2302,
+      "chapter_label": "EXO 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "The skillfully woven band, which is on it, shall be like its work and of the same piece; of gold, blue, purple, scarlet, and fine twined linen.",
+      "ko": "에봇 위에 매는 띠는 에봇 짜는 법으로 금실과 청색 자색 홍색실과 가늘게 꼰 베실로 에봇에 공교히 붙여 짤찌며",
+      "source_text_hash": "4a8333656f117082a52e7876b9f739123a9c920a1bf78fa3db40a801e2268aa7",
+      "translation_text_hash": "e65cda2aa87ac2077a669467e5c5913a51af4b46a5b6118feaa4c2c4b6be28ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에봇 위에 매는 띠는 에봇 짜는 법으로 금실과 청색 자색 홍색실과 가늘게 꼰 베실로 에봇에 공교히 붙여 짤찌며"
+      ],
+      "raw_text_hashes": [
+        "e65cda2aa87ac2077a669467e5c5913a51af4b46a5b6118feaa4c2c4b6be28ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:9",
+      "sequence": 2303,
+      "chapter_label": "EXO 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "You shall take two onyx stones, and engrave on them the names of the children of Israel.",
+      "ko": "호마노 두개를 취하여 그 위에 이스라엘 아들들의 이름을 새기되",
+      "source_text_hash": "147bfbcecbc899b1834257d6824f3aa0fe19194e20c3237e877bff80368b9e45",
+      "translation_text_hash": "ab48ffb1e107d2d4e016a03279cb33102c2d9e69bb3f7eedd82438751467439b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호마노 두개를 취하여 그 위에 이스라엘 아들들의 이름을 새기되"
+      ],
+      "raw_text_hashes": [
+        "ab48ffb1e107d2d4e016a03279cb33102c2d9e69bb3f7eedd82438751467439b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:10",
+      "sequence": 2304,
+      "chapter_label": "EXO 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "Six of their names on the one stone, and the names of the six that remain on the other stone, in the order of their birth.",
+      "ko": "그들의 연치대로 여섯 이름을 한 보석에, 나머지 여섯 이름은 다른 보석에",
+      "source_text_hash": "ba1678e5b5426b1779b5feefeb10e4c057361f737185b24ac3b864089fa488ed",
+      "translation_text_hash": "792a5ffbb22ff9d7485c171f25d9996ab9cebd1490848eb89051e3f8084d1ba3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 연치대로 여섯 이름을 한 보석에, 나머지 여섯 이름은 다른 보석에"
+      ],
+      "raw_text_hashes": [
+        "792a5ffbb22ff9d7485c171f25d9996ab9cebd1490848eb89051e3f8084d1ba3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:11",
+      "sequence": 2305,
+      "chapter_label": "EXO 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "With the work of an engraver in stone, like the engravings of a signet, you shall engrave the two stones, according to the names of the children of Israel. You shall make them to be enclosed in settings of gold.",
+      "ko": "보석을 새기는 자가 인에 새김 같이 너는 이스라엘 아들들의 이름을 그 두 보석에 새겨 금테에 물리고",
+      "source_text_hash": "752bf620a21bdc3d5dc037059d20a915ff62d5d5a69f8e59466c69d0186aea30",
+      "translation_text_hash": "45b0af701a07b8c7cb752038f31dd72d93a9532388764a5cd9360e81625f8772",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보석을 새기는 자가 인에 새김 같이 너는 이스라엘 아들들의 이름을 그 두 보석에 새겨 금테에 물리고"
+      ],
+      "raw_text_hashes": [
+        "45b0af701a07b8c7cb752038f31dd72d93a9532388764a5cd9360e81625f8772"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:12",
+      "sequence": 2306,
+      "chapter_label": "EXO 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "You shall put the two stones on the shoulder straps of the ephod, to be stones of memorial for the children of Israel. Aaron shall bear their names before the LORD on his two shoulders for a memorial.",
+      "ko": "그 두 보석을 에봇 두 견대에 붙여 이스라엘 아들들의 기념 보석을 삼되 아론이 여호와 앞에서 그들의 이름을 그 두 어깨에 메어서 기념이 되게 할찌며",
+      "source_text_hash": "2877d2552abb81c09d4440212a26e34ca20b679c22ad6d3ffbc5e03018d8ac08",
+      "translation_text_hash": "49b1ea4ceb9f4b6ca93086b13152370a670cac58ee57fc710321dd73c78486e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두 보석을 에봇 두 견대에 붙여 이스라엘 아들들의 기념 보석을 삼되 아론이 여호와 앞에서 그들의 이름을 그 두 어깨에 메어서 기념이 되게 할찌며"
+      ],
+      "raw_text_hashes": [
+        "49b1ea4ceb9f4b6ca93086b13152370a670cac58ee57fc710321dd73c78486e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:13",
+      "sequence": 2307,
+      "chapter_label": "EXO 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "You shall make settings of gold,",
+      "ko": "너는 금으로 테를 만들고",
+      "source_text_hash": "36bdb170206a5665fef388eb55f61fa43bd6f85a75ba3d9c7f46161c87f82964",
+      "translation_text_hash": "ea090b173a3bfd60ae41cbb831bfec3a9d8300f024f365e11d72700f18b8d541",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 금으로 테를 만들고"
+      ],
+      "raw_text_hashes": [
+        "ea090b173a3bfd60ae41cbb831bfec3a9d8300f024f365e11d72700f18b8d541"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:14",
+      "sequence": 2308,
+      "chapter_label": "EXO 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "and two chains of pure gold; you shall make them like cords of braided work. You shall put the braided chains on the settings.",
+      "ko": "정금으로 노끈처럼 두 사슬을 땋고 그 땋은 사슬을 그 테에 달찌니라",
+      "source_text_hash": "c8920ef9bc81b2fc91691db166a33baafbffd3f797b4bf618b14ed9fec44ec2b",
+      "translation_text_hash": "e38a41e73f2d8d383a4cae3d1899454644a6280d7df76ece2a0be56ccb59d840",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정금으로 노끈처럼 두 사슬을 땋고 그 땋은 사슬을 그 테에 달찌니라"
+      ],
+      "raw_text_hashes": [
+        "e38a41e73f2d8d383a4cae3d1899454644a6280d7df76ece2a0be56ccb59d840"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:15",
+      "sequence": 2309,
+      "chapter_label": "EXO 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "“You shall make a breastplate of judgment, the work of the skillful workman; like the work of the ephod you shall make it; of gold, of blue, and purple, and scarlet, and fine twined linen, you shall make it.",
+      "ko": "너는 판결 흉패를 에봇 짜는 법으로 금실과 청색 자색 홍색실과 가늘게 꼰 베실로 공교히 짜서 만들되",
+      "source_text_hash": "8a816d83894af55a550fe8699b6961bd8221952ff3e5ae4fb7452f8a6fe0f497",
+      "translation_text_hash": "056a52cd43ff63f6317a046d040ddea9a9c957ca514130623e5acf3bd53c0272",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 판결 흉패를 에봇 짜는 법으로 금실과 청색 자색 홍색실과 가늘게 꼰 베실로 공교히 짜서 만들되"
+      ],
+      "raw_text_hashes": [
+        "056a52cd43ff63f6317a046d040ddea9a9c957ca514130623e5acf3bd53c0272"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:16",
+      "sequence": 2310,
+      "chapter_label": "EXO 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "It shall be square and folded double; a span shall be its length, and a span its width.",
+      "ko": "장광이 한뼘씩 두 겹으로 네모 반듯하게 하고",
+      "source_text_hash": "616e58c33ae3a08aa6a75a0156826eb08bf97342d3f8e636b069770bfdd1b784",
+      "translation_text_hash": "722f08d1993ab6541b60fa56a43571b01c4016585d8ee40a7dc00631c3e0e3c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장광이 한뼘씩 두 겹으로 네모 반듯하게 하고"
+      ],
+      "raw_text_hashes": [
+        "722f08d1993ab6541b60fa56a43571b01c4016585d8ee40a7dc00631c3e0e3c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:17",
+      "sequence": 2311,
+      "chapter_label": "EXO 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "You shall set in it settings of stones, four rows of stones: a row of ruby, topaz, and beryl shall be the first row;",
+      "ko": "그것에 네 줄로 보석을 물리되 첫 줄은 홍보석 황옥 녹주옥이요",
+      "source_text_hash": "481caa72d63c53454bca4b62331d79ea053997c58cb828bfb21cfba96e06ab1e",
+      "translation_text_hash": "276ec8887b126af94acb5c79dad3e81daf8da19e30e2fc78cbdf778a82283e92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것에 네 줄로 보석을 물리되 첫 줄은 홍보석 황옥 녹주옥이요"
+      ],
+      "raw_text_hashes": [
+        "276ec8887b126af94acb5c79dad3e81daf8da19e30e2fc78cbdf778a82283e92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:18",
+      "sequence": 2312,
+      "chapter_label": "EXO 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "and the second row a turquoise, a sapphire, and an emerald;",
+      "ko": "둘째 줄은 석류석 남보석 홍마노요",
+      "source_text_hash": "316753a64c9f44a0e4b68df65c3ec8cb30a8c3b3b01f26498db2bdcb977f81d4",
+      "translation_text_hash": "4aa5f173d71bc1c817d927eb1f6ef348df2c13cd7062f60910a856f96a7fedc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째 줄은 석류석 남보석 홍마노요"
+      ],
+      "raw_text_hashes": [
+        "4aa5f173d71bc1c817d927eb1f6ef348df2c13cd7062f60910a856f96a7fedc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:19",
+      "sequence": 2313,
+      "chapter_label": "EXO 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "and the third row a jacinth, an agate, and an amethyst;",
+      "ko": "세째 줄은 호박 백마노 자수정이요",
+      "source_text_hash": "74856b986a48a060cc80ae179ae25f14725b4045362089c5bfbb7d33e3894711",
+      "translation_text_hash": "0566fb2b7392f8b966787dc8da21ff934ae11835376f351543f6be1a88f6606e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세째 줄은 호박 백마노 자수정이요"
+      ],
+      "raw_text_hashes": [
+        "0566fb2b7392f8b966787dc8da21ff934ae11835376f351543f6be1a88f6606e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:20",
+      "sequence": 2314,
+      "chapter_label": "EXO 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "and the fourth row a chrysolite, an onyx, and a jasper. They shall be enclosed in gold in their settings.",
+      "ko": "네째 줄은 녹보석 호마노 벽옥으로 다 금테에 물릴찌니",
+      "source_text_hash": "9426d25cee029dd01e52cd35879bf6210f34e11e2386fddb4af8a52b679f62e1",
+      "translation_text_hash": "dfea3c294b7b59e9df68ecc37ff1c9de7fda6c356ac4ed4ef6fced55650a46df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째 줄은 녹보석 호마노 벽옥으로 다 금테에 물릴찌니"
+      ],
+      "raw_text_hashes": [
+        "dfea3c294b7b59e9df68ecc37ff1c9de7fda6c356ac4ed4ef6fced55650a46df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:21",
+      "sequence": 2315,
+      "chapter_label": "EXO 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "The stones shall be according to the names of the children of Israel, twelve, according to their names; like the engravings of a signet, everyone according to his name, they shall be for the twelve tribes.",
+      "ko": "이 보석들은 이스라엘 아들들의 이름대로 열 둘이라 매 보석에 열 두 지파의 한 이름씩 인을 새기는 법으로 새기고",
+      "source_text_hash": "360e116ecf1163be19172bc8fc816fd9ba831cf69891aac13ef99417f9671e75",
+      "translation_text_hash": "02b5c9f5e168346a39828caba3b99b9834ed664eaccf72b8df7484b8b1bb83a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 보석들은 이스라엘 아들들의 이름대로 열 둘이라 매 보석에 열 두 지파의 한 이름씩 인을 새기는 법으로 새기고"
+      ],
+      "raw_text_hashes": [
+        "02b5c9f5e168346a39828caba3b99b9834ed664eaccf72b8df7484b8b1bb83a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:22",
+      "sequence": 2316,
+      "chapter_label": "EXO 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "You shall make on the breastplate chains like cords, of braided work of pure gold.",
+      "ko": "정금으로 노끈처럼 땋은 사슬을 흉패 위에 붙이고",
+      "source_text_hash": "fe9c932b5c7f7c0c173dd307201deca38209f53a7801f04c82c578519fa0ac03",
+      "translation_text_hash": "0508ecaa32481b2ec4390b790ca62ed9a7dc221ebc6fbb58142fd35860485da9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정금으로 노끈처럼 땋은 사슬을 흉패 위에 붙이고"
+      ],
+      "raw_text_hashes": [
+        "0508ecaa32481b2ec4390b790ca62ed9a7dc221ebc6fbb58142fd35860485da9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:23",
+      "sequence": 2317,
+      "chapter_label": "EXO 28",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 23
+        }
+      ],
+      "en": "You shall make on the breastplate two rings of gold, and shall put the two rings on the two ends of the breastplate.",
+      "ko": "또 금고리 둘을 만들어 흉패 위 곧 흉패 두 끝에 그 두 고리를 달고",
+      "source_text_hash": "3173cba405bb932c4457306709bea5ddc66fc475c829d04f2f89fa8d23577225",
+      "translation_text_hash": "7c7278698d8ded6b5fc993a46bfdc257aebc78a69563f0af1cd1bc6fbaaec6f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 금고리 둘을 만들어 흉패 위 곧 흉패 두 끝에 그 두 고리를 달고"
+      ],
+      "raw_text_hashes": [
+        "7c7278698d8ded6b5fc993a46bfdc257aebc78a69563f0af1cd1bc6fbaaec6f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:24",
+      "sequence": 2318,
+      "chapter_label": "EXO 28",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 24
+        }
+      ],
+      "en": "You shall put the two braided chains of gold in the two rings at the ends of the breastplate.",
+      "ko": "땋은 두 금사슬로 흉패 두 끝 두 고리에 꿰어 매고",
+      "source_text_hash": "a036872c641669e5305ea27c5b952e1b8317ee5c901362c9dd2184994f849d14",
+      "translation_text_hash": "adf2476c198635bf643e693050ab609cb395dff99a84fe88d8bb28789702b1da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땋은 두 금사슬로 흉패 두 끝 두 고리에 꿰어 매고"
+      ],
+      "raw_text_hashes": [
+        "adf2476c198635bf643e693050ab609cb395dff99a84fe88d8bb28789702b1da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:25",
+      "sequence": 2319,
+      "chapter_label": "EXO 28",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 25
+        }
+      ],
+      "en": "The other two ends of the two braided chains you shall put on the two settings, and put them on the shoulder straps of the ephod in its forepart.",
+      "ko": "두 땋은 사슬의 다른 두 끝을 에봇 앞 두 견대의 금테에 매고",
+      "source_text_hash": "575fa1242b199904a23d6e95d1286c71417e9d4930f95c59852ecae92c582924",
+      "translation_text_hash": "aa36ccc46b94a51b963a72a7918be4569519b8ebd607833ff2240746d3390587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 땋은 사슬의 다른 두 끝을 에봇 앞 두 견대의 금테에 매고"
+      ],
+      "raw_text_hashes": [
+        "aa36ccc46b94a51b963a72a7918be4569519b8ebd607833ff2240746d3390587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:26",
+      "sequence": 2320,
+      "chapter_label": "EXO 28",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 26
+        }
+      ],
+      "en": "You shall make two rings of gold, and you shall put them on the two ends of the breastplate, on its edge, which is toward the side of the ephod inward.",
+      "ko": "또 금고리 둘을 만들어 흉패 아래 양편 가 안쪽 곧 에봇에 닿은 곳에 달고",
+      "source_text_hash": "072626786fd582965e25b4eb7fef1cfdd2af5da31d23579ed285dbbfddbcf776",
+      "translation_text_hash": "4b8d26b54980d83b0febe4af96ae9b202caa9753cf27257bbc5ccdf528c03b5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 금고리 둘을 만들어 흉패 아래 양편 가 안쪽 곧 에봇에 닿은 곳에 달고"
+      ],
+      "raw_text_hashes": [
+        "4b8d26b54980d83b0febe4af96ae9b202caa9753cf27257bbc5ccdf528c03b5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:27",
+      "sequence": 2321,
+      "chapter_label": "EXO 28",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 27
+        }
+      ],
+      "en": "You shall make two rings of gold, and shall put them on the two shoulder straps of the ephod underneath, in its forepart, close by its coupling, above the skillfully woven band of the ephod.",
+      "ko": "또 금고리 둘을 만들어 에봇 앞 두 견대 아래 매는 자리 가까운 편 곧 공교히 짠 띠 윗편에 달고",
+      "source_text_hash": "8ffd76742c8e1479bcacc9ccf615fbe880ec005a76cdd2ddad2a46ff38ff6c6b",
+      "translation_text_hash": "b679b95fc870358cfd9671444529d6377fd877048128b6808348a48b327abe6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 금고리 둘을 만들어 에봇 앞 두 견대 아래 매는 자리 가까운 편 곧 공교히 짠 띠 윗편에 달고"
+      ],
+      "raw_text_hashes": [
+        "b679b95fc870358cfd9671444529d6377fd877048128b6808348a48b327abe6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:28",
+      "sequence": 2322,
+      "chapter_label": "EXO 28",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 28
+        }
+      ],
+      "en": "They shall bind the breastplate by its rings to the rings of the ephod with a lace of blue, that it may be on the skillfully woven band of the ephod, and that the breastplate may not swing out from the ephod.",
+      "ko": "청색 끈으로 흉패 고리와 에봇 고리에 꿰어 흉패로 공교히 짠 에봇 띠 위에 붙여 떠나지 않게 하라",
+      "source_text_hash": "73aca683e1e4a8ba1304a34a07934fa760f848b2a235a3dffccef1f40bc6f7d6",
+      "translation_text_hash": "983d67504994d51d02bef45691f5fc29a2cc6f60ed7dc68a259827e650313a09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청색 끈으로 흉패 고리와 에봇 고리에 꿰어 흉패로 공교히 짠 에봇 띠 위에 붙여 떠나지 않게 하라"
+      ],
+      "raw_text_hashes": [
+        "983d67504994d51d02bef45691f5fc29a2cc6f60ed7dc68a259827e650313a09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:29",
+      "sequence": 2323,
+      "chapter_label": "EXO 28",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 29
+        }
+      ],
+      "en": "Aaron shall bear the names of the children of Israel in the breastplate of judgment on his heart, when he goes in to the holy place, for a memorial before the LORD continually.",
+      "ko": "아론이 성소에 들어갈 때에는 이스라엘 아들들의 이름을 기록한 이 판결 흉패를 가슴에 붙여 여호와 앞에 영원한 기념을 삼을 것이니라",
+      "source_text_hash": "f1179ded0880636ff7d6f0fed8325220e571f698ef1aca00438d051bad35af6d",
+      "translation_text_hash": "336d65c134b23454743bacbf863618df3a1ee4911d6c6b5f5b9fcc88727280d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 성소에 들어갈 때에는 이스라엘 아들들의 이름을 기록한 이 판결 흉패를 가슴에 붙여 여호와 앞에 영원한 기념을 삼을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "336d65c134b23454743bacbf863618df3a1ee4911d6c6b5f5b9fcc88727280d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:30",
+      "sequence": 2324,
+      "chapter_label": "EXO 28",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 30
+        }
+      ],
+      "en": "You shall put in the breastplate of judgment the Urim and the Thummim; and they shall be on Aaron’s heart, when he goes in before the LORD. Aaron shall bear the judgment of the children of Israel on his heart before the LORD continually.",
+      "ko": "너는 우림과 둠밈을 판결 흉패 안에 넣어 아론으로 여호와 앞에 들어 갈 때에 그 가슴 위에 있게 하라 아론이 여호와 앞에서 이스라엘 자손의 판결을 항상 그 가슴 위에 둘찌니라",
+      "source_text_hash": "a216bd4d3504345170ca21cf7feaa2f335560cab55513ab000b1ea91114da763",
+      "translation_text_hash": "0798ac63d555f17c80109987da6c440e2522ea442c8ceaf88a414fc39d74bf15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 우림과 둠밈을 판결 흉패 안에 넣어 아론으로 여호와 앞에 들어 갈 때에 그 가슴 위에 있게 하라 아론이 여호와 앞에서 이스라엘 자손의 판결을 항상 그 가슴 위에 둘찌니라"
+      ],
+      "raw_text_hashes": [
+        "0798ac63d555f17c80109987da6c440e2522ea442c8ceaf88a414fc39d74bf15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:31",
+      "sequence": 2325,
+      "chapter_label": "EXO 28",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 31
+        }
+      ],
+      "en": "“You shall make the robe of the ephod all of blue.",
+      "ko": "너는 에봇 받침 겉옷을 전부 청색으로 하되",
+      "source_text_hash": "f7acd74b81d07dda2334a8907466c9e755a55c70c95b89f132b3fdec381a99f8",
+      "translation_text_hash": "c2652e373e92a7e4b4ff7b2f81e924dd233ca788c4ab4cac370f82f68e38cc6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 에봇 받침 겉옷을 전부 청색으로 하되"
+      ],
+      "raw_text_hashes": [
+        "c2652e373e92a7e4b4ff7b2f81e924dd233ca788c4ab4cac370f82f68e38cc6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:32",
+      "sequence": 2326,
+      "chapter_label": "EXO 28",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 32
+        }
+      ],
+      "en": "It shall have a hole for the head in the middle of it. It shall have a binding of woven work around its hole, as it were the hole of a coat of mail, that it not be torn.",
+      "ko": "두 어깨 사이에 머리 들어갈 구멍을 내고 그 주위에 갑옷 깃 같이 깃을 짜서 찢어지지 않게하고",
+      "source_text_hash": "e6d4641be9565f2725872f8f865d843f3004db148fef5e4dac712cf25f546f2a",
+      "translation_text_hash": "d103acdc0466d630c61ae54180d650ce3afce7fac6a3ff9160323404eb19e2ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 어깨 사이에 머리 들어갈 구멍을 내고 그 주위에 갑옷 깃 같이 깃을 짜서 찢어지지 않게하고"
+      ],
+      "raw_text_hashes": [
+        "d103acdc0466d630c61ae54180d650ce3afce7fac6a3ff9160323404eb19e2ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:33",
+      "sequence": 2327,
+      "chapter_label": "EXO 28",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 33
+        }
+      ],
+      "en": "On its hem you shall make pomegranates of blue, and of purple, and of scarlet, all around its hem; with bells of gold between and around them:",
+      "ko": "그 옷 가장자리로 돌아가며 청색 자색 홍색실로 석류를 수 놓고 금방울을 간격하여 달되",
+      "source_text_hash": "45d08dbe3f216a90d202767a1277de6b4165c5573184b6fb472dc57dd4bb32c9",
+      "translation_text_hash": "29db28bddf184e902ac7ada3cab82cbca546c26b0cd5eacfacef99373fa75bbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 옷 가장자리로 돌아가며 청색 자색 홍색실로 석류를 수 놓고 금방울을 간격하여 달되"
+      ],
+      "raw_text_hashes": [
+        "29db28bddf184e902ac7ada3cab82cbca546c26b0cd5eacfacef99373fa75bbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:34",
+      "sequence": 2328,
+      "chapter_label": "EXO 28",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 34
+        }
+      ],
+      "en": "a golden bell and a pomegranate, a golden bell and a pomegranate, around the hem of the robe.",
+      "ko": "그 옷 가장자리로 돌아가며 한 금방울, 한 석류, 한 금방울, 한 석류가 있게 하라",
+      "source_text_hash": "568a8e2a1deb5eee4480210750aa5ed47e5488ea3c894a6508a460d4561f7b2b",
+      "translation_text_hash": "a4fac790d94ad6fb5a430c4e03f990c962296d5070e6affaedd508539cd77b84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 옷 가장자리로 돌아가며 한 금방울, 한 석류, 한 금방울, 한 석류가 있게 하라"
+      ],
+      "raw_text_hashes": [
+        "a4fac790d94ad6fb5a430c4e03f990c962296d5070e6affaedd508539cd77b84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:35",
+      "sequence": 2329,
+      "chapter_label": "EXO 28",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 35
+        }
+      ],
+      "en": "It shall be on Aaron to minister: and its sound shall be heard when he goes in to the holy place before the LORD, and when he comes out, that he not die.",
+      "ko": "아론이 입고 여호와를 섬기러 성소에 들어갈 때와 성소에서 나갈 때에 그 소리가 들릴 것이라 그리하면 그가 죽지 아니하리라",
+      "source_text_hash": "cfaa36f4f1952efe9611af00c0b46df561a8cf196d881cd277b836a369b7c550",
+      "translation_text_hash": "ee78400298bf27c08c21f51b18d8fe6c05018bee28a1c4aaba69e7e1b589c343",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 입고 여호와를 섬기러 성소에 들어갈 때와 성소에서 나갈 때에 그 소리가 들릴 것이라 그리하면 그가 죽지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "ee78400298bf27c08c21f51b18d8fe6c05018bee28a1c4aaba69e7e1b589c343"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:36",
+      "sequence": 2330,
+      "chapter_label": "EXO 28",
+      "verse_label": "36",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 36
+        }
+      ],
+      "en": "“You shall make a plate of pure gold, and engrave on it, like the engravings of a signet, ‘HOLY TO THE LORD.’",
+      "ko": "너는 또 정금으로 패를 만들어 인을 새기는 법으로 그 위에 새기되 「여호와께 성결」이라 하고",
+      "source_text_hash": "4c7232e7a99f1d3789d8d53054e60953a9993f7be2c4a6dd6b92fe9f5dc05efb",
+      "translation_text_hash": "6c3c92dfa48b71c6cf9679adc9bf4603ff601a0db60b651e2700d63080e71500",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 정금으로 패를 만들어 인을 새기는 법으로 그 위에 새기되 「여호와께 성결」이라 하고"
+      ],
+      "raw_text_hashes": [
+        "6c3c92dfa48b71c6cf9679adc9bf4603ff601a0db60b651e2700d63080e71500"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:37",
+      "sequence": 2331,
+      "chapter_label": "EXO 28",
+      "verse_label": "37",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 37
+        }
+      ],
+      "en": "You shall put it on a lace of blue, and it shall be on the sash. It shall be on the front of the sash.",
+      "ko": "그 패를 청색 끈으로 관 위에 매되 곧 관 전면에 있게 하라",
+      "source_text_hash": "90b046df66576bb39b517963115b3522a885773fdd70c83f972dac0cde2690e8",
+      "translation_text_hash": "4847e77475e8ac31097893c9721af2005417f560fa89521d1ee2f05ba3a580a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 패를 청색 끈으로 관 위에 매되 곧 관 전면에 있게 하라"
+      ],
+      "raw_text_hashes": [
+        "4847e77475e8ac31097893c9721af2005417f560fa89521d1ee2f05ba3a580a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:38",
+      "sequence": 2332,
+      "chapter_label": "EXO 28",
+      "verse_label": "38",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 38
+        }
+      ],
+      "en": "It shall be on Aaron’s forehead, and Aaron shall bear the iniquity of the holy things, which the children of Israel shall make holy in all their holy gifts; and it shall be always on his forehead, that they may be accepted before the LORD.",
+      "ko": "이 패가 아론의 이마에 있어서 그로 이스라엘 자손의 거룩하게 드리는 성물의 죄건을 담당하게 하라 그 패가 아론의 이마에 늘 있으므로 그 성물을 여호와께서 받으시게 되리라",
+      "source_text_hash": "2be565a6302783a27ffcd8eea9ea0ba0e23b0a3566aba280d281a6f66a639de5",
+      "translation_text_hash": "63d3345fbabb611ee6cab8f7dca414688ba38cf37f92fc2a967cfc8be72d71b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 패가 아론의 이마에 있어서 그로 이스라엘 자손의 거룩하게 드리는 성물의 죄건을 담당하게 하라 그 패가 아론의 이마에 늘 있으므로 그 성물을 여호와께서 받으시게 되리라"
+      ],
+      "raw_text_hashes": [
+        "63d3345fbabb611ee6cab8f7dca414688ba38cf37f92fc2a967cfc8be72d71b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:39",
+      "sequence": 2333,
+      "chapter_label": "EXO 28",
+      "verse_label": "39",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 39
+        }
+      ],
+      "en": "You shall weave the tunic with fine linen. You shall make a turban of fine linen. You shall make a sash, the work of the embroiderer.",
+      "ko": "너는 가는 베실로 반포 속옷을 짜고 가는 베실로 관을 만들고 띠를 수 놓아 만들찌니라",
+      "source_text_hash": "c951838c1b11ece3ea64e2d347469a4cfd04d5cd22c49769a96113dd39041276",
+      "translation_text_hash": "997fa7664954cf860d26ccc8074f5ced540c154bb158e592e3d5bfc1a24a379e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 가는 베실로 반포 속옷을 짜고 가는 베실로 관을 만들고 띠를 수 놓아 만들찌니라"
+      ],
+      "raw_text_hashes": [
+        "997fa7664954cf860d26ccc8074f5ced540c154bb158e592e3d5bfc1a24a379e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:40",
+      "sequence": 2334,
+      "chapter_label": "EXO 28",
+      "verse_label": "40",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 40
+        }
+      ],
+      "en": "“You shall make tunics for Aaron’s sons. You shall make sashes for them. You shall make headbands for them, for glory and for beauty.",
+      "ko": "너는 아론의 아들들을 위하여 속옷을 만들며 그들을 위하여 띠를 만들며 그들을 위하여 관을 만들어서 영화롭고 아름답게 하되",
+      "source_text_hash": "88bd729dd8867c7990fde158c00eb80dec3502012f5d43f2c8614fbebf647c10",
+      "translation_text_hash": "4ae16f85c606436a8730df97c718f5704ae12b7674409bd56f45fd339f216b40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 아론의 아들들을 위하여 속옷을 만들며 그들을 위하여 띠를 만들며 그들을 위하여 관을 만들어서 영화롭고 아름답게 하되"
+      ],
+      "raw_text_hashes": [
+        "4ae16f85c606436a8730df97c718f5704ae12b7674409bd56f45fd339f216b40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:41",
+      "sequence": 2335,
+      "chapter_label": "EXO 28",
+      "verse_label": "41",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 41
+        }
+      ],
+      "en": "You shall put them on Aaron your brother, and on his sons with him, and shall anoint them, and consecrate them, and sanctify them, that they may minister to me in the priest’s office.",
+      "ko": "너는 그것들로 네 형 아론과 그와 함께한 그 아들들에게 입히고 그들에게 기름을 부어 위임하고 거룩하게 하여 그들로 제사장 직분을 내게 행하게 할찌며",
+      "source_text_hash": "cdb2b89399a106fd7382cdaf8f087efe6c6560719e39c8bb8c898bb964652cb5",
+      "translation_text_hash": "6d1a00cac3cc5f7e29fe14348a77f82f345e987739d2b6ebdfe152ca6d75c621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그것들로 네 형 아론과 그와 함께한 그 아들들에게 입히고 그들에게 기름을 부어 위임하고 거룩하게 하여 그들로 제사장 직분을 내게 행하게 할찌며"
+      ],
+      "raw_text_hashes": [
+        "6d1a00cac3cc5f7e29fe14348a77f82f345e987739d2b6ebdfe152ca6d75c621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:42",
+      "sequence": 2336,
+      "chapter_label": "EXO 28",
+      "verse_label": "42",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 42
+        }
+      ],
+      "en": "You shall make them linen pants to cover their naked flesh. They shall reach from the waist even to the thighs.",
+      "ko": "또 그들을 위하여 베로 고의를 만들어 허리에서부터 넓적다리까지 이르게 하여 하체를 가리게 하라",
+      "source_text_hash": "d22d60ab7c2cc48710d2d5b4b270d119fa4041ce8f663c5e33f3308a5c3bae59",
+      "translation_text_hash": "9f036a11930e98d4522257f1073c24e76b0185ec9b6902124b86266194c2c48c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들을 위하여 베로 고의를 만들어 허리에서부터 넓적다리까지 이르게 하여 하체를 가리게 하라"
+      ],
+      "raw_text_hashes": [
+        "9f036a11930e98d4522257f1073c24e76b0185ec9b6902124b86266194c2c48c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:28:43",
+      "sequence": 2337,
+      "chapter_label": "EXO 28",
+      "verse_label": "43",
+      "locator": {
+        "book": "EXO",
+        "chapter": 28,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 28,
+          "verse": 43
+        }
+      ],
+      "en": "They shall be on Aaron and on his sons, when they go in to the Tent of Meeting, or when they come near to the altar to minister in the holy place, that they don’t bear iniquity, and die. This shall be a statute forever to him and to his offspring after him.",
+      "ko": "아론과 그 아들들이 회막에 들어갈 때에나 제단에 가까이 하여 거룩한 곳에서 섬길 때에 그것들을 입어야 죄를 지어서 죽지 아니하리니 그와 그의 후손의 영원히 지킬 규례니라",
+      "source_text_hash": "6a9dec0d604a72691f4ec4795234dc9bd0bccda7f0cbef76a4889d551c25da29",
+      "translation_text_hash": "90878f941b0d1a1d864c914139dcfab8865a3636d960afd440d5af0a9ef4307f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들이 회막에 들어갈 때에나 제단에 가까이 하여 거룩한 곳에서 섬길 때에 그것들을 입어야 죄를 지어서 죽지 아니하리니 그와 그의 후손의 영원히 지킬 규례니라"
+      ],
+      "raw_text_hashes": [
+        "90878f941b0d1a1d864c914139dcfab8865a3636d960afd440d5af0a9ef4307f"
+      ]
+    }
+  ]
+}

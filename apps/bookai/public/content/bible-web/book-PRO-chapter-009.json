@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:009",
+  "unit_ordinal": 637,
+  "unit_label": "PRO 9",
+  "book_code": "PRO",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:9:1",
+      "sequence": 16640,
+      "chapter_label": "PRO 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Wisdom has built her house. She has carved out her seven pillars.",
+      "ko": "지혜가 그 집을 짓고 일곱 기둥을 다듬고",
+      "source_text_hash": "4495c312ae429c89e9a40a2742b378c9e0425456ffb238ff75dae112b19bd7a0",
+      "translation_text_hash": "40209460ffc6ddf138d4b3e1da3df705a342a5982f7147056476b3b6b68f578c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜가 그 집을 짓고 일곱 기둥을 다듬고"
+      ],
+      "raw_text_hashes": [
+        "40209460ffc6ddf138d4b3e1da3df705a342a5982f7147056476b3b6b68f578c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:2",
+      "sequence": 16641,
+      "chapter_label": "PRO 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "She has prepared her meat. She has mixed her wine. She has also set her table.",
+      "ko": "짐승을 잡으며 포도주를 혼합하여 상을 갖추고",
+      "source_text_hash": "9bfc01eda075250fa851b2687ef6594b88d62e16fb4c2da5ab96a09115faeb3f",
+      "translation_text_hash": "f593ebef42c10211a5f4b3dd8408fd0a37b15d80711e73705e3eaf9f3a69e372",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "짐승을 잡으며 포도주를 혼합하여 상을 갖추고"
+      ],
+      "raw_text_hashes": [
+        "f593ebef42c10211a5f4b3dd8408fd0a37b15d80711e73705e3eaf9f3a69e372"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:3",
+      "sequence": 16642,
+      "chapter_label": "PRO 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "She has sent out her maidens. She cries from the highest places of the city:",
+      "ko": "그 여종을 보내어 성중 높은 곳에서 불러 이르기를",
+      "source_text_hash": "f003b59b7b4f40c1823a9ba5aa8174d80b2230145e4d5faed29d682050760224",
+      "translation_text_hash": "41522d8f0031cb4aea0fd6186c67ff8483da0da330a77a750144ac9192aaa751",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여종을 보내어 성중 높은 곳에서 불러 이르기를"
+      ],
+      "raw_text_hashes": [
+        "41522d8f0031cb4aea0fd6186c67ff8483da0da330a77a750144ac9192aaa751"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:4",
+      "sequence": 16643,
+      "chapter_label": "PRO 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "“Whoever is simple, let him turn in here!” As for him who is void of understanding, she says to him,",
+      "ko": "무릇 어리석은 자는 이리로 돌이키라 또 지혜 없는 자에게 이르기를",
+      "source_text_hash": "7eacd4f0790c5d30cdf884af6d69bee2a9a322cf30f09c79ff0990e56141f018",
+      "translation_text_hash": "58f0d2e802ac4007e2f7cc84ebc3f735e708408afdd49baa58fc52afd1a6d682",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 어리석은 자는 이리로 돌이키라 또 지혜 없는 자에게 이르기를"
+      ],
+      "raw_text_hashes": [
+        "58f0d2e802ac4007e2f7cc84ebc3f735e708408afdd49baa58fc52afd1a6d682"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:5",
+      "sequence": 16644,
+      "chapter_label": "PRO 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "“Come, eat some of my bread, Drink some of the wine which I have mixed!",
+      "ko": "너는 와서 내 식물을 먹으며 내 혼합한 포도주를 마시고",
+      "source_text_hash": "cfbc36775dbb78608e585e63cbb8a235c22cb65342872635d90ad308b4c338fe",
+      "translation_text_hash": "1ef4de93a4a4c48d4f5aa6312f355e7c72fa57b9de906f9c754e5d7d6388bcdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 와서 내 식물을 먹으며 내 혼합한 포도주를 마시고"
+      ],
+      "raw_text_hashes": [
+        "1ef4de93a4a4c48d4f5aa6312f355e7c72fa57b9de906f9c754e5d7d6388bcdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:6",
+      "sequence": 16645,
+      "chapter_label": "PRO 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Leave your simple ways, and live. Walk in the way of understanding.”",
+      "ko": "어리석음을 버리고 생명을 얻으라 명철의 길을 행하라 하느니라",
+      "source_text_hash": "b4a8bf0ff95f052b36eee20bbda5f40ca5647bccaa2f78d0f5674c6c9bd8f73d",
+      "translation_text_hash": "4d5c1383a0f610bb742b42b40ec9a4a2692ec8cc2e9382f3247b609d7f95e89e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어리석음을 버리고 생명을 얻으라 명철의 길을 행하라 하느니라"
+      ],
+      "raw_text_hashes": [
+        "4d5c1383a0f610bb742b42b40ec9a4a2692ec8cc2e9382f3247b609d7f95e89e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:7",
+      "sequence": 16646,
+      "chapter_label": "PRO 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "One who corrects a mocker invites insult. One who reproves a wicked man invites abuse.",
+      "ko": "거만한 자를 징계하는 자는 도리어 능욕을 받고 악인을 책망하는 자는 도리어 흠을 잡히느니라",
+      "source_text_hash": "32dc73187a2c171ed929c76e5aad4094ce8c99d4ef2efd6b1df5417e47ded0c5",
+      "translation_text_hash": "5657d98addc197a039c330746ad2bcf2e972d8f54a6062e821766735d5b8ea03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거만한 자를 징계하는 자는 도리어 능욕을 받고 악인을 책망하는 자는 도리어 흠을 잡히느니라"
+      ],
+      "raw_text_hashes": [
+        "5657d98addc197a039c330746ad2bcf2e972d8f54a6062e821766735d5b8ea03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:8",
+      "sequence": 16647,
+      "chapter_label": "PRO 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Don’t reprove a scoffer, lest he hate you. Reprove a wise person, and he will love you.",
+      "ko": "거만한 자를 책망하지 말라 그가 너를 미워할까 두려우니라 지혜 있는 자를 책망하라 그가 너를 사랑하리라",
+      "source_text_hash": "4904aa8280f8a142ac6dfe0f763b3da9098533ef4cf42c42a45615439fc6fdc5",
+      "translation_text_hash": "ce2fbbaf53aaf772a03f3c51438b23666767a6cd0c0710b39f0144142845cf85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거만한 자를 책망하지 말라 그가 너를 미워할까 두려우니라 지혜 있는 자를 책망하라 그가 너를 사랑하리라"
+      ],
+      "raw_text_hashes": [
+        "ce2fbbaf53aaf772a03f3c51438b23666767a6cd0c0710b39f0144142845cf85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:9",
+      "sequence": 16648,
+      "chapter_label": "PRO 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "Instruct a wise person, and he will be still wiser. Teach a righteous person, and he will increase in learning.",
+      "ko": "지혜 있는 자에게 교훈을 더하라 그가 더욱 지혜로와질 것이요 의로운 사람을 가르치라 그의 학식이 더하리라",
+      "source_text_hash": "0b05a61d868a47617f90a120a525cd53e73ac37141c2e7c2be241d4f9c1e5a38",
+      "translation_text_hash": "48ffcc3933ffe9febc9bc93e6ca240317e7d078bad4c4dedc12bb520cf5290df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜 있는 자에게 교훈을 더하라 그가 더욱 지혜로와질 것이요 의로운 사람을 가르치라 그의 학식이 더하리라"
+      ],
+      "raw_text_hashes": [
+        "48ffcc3933ffe9febc9bc93e6ca240317e7d078bad4c4dedc12bb520cf5290df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:10",
+      "sequence": 16649,
+      "chapter_label": "PRO 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "The fear of the LORD is the beginning of wisdom. The knowledge of the Holy One is understanding.",
+      "ko": "여호와를 경외하는 것이 지혜의 근본이요 거룩하신 자를 아는 것이 명철이니라",
+      "source_text_hash": "f5962d20b76149ecf7ea53441ac108adec76743da6ee1c7521506a89298b914d",
+      "translation_text_hash": "1588a524c2b50c14e61cfd884b889153c29af0799af4adacc3569c3744b392ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외하는 것이 지혜의 근본이요 거룩하신 자를 아는 것이 명철이니라"
+      ],
+      "raw_text_hashes": [
+        "1588a524c2b50c14e61cfd884b889153c29af0799af4adacc3569c3744b392ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:11",
+      "sequence": 16650,
+      "chapter_label": "PRO 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "For by me your days will be multiplied. The years of your life will be increased.",
+      "ko": "나 지혜로 말미암아 네 날이 많아질 것이요 네 생명의 해가 더하리라",
+      "source_text_hash": "9d84137c032f8ff63f1b3ba39b5502ca86180ea28f523ce8d9c82dea65b30c73",
+      "translation_text_hash": "7ad52b6191e4fca1b5ee8444f183b1187c3eb013cc15f747f945619a92ae18fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 지혜로 말미암아 네 날이 많아질 것이요 네 생명의 해가 더하리라"
+      ],
+      "raw_text_hashes": [
+        "7ad52b6191e4fca1b5ee8444f183b1187c3eb013cc15f747f945619a92ae18fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:12",
+      "sequence": 16651,
+      "chapter_label": "PRO 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "If you are wise, you are wise for yourself. If you mock, you alone will bear it.",
+      "ko": "네가 만일 지혜로우면 그 지혜가 네게 유익할 것이나 네가 만일 거만하면 너 홀로 해를 당하리라",
+      "source_text_hash": "bd60c8a53f6f2658c5182712ac166429bcc9c970023929c6dc2f8533d0de22de",
+      "translation_text_hash": "cb493025f402bd27ac3208189ad21df7a50dc193cb2c90040efc597ab114f0c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 지혜로우면 그 지혜가 네게 유익할 것이나 네가 만일 거만하면 너 홀로 해를 당하리라"
+      ],
+      "raw_text_hashes": [
+        "cb493025f402bd27ac3208189ad21df7a50dc193cb2c90040efc597ab114f0c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:13",
+      "sequence": 16652,
+      "chapter_label": "PRO 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "The foolish woman is loud, undisciplined, and knows nothing.",
+      "ko": "미련한 계집이 떠들며 어리석어서 아무 것도 알지 못하고",
+      "source_text_hash": "c2ad4eea1fd23d2af73f72b89e54a94ce4ad49213ba8293a85fd281ff4b05c02",
+      "translation_text_hash": "cf979fb893cecab11aa39b0cfac29c061e9e1264ce457dbaaef5f942c0769569",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 계집이 떠들며 어리석어서 아무 것도 알지 못하고"
+      ],
+      "raw_text_hashes": [
+        "cf979fb893cecab11aa39b0cfac29c061e9e1264ce457dbaaef5f942c0769569"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:14",
+      "sequence": 16653,
+      "chapter_label": "PRO 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "She sits at the door of her house, on a seat in the high places of the city,",
+      "ko": "자기 집 문에 앉으며 성읍 높은 곳에 있는 자리에 앉아서",
+      "source_text_hash": "61e35d5b654f9cfc23d04f2c08b4f9af2288520432de9c1678f958a3fb9056c3",
+      "translation_text_hash": "ec0da0ad8e55eeaaf9a54679d7ecaf41ac96d4bda7dcdc15bf92e53be31b8303",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 집 문에 앉으며 성읍 높은 곳에 있는 자리에 앉아서"
+      ],
+      "raw_text_hashes": [
+        "ec0da0ad8e55eeaaf9a54679d7ecaf41ac96d4bda7dcdc15bf92e53be31b8303"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:15",
+      "sequence": 16654,
+      "chapter_label": "PRO 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "to call to those who pass by, who go straight on their ways,",
+      "ko": "자기 길을 바로 가는 행객을 불러 이르되",
+      "source_text_hash": "f09d88683480480748d1a5168c6319e12705bbafeae63c752edb2b29b50215e0",
+      "translation_text_hash": "c6ca12a9be11e0b8693992955b70d4a189d9a1d26fe521db07c15dd54a9a45be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 길을 바로 가는 행객을 불러 이르되"
+      ],
+      "raw_text_hashes": [
+        "c6ca12a9be11e0b8693992955b70d4a189d9a1d26fe521db07c15dd54a9a45be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:16",
+      "sequence": 16655,
+      "chapter_label": "PRO 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "“Whoever is simple, let him turn in here.” As for him who is void of understanding, she says to him,",
+      "ko": "무릇 어리석은 자는 이리로 돌이키라 또 지혜 없는 자에게 이르기를",
+      "source_text_hash": "7da32ae0fd41811ac12eba5c9f0bcaa9affcc2ebc627e22179027d19001cf304",
+      "translation_text_hash": "58f0d2e802ac4007e2f7cc84ebc3f735e708408afdd49baa58fc52afd1a6d682",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 어리석은 자는 이리로 돌이키라 또 지혜 없는 자에게 이르기를"
+      ],
+      "raw_text_hashes": [
+        "58f0d2e802ac4007e2f7cc84ebc3f735e708408afdd49baa58fc52afd1a6d682"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:17",
+      "sequence": 16656,
+      "chapter_label": "PRO 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "“Stolen water is sweet. Food eaten in secret is pleasant.”",
+      "ko": "도적질한 물이 달고 몰래 먹는 떡이 맛이 있다 하는도다",
+      "source_text_hash": "f4a8cdcf6fd37598d123fe36df630cb7ca318553fb25fac3737f4c0cb04d4aa0",
+      "translation_text_hash": "7847eb2e7b8c8a9e7c382242547f756d16c35f1d9acd994c4d98579d19f95681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적질한 물이 달고 몰래 먹는 떡이 맛이 있다 하는도다"
+      ],
+      "raw_text_hashes": [
+        "7847eb2e7b8c8a9e7c382242547f756d16c35f1d9acd994c4d98579d19f95681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:9:18",
+      "sequence": 16657,
+      "chapter_label": "PRO 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "But he doesn’t know that the departed spirits are there, that her guests are in the depths of Sheol.",
+      "ko": "오직 그 어리석은 자는 죽은 자가 그의 곳에 있는 것과 그의 객들이 음부 깊은 곳에 있는 것을 알지 못하느니라",
+      "source_text_hash": "1ff5f51a348b25fd0e603d956c29daef659183d33f1c5b6b582117dc77128df7",
+      "translation_text_hash": "734661c6858251ac6b93e8f93357f678bacf47eb4c04344993dd937b915e0e97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 어리석은 자는 죽은 자가 그의 곳에 있는 것과 그의 객들이 음부 깊은 곳에 있는 것을 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "734661c6858251ac6b93e8f93357f678bacf47eb4c04344993dd937b915e0e97"
+      ]
+    }
+  ]
+}

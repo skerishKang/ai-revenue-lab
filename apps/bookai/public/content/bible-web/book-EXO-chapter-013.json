@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:013",
+  "unit_ordinal": 63,
+  "unit_label": "EXO 13",
+  "book_code": "EXO",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:13:1",
+      "sequence": 1869,
+      "chapter_label": "EXO 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:2",
+      "sequence": 1870,
+      "chapter_label": "EXO 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "“Sanctify to me all the firstborn, whatever opens the womb among the children of Israel, both of man and of animal. It is mine.”",
+      "ko": "이스라엘 자손 중에 사람이나 짐승이나 무론하고 초태생은 다 거룩히 구별하여 내게 돌리라 이는 내 것이니라 하시니라",
+      "source_text_hash": "fcc23aea5c63f678b4fc18ec62b52ec277bf5a08bef63803c87639bf60b98d54",
+      "translation_text_hash": "a5193e7741d6b089553cfd4fb1fd16f0c6727602533c89ab4f1168a833bba1ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손 중에 사람이나 짐승이나 무론하고 초태생은 다 거룩히 구별하여 내게 돌리라 이는 내 것이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "a5193e7741d6b089553cfd4fb1fd16f0c6727602533c89ab4f1168a833bba1ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:3",
+      "sequence": 1871,
+      "chapter_label": "EXO 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "Moses said to the people, “Remember this day, in which you came out of Egypt, out of the house of bondage; for by strength of hand the LORD brought you out from this place. No leavened bread shall be eaten.",
+      "ko": "모세가 백성에게 이르되 너희는 애굽에서 곧 종 되었던 집에서 나온 그 날을 기념하여 유교병을 먹지 말라 여호와께서 그 손의 권능으로 너희를 그곳에서 인도하여 내셨음이니라",
+      "source_text_hash": "fa4dec4f783846c9ecb18dfaea26578b1f978dc4f58065dd7197694a1bf87203",
+      "translation_text_hash": "cfa690c797cebb8251e6ed8aeff625e0663b7fe348900960851c938ce95f8a9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 백성에게 이르되 너희는 애굽에서 곧 종 되었던 집에서 나온 그 날을 기념하여 유교병을 먹지 말라 여호와께서 그 손의 권능으로 너희를 그곳에서 인도하여 내셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "cfa690c797cebb8251e6ed8aeff625e0663b7fe348900960851c938ce95f8a9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:4",
+      "sequence": 1872,
+      "chapter_label": "EXO 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "Today you go out in the month Abib.",
+      "ko": "아빕월 이 날에 너희가 나왔으니",
+      "source_text_hash": "d22b68875ab2db17cd6734bf537f9f1e06ac60ec5863efa4d7248a31d6e0f662",
+      "translation_text_hash": "1c1d9f9cc9b290da48e83e5245086d955d0a626ef9d5c543a655df3d7dba7c2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아빕월 이 날에 너희가 나왔으니"
+      ],
+      "raw_text_hashes": [
+        "1c1d9f9cc9b290da48e83e5245086d955d0a626ef9d5c543a655df3d7dba7c2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:5",
+      "sequence": 1873,
+      "chapter_label": "EXO 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "It shall be, when the LORD brings you into the land of the Canaanite, and the Hittite, and the Amorite, and the Hivite, and the Jebusite, which he swore to your fathers to give you, a land flowing with milk and honey, that you shall keep this service in this month.",
+      "ko": "여호와께서 너를 인도하여 가나안 사람과 헷 사람과 아모리 사람과 히위 사람과 여부스 사람의 땅 곧 네게 주시려고 네 조상들에게 맹세하신바 젖과 꿀이 흐르는 땅에 이르게 하시거든 너는 이 달에 이 예식을 지켜",
+      "source_text_hash": "24da83fc19ba0d95aca72068e2b638e4feeb9ba2e7d5bfcf944caf71d963edfd",
+      "translation_text_hash": "3d1799dea474bbfc9a5e3722e1079384cb51d597fa9209feb9a703655055730c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너를 인도하여 가나안 사람과 헷 사람과 아모리 사람과 히위 사람과 여부스 사람의 땅 곧 네게 주시려고 네 조상들에게 맹세하신바 젖과 꿀이 흐르는 땅에 이르게 하시거든 너는 이 달에 이 예식을 지켜"
+      ],
+      "raw_text_hashes": [
+        "3d1799dea474bbfc9a5e3722e1079384cb51d597fa9209feb9a703655055730c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:6",
+      "sequence": 1874,
+      "chapter_label": "EXO 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "Seven days you shall eat unleavened bread, and in the seventh day shall be a feast to the LORD.",
+      "ko": "칠일 동안 무교병을 먹고 제 칠일에는 여호와께 절기를 지키라",
+      "source_text_hash": "5f7edc35e9a52b208765987b27416285f75b2a4d1c7dfc9b0bfd857a03412f24",
+      "translation_text_hash": "99c4122bb6159e43fe5181d771977108e1a267b8a61f30b7b5d9375ed998c259",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일 동안 무교병을 먹고 제 칠일에는 여호와께 절기를 지키라"
+      ],
+      "raw_text_hashes": [
+        "99c4122bb6159e43fe5181d771977108e1a267b8a61f30b7b5d9375ed998c259"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:7",
+      "sequence": 1875,
+      "chapter_label": "EXO 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Unleavened bread shall be eaten throughout the seven days; and no leavened bread shall be seen with you. No yeast shall be seen with you, within all your borders.",
+      "ko": "칠일 동안에는 무교병을 먹고 유교병을 너희 곳에 있게 하지 말며 네 지경 안에서 누룩을 네게 보이지도 말게 하며",
+      "source_text_hash": "100a810a8035a74d70f4ae134dd0f3b076604d93c8e50b47dcf5972f3bc61c42",
+      "translation_text_hash": "9ceea21ed117bfb6a9084b757860284601824d17bcb8faa8f507af47046c1c19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일 동안에는 무교병을 먹고 유교병을 너희 곳에 있게 하지 말며 네 지경 안에서 누룩을 네게 보이지도 말게 하며"
+      ],
+      "raw_text_hashes": [
+        "9ceea21ed117bfb6a9084b757860284601824d17bcb8faa8f507af47046c1c19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:8",
+      "sequence": 1876,
+      "chapter_label": "EXO 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "You shall tell your son in that day, saying, ‘It is because of that which the LORD did for me when I came out of Egypt.’",
+      "ko": "너는 그 날에 네 아들에게 뵈어 이르기를 이 예식은 내가 애굽에서 나올 때에 여호와께서 나를 위하여 행하신 일을 인함이라 하고",
+      "source_text_hash": "00f7718ef8a95cd853458630fed1a1c4de38221d68360329943098540c04cd11",
+      "translation_text_hash": "f472c7e89b3dd54b35456dfde580541faa160aa63153f38da3de367725da2b05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그 날에 네 아들에게 뵈어 이르기를 이 예식은 내가 애굽에서 나올 때에 여호와께서 나를 위하여 행하신 일을 인함이라 하고"
+      ],
+      "raw_text_hashes": [
+        "f472c7e89b3dd54b35456dfde580541faa160aa63153f38da3de367725da2b05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:9",
+      "sequence": 1877,
+      "chapter_label": "EXO 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "It shall be for a sign to you on your hand, and for a memorial between your eyes, that the LORD’s law may be in your mouth; for with a strong hand the LORD has brought you out of Egypt.",
+      "ko": "이것으로 네 손의 기호와 네 미간의 표를 삼고 여호와의 율법으로 네 입에 있게 하라 이는 여호와께서 능하신 손으로 너를 애굽에서 인도하여 내셨음이니",
+      "source_text_hash": "8a1210d03b4814e2d5cb970315c714a7608d5d316d213dd40f1dcee3d1ce2452",
+      "translation_text_hash": "91f14e03de33a1e7d468883cf6f4301957fda10282fe25d19dcf8054c77d2e2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것으로 네 손의 기호와 네 미간의 표를 삼고 여호와의 율법으로 네 입에 있게 하라 이는 여호와께서 능하신 손으로 너를 애굽에서 인도하여 내셨음이니"
+      ],
+      "raw_text_hashes": [
+        "91f14e03de33a1e7d468883cf6f4301957fda10282fe25d19dcf8054c77d2e2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:10",
+      "sequence": 1878,
+      "chapter_label": "EXO 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "You shall therefore keep this ordinance in its season from year to year.",
+      "ko": "연년이 기한에 이르러 이 규례를 지킬찌니라",
+      "source_text_hash": "6d5d69cb41c6fde61b91cd6b3658c96a8576054f3956a53ef67e4f7511a36dcb",
+      "translation_text_hash": "da7fb9f7b4b3a7f66a92181f024fd86fa8f9042c0dce9d4063a797699485a302",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "연년이 기한에 이르러 이 규례를 지킬찌니라"
+      ],
+      "raw_text_hashes": [
+        "da7fb9f7b4b3a7f66a92181f024fd86fa8f9042c0dce9d4063a797699485a302"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:11",
+      "sequence": 1879,
+      "chapter_label": "EXO 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "“It shall be, when the LORD brings you into the land of the Canaanite, as he swore to you and to your fathers, and will give it to you,",
+      "ko": "여호와께서 너와 네 조상에게 맹세하신대로 너를 가나안 사람의 땅에 인도하시고 그 땅을 네게 주시거든",
+      "source_text_hash": "a6be8ec038cb41051404ae1e8b54c9f15cf2b8c1295ac7782b574d8424c4b3f8",
+      "translation_text_hash": "338092851d808d81c69ba1f9c43e34b8131c3ae4fbfba4f6c7d83742f669ed70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너와 네 조상에게 맹세하신대로 너를 가나안 사람의 땅에 인도하시고 그 땅을 네게 주시거든"
+      ],
+      "raw_text_hashes": [
+        "338092851d808d81c69ba1f9c43e34b8131c3ae4fbfba4f6c7d83742f669ed70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:12",
+      "sequence": 1880,
+      "chapter_label": "EXO 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "that you shall set apart to the LORD all that opens the womb, and every firstborn that comes from an animal which you have. The males shall be the LORD’s.",
+      "ko": "너는 무릇 초태생과 네게 있는 생축의 초태생을 다 구별하여 여호와께 돌리라 수컷은 여호와의 것이니라",
+      "source_text_hash": "0b4fdf4cb0ca8f2c74d8ccc52a109fe69dff4dd4604804f12ad41a73302f34af",
+      "translation_text_hash": "e1f5e8a2820420c77614d276da8bb4d8c5058f49e201fa1daf97b4efd2975882",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 무릇 초태생과 네게 있는 생축의 초태생을 다 구별하여 여호와께 돌리라 수컷은 여호와의 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e1f5e8a2820420c77614d276da8bb4d8c5058f49e201fa1daf97b4efd2975882"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:13",
+      "sequence": 1881,
+      "chapter_label": "EXO 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "Every firstborn of a donkey you shall redeem with a lamb; and if you will not redeem it, then you shall break its neck; and you shall redeem all the firstborn of man among your sons.",
+      "ko": "나귀의 첫새끼는 다 어린 양으로 대속할 것이요 그렇게 아니하려면 그 목을 꺾을 것이며 너의 아들중 모든 장자 된 자는 다 대속할찌니라",
+      "source_text_hash": "3e6c9cb52c6d8d35b74db364e71fa4e38f4cb7382b3dd0277edbadfc7876b222",
+      "translation_text_hash": "c13da39a187b379bc4dcde67a915cbf1142d2a1e4d40364c098fc7a948056979",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀의 첫새끼는 다 어린 양으로 대속할 것이요 그렇게 아니하려면 그 목을 꺾을 것이며 너의 아들중 모든 장자 된 자는 다 대속할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c13da39a187b379bc4dcde67a915cbf1142d2a1e4d40364c098fc7a948056979"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:14",
+      "sequence": 1882,
+      "chapter_label": "EXO 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "It shall be, when your son asks you in time to come, saying, ‘What is this?’ that you shall tell him, ‘By strength of hand the LORD brought us out from Egypt, from the house of bondage.",
+      "ko": "장래에 네 아들이 네게 묻기를 이것이 어찜이냐 하거든 너는 그에게 이르기를 여호와께서 그 손의 권능으로 우리를 애굽에서 곧 종이 되었던 집에서 인도하여 내실쌔",
+      "source_text_hash": "1a97458c37d29f879d167c004eaccb05bb59924230f727dcb4e23fc0afa3fd0d",
+      "translation_text_hash": "108e5c358c29f8aed051ac1f004b6e4e3448ed6d2be54594472d4d3616efd265",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장래에 네 아들이 네게 묻기를 이것이 어찜이냐 하거든 너는 그에게 이르기를 여호와께서 그 손의 권능으로 우리를 애굽에서 곧 종이 되었던 집에서 인도하여 내실쌔"
+      ],
+      "raw_text_hashes": [
+        "108e5c358c29f8aed051ac1f004b6e4e3448ed6d2be54594472d4d3616efd265"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:15",
+      "sequence": 1883,
+      "chapter_label": "EXO 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "When Pharaoh stubbornly refused to let us go, the LORD killed all the firstborn in the land of Egypt, both the firstborn of man, and the firstborn of livestock. Therefore I sacrifice to the LORD all that opens the womb, being males; but all the firstborn of my sons I redeem.’",
+      "ko": "그 때에 바로가 강퍅하여 우리를 보내지 아니하매 여호와께서 애굽 나라 가운데 처음 낳은 것을 사람의 장자로부터 생축의 처음 낳은 것까지 다 죽이신고로 초태생의 수컷은 다 여호와께 희생으로 드리고 우리 장자는 다 대속하나니",
+      "source_text_hash": "40b3d0c254a8f744196c469a8f59eaeed0eb3337ce2c697926368cde72f39ed5",
+      "translation_text_hash": "7a1307e8ad94cb3bbf8ed99ffe843f76020bf29b87f3246a97b4da8150c02673",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 바로가 강퍅하여 우리를 보내지 아니하매 여호와께서 애굽 나라 가운데 처음 낳은 것을 사람의 장자로부터 생축의 처음 낳은 것까지 다 죽이신고로 초태생의 수컷은 다 여호와께 희생으로 드리고 우리 장자는 다 대속하나니"
+      ],
+      "raw_text_hashes": [
+        "7a1307e8ad94cb3bbf8ed99ffe843f76020bf29b87f3246a97b4da8150c02673"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:16",
+      "sequence": 1884,
+      "chapter_label": "EXO 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "It shall be for a sign on your hand, and for symbols between your eyes; for by strength of hand the LORD brought us out of Egypt.”",
+      "ko": "이것으로 네 손의 기호와 네 미간의 표를 삼으라 여호와께서 그 손의 권능으로 우리를 애굽에서 인도하여 내셨음이니라 할찌니라",
+      "source_text_hash": "c210f20e1b6cc57a440d932b0ca9ca784dfb2c8a52dbdf9a5d9915c2d6409669",
+      "translation_text_hash": "f907535c039852974c9d7da7a8acb7770413b8438f2ab7616e5739cd8ccfb866",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것으로 네 손의 기호와 네 미간의 표를 삼으라 여호와께서 그 손의 권능으로 우리를 애굽에서 인도하여 내셨음이니라 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "f907535c039852974c9d7da7a8acb7770413b8438f2ab7616e5739cd8ccfb866"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:17",
+      "sequence": 1885,
+      "chapter_label": "EXO 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "When Pharaoh had let the people go, God didn’t lead them by the way of the land of the Philistines, although that was near; for God said, “Lest perhaps the people change their minds when they see war, and they return to Egypt”;",
+      "ko": "바로가 백성을 보낸 후에 블레셋 사람의 땅의 길은 가까울찌라도 하나님이 그들을 그 길로 인도하지 아니하셨으니 이는 하나님이 말씀하시기를 이 백성이 전쟁을 보면 뉘우쳐 애굽으로 돌아갈까 하셨음이라",
+      "source_text_hash": "6852c4744ce6fe6cccba02506ae59aede24493a19436ae90e64c18ab7feeeeae",
+      "translation_text_hash": "bd17a3adee160e0bbbae1f1a3b9ea652562b6a07692ea0eb983c2c024c2eb7fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 백성을 보낸 후에 블레셋 사람의 땅의 길은 가까울찌라도 하나님이 그들을 그 길로 인도하지 아니하셨으니 이는 하나님이 말씀하시기를 이 백성이 전쟁을 보면 뉘우쳐 애굽으로 돌아갈까 하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "bd17a3adee160e0bbbae1f1a3b9ea652562b6a07692ea0eb983c2c024c2eb7fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:18",
+      "sequence": 1886,
+      "chapter_label": "EXO 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "but God led the people around by the way of the wilderness by the Red Sea; and the children of Israel went up armed out of the land of Egypt.",
+      "ko": "그러므로 하나님이 홍해의 광야 길로 돌려 백성을 인도하시매 이스라엘 자손이 애굽 땅에서 항오를 지어 나올 때에",
+      "source_text_hash": "64ef235bf09a52de36121ea89dd24fcf73f8144d6a654c207f3e1d32af8c8b08",
+      "translation_text_hash": "b6cf6b2df756ec28b3788ac974fca2b33ac85b869c92dbae133820d6f65345ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하나님이 홍해의 광야 길로 돌려 백성을 인도하시매 이스라엘 자손이 애굽 땅에서 항오를 지어 나올 때에"
+      ],
+      "raw_text_hashes": [
+        "b6cf6b2df756ec28b3788ac974fca2b33ac85b869c92dbae133820d6f65345ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:19",
+      "sequence": 1887,
+      "chapter_label": "EXO 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "Moses took the bones of Joseph with him, for he had made the children of Israel swear, saying, “God will surely visit you, and you shall carry up my bones away from here with you.”",
+      "ko": "모세가 요셉의 해골을 취하였으니 이는 요셉이 이스라엘 자손으로 단단히 맹세케 하여 이르기를 하나님이 필연 너희를 권고하시리니 너희는 나의 해골을 여기서 가지고 나가라 하였음이었더라",
+      "source_text_hash": "f0067b5d56163c5ae049b338e3c4773441624c659d9983b8bbe592931b0da86a",
+      "translation_text_hash": "f911000d92f51b3595c79732bdc4893064d3daa222f345e74cdb5908db0e4558",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 요셉의 해골을 취하였으니 이는 요셉이 이스라엘 자손으로 단단히 맹세케 하여 이르기를 하나님이 필연 너희를 권고하시리니 너희는 나의 해골을 여기서 가지고 나가라 하였음이었더라"
+      ],
+      "raw_text_hashes": [
+        "f911000d92f51b3595c79732bdc4893064d3daa222f345e74cdb5908db0e4558"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:20",
+      "sequence": 1888,
+      "chapter_label": "EXO 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "They took their journey from Succoth, and encamped in Etham, in the edge of the wilderness.",
+      "ko": "그들이 숙곳에서 발행하여 광야 끝 에담에 장막을 치니",
+      "source_text_hash": "b915de61c095a55c034e75df585c6d46e73ef38a96ad9a88be76637f01d03936",
+      "translation_text_hash": "05436834b317f92e3aee80ba7757895ba5d706cd41c9ee0c11c1122b6eca9542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 숙곳에서 발행하여 광야 끝 에담에 장막을 치니"
+      ],
+      "raw_text_hashes": [
+        "05436834b317f92e3aee80ba7757895ba5d706cd41c9ee0c11c1122b6eca9542"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:21",
+      "sequence": 1889,
+      "chapter_label": "EXO 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD went before them by day in a pillar of cloud, to lead them on their way, and by night in a pillar of fire, to give them light, that they might go by day and by night:",
+      "ko": "여호와께서 그들 앞에 행하사 낮에는 구름 기둥으로 그들의 길을 인도하시고 밤에는 불 기둥으로 그들에게 비취사 주야로 진행하게 하시니",
+      "source_text_hash": "4d36aa3ec9eead10ad17e095e48367f92a54c53cdaaccc3b3db49e0dd28579c3",
+      "translation_text_hash": "4492117490f077649a026775c7710d68d84515091dab878723d8f6a9df066280",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그들 앞에 행하사 낮에는 구름 기둥으로 그들의 길을 인도하시고 밤에는 불 기둥으로 그들에게 비취사 주야로 진행하게 하시니"
+      ],
+      "raw_text_hashes": [
+        "4492117490f077649a026775c7710d68d84515091dab878723d8f6a9df066280"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:13:22",
+      "sequence": 1890,
+      "chapter_label": "EXO 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "the pillar of cloud by day, and the pillar of fire by night, didn’t depart from before the people.",
+      "ko": "낮에는 구름 기둥, 밤에는 불 기둥이 백성 앞에서 떠나지 아니하니라",
+      "source_text_hash": "0ae8ee4e97ce53f88dcd63229b48687cdb18f5e655ed54050b6b2d2691fda159",
+      "translation_text_hash": "544d26a6499bb8b743bcdc785ea3d5b3034eb417a38816acad7aa60b94d14ff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮에는 구름 기둥, 밤에는 불 기둥이 백성 앞에서 떠나지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "544d26a6499bb8b743bcdc785ea3d5b3034eb417a38816acad7aa60b94d14ff3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:004",
+  "unit_ordinal": 866,
+  "unit_label": "HOS 4",
+  "book_code": "HOS",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:4:1",
+      "sequence": 22135,
+      "chapter_label": "HOS 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Hear the LORD’s word, you children of Israel, for the LORD has a charge against the inhabitants of the land: “Indeed there is no truth, nor goodness, nor knowledge of God in the land.",
+      "ko": "이스라엘 자손들아 여호와의 말씀을 들으라 여호와께서 이 땅 거민과 쟁변하시나니 이 땅에는 진실도 없고 인애도 없고 하나님을 아는 지식도 없고",
+      "source_text_hash": "14ddc0361076280743318a49598ae0d9beca01ebfd6611550add90805caa98a5",
+      "translation_text_hash": "77fa2d402c1cb27ab5b5d4515d44ce4e85598e1780f4a346a047309ad09728a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들아 여호와의 말씀을 들으라 여호와께서 이 땅 거민과 쟁변하시나니 이 땅에는 진실도 없고 인애도 없고 하나님을 아는 지식도 없고"
+      ],
+      "raw_text_hashes": [
+        "77fa2d402c1cb27ab5b5d4515d44ce4e85598e1780f4a346a047309ad09728a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:2",
+      "sequence": 22136,
+      "chapter_label": "HOS 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "There is cursing, lying, murder, stealing, and committing adultery; they break boundaries, and bloodshed causes bloodshed.",
+      "ko": "오직 저주와 사위와 살인과 투절과 간음 뿐이요 강포하여 피가 피를 뒤대임이라",
+      "source_text_hash": "1d987120d85340e34f9eaaf2472e44bab20cca0f8de1e045934d56634a4ae6eb",
+      "translation_text_hash": "7703b04bace2744966c2f2c0dd48ae792290fe7c7e05209ce1269731a1417bd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 저주와 사위와 살인과 투절과 간음 뿐이요 강포하여 피가 피를 뒤대임이라"
+      ],
+      "raw_text_hashes": [
+        "7703b04bace2744966c2f2c0dd48ae792290fe7c7e05209ce1269731a1417bd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:3",
+      "sequence": 22137,
+      "chapter_label": "HOS 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore the land will mourn, and everyone who dwells in it will waste away, with all living things in her, even the animals of the field and the birds of the sky; yes, the fish of the sea also die.",
+      "ko": "그러므로 이 땅이 슬퍼하며 무릇 거기 거하는 자와 들짐승과 공중에 나는 새가 다 쇠잔할 것이요 바다의 고기도 없어지리라",
+      "source_text_hash": "61bbe8d583fc0163c9ef33e12cabbd743d90d40a987a495fbae3ad0e8a884af5",
+      "translation_text_hash": "b0a4e7663a3ac5a65d8747c1f58ac1a9ff4decc73a6fb6b28125280d5e7674b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이 땅이 슬퍼하며 무릇 거기 거하는 자와 들짐승과 공중에 나는 새가 다 쇠잔할 것이요 바다의 고기도 없어지리라"
+      ],
+      "raw_text_hashes": [
+        "b0a4e7663a3ac5a65d8747c1f58ac1a9ff4decc73a6fb6b28125280d5e7674b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:4",
+      "sequence": 22138,
+      "chapter_label": "HOS 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "“Yet let no man bring a charge, neither let any man accuse; for your people are like those who bring charges against a priest.",
+      "ko": "그러나 아무 사람이든지 다투지도 말며 책망하지도 말라 네 백성들이 제사장과 다투는 자 같이 되었음이니라",
+      "source_text_hash": "5895b6bf6d0390ab4c33a875421100f6854ff130fae12a0f5422df8db475183a",
+      "translation_text_hash": "df150e43f1357790ea0e942e1462ee5c6c1983bbb979c75d07f6bb3db7ae62c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 아무 사람이든지 다투지도 말며 책망하지도 말라 네 백성들이 제사장과 다투는 자 같이 되었음이니라"
+      ],
+      "raw_text_hashes": [
+        "df150e43f1357790ea0e942e1462ee5c6c1983bbb979c75d07f6bb3db7ae62c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:5",
+      "sequence": 22139,
+      "chapter_label": "HOS 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "You will stumble in the day, and the prophet will also stumble with you in the night; and I will destroy your mother.",
+      "ko": "너는 낮에 거치겠고 너와 함께 있는 선지자는 밤에 거치리라 내가 네 어미를 멸하리라",
+      "source_text_hash": "52fac4249879dc8907808d37341fa5b09b8341269436e49b45d260422c208cdd",
+      "translation_text_hash": "cb038aaa333fae4c8dd39974de20ad00cdfb06f4a7cd9903eec80474492be0cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 낮에 거치겠고 너와 함께 있는 선지자는 밤에 거치리라 내가 네 어미를 멸하리라"
+      ],
+      "raw_text_hashes": [
+        "cb038aaa333fae4c8dd39974de20ad00cdfb06f4a7cd9903eec80474492be0cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:6",
+      "sequence": 22140,
+      "chapter_label": "HOS 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "My people are destroyed for lack of knowledge. Because you have rejected knowledge, I will also reject you, that you may be no priest to me. Because you have forgotten your God’s law, I will also forget your children.",
+      "ko": "내 백성이 지식이 없으므로 망하는도다 네가 지식을 버렸으니 나도 너를 버려 내 제사장이 되지 못하게 할 것이요 네가 네 하나님의 율법을 잊었으니 나도 네 자녀들을 잊어버리리라",
+      "source_text_hash": "d398ff791275d9cad34173517b84dd45cb85d00d2a308066cf35c0083a3bec49",
+      "translation_text_hash": "e4456ad11e260239c70b7f0881b88cd64d1aaa6bc8aa48c6329f320212e2e175",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성이 지식이 없으므로 망하는도다 네가 지식을 버렸으니 나도 너를 버려 내 제사장이 되지 못하게 할 것이요 네가 네 하나님의 율법을 잊었으니 나도 네 자녀들을 잊어버리리라"
+      ],
+      "raw_text_hashes": [
+        "e4456ad11e260239c70b7f0881b88cd64d1aaa6bc8aa48c6329f320212e2e175"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:7",
+      "sequence": 22141,
+      "chapter_label": "HOS 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "As they were multiplied, so they sinned against me. I will change their glory into shame.",
+      "ko": "저희는 번성할수록 내게 범죄하니 내가 저희의 영화를 변하여 욕이 되게 하리라",
+      "source_text_hash": "30460beaa1d95cf7671afba971cf15881dbb356c939aa9d0732bad3049e1d3d4",
+      "translation_text_hash": "3bcddd8c0cc4a6276acb4c31efe7cdb0c5fe9e1250078144c2cfb1ca85e17ffc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 번성할수록 내게 범죄하니 내가 저희의 영화를 변하여 욕이 되게 하리라"
+      ],
+      "raw_text_hashes": [
+        "3bcddd8c0cc4a6276acb4c31efe7cdb0c5fe9e1250078144c2cfb1ca85e17ffc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:8",
+      "sequence": 22142,
+      "chapter_label": "HOS 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "They feed on the sin of my people, and set their heart on their iniquity.",
+      "ko": "저희가 내 백성의 속죄 제물을 먹고 그 마음을 저희의 죄악에 두는도다",
+      "source_text_hash": "25773c5b88d70f5d1628694a23550b0129b861e5251ac32f4c14bdfe03574437",
+      "translation_text_hash": "090c4dd56e8615af049bc6c777a753d52fff44677587c0ae516d9eba4adb9547",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 내 백성의 속죄 제물을 먹고 그 마음을 저희의 죄악에 두는도다"
+      ],
+      "raw_text_hashes": [
+        "090c4dd56e8615af049bc6c777a753d52fff44677587c0ae516d9eba4adb9547"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:9",
+      "sequence": 22143,
+      "chapter_label": "HOS 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "It will be like people, like priest; and I will punish them for their ways, and will repay them for their deeds.",
+      "ko": "장차는 백성이나 제사장이나 일반이라 내가 그 소행대로 벌하며 그 소위대로 갚으리라",
+      "source_text_hash": "85b883a9c980cf4a1ff5d032ba7f8546bbaa838344b10e0748afbc1f22f7b91b",
+      "translation_text_hash": "e527f4903c1051980ba25b67a7af738c39f4dfb55f721db03936989878781c2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장차는 백성이나 제사장이나 일반이라 내가 그 소행대로 벌하며 그 소위대로 갚으리라"
+      ],
+      "raw_text_hashes": [
+        "e527f4903c1051980ba25b67a7af738c39f4dfb55f721db03936989878781c2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:10",
+      "sequence": 22144,
+      "chapter_label": "HOS 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "They will eat, and not have enough. They will play the prostitute, and will not increase; because they have abandoned listening to the LORD.",
+      "ko": "저희가 먹어도 배부르지 아니하며 행음하여도 수효가 더하지 못하니 이는 여호와 좇기를 그쳤음이니라",
+      "source_text_hash": "5723f082855409b9f1a02d402042dab99072aa928f5fcbd106977bbd19dd525c",
+      "translation_text_hash": "046996db81b6c6fbb39629acd32ccce1f6a273b4881808875b0ade0701e0fe36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 먹어도 배부르지 아니하며 행음하여도 수효가 더하지 못하니 이는 여호와 좇기를 그쳤음이니라"
+      ],
+      "raw_text_hashes": [
+        "046996db81b6c6fbb39629acd32ccce1f6a273b4881808875b0ade0701e0fe36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:11",
+      "sequence": 22145,
+      "chapter_label": "HOS 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Prostitution, wine, and new wine take away understanding.",
+      "ko": "음행과 묵은 포도주와 새 포도주가 마음을 빼앗느니라",
+      "source_text_hash": "c0e67db66be34a9f29486b4971a3cd2162c04aafc6208e2641db14c2a8144d7d",
+      "translation_text_hash": "7234c7938e511f0b9bb5f0c4e0d02e2b6a84c73cc42656c0c3e9b1ce81f28648",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음행과 묵은 포도주와 새 포도주가 마음을 빼앗느니라"
+      ],
+      "raw_text_hashes": [
+        "7234c7938e511f0b9bb5f0c4e0d02e2b6a84c73cc42656c0c3e9b1ce81f28648"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:12",
+      "sequence": 22146,
+      "chapter_label": "HOS 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "My people consult with their wooden idol, and answer to a stick of wood. Indeed the spirit of prostitution has led them astray, and they have been unfaithful to their God.",
+      "ko": "내 백성이 나무를 향하여 묻고 그 막대기는 저희에게 고하나니 이는 저희가 음란한 마음에 미혹되어 그 하나님의 수하를 음란하듯 떠났음이니라",
+      "source_text_hash": "8c9690d61437a425cc486abc147bf1dce4a42cae84c28e801d5b8a3f9a5beb78",
+      "translation_text_hash": "355d164e13b6ce3c28e0bb84076bb5673d69e90bf77beca8a9992c8656bc3a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성이 나무를 향하여 묻고 그 막대기는 저희에게 고하나니 이는 저희가 음란한 마음에 미혹되어 그 하나님의 수하를 음란하듯 떠났음이니라"
+      ],
+      "raw_text_hashes": [
+        "355d164e13b6ce3c28e0bb84076bb5673d69e90bf77beca8a9992c8656bc3a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:13",
+      "sequence": 22147,
+      "chapter_label": "HOS 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "They sacrifice on the tops of the mountains, and burn incense on the hills, under oaks, poplars, and terebinths, because its shade is good. Therefore your daughters play the prostitute, and your brides commit adultery.",
+      "ko": "저희가 산 꼭대기에서 제사를 드리며 작은 산 위에서 분향하되 참나무와 버드나무와 상수리나무 아래서 하니 이는 그 나무 그늘이 아름다움이라 이러므로 너희 딸들이 행음하며 너희 며느리들이 간음을 행하는도다",
+      "source_text_hash": "3f892e65e7b700d3e6779d4146cf7cd0aaddc1165f2ab942a98f100348bfa9de",
+      "translation_text_hash": "9c98579b36e89b119f2452c46d4f81464aa918e00ca34a6d64efbbcdbe369851",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 산 꼭대기에서 제사를 드리며 작은 산 위에서 분향하되 참나무와 버드나무와 상수리나무 아래서 하니 이는 그 나무 그늘이 아름다움이라 이러므로 너희 딸들이 행음하며 너희 며느리들이 간음을 행하는도다"
+      ],
+      "raw_text_hashes": [
+        "9c98579b36e89b119f2452c46d4f81464aa918e00ca34a6d64efbbcdbe369851"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:14",
+      "sequence": 22148,
+      "chapter_label": "HOS 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "I will not punish your daughters when they play the prostitute, nor your brides when they commit adultery; because the men consort with prostitutes, and they sacrifice with the shrine prostitutes; so the people without understanding will come to ruin.",
+      "ko": "너희 딸들이 행음하며 너희 며느리들이 간음하여도 내가 벌하지 아니하리니 이는 남자들도 창기와 함께 나가며 음부와 함께 희생을 드림이니라 깨닫지 못하는 백성은 패망하리라",
+      "source_text_hash": "cac5e3bf5bcbe84f6ba0f349ceabbae6b45f82b01751ba496ab449942870f9b0",
+      "translation_text_hash": "d07f306e2a260d56fc77fac0598b1bbb9a58093e1e38ad78794a00ba0a634794",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 딸들이 행음하며 너희 며느리들이 간음하여도 내가 벌하지 아니하리니 이는 남자들도 창기와 함께 나가며 음부와 함께 희생을 드림이니라 깨닫지 못하는 백성은 패망하리라"
+      ],
+      "raw_text_hashes": [
+        "d07f306e2a260d56fc77fac0598b1bbb9a58093e1e38ad78794a00ba0a634794"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:15",
+      "sequence": 22149,
+      "chapter_label": "HOS 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "“Though you, Israel, play the prostitute, yet don’t let Judah offend; and don’t come to Gilgal, neither go up to Beth Aven, nor swear, ‘As the LORD lives.’",
+      "ko": "이스라엘아 너는 행음하여도 유다는 죄를 범치 말아야 할 것이라 너희는 길갈로 가지 말며 벧아웬으로 올라가지 말며 여호와의 사심을 가리켜 맹세하지 말찌어다",
+      "source_text_hash": "7e0bab6b14bf995c002a8afd9b9f94e1dfaaf6f6b5ba60d855dce784e204d1e0",
+      "translation_text_hash": "cd28ed7fecf98ac7265223d6131e41a8715e83db03c06871c9f6c7f970cd2cf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 너는 행음하여도 유다는 죄를 범치 말아야 할 것이라 너희는 길갈로 가지 말며 벧아웬으로 올라가지 말며 여호와의 사심을 가리켜 맹세하지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "cd28ed7fecf98ac7265223d6131e41a8715e83db03c06871c9f6c7f970cd2cf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:16",
+      "sequence": 22150,
+      "chapter_label": "HOS 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "For Israel has behaved extremely stubbornly, like a stubborn heifer. Then how will the LORD feed them like a lamb in a meadow?",
+      "ko": "이스라엘은 완강한 암소처럼 완강하니 이제 여호와께서 어린 양을 넓은 들에서 먹임 같이 저희를 먹이시겠느냐",
+      "source_text_hash": "66ee9d8ab4be94908bfcf74ec9eb7c5cdbdc0e71cd5ea5db68c10f8208089ee3",
+      "translation_text_hash": "21da2361e6c2246b6624359b415fb00a033dd1294e64f58db75eff8a42608bc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘은 완강한 암소처럼 완강하니 이제 여호와께서 어린 양을 넓은 들에서 먹임 같이 저희를 먹이시겠느냐"
+      ],
+      "raw_text_hashes": [
+        "21da2361e6c2246b6624359b415fb00a033dd1294e64f58db75eff8a42608bc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:17",
+      "sequence": 22151,
+      "chapter_label": "HOS 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "Ephraim is joined to idols. Leave him alone!",
+      "ko": "에브라임이 우상과 연합하였으니 버려두라",
+      "source_text_hash": "8b2eb582bd924f9138985a4412261014acf89cc48025bd2d102bd56862f42e16",
+      "translation_text_hash": "b2d9cb613ad5ea95ea62a37bc75f628c99ef4ced6f4acbe468823270e2961ccb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이 우상과 연합하였으니 버려두라"
+      ],
+      "raw_text_hashes": [
+        "b2d9cb613ad5ea95ea62a37bc75f628c99ef4ced6f4acbe468823270e2961ccb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:18",
+      "sequence": 22152,
+      "chapter_label": "HOS 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Their drink has become sour. They play the prostitute continually. Her rulers dearly love their shameful way.",
+      "ko": "저희가 마시기를 다 하고는 행음하기를 마지아니하며 그 방백들은 수치를 기뻐하느니라",
+      "source_text_hash": "9f8dd2acced7a9df281638a3d6198c819bb65160f65fee425aaef7a5afcf30fe",
+      "translation_text_hash": "1f1473cdabcaff1d8a64f62be9991cb13a9a3b783df2a008936d2b2cb27d494b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 마시기를 다 하고는 행음하기를 마지아니하며 그 방백들은 수치를 기뻐하느니라"
+      ],
+      "raw_text_hashes": [
+        "1f1473cdabcaff1d8a64f62be9991cb13a9a3b783df2a008936d2b2cb27d494b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:4:19",
+      "sequence": 22153,
+      "chapter_label": "HOS 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "HOS",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "The wind has wrapped her up in its wings; and they shall be disappointed because of their sacrifices.",
+      "ko": "바람이 그 날개로 저를 쌌나니 저희가 그 제물로 인하여 수치를 당하리라",
+      "source_text_hash": "7309370b76f61d85c1fbd34ef881930e4a6802f9bdc2feb4b7694a56925c5d81",
+      "translation_text_hash": "73782602f3ef9c19628fc7a6be21f5c0a1fbe572e89e6337fabfcac67c6ea48c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바람이 그 날개로 저를 쌌나니 저희가 그 제물로 인하여 수치를 당하리라"
+      ],
+      "raw_text_hashes": [
+        "73782602f3ef9c19628fc7a6be21f5c0a1fbe572e89e6337fabfcac67c6ea48c"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:003",
+  "unit_ordinal": 1081,
+  "unit_label": "2CO 3",
+  "book_code": "2CO",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:3:1",
+      "sequence": 28839,
+      "chapter_label": "2CO 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Are we beginning again to commend ourselves? Or do we need, as do some, letters of commendation to you or from you?",
+      "ko": "우리가 다시 자천하기를 시작하겠느냐 우리가 어찌 어떤 사람처럼 천거서를 너희에게 부치거나 혹 너희에게 맡거나 할 필요가 있느냐",
+      "source_text_hash": "d0e78fd1af8cd63d62305d1697e8de30406ec4ae9f958afebe9f977fe6e1471c",
+      "translation_text_hash": "ab24492157b0959c50f58813c475c5827ac97927b46325c5abf1f0917a42f68c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 다시 자천하기를 시작하겠느냐 우리가 어찌 어떤 사람처럼 천거서를 너희에게 부치거나 혹 너희에게 맡거나 할 필요가 있느냐"
+      ],
+      "raw_text_hashes": [
+        "ab24492157b0959c50f58813c475c5827ac97927b46325c5abf1f0917a42f68c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:2",
+      "sequence": 28840,
+      "chapter_label": "2CO 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "You are our letter, written in our hearts, known and read by all men,",
+      "ko": "너희가 우리의 편지라 우리 마음에 썼고 뭇사람이 알고 읽는바라",
+      "source_text_hash": "96ccb8a3dc39bd2f65db424a966f9e6988b657a71798f8fb6289a050bdddec00",
+      "translation_text_hash": "ad4c3a3141e86a7bb5b205cb826ee2a722cb30ffac35d121e9f64e94c1da1d39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 우리의 편지라 우리 마음에 썼고 뭇사람이 알고 읽는바라"
+      ],
+      "raw_text_hashes": [
+        "ad4c3a3141e86a7bb5b205cb826ee2a722cb30ffac35d121e9f64e94c1da1d39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:3",
+      "sequence": 28841,
+      "chapter_label": "2CO 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "being revealed that you are a letter of Christ, served by us, written not with ink, but with the Spirit of the living God; not in tablets of stone, but in tablets that are hearts of flesh.",
+      "ko": "너희는 우리로 말미암아 나타난 그리스도의 편지니 이는 먹으로 쓴 것이 아니요 오직 살아 계신 하나님의 영으로 한 것이며 또 돌비에 쓴 것이 아니요 오직 육의 심비에 한 것이라",
+      "source_text_hash": "bfcae486916e66c98a4bf0fcd9b04554c53304f4160fa08b519b4522f8cd6263",
+      "translation_text_hash": "013c1ae2a10f8e8fdbcf951cce15c16240417ce02e95df7b2df4ab7397f50af9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 우리로 말미암아 나타난 그리스도의 편지니 이는 먹으로 쓴 것이 아니요 오직 살아 계신 하나님의 영으로 한 것이며 또 돌비에 쓴 것이 아니요 오직 육의 심비에 한 것이라"
+      ],
+      "raw_text_hashes": [
+        "013c1ae2a10f8e8fdbcf951cce15c16240417ce02e95df7b2df4ab7397f50af9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:4",
+      "sequence": 28842,
+      "chapter_label": "2CO 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Such confidence we have through Christ toward God,",
+      "ko": "우리가 그리스도로 말미암아 하나님을 향하여 이같은 확신이 있으니",
+      "source_text_hash": "b024174f7be6e26c52bba26fff6d34298e13dee6788c5062d495577427c89cad",
+      "translation_text_hash": "2569cd8560fd227014b5921c48eab4cff1e8a18559264ec95a99eb3f343a70cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그리스도로 말미암아 하나님을 향하여 이같은 확신이 있으니"
+      ],
+      "raw_text_hashes": [
+        "2569cd8560fd227014b5921c48eab4cff1e8a18559264ec95a99eb3f343a70cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:5",
+      "sequence": 28843,
+      "chapter_label": "2CO 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "not that we are sufficient of ourselves to account anything as from ourselves; but our sufficiency is from God,",
+      "ko": "우리가 무슨 일이든지 우리에게서 난것 같이 생각하여 스스로 만족할 것이 아니니 우리의 만족은 오직 하나님께로서 났느니라",
+      "source_text_hash": "d66d41654c99889d3d09e5ffc619df97aa208730bbda1aec41686f4643dd88ec",
+      "translation_text_hash": "ae8a4a2b4105136e7e768f42533eafa8d4bd7d07fb9fa2f3a7838864073afa19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 무슨 일이든지 우리에게서 난것 같이 생각하여 스스로 만족할 것이 아니니 우리의 만족은 오직 하나님께로서 났느니라"
+      ],
+      "raw_text_hashes": [
+        "ae8a4a2b4105136e7e768f42533eafa8d4bd7d07fb9fa2f3a7838864073afa19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:6",
+      "sequence": 28844,
+      "chapter_label": "2CO 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "who also made us sufficient as servants of a new covenant, not of the letter but of the Spirit. For the letter kills, but the Spirit gives life.",
+      "ko": "저가 또 우리로 새 언약의 일군 되기에 만족케 하셨으니 의문으로 하지 아니하고 오직 영으로 함이니 의문은 죽이는 것이요 영은 살리는 것임이니라",
+      "source_text_hash": "185bc7efd31dbadf70bcaf5b44beb0ccb2fddb6bd84e133a68c5ce3f713b8183",
+      "translation_text_hash": "f7ef90e84966681667ae95bf3c586c7b916912d84988df2a9de1555a46d2f2d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 우리로 새 언약의 일군 되기에 만족케 하셨으니 의문으로 하지 아니하고 오직 영으로 함이니 의문은 죽이는 것이요 영은 살리는 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "f7ef90e84966681667ae95bf3c586c7b916912d84988df2a9de1555a46d2f2d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:7",
+      "sequence": 28845,
+      "chapter_label": "2CO 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "But if the service of death, written engraved on stones, came with glory, so that the children of Israel could not look steadfastly on the face of Moses for the glory of his face, which was passing away,",
+      "ko": "돌에 써서 새긴 죽게 하는 의문의 직분도 영광이 있어 이스라엘 자손들이 모세의 얼굴의 없어질 영광을 인하여 그 얼굴을 주목하지 못하였거든",
+      "source_text_hash": "14b33526a4834d5615f31a2caccc8a4683b9569e2483c7d486106c18ece102b0",
+      "translation_text_hash": "20c67f005e3aee304187b8a561c3b0f146bba6958586967a667bdd42bb196121",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌에 써서 새긴 죽게 하는 의문의 직분도 영광이 있어 이스라엘 자손들이 모세의 얼굴의 없어질 영광을 인하여 그 얼굴을 주목하지 못하였거든"
+      ],
+      "raw_text_hashes": [
+        "20c67f005e3aee304187b8a561c3b0f146bba6958586967a667bdd42bb196121"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:8",
+      "sequence": 28846,
+      "chapter_label": "2CO 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "won’t service of the Spirit be with much more glory?",
+      "ko": "하물며 영의 직분이 더욱 영광이 있지 아니하겠느냐",
+      "source_text_hash": "38158a62837d268023d3c83e97c8a5e0c29278c5ee750d79dfcb6f27c3418c58",
+      "translation_text_hash": "c614b74fa124d55b0fd21bae2a53390b7fe556b6d011d510c130df94c9a8c910",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하물며 영의 직분이 더욱 영광이 있지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "c614b74fa124d55b0fd21bae2a53390b7fe556b6d011d510c130df94c9a8c910"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:9",
+      "sequence": 28847,
+      "chapter_label": "2CO 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "For if the service of condemnation has glory, the service of righteousness exceeds much more in glory.",
+      "ko": "정죄의 직분도 영광이 있은즉 의의 직분은 영광이 더욱 넘치리라",
+      "source_text_hash": "7aace5ceba523199355e14b56ffe2b1e936478c3176c1dea4ca2aa9d218892bb",
+      "translation_text_hash": "3a1c1e988c0811a6e85492aa3f5cb673537b8765b2fceccd31b8e453ab483d52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정죄의 직분도 영광이 있은즉 의의 직분은 영광이 더욱 넘치리라"
+      ],
+      "raw_text_hashes": [
+        "3a1c1e988c0811a6e85492aa3f5cb673537b8765b2fceccd31b8e453ab483d52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:10",
+      "sequence": 28848,
+      "chapter_label": "2CO 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "For most certainly that which has been made glorious has not been made glorious in this respect, by reason of the glory that surpasses.",
+      "ko": "영광되었던 것이 더 큰 영광을 인하여 이에 영광될 것이 없으나",
+      "source_text_hash": "a737e532f2ce253cf68797043345d9f3d60e6aaf2f704053e13c75ac6441e479",
+      "translation_text_hash": "5df3044b50b73f52bed597467a9aba12d63de3db3b6bf89d734a89becc12884a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영광되었던 것이 더 큰 영광을 인하여 이에 영광될 것이 없으나"
+      ],
+      "raw_text_hashes": [
+        "5df3044b50b73f52bed597467a9aba12d63de3db3b6bf89d734a89becc12884a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:11",
+      "sequence": 28849,
+      "chapter_label": "2CO 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "For if that which passes away was with glory, much more that which remains is in glory.",
+      "ko": "없어질 것도 영광으로 말미암았은즉 길이 있을 것은 더욱 영광 가운데 있느니라",
+      "source_text_hash": "0224e72d59f6f97a70f90e5faba1d1703b22c8926c9aa8d3702ad0f8b2a2c326",
+      "translation_text_hash": "75463212b4fc109825762e90a42242f8a14d82a0d8493509b531242229c39055",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "없어질 것도 영광으로 말미암았은즉 길이 있을 것은 더욱 영광 가운데 있느니라"
+      ],
+      "raw_text_hashes": [
+        "75463212b4fc109825762e90a42242f8a14d82a0d8493509b531242229c39055"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:12",
+      "sequence": 28850,
+      "chapter_label": "2CO 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Having therefore such a hope, we use great boldness of speech,",
+      "ko": "우리가 이같은 소망이 있으므로 담대히 말하노니",
+      "source_text_hash": "96b75897f73b1930ad32e0da0bb3e73bde44de8ee5aff49df68e6eb389615373",
+      "translation_text_hash": "2553fc2fd5ebdbae522440fd91204be16626c997744eb80bfa8a9d618a258747",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이같은 소망이 있으므로 담대히 말하노니"
+      ],
+      "raw_text_hashes": [
+        "2553fc2fd5ebdbae522440fd91204be16626c997744eb80bfa8a9d618a258747"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:13",
+      "sequence": 28851,
+      "chapter_label": "2CO 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "and not as Moses, who put a veil on his face so that the children of Israel wouldn’t look steadfastly on the end of that which was passing away.",
+      "ko": "우리는 모세가 이스라엘 자손들로 장차 없어질 것의 결국을 주목치 못하게 하려고 수건을 그 얼굴에 쓴것 같이 아니하노라",
+      "source_text_hash": "2b5a4f424c282850041716b0f105f6fd30874843a847ce5f7999f4a307ccb11e",
+      "translation_text_hash": "9dc884805436bb53f37a3a037b9aa1a1bcac53d52188a7a1a83e8fadd16afda2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 모세가 이스라엘 자손들로 장차 없어질 것의 결국을 주목치 못하게 하려고 수건을 그 얼굴에 쓴것 같이 아니하노라"
+      ],
+      "raw_text_hashes": [
+        "9dc884805436bb53f37a3a037b9aa1a1bcac53d52188a7a1a83e8fadd16afda2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:14",
+      "sequence": 28852,
+      "chapter_label": "2CO 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "But their minds were hardened, for until this very day at the reading of the old covenant the same veil remains, because in Christ it passes away.",
+      "ko": "그러나 저희 마음이 완고하여 오늘까지라도 구약을 읽을 때에 그 수건이 오히려 벗어지지 아니하고 있으니 그 수건은 그리스도 안에서 없어질 것이라",
+      "source_text_hash": "cca8346c62c43a0c354d9a12cf9b8830220785df25d8bafd053cd6c74c9bf68e",
+      "translation_text_hash": "610f197b9388e38306676dcbafb18a631007eaaa32035c5e832e5d6cec4a2c77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 저희 마음이 완고하여 오늘까지라도 구약을 읽을 때에 그 수건이 오히려 벗어지지 아니하고 있으니 그 수건은 그리스도 안에서 없어질 것이라"
+      ],
+      "raw_text_hashes": [
+        "610f197b9388e38306676dcbafb18a631007eaaa32035c5e832e5d6cec4a2c77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:15",
+      "sequence": 28853,
+      "chapter_label": "2CO 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "But to this day, when Moses is read, a veil lies on their heart.",
+      "ko": "오늘까지 모세의 글을 읽을 때에 수건이 오히려 그 마음을 덮었도다",
+      "source_text_hash": "04458c412c6ed0f47d85ffee126f64e74bb7b899fde783f7b5de6574d7dee917",
+      "translation_text_hash": "16b3e53ad6c48f00d51cedff3ee6b7bf627ffc411ca7fa09ccc5b71d89a4c590",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘까지 모세의 글을 읽을 때에 수건이 오히려 그 마음을 덮었도다"
+      ],
+      "raw_text_hashes": [
+        "16b3e53ad6c48f00d51cedff3ee6b7bf627ffc411ca7fa09ccc5b71d89a4c590"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:16",
+      "sequence": 28854,
+      "chapter_label": "2CO 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "But whenever someone turns to the Lord, the veil is taken away.",
+      "ko": "그러나 언제든지 주께로 돌아가면 그 수건이 벗어지리라",
+      "source_text_hash": "051f0a22a59ee0d81527cbc96627a9e13e32f5b7e42093eb293de29191c8ab9e",
+      "translation_text_hash": "d8b7977cfd5baa30e0454024f4c24bd93458c59eca1a0019768f04a342f3d9d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 언제든지 주께로 돌아가면 그 수건이 벗어지리라"
+      ],
+      "raw_text_hashes": [
+        "d8b7977cfd5baa30e0454024f4c24bd93458c59eca1a0019768f04a342f3d9d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:17",
+      "sequence": 28855,
+      "chapter_label": "2CO 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "Now the Lord is the Spirit; and where the Spirit of the Lord is, there is liberty.",
+      "ko": "주는 영이시니 주의 영이 계신 곳에는 자유함이 있느니라",
+      "source_text_hash": "7803d76bc2bc0882e0a04de38c249569605009e53046340ee75d4e3c96667358",
+      "translation_text_hash": "d124bbaef41bc9bd39d18abed5786fd0c2a76c1620a9f8a105185d6c87a77eee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 영이시니 주의 영이 계신 곳에는 자유함이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "d124bbaef41bc9bd39d18abed5786fd0c2a76c1620a9f8a105185d6c87a77eee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:3:18",
+      "sequence": 28856,
+      "chapter_label": "2CO 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CO",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "But we all, with unveiled face seeing the glory of the Lord as in a mirror, are transformed into the same image from glory to glory, even as from the Lord, the Spirit.",
+      "ko": "우리가 다 수건을 벗은 얼굴로 거울을 보는것 같이 주의 영광을 보매 저와 같은 형상으로 화하여 영광으로 영광에 이르니 곧 주의 영으로 말미암음이니라",
+      "source_text_hash": "2c59c409d88af083495eb5407e46f505501289bff2120f3ace81d3ea431f00a6",
+      "translation_text_hash": "c7e1349fa154aeceaa2226a95399d10d41db8a64ac62863379ad34d34b5326c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 다 수건을 벗은 얼굴로 거울을 보는것 같이 주의 영광을 보매 저와 같은 형상으로 화하여 영광으로 영광에 이르니 곧 주의 영으로 말미암음이니라"
+      ],
+      "raw_text_hashes": [
+        "c7e1349fa154aeceaa2226a95399d10d41db8a64ac62863379ad34d34b5326c7"
+      ]
+    }
+  ]
+}

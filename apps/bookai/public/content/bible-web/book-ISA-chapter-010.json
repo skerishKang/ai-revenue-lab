@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:010",
+  "unit_ordinal": 689,
+  "unit_label": "ISA 10",
+  "book_code": "ISA",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:10:1",
+      "sequence": 17852,
+      "chapter_label": "ISA 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Woe to those who decree unrighteous decrees, and to the writers who write oppressive decrees",
+      "ko": "불의한 법령을 발포하며 불의한 말을 기록하며",
+      "source_text_hash": "ca70a31f563930ff0fbf39334de7d32d95ebe1f358b6236ec8ed4d4d89cb6738",
+      "translation_text_hash": "d3a21bdbf538ac1640c2bc203c0cdd31ccec748f3f245c82cf65cacae0919afc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의한 법령을 발포하며 불의한 말을 기록하며"
+      ],
+      "raw_text_hashes": [
+        "d3a21bdbf538ac1640c2bc203c0cdd31ccec748f3f245c82cf65cacae0919afc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:2",
+      "sequence": 17853,
+      "chapter_label": "ISA 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "to deprive the needy of justice, and to rob the poor among my people of their rights, that widows may be their plunder, and that they may make the fatherless their prey!",
+      "ko": "빈핍한 자를 불공평하게 판결하여 내 백성의 가련한 자의 권리를 박탈하며 과부에게 토색하고 고아의 것을 약탈하는 자는 화 있을진저",
+      "source_text_hash": "a958f5bb83456ef8bb601c6d1845b688463400c9207c00869561ad3ad31125e7",
+      "translation_text_hash": "86d47f075848486a1d357ee9d44f66e1606e34adfee73a033733fdf6c4bfab14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빈핍한 자를 불공평하게 판결하여 내 백성의 가련한 자의 권리를 박탈하며 과부에게 토색하고 고아의 것을 약탈하는 자는 화 있을진저"
+      ],
+      "raw_text_hashes": [
+        "86d47f075848486a1d357ee9d44f66e1606e34adfee73a033733fdf6c4bfab14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:3",
+      "sequence": 17854,
+      "chapter_label": "ISA 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "What will you do in the day of visitation, and in the desolation which will come from afar? To whom will you flee for help? Where will you leave your wealth?",
+      "ko": "너희에게 벌하시는 날에와 멀리서 오는 환난 때에 너희가 어떻게 하려느냐 누구에게로 도망하여 도움을 구하겠으며 너희 영화를 어느 곳에 두려느냐",
+      "source_text_hash": "1c26c64cc8cfc58a99cb4524b4978d313115a1e9740436d471d69df47ad04094",
+      "translation_text_hash": "8c709f097d9f64ba3a320a955f1b19224f3616ffce29b78133d36d4cc42a0e9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게 벌하시는 날에와 멀리서 오는 환난 때에 너희가 어떻게 하려느냐 누구에게로 도망하여 도움을 구하겠으며 너희 영화를 어느 곳에 두려느냐"
+      ],
+      "raw_text_hashes": [
+        "8c709f097d9f64ba3a320a955f1b19224f3616ffce29b78133d36d4cc42a0e9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:4",
+      "sequence": 17855,
+      "chapter_label": "ISA 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "They will only bow down under the prisoners, and will fall under the slain. For all this his anger is not turned away, but his hand is stretched out still.",
+      "ko": "포로 된 자의 아래에 구푸리며 죽임을 당한 자의 아래에 엎드러질 따름이니라 그럴지라도 여호와의 노가 쉬지 아니하며 그 손이 여전히 펴지리라",
+      "source_text_hash": "0afaf7c6da28a017ab936c6fa631d84530c205afcc2dd6b0e9764434c5623e9c",
+      "translation_text_hash": "684e48e9ca716655c56f8a6785730986f71777982e7c26d3586cf68ce2c16d49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포로 된 자의 아래에 구푸리며 죽임을 당한 자의 아래에 엎드러질 따름이니라 그럴지라도 여호와의 노가 쉬지 아니하며 그 손이 여전히 펴지리라"
+      ],
+      "raw_text_hashes": [
+        "684e48e9ca716655c56f8a6785730986f71777982e7c26d3586cf68ce2c16d49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:5",
+      "sequence": 17856,
+      "chapter_label": "ISA 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "Alas Assyrian, the rod of my anger, the staff in whose hand is my indignation!",
+      "ko": "화 있을진저 앗수르 사람이여 그는 나의 진노의 막대기요 그 손의 몽둥이는 나의 분한이라",
+      "source_text_hash": "701bf837008ba9ad7479ae9fd95888d8f93f1b55edcb60b62f46eb07bf2bcfc6",
+      "translation_text_hash": "0baa5eee74033e00b0157979b66c18c3b4efad2e52ad2725e681db53d8121df2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을진저 앗수르 사람이여 그는 나의 진노의 막대기요 그 손의 몽둥이는 나의 분한이라"
+      ],
+      "raw_text_hashes": [
+        "0baa5eee74033e00b0157979b66c18c3b4efad2e52ad2725e681db53d8121df2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:6",
+      "sequence": 17857,
+      "chapter_label": "ISA 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "I will send him against a profane nation, and against the people who anger me I will give him a command to take the plunder and to take the prey, and to tread them down like the mire of the streets.",
+      "ko": "내가 그를 보내어 한 나라를 치게 하며 내가 그에게 명하여 나의 노한 백성을 쳐서 탈취하며 노략하게 하며 또 그들을 가로상의 진흙 같이 짓밟게 하려 하거늘",
+      "source_text_hash": "72e00cbf5754109a3ee99ed7d0a86adb6fd102ac48a3b0b3697ba1b88329a43b",
+      "translation_text_hash": "46ca8d922099b8e6f9fe12c808448876768137d63266ad6a354c3c1fcb0ba6e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그를 보내어 한 나라를 치게 하며 내가 그에게 명하여 나의 노한 백성을 쳐서 탈취하며 노략하게 하며 또 그들을 가로상의 진흙 같이 짓밟게 하려 하거늘"
+      ],
+      "raw_text_hashes": [
+        "46ca8d922099b8e6f9fe12c808448876768137d63266ad6a354c3c1fcb0ba6e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:7",
+      "sequence": 17858,
+      "chapter_label": "ISA 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "However, he doesn’t mean so, neither does his heart think so; but it is in his heart to destroy, and to cut off not a few nations.",
+      "ko": "그의 뜻은 이같지 아니하며 그 마음의 생각도 이같지 아니하고 오직 그 마음에 허다한 나라를 파괴하며 멸절하려 하여",
+      "source_text_hash": "a29fa7ed4cdb47bd5974eb6f5b9b7f979b8853fb66855495491fa609980c854b",
+      "translation_text_hash": "4463d953f1a3ac9af4c22edccf69fbeaddb3e4aa546fa96e4b3a27502648d1e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 뜻은 이같지 아니하며 그 마음의 생각도 이같지 아니하고 오직 그 마음에 허다한 나라를 파괴하며 멸절하려 하여"
+      ],
+      "raw_text_hashes": [
+        "4463d953f1a3ac9af4c22edccf69fbeaddb3e4aa546fa96e4b3a27502648d1e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:8",
+      "sequence": 17859,
+      "chapter_label": "ISA 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "For he says, “Aren’t all of my princes kings?",
+      "ko": "이르기를 나의 방백들은 다 왕이 아니냐",
+      "source_text_hash": "d20fee31d1f4589d92375ca2c4dd9edd034e986c062d3f5453edcf6149648331",
+      "translation_text_hash": "3157e93eb3138ccae9545685d5163274aa5b476eed8578496680eb762cf0efe6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 나의 방백들은 다 왕이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "3157e93eb3138ccae9545685d5163274aa5b476eed8578496680eb762cf0efe6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:9",
+      "sequence": 17860,
+      "chapter_label": "ISA 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Isn’t Calno like Carchemish? Isn’t Hamath like Arpad? Isn’t Samaria like Damascus?”",
+      "ko": "갈로는 갈그미스와 같지 아니하며 하맛은 아르밧과 같지 아니하며 사마리아는 다메섹과 같지 아니하냐",
+      "source_text_hash": "e587680d5b201fc2626b5dd68a0c58a8aa7fc4552ffc32f1e538066905f68da0",
+      "translation_text_hash": "563c5dffcd9b377c71fde767518338bf1ee162ac3db6a055aab680d7e8ea1be4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈로는 갈그미스와 같지 아니하며 하맛은 아르밧과 같지 아니하며 사마리아는 다메섹과 같지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "563c5dffcd9b377c71fde767518338bf1ee162ac3db6a055aab680d7e8ea1be4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:10",
+      "sequence": 17861,
+      "chapter_label": "ISA 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "As my hand has found the kingdoms of the idols, whose engraved images exceeded those of Jerusalem and of Samaria,",
+      "ko": "내 손이 이미 신상을 섬기는 나라에 미쳤나니 그 조각한 신상이 예루살렘과 사마리아의 신상보다 우승하였느니라",
+      "source_text_hash": "7fbd71b9ec6a3dac354d90419b19a5477896382772ee7bbd8846e74fd9e57c3b",
+      "translation_text_hash": "9ad210988cab3770a8360c1106851c4b9afbf0762cff00772032a7a2289fdd23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 손이 이미 신상을 섬기는 나라에 미쳤나니 그 조각한 신상이 예루살렘과 사마리아의 신상보다 우승하였느니라"
+      ],
+      "raw_text_hashes": [
+        "9ad210988cab3770a8360c1106851c4b9afbf0762cff00772032a7a2289fdd23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:11",
+      "sequence": 17862,
+      "chapter_label": "ISA 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "shall I not, as I have done to Samaria and her idols, so do to Jerusalem and her idols?",
+      "ko": "내가 사마리아와 그 신상에게 행함 같이 예루살렘과 그 신상에게 행치 못하겠느냐 하도다",
+      "source_text_hash": "af6e9c64dfa156722b7f518fd0320ec43bd3ba6a3a70726b279488d5100884a1",
+      "translation_text_hash": "810570905bbc053271e23207b4cffca0351bc5214c19d78b01fccffcf1453006",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사마리아와 그 신상에게 행함 같이 예루살렘과 그 신상에게 행치 못하겠느냐 하도다"
+      ],
+      "raw_text_hashes": [
+        "810570905bbc053271e23207b4cffca0351bc5214c19d78b01fccffcf1453006"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:12",
+      "sequence": 17863,
+      "chapter_label": "ISA 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore it will happen that when the Lord has performed his whole work on Mount Zion and on Jerusalem, I will punish the fruit of the willful proud heart of the king of Assyria, and the insolence of his arrogant looks.",
+      "ko": "이러므로 주 내가 나의 일을 시온산과 예루살렘에 다 행한 후에 앗수르 왕의 완악한 마음의 열매와 높은 눈의 자랑을 벌하리라",
+      "source_text_hash": "a79eaa0c390eedba6870a26b00d97edeceed325c5f546ad8c9f43223e048133f",
+      "translation_text_hash": "589f9de3ecdcb097247fec854040f0947f0cade41f8f47574ca06224dfa9fa59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 주 내가 나의 일을 시온산과 예루살렘에 다 행한 후에 앗수르 왕의 완악한 마음의 열매와 높은 눈의 자랑을 벌하리라"
+      ],
+      "raw_text_hashes": [
+        "589f9de3ecdcb097247fec854040f0947f0cade41f8f47574ca06224dfa9fa59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:13",
+      "sequence": 17864,
+      "chapter_label": "ISA 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "For he has said, “By the strength of my hand I have done it, and by my wisdom, for I have understanding. I have removed the boundaries of the peoples, and have robbed their treasures. Like a valiant man I have brought down their rulers.",
+      "ko": "그의 말에 나는 내 손의 힘과 내 지혜로 이 일을 행하였나니 나는 총명한 자라 열국의 경계를 옮겼고 그 재물을 약탈하였으며 또 용감한자 같이 위에 거한 자를 낮추었으며",
+      "source_text_hash": "0120bbfb479fe909d7e31a2d83b856c452f40da1ae138e0e18cd90b93398fb1f",
+      "translation_text_hash": "3337efeef74eb40dbb06f0cdef78bda1f6ea4f0d89d31d89b5d185c015081900",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 말에 나는 내 손의 힘과 내 지혜로 이 일을 행하였나니 나는 총명한 자라 열국의 경계를 옮겼고 그 재물을 약탈하였으며 또 용감한자 같이 위에 거한 자를 낮추었으며"
+      ],
+      "raw_text_hashes": [
+        "3337efeef74eb40dbb06f0cdef78bda1f6ea4f0d89d31d89b5d185c015081900"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:14",
+      "sequence": 17865,
+      "chapter_label": "ISA 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "My hand has found the riches of the peoples like a nest, and like one gathers eggs that are abandoned, I have gathered all the earth. There was no one who moved their wing, or that opened their mouth, or chirped.”",
+      "ko": "나의 손으로 열국의 재물을 얻은 것은 새의 보금자리를 얻음 같고 온 세계를 얻은 것은 내어버린 알을 주움 같았으나 날개를 치거나 입을 벌리거나 지저귀는 것이 하나도 없었다 하는도다",
+      "source_text_hash": "fffbb6e86660aeb209339a17454bb98197df4efbac9be3f2aac4dd4cc2ba0e50",
+      "translation_text_hash": "2068c8c2c3f4cdbfd80c7ac1861a4e27ec36f345b5ed537b9c2138eda3878fa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 손으로 열국의 재물을 얻은 것은 새의 보금자리를 얻음 같고 온 세계를 얻은 것은 내어버린 알을 주움 같았으나 날개를 치거나 입을 벌리거나 지저귀는 것이 하나도 없었다 하는도다"
+      ],
+      "raw_text_hashes": [
+        "2068c8c2c3f4cdbfd80c7ac1861a4e27ec36f345b5ed537b9c2138eda3878fa7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:15",
+      "sequence": 17866,
+      "chapter_label": "ISA 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "Should an ax brag against him who chops with it? Should a saw exalt itself above him who saws with it? As if a rod should lift those who lift it up, or as if a staff should lift up someone who is not wood.",
+      "ko": "도끼가 어찌 찍는 자에게 스스로 자랑하겠으며 톱이 어찌 켜는 자에게 스스로 큰체 하겠느냐 이는 막대기가 자기를 드는 자를 움직이려 하며 몽둥이가 나무 아닌 사람을 들려 함과 일반이로다",
+      "source_text_hash": "3bf85e4b44967f18e4eeeef28d7315b4fc4d8beb63af6daf40e4d8c3f88ddc36",
+      "translation_text_hash": "32816cdee8cbf85fffabce23530fa89c1579f091e0bf450fca3b2fa4b61d56f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도끼가 어찌 찍는 자에게 스스로 자랑하겠으며 톱이 어찌 켜는 자에게 스스로 큰체 하겠느냐 이는 막대기가 자기를 드는 자를 움직이려 하며 몽둥이가 나무 아닌 사람을 들려 함과 일반이로다"
+      ],
+      "raw_text_hashes": [
+        "32816cdee8cbf85fffabce23530fa89c1579f091e0bf450fca3b2fa4b61d56f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:16",
+      "sequence": 17867,
+      "chapter_label": "ISA 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "Therefore the Lord, GOD of Armies, will send among his fat ones leanness; and under his glory a burning will be kindled like the burning of fire.",
+      "ko": "그러므로 주 만군의 여호와께서 살찐 자로 파리하게 하시며 그 영화의 아래에 불이 붙는 것 같이 맹렬히 타게 하실 것이라",
+      "source_text_hash": "3f338809b6c91f86f8df804d272283eb914b0f28a6ceab79a7d3575c7db6c3d6",
+      "translation_text_hash": "ab4b7c9ae6e67026426c50aba20683e2b77ca98a765dc27da8b05d678b931a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주 만군의 여호와께서 살찐 자로 파리하게 하시며 그 영화의 아래에 불이 붙는 것 같이 맹렬히 타게 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "ab4b7c9ae6e67026426c50aba20683e2b77ca98a765dc27da8b05d678b931a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:17",
+      "sequence": 17868,
+      "chapter_label": "ISA 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "The light of Israel will be for a fire, and his Holy One for a flame; and it will burn and devour his thorns and his briers in one day.",
+      "ko": "이스라엘의 빛은 불이요 그 거룩한 자는 불꽃이라 하루 사이에 그의 형극과 질려가 소멸되며",
+      "source_text_hash": "66ee43d04f449889ecb1b6a7dd5facacaebe83162fdb50d4ac635936fee5ceb7",
+      "translation_text_hash": "5dd03eeeec3c1774edbe6f872bc7b18d80625606849fd19bb14f739ae80f6101",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 빛은 불이요 그 거룩한 자는 불꽃이라 하루 사이에 그의 형극과 질려가 소멸되며"
+      ],
+      "raw_text_hashes": [
+        "5dd03eeeec3c1774edbe6f872bc7b18d80625606849fd19bb14f739ae80f6101"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:18",
+      "sequence": 17869,
+      "chapter_label": "ISA 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "He will consume the glory of his forest and of his fruitful field, both soul and body. It will be as when a standard bearer faints.",
+      "ko": "그 삼림과 기름진 밭의 영광이 전부 소멸되리니 병인이 점점 쇠약하여 감 같을 것이라",
+      "source_text_hash": "480dbad52e39c3baf86afd64a5c66a488065f506557e46a83db7ae45ff7018f0",
+      "translation_text_hash": "410e3f76abfe45d07bc3393643b92ba6ac4a75ecfd9a10057bfe1d7da4fa0e9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 삼림과 기름진 밭의 영광이 전부 소멸되리니 병인이 점점 쇠약하여 감 같을 것이라"
+      ],
+      "raw_text_hashes": [
+        "410e3f76abfe45d07bc3393643b92ba6ac4a75ecfd9a10057bfe1d7da4fa0e9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:19",
+      "sequence": 17870,
+      "chapter_label": "ISA 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "The remnant of the trees of his forest shall be few, so that a child could write their number.",
+      "ko": "그 삼림에 남은 나무의 수가 희소하여 아이라도 능히 계산할 수 있으리라",
+      "source_text_hash": "1e409f307506f746113c53b9638c1b7d822ba925641cb3b926739d086ba91d62",
+      "translation_text_hash": "650b43c9b2d19e42993d2145f0da6437bb70ab068d638a0292dd6e1ac9a50726",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 삼림에 남은 나무의 수가 희소하여 아이라도 능히 계산할 수 있으리라"
+      ],
+      "raw_text_hashes": [
+        "650b43c9b2d19e42993d2145f0da6437bb70ab068d638a0292dd6e1ac9a50726"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:20",
+      "sequence": 17871,
+      "chapter_label": "ISA 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "It will come to pass in that day that the remnant of Israel, and those who have escaped from the house of Jacob will no more again lean on him who struck them, but shall lean on the LORD, the Holy One of Israel, in truth.",
+      "ko": "그 날에 이스라엘의 남은 자와 야곱 족속의 피난한 자들이 다시는 자기를 친 자를 의뢰치 아니하고 이스라엘의 거룩하신 자 여호와를 진실히 의뢰하리니",
+      "source_text_hash": "312a2b4e82da10b597ec87770deeea7cbf5c9982cbd537aeee58d09c28a834cd",
+      "translation_text_hash": "da3e5c29aa5ffb9d02dab50ab541cf12c6b1d77499167a8172e568c8673338a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 이스라엘의 남은 자와 야곱 족속의 피난한 자들이 다시는 자기를 친 자를 의뢰치 아니하고 이스라엘의 거룩하신 자 여호와를 진실히 의뢰하리니"
+      ],
+      "raw_text_hashes": [
+        "da3e5c29aa5ffb9d02dab50ab541cf12c6b1d77499167a8172e568c8673338a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:21",
+      "sequence": 17872,
+      "chapter_label": "ISA 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "A remnant will return, even the remnant of Jacob, to the mighty God.",
+      "ko": "남은 자 곧 야곱의 남은 자가 능하신 하나님께로 돌아올것이라",
+      "source_text_hash": "547d3d4d0dc0fe9cb750fde1b493400c977171a4f3a220968a082e2035409a57",
+      "translation_text_hash": "e1d49c92a9f84f9e25b8465fb1e81e904b8eda08f7c328006270fdc1c63b6647",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남은 자 곧 야곱의 남은 자가 능하신 하나님께로 돌아올것이라"
+      ],
+      "raw_text_hashes": [
+        "e1d49c92a9f84f9e25b8465fb1e81e904b8eda08f7c328006270fdc1c63b6647"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:22",
+      "sequence": 17873,
+      "chapter_label": "ISA 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "For though your people, Israel, are like the sand of the sea, only a remnant of them will return. A destruction is determined, overflowing with righteousness.",
+      "ko": "이스라엘이여 네 백성이 바다의 모래 같을찌라도 남은 자만 돌아오리니 넘치는 공의로 훼멸이 작정되었음이라",
+      "source_text_hash": "2ff329894f5119fb98d4bc3040fa68ee7392b4b57bb51b871f6ce2215d20b108",
+      "translation_text_hash": "5c548bb7f4bbf7fea51574f930c705ee971c32b1b6e8e01cf16754c0ec90b3fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이여 네 백성이 바다의 모래 같을찌라도 남은 자만 돌아오리니 넘치는 공의로 훼멸이 작정되었음이라"
+      ],
+      "raw_text_hashes": [
+        "5c548bb7f4bbf7fea51574f930c705ee971c32b1b6e8e01cf16754c0ec90b3fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:23",
+      "sequence": 17874,
+      "chapter_label": "ISA 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "For the Lord, GOD of Armies, will make a full end, and that determined, throughout all the earth.",
+      "ko": "이미 작정되었은즉 주 만군의 여호와께서 온 세계 중에 끝까지 행하시리라",
+      "source_text_hash": "156c4ccc1b750d2fdd35f174d876a81413fdc53644e7b0863c0b37a2032e5109",
+      "translation_text_hash": "06892d549540a256778409aa9d732cc4d62b7d51659e00da90f19322f81eb776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 작정되었은즉 주 만군의 여호와께서 온 세계 중에 끝까지 행하시리라"
+      ],
+      "raw_text_hashes": [
+        "06892d549540a256778409aa9d732cc4d62b7d51659e00da90f19322f81eb776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:24",
+      "sequence": 17875,
+      "chapter_label": "ISA 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore the Lord, GOD of Armies, says, “My people who dwell in Zion, don’t be afraid of the Assyrian, though he strike you with the rod, and lift up his staff against you, as Egypt did.",
+      "ko": "주 만군의 여호와께서 가라사대 시온에 거한 나의 백성들아 앗수르 사람이 애굽을 본받아 막대기로 너를 때리며 몽둥이를 들어 너를 칠찌라도 그를 두려워 말라",
+      "source_text_hash": "9a0a4071ac6dc1a761df5d51fde40bb332307c4adcaad342e6826f02583b6729",
+      "translation_text_hash": "4ecfdfedde19ea601352e07546cf00ccd30f63095781e1002c5f64e75a675f71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 만군의 여호와께서 가라사대 시온에 거한 나의 백성들아 앗수르 사람이 애굽을 본받아 막대기로 너를 때리며 몽둥이를 들어 너를 칠찌라도 그를 두려워 말라"
+      ],
+      "raw_text_hashes": [
+        "4ecfdfedde19ea601352e07546cf00ccd30f63095781e1002c5f64e75a675f71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:25",
+      "sequence": 17876,
+      "chapter_label": "ISA 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "For yet a very little while, and the indignation against you will be accomplished, and my anger will be directed to his destruction.”",
+      "ko": "내가 불구에 네게는 분을 그치고 노를 옮겨 그들을 멸하리라 하시도다",
+      "source_text_hash": "04d8279d012169b63e84ce87183c5d3346a22fcab5d0313789e513d3cf9047f3",
+      "translation_text_hash": "ca9282bdaf64aa51d5d75865e7e0b37791acdeadaa530f9f4f3441a301eb59b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 불구에 네게는 분을 그치고 노를 옮겨 그들을 멸하리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "ca9282bdaf64aa51d5d75865e7e0b37791acdeadaa530f9f4f3441a301eb59b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:26",
+      "sequence": 17877,
+      "chapter_label": "ISA 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "The LORD of Armies will stir up a scourge against him, as in the slaughter of Midian at the rock of Oreb. His rod will be over the sea, and he will lift it up like he did against Egypt.",
+      "ko": "만군의 여호와께서 채찍을 들어 그를 치시되 오렙 반석에서 미디안 사람을 쳐 죽이신 것 같이 하실 것이며 막대기를 드시되 바다를 향하여 애굽에 드신 것 같이 하실 것이라",
+      "source_text_hash": "779c4762cc2462280db77efc358e9cad24f524409af79a8a3049bfac222b5e22",
+      "translation_text_hash": "061218ddfbc992a9bdd89cc2de30a1e63ef10480a88bf3ae10616d8b71a1f782",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 채찍을 들어 그를 치시되 오렙 반석에서 미디안 사람을 쳐 죽이신 것 같이 하실 것이며 막대기를 드시되 바다를 향하여 애굽에 드신 것 같이 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "061218ddfbc992a9bdd89cc2de30a1e63ef10480a88bf3ae10616d8b71a1f782"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:27",
+      "sequence": 17878,
+      "chapter_label": "ISA 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "It will happen in that day that his burden will depart from off your shoulder, and his yoke from off your neck, and the yoke shall be destroyed because of the anointing oil.",
+      "ko": "그 날에 그의 무거운 짐이 네 어깨에서 떠나고 그의 멍에가 네 목에서 벗어지되 기름진 까닭에 멍에가 부러지리라",
+      "source_text_hash": "693fa61d7aaf7f6b04f3c2a87269cd47d19cdce923ab7d0cddb7f76a442ece6e",
+      "translation_text_hash": "c813a61b73694e6d8ff97eb8f08051c2e02f07fabec57c35eca7f79dffed2e21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 그의 무거운 짐이 네 어깨에서 떠나고 그의 멍에가 네 목에서 벗어지되 기름진 까닭에 멍에가 부러지리라"
+      ],
+      "raw_text_hashes": [
+        "c813a61b73694e6d8ff97eb8f08051c2e02f07fabec57c35eca7f79dffed2e21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:28",
+      "sequence": 17879,
+      "chapter_label": "ISA 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "He has come to Aiath. He has passed through Migron. At Michmash he stores his baggage.",
+      "ko": "앗수르 왕이 아얏에 이르러 미그론을 지나 믹마스에 치중을 머무르고",
+      "source_text_hash": "e61465d10c34ea21b657d906aeb3fb23047d917e3bc022ae454919799e056a77",
+      "translation_text_hash": "15f382b3ef83e42dbae5647b04b297b56be07f94724128d6680b84057bfa26ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕이 아얏에 이르러 미그론을 지나 믹마스에 치중을 머무르고"
+      ],
+      "raw_text_hashes": [
+        "15f382b3ef83e42dbae5647b04b297b56be07f94724128d6680b84057bfa26ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:29",
+      "sequence": 17880,
+      "chapter_label": "ISA 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "They have gone over the pass. They have taken up their lodging at Geba. Ramah trembles. Gibeah of Saul has fled.",
+      "ko": "영을 넘어 게바에서 유숙하매 라마는 떨고 사울의 기브아 사람은 도망하도다",
+      "source_text_hash": "f4eb198e4d838b77494cd25bec5c6a539fc28a3496736ce69f9c340cabe7f355",
+      "translation_text_hash": "03738d60eed8cbc5f1275dd32b14a47ae6f6fe00aee8365e409e56dbd0eec43d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영을 넘어 게바에서 유숙하매 라마는 떨고 사울의 기브아 사람은 도망하도다"
+      ],
+      "raw_text_hashes": [
+        "03738d60eed8cbc5f1275dd32b14a47ae6f6fe00aee8365e409e56dbd0eec43d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:30",
+      "sequence": 17881,
+      "chapter_label": "ISA 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "Cry aloud with your voice, daughter of Gallim! Listen, Laishah! You poor Anathoth!",
+      "ko": "딸 갈림아 큰 소리로 외칠찌어다 라이사야 자세히 들을찌어다 가련하다 너 아나돗이여",
+      "source_text_hash": "b437abecbffda4692fe5668520101d8d0689e2fc7e6baba40b29b08b643c397f",
+      "translation_text_hash": "4653999ae4bec824fbad38bac97ab3e449967c1142383b5a10371a0d88df52e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸 갈림아 큰 소리로 외칠찌어다 라이사야 자세히 들을찌어다 가련하다 너 아나돗이여"
+      ],
+      "raw_text_hashes": [
+        "4653999ae4bec824fbad38bac97ab3e449967c1142383b5a10371a0d88df52e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:31",
+      "sequence": 17882,
+      "chapter_label": "ISA 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "Madmenah is a fugitive. The inhabitants of Gebim flee for safety.",
+      "ko": "맛메나 사람은 피난하며 게빔 거민은 도망하도다",
+      "source_text_hash": "73afa1fd8d5e3d77d4c246446a81a78a5cfdfe23ba0f34748add681377f94e68",
+      "translation_text_hash": "7e15c65cae8eab85612b8fea25ee33886cbf77219a1846957b7335448dbb0501",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맛메나 사람은 피난하며 게빔 거민은 도망하도다"
+      ],
+      "raw_text_hashes": [
+        "7e15c65cae8eab85612b8fea25ee33886cbf77219a1846957b7335448dbb0501"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:32",
+      "sequence": 17883,
+      "chapter_label": "ISA 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "This very day he will halt at Nob. He shakes his hand at the mountain of the daughter of Zion, the hill of Jerusalem.",
+      "ko": "이 날에 그가 놉에서 쉬고 딸 시온 산 곧 예루살렘 산을 향하여 그 손을 흔들리로다",
+      "source_text_hash": "c2afe023dc25d7963540df68dc0eb04df6810373f8801cf5b5706e6a580ac692",
+      "translation_text_hash": "7dfc85d8a198220dd4ea3b023fa273aa1f5268739193aa0883ef276de458a901",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 그가 놉에서 쉬고 딸 시온 산 곧 예루살렘 산을 향하여 그 손을 흔들리로다"
+      ],
+      "raw_text_hashes": [
+        "7dfc85d8a198220dd4ea3b023fa273aa1f5268739193aa0883ef276de458a901"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:33",
+      "sequence": 17884,
+      "chapter_label": "ISA 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "Behold, the Lord, GOD of Armies, will lop the boughs with terror. The tall will be cut down, and the lofty will be brought low.",
+      "ko": "주 만군의 여호와께서 혁혁한 위력으로 그 가지를 꺾으시리니 그 장대한 자가 찍힐 것이요 높은 자가 낮아질 것이며",
+      "source_text_hash": "dfb91f71fcf63017c6340eeb38f62cea5c5e0ea5090bbe5c58cc2fb61e014d8e",
+      "translation_text_hash": "e04ceaa24337bdbb6a16696406df8d38265755ad5dcaaec963aa50e87bf3a4bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 만군의 여호와께서 혁혁한 위력으로 그 가지를 꺾으시리니 그 장대한 자가 찍힐 것이요 높은 자가 낮아질 것이며"
+      ],
+      "raw_text_hashes": [
+        "e04ceaa24337bdbb6a16696406df8d38265755ad5dcaaec963aa50e87bf3a4bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:10:34",
+      "sequence": 17885,
+      "chapter_label": "ISA 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "ISA",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "He will cut down the thickets of the forest with iron, and Lebanon will fall by the Mighty One.",
+      "ko": "철로 그 빽빽한 삼림을 베시리니 레바논이 권능 있는 자에게 작벌을 당하리라",
+      "source_text_hash": "9cac39ae9b8805e9ac5eae487d41631f0d8785aad75e3869184c55e63c3acc8a",
+      "translation_text_hash": "48c0e63896b6a32ca21d8ee75e7eff5e4c7312cd8905e3041d40f527ff06d7d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "철로 그 빽빽한 삼림을 베시리니 레바논이 권능 있는 자에게 작벌을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "48c0e63896b6a32ca21d8ee75e7eff5e4c7312cd8905e3041d40f527ff06d7d7"
+      ]
+    }
+  ]
+}

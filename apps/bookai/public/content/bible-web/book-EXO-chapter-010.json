@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:010",
+  "unit_ordinal": 60,
+  "unit_label": "EXO 10",
+  "book_code": "EXO",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:10:1",
+      "sequence": 1779,
+      "chapter_label": "EXO 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Moses, “Go in to Pharaoh, for I have hardened his heart and the heart of his servants, that I may show these my signs among them;",
+      "ko": "여호와께서 모세에게 이르시되 바로에게로 들어가라 내가 그의 마음과 그 신하들의 마음을 완강케 함은 나의 표징을 그들 중에 보이기 위함이며",
+      "source_text_hash": "eb17ee5d15586c0e149e9ba84efa73b25408ecc246354974bfb778cf9947407b",
+      "translation_text_hash": "9b8e65847356b2838f75ecee96c18222fdc7f975dd243d63cdb7134373546f08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 바로에게로 들어가라 내가 그의 마음과 그 신하들의 마음을 완강케 함은 나의 표징을 그들 중에 보이기 위함이며"
+      ],
+      "raw_text_hashes": [
+        "9b8e65847356b2838f75ecee96c18222fdc7f975dd243d63cdb7134373546f08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:2",
+      "sequence": 1780,
+      "chapter_label": "EXO 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "and that you may tell in the hearing of your son, and of your son’s son, what things I have done to Egypt, and my signs which I have done among them; that you may know that I am the LORD.”",
+      "ko": "너로 내가 애굽에서 행한 일들 곧 내가 그 가운데서 행한 표징을 네 아들과 네 자손의 귀에 전하게 하려 함이라 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "952729f007667637eab8fcee7b13ac2fe991077f6ee7719f4c0183f3d803ece8",
+      "translation_text_hash": "c6516050e6f28d3ae7a4cbc5b2223d5b466b1d37653f359584a730a6508c38c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너로 내가 애굽에서 행한 일들 곧 내가 그 가운데서 행한 표징을 네 아들과 네 자손의 귀에 전하게 하려 함이라 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "c6516050e6f28d3ae7a4cbc5b2223d5b466b1d37653f359584a730a6508c38c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:3",
+      "sequence": 1781,
+      "chapter_label": "EXO 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Moses and Aaron went in to Pharaoh, and said to him, “This is what the LORD, the God of the Hebrews, says: ‘How long will you refuse to humble yourself before me? Let my people go, that they may serve me.",
+      "ko": "모세와 아론이 바로에게 들어가서 그에게 이르되 히브리 사람의 하나님 여호와께서 말씀하시기를 네가 어느 때까지 내 앞에 겸비치 아니하겠느냐 내 백성을 보내라 그들이 나를 섬길 것이라",
+      "source_text_hash": "bd1e4c15b51ed2f89773269c5fb77ecd2b994813a1e7b66f38451fa66cd94a7a",
+      "translation_text_hash": "5eb327d862d152798a5abb65ea05cee20d93eb1ce1c6841a5c5b18abea62bb4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 바로에게 들어가서 그에게 이르되 히브리 사람의 하나님 여호와께서 말씀하시기를 네가 어느 때까지 내 앞에 겸비치 아니하겠느냐 내 백성을 보내라 그들이 나를 섬길 것이라"
+      ],
+      "raw_text_hashes": [
+        "5eb327d862d152798a5abb65ea05cee20d93eb1ce1c6841a5c5b18abea62bb4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:4",
+      "sequence": 1782,
+      "chapter_label": "EXO 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "Or else, if you refuse to let my people go, behold, tomorrow I will bring locusts into your country,",
+      "ko": "네가 만일 내 백성 보내기를 거절하면 내일 내가 메뚜기로 네 경내에 들어가게 하리니",
+      "source_text_hash": "dac75a33402307e71ef2a28822c3b801c74fb91502e66e59b58921d7f591f976",
+      "translation_text_hash": "239ac6746a92811250c72f554d99a416168f2ffc86e4e8cd0535661118b5915b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 내 백성 보내기를 거절하면 내일 내가 메뚜기로 네 경내에 들어가게 하리니"
+      ],
+      "raw_text_hashes": [
+        "239ac6746a92811250c72f554d99a416168f2ffc86e4e8cd0535661118b5915b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:5",
+      "sequence": 1783,
+      "chapter_label": "EXO 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "and they shall cover the surface of the earth, so that one won’t be able to see the earth. They shall eat the residue of that which has escaped, which remains to you from the hail, and shall eat every tree which grows for you out of the field.",
+      "ko": "메뚜기가 지면을 덮어서 사람이 땅을 볼 수 없을 것이라 메뚜기가 네게 남은 그것 곧 우박을 면하고 남은 것을 먹으며 들에 너희를 위하여 자라는 모든 나무를 먹을 것이며",
+      "source_text_hash": "5da9bff2398432413b0d70821418825dab394a85ee144e51710bf11de155cfd8",
+      "translation_text_hash": "8c66ae338d4f179e459150e30126ee57c517b71b9d2e0fd91e66617bc92dc022",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "메뚜기가 지면을 덮어서 사람이 땅을 볼 수 없을 것이라 메뚜기가 네게 남은 그것 곧 우박을 면하고 남은 것을 먹으며 들에 너희를 위하여 자라는 모든 나무를 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "8c66ae338d4f179e459150e30126ee57c517b71b9d2e0fd91e66617bc92dc022"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:6",
+      "sequence": 1784,
+      "chapter_label": "EXO 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "Your houses shall be filled, and the houses of all your servants, and the houses of all the Egyptians, as neither your fathers nor your fathers’ fathers have seen, since the day that they were on the earth to this day.’” He turned, and went out from Pharaoh.",
+      "ko": "또 네 집들과 네 모든 신하의 집들과 모든 애굽 사람의 집들에 가득하리니 이는 네 아비와 네 조상이 세상에 있어 옴으로 오늘까지 보지 못하였던 것이리라 하셨다 하고 돌이켜 바로에게서 나오니",
+      "source_text_hash": "cea5d851465ad52c0c1dc8fcaf054a023447925295d47ced4784553c887a1c5d",
+      "translation_text_hash": "82a6956eaa92b56e7ff8e3680518690dfa4ec8386dea36f20112a4db33708d26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네 집들과 네 모든 신하의 집들과 모든 애굽 사람의 집들에 가득하리니 이는 네 아비와 네 조상이 세상에 있어 옴으로 오늘까지 보지 못하였던 것이리라 하셨다 하고 돌이켜 바로에게서 나오니"
+      ],
+      "raw_text_hashes": [
+        "82a6956eaa92b56e7ff8e3680518690dfa4ec8386dea36f20112a4db33708d26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:7",
+      "sequence": 1785,
+      "chapter_label": "EXO 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "Pharaoh’s servants said to him, “How long will this man be a snare to us? Let the men go, that they may serve the LORD, their God. Don’t you yet know that Egypt is destroyed?”",
+      "ko": "바로의 신하들이 그에게 고하되 어느 때까지 이 사람이 우리의 함정이 되리이까 그 사람들을 보내어 그 하나님 여호와를 섬기게 하소서 왕은 아직도 애굽이 망한 줄을 알지 못하시나이까 하고",
+      "source_text_hash": "8da6d7af340a9e905e60e15f7ec9f39b90741e4582d40f59d544e0e7770886a2",
+      "translation_text_hash": "44f4c9f7cf9a2ea8cf3bbd097ac3fecc979608b36bbae5d6f9de4397bb2623ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 신하들이 그에게 고하되 어느 때까지 이 사람이 우리의 함정이 되리이까 그 사람들을 보내어 그 하나님 여호와를 섬기게 하소서 왕은 아직도 애굽이 망한 줄을 알지 못하시나이까 하고"
+      ],
+      "raw_text_hashes": [
+        "44f4c9f7cf9a2ea8cf3bbd097ac3fecc979608b36bbae5d6f9de4397bb2623ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:8",
+      "sequence": 1786,
+      "chapter_label": "EXO 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "Moses and Aaron were brought again to Pharaoh, and he said to them, “Go, serve the LORD your God; but who are those who will go?”",
+      "ko": "모세와 아론을 바로에게로 다시 데려오니 바로가 그들에게 이르되 가서 너희 하나님 여호와를 섬기라 갈 자는 누구 누구뇨",
+      "source_text_hash": "cf80d31cb6910cc484c46c2c604919d059ebbecd524bb892bcb7660c77ae24bd",
+      "translation_text_hash": "2ac735d5e071356f8534ca2b42be10712480b672635bfe7e0f183e402e2f03c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론을 바로에게로 다시 데려오니 바로가 그들에게 이르되 가서 너희 하나님 여호와를 섬기라 갈 자는 누구 누구뇨"
+      ],
+      "raw_text_hashes": [
+        "2ac735d5e071356f8534ca2b42be10712480b672635bfe7e0f183e402e2f03c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:9",
+      "sequence": 1787,
+      "chapter_label": "EXO 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Moses said, “We will go with our young and with our old. We will go with our sons and with our daughters, with our flocks and with our herds; for we must hold a feast to the LORD.”",
+      "ko": "모세가 가로되 우리가 여호와 앞에 절기를 지킬것인즉 우리가 남녀 노소와 우양을 데리고 가겠나이다",
+      "source_text_hash": "40307bbcc30f11acc078cb90dca6618cff259a99d336e8bcf27cd364790791bf",
+      "translation_text_hash": "13c339b7c04643c42df94746d55087bdd93ad7c1de550929c30c8a90bbd13f7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 우리가 여호와 앞에 절기를 지킬것인즉 우리가 남녀 노소와 우양을 데리고 가겠나이다"
+      ],
+      "raw_text_hashes": [
+        "13c339b7c04643c42df94746d55087bdd93ad7c1de550929c30c8a90bbd13f7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:10",
+      "sequence": 1788,
+      "chapter_label": "EXO 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "He said to them, “The LORD be with you if I let you go with your little ones! See, evil is clearly before your faces.",
+      "ko": "바로가 그들에게 이르되 내가 너희와 너희 어린 것들을 보내면 여호와를 너희와 함께하게 함과 일반이니라 삼갈찌어다 너희 경영이 악하니라",
+      "source_text_hash": "e1f53943557a8a6013688f78417ef729a2fc0fbb592439225eff0ca90f191a66",
+      "translation_text_hash": "c31b6d6ec028ac95dcae85e67b835509d98239ff38718f1a04fdf73e7b122222",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 그들에게 이르되 내가 너희와 너희 어린 것들을 보내면 여호와를 너희와 함께하게 함과 일반이니라 삼갈찌어다 너희 경영이 악하니라"
+      ],
+      "raw_text_hashes": [
+        "c31b6d6ec028ac95dcae85e67b835509d98239ff38718f1a04fdf73e7b122222"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:11",
+      "sequence": 1789,
+      "chapter_label": "EXO 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "Not so! Go now you who are men, and serve the LORD; for that is what you desire!” Then they were driven out from Pharaoh’s presence.",
+      "ko": "그는 불가하니 너희 남정만 가서 여호와를 섬기라 이것이 너희의 구하는 바니라 이에 그들이 바로 앞에서 쫓겨나니라",
+      "source_text_hash": "a1e34e2b07528be3a1248252ff8ae4e67c289b6bcfcba6c48b6aebe242f20add",
+      "translation_text_hash": "4a31330602b8c59992b8aef2c6b77471408200e00978fb2228507949f1e9e41e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 불가하니 너희 남정만 가서 여호와를 섬기라 이것이 너희의 구하는 바니라 이에 그들이 바로 앞에서 쫓겨나니라"
+      ],
+      "raw_text_hashes": [
+        "4a31330602b8c59992b8aef2c6b77471408200e00978fb2228507949f1e9e41e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:12",
+      "sequence": 1790,
+      "chapter_label": "EXO 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD said to Moses, “Stretch out your hand over the land of Egypt for the locusts, that they may come up on the land of Egypt, and eat every herb of the land, even all that the hail has left.”",
+      "ko": "여호와께서 모세에게 이르시되 네 손을 애굽 땅 위에 들어 메뚜기로 애굽 땅에 올라와서 우박에 상하지 아니한 밭의 모든 채소를 먹게 하라",
+      "source_text_hash": "4a52ec12a625cdeabf63b33204a4f6c715ef7e0de5d3502bf3ce339f10e4aa7a",
+      "translation_text_hash": "5ed9e47f090deccab91498e969d6ba40913a17c3b17ec53eb36f997c17f0aeee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 네 손을 애굽 땅 위에 들어 메뚜기로 애굽 땅에 올라와서 우박에 상하지 아니한 밭의 모든 채소를 먹게 하라"
+      ],
+      "raw_text_hashes": [
+        "5ed9e47f090deccab91498e969d6ba40913a17c3b17ec53eb36f997c17f0aeee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:13",
+      "sequence": 1791,
+      "chapter_label": "EXO 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "Moses stretched out his rod over the land of Egypt, and the LORD brought an east wind on the land all that day, and all night; and when it was morning, the east wind brought the locusts.",
+      "ko": "모세가 애굽 땅 위에 그 지팡이를 들매 여호와께서 동풍을 일으켜 온 낮과 온 밤에 불게 하시니 아침에 미쳐 동풍이 메뚜기를 불어 들인지라",
+      "source_text_hash": "12178b0f7897f2f168c783c205aa7d25d63854e8652ab41bbb17733753c9082a",
+      "translation_text_hash": "c3bb2943757180347b3883028206a6fa96305228d269f1d4ff0e6b7a38ff2a6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 애굽 땅 위에 그 지팡이를 들매 여호와께서 동풍을 일으켜 온 낮과 온 밤에 불게 하시니 아침에 미쳐 동풍이 메뚜기를 불어 들인지라"
+      ],
+      "raw_text_hashes": [
+        "c3bb2943757180347b3883028206a6fa96305228d269f1d4ff0e6b7a38ff2a6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:14",
+      "sequence": 1792,
+      "chapter_label": "EXO 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "The locusts went up over all the land of Egypt, and rested in all the borders of Egypt. They were very grievous. Before them there were no such locusts as they, nor will there ever be again.",
+      "ko": "메뚜기가 애굽 온 땅에 이르러 그 사방에 내리매 그 해가 심하니 이런 메뚜기는 전에도 없었고 후에도 없을러라",
+      "source_text_hash": "07800c804c453a19318d094925f71284e7f7413a9cfe2fed3db044ec8f0caf0e",
+      "translation_text_hash": "8fbf49a026c20b76d79fe20b103afce0a061f1f51005498189f76bf43f403c0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "메뚜기가 애굽 온 땅에 이르러 그 사방에 내리매 그 해가 심하니 이런 메뚜기는 전에도 없었고 후에도 없을러라"
+      ],
+      "raw_text_hashes": [
+        "8fbf49a026c20b76d79fe20b103afce0a061f1f51005498189f76bf43f403c0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:15",
+      "sequence": 1793,
+      "chapter_label": "EXO 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "For they covered the surface of the whole earth, so that the land was darkened, and they ate every herb of the land, and all the fruit of the trees which the hail had left. There remained nothing green, either tree or herb of the field, through all the land of Egypt.",
+      "ko": "메뚜기가 온 지면에 덮여 날으매 땅이 어둡게 되었고 메뚜기가 우박에 상하지 아니한 밭의 채소와 나무 열매를 다 먹었으므로 애굽 전경에 나무나 밭의 채소나 푸른것은 남지 아니하였더라",
+      "source_text_hash": "4aaa5d6d2e0d9e427e565dde67fc632c39161dc238db00dd6f9bf87707ab041b",
+      "translation_text_hash": "3b6772f848095e4ab7976bbd601a97c19cbc1f4cce3a90f43899e8ddb98c92d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "메뚜기가 온 지면에 덮여 날으매 땅이 어둡게 되었고 메뚜기가 우박에 상하지 아니한 밭의 채소와 나무 열매를 다 먹었으므로 애굽 전경에 나무나 밭의 채소나 푸른것은 남지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "3b6772f848095e4ab7976bbd601a97c19cbc1f4cce3a90f43899e8ddb98c92d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:16",
+      "sequence": 1794,
+      "chapter_label": "EXO 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "Then Pharaoh called for Moses and Aaron in haste, and he said, “I have sinned against the LORD your God, and against you.",
+      "ko": "바로가 모세와 아론을 급히 불러서 이르되 내가 너희 하나님 여호와와 너희에게 득죄하였으니",
+      "source_text_hash": "aae0a2a0682e62cf83f24a91af1e432dc0f5e68092238d38ad9cfe36c496c25d",
+      "translation_text_hash": "4ff6b08fb54be6d04ca10cb8c838f8a87a1c7a53b74ee9a39726d3948d0b44fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 모세와 아론을 급히 불러서 이르되 내가 너희 하나님 여호와와 너희에게 득죄하였으니"
+      ],
+      "raw_text_hashes": [
+        "4ff6b08fb54be6d04ca10cb8c838f8a87a1c7a53b74ee9a39726d3948d0b44fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:17",
+      "sequence": 1795,
+      "chapter_label": "EXO 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "Now therefore please forgive my sin again, and pray to the LORD your God, that he may also take away from me this death.”",
+      "ko": "청컨대 나의 죄를 이번만 용서하고 너희 하나님 여호와께 구하여 이 죽음만을 내게서 떠나게 하라",
+      "source_text_hash": "f36722244823e2df83e86bcf950a0370660bb495559de71fc3296cbd548d1401",
+      "translation_text_hash": "15d6e11ee353e9f0d609ff06a24d801289707ae4382964041098392cfd29e0b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청컨대 나의 죄를 이번만 용서하고 너희 하나님 여호와께 구하여 이 죽음만을 내게서 떠나게 하라"
+      ],
+      "raw_text_hashes": [
+        "15d6e11ee353e9f0d609ff06a24d801289707ae4382964041098392cfd29e0b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:18",
+      "sequence": 1796,
+      "chapter_label": "EXO 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "Moses went out from Pharaoh, and prayed to the LORD.",
+      "ko": "그가 바로에게서 나가서 여호와께 구하매",
+      "source_text_hash": "11622d1abeda0488dc9acb7fd81544cd80320699330bffe743bae7e6f7b96c9b",
+      "translation_text_hash": "b5f7064bbb5a41e11b515152fb9844d48e14c473e151145c08b90a1aa714c2bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 바로에게서 나가서 여호와께 구하매"
+      ],
+      "raw_text_hashes": [
+        "b5f7064bbb5a41e11b515152fb9844d48e14c473e151145c08b90a1aa714c2bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:19",
+      "sequence": 1797,
+      "chapter_label": "EXO 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD sent an exceedingly strong west wind, which took up the locusts, and drove them into the Red Sea. There remained not one locust in all the borders of Egypt.",
+      "ko": "여호와께서 돌이켜 강렬한 서풍이 불게 하사 메뚜기를 홍해에 몰아 넣으시니 애굽 온 지경에 메뚜기가 하나도 남지 아니하니라",
+      "source_text_hash": "2f5cf22206d5c4b62367fbcbff8d2dc24585a2d8b52c45bbd28a173c03a3363b",
+      "translation_text_hash": "cbd539f0caa40f527a4bc5ac399d78eceb6e09a589cd12ac3353c99f935be819",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 돌이켜 강렬한 서풍이 불게 하사 메뚜기를 홍해에 몰아 넣으시니 애굽 온 지경에 메뚜기가 하나도 남지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "cbd539f0caa40f527a4bc5ac399d78eceb6e09a589cd12ac3353c99f935be819"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:20",
+      "sequence": 1798,
+      "chapter_label": "EXO 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "But the LORD hardened Pharaoh’s heart, and he didn’t let the children of Israel go.",
+      "ko": "그러나 여호와께서 바로의 마음을 강퍅케 하셨으므로 이스라엘 자손을 보내지 아니하였더라",
+      "source_text_hash": "f032ad55dc1e685837fdf7c0cd701b2098d854faadff4411147fc20a3039aa7d",
+      "translation_text_hash": "b11ba49371b97523358bc2ea2727818137b1cbaf56c0438b168d643889853431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 여호와께서 바로의 마음을 강퍅케 하셨으므로 이스라엘 자손을 보내지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "b11ba49371b97523358bc2ea2727818137b1cbaf56c0438b168d643889853431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:21",
+      "sequence": 1799,
+      "chapter_label": "EXO 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD said to Moses, “Stretch out your hand toward the sky, that there may be darkness over the land of Egypt, even darkness which may be felt.”",
+      "ko": "여호와께서 모세에게 이르시되 하늘을 향하여 네 손을 들어서 애굽 땅 위에 흑암이 있게 하라 곧 더듬을만한 흑암이리라",
+      "source_text_hash": "cd2fff38224140954cba865664f050efa1dd8f80eba7df535bbade014b96c455",
+      "translation_text_hash": "663f126556f9955ffe1fe1d5e334ecf5493bf110663dd90419740e55e5d5fcc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 하늘을 향하여 네 손을 들어서 애굽 땅 위에 흑암이 있게 하라 곧 더듬을만한 흑암이리라"
+      ],
+      "raw_text_hashes": [
+        "663f126556f9955ffe1fe1d5e334ecf5493bf110663dd90419740e55e5d5fcc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:22",
+      "sequence": 1800,
+      "chapter_label": "EXO 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "Moses stretched out his hand toward the sky, and there was a thick darkness in all the land of Egypt for three days.",
+      "ko": "모세가 하늘을 향하여 손을 들매 캄캄한 흑암이 삼일 동안 애굽 온 땅에 있어서",
+      "source_text_hash": "c7b628110264ebf2a8810acd714c1ee7c0942288369ec572f9cec5b269b8d022",
+      "translation_text_hash": "b5e242d64bbe51cb6d34aa69aebae1d468173cc9b9b39fa188d86a0c1587d0ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 하늘을 향하여 손을 들매 캄캄한 흑암이 삼일 동안 애굽 온 땅에 있어서"
+      ],
+      "raw_text_hashes": [
+        "b5e242d64bbe51cb6d34aa69aebae1d468173cc9b9b39fa188d86a0c1587d0ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:23",
+      "sequence": 1801,
+      "chapter_label": "EXO 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "They didn’t see one another, and nobody rose from his place for three days; but all the children of Israel had light in their dwellings.",
+      "ko": "그 동안은 사람 사람이 서로 볼 수 없으며 자기 처소에서 일어나는 자가 없으되 이스라엘 자손의 거하는 곳에는 광명이 있었더라",
+      "source_text_hash": "0c919d63cbeee5748aecbeab0525d3dcbc5a37918834ff40e1d49a0c0ae38bef",
+      "translation_text_hash": "d18f271ed62d43f00e0b6a231b6671f2c295c79b978a76968fbe95a50c14743a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 동안은 사람 사람이 서로 볼 수 없으며 자기 처소에서 일어나는 자가 없으되 이스라엘 자손의 거하는 곳에는 광명이 있었더라"
+      ],
+      "raw_text_hashes": [
+        "d18f271ed62d43f00e0b6a231b6671f2c295c79b978a76968fbe95a50c14743a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:24",
+      "sequence": 1802,
+      "chapter_label": "EXO 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "Pharaoh called to Moses, and said, “Go, serve the LORD. Only let your flocks and your herds stay behind. Let your little ones also go with you.”",
+      "ko": "바로가 모세를 불러서 이르되 너희는 가서 여호와를 섬기되 너희 양과 소는 머물러 두고 너희 어린 것은 너희와 함께 갈찌니라",
+      "source_text_hash": "c7a8da555c47c22b283c89c6088d1c70e3e6d02b5bd66045abf40c13eec6f552",
+      "translation_text_hash": "24d5fbbc4b4f9ba81276f7418890eb117b707664e161544b02f5826d31746f54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 모세를 불러서 이르되 너희는 가서 여호와를 섬기되 너희 양과 소는 머물러 두고 너희 어린 것은 너희와 함께 갈찌니라"
+      ],
+      "raw_text_hashes": [
+        "24d5fbbc4b4f9ba81276f7418890eb117b707664e161544b02f5826d31746f54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:25",
+      "sequence": 1803,
+      "chapter_label": "EXO 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "Moses said, “You must also give into our hand sacrifices and burnt offerings, that we may sacrifice to the LORD our God.",
+      "ko": "모세가 가로되 왕이라도 우리 하나님 여호와께 드릴 희생과 번제물을 우리에게 주어야 하겠고",
+      "source_text_hash": "400fbe403141ceb71dc11d50616142038051e22a3676ce83e8f6ece473c61eea",
+      "translation_text_hash": "ffadfcf74a35615ce8d4568869b8500d76d5d1722c8cb13b6ebf1c446d41230f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 왕이라도 우리 하나님 여호와께 드릴 희생과 번제물을 우리에게 주어야 하겠고"
+      ],
+      "raw_text_hashes": [
+        "ffadfcf74a35615ce8d4568869b8500d76d5d1722c8cb13b6ebf1c446d41230f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:26",
+      "sequence": 1804,
+      "chapter_label": "EXO 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "Our livestock also shall go with us. Not a hoof shall be left behind, for of it we must take to serve the LORD our God; and we don’t know with what we must serve the LORD, until we come there.”",
+      "ko": "우리의 생축도 우리와 함께 가고 한 마리도 남길 수 없으니 이는 우리가 그 중에서 취하여 우리 하나님 여호와를 섬길 것임이며 또 우리가 거기 이르기까지는 어떤 것으로 여호와를 섬길는지 알지 못함이니이다 하나",
+      "source_text_hash": "a94f2673fb3556b47134bbd5024c0d478ed86b0ac9b2927f947acfb74d3f02a2",
+      "translation_text_hash": "a1cd682943baa0fa108182e553f5fa54a112617a0518b8731a0af39808392b66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 생축도 우리와 함께 가고 한 마리도 남길 수 없으니 이는 우리가 그 중에서 취하여 우리 하나님 여호와를 섬길 것임이며 또 우리가 거기 이르기까지는 어떤 것으로 여호와를 섬길는지 알지 못함이니이다 하나"
+      ],
+      "raw_text_hashes": [
+        "a1cd682943baa0fa108182e553f5fa54a112617a0518b8731a0af39808392b66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:27",
+      "sequence": 1805,
+      "chapter_label": "EXO 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "But the LORD hardened Pharaoh’s heart, and he wouldn’t let them go.",
+      "ko": "여호와께서 바로의 마음을 강퍅케 하셨으므로 그들을 보내기를 즐겨 아니하고",
+      "source_text_hash": "c3067ea73321bb4bd193e83a9190493141758daafb97810ed7a0f6ae493c54ca",
+      "translation_text_hash": "0f5928d0da878e3f0a98df2732beaff7d8e89cf2e5cbcb5e6789aa35ad5fc8d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 바로의 마음을 강퍅케 하셨으므로 그들을 보내기를 즐겨 아니하고"
+      ],
+      "raw_text_hashes": [
+        "0f5928d0da878e3f0a98df2732beaff7d8e89cf2e5cbcb5e6789aa35ad5fc8d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:28",
+      "sequence": 1806,
+      "chapter_label": "EXO 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "Pharaoh said to him, “Get away from me! Be careful to see my face no more; for in the day you see my face you shall die!”",
+      "ko": "모세에게 이르되 너는 나를 떠나가고 스스로 삼가 다시 내 얼굴을 보지 말라 내 얼굴을 보는 날에는 죽으리라",
+      "source_text_hash": "8fbbbd43a1c144e4ea5b6ddc4ddb4b770f8ab66a97598756b28567ccaa3511f1",
+      "translation_text_hash": "e2f62f858a49a6611f7b4780668209f8c62086f409d36a347b3597a96c0464e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세에게 이르되 너는 나를 떠나가고 스스로 삼가 다시 내 얼굴을 보지 말라 내 얼굴을 보는 날에는 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "e2f62f858a49a6611f7b4780668209f8c62086f409d36a347b3597a96c0464e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:10:29",
+      "sequence": 1807,
+      "chapter_label": "EXO 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "Moses said, “You have spoken well. I will see your face again no more.”",
+      "ko": "모세가 가로되 왕의 말씀이 옳으니이다 내가 다시는 왕의 얼굴을 보지 아니하리이다",
+      "source_text_hash": "5545a470bbfbe4dda2d21266de6188dfcf9d14cdb628ce12de66a6a4eb3e6de9",
+      "translation_text_hash": "4493d4293538c6a038f1336d3a89c3cfe70348d2b3641907dea2670d91de532a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 왕의 말씀이 옳으니이다 내가 다시는 왕의 얼굴을 보지 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "4493d4293538c6a038f1336d3a89c3cfe70348d2b3641907dea2670d91de532a"
+      ]
+    }
+  ]
+}

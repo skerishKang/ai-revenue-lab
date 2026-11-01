@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:COL:chapter:002",
+  "unit_ordinal": 1109,
+  "unit_label": "COL 2",
+  "book_code": "COL",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:COL:2:1",
+      "sequence": 29492,
+      "chapter_label": "COL 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "For I desire to have you know how greatly I struggle for you and for those at Laodicea, and for as many as have not seen my face in the flesh;",
+      "ko": "내가 너희와 라오디게아에 있는 자들과 무릇 내 육신의 얼굴을 보지 못한 자들을 위하여 어떻게 힘쓰는 것을 너희가 알기를 원하노니",
+      "source_text_hash": "50cf703b00c033aa356cd39cdbca6c60fa21a6afe62ad1931e2f8ea637036ab5",
+      "translation_text_hash": "6d5d5a5db46d5d41c8f1dfc5a83b457c0a78c65768dc6812e391998a3ce3154d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희와 라오디게아에 있는 자들과 무릇 내 육신의 얼굴을 보지 못한 자들을 위하여 어떻게 힘쓰는 것을 너희가 알기를 원하노니"
+      ],
+      "raw_text_hashes": [
+        "6d5d5a5db46d5d41c8f1dfc5a83b457c0a78c65768dc6812e391998a3ce3154d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:2",
+      "sequence": 29493,
+      "chapter_label": "COL 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "that their hearts may be comforted, they being knit together in love, and gaining all riches of the full assurance of understanding, that they may know the mystery of God, both of the Father and of Christ,",
+      "ko": "이는 저희로 마음에 위안을 받고 사랑 안에서 연합하여 원만한 이해의 모든 부요에 이르러 하나님의 비밀인 그리스도를 깨닫게 하려 함이라",
+      "source_text_hash": "fd3f28bb2a6d3d7a898bcb16344d00b9f950aefeaf7ecb0246273d3b24c7611e",
+      "translation_text_hash": "b2c82618826e36aa0a68b734df5f3b1f1dbf5a81f6ed9595ec86c33cfce4b750",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희로 마음에 위안을 받고 사랑 안에서 연합하여 원만한 이해의 모든 부요에 이르러 하나님의 비밀인 그리스도를 깨닫게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "b2c82618826e36aa0a68b734df5f3b1f1dbf5a81f6ed9595ec86c33cfce4b750"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:3",
+      "sequence": 29494,
+      "chapter_label": "COL 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "in whom all the treasures of wisdom and knowledge are hidden.",
+      "ko": "그 안에는 지혜와 지식의 모든 보화가 감취어 있느니라",
+      "source_text_hash": "6dd6c4eed8ba699f68738f4c1ca95e95acab6dca1c7204650832494d7f1fe5b1",
+      "translation_text_hash": "33dd8c8cf5de22a0d01a74dbae6927641ce27940ce65e9f3014030ee0eb47960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 안에는 지혜와 지식의 모든 보화가 감취어 있느니라"
+      ],
+      "raw_text_hashes": [
+        "33dd8c8cf5de22a0d01a74dbae6927641ce27940ce65e9f3014030ee0eb47960"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:4",
+      "sequence": 29495,
+      "chapter_label": "COL 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Now I say this that no one may delude you with persuasiveness of speech.",
+      "ko": "내가 이것을 말함은 아무도 공교한 말로 너희를 속이지 못하게 하려 함이니",
+      "source_text_hash": "e6b76b23d1e7ec9c329f92bd941d9a049d869768dad1e361f07487e6b95fa026",
+      "translation_text_hash": "d7380fe58065fa9268cdf3f32d6b79af5f2072bc203bcbd3af99eacd32850b6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이것을 말함은 아무도 공교한 말로 너희를 속이지 못하게 하려 함이니"
+      ],
+      "raw_text_hashes": [
+        "d7380fe58065fa9268cdf3f32d6b79af5f2072bc203bcbd3af99eacd32850b6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:5",
+      "sequence": 29496,
+      "chapter_label": "COL 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "For though I am absent in the flesh, yet I am with you in the spirit, rejoicing and seeing your order, and the steadfastness of your faith in Christ.",
+      "ko": "이는 내가 육신으로는 떠나 있으나 심령으로는 너희와 함께 있어 너희의 규모와 그리스도를 믿는 너희 믿음의 굳은 것을 기쁘게 봄이라",
+      "source_text_hash": "f7b07e381db4dfb189479f23570337a44d09eeda6fcbe3d761c93a5f4b1c1a95",
+      "translation_text_hash": "e0fed525d26113fda26b534c8f35062c690cef1ba931b32aaa9b540710030901",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 육신으로는 떠나 있으나 심령으로는 너희와 함께 있어 너희의 규모와 그리스도를 믿는 너희 믿음의 굳은 것을 기쁘게 봄이라"
+      ],
+      "raw_text_hashes": [
+        "e0fed525d26113fda26b534c8f35062c690cef1ba931b32aaa9b540710030901"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:6",
+      "sequence": 29497,
+      "chapter_label": "COL 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "As therefore you received Christ Jesus the Lord, walk in him,",
+      "ko": "그러므로 너희가 그리스도 예수를 주로 받았으니 그 안에서 행하되",
+      "source_text_hash": "c5e3d29a44097e8e4d7274e33d71d3800e72d5b6704cc36c876b2ee4c8f135e2",
+      "translation_text_hash": "14a4039c9f0b14c3266d313701b79499c2356d90c145b7438e3f0b752242b7bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 그리스도 예수를 주로 받았으니 그 안에서 행하되"
+      ],
+      "raw_text_hashes": [
+        "14a4039c9f0b14c3266d313701b79499c2356d90c145b7438e3f0b752242b7bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:7",
+      "sequence": 29498,
+      "chapter_label": "COL 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "rooted and built up in him and established in the faith, even as you were taught, abounding in it in thanksgiving.",
+      "ko": "그 안에 뿌리를 박으며 세움을 입어 교훈을 받은대로 믿음에 굳게 서서 감사함을 넘치게 하라",
+      "source_text_hash": "377d5fc6638d9c845622670a690abc42dc38ae4dfaafb122c0cd707b7f17d9cb",
+      "translation_text_hash": "67a4e451836134b3e73d8ad21f4456f97eb37da5692a8c83dd86241e404a1cf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 안에 뿌리를 박으며 세움을 입어 교훈을 받은대로 믿음에 굳게 서서 감사함을 넘치게 하라"
+      ],
+      "raw_text_hashes": [
+        "67a4e451836134b3e73d8ad21f4456f97eb37da5692a8c83dd86241e404a1cf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:8",
+      "sequence": 29499,
+      "chapter_label": "COL 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Be careful that you don’t let anyone rob you through his philosophy and vain deceit, after the tradition of men, after the elemental spirits of the world, and not after Christ.",
+      "ko": "누가 철학과 헛된 속임수로 너희를 노략할까 주의하라 이것이 사람의 유전과 세상의 초등 학문을 좇음이요 그리스도를 좇음이 아니니라",
+      "source_text_hash": "96183c0ab61118dfbc12bb8f28428ee2b69b798cc1ad1fe2f5c136249b088aa7",
+      "translation_text_hash": "8f0180545c093c351982bd26620499b5d315a07ab16173d501f83514b31dea0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 철학과 헛된 속임수로 너희를 노략할까 주의하라 이것이 사람의 유전과 세상의 초등 학문을 좇음이요 그리스도를 좇음이 아니니라"
+      ],
+      "raw_text_hashes": [
+        "8f0180545c093c351982bd26620499b5d315a07ab16173d501f83514b31dea0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:9",
+      "sequence": 29500,
+      "chapter_label": "COL 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "For in him all the fullness of the Deity dwells bodily,",
+      "ko": "그 안에는 신성의 모든 충만이 육체로 거하시고",
+      "source_text_hash": "2fdeebc641e3ab36a491440d22931fa0b96f70f1d0019433917c3f7e70ca0b46",
+      "translation_text_hash": "3f19a77661d106e6ee2e5fe4561bb7a12a0d1b5214342418eb3ae1f9e88e8e13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 안에는 신성의 모든 충만이 육체로 거하시고"
+      ],
+      "raw_text_hashes": [
+        "3f19a77661d106e6ee2e5fe4561bb7a12a0d1b5214342418eb3ae1f9e88e8e13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:10",
+      "sequence": 29501,
+      "chapter_label": "COL 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "and in him you are made full, who is the head of all principality and power.",
+      "ko": "너희도 그 안에서 충만하여졌으니 그는 모든 정사와 권세의 머리시라",
+      "source_text_hash": "0af8e009765e34a245cbad6de4f68d9db4cd2c7b1732b707c0949711feb1c052",
+      "translation_text_hash": "3cebe174c3bb72ed67b8ccd94e43e2281ca0db77d5fbf59e313db8de6b7ebd2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 그 안에서 충만하여졌으니 그는 모든 정사와 권세의 머리시라"
+      ],
+      "raw_text_hashes": [
+        "3cebe174c3bb72ed67b8ccd94e43e2281ca0db77d5fbf59e313db8de6b7ebd2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:11",
+      "sequence": 29502,
+      "chapter_label": "COL 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "In him you were also circumcised with a circumcision not made with hands, in the putting off of the body of the sins of the flesh, in the circumcision of Christ,",
+      "ko": "또 그 안에서 너희가 손으로 하지 아니한 할례를 받았으니 곧 육적 몸을 벗는 것이요 그리스도의 할례니라",
+      "source_text_hash": "6978d9a5e54739080682b31915c3de92ca0ff68f040a059e44e388e6750fd0e6",
+      "translation_text_hash": "0d03d93b2e6eb78bf35f7a26371d8885a9bd4ffd13945591b50a2ec9d80deb15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 안에서 너희가 손으로 하지 아니한 할례를 받았으니 곧 육적 몸을 벗는 것이요 그리스도의 할례니라"
+      ],
+      "raw_text_hashes": [
+        "0d03d93b2e6eb78bf35f7a26371d8885a9bd4ffd13945591b50a2ec9d80deb15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:12",
+      "sequence": 29503,
+      "chapter_label": "COL 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "having been buried with him in baptism, in which you were also raised with him through faith in the working of God, who raised him from the dead.",
+      "ko": "너희가 세례로 그리스도와 함께 장사한바 되고 또 죽은 자들 가운데서 그를 일으키신 하나님의 역사를 믿음으로 말미암아 그 안에서 함께 일으키심을 받았느니라",
+      "source_text_hash": "aa688398c3e0d99af92d78272b5ca644816793445b4c90176c9b59fdd98f56d2",
+      "translation_text_hash": "0c783e36eca6b422d44f0af7caf60242126424c568bfbfffa92c7aa096a32b1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 세례로 그리스도와 함께 장사한바 되고 또 죽은 자들 가운데서 그를 일으키신 하나님의 역사를 믿음으로 말미암아 그 안에서 함께 일으키심을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "0c783e36eca6b422d44f0af7caf60242126424c568bfbfffa92c7aa096a32b1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:13",
+      "sequence": 29504,
+      "chapter_label": "COL 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "You were dead through your trespasses and the uncircumcision of your flesh. He made you alive together with him, having forgiven us all our trespasses,",
+      "ko": "또 너희의 범죄와 육체의 무할례로 죽었던 너희를 하나님이 그와 함께 살리시고 우리에게 모든 죄를 사하시고",
+      "source_text_hash": "eab3e94e00b95e7797053613cf9c45414ac15326f446b44a3687db623ca6c61b",
+      "translation_text_hash": "4ff69c30485af65ce130066f86e894ecb09a94b6f214872d1c41eecc60319138",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희의 범죄와 육체의 무할례로 죽었던 너희를 하나님이 그와 함께 살리시고 우리에게 모든 죄를 사하시고"
+      ],
+      "raw_text_hashes": [
+        "4ff69c30485af65ce130066f86e894ecb09a94b6f214872d1c41eecc60319138"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:14",
+      "sequence": 29505,
+      "chapter_label": "COL 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "wiping out the handwriting in ordinances which was against us. He has taken it out of the way, nailing it to the cross.",
+      "ko": "우리를 거스리고 우리를 대적하는 의문에 쓴 증서를 도말하시고 제하여 버리사 십자가에 못 박으시고",
+      "source_text_hash": "5439225b1a28b77dcaad2ae04716893f99084f134cdcd47b5d78c2f172b426ba",
+      "translation_text_hash": "286c01bd9b18f664ccb85dc45c33120f652999bceb8b04e3eae0586ca5ddc1e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 거스리고 우리를 대적하는 의문에 쓴 증서를 도말하시고 제하여 버리사 십자가에 못 박으시고"
+      ],
+      "raw_text_hashes": [
+        "286c01bd9b18f664ccb85dc45c33120f652999bceb8b04e3eae0586ca5ddc1e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:15",
+      "sequence": 29506,
+      "chapter_label": "COL 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Having stripped the principalities and the powers, he made a show of them openly, triumphing over them in it.",
+      "ko": "정사와 권세를 벗어버려 밝히 드러내시고 십자가로 승리하셨느니라",
+      "source_text_hash": "2954ed314c9eab853ffee5a4d9c499921bbdd71cda69e1dc0fceb00602992e91",
+      "translation_text_hash": "164ade26a7aa671b899331cc107e450dbc247343af95cf75ff2a849c9c4bf7ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정사와 권세를 벗어버려 밝히 드러내시고 십자가로 승리하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "164ade26a7aa671b899331cc107e450dbc247343af95cf75ff2a849c9c4bf7ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:16",
+      "sequence": 29507,
+      "chapter_label": "COL 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "Let no one therefore judge you in eating or drinking, or with respect to a feast day or a new moon or a Sabbath day,",
+      "ko": "그러므로 먹고 마시는 것과 절기나 월삭이나 안식일을 인하여 누구든지 너희를 폄론하지 못하게 하라",
+      "source_text_hash": "c48fe83243ec3974c2347e40505b580628c81fe5f19a724b4336ff50be9d3fb9",
+      "translation_text_hash": "b7e74218f7cc408c60b3072cf0b22745393eda34a186900b46864fb96cd5ee40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 먹고 마시는 것과 절기나 월삭이나 안식일을 인하여 누구든지 너희를 폄론하지 못하게 하라"
+      ],
+      "raw_text_hashes": [
+        "b7e74218f7cc408c60b3072cf0b22745393eda34a186900b46864fb96cd5ee40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:17",
+      "sequence": 29508,
+      "chapter_label": "COL 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "which are a shadow of the things to come; but the body is Christ’s.",
+      "ko": "이것들은 장래 일의 그림자이나 몸은 그리스도의 것이니라",
+      "source_text_hash": "2fd9776dc04406168f29e3b76e9f239e29b79dc03af3f6e8653e83e8d8826ef1",
+      "translation_text_hash": "b471bd465d9d2c6503e6a09dcc93f140d6baaeac13e0acd63238abec1995a7a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것들은 장래 일의 그림자이나 몸은 그리스도의 것이니라"
+      ],
+      "raw_text_hashes": [
+        "b471bd465d9d2c6503e6a09dcc93f140d6baaeac13e0acd63238abec1995a7a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:18",
+      "sequence": 29509,
+      "chapter_label": "COL 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Let no one rob you of your prize by self-abasement and worshiping of the angels, dwelling in the things which he has not seen, vainly puffed up by his fleshly mind,",
+      "ko": "누구든지 일부러 겸손함과 천사 숭배함을 인하여 너희 상을 빼앗지 못하게 하라 저가 그 본 것을 의지하여 그 육체의 마음을 좇아 헛되이 과장하고",
+      "source_text_hash": "8ffc70545d89043cc5accca7b8ff6a03c7512890e2f200b2df3fdd5808318852",
+      "translation_text_hash": "13e24681b4a35198b1dc9bcc9b1d05c4661bca151ba0c22011d02cd33796e0de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 일부러 겸손함과 천사 숭배함을 인하여 너희 상을 빼앗지 못하게 하라 저가 그 본 것을 의지하여 그 육체의 마음을 좇아 헛되이 과장하고"
+      ],
+      "raw_text_hashes": [
+        "13e24681b4a35198b1dc9bcc9b1d05c4661bca151ba0c22011d02cd33796e0de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:19",
+      "sequence": 29510,
+      "chapter_label": "COL 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "and not holding firmly to the Head, from whom all the body, being supplied and knit together through the joints and ligaments, grows with God’s growth.",
+      "ko": "머리를 붙들지 아니하는지라 온 몸이 머리로 말미암아 마디와 힘줄로 공급함을 얻고 연합하여 하나님이 자라게 하심으로 자라느니라",
+      "source_text_hash": "b9206a0242d06f4d808604fa3d9d0272a45f71d1647acccef0eed5ed868b5caa",
+      "translation_text_hash": "16715ff6d3aa8e8f66c36069e63dc115e534a04fc2bf8dffced50a2b3d9eb746",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "머리를 붙들지 아니하는지라 온 몸이 머리로 말미암아 마디와 힘줄로 공급함을 얻고 연합하여 하나님이 자라게 하심으로 자라느니라"
+      ],
+      "raw_text_hashes": [
+        "16715ff6d3aa8e8f66c36069e63dc115e534a04fc2bf8dffced50a2b3d9eb746"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:20",
+      "sequence": 29511,
+      "chapter_label": "COL 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "If you died with Christ from the elemental spirits of the world, why, as though living in the world, do you subject yourselves to ordinances,",
+      "ko": "너희가 세상의 초등 학문에서 그리스도와 함께 죽었거든 어찌하여 세상에 사는 것과 같이 의문에 순종하느냐",
+      "source_text_hash": "43514dce4c37bf4f00d355c6f8f2b633733147dfd8e838305a0158517ec67ae6",
+      "translation_text_hash": "59b5cda2704065a0140b1d93e875ba2501977227b8989fcf627a58296fe9aea7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 세상의 초등 학문에서 그리스도와 함께 죽었거든 어찌하여 세상에 사는 것과 같이 의문에 순종하느냐"
+      ],
+      "raw_text_hashes": [
+        "59b5cda2704065a0140b1d93e875ba2501977227b8989fcf627a58296fe9aea7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:21",
+      "sequence": 29512,
+      "chapter_label": "COL 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "“Don’t handle, nor taste, nor touch”",
+      "ko": "곧 붙잡지도 말고 맛보지도 말고 만지지도 말라 하는 것이니",
+      "source_text_hash": "c9bef7c629e57abb5d9561f134b202de7d7accf0ef3b3c8897a10fae7e879d72",
+      "translation_text_hash": "656dcf63417ffdab0f7a71fcdb35ac54cb9320d289dbcf72982f3ba6d318d593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 붙잡지도 말고 맛보지도 말고 만지지도 말라 하는 것이니"
+      ],
+      "raw_text_hashes": [
+        "656dcf63417ffdab0f7a71fcdb35ac54cb9320d289dbcf72982f3ba6d318d593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:22",
+      "sequence": 29513,
+      "chapter_label": "COL 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "(all of which perish with use), according to the precepts and doctrines of men?",
+      "ko": "(이 모든 것은 쓰는대로 부패에 돌아 가리라) 사람의 명과 가르침을 좇느냐",
+      "source_text_hash": "c1dc8f66de864b34fb9d365e8cb2ba4a5f6f6445ca180bc535f08839aceb6f63",
+      "translation_text_hash": "4f16668feb48b533d975faf7a0c3ee1a60e3e44a44a0f3c66e7117afabcacdf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(이 모든 것은 쓰는대로 부패에 돌아 가리라) 사람의 명과 가르침을 좇느냐"
+      ],
+      "raw_text_hashes": [
+        "4f16668feb48b533d975faf7a0c3ee1a60e3e44a44a0f3c66e7117afabcacdf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:2:23",
+      "sequence": 29514,
+      "chapter_label": "COL 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "COL",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "These things indeed appear like wisdom in self-imposed worship, humility, and severity to the body, but aren’t of any value against the indulgence of the flesh.",
+      "ko": "이런 것들은 자의적 숭배와 겸손과 몸을 괴롭게 하는데 지혜 있는 모양이나 오직 육체 좇는 것을 금하는데는 유익이 조금도 없느니라",
+      "source_text_hash": "d7746333f7780e692b41b229f0510427e8574b264e4fa91c8f50a46d3582e9fd",
+      "translation_text_hash": "e8cfe278531b9bbfbbd28037c93fed5b0dd71dc656cbf8704aa8b2c54a35b2c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것들은 자의적 숭배와 겸손과 몸을 괴롭게 하는데 지혜 있는 모양이나 오직 육체 좇는 것을 금하는데는 유익이 조금도 없느니라"
+      ],
+      "raw_text_hashes": [
+        "e8cfe278531b9bbfbbd28037c93fed5b0dd71dc656cbf8704aa8b2c54a35b2c5"
+      ]
+    }
+  ]
+}

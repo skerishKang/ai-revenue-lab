@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:RUT:chapter:001",
+  "unit_ordinal": 233,
+  "unit_label": "RUT 1",
+  "book_code": "RUT",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:RUT:1:1",
+      "sequence": 7129,
+      "chapter_label": "RUT 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "In the days when the judges judged, there was a famine in the land. A certain man of Bethlehem Judah went to live in the country of Moab with his wife and his two sons.",
+      "ko": "사사들의 치리하던 때에 그 땅에 흉년이 드니라 유다 베들레헴에 한 사람이 그 아내와 두 아들을 데리고 모압 지방에 가서 우거하였는데",
+      "source_text_hash": "9dc2920c8d31355a3edd569ead73855be90a1bec1f352f66a3c6451ac64ed2f7",
+      "translation_text_hash": "581d00621f8f03b29275336c6501a9b361d5419daaebff9670954f5560041620",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사사들의 치리하던 때에 그 땅에 흉년이 드니라 유다 베들레헴에 한 사람이 그 아내와 두 아들을 데리고 모압 지방에 가서 우거하였는데"
+      ],
+      "raw_text_hashes": [
+        "581d00621f8f03b29275336c6501a9b361d5419daaebff9670954f5560041620"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:2",
+      "sequence": 7130,
+      "chapter_label": "RUT 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "The name of the man was Elimelech, and the name of his wife Naomi. The names of his two sons were Mahlon and Chilion, Ephrathites of Bethlehem Judah. They came into the country of Moab and lived there.",
+      "ko": "그 사람의 이름은 엘리멜렉이요 그 아내의 이름은 나오미요 그 두 아들의 이름은 말론과 기룐이니 유다 베들레헴 에브랏 사람들이더라 그들이 모압 지방에 들어가서 거기 유하더니",
+      "source_text_hash": "6ed9bec626ad9ffdab8f74a26beaf6c3693fe6d9893df8b90477331c30cbfd31",
+      "translation_text_hash": "e64aaefe2bc2bceffef91d0f8bbb8fa112452dc838cb16698b7d9310c782af26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람의 이름은 엘리멜렉이요 그 아내의 이름은 나오미요 그 두 아들의 이름은 말론과 기룐이니 유다 베들레헴 에브랏 사람들이더라 그들이 모압 지방에 들어가서 거기 유하더니"
+      ],
+      "raw_text_hashes": [
+        "e64aaefe2bc2bceffef91d0f8bbb8fa112452dc838cb16698b7d9310c782af26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:3",
+      "sequence": 7131,
+      "chapter_label": "RUT 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Elimelech, Naomi’s husband, died; and she was left with her two sons.",
+      "ko": "나오미의 남편 엘리멜렉이 죽고 나오미와 그 두 아들이 남았으며",
+      "source_text_hash": "31bf507012f62a6eb56c1202caae832c34de26d362994ed71e1267d253885e53",
+      "translation_text_hash": "e2f49f43d02fe8f05b42152a1f0b88a3b92c98ecd63aec6ccdd95b97830e6f5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미의 남편 엘리멜렉이 죽고 나오미와 그 두 아들이 남았으며"
+      ],
+      "raw_text_hashes": [
+        "e2f49f43d02fe8f05b42152a1f0b88a3b92c98ecd63aec6ccdd95b97830e6f5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:4",
+      "sequence": 7132,
+      "chapter_label": "RUT 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "They took for themselves wives of the women of Moab. The name of the one was Orpah, and the name of the other was Ruth. They lived there about ten years.",
+      "ko": "그들은 모압 여자 중에서 아내를 취하였는데 하나의 이름은 오르바요 하나의 이름은 룻이더라 거기 거한지 십년 즈음에",
+      "source_text_hash": "ed8b471d3e0420a7f6e6e5d6d6e2e12a2535a35adaeb67a5d13e69f55772e7b3",
+      "translation_text_hash": "a847891ac7853d397c805da14708fe1dec0deaf88221b52960366ecf0ef4b7f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 모압 여자 중에서 아내를 취하였는데 하나의 이름은 오르바요 하나의 이름은 룻이더라 거기 거한지 십년 즈음에"
+      ],
+      "raw_text_hashes": [
+        "a847891ac7853d397c805da14708fe1dec0deaf88221b52960366ecf0ef4b7f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:5",
+      "sequence": 7133,
+      "chapter_label": "RUT 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Mahlon and Chilion both died, and the woman was bereaved of her two children and of her husband.",
+      "ko": "말론과 기룐 두 사람이 다 죽고 그 여인은 두 아들과 남편의 뒤에 남았더라",
+      "source_text_hash": "6b2cc6b9e85e717fcc633d38b434fa1162bec8e857faa9a381866bb022f4cad9",
+      "translation_text_hash": "4f0a5ef5851cbc7df7897b3bc2873742f5f3b83f782f36d03f040dbd5c72908b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말론과 기룐 두 사람이 다 죽고 그 여인은 두 아들과 남편의 뒤에 남았더라"
+      ],
+      "raw_text_hashes": [
+        "4f0a5ef5851cbc7df7897b3bc2873742f5f3b83f782f36d03f040dbd5c72908b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:6",
+      "sequence": 7134,
+      "chapter_label": "RUT 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Then she arose with her daughters-in-law, that she might return from the country of Moab; for she had heard in the country of Moab how the LORD had visited his people in giving them bread.",
+      "ko": "그가 모압 지방에 있어서 여호와께서 자기 백성을 권고하사 그들에게 양식을 주셨다 함을 들었으므로 이에 두 자부와 함께 일어나 모압 지방에서 돌아오려 하여",
+      "source_text_hash": "fd5829b2dee8835e42a6bb66bc13663eecc911576180b4ab7615491d70f27e9f",
+      "translation_text_hash": "9fa8c011b36f9235677a31854b60687b2dfdbe8112db2eb72879e857d8ebcfac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 모압 지방에 있어서 여호와께서 자기 백성을 권고하사 그들에게 양식을 주셨다 함을 들었으므로 이에 두 자부와 함께 일어나 모압 지방에서 돌아오려 하여"
+      ],
+      "raw_text_hashes": [
+        "9fa8c011b36f9235677a31854b60687b2dfdbe8112db2eb72879e857d8ebcfac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:7",
+      "sequence": 7135,
+      "chapter_label": "RUT 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "She went out of the place where she was, and her two daughters-in-law with her. They went on the way to return to the land of Judah.",
+      "ko": "있던 곳을 떠나고 두 자부도 그와 함께하여 유다 땅으로 돌아오려고 길을 행하다가",
+      "source_text_hash": "86e679a909cb29ad820277b6dbdce961ad54d6425ac4b6a65fb825624ef3e7be",
+      "translation_text_hash": "7efaae12ef36c5ee22124524c483c6c3e670b27f7f78f09f8ba35c1c9c2fff4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "있던 곳을 떠나고 두 자부도 그와 함께하여 유다 땅으로 돌아오려고 길을 행하다가"
+      ],
+      "raw_text_hashes": [
+        "7efaae12ef36c5ee22124524c483c6c3e670b27f7f78f09f8ba35c1c9c2fff4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:8",
+      "sequence": 7136,
+      "chapter_label": "RUT 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Naomi said to her two daughters-in-law, “Go, return each of you to her mother’s house. May the LORD deal kindly with you, as you have dealt with the dead and with me.",
+      "ko": "나오미가 두 자부에게 이르되 너희는 각각 어미의 집으로 돌아가라 너희가 죽은 자와 나를 선대한 것 같이 여호와께서 너희를 선대하시기를 원하며",
+      "source_text_hash": "17aa32abd568ebf8ef6b7fdd30a42600fb9ced637e169ed6c3b37d261a6ddd5a",
+      "translation_text_hash": "a67d5da427b582c689fbc5e08b53fae0f219f9dc69bd563b52b4f86f44e6b1c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미가 두 자부에게 이르되 너희는 각각 어미의 집으로 돌아가라 너희가 죽은 자와 나를 선대한 것 같이 여호와께서 너희를 선대하시기를 원하며"
+      ],
+      "raw_text_hashes": [
+        "a67d5da427b582c689fbc5e08b53fae0f219f9dc69bd563b52b4f86f44e6b1c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:9",
+      "sequence": 7137,
+      "chapter_label": "RUT 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "May the LORD grant you that you may find rest, each of you in the house of her husband.” Then she kissed them, and they lifted up their voices, and wept.",
+      "ko": "여호와께서 너희로 각각 남편의 집에서 평안함을 얻게 하시기를 원하노라 하고 그들에게 입맞추매 그들이 소리를 높여 울며",
+      "source_text_hash": "ca90f0feab365ab9e0b895c9620dca7a68f3a4f937705186f9d747af55794965",
+      "translation_text_hash": "21ec096d327b0a22af1336718ee4ed96c29b490d6557037b34c0c532bae5986b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희로 각각 남편의 집에서 평안함을 얻게 하시기를 원하노라 하고 그들에게 입맞추매 그들이 소리를 높여 울며"
+      ],
+      "raw_text_hashes": [
+        "21ec096d327b0a22af1336718ee4ed96c29b490d6557037b34c0c532bae5986b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:10",
+      "sequence": 7138,
+      "chapter_label": "RUT 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "They said to her, “No, but we will return with you to your people.”",
+      "ko": "나오미에게 이르되 아니니이다 우리는 어머니와 함께 어머니의 백성에게로 돌아가겠나이다",
+      "source_text_hash": "2764b04fac39a5975c43242ec8d8e2351b81c09175f4a6528fa83259e82aeaf0",
+      "translation_text_hash": "1b4feae2b8f4a2483d1918e8735363f209d9dbbe92d80fe83f6cfdbe04e5b375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미에게 이르되 아니니이다 우리는 어머니와 함께 어머니의 백성에게로 돌아가겠나이다"
+      ],
+      "raw_text_hashes": [
+        "1b4feae2b8f4a2483d1918e8735363f209d9dbbe92d80fe83f6cfdbe04e5b375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:11",
+      "sequence": 7139,
+      "chapter_label": "RUT 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Naomi said, “Go back, my daughters. Why do you want to go with me? Do I still have sons in my womb, that they may be your husbands?",
+      "ko": "나오미가 가로되 내 딸들아 돌아가라 너희가 어찌 나와 함께 가려느냐 나의 태중에 너희 남편될 아들들이 오히려 있느냐",
+      "source_text_hash": "2550402a6af0d05a0ebc7e52bdfd82b9a5848818db32d7c752be1da7543d07c6",
+      "translation_text_hash": "bee0fe7105d10e80491f9e25d101a635cc2ee415e59ebcf59fbd754cb044d5c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미가 가로되 내 딸들아 돌아가라 너희가 어찌 나와 함께 가려느냐 나의 태중에 너희 남편될 아들들이 오히려 있느냐"
+      ],
+      "raw_text_hashes": [
+        "bee0fe7105d10e80491f9e25d101a635cc2ee415e59ebcf59fbd754cb044d5c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:12",
+      "sequence": 7140,
+      "chapter_label": "RUT 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Go back, my daughters, go your way; for I am too old to have a husband. If I should say, ‘I have hope,’ if I should even have a husband tonight, and should also bear sons,",
+      "ko": "내 딸들아 돌이켜 너희 길로 가라 나는 늙었으니 남편을 두지 못할찌라 가령 내가 소망이 있다고 말한다든지 오늘 밤에 남편을 두어서 아들들을 생산한다 하자",
+      "source_text_hash": "2793f4427f7e9450a30da6eb55fddfbb617d710d50814f2c81791fbfb7c42011",
+      "translation_text_hash": "9fca29c025bbc3f3fff9a236aeacf8c09a55efb222f1a3145279bd83a579683c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 딸들아 돌이켜 너희 길로 가라 나는 늙었으니 남편을 두지 못할찌라 가령 내가 소망이 있다고 말한다든지 오늘 밤에 남편을 두어서 아들들을 생산한다 하자"
+      ],
+      "raw_text_hashes": [
+        "9fca29c025bbc3f3fff9a236aeacf8c09a55efb222f1a3145279bd83a579683c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:13",
+      "sequence": 7141,
+      "chapter_label": "RUT 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "would you then wait until they were grown? Would you then refrain from having husbands? No, my daughters, for it grieves me seriously for your sakes, for the LORD’s hand has gone out against me.”",
+      "ko": "너희가 어찌 그것을 인하여 그들의 자라기를 기다리겠느냐 어찌 그것을 인하여 남편 두기를 멈추겠느냐 내 딸들아 그렇지 아니하니라 여호와의 손이 나를 치셨으므로 나는 너희로 인하여 더욱 마음이 아프도다",
+      "source_text_hash": "08ff9460e7204c24e2c6638c1bd744d8659c7de87bc62a7d6f061405406c1c27",
+      "translation_text_hash": "1fe24caa215c6e3431fd441c4d731f9dfc3dd1ee717c6676b7d41c1b95a7e3ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 어찌 그것을 인하여 그들의 자라기를 기다리겠느냐 어찌 그것을 인하여 남편 두기를 멈추겠느냐 내 딸들아 그렇지 아니하니라 여호와의 손이 나를 치셨으므로 나는 너희로 인하여 더욱 마음이 아프도다"
+      ],
+      "raw_text_hashes": [
+        "1fe24caa215c6e3431fd441c4d731f9dfc3dd1ee717c6676b7d41c1b95a7e3ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:14",
+      "sequence": 7142,
+      "chapter_label": "RUT 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "They lifted up their voices and wept again; then Orpah kissed her mother-in-law, but Ruth stayed with her.",
+      "ko": "그들이 소리를 높여 다시 울더니 오르바는 그 시모에게 입맞추되 룻은 그를 붙좇았더라",
+      "source_text_hash": "19af7b01f96e63dac0cdc4d6a2235c9843133c13938132c066ea963809870251",
+      "translation_text_hash": "2c20ed2ca26fdb43b104ba4d66c85ece505c0dd822cd38e2ba6d767531368214",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 소리를 높여 다시 울더니 오르바는 그 시모에게 입맞추되 룻은 그를 붙좇았더라"
+      ],
+      "raw_text_hashes": [
+        "2c20ed2ca26fdb43b104ba4d66c85ece505c0dd822cd38e2ba6d767531368214"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:15",
+      "sequence": 7143,
+      "chapter_label": "RUT 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "She said, “Behold, your sister-in-law has gone back to her people and to her god. Follow your sister-in-law.”",
+      "ko": "나오미가 또 가로되 보라 네 동서는 그 백성과 그 신에게로 돌아가나니 너도 동서를 따라 돌아가라",
+      "source_text_hash": "b8889c7ef243ada537b5b5eb4d5448feace7ef924d819ac0a284ee8085956511",
+      "translation_text_hash": "6158c7657958df95ac2784f325ea12b48fc4f719e6d0823a975d17f3714e1a98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미가 또 가로되 보라 네 동서는 그 백성과 그 신에게로 돌아가나니 너도 동서를 따라 돌아가라"
+      ],
+      "raw_text_hashes": [
+        "6158c7657958df95ac2784f325ea12b48fc4f719e6d0823a975d17f3714e1a98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:16",
+      "sequence": 7144,
+      "chapter_label": "RUT 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Ruth said, “Don’t urge me to leave you, and to return from following you, for where you go, I will go; and where you stay, I will stay. Your people will be my people, and your God my God.",
+      "ko": "룻이 가로되 나로 어머니를 떠나며 어머니를 따르지 말고 돌아가라 강권하지 마옵소서 어머니께서 가시는 곳에 나도 가고 어머니께서 유숙하시는 곳에서 나도 유숙하겠나이다 어머니의 백성이 나의 백성이 되고 어머니의 하나님이 나의 하나님이 되시리니",
+      "source_text_hash": "cbee7ea08c1462a314e28edd826963ea961692732dbdd0c5bd1903273efa090b",
+      "translation_text_hash": "ee6a0038606accdb0b812dc7903286752a6e8d9c175be49341cda08156f5b07d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "룻이 가로되 나로 어머니를 떠나며 어머니를 따르지 말고 돌아가라 강권하지 마옵소서 어머니께서 가시는 곳에 나도 가고 어머니께서 유숙하시는 곳에서 나도 유숙하겠나이다 어머니의 백성이 나의 백성이 되고 어머니의 하나님이 나의 하나님이 되시리니"
+      ],
+      "raw_text_hashes": [
+        "ee6a0038606accdb0b812dc7903286752a6e8d9c175be49341cda08156f5b07d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:17",
+      "sequence": 7145,
+      "chapter_label": "RUT 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "Where you die, I will die, and there I will be buried. May the LORD do so to me, and more also, if anything but death parts you and me.”",
+      "ko": "어머니께서 죽으시는 곳에서 나도 죽어 거기 장사될 것이라 만일 내가 죽는 일 외에 어머니와 떠나면 여호와께서 내게 벌을 내리시고 더 내리시기를 원하나이다",
+      "source_text_hash": "9a51d5b36366fdaaf1cbf62e7e212cbf4322050dc1e00c4e0b14054f118bcad2",
+      "translation_text_hash": "998857f1812a4cd23a1118c6e4b194ff22faade2cc60d84fdb18d833a3737bce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어머니께서 죽으시는 곳에서 나도 죽어 거기 장사될 것이라 만일 내가 죽는 일 외에 어머니와 떠나면 여호와께서 내게 벌을 내리시고 더 내리시기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "998857f1812a4cd23a1118c6e4b194ff22faade2cc60d84fdb18d833a3737bce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:18",
+      "sequence": 7146,
+      "chapter_label": "RUT 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "When Naomi saw that she was determined to go with her, she stopped urging her.",
+      "ko": "나오미가 룻의 자기와 함께 가기로 굳게 결심함을 보고 그에게 말하기를 그치니라",
+      "source_text_hash": "554f41b8104cb06cfaf09f3f928ec4dcfdfb22ce8a39a3b2a29841ce3ef219b8",
+      "translation_text_hash": "fbbc6f3dd3e46bff542db8bac6c469634278f0e88ce1e5981948fcd3be727cf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미가 룻의 자기와 함께 가기로 굳게 결심함을 보고 그에게 말하기를 그치니라"
+      ],
+      "raw_text_hashes": [
+        "fbbc6f3dd3e46bff542db8bac6c469634278f0e88ce1e5981948fcd3be727cf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:19",
+      "sequence": 7147,
+      "chapter_label": "RUT 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "So they both went until they came to Bethlehem. When they had come to Bethlehem, all the city was excited about them, and they asked, “Is this Naomi?”",
+      "ko": "이에 그 두 사람이 행하여 베들레헴까지 이르니라 베들레헴에 이를 때에 온 성읍이 그들을 인하여 떠들며 이르기를 이가 나오미냐 하는지라",
+      "source_text_hash": "215b9bcafea07de6f4f4f8220951235011ccb0a0bf9ba1e7afb153ef14982cce",
+      "translation_text_hash": "e38c30a38bbfdb6d9146f1a1411fbba659a9cd90f1e06e60c98dd4294bd2b16f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 두 사람이 행하여 베들레헴까지 이르니라 베들레헴에 이를 때에 온 성읍이 그들을 인하여 떠들며 이르기를 이가 나오미냐 하는지라"
+      ],
+      "raw_text_hashes": [
+        "e38c30a38bbfdb6d9146f1a1411fbba659a9cd90f1e06e60c98dd4294bd2b16f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:20",
+      "sequence": 7148,
+      "chapter_label": "RUT 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "She said to them, “Don’t call me Naomi. Call me Mara, for the Almighty has dealt very bitterly with me.",
+      "ko": "나오미가 그들에게 이르되 나를 나오미라 칭하지 말고 마라라 칭하라 이는 전능자가 나를 심히 괴롭게 하셨음이니라",
+      "source_text_hash": "715d5dcd4026679a37651f04c9bedc884f5f0f5f0fe0728e35b416f4a36988bd",
+      "translation_text_hash": "aa39bcaca279e7b95a9b6e6e71132d976a15b98f5a1240d235e63c66f1e73920",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미가 그들에게 이르되 나를 나오미라 칭하지 말고 마라라 칭하라 이는 전능자가 나를 심히 괴롭게 하셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "aa39bcaca279e7b95a9b6e6e71132d976a15b98f5a1240d235e63c66f1e73920"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:21",
+      "sequence": 7149,
+      "chapter_label": "RUT 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "I went out full, and the LORD has brought me home again empty. Why do you call me Naomi, since the LORD has testified against me, and the Almighty has afflicted me?”",
+      "ko": "내가 풍족하게 나갔더니 여호와께서 나로 비어 돌아오게 하셨느니라 여호와께서 나를 징벌하셨고 전능자가 나를 괴롭게 하셨거늘 너희가 어찌 나를 나오미라 칭하느뇨 하니라",
+      "source_text_hash": "3d0153c8d44daf44b52e5eba39044fe4d3d39c951cbc67dd8eb02e39d5af633f",
+      "translation_text_hash": "7da58bdcd5af2ad04de1aacb67d0a986fa7aa6bdd325d916ff16f7fa31deea6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 풍족하게 나갔더니 여호와께서 나로 비어 돌아오게 하셨느니라 여호와께서 나를 징벌하셨고 전능자가 나를 괴롭게 하셨거늘 너희가 어찌 나를 나오미라 칭하느뇨 하니라"
+      ],
+      "raw_text_hashes": [
+        "7da58bdcd5af2ad04de1aacb67d0a986fa7aa6bdd325d916ff16f7fa31deea6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:1:22",
+      "sequence": 7150,
+      "chapter_label": "RUT 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "RUT",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "So Naomi returned, and Ruth the Moabitess, her daughter-in-law, with her, who returned out of the country of Moab. They came to Bethlehem in the beginning of barley harvest.",
+      "ko": "나오미가 모압 지방에서 그 자부 모압 여인 룻과 함께 돌아왔는데 그들이 보리 추수 시작할 때에 베들레헴에 이르렀더라",
+      "source_text_hash": "d4017c7c6a2a31d557ce6cbcef7aa4034f7dae1a4b79646a6f998bcea4f5d908",
+      "translation_text_hash": "5d81674d0d06cf2ef2a19d198bfc112be4ccaccd739d9446d67d6e919fbe74cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미가 모압 지방에서 그 자부 모압 여인 룻과 함께 돌아왔는데 그들이 보리 추수 시작할 때에 베들레헴에 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "5d81674d0d06cf2ef2a19d198bfc112be4ccaccd739d9446d67d6e919fbe74cb"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1517 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:015",
+  "unit_ordinal": 972,
+  "unit_label": "MRK 15",
+  "book_code": "MRK",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:15:1",
+      "sequence": 24828,
+      "chapter_label": "MRK 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "Immediately in the morning the chief priests, with the elders, scribes, and the whole council, held a consultation, bound Jesus, carried him away, and delivered him up to Pilate.",
+      "ko": "새벽에 대제사장들이 즉시 장로들과 서기관들 곧 온 공회로 더불어 의논하고 예수를 결박하여 끌고 가서 빌라도에게 넘겨주니",
+      "source_text_hash": "028b95330785f6f40e1542fa6bd05a7ccc2c20df4d70622a66efd1de4883d5a0",
+      "translation_text_hash": "f72b6919d917dced4ed4e8456130b9414034485c7e4b239e65a7dd60ff6fc497",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새벽에 대제사장들이 즉시 장로들과 서기관들 곧 온 공회로 더불어 의논하고 예수를 결박하여 끌고 가서 빌라도에게 넘겨주니"
+      ],
+      "raw_text_hashes": [
+        "f72b6919d917dced4ed4e8456130b9414034485c7e4b239e65a7dd60ff6fc497"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:2",
+      "sequence": 24829,
+      "chapter_label": "MRK 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "Pilate asked him, “Are you the King of the Jews?” He answered, “So you say.”",
+      "ko": "빌라도가 묻되 네가 유대인의 왕이냐 예수께서 대답하여 가라사대 네 말이 옳도다 하시매",
+      "source_text_hash": "04f3b1b2ebb49fc5b6085e7bff0b12a1163c4cc3a35fe96dec4055b314f7d74a",
+      "translation_text_hash": "739ee94ce21d1c3a594b7b6437a37e00bf84e6fbdf39ad917e5fc15211616593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 묻되 네가 유대인의 왕이냐 예수께서 대답하여 가라사대 네 말이 옳도다 하시매"
+      ],
+      "raw_text_hashes": [
+        "739ee94ce21d1c3a594b7b6437a37e00bf84e6fbdf39ad917e5fc15211616593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:3",
+      "sequence": 24830,
+      "chapter_label": "MRK 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "The chief priests accused him of many things.",
+      "ko": "대제사장들이 여러가지로 고소하는지라",
+      "source_text_hash": "eb0ba989a94fb30854aaabb5e1cd8a9cb0be9e94502ca94b8edcd3b86bd5890f",
+      "translation_text_hash": "b383f9dfeba428e365d272909e195733cf52e86f2419594ecc161ffc3c4d8402",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들이 여러가지로 고소하는지라"
+      ],
+      "raw_text_hashes": [
+        "b383f9dfeba428e365d272909e195733cf52e86f2419594ecc161ffc3c4d8402"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:4",
+      "sequence": 24831,
+      "chapter_label": "MRK 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "Pilate again asked him, “Have you no answer? See how many things they testify against you!”",
+      "ko": "빌라도가 또 물어 가로되 아무 대답도 없느냐 저희가 얼마나 많은 것으로 너로 고소하는가 보라 하되",
+      "source_text_hash": "d85c6ffb2e0c2e31bda88479e7658312b72c224f23fcd85bde71357829e585a4",
+      "translation_text_hash": "8c7820f22a9cff2c49f89aaf5ae9904126ada0140d25257a64218e7974d697c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 또 물어 가로되 아무 대답도 없느냐 저희가 얼마나 많은 것으로 너로 고소하는가 보라 하되"
+      ],
+      "raw_text_hashes": [
+        "8c7820f22a9cff2c49f89aaf5ae9904126ada0140d25257a64218e7974d697c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:5",
+      "sequence": 24832,
+      "chapter_label": "MRK 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "But Jesus made no further answer, so that Pilate marveled.",
+      "ko": "예수께서 다시 아무 말씀도 대답지 아니하시니 빌라도가 기이히 여기더라",
+      "source_text_hash": "d997865e7baee0d07cb656295e4901d91db6a509fc3414f529b28940bd85e3c5",
+      "translation_text_hash": "8029bb0be92449999208f46ad9e487e803e41fb6284161bccb97f11ebaafb38b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 다시 아무 말씀도 대답지 아니하시니 빌라도가 기이히 여기더라"
+      ],
+      "raw_text_hashes": [
+        "8029bb0be92449999208f46ad9e487e803e41fb6284161bccb97f11ebaafb38b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:6",
+      "sequence": 24833,
+      "chapter_label": "MRK 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "Now at the feast he used to release to them one prisoner, whomever they asked of him.",
+      "ko": "명절을 당하면 백성의 구하는대로 죄수 하나를 놓아 주는 전례가 있더니",
+      "source_text_hash": "b7b52c680ee1e3484e1af2ae31e0bfb03080204ae210157a75b1d74eaf09e350",
+      "translation_text_hash": "29c9ac967c500f556623ad2bd739627d2cb9660210497cc5a5180747361df0f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명절을 당하면 백성의 구하는대로 죄수 하나를 놓아 주는 전례가 있더니"
+      ],
+      "raw_text_hashes": [
+        "29c9ac967c500f556623ad2bd739627d2cb9660210497cc5a5180747361df0f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:7",
+      "sequence": 24834,
+      "chapter_label": "MRK 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "There was one called Barabbas, bound with his fellow insurgents, men who in the insurrection had committed murder.",
+      "ko": "민란을 꾸미고 이 민란에 살인하고 포박된 자 중에 바라바라 하는 자가 있는지라",
+      "source_text_hash": "4ac3d70b1b66f26cb0dcef8e9ff229df2bf8ee4b1a190c249fe942b52f43de0c",
+      "translation_text_hash": "f2cf8d07a4d13cc01b4414150e440be3371d7fc937d30153fc316b3d90507ad9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "민란을 꾸미고 이 민란에 살인하고 포박된 자 중에 바라바라 하는 자가 있는지라"
+      ],
+      "raw_text_hashes": [
+        "f2cf8d07a4d13cc01b4414150e440be3371d7fc937d30153fc316b3d90507ad9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:8",
+      "sequence": 24835,
+      "chapter_label": "MRK 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "The multitude, crying aloud, began to ask him to do as he always did for them.",
+      "ko": "무리가 나아가서 전례대로 하여주기를 구한대",
+      "source_text_hash": "0a16acef739415b4fa868f77ea895c0b405facc0d409c13ad98abb8b0a2d34af",
+      "translation_text_hash": "25569a8374c888b851fe4beb874a1f4ed31812422316079d9d22e2fd48471b34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 나아가서 전례대로 하여주기를 구한대"
+      ],
+      "raw_text_hashes": [
+        "25569a8374c888b851fe4beb874a1f4ed31812422316079d9d22e2fd48471b34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:9",
+      "sequence": 24836,
+      "chapter_label": "MRK 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "Pilate answered them, saying, “Do you want me to release to you the King of the Jews?”",
+      "ko": "빌라도가 대답하여 가로되 너희는 내가 유대인의 왕을 너희에게 놓아 주기를 원하느냐 하니",
+      "source_text_hash": "3d0d1d186d901817cf63bd123c59794df6904cf49d1003a36bde35c275a0580e",
+      "translation_text_hash": "8f62c884093258c5639e00c6a032df356ebb563d67b864392a6dba345d5c93da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 대답하여 가로되 너희는 내가 유대인의 왕을 너희에게 놓아 주기를 원하느냐 하니"
+      ],
+      "raw_text_hashes": [
+        "8f62c884093258c5639e00c6a032df356ebb563d67b864392a6dba345d5c93da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:10",
+      "sequence": 24837,
+      "chapter_label": "MRK 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "For he perceived that for envy the chief priests had delivered him up.",
+      "ko": "이는 저가 대제사장들이 시기로 예수를 넘겨준줄 앎이러라",
+      "source_text_hash": "f19c70e372ba668f57340f3f10bc3f7c7eb1676c5f1f2aa214c5d8cf8cf5a253",
+      "translation_text_hash": "ab9341ed5ae5559e8fa70ab2f72cc555e1a6599a9c275d5155b02d481b5b544e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저가 대제사장들이 시기로 예수를 넘겨준줄 앎이러라"
+      ],
+      "raw_text_hashes": [
+        "ab9341ed5ae5559e8fa70ab2f72cc555e1a6599a9c275d5155b02d481b5b544e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:11",
+      "sequence": 24838,
+      "chapter_label": "MRK 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "But the chief priests stirred up the multitude, that he should release Barabbas to them instead.",
+      "ko": "그러나 대제사장들이 무리를 충동하여 도리어 바라바를 놓아 달라 하게 하니",
+      "source_text_hash": "f767ced3fab7a546e27e869e76b72d8623cb157734719f7a9a7030edfb173bec",
+      "translation_text_hash": "ca69ae3b682d515b2970b7c9a90d67f2d01b2d946ce40683871d90b9a8c8e55f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 대제사장들이 무리를 충동하여 도리어 바라바를 놓아 달라 하게 하니"
+      ],
+      "raw_text_hashes": [
+        "ca69ae3b682d515b2970b7c9a90d67f2d01b2d946ce40683871d90b9a8c8e55f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:12",
+      "sequence": 24839,
+      "chapter_label": "MRK 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "Pilate again asked them, “What then should I do to him whom you call the King of the Jews?”",
+      "ko": "빌라도가 또 대답하여 가로되 그러면 너희가 유대인의 왕이라 하는 이는 내가 어떻게 하랴",
+      "source_text_hash": "5b9315f872168876b8fb21d8b8ededf6d1002c5e3d6de301cc79f9ae476e2cc2",
+      "translation_text_hash": "f92df3fa935a9a18fb9dee1174d979ec98d22420e0232fc683dfe942f19b7f67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 또 대답하여 가로되 그러면 너희가 유대인의 왕이라 하는 이는 내가 어떻게 하랴"
+      ],
+      "raw_text_hashes": [
+        "f92df3fa935a9a18fb9dee1174d979ec98d22420e0232fc683dfe942f19b7f67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:13",
+      "sequence": 24840,
+      "chapter_label": "MRK 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "They cried out again, “Crucify him!”",
+      "ko": "저희가 다시 소리지르되 저를 십자가에 못 박게 하소서",
+      "source_text_hash": "7e063634e04e4ffccb1bc301e170128c5b193c454008252f5f41f9cb70d263f6",
+      "translation_text_hash": "cbba421955d9761505c65520e4dcc71956cd849f268c58c195e4ff6948b83bf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 다시 소리지르되 저를 십자가에 못 박게 하소서"
+      ],
+      "raw_text_hashes": [
+        "cbba421955d9761505c65520e4dcc71956cd849f268c58c195e4ff6948b83bf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:14",
+      "sequence": 24841,
+      "chapter_label": "MRK 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "Pilate said to them, “Why, what evil has he done?” But they cried out exceedingly, “Crucify him!”",
+      "ko": "빌라도가 가로되 어찜이뇨 무슨 악한 일을 하였느냐 하니 더욱 소리지르되 십자가에 못 박게 하소서 하는지라",
+      "source_text_hash": "159240ef2fad84c414d1a9caf8e10cf82ff721efe41163df182a66e2397b8da2",
+      "translation_text_hash": "8e0d99e373365ddff19f2b65ba3cdb26b26eb925b4817fbdd721ccfaffd02514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 가로되 어찜이뇨 무슨 악한 일을 하였느냐 하니 더욱 소리지르되 십자가에 못 박게 하소서 하는지라"
+      ],
+      "raw_text_hashes": [
+        "8e0d99e373365ddff19f2b65ba3cdb26b26eb925b4817fbdd721ccfaffd02514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:15",
+      "sequence": 24842,
+      "chapter_label": "MRK 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "Pilate, wishing to please the multitude, released Barabbas to them, and handed over Jesus, when he had flogged him, to be crucified.",
+      "ko": "빌라도가 무리에게 만족을 주고자 하여 바라바는 놓아 주고 예수는 채찍질하고 십자가에 못 박히게 넘겨주니라",
+      "source_text_hash": "9eef03f64233b06f548ed39581d801f2bd306b5514f96db3f6498776d495ad0d",
+      "translation_text_hash": "e03303be8d33e0e5ed71f352e1cac5e88153b6e7f65240b64e38066ea2c4b4e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 무리에게 만족을 주고자 하여 바라바는 놓아 주고 예수는 채찍질하고 십자가에 못 박히게 넘겨주니라"
+      ],
+      "raw_text_hashes": [
+        "e03303be8d33e0e5ed71f352e1cac5e88153b6e7f65240b64e38066ea2c4b4e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:16",
+      "sequence": 24843,
+      "chapter_label": "MRK 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "The soldiers led him away within the court, which is the Praetorium; and they called together the whole cohort.",
+      "ko": "군병들이 예수를 끌고 브라이도리온이라는 뜰안으로 들어가서 온 군대를 모으고",
+      "source_text_hash": "5166c5149ddc392b4ab20888e752f30efdcda910bcbf0be0fda0872d64bc450e",
+      "translation_text_hash": "73c154d3d433bd31960d7eaa5aae902193bcf6fe57a2361e6d525c82f4dfd95f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군병들이 예수를 끌고 브라이도리온이라는 뜰안으로 들어가서 온 군대를 모으고"
+      ],
+      "raw_text_hashes": [
+        "73c154d3d433bd31960d7eaa5aae902193bcf6fe57a2361e6d525c82f4dfd95f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:17",
+      "sequence": 24844,
+      "chapter_label": "MRK 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "They clothed him with purple; and weaving a crown of thorns, they put it on him.",
+      "ko": "예수에게 자색 옷을 입히고 가시 면류관을 엮어 씌우고",
+      "source_text_hash": "dc06baa9b60393fcce08d4d084f7b5dfafc262d9a8e39df418605eba55e5af63",
+      "translation_text_hash": "f29bbed13ed3ca0f39400b517c9b8384c4374de8110029c1d242031e93c38fd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수에게 자색 옷을 입히고 가시 면류관을 엮어 씌우고"
+      ],
+      "raw_text_hashes": [
+        "f29bbed13ed3ca0f39400b517c9b8384c4374de8110029c1d242031e93c38fd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:18",
+      "sequence": 24845,
+      "chapter_label": "MRK 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "They began to salute him, “Hail, King of the Jews!”",
+      "ko": "예하여 가로되 유대인의 왕이여 평안할찌어다 하고",
+      "source_text_hash": "c7de69beab03bdbebde70d1267527c86d6a17a09f0b1eb0e84ca730a3505defd",
+      "translation_text_hash": "eeb978e4f9e7e7d946d5494c8d51d4566e837f1a0550ee66d851beea16720785",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예하여 가로되 유대인의 왕이여 평안할찌어다 하고"
+      ],
+      "raw_text_hashes": [
+        "eeb978e4f9e7e7d946d5494c8d51d4566e837f1a0550ee66d851beea16720785"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:19",
+      "sequence": 24846,
+      "chapter_label": "MRK 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "They struck his head with a reed and spat on him, and bowing their knees, did homage to him.",
+      "ko": "갈대로 그의 머리를 치며 침을 뱉으며 꿇어 절하더라",
+      "source_text_hash": "ff2962a42109b95cf40de75eb11d018ac004f1dc64ed802e2b725daa3ee10eca",
+      "translation_text_hash": "2b89a70e4f1d2de24866a217e4bd3ce2cbc2b4d17073fac92a31ff4d933ef30b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대로 그의 머리를 치며 침을 뱉으며 꿇어 절하더라"
+      ],
+      "raw_text_hashes": [
+        "2b89a70e4f1d2de24866a217e4bd3ce2cbc2b4d17073fac92a31ff4d933ef30b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:20",
+      "sequence": 24847,
+      "chapter_label": "MRK 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "When they had mocked him, they took the purple cloak off him, and put his own garments on him. They led him out to crucify him.",
+      "ko": "희롱을 다한 후 자색 옷을 벗기고 도로 그의 옷을 입히고 십자가에 못 박으려고 끌고 나가니라",
+      "source_text_hash": "0c82cd3f15455a69165f101278d4d46430617f62aefe478f0f1a45ff814d56f8",
+      "translation_text_hash": "55872d3c80795625438922ddde5b5e06979e90935d3d5cff03d9cb81dea2910c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "희롱을 다한 후 자색 옷을 벗기고 도로 그의 옷을 입히고 십자가에 못 박으려고 끌고 나가니라"
+      ],
+      "raw_text_hashes": [
+        "55872d3c80795625438922ddde5b5e06979e90935d3d5cff03d9cb81dea2910c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:21",
+      "sequence": 24848,
+      "chapter_label": "MRK 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "They compelled one passing by, coming from the country, Simon of Cyrene, the father of Alexander and Rufus, to go with them that he might bear his cross.",
+      "ko": "마침 알렉산더와 루포의 아비인 구레네 사람 시몬이 시골로서 와서 지나가는데 저희가 그를 억지로 같이 가게 하여 예수의 십자가를 지우고",
+      "source_text_hash": "018545228c93255bbec5f47929b8cdc6dca2deb0486404d7a625a426fe278c04",
+      "translation_text_hash": "f5b4f2242fb0f30988a43e83bfb8e9a3c20e39e62f088d0421d3f98aafdeeb99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 알렉산더와 루포의 아비인 구레네 사람 시몬이 시골로서 와서 지나가는데 저희가 그를 억지로 같이 가게 하여 예수의 십자가를 지우고"
+      ],
+      "raw_text_hashes": [
+        "f5b4f2242fb0f30988a43e83bfb8e9a3c20e39e62f088d0421d3f98aafdeeb99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:22",
+      "sequence": 24849,
+      "chapter_label": "MRK 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "They brought him to the place called Golgotha, which is, being interpreted, “The place of a skull.”",
+      "ko": "예수를 끌고 골고다라 하는 곳(번역하면 해골의 곳)에 이르러",
+      "source_text_hash": "01de6af3ca107318e9624fc3fef861bc644aa5c0f32c46eccbf05f8173455726",
+      "translation_text_hash": "06be347896959d4267c606113ae8f080fcb9f2fda18c15bfb6abe4a4ea95fc34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 끌고 골고다라 하는 곳(번역하면 해골의 곳)에 이르러"
+      ],
+      "raw_text_hashes": [
+        "06be347896959d4267c606113ae8f080fcb9f2fda18c15bfb6abe4a4ea95fc34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:23",
+      "sequence": 24850,
+      "chapter_label": "MRK 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "They offered him wine mixed with myrrh to drink, but he didn’t take it.",
+      "ko": "몰약을 탄 포도주를 주었으나 예수께서 받지 아니하시니라",
+      "source_text_hash": "bfcde1113b36053a699bda0d05cfc02b64c2d81cb49e58697c093d79ee738bb2",
+      "translation_text_hash": "aa012828d5b0843f6acee06527f4db17062ea8d9ea02fa2ce5d809205fbb3e6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몰약을 탄 포도주를 주었으나 예수께서 받지 아니하시니라"
+      ],
+      "raw_text_hashes": [
+        "aa012828d5b0843f6acee06527f4db17062ea8d9ea02fa2ce5d809205fbb3e6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:24",
+      "sequence": 24851,
+      "chapter_label": "MRK 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "Crucifying him, they parted his garments among them, casting lots on them, what each should take.",
+      "ko": "십자가에 못 박고 그 옷을 나눌쌔 누가 어느 것을 얻을까 하여 제비를 뽑더라",
+      "source_text_hash": "9b611d379200db4d918ad42adda566253c8bed4fe5d76b77f1c077e6e32539aa",
+      "translation_text_hash": "c120c468f35762690caa39e0a813a20b90cec29cd03a320187951cf2b063d6f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십자가에 못 박고 그 옷을 나눌쌔 누가 어느 것을 얻을까 하여 제비를 뽑더라"
+      ],
+      "raw_text_hashes": [
+        "c120c468f35762690caa39e0a813a20b90cec29cd03a320187951cf2b063d6f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:25",
+      "sequence": 24852,
+      "chapter_label": "MRK 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "It was the third hour when they crucified him.",
+      "ko": "때가 제삼시가 되어 십자가에 못 박으니라",
+      "source_text_hash": "da87df22ee2d0340bbf19bd18ed1a4c2b8363a5fc652cda57ecd013858db94b9",
+      "translation_text_hash": "e9c2d143f2559aac638f3cfd170e59a108e70e5e2dceb0a4f847cda5802af022",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 제삼시가 되어 십자가에 못 박으니라"
+      ],
+      "raw_text_hashes": [
+        "e9c2d143f2559aac638f3cfd170e59a108e70e5e2dceb0a4f847cda5802af022"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:26",
+      "sequence": 24853,
+      "chapter_label": "MRK 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "The superscription of his accusation was written over him: “THE KING OF THE JEWS.”",
+      "ko": "그 위에 있는 죄 패에 유대인의 왕이라 썼고",
+      "source_text_hash": "a7a6ab455da2fe1986e15e72b32009478d7d0dfbd928a1a49f061ead8f570a4f",
+      "translation_text_hash": "addf602337ef4f643170bc7d33fdc1e0f6d8f6f34ac47905fcdcf94bd0048f1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 위에 있는 죄 패에 유대인의 왕이라 썼고"
+      ],
+      "raw_text_hashes": [
+        "addf602337ef4f643170bc7d33fdc1e0f6d8f6f34ac47905fcdcf94bd0048f1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:27",
+      "sequence": 24854,
+      "chapter_label": "MRK 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "With him they crucified two robbers, one on his right hand, and one on his left.",
+      "ko": "강도 둘을 예수와 함께 십자가에 못 박으니 하나는 그의 우편에, 하나는 좌편에 있더라",
+      "source_text_hash": "abff0d5324dc348cb4cd6724272d58475c1ca0e970066bb0d394f5e9e4e94927",
+      "translation_text_hash": "6c441b09a597ade8a40dec232336a6d3d39c2b667f47ddf8790136ac5e631ba4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강도 둘을 예수와 함께 십자가에 못 박으니 하나는 그의 우편에, 하나는 좌편에 있더라"
+      ],
+      "raw_text_hashes": [
+        "6c441b09a597ade8a40dec232336a6d3d39c2b667f47ddf8790136ac5e631ba4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:28",
+      "sequence": 24855,
+      "chapter_label": "MRK 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "The Scripture was fulfilled which says, “He was counted with transgressors.”",
+      "ko": "(없음)",
+      "source_text_hash": "a29cd1769f71b6aaa4aaa945b13ede1195860479f446678057d33cf5fbdcd672",
+      "translation_text_hash": "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(없음)"
+      ],
+      "raw_text_hashes": [
+        "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:29",
+      "sequence": 24856,
+      "chapter_label": "MRK 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "Those who passed by blasphemed him, wagging their heads and saying, “Ha! You who destroy the temple and build it in three days,",
+      "ko": "지나가는 자들은 자기 머리를 흔들며 예수를 모욕하여 가로되 아하 성전을 헐고 사흘에 짓는 자여",
+      "source_text_hash": "c5385d92146350b410f2cf634d81868d3dfc129102081ed59b43b601201fd4fe",
+      "translation_text_hash": "f69e873d1e10aa6d33d5bef2b63a30d922fe656d0f357d32c03af06397feac3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지나가는 자들은 자기 머리를 흔들며 예수를 모욕하여 가로되 아하 성전을 헐고 사흘에 짓는 자여"
+      ],
+      "raw_text_hashes": [
+        "f69e873d1e10aa6d33d5bef2b63a30d922fe656d0f357d32c03af06397feac3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:30",
+      "sequence": 24857,
+      "chapter_label": "MRK 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "save yourself, and come down from the cross!”",
+      "ko": "네가 너를 구원하여 십자가에서 내려 오라 하고",
+      "source_text_hash": "7e343e83d6ffa087231481ef12b67d2d528f1093db9db61183f2cae453dfab57",
+      "translation_text_hash": "47afb6722ee034f178cc9fa62b783287e41c174e248f20e203c5d6bbcb2bab4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 너를 구원하여 십자가에서 내려 오라 하고"
+      ],
+      "raw_text_hashes": [
+        "47afb6722ee034f178cc9fa62b783287e41c174e248f20e203c5d6bbcb2bab4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:31",
+      "sequence": 24858,
+      "chapter_label": "MRK 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "Likewise, also the chief priests mocking among themselves with the scribes said, “He saved others. He can’t save himself.",
+      "ko": "그와 같이 대제사장들도 서기관들과 함께 희롱하며 서로 말하되 저가 남은 구원하였으되 자기는 구원할 수 없도다",
+      "source_text_hash": "8b15c9a7fdf374a99a9bd9557cce5ca4973373ca3b8dc8eef95d0f89d9b60e55",
+      "translation_text_hash": "d4d7104a80ef8fbcb7d55e22e9e527b4272805920cd0f74a563abc79df0ba91e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그와 같이 대제사장들도 서기관들과 함께 희롱하며 서로 말하되 저가 남은 구원하였으되 자기는 구원할 수 없도다"
+      ],
+      "raw_text_hashes": [
+        "d4d7104a80ef8fbcb7d55e22e9e527b4272805920cd0f74a563abc79df0ba91e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:32",
+      "sequence": 24859,
+      "chapter_label": "MRK 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "Let the Christ, the King of Israel, now come down from the cross, that we may see and believe him.” Those who were crucified with him also insulted him.",
+      "ko": "이스라엘의 왕 그리스도가 지금 십자가에서 내려와 우리로 보고 믿게 할찌어다 하며 함께 십자가에 못 박힌 자들도 예수를 욕하더라",
+      "source_text_hash": "b6e6e266d44e628766e192772d2ddcc7bfc0f09c34adea35cfddfcc82e9ee57f",
+      "translation_text_hash": "faad71b80ab0a1d86a4ab60184855e22346d79b459eec2978da1ce2c6ef999f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 왕 그리스도가 지금 십자가에서 내려와 우리로 보고 믿게 할찌어다 하며 함께 십자가에 못 박힌 자들도 예수를 욕하더라"
+      ],
+      "raw_text_hashes": [
+        "faad71b80ab0a1d86a4ab60184855e22346d79b459eec2978da1ce2c6ef999f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:33",
+      "sequence": 24860,
+      "chapter_label": "MRK 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "When the sixth hour had come, there was darkness over the whole land until the ninth hour.",
+      "ko": "제 육시가 되매 온 땅에 어두움이 임하여 제 구시까지 계속하더니",
+      "source_text_hash": "7342bb2dfe5e19b23ec853f2cea1eb7f2831ede84299148e167e6c97915837b0",
+      "translation_text_hash": "f6ed4239dbff8af8fa8c19ae689e47ba4b109555dbb43873293f2e95de8f2825",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 육시가 되매 온 땅에 어두움이 임하여 제 구시까지 계속하더니"
+      ],
+      "raw_text_hashes": [
+        "f6ed4239dbff8af8fa8c19ae689e47ba4b109555dbb43873293f2e95de8f2825"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:34",
+      "sequence": 24861,
+      "chapter_label": "MRK 15",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 34
+        }
+      ],
+      "en": "At the ninth hour Jesus cried with a loud voice, saying, “Eloi, Eloi, lama sabachthani?”which is, being interpreted, “My God, my God, why have you forsaken me?”",
+      "ko": "제 구시에 예수께서 크게 소리지르시되 엘리 엘리 라마 사박다니 하시니 이를 번역하면 나의 하나님 나의 하나님 어찌하여 나를 버리셨나이까 하는 뜻이라",
+      "source_text_hash": "ee463e583a08ac148d5b45c54a142d473c5ce6d707f89d08bfc71721c8fc87b9",
+      "translation_text_hash": "d3ccbec2878235bef7791630f38a907fdf60c60dc8cd1cf7e25c3a59cc93b028",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 구시에 예수께서 크게 소리지르시되 엘리 엘리 라마 사박다니 하시니 이를 번역하면 나의 하나님 나의 하나님 어찌하여 나를 버리셨나이까 하는 뜻이라"
+      ],
+      "raw_text_hashes": [
+        "d3ccbec2878235bef7791630f38a907fdf60c60dc8cd1cf7e25c3a59cc93b028"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:35",
+      "sequence": 24862,
+      "chapter_label": "MRK 15",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 35
+        }
+      ],
+      "en": "Some of those who stood by, when they heard it, said, “Behold, he is calling Elijah.”",
+      "ko": "곁에 섰던 자 중 어떤이들이 듣고 가로되 보라 엘리야를 부른다 하고",
+      "source_text_hash": "0f198a53c9afdc8cf70c742e7f520b599a35495abd25c4c181d9aa365d989a6a",
+      "translation_text_hash": "848c8d319c8ee1b46e48e4841ddc6eaed9f9fa23b9cea50985840184b0b56d95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곁에 섰던 자 중 어떤이들이 듣고 가로되 보라 엘리야를 부른다 하고"
+      ],
+      "raw_text_hashes": [
+        "848c8d319c8ee1b46e48e4841ddc6eaed9f9fa23b9cea50985840184b0b56d95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:36",
+      "sequence": 24863,
+      "chapter_label": "MRK 15",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 36
+        }
+      ],
+      "en": "One ran, and filling a sponge full of vinegar, put it on a reed and gave it to him to drink, saying, “Let him be. Let’s see whether Elijah comes to take him down.”",
+      "ko": "한 사람이 달려가서 해융에 신포도주를 머금게 하여 갈대에 꿰어 마시우고 가로되 가만 두어라 엘리야가 와서 저를 내려 주나 보자 하더라",
+      "source_text_hash": "021315e8ecc1d03f2cc9fb9491b8541c2cac825a98b30b43a20a00147c1529be",
+      "translation_text_hash": "a7be70a39f7e781619fddde1db6767ffee816803001dec694934732aefc42fe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 달려가서 해융에 신포도주를 머금게 하여 갈대에 꿰어 마시우고 가로되 가만 두어라 엘리야가 와서 저를 내려 주나 보자 하더라"
+      ],
+      "raw_text_hashes": [
+        "a7be70a39f7e781619fddde1db6767ffee816803001dec694934732aefc42fe8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:37",
+      "sequence": 24864,
+      "chapter_label": "MRK 15",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 37
+        }
+      ],
+      "en": "Jesus cried out with a loud voice, and gave up the spirit.",
+      "ko": "예수께서 큰 소리를 지르시고 운명하시다",
+      "source_text_hash": "46c26a36e263ed8e68876bd50d6a1b7b2d558f4b4789084569a17af141ad35c5",
+      "translation_text_hash": "14c5874ede257fcdf7d7228a97533b1e1098126da9a03070dea35de05e5cae7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 큰 소리를 지르시고 운명하시다"
+      ],
+      "raw_text_hashes": [
+        "14c5874ede257fcdf7d7228a97533b1e1098126da9a03070dea35de05e5cae7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:38",
+      "sequence": 24865,
+      "chapter_label": "MRK 15",
+      "verse_label": "38",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 38
+        }
+      ],
+      "en": "The veil of the temple was torn in two from the top to the bottom.",
+      "ko": "이에 성소 휘장이 위로부터 아래까지 찢어져 둘이 되니라",
+      "source_text_hash": "f8fc53c74329d2f4c546e97fe5621d966884ec53a66bfee281462d8285f661af",
+      "translation_text_hash": "4ec9e6e10226c5ed1892dccad0a72c306c06d4b5434c15f211e30f38efe19b91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 성소 휘장이 위로부터 아래까지 찢어져 둘이 되니라"
+      ],
+      "raw_text_hashes": [
+        "4ec9e6e10226c5ed1892dccad0a72c306c06d4b5434c15f211e30f38efe19b91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:39",
+      "sequence": 24866,
+      "chapter_label": "MRK 15",
+      "verse_label": "39",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 39
+        }
+      ],
+      "en": "When the centurion, who stood by opposite him, saw that he cried out like this and breathed his last, he said, “Truly this man was the Son of God!”",
+      "ko": "예수를 향하여 섰던 백부장이 그렇게 운명하심을 보고 가로되 이 사람은 진실로 하나님의 아들이었도다 하더라",
+      "source_text_hash": "c2380eb117ebab67e0f41c90fb3cb3031acb4c2d4a34a4ca416e95807e697b3b",
+      "translation_text_hash": "b3ad4b057b735171956fd9f31873206b6447e6917bb02d39d088032158d527b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 향하여 섰던 백부장이 그렇게 운명하심을 보고 가로되 이 사람은 진실로 하나님의 아들이었도다 하더라"
+      ],
+      "raw_text_hashes": [
+        "b3ad4b057b735171956fd9f31873206b6447e6917bb02d39d088032158d527b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:40",
+      "sequence": 24867,
+      "chapter_label": "MRK 15",
+      "verse_label": "40",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 40
+        }
+      ],
+      "en": "There were also women watching from afar, among whom were both Mary Magdalene and Mary the mother of James the less and of Joses, and Salome;",
+      "ko": "멀리서 바라보는 여자들도 있는데 그 중에 막달라 마리아와 또 작은 야고보와 요세의 어머니 마리아와 또 살로메가 있었으니",
+      "source_text_hash": "fa2c2fa69ba8e525a7ce7c7c4cdbbbb77bccf04c834503b48265964a81164b96",
+      "translation_text_hash": "aca260129313a0a3ce6409d11bdc7a7768514bb1415ad15203bbdd44b4b91de3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "멀리서 바라보는 여자들도 있는데 그 중에 막달라 마리아와 또 작은 야고보와 요세의 어머니 마리아와 또 살로메가 있었으니"
+      ],
+      "raw_text_hashes": [
+        "aca260129313a0a3ce6409d11bdc7a7768514bb1415ad15203bbdd44b4b91de3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:41",
+      "sequence": 24868,
+      "chapter_label": "MRK 15",
+      "verse_label": "41",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 41
+        }
+      ],
+      "en": "who, when he was in Galilee, followed him and served him; and many other women who came up with him to Jerusalem.",
+      "ko": "이들은 예수께서 갈릴리에 계실 때에 좇아 섬기던 자요 또 이 외에도 예수와 함께 예루살렘에 올라온 여자가 많이 있었더라",
+      "source_text_hash": "5dba9deec3b08cee425b9bd8ea2cbb0d04fba57f1d5c79ca9d6ba1bdcf1e3cbe",
+      "translation_text_hash": "35424185af3d1ee139738760d148924fcc6f0bc123e317ae265b4e7fd2e9985e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 예수께서 갈릴리에 계실 때에 좇아 섬기던 자요 또 이 외에도 예수와 함께 예루살렘에 올라온 여자가 많이 있었더라"
+      ],
+      "raw_text_hashes": [
+        "35424185af3d1ee139738760d148924fcc6f0bc123e317ae265b4e7fd2e9985e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:42",
+      "sequence": 24869,
+      "chapter_label": "MRK 15",
+      "verse_label": "42",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 42
+        }
+      ],
+      "en": "When evening had now come, because it was the Preparation Day, that is, the day before the Sabbath,",
+      "ko": "이 날은 예비일 곧 안식일 전날이므로 저물었을 때에",
+      "source_text_hash": "6a3b20df2d05be105b99eb301b7c64db69ad700728457a972ee4c6a6db93cb3c",
+      "translation_text_hash": "e9d7aff804bd40702046dcf60fe7bbb20c423f36404b91529294439d74c8b9e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날은 예비일 곧 안식일 전날이므로 저물었을 때에"
+      ],
+      "raw_text_hashes": [
+        "e9d7aff804bd40702046dcf60fe7bbb20c423f36404b91529294439d74c8b9e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:43",
+      "sequence": 24870,
+      "chapter_label": "MRK 15",
+      "verse_label": "43",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 43
+        }
+      ],
+      "en": "Joseph of Arimathaea, a prominent council member who also himself was looking for God’s Kingdom, came. He boldly went in to Pilate, and asked for Jesus’ body.",
+      "ko": "아리마대 사람 요셉이 와서 당돌히 빌라도에게 들어가 예수의 시체를 달라 하니 이 사람은 존귀한 공회원이요 하나님의 나라를 기다리는 자라",
+      "source_text_hash": "f64c3182ae776302071b6b87ee42218def36e3ba7d10b870d8ba08735b52d879",
+      "translation_text_hash": "d2f625813c8d5d4192775511a28b06eac622233652287ede2932739b33846cbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아리마대 사람 요셉이 와서 당돌히 빌라도에게 들어가 예수의 시체를 달라 하니 이 사람은 존귀한 공회원이요 하나님의 나라를 기다리는 자라"
+      ],
+      "raw_text_hashes": [
+        "d2f625813c8d5d4192775511a28b06eac622233652287ede2932739b33846cbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:44",
+      "sequence": 24871,
+      "chapter_label": "MRK 15",
+      "verse_label": "44",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 44
+        }
+      ],
+      "en": "Pilate was surprised to hear that he was already dead; and summoning the centurion, he asked him whether he had been dead long.",
+      "ko": "빌라도는 예수께서 벌써 죽었을까 하고 이상히 여겨 백부장을 불러 죽은지 오래냐 묻고",
+      "source_text_hash": "1c95ae1d3156f82694e4168bf1f424bbc4dbf011988552cd8ab5b264a6f1515b",
+      "translation_text_hash": "8793b5acb00b34a63f6fc3f51d8ea336d77ecf38d743a3e5f90a6604eca78288",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도는 예수께서 벌써 죽었을까 하고 이상히 여겨 백부장을 불러 죽은지 오래냐 묻고"
+      ],
+      "raw_text_hashes": [
+        "8793b5acb00b34a63f6fc3f51d8ea336d77ecf38d743a3e5f90a6604eca78288"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:45",
+      "sequence": 24872,
+      "chapter_label": "MRK 15",
+      "verse_label": "45",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 45
+        }
+      ],
+      "en": "When he found out from the centurion, he granted the body to Joseph.",
+      "ko": "백부장에게 알아 본 후에 요셉에게 시체를 내어 주는지라",
+      "source_text_hash": "ee4cdbe7b4c9f41f374a6f4fbc5526513e158df67b7dbe6a4cfafa614796a9c0",
+      "translation_text_hash": "803fcfe2e611aecee2395a9c9af0a99fd0a27ec138180ff6c238b36e33533920",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백부장에게 알아 본 후에 요셉에게 시체를 내어 주는지라"
+      ],
+      "raw_text_hashes": [
+        "803fcfe2e611aecee2395a9c9af0a99fd0a27ec138180ff6c238b36e33533920"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:46",
+      "sequence": 24873,
+      "chapter_label": "MRK 15",
+      "verse_label": "46",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 46
+        }
+      ],
+      "en": "He bought a linen cloth, and taking him down, wound him in the linen cloth and laid him in a tomb which had been cut out of a rock. He rolled a stone against the door of the tomb.",
+      "ko": "요셉이 세마포를 사고 예수를 내려다가 이것으로 싸서 바위 속에 판 무덤에 넣어 두고 돌을 굴려 무덤 문에 놓으매",
+      "source_text_hash": "f89d1f03173e3813f6e30e9b58956da781c2382d32b96237882980d10e116fe8",
+      "translation_text_hash": "260c18393ae7ee34484592424db7dab55c32ee275f30ea8f6094cb6265f72ef3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 세마포를 사고 예수를 내려다가 이것으로 싸서 바위 속에 판 무덤에 넣어 두고 돌을 굴려 무덤 문에 놓으매"
+      ],
+      "raw_text_hashes": [
+        "260c18393ae7ee34484592424db7dab55c32ee275f30ea8f6094cb6265f72ef3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:15:47",
+      "sequence": 24874,
+      "chapter_label": "MRK 15",
+      "verse_label": "47",
+      "locator": {
+        "book": "MRK",
+        "chapter": 15,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 15,
+          "verse": 47
+        }
+      ],
+      "en": "Mary Magdalene and Mary the mother of Joses, saw where he was laid.",
+      "ko": "때에 막달라 마리아와 요세의 어머니 마리아가 예수 둔 곳을 보더라",
+      "source_text_hash": "765fe65716de08f6f5df9db5180e2c757ef678fed447183763a0a202a49e267f",
+      "translation_text_hash": "d31be7b31808d81b0673624a7f9a7d7f3667e0a65004ba5ba62e04377611a65e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 막달라 마리아와 요세의 어머니 마리아가 예수 둔 곳을 보더라"
+      ],
+      "raw_text_hashes": [
+        "d31be7b31808d81b0673624a7f9a7d7f3667e0a65004ba5ba62e04377611a65e"
+      ]
+    }
+  ]
+}

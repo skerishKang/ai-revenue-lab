@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:118",
+  "unit_ordinal": 596,
+  "unit_label": "PSA 118",
+  "book_code": "PSA",
+  "chapter_number": 118,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:118:1",
+      "sequence": 15871,
+      "chapter_label": "PSA 118",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 1
+        }
+      ],
+      "en": "Give thanks to the LORD, for he is good, for his loving kindness endures forever.",
+      "ko": "여호와께 감사하라 저는 선하시며 그 인자하심이 영원함이로다",
+      "source_text_hash": "5952864712492c7c4000fb1ee544c2bd85ba0d5c398afae1e166342fe07a5263",
+      "translation_text_hash": "8adbcc0cf27c2c3e51692d4cdba043f8111410b45bc7d4c0b31ce5630e4ccc33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 감사하라 저는 선하시며 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "8adbcc0cf27c2c3e51692d4cdba043f8111410b45bc7d4c0b31ce5630e4ccc33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:2",
+      "sequence": 15872,
+      "chapter_label": "PSA 118",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 2
+        }
+      ],
+      "en": "Let Israel now say that his loving kindness endures forever.",
+      "ko": "이제 이스라엘은 말하기를 그 인자하심이 영원하다 할찌로다",
+      "source_text_hash": "c11c8192a5ffdaf01f48cde9043356283f9630f5e8e54e581c61acf21ffac4d2",
+      "translation_text_hash": "2632f93e387551b4e57bcc1b6124bdfd3f71f2796e7e3e5a2aa4464f0b9471fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 이스라엘은 말하기를 그 인자하심이 영원하다 할찌로다"
+      ],
+      "raw_text_hashes": [
+        "2632f93e387551b4e57bcc1b6124bdfd3f71f2796e7e3e5a2aa4464f0b9471fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:3",
+      "sequence": 15873,
+      "chapter_label": "PSA 118",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 3
+        }
+      ],
+      "en": "Let the house of Aaron now say that his loving kindness endures forever.",
+      "ko": "이제 아론의 집은 말하기를 그 인자하심이 영원하다 할찌로다",
+      "source_text_hash": "1d9facd35cab8edff5d6ac41da7dbb32c2fd83f076d2cbdfce1368bdf17edd36",
+      "translation_text_hash": "fa67944ecf24a92f5a8b8546f21c8a69efd753ac9543f449198e245d4d30666c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 아론의 집은 말하기를 그 인자하심이 영원하다 할찌로다"
+      ],
+      "raw_text_hashes": [
+        "fa67944ecf24a92f5a8b8546f21c8a69efd753ac9543f449198e245d4d30666c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:4",
+      "sequence": 15874,
+      "chapter_label": "PSA 118",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 4
+        }
+      ],
+      "en": "Now let those who fear the LORD say that his loving kindness endures forever.",
+      "ko": "이제 여호와를 경외하는 자는 말하기를 그 인자하심이 영원하다 할찌로다",
+      "source_text_hash": "dba60177bc947c24134f3992044839dd193bc1a12492bbc8a91594d14eb7d2d3",
+      "translation_text_hash": "a497f76a2c3ade8c94f24c032acbdd579315edf97a068bb8258e4b2b0c6e2a17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 여호와를 경외하는 자는 말하기를 그 인자하심이 영원하다 할찌로다"
+      ],
+      "raw_text_hashes": [
+        "a497f76a2c3ade8c94f24c032acbdd579315edf97a068bb8258e4b2b0c6e2a17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:5",
+      "sequence": 15875,
+      "chapter_label": "PSA 118",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 5
+        }
+      ],
+      "en": "Out of my distress, I called on the LORD. The LORD answered me with freedom.",
+      "ko": "내가 고통 중에 여호와께 부르짖었더니 여호와께서 응답하시고 나를 광활한 곳에 세우셨도다",
+      "source_text_hash": "8e1939dd511e258c37dbcb2c987564d9f171d9a62371c2ebfc69abbc41309bfa",
+      "translation_text_hash": "315cbdb5e6b075c53f997b733ae019cd85e658a831c733935aad3cfbc4933b76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 고통 중에 여호와께 부르짖었더니 여호와께서 응답하시고 나를 광활한 곳에 세우셨도다"
+      ],
+      "raw_text_hashes": [
+        "315cbdb5e6b075c53f997b733ae019cd85e658a831c733935aad3cfbc4933b76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:6",
+      "sequence": 15876,
+      "chapter_label": "PSA 118",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD is on my side. I will not be afraid. What can man do to me?",
+      "ko": "여호와는 내 편이시라 내게 두려움이 없나니 사람이 내게 어찌할꼬",
+      "source_text_hash": "41424369305008956f1efa678e9366fc96d37152ce4bca94733f1028cbc2d68a",
+      "translation_text_hash": "6175b5abb547625f16ba70ffef7a3d147504449441175eae3b2f87e403d4f7a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 내 편이시라 내게 두려움이 없나니 사람이 내게 어찌할꼬"
+      ],
+      "raw_text_hashes": [
+        "6175b5abb547625f16ba70ffef7a3d147504449441175eae3b2f87e403d4f7a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:7",
+      "sequence": 15877,
+      "chapter_label": "PSA 118",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD is on my side among those who help me. Therefore I will look in triumph at those who hate me.",
+      "ko": "여호와께서 내 편이 되사 나를 돕는 자 중에 계시니 그러므로 나를 미워하는 자에게 보응하시는 것을 내가 보리로다",
+      "source_text_hash": "d0313d0199c04fcda2de7162e52d0ac13aa21ae0e4de97496a11d02ce8994062",
+      "translation_text_hash": "85958831c74b36e44115c37d2f79cd095180b7e91d2fb209fce7f0408913c2a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내 편이 되사 나를 돕는 자 중에 계시니 그러므로 나를 미워하는 자에게 보응하시는 것을 내가 보리로다"
+      ],
+      "raw_text_hashes": [
+        "85958831c74b36e44115c37d2f79cd095180b7e91d2fb209fce7f0408913c2a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:8",
+      "sequence": 15878,
+      "chapter_label": "PSA 118",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 8
+        }
+      ],
+      "en": "It is better to take refuge in the LORD, than to put confidence in man.",
+      "ko": "여호와께 피함이 사람을 신뢰함보다 나으며",
+      "source_text_hash": "6f9a900a546f0fe336082960ac6fb9d13cc2d38f2b4d60c4df5c5ad14ca4bd16",
+      "translation_text_hash": "3b12f1d1bef15fd1f2d7578241167d4e44efe5113a20b692f1229d6d50517210",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 피함이 사람을 신뢰함보다 나으며"
+      ],
+      "raw_text_hashes": [
+        "3b12f1d1bef15fd1f2d7578241167d4e44efe5113a20b692f1229d6d50517210"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:9",
+      "sequence": 15879,
+      "chapter_label": "PSA 118",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 9
+        }
+      ],
+      "en": "It is better to take refuge in the LORD, than to put confidence in princes.",
+      "ko": "여호와께 피함이 방백들을 신뢰함보다 낫도다",
+      "source_text_hash": "37d1b91654bbfc3ae16f9709203af23ddf9e204db99ab6e12138e56694ba8e96",
+      "translation_text_hash": "6aaf314f8df5b646bcf378ede95f1d073c8459d9653f9f6c36512271ef68b77f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 피함이 방백들을 신뢰함보다 낫도다"
+      ],
+      "raw_text_hashes": [
+        "6aaf314f8df5b646bcf378ede95f1d073c8459d9653f9f6c36512271ef68b77f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:10",
+      "sequence": 15880,
+      "chapter_label": "PSA 118",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 10
+        }
+      ],
+      "en": "All the nations surrounded me, but in the LORD’s name I cut them off.",
+      "ko": "열방이 나를 에워쌌으니 내가 여호와의 이름으로 저희를 끊으리로다",
+      "source_text_hash": "1cfac4053f3c0f0b7da5ed6bdb04a71c75d19495b68e73f488178f79de491c75",
+      "translation_text_hash": "c13c9628ba3e36ef90dd8a8ad3f4cc4d6f430b20752e78b5dc8d31b6ab0797c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방이 나를 에워쌌으니 내가 여호와의 이름으로 저희를 끊으리로다"
+      ],
+      "raw_text_hashes": [
+        "c13c9628ba3e36ef90dd8a8ad3f4cc4d6f430b20752e78b5dc8d31b6ab0797c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:11",
+      "sequence": 15881,
+      "chapter_label": "PSA 118",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 11
+        }
+      ],
+      "en": "They surrounded me, yes, they surrounded me. In the LORD’s name I indeed cut them off.",
+      "ko": "저희가 나를 에워싸고 에워쌌으니 내가 여호와의 이름으로 저희를 끊으리로다",
+      "source_text_hash": "cac885ef06e9bf660c4d41b89e7a1d4f6c8b41a9ce271c1322bcfa4463b11ed8",
+      "translation_text_hash": "1dc5ae8ce1f6d26edb244c5b57c67c48729784a7fc4e9e70b980189e93994471",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나를 에워싸고 에워쌌으니 내가 여호와의 이름으로 저희를 끊으리로다"
+      ],
+      "raw_text_hashes": [
+        "1dc5ae8ce1f6d26edb244c5b57c67c48729784a7fc4e9e70b980189e93994471"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:12",
+      "sequence": 15882,
+      "chapter_label": "PSA 118",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 12
+        }
+      ],
+      "en": "They surrounded me like bees. They are quenched like the burning thorns. In the LORD’s name I cut them off.",
+      "ko": "저희가 벌과 같이 나를 에워쌌으나 가시덤불의 불 같이 소멸되었나니 내가 여호와의 이름으로 저희를 끊으리로다",
+      "source_text_hash": "df68ab0137ab64af0e1b988ab0ac2f2cbde8646443c8a430cc6b35a5c87563e2",
+      "translation_text_hash": "d2436caab8afce991b688915756b5e9357c8cfde253fc6184ea8fb36f4f667f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 벌과 같이 나를 에워쌌으나 가시덤불의 불 같이 소멸되었나니 내가 여호와의 이름으로 저희를 끊으리로다"
+      ],
+      "raw_text_hashes": [
+        "d2436caab8afce991b688915756b5e9357c8cfde253fc6184ea8fb36f4f667f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:13",
+      "sequence": 15883,
+      "chapter_label": "PSA 118",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 13
+        }
+      ],
+      "en": "You pushed me back hard, to make me fall, but the LORD helped me.",
+      "ko": "네가 나를 밀쳐 넘어뜨리려 하였으나 여호와께서 나를 도우셨도다",
+      "source_text_hash": "a90285864fa8e7473c7d1487acd5ec1a87da7d6e725cda8a549978c6e149d27e",
+      "translation_text_hash": "cefa888be34db4cd8d08ac2ec3fd5eb0c197bc1c46b6c17bb62aa6593eae6046",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 나를 밀쳐 넘어뜨리려 하였으나 여호와께서 나를 도우셨도다"
+      ],
+      "raw_text_hashes": [
+        "cefa888be34db4cd8d08ac2ec3fd5eb0c197bc1c46b6c17bb62aa6593eae6046"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:14",
+      "sequence": 15884,
+      "chapter_label": "PSA 118",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD is my strength and song. He has become my salvation.",
+      "ko": "여호와는 나의 능력과 찬송이시요 또 나의 구원이 되셨도다",
+      "source_text_hash": "23c4f2f5e3ab77118f9784375b5313d0098c037e158d595c42517234404540eb",
+      "translation_text_hash": "1acdafdefc2a8421c0f631754d11b6a59667a1ddaab68d50ebfd26b8f0d674d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 나의 능력과 찬송이시요 또 나의 구원이 되셨도다"
+      ],
+      "raw_text_hashes": [
+        "1acdafdefc2a8421c0f631754d11b6a59667a1ddaab68d50ebfd26b8f0d674d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:15",
+      "sequence": 15885,
+      "chapter_label": "PSA 118",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 15
+        }
+      ],
+      "en": "The voice of rejoicing and salvation is in the tents of the righteous. “The right hand of the LORD does valiantly.",
+      "ko": "의인의 장막에 기쁜 소리, 구원의 소리가 있음이여 여호와의 오른손이 권능을 베푸시며",
+      "source_text_hash": "8d73e5557d95709b32f0b5a5d408a5d9ed76ad1616b0c9d19552232022a1985f",
+      "translation_text_hash": "175e86863e8977a2bada944efa17cee2c96ee649a9a69fff33f1b051c9705503",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 장막에 기쁜 소리, 구원의 소리가 있음이여 여호와의 오른손이 권능을 베푸시며"
+      ],
+      "raw_text_hashes": [
+        "175e86863e8977a2bada944efa17cee2c96ee649a9a69fff33f1b051c9705503"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:16",
+      "sequence": 15886,
+      "chapter_label": "PSA 118",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 16
+        }
+      ],
+      "en": "The right hand of the LORD is exalted! The right hand of the LORD does valiantly!”",
+      "ko": "여호와의 오른손이 높이 들렸으며 여호와의 오른손이 권능을 베푸시는도다",
+      "source_text_hash": "4ed8bafb67fb42b68a626ae3f851ccb941f4a2aa8c6a402310ffeefd3ac81019",
+      "translation_text_hash": "00ba6842592f1e0e10df0fb5c38f2b1162621513aad2db310c2c034cc1b64ece",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 오른손이 높이 들렸으며 여호와의 오른손이 권능을 베푸시는도다"
+      ],
+      "raw_text_hashes": [
+        "00ba6842592f1e0e10df0fb5c38f2b1162621513aad2db310c2c034cc1b64ece"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:17",
+      "sequence": 15887,
+      "chapter_label": "PSA 118",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 17
+        }
+      ],
+      "en": "I will not die, but live, and declare the LORD’s works.",
+      "ko": "내가 죽지 않고 살아서 여호와의 행사를 선포하리로다",
+      "source_text_hash": "26fbf1da05bb4d37da78aabec228cdf7fd533c76f7d261d903dd3f3d50ed320d",
+      "translation_text_hash": "e3936a8a5a2370350d2d81f2dcd1fe36ec94842fbc8288982c985fcacae38640",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 죽지 않고 살아서 여호와의 행사를 선포하리로다"
+      ],
+      "raw_text_hashes": [
+        "e3936a8a5a2370350d2d81f2dcd1fe36ec94842fbc8288982c985fcacae38640"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:18",
+      "sequence": 15888,
+      "chapter_label": "PSA 118",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD has punished me severely, but he has not given me over to death.",
+      "ko": "여호와께서 나를 심히 경책하셨어도 죽음에는 붙이지 아니하셨도다",
+      "source_text_hash": "2f608efce76b44f85952aa841ab9c2d9d69f647b36de740087a4a5da778d754a",
+      "translation_text_hash": "51038b58887d495af32e774dc4e50c41798b8967ccdb4a6ee62c7a88f8f236c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 나를 심히 경책하셨어도 죽음에는 붙이지 아니하셨도다"
+      ],
+      "raw_text_hashes": [
+        "51038b58887d495af32e774dc4e50c41798b8967ccdb4a6ee62c7a88f8f236c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:19",
+      "sequence": 15889,
+      "chapter_label": "PSA 118",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 19
+        }
+      ],
+      "en": "Open to me the gates of righteousness. I will enter into them. I will give thanks to the LORD.",
+      "ko": "내게 의의 문을 열찌어다 내가 들어 가서 여호와께 감사하리로다",
+      "source_text_hash": "67e6d29554d9359a64bff63cd623dbb07bd119f3d0171bc0f31ff94e0045a1a6",
+      "translation_text_hash": "53baa74f797d18515dade37677936874f6f2fb6dfce4e04f0f0bcc1bac7d07d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 의의 문을 열찌어다 내가 들어 가서 여호와께 감사하리로다"
+      ],
+      "raw_text_hashes": [
+        "53baa74f797d18515dade37677936874f6f2fb6dfce4e04f0f0bcc1bac7d07d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:20",
+      "sequence": 15890,
+      "chapter_label": "PSA 118",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 20
+        }
+      ],
+      "en": "This is the gate of the LORD; the righteous will enter into it.",
+      "ko": "이는 여호와의 문이라 의인이 그리로 들어 가리로다",
+      "source_text_hash": "d4ad0626efbc1b4ad77675f2265c57e567a573d507637a5e26de0d45595fcd29",
+      "translation_text_hash": "e9cbd495ac1e9cefa853fca3494fd3c389570b98628bebf1a4f846ee9d33ecf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와의 문이라 의인이 그리로 들어 가리로다"
+      ],
+      "raw_text_hashes": [
+        "e9cbd495ac1e9cefa853fca3494fd3c389570b98628bebf1a4f846ee9d33ecf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:21",
+      "sequence": 15891,
+      "chapter_label": "PSA 118",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 21
+        }
+      ],
+      "en": "I will give thanks to you, for you have answered me, and have become my salvation.",
+      "ko": "주께서 내게 응답하시고 나의 구원이 되셨으니 내가 주께 감사하리이다",
+      "source_text_hash": "3d883496d1c9b478912efce96c4fa9217e37314ef2a8c707c15212e3ab516f2d",
+      "translation_text_hash": "2adf894c7e9f08783826024d79e427bc8a6cef6866cac1b03833b81a3bb79a97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내게 응답하시고 나의 구원이 되셨으니 내가 주께 감사하리이다"
+      ],
+      "raw_text_hashes": [
+        "2adf894c7e9f08783826024d79e427bc8a6cef6866cac1b03833b81a3bb79a97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:22",
+      "sequence": 15892,
+      "chapter_label": "PSA 118",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 22
+        }
+      ],
+      "en": "The stone which the builders rejected has become the cornerstone.",
+      "ko": "건축자의 버린 돌이 집 모퉁이의 머릿돌이 되었나니",
+      "source_text_hash": "b341440a77ed3924374a01ad199c99196f3933aa598825ba23e40362f765b109",
+      "translation_text_hash": "58eb633480c72efc3534bc42a709fdc2f8e7dca674e05d8ffe14401277fdc265",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "건축자의 버린 돌이 집 모퉁이의 머릿돌이 되었나니"
+      ],
+      "raw_text_hashes": [
+        "58eb633480c72efc3534bc42a709fdc2f8e7dca674e05d8ffe14401277fdc265"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:23",
+      "sequence": 15893,
+      "chapter_label": "PSA 118",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 23
+        }
+      ],
+      "en": "This is the LORD’s doing. It is marvelous in our eyes.",
+      "ko": "이는 여호와의 행하신 것이요 우리 눈에 기이한 바로다",
+      "source_text_hash": "ab21cc4ba05b4db161578a53f82170c48d4f4eaa4f76af1482caa7e9bf915318",
+      "translation_text_hash": "bf868d8b58942e44a84e5735af3ae975ed748f9bdfe568a993727598e43b9444",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와의 행하신 것이요 우리 눈에 기이한 바로다"
+      ],
+      "raw_text_hashes": [
+        "bf868d8b58942e44a84e5735af3ae975ed748f9bdfe568a993727598e43b9444"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:24",
+      "sequence": 15894,
+      "chapter_label": "PSA 118",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 24
+        }
+      ],
+      "en": "This is the day that the LORD has made. We will rejoice and be glad in it!",
+      "ko": "이 날은 여호와의 정하신 것이라 이 날에 우리가 즐거워하고 기뻐하리로다",
+      "source_text_hash": "bbf62edb806ae2a778dd2f751f2063b5b4703ff10d079a61b1f6cd537c7e962d",
+      "translation_text_hash": "aa12035c238ce64078730b2658bedcc48f3b210b3e57af652800753d212fb775",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날은 여호와의 정하신 것이라 이 날에 우리가 즐거워하고 기뻐하리로다"
+      ],
+      "raw_text_hashes": [
+        "aa12035c238ce64078730b2658bedcc48f3b210b3e57af652800753d212fb775"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:25",
+      "sequence": 15895,
+      "chapter_label": "PSA 118",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 25
+        }
+      ],
+      "en": "Save us now, we beg you, LORD! LORD, we beg you, send prosperity now.",
+      "ko": "여호와여 구하옵나니 이제 구원하소서 여호와여 우리가 구하옵나니 이제 형통케 하소서",
+      "source_text_hash": "05a6f7dd7e29daa93abb5502c6f00bf0540793af22069452df5c04caadf3a939",
+      "translation_text_hash": "9dd6a4b84fb43213dcd7e713c98df90726c0e59a19e6180a2138922bab90873c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 구하옵나니 이제 구원하소서 여호와여 우리가 구하옵나니 이제 형통케 하소서"
+      ],
+      "raw_text_hashes": [
+        "9dd6a4b84fb43213dcd7e713c98df90726c0e59a19e6180a2138922bab90873c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:26",
+      "sequence": 15896,
+      "chapter_label": "PSA 118",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 26
+        }
+      ],
+      "en": "Blessed is he who comes in the LORD’s name! We have blessed you out of the LORD’s house.",
+      "ko": "여호와의 이름으로 오는 자가 복이 있음이여 우리가 여호와의 집에서 너희를 축복하였도다",
+      "source_text_hash": "11100ade9b72b5ba9e2c90c99ac112e7b2d7171f8b3cfe579c8d3edd1ef9c6de",
+      "translation_text_hash": "f36e83649e4eccdf440398ad65703bea7b482725eb5955126d8ffa4f1ae54877",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 이름으로 오는 자가 복이 있음이여 우리가 여호와의 집에서 너희를 축복하였도다"
+      ],
+      "raw_text_hashes": [
+        "f36e83649e4eccdf440398ad65703bea7b482725eb5955126d8ffa4f1ae54877"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:27",
+      "sequence": 15897,
+      "chapter_label": "PSA 118",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 27
+        }
+      ],
+      "en": "The LORD is God, and he has given us light. Bind the sacrifice with cords, even to the horns of the altar.",
+      "ko": "여호와는 하나님이시라 우리에게 비취셨으니 줄로 희생을 제단 뿔에 맬찌어다",
+      "source_text_hash": "2c3a8bf45c423b038c203a833915fb8ba141d67894fe5dfa20c743582789b089",
+      "translation_text_hash": "ffa348264e28e23f90796eefb79355ded2f71b2ced7e885852aa350c057c321e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 하나님이시라 우리에게 비취셨으니 줄로 희생을 제단 뿔에 맬찌어다"
+      ],
+      "raw_text_hashes": [
+        "ffa348264e28e23f90796eefb79355ded2f71b2ced7e885852aa350c057c321e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:28",
+      "sequence": 15898,
+      "chapter_label": "PSA 118",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 28
+        }
+      ],
+      "en": "You are my God, and I will give thanks to you. You are my God, I will exalt you.",
+      "ko": "주는 나의 하나님이시라 내가 주께 감사하리이다 주는 나의 하나님이시라 내가 주를 높이리이다",
+      "source_text_hash": "49c27dce321202992535101936328d4e9ebd6d66d718d4feeea853a8874baa99",
+      "translation_text_hash": "cfb4dae4a603bb1fed3524c718ee0d90428454c9d977bcd3d07bc269285f62f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나의 하나님이시라 내가 주께 감사하리이다 주는 나의 하나님이시라 내가 주를 높이리이다"
+      ],
+      "raw_text_hashes": [
+        "cfb4dae4a603bb1fed3524c718ee0d90428454c9d977bcd3d07bc269285f62f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:118:29",
+      "sequence": 15899,
+      "chapter_label": "PSA 118",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 118,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 118,
+          "verse": 29
+        }
+      ],
+      "en": "Oh give thanks to the LORD, for he is good, for his loving kindness endures forever.",
+      "ko": "여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다",
+      "source_text_hash": "d714e2e330cdc35be8c78b8923c0e2b831e2711c47391fedb5e57f25bb63213a",
+      "translation_text_hash": "dc191eaa2cafa6a8b06a7d277813c0ae7b6f397607600233379c0797e8895296",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "dc191eaa2cafa6a8b06a7d277813c0ae7b6f397607600233379c0797e8895296"
+      ]
+    }
+  ]
+}

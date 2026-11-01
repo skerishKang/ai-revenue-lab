@@ -1,0 +1,205 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:150",
+  "unit_ordinal": 628,
+  "unit_label": "PSA 150",
+  "book_code": "PSA",
+  "chapter_number": 150,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:150:1",
+      "sequence": 16396,
+      "chapter_label": "PSA 150",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 150,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 150,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD! Praise God in his sanctuary! Praise him in his heavens for his acts of power!",
+      "ko": "할렐루야 그 성소에서 하나님을 찬양하며 그 권능의 궁창에서 그를 찬양할찌어다",
+      "source_text_hash": "2eb60c9e61ef58b41b3b8c33705e108068a166cfb2596e3d656d7adaa7eefe51",
+      "translation_text_hash": "ab66b99fb933349caf2e59c8a12502120c71557ce9ca21bbbbc5585269a60842",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할렐루야 그 성소에서 하나님을 찬양하며 그 권능의 궁창에서 그를 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "ab66b99fb933349caf2e59c8a12502120c71557ce9ca21bbbbc5585269a60842"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:150:2",
+      "sequence": 16397,
+      "chapter_label": "PSA 150",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 150,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 150,
+          "verse": 2
+        }
+      ],
+      "en": "Praise him for his mighty acts! Praise him according to his excellent greatness!",
+      "ko": "그의 능하신 행동을 인하여 찬양하며 그의 지극히 광대하심을 좇아 찬양할찌어다",
+      "source_text_hash": "8677fefdda2b55b2b467cc99b9227f1ebdcc016eb544f9a51b6b06805c467e74",
+      "translation_text_hash": "3b95eb0c312bdf3115a5987a9c0ba9c681a2ef58e5347daacf1bfb4dd77b191c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 능하신 행동을 인하여 찬양하며 그의 지극히 광대하심을 좇아 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "3b95eb0c312bdf3115a5987a9c0ba9c681a2ef58e5347daacf1bfb4dd77b191c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:150:3",
+      "sequence": 16398,
+      "chapter_label": "PSA 150",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 150,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 150,
+          "verse": 3
+        }
+      ],
+      "en": "Praise him with the sounding of the trumpet! Praise him with harp and lyre!",
+      "ko": "나팔 소리로 찬양하며 비파와 수금으로 찬양할찌어다",
+      "source_text_hash": "e3192c684818c8feb4de5b05c2e0700f367fb1d644d17edf21f8e25fdcbe26bd",
+      "translation_text_hash": "b411a0ecb208c1b7f253760a6bfb949e071d35025d1b092c09924c00c15bcb13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나팔 소리로 찬양하며 비파와 수금으로 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "b411a0ecb208c1b7f253760a6bfb949e071d35025d1b092c09924c00c15bcb13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:150:4",
+      "sequence": 16399,
+      "chapter_label": "PSA 150",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 150,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 150,
+          "verse": 4
+        }
+      ],
+      "en": "Praise him with tambourine and dancing! Praise him with stringed instruments and flute!",
+      "ko": "소고 치며 춤 추어 찬양하며 현악과 퉁소로 찬양할찌어다",
+      "source_text_hash": "19a3216401ffd4cc787bb7ec2dbaff215295ea1257487c85893a3a33719ac149",
+      "translation_text_hash": "54b4c2f9ba2389f25879e22653c447459c668c6c8aa94cd4cc61e9d98bfa9c4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소고 치며 춤 추어 찬양하며 현악과 퉁소로 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "54b4c2f9ba2389f25879e22653c447459c668c6c8aa94cd4cc61e9d98bfa9c4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:150:5",
+      "sequence": 16400,
+      "chapter_label": "PSA 150",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 150,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 150,
+          "verse": 5
+        }
+      ],
+      "en": "Praise him with loud cymbals! Praise him with resounding cymbals!",
+      "ko": "큰 소리 나는 제금으로 찬양하며 높은 소리 나는 제금으로 찬양할찌어다",
+      "source_text_hash": "00a22ee9a814f4fe32c85be8632279f3192474215d3e7eba842fa04f3ae8c7d1",
+      "translation_text_hash": "9ccd3ecb52737e605c16d7878bbfabc5a28b313ce519502cd9d3f455d503ba21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 소리 나는 제금으로 찬양하며 높은 소리 나는 제금으로 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "9ccd3ecb52737e605c16d7878bbfabc5a28b313ce519502cd9d3f455d503ba21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:150:6",
+      "sequence": 16401,
+      "chapter_label": "PSA 150",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 150,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 150,
+          "verse": 6
+        }
+      ],
+      "en": "Let everything that has breath praise the LORD! Praise the LORD!",
+      "ko": "호흡이 있는 자마다 여호와를 찬양할찌어다 할렐루야",
+      "source_text_hash": "977ef9862d70fe68034766b1f922c89a8ae03b7ff712ea5030f379ac86472611",
+      "translation_text_hash": "2187ccff61302716636bb3d904d21d304208e43fad71738fd4a90f67e6d83743",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호흡이 있는 자마다 여호와를 찬양할찌어다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "2187ccff61302716636bb3d904d21d304208e43fad71738fd4a90f67e6d83743"
+      ]
+    }
+  ]
+}

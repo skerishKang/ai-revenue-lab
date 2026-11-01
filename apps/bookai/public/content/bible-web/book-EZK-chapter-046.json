@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:046",
+  "unit_ordinal": 848,
+  "unit_label": "EZK 46",
+  "book_code": "EZK",
+  "chapter_number": 46,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:46:1",
+      "sequence": 21657,
+      "chapter_label": "EZK 46",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 1
+        }
+      ],
+      "en": "“‘The Lord GOD says: “The gate of the inner court that looks toward the east shall be shut the six working days; but on the Sabbath day it shall be opened, and on the day of the new moon it shall be opened.",
+      "ko": "나 주 여호와가 말하노라 안 뜰 동향한 문을 일하는 육일 동안에는 닫되 안식일에는 열며 월삭에도 열고",
+      "source_text_hash": "c44827bc2534d142ba395d871ba2ab5ce41dbea17549fc5ca80a064dcab2029b",
+      "translation_text_hash": "ca38af03886046b8e6d3ad8bdc19f8dc94dfefc036320bf05aba587db874aeb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 안 뜰 동향한 문을 일하는 육일 동안에는 닫되 안식일에는 열며 월삭에도 열고"
+      ],
+      "raw_text_hashes": [
+        "ca38af03886046b8e6d3ad8bdc19f8dc94dfefc036320bf05aba587db874aeb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:2",
+      "sequence": 21658,
+      "chapter_label": "EZK 46",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 2
+        }
+      ],
+      "en": "The prince shall enter by the way of the porch of the gate outside, and shall stand by the post of the gate; and the priests shall prepare his burnt offering and his peace offerings, and he shall worship at the threshold of the gate. Then he shall go out, but the gate shall not be shut until the evening.",
+      "ko": "왕은 바깥 문 현관을 통하여 들어와서 문 벽 곁에 서고 제사장은 그를 위하여 번제와 감사제를 드릴 것이요 왕은 문통에서 경배한 후에 밖으로 나가고 그 문은 저녁까지 닫지 말 것이며",
+      "source_text_hash": "49b9ddb665391be4df7ad061a564819b1f66403d5f8741e3c398f385cd41c33c",
+      "translation_text_hash": "71417da53b5280a9b36d16dbe4d2eb6004078227dff883019e422c90ed89963c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 바깥 문 현관을 통하여 들어와서 문 벽 곁에 서고 제사장은 그를 위하여 번제와 감사제를 드릴 것이요 왕은 문통에서 경배한 후에 밖으로 나가고 그 문은 저녁까지 닫지 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "71417da53b5280a9b36d16dbe4d2eb6004078227dff883019e422c90ed89963c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:3",
+      "sequence": 21659,
+      "chapter_label": "EZK 46",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 3
+        }
+      ],
+      "en": "The people of the land shall worship at the door of that gate before the LORD on the Sabbaths and on the new moons.",
+      "ko": "이 땅 백성도 안식일과 월삭에 이 문통에서 나 여호와 앞에 경배할 것이며",
+      "source_text_hash": "fa88f7fb60bf78074eb4f065020a8f6fe5e11a4009cc36304edaf719d9f391e5",
+      "translation_text_hash": "45275132b5853ca34534039f340344cadfcd1c2e8331031fa7f514ffdc876d71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅 백성도 안식일과 월삭에 이 문통에서 나 여호와 앞에 경배할 것이며"
+      ],
+      "raw_text_hashes": [
+        "45275132b5853ca34534039f340344cadfcd1c2e8331031fa7f514ffdc876d71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:4",
+      "sequence": 21660,
+      "chapter_label": "EZK 46",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 4
+        }
+      ],
+      "en": "The burnt offering that the prince shall offer to the LORD shall be on the Sabbath day, six lambs without defect and a ram without defect;",
+      "ko": "안식일에 왕이 여호와께 드릴 번제는 흠 없는 어린 양 여섯과 흠 없는 수양 하나라",
+      "source_text_hash": "e1b5806acd193c94cef8fcb3a162753a938f7e52a50f5d43ef3cd7b4ec8fe3d7",
+      "translation_text_hash": "a014e422a6b5da2a29b7f0978e203d180e87bc0165d93cbc2b841869c9b15508",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일에 왕이 여호와께 드릴 번제는 흠 없는 어린 양 여섯과 흠 없는 수양 하나라"
+      ],
+      "raw_text_hashes": [
+        "a014e422a6b5da2a29b7f0978e203d180e87bc0165d93cbc2b841869c9b15508"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:5",
+      "sequence": 21661,
+      "chapter_label": "EZK 46",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 5
+        }
+      ],
+      "en": "and the meal offering shall be an ephah for the ram, and the meal offering for the lambs as he is able to give, and a hin of oil to an ephah.",
+      "ko": "그 소제는 수양 하나에는 밀가루 한 에바요 모든 어린 양에는 그 힘대로 할 것이며 밀가루 한 에바에는 기름 한 힌씩이니라",
+      "source_text_hash": "59ab613ed84fe805749eae2fd11cf4616a90e8797b5138abef2a1dba94b07279",
+      "translation_text_hash": "4159269e899c0ca593337d777770aecf34b029186a3db5fbd7952028c20a4fe9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소제는 수양 하나에는 밀가루 한 에바요 모든 어린 양에는 그 힘대로 할 것이며 밀가루 한 에바에는 기름 한 힌씩이니라"
+      ],
+      "raw_text_hashes": [
+        "4159269e899c0ca593337d777770aecf34b029186a3db5fbd7952028c20a4fe9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:6",
+      "sequence": 21662,
+      "chapter_label": "EZK 46",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 6
+        }
+      ],
+      "en": "On the day of the new moon it shall be a young bull without defect, six lambs, and a ram. They shall be without defect.",
+      "ko": "월삭에는 흠 없는 수송아지 하나와 어린 양 여섯과 수양 하나를 드리되 모두 흠 없는 것으로 할 것이며",
+      "source_text_hash": "e5aa9db93ee86bf2002cac50e8974c39e7e02d7240526f1062e30c35d13275b1",
+      "translation_text_hash": "28603ae370eb872e156038f10d501b6aeac07bdd92775d731403faf13ba821d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "월삭에는 흠 없는 수송아지 하나와 어린 양 여섯과 수양 하나를 드리되 모두 흠 없는 것으로 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "28603ae370eb872e156038f10d501b6aeac07bdd92775d731403faf13ba821d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:7",
+      "sequence": 21663,
+      "chapter_label": "EZK 46",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 7
+        }
+      ],
+      "en": "He shall prepare a meal offering: an ephah for the bull, and an ephah for the ram, and for the lambs according as he is able, and a hin of oil to an ephah.",
+      "ko": "또 소제를 갖추되 수송아지에는 밀가루 한 에바요 수양에도 밀가루 한 에바며 모든 어린 양에는 그 힘대로 할 것이요 밀가루 한 에바에는 기름 한 힌씩이며",
+      "source_text_hash": "1ac93939cacbe9c20a138bcc7e3c0a84716e67e77cc1bafc141b5905b693cab6",
+      "translation_text_hash": "48e645b8d8c0788aa7ada616a47987eff513269fd4c8ebe7e35365e683cd0e80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 소제를 갖추되 수송아지에는 밀가루 한 에바요 수양에도 밀가루 한 에바며 모든 어린 양에는 그 힘대로 할 것이요 밀가루 한 에바에는 기름 한 힌씩이며"
+      ],
+      "raw_text_hashes": [
+        "48e645b8d8c0788aa7ada616a47987eff513269fd4c8ebe7e35365e683cd0e80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:8",
+      "sequence": 21664,
+      "chapter_label": "EZK 46",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 8
+        }
+      ],
+      "en": "When the prince enters, he shall go in by the way of the porch of the gate, and he shall go out by its way.",
+      "ko": "왕이 올 때에는 이 문 현관을 통하여 들어오고 나갈 때에도 그리할찌니라",
+      "source_text_hash": "555555831be2fd2fc72009eaa5535578a9edd78a4e402d41c2307c0191db03a2",
+      "translation_text_hash": "a2fcb75db3d8e9b68b828f3a9f560dcd299468f3307dc0f043bb1633c5b189ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 올 때에는 이 문 현관을 통하여 들어오고 나갈 때에도 그리할찌니라"
+      ],
+      "raw_text_hashes": [
+        "a2fcb75db3d8e9b68b828f3a9f560dcd299468f3307dc0f043bb1633c5b189ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:9",
+      "sequence": 21665,
+      "chapter_label": "EZK 46",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 9
+        }
+      ],
+      "en": "“‘“But when the people of the land come before the LORD in the appointed feasts, he who enters by the way of the north gate to worship shall go out by the way of the south gate; and he who enters by the way of the south gate shall go out by the way of the north gate. He shall not return by the way of the gate by which he came in, but shall go out straight before him.",
+      "ko": "그러나 모든 정한 절기에 이 땅 거민이 나 여호와 앞에 나아올 때에는 북문으로 들어와서 경배하는 자는 남문으로 나가고 남문으로 들어오는 자는 북문으로 나갈찌라 들어온 문으로 도로 나가지 말고 그 몸이 앞으로 향한대로 나갈찌며",
+      "source_text_hash": "dc94076dba563e9757629d296a1267146968935d6695ba1d43ee6a43db5efe0a",
+      "translation_text_hash": "bda34ef668839e753d1028e8f43c5f6fd5b37b80b3c008f9a768e6c51510ee38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 모든 정한 절기에 이 땅 거민이 나 여호와 앞에 나아올 때에는 북문으로 들어와서 경배하는 자는 남문으로 나가고 남문으로 들어오는 자는 북문으로 나갈찌라 들어온 문으로 도로 나가지 말고 그 몸이 앞으로 향한대로 나갈찌며"
+      ],
+      "raw_text_hashes": [
+        "bda34ef668839e753d1028e8f43c5f6fd5b37b80b3c008f9a768e6c51510ee38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:10",
+      "sequence": 21666,
+      "chapter_label": "EZK 46",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 10
+        }
+      ],
+      "en": "The prince shall go in with them when they go in. When they go out, he shall go out.",
+      "ko": "왕은 무리 가운데 있어서 그들의 들어올 때에 들어오고 그들의 나갈 때에 나갈찌니라",
+      "source_text_hash": "30ac403e98001508745bcb10cf0e582648ea0fbe9427f471df34940a82cd7eed",
+      "translation_text_hash": "60fa65611669fe7e280dc5265c533626ede3e66369555eac0e647a193216d031",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 무리 가운데 있어서 그들의 들어올 때에 들어오고 그들의 나갈 때에 나갈찌니라"
+      ],
+      "raw_text_hashes": [
+        "60fa65611669fe7e280dc5265c533626ede3e66369555eac0e647a193216d031"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:11",
+      "sequence": 21667,
+      "chapter_label": "EZK 46",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 11
+        }
+      ],
+      "en": "“‘“In the feasts and in the appointed holidays, the meal offering shall be an ephah for a bull, and an ephah for a ram, and for the lambs as he is able to give, and a hin of oil to an ephah.",
+      "ko": "절기와 성회 때에 그 소제는 수송아지 하나에 밀가루 한 에바요 수양 하나에도 한 에바요 모든 어린 양에는 그 힘대로 할 것이며 밀가루 한 에바에는 기름 한 힌씩이며",
+      "source_text_hash": "c786cc9ffc82ab768c0f27a6b304523c1a53f09ceb9535529ec25e38223a3493",
+      "translation_text_hash": "5334220848a9dbe3f6af33ab80babadf0cc307af9d3c2764dd2c11459faca85f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "절기와 성회 때에 그 소제는 수송아지 하나에 밀가루 한 에바요 수양 하나에도 한 에바요 모든 어린 양에는 그 힘대로 할 것이며 밀가루 한 에바에는 기름 한 힌씩이며"
+      ],
+      "raw_text_hashes": [
+        "5334220848a9dbe3f6af33ab80babadf0cc307af9d3c2764dd2c11459faca85f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:12",
+      "sequence": 21668,
+      "chapter_label": "EZK 46",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 12
+        }
+      ],
+      "en": "When the prince prepares a free will offering, a burnt offering or peace offerings as a free will offering to the LORD, one shall open for him the gate that looks toward the east; and he shall prepare his burnt offering and his peace offerings, as he does on the Sabbath day. Then he shall go out; and after his going out one shall shut the gate.",
+      "ko": "만일 왕이 자원하여 번제를 갖추거나 혹 자원하여 감사제를 갖추어 나 여호와께 드릴 때에는 그를 위하여 동향한 문을 열고 그가 번제와 감사제를 안식일에 드림 같이 드리고 밖으로 나갈찌며 나간 후에 문을 닫을찌니라",
+      "source_text_hash": "948d3d150ac489971bc5d8a62cf1f01f1844e27107ec68ec3100e65b808724a2",
+      "translation_text_hash": "52e7a0affa3f51672729c8cfafe662980c9dfd0d599edb316bc9065d42a5d6e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 왕이 자원하여 번제를 갖추거나 혹 자원하여 감사제를 갖추어 나 여호와께 드릴 때에는 그를 위하여 동향한 문을 열고 그가 번제와 감사제를 안식일에 드림 같이 드리고 밖으로 나갈찌며 나간 후에 문을 닫을찌니라"
+      ],
+      "raw_text_hashes": [
+        "52e7a0affa3f51672729c8cfafe662980c9dfd0d599edb316bc9065d42a5d6e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:13",
+      "sequence": 21669,
+      "chapter_label": "EZK 46",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 13
+        }
+      ],
+      "en": "“‘“You shall prepare a lamb a year old without defect for a burnt offering to the LORD daily. Morning by morning you shall prepare it.",
+      "ko": "아침마다 일년 되고 흠 없는 어린 양 하나로 번제를 갖추어 나 여호와께 드리고",
+      "source_text_hash": "6ab01473e5f697a8892379a8389b80f157c7f8e8797f307c4cd1860d812e0b2b",
+      "translation_text_hash": "fb0a820d07ab40797b98e0433087f61b6cbef3f7a0a7d596ca5f87ac19897e2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침마다 일년 되고 흠 없는 어린 양 하나로 번제를 갖추어 나 여호와께 드리고"
+      ],
+      "raw_text_hashes": [
+        "fb0a820d07ab40797b98e0433087f61b6cbef3f7a0a7d596ca5f87ac19897e2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:14",
+      "sequence": 21670,
+      "chapter_label": "EZK 46",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 14
+        }
+      ],
+      "en": "You shall prepare a meal offering with it morning by morning, the sixth part of an ephah, and the third part of a hin of oil to moisten the fine flour; a meal offering to the LORD continually by a perpetual ordinance.",
+      "ko": "또 아침마다 그것과 함께 드릴 소제를 갖추되 곧 밀가루 에바 육분지 일과 기름 힌 삼분지 일을 섞을 것이니 이는 영원한 규례를 삼아 항상 나 여호와께 드릴 소제라",
+      "source_text_hash": "206b78c281e4002e27a582914b318613f50fdcb8f3d77451d0f9d6329ae618c7",
+      "translation_text_hash": "423c44f416d2951728ce2f1ca160cb8939eb6aced14bf097b8bf561d95497605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아침마다 그것과 함께 드릴 소제를 갖추되 곧 밀가루 에바 육분지 일과 기름 힌 삼분지 일을 섞을 것이니 이는 영원한 규례를 삼아 항상 나 여호와께 드릴 소제라"
+      ],
+      "raw_text_hashes": [
+        "423c44f416d2951728ce2f1ca160cb8939eb6aced14bf097b8bf561d95497605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:15",
+      "sequence": 21671,
+      "chapter_label": "EZK 46",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 15
+        }
+      ],
+      "en": "Thus they shall prepare the lamb, the meal offering, and the oil, morning by morning, for a continual burnt offering.”",
+      "ko": "이와 같이 아침마다 그 어린 양과 밀가루와 기름을 갖추어 항상 드리는 번제를 삼을찌니라",
+      "source_text_hash": "e03b047f457e274b93bd21f3a51d5a3c2ecadc8f17f7282109c1244fa77e61a9",
+      "translation_text_hash": "cfdfba80a54672023e3741c6e4dfdeb5d1fde2a9ed622345eaf0182992d1d63a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 아침마다 그 어린 양과 밀가루와 기름을 갖추어 항상 드리는 번제를 삼을찌니라"
+      ],
+      "raw_text_hashes": [
+        "cfdfba80a54672023e3741c6e4dfdeb5d1fde2a9ed622345eaf0182992d1d63a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:16",
+      "sequence": 21672,
+      "chapter_label": "EZK 46",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 16
+        }
+      ],
+      "en": "“‘The Lord GOD says: “If the prince gives a gift to any of his sons, it is his inheritance. It shall belong to his sons. It is their possession by inheritance.",
+      "ko": "나 주 여호와가 말하노라 왕이 만일 한 아들에게 선물을 준즉 그의 기업이 되어 그 자손에게 속하나니 이는 그 기업을 이어 받음이어니와",
+      "source_text_hash": "2c434fa9851327d8214810f558dbdf9a7c4b48160689dbac1df30c5633dd23e3",
+      "translation_text_hash": "ce54a4eb8a04ca02f8b3b3e16c54f97e69582f4735667351d357c2ebc7102a7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 왕이 만일 한 아들에게 선물을 준즉 그의 기업이 되어 그 자손에게 속하나니 이는 그 기업을 이어 받음이어니와"
+      ],
+      "raw_text_hashes": [
+        "ce54a4eb8a04ca02f8b3b3e16c54f97e69582f4735667351d357c2ebc7102a7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:17",
+      "sequence": 21673,
+      "chapter_label": "EZK 46",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 17
+        }
+      ],
+      "en": "But if he gives of his inheritance a gift to one of his servants, it shall be his to the year of liberty; then it shall return to the prince; but as for his inheritance, it shall be for his sons.",
+      "ko": "왕이 만일 그 기업으로 한 종에게 선물로 준즉 그 종에게 속하여 희년까지 이르고 그 후에는 왕에게로 돌아갈 것이니 왕의 기업은 그 아들이 이어 받을 것임이니라",
+      "source_text_hash": "7a795ba7a01ccc48a1c8cd1b1ac89d82ca4dbd32809a282fb960e1625cf8110b",
+      "translation_text_hash": "497a948ea17dd763ca6de302cadb7fcc85bb390d264d795ba7d3ada89baf6525",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 만일 그 기업으로 한 종에게 선물로 준즉 그 종에게 속하여 희년까지 이르고 그 후에는 왕에게로 돌아갈 것이니 왕의 기업은 그 아들이 이어 받을 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "497a948ea17dd763ca6de302cadb7fcc85bb390d264d795ba7d3ada89baf6525"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:18",
+      "sequence": 21674,
+      "chapter_label": "EZK 46",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 18
+        }
+      ],
+      "en": "Moreover the prince shall not take of the people’s inheritance, to thrust them out of their possession. He shall give inheritance to his sons out of his own possession, that my people not each be scattered from his possession.”’”",
+      "ko": "왕은 백성의 기업을 취하여 그 산업에서 쫓아내지 못할찌니 왕이 자기 아들에게 기업으로 줄 것은 자기 산업으로만 할 것임이니라 백성으로 각각 그 산업을 떠나 흩어지지 않게 할 것이니라",
+      "source_text_hash": "3308ea50136cd71e808840957acb69df69d4a8958080479c775cbca060142378",
+      "translation_text_hash": "e84761ec9d60d36827e4738e0e8ed8cdf1ce64c29f7257b0850b7f94b77dacda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 백성의 기업을 취하여 그 산업에서 쫓아내지 못할찌니 왕이 자기 아들에게 기업으로 줄 것은 자기 산업으로만 할 것임이니라 백성으로 각각 그 산업을 떠나 흩어지지 않게 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e84761ec9d60d36827e4738e0e8ed8cdf1ce64c29f7257b0850b7f94b77dacda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:19",
+      "sequence": 21675,
+      "chapter_label": "EZK 46",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 19
+        }
+      ],
+      "en": "Then he brought me through the entry, which was at the side of the gate, into the holy rooms for the priests, which looked toward the north. Behold, there was a place on the back part westward.",
+      "ko": "그 후에 그가 나를 데리고 문곁 통행구로 말미암아 제사장의 북향한 거룩한 방에 들어가시니 그 방 뒤 서편에 한 처소가 있더라",
+      "source_text_hash": "a0b1410dc77a8be83a2ad6daf3adf2a10b41670dffbc6fe59053cb384deed8c2",
+      "translation_text_hash": "4c342be5c8ee841fde4760b43266d3d2a455233fd93586fcc298f252d420e750",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 그가 나를 데리고 문곁 통행구로 말미암아 제사장의 북향한 거룩한 방에 들어가시니 그 방 뒤 서편에 한 처소가 있더라"
+      ],
+      "raw_text_hashes": [
+        "4c342be5c8ee841fde4760b43266d3d2a455233fd93586fcc298f252d420e750"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:20",
+      "sequence": 21676,
+      "chapter_label": "EZK 46",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 20
+        }
+      ],
+      "en": "He said to me, “This is the place where the priests shall boil the trespass offering and the sin offering, and where they shall bake the meal offering, that they not bring them out into the outer court, to sanctify the people.”",
+      "ko": "그가 내게 이르시되 이는 제사장이 속건제와 속죄제 희생을 삶으며 소제 제물을 구울 처소니 그들이 이 성물을 가지고 바깥 뜰에 나가면 백성을 거룩하게 할까 함이니라 하시고",
+      "source_text_hash": "78a91c3d08d46d29d5ca024d408e0cc239994d9bde9ee051e24eb894ba83788a",
+      "translation_text_hash": "5e7eeb2bf469dc0d4901153aab3edeebf733eda64e3f29d1622f5033d73bfb67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 이는 제사장이 속건제와 속죄제 희생을 삶으며 소제 제물을 구울 처소니 그들이 이 성물을 가지고 바깥 뜰에 나가면 백성을 거룩하게 할까 함이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "5e7eeb2bf469dc0d4901153aab3edeebf733eda64e3f29d1622f5033d73bfb67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:21",
+      "sequence": 21677,
+      "chapter_label": "EZK 46",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 21
+        }
+      ],
+      "en": "Then he brought me out into the outer court and caused me to pass by the four corners of the court; and behold, in every corner of the court there was a court.",
+      "ko": "나를 데리고 바깥 뜰로 나가서 나로 뜰 네 구석을 지나가게 하시는데 본즉 그 뜰 매 구석에 또 뜰이 있는데",
+      "source_text_hash": "74c7aba8062fcb64349be32f72d79ab818910a1ab7aed08911eb4b2b4491b9bd",
+      "translation_text_hash": "f9be1581a4ab3d21bd7118441ef22a66c35a33cf51a4f5375dbfadd726ad90cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 데리고 바깥 뜰로 나가서 나로 뜰 네 구석을 지나가게 하시는데 본즉 그 뜰 매 구석에 또 뜰이 있는데"
+      ],
+      "raw_text_hashes": [
+        "f9be1581a4ab3d21bd7118441ef22a66c35a33cf51a4f5375dbfadd726ad90cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:22",
+      "sequence": 21678,
+      "chapter_label": "EZK 46",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 22
+        }
+      ],
+      "en": "In the four corners of the court there were courts enclosed, forty cubits long and thirty wide. These four in the corners were the same size.",
+      "ko": "뜰 네 구석에 있는 그 뜰에 담이 둘렸으니 뜰의 장이 사십척이요 광이 삼십척이라 구석의 네 뜰이 한 척수며",
+      "source_text_hash": "89c798572cd39ff83b8025d7b865ede55247e07d238656d4241b95c066646f99",
+      "translation_text_hash": "459b87bdebe2542ecf1fe81788600c3ac0e3dd0244ee6a368a7fdb7f35ca0c28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰 네 구석에 있는 그 뜰에 담이 둘렸으니 뜰의 장이 사십척이요 광이 삼십척이라 구석의 네 뜰이 한 척수며"
+      ],
+      "raw_text_hashes": [
+        "459b87bdebe2542ecf1fe81788600c3ac0e3dd0244ee6a368a7fdb7f35ca0c28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:23",
+      "sequence": 21679,
+      "chapter_label": "EZK 46",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 23
+        }
+      ],
+      "en": "There was a wall around in them, around the four, and boiling places were made under the walls all around.",
+      "ko": "그 작은 네 뜰 사면으로 돌아가며 부엌이 있고 그 사면 부엌에 삶는 기구가 설비되었는데",
+      "source_text_hash": "020fd51d585e6b13642cffd9e15542ed95179c652128069704fd441743c56aa9",
+      "translation_text_hash": "2dfcbc03ead63057e29622e152da660c1963f88b30f6d65df0e075c500c214b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 작은 네 뜰 사면으로 돌아가며 부엌이 있고 그 사면 부엌에 삶는 기구가 설비되었는데"
+      ],
+      "raw_text_hashes": [
+        "2dfcbc03ead63057e29622e152da660c1963f88b30f6d65df0e075c500c214b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:46:24",
+      "sequence": 21680,
+      "chapter_label": "EZK 46",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 46,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 46,
+          "verse": 24
+        }
+      ],
+      "en": "Then he said to me, “These are the boiling houses, where the ministers of the house shall boil the sacrifice of the people.”",
+      "ko": "그가 내게 이르시되 이는 삶는 부엌이니 전에 수종드는 자가 백성의 제물을 여기서 삶을 것이니라 하시더라",
+      "source_text_hash": "f97df2d7cc548af1a9b065f2df0c110ff2bc67b6928597d22021ba2ba25a16d3",
+      "translation_text_hash": "5d7f9d8a8e75a41e8047fdb16cdd9fc2ebffbca4c47ed5bf4187298caf870f4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 이는 삶는 부엌이니 전에 수종드는 자가 백성의 제물을 여기서 삶을 것이니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "5d7f9d8a8e75a41e8047fdb16cdd9fc2ebffbca4c47ed5bf4187298caf870f4a"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,237 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:018",
+  "unit_ordinal": 697,
+  "unit_label": "ISA 18",
+  "book_code": "ISA",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:18:1",
+      "sequence": 17999,
+      "chapter_label": "ISA 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "Ah, the land of the rustling of wings, which is beyond the rivers of Ethiopia;",
+      "ko": "슬프다 구스의 강 건너편 날개치는 소리 나는 땅이여",
+      "source_text_hash": "afd031a851cd0536e7258a15b840e74b38a5964a74b7d6cce9dc0d0c5a9dce73",
+      "translation_text_hash": "0de0adb579dca7f1b6361ef49385bbfd7cb15256452e7d46d38a6b491355441a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 구스의 강 건너편 날개치는 소리 나는 땅이여"
+      ],
+      "raw_text_hashes": [
+        "0de0adb579dca7f1b6361ef49385bbfd7cb15256452e7d46d38a6b491355441a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:18:2",
+      "sequence": 18000,
+      "chapter_label": "ISA 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "that sends ambassadors by the sea, even in vessels of papyrus on the waters, saying, “Go, you swift messengers, to a nation tall and smooth, to a people awesome from their beginning onward, a nation that measures out and treads down, whose land the rivers divide!”",
+      "ko": "갈대배를 물에 띄우고 그 사자를 수로로 보내며 이르기를 너희 경첩한 사자들아 너희는 강들이 흘러 나누인 나라로 가되 장대하고 준수한 백성 곧 시초부터 두려움이 되며 강성하여 대적을 밟는 백성에게로 가라 하도다",
+      "source_text_hash": "a6a19c36a4458344bf14e6ba81a41ddc745709309a36bbee5c9ee24bf99fd4e1",
+      "translation_text_hash": "91d9981dba03a6b550f6d54861163b9ec1e4f60149b91eaeb0870c5b9ad4062d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대배를 물에 띄우고 그 사자를 수로로 보내며 이르기를 너희 경첩한 사자들아 너희는 강들이 흘러 나누인 나라로 가되 장대하고 준수한 백성 곧 시초부터 두려움이 되며 강성하여 대적을 밟는 백성에게로 가라 하도다"
+      ],
+      "raw_text_hashes": [
+        "91d9981dba03a6b550f6d54861163b9ec1e4f60149b91eaeb0870c5b9ad4062d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:18:3",
+      "sequence": 18001,
+      "chapter_label": "ISA 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "All you inhabitants of the world, and you dwellers on the earth, when a banner is lifted up on the mountains, look! When the trumpet is blown, listen!",
+      "ko": "세상의 모든 거민, 지상에 거하는 너희여 산들 위에 기호를 세우거든 너희는 보고 나팔을 불거든 너희는 들을찌니라",
+      "source_text_hash": "9aced4bcb501b4ff3ded0f0b7df9a4a736964241b0a02655337e2afe48813db1",
+      "translation_text_hash": "d3f6e194203c3453ac293217ae4ac8c1ee5cfd2e8038fa7fe7404da52b5613ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상의 모든 거민, 지상에 거하는 너희여 산들 위에 기호를 세우거든 너희는 보고 나팔을 불거든 너희는 들을찌니라"
+      ],
+      "raw_text_hashes": [
+        "d3f6e194203c3453ac293217ae4ac8c1ee5cfd2e8038fa7fe7404da52b5613ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:18:4",
+      "sequence": 18002,
+      "chapter_label": "ISA 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "For the LORD said to me, “I will be still, and I will see in my dwelling place, like clear heat in sunshine, like a cloud of dew in the heat of harvest.”",
+      "ko": "여호와께서 내게 이르시되 내가 나의 처소에서 종용히 감찰함이 쬐이는 일광 같고 가을 더위에 운무 같도다",
+      "source_text_hash": "fe0e49d7b1b041b727982e85cf26eeb8cdcedde60133b2e429236c2dada351a5",
+      "translation_text_hash": "de61229988fbf53addf7a50a33a264136f404c43d970fae4553cf0dd50085553",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 내가 나의 처소에서 종용히 감찰함이 쬐이는 일광 같고 가을 더위에 운무 같도다"
+      ],
+      "raw_text_hashes": [
+        "de61229988fbf53addf7a50a33a264136f404c43d970fae4553cf0dd50085553"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:18:5",
+      "sequence": 18003,
+      "chapter_label": "ISA 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "For before the harvest, when the blossom is over, and the flower becomes a ripening grape, he will cut off the sprigs with pruning hooks, and he will cut down and take away the spreading branches.",
+      "ko": "추수하기 전에 꽃이 떨어지고 포도가 맺혀 익어 갈 때에 내가 낫으로 그 연한 가지를 베며 퍼진 가지를 찍어버려서",
+      "source_text_hash": "1df86ba331fca2964be1137129ea2de77113696f186c9e9a6ae198f5490f88b0",
+      "translation_text_hash": "cb66f3d2bcf9eae13a217afe6441cfc2d416593c22290ea671613bb26cd92849",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "추수하기 전에 꽃이 떨어지고 포도가 맺혀 익어 갈 때에 내가 낫으로 그 연한 가지를 베며 퍼진 가지를 찍어버려서"
+      ],
+      "raw_text_hashes": [
+        "cb66f3d2bcf9eae13a217afe6441cfc2d416593c22290ea671613bb26cd92849"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:18:6",
+      "sequence": 18004,
+      "chapter_label": "ISA 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "They will be left together for the ravenous birds of the mountains, and for the animals of the earth. The ravenous birds will eat them in the summer, and all the animals of the earth will eat them in the winter.",
+      "ko": "산의 독수리들에게와 땅의 들 짐승들에게 끼쳐주리니 산의 독수리들이 그것으로 과하하며 땅의 들짐승들이 다 그것으로 과동하리라 하셨음이니라",
+      "source_text_hash": "1e42bc8e98912768ef1bc258b7b2f6bdb8837801f57a59d6c7edeaf18a49b572",
+      "translation_text_hash": "1f2ef490336eacb49b04a15802e89c058f8f75461f0ced385269776fa4bb4053",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산의 독수리들에게와 땅의 들 짐승들에게 끼쳐주리니 산의 독수리들이 그것으로 과하하며 땅의 들짐승들이 다 그것으로 과동하리라 하셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "1f2ef490336eacb49b04a15802e89c058f8f75461f0ced385269776fa4bb4053"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:18:7",
+      "sequence": 18005,
+      "chapter_label": "ISA 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "In that time, a present will be brought to the LORD of Armies from a people tall and smooth, even from a people awesome from their beginning onward, a nation that measures out and treads down, whose land the rivers divide, to the place of the name of the LORD of Armies, Mount Zion.",
+      "ko": "그 때에 강들이 흘러 나누인 나라의 장대하고 준수하며 시초부터 두려움이 되며 강성하여 대적을 밟는 백성에게서 만군의 여호와께 드릴 예물을 가지고 만군의 여호와의 이름을 두신 곳 시온 산에 이르리라",
+      "source_text_hash": "f8b18953a00c1b56e8b9d9c60199e36cec858da1f97a84fdcad83d52cb0860b8",
+      "translation_text_hash": "ddc63e9ce7b30d2fb1b7d30aaaa5425077d596467ce909593824359f7847897b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 강들이 흘러 나누인 나라의 장대하고 준수하며 시초부터 두려움이 되며 강성하여 대적을 밟는 백성에게서 만군의 여호와께 드릴 예물을 가지고 만군의 여호와의 이름을 두신 곳 시온 산에 이르리라"
+      ],
+      "raw_text_hashes": [
+        "ddc63e9ce7b30d2fb1b7d30aaaa5425077d596467ce909593824359f7847897b"
+      ]
+    }
+  ]
+}

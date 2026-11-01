@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MIC:chapter:003",
+  "unit_ordinal": 896,
+  "unit_label": "MIC 3",
+  "book_code": "MIC",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MIC:3:1",
+      "sequence": 22610,
+      "chapter_label": "MIC 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "I said, “Please listen, you heads of Jacob, and rulers of the house of Israel: Isn’t it for you to know justice?",
+      "ko": "내가 또 이르노니 야곱의 두령들과 이스라엘 족속의 치리자들아 청컨대 들으라 공의는 너희의 알 것이 아니냐",
+      "source_text_hash": "b909c4485af50d78fc0647ef22bae21de136af978c23fd938ce12f00c21c3269",
+      "translation_text_hash": "4aeabe870a5f2ae4ea88dbbc23ab891ffee09c74ec87afae73a82d2258c12ea1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 이르노니 야곱의 두령들과 이스라엘 족속의 치리자들아 청컨대 들으라 공의는 너희의 알 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "4aeabe870a5f2ae4ea88dbbc23ab891ffee09c74ec87afae73a82d2258c12ea1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:2",
+      "sequence": 22611,
+      "chapter_label": "MIC 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "You who hate the good, and love the evil; who tear off their skin, and their flesh from off their bones;",
+      "ko": "너희가 선을 미워하고 악을 좋아하여 내 백성의 가죽을 벗기고 그 뼈에서 살을 뜯어",
+      "source_text_hash": "e385b74b91f89b780bd7af91c94d65c3b87b4cb7e50ce21cbe569ee6b21aeaaa",
+      "translation_text_hash": "1910dff47e16d23fbb51806d13efd8655614e12bfbaf080a381fe96442657854",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 선을 미워하고 악을 좋아하여 내 백성의 가죽을 벗기고 그 뼈에서 살을 뜯어"
+      ],
+      "raw_text_hashes": [
+        "1910dff47e16d23fbb51806d13efd8655614e12bfbaf080a381fe96442657854"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:3",
+      "sequence": 22612,
+      "chapter_label": "MIC 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "who also eat the flesh of my people, and peel their skin from off them, and break their bones, and chop them in pieces, as for the pot, and as meat within the cauldron.",
+      "ko": "그들의 살을 먹으며 그 가죽을 벗기며 그 뼈를 꺾어 다지기를 남비와 솥 가운데 담을 고기처럼 하는도다",
+      "source_text_hash": "4a51cac65ca8deb5363e86cf1020b353d3a2cea23fe5a7a505d7bbb183c9d24b",
+      "translation_text_hash": "dc04ce42931be915fa2be3df53f72937b3c13c8f255c714df8947111d0def674",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 살을 먹으며 그 가죽을 벗기며 그 뼈를 꺾어 다지기를 남비와 솥 가운데 담을 고기처럼 하는도다"
+      ],
+      "raw_text_hashes": [
+        "dc04ce42931be915fa2be3df53f72937b3c13c8f255c714df8947111d0def674"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:4",
+      "sequence": 22613,
+      "chapter_label": "MIC 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Then they will cry to the LORD, but he will not answer them. Yes, he will hide his face from them at that time, because they made their deeds evil.”",
+      "ko": "그 때에 그들이 여호와께 부르짖을찌라도 응답지 아니하시고 그들의 행위의 악하던대로 그들 앞에 얼굴을 가리우시리라",
+      "source_text_hash": "82dfb89d822decf80f83baea61b87dd1066e7a09e56987d7a03f78fb14abef47",
+      "translation_text_hash": "da4ad4a377ee783d7c2143f4530227c471dbf87b203f08556e308765ece574e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 그들이 여호와께 부르짖을찌라도 응답지 아니하시고 그들의 행위의 악하던대로 그들 앞에 얼굴을 가리우시리라"
+      ],
+      "raw_text_hashes": [
+        "da4ad4a377ee783d7c2143f4530227c471dbf87b203f08556e308765ece574e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:5",
+      "sequence": 22614,
+      "chapter_label": "MIC 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD says concerning the prophets who lead my people astray—for those who feed their teeth, they proclaim, “Peace!” and whoever doesn’t provide for their mouths, they prepare war against him:",
+      "ko": "내 백성을 유혹하는 선지자는 이에 물면 평강을 외치나 그 입에 무엇을 채워 주지 아니하는 자에게는 전쟁을 준비하는도다 이런 선지자에 대하여 여호와께서 가라사대",
+      "source_text_hash": "16f12f833c6f5399d87081fb2cf06198522780843a10323605e2f602e26370ee",
+      "translation_text_hash": "720e0e301d4d21b0bf6b804fd241bc23b80fa1b2fede7bb319de0009ebcabff0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성을 유혹하는 선지자는 이에 물면 평강을 외치나 그 입에 무엇을 채워 주지 아니하는 자에게는 전쟁을 준비하는도다 이런 선지자에 대하여 여호와께서 가라사대"
+      ],
+      "raw_text_hashes": [
+        "720e0e301d4d21b0bf6b804fd241bc23b80fa1b2fede7bb319de0009ebcabff0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:6",
+      "sequence": 22615,
+      "chapter_label": "MIC 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "“Therefore night is over you, with no vision, and it is dark to you, that you may not divine; and the sun will go down on the prophets, and the day will be black over them.",
+      "ko": "그러므로 너희가 밤을 만나리니 이상을 보지 못할 것이요 흑암을 만나리니 점 치지 못하리라 하셨나니 이 선지자 위에는 해가 져서 낮이 캄캄할 것이라",
+      "source_text_hash": "1be6090e9e4c3d0a347e7107d7e0a4124c6ae523d2a3b7658ba4f259cbe95908",
+      "translation_text_hash": "8dad98383707034b862e2104eb2092799ccdec1869e3f560e72f1608e2fafd32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 밤을 만나리니 이상을 보지 못할 것이요 흑암을 만나리니 점 치지 못하리라 하셨나니 이 선지자 위에는 해가 져서 낮이 캄캄할 것이라"
+      ],
+      "raw_text_hashes": [
+        "8dad98383707034b862e2104eb2092799ccdec1869e3f560e72f1608e2fafd32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:7",
+      "sequence": 22616,
+      "chapter_label": "MIC 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "The seers shall be disappointed, and the diviners confounded. Yes, they shall all cover their lips, for there is no answer from God.”",
+      "ko": "선견자가 부끄러워하며 술객이 수치를 당하여 다 입술을 가리울 것은 하나님이 응답지 아니하심이어니와",
+      "source_text_hash": "1097cb540b1011e250a3490dc56cd62b76948529c49cbf14d841e5b57f191bdc",
+      "translation_text_hash": "9a3d51581f772711a3e8d22b1f5bf8c8cc20d4aa94073a6a423d8b44aaa37d72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선견자가 부끄러워하며 술객이 수치를 당하여 다 입술을 가리울 것은 하나님이 응답지 아니하심이어니와"
+      ],
+      "raw_text_hashes": [
+        "9a3d51581f772711a3e8d22b1f5bf8c8cc20d4aa94073a6a423d8b44aaa37d72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:8",
+      "sequence": 22617,
+      "chapter_label": "MIC 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "But as for me, I am full of power by the LORD’s Spirit, and of judgment, and of might, to declare to Jacob his disobedience, and to Israel his sin.",
+      "ko": "오직 나는 여호와의 신으로 말미암아 권능과 공의와 재능으로 채움을 얻고 야곱의 허물과 이스라엘의 죄를 그들에게 보이리라",
+      "source_text_hash": "1d4af441b2679a461af2b3a24b2aeda49157f3d4415eed7bffd7de5e2c136e5c",
+      "translation_text_hash": "67024cbf4919e199f058de5fbde8ab6c8fce6ee294af2db579b3b778ae7e1940",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 나는 여호와의 신으로 말미암아 권능과 공의와 재능으로 채움을 얻고 야곱의 허물과 이스라엘의 죄를 그들에게 보이리라"
+      ],
+      "raw_text_hashes": [
+        "67024cbf4919e199f058de5fbde8ab6c8fce6ee294af2db579b3b778ae7e1940"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:9",
+      "sequence": 22618,
+      "chapter_label": "MIC 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Please listen to this, you heads of the house of Jacob, and rulers of the house of Israel, who abhor justice, and pervert all equity,",
+      "ko": "야곱 족속의 두령과 이스라엘 족속의 치리자 곧 공의를 미워하고 정직한 것을 굽게 하는 자들아 청컨대 이 말을 들을찌어다",
+      "source_text_hash": "76bf5d25d3b98a8ae7a7e9f50af58e688ce724cb650bb0c4ac17c9a9f6d9daa4",
+      "translation_text_hash": "df2cd84ffaf98661f88cf871067938622f5657b45843f81abfba02afc88668bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱 족속의 두령과 이스라엘 족속의 치리자 곧 공의를 미워하고 정직한 것을 굽게 하는 자들아 청컨대 이 말을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "df2cd84ffaf98661f88cf871067938622f5657b45843f81abfba02afc88668bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:10",
+      "sequence": 22619,
+      "chapter_label": "MIC 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "who build up Zion with blood, and Jerusalem with iniquity.",
+      "ko": "시온을 피로, 예루살렘을 죄악으로 건축하는도다",
+      "source_text_hash": "8591f73800fc74480fe86038afe93334c1d0180880283e08d35ae463975d9638",
+      "translation_text_hash": "2a77e2fc098d1030b95d966d855f00d00f697b937ecf3013d6dac68c3765151d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온을 피로, 예루살렘을 죄악으로 건축하는도다"
+      ],
+      "raw_text_hashes": [
+        "2a77e2fc098d1030b95d966d855f00d00f697b937ecf3013d6dac68c3765151d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:11",
+      "sequence": 22620,
+      "chapter_label": "MIC 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Her leaders judge for bribes, and her priests teach for a price, and her prophets tell fortunes for money; yet they lean on the LORD, and say, “Isn’t the LORD among us? No disaster will come on us.”",
+      "ko": "그 두령은 뇌물을 위하여 재판하며 그 제사장은 삯을 위하여 교훈하며 그 선지자는 돈을 위하여 점 치면서 오히려 여호와를 의뢰하여 이르기를 여호와께서 우리 중에 계시지 아니하냐 재앙이 우리에게 임하지 아니하리라 하는도다",
+      "source_text_hash": "819f028bdf57bbfbe6f2eeef3f02527269e363184a2f92d0ed3399070933ea32",
+      "translation_text_hash": "84548e715ae65839e828f40f1c0aaba37d7ad0d954e44b8ca63ea430ac67ff2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두령은 뇌물을 위하여 재판하며 그 제사장은 삯을 위하여 교훈하며 그 선지자는 돈을 위하여 점 치면서 오히려 여호와를 의뢰하여 이르기를 여호와께서 우리 중에 계시지 아니하냐 재앙이 우리에게 임하지 아니하리라 하는도다"
+      ],
+      "raw_text_hashes": [
+        "84548e715ae65839e828f40f1c0aaba37d7ad0d954e44b8ca63ea430ac67ff2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:3:12",
+      "sequence": 22621,
+      "chapter_label": "MIC 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "MIC",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore Zion for your sake will be plowed like a field, and Jerusalem will become heaps of rubble, and the mountain of the temple like the high places of a forest.",
+      "ko": "이러므로 너희로 인하여 시온은 밭 같이 갊을 당하고 예루살렘은 무더기가 되고 성전의 산은 수풀의 높은 곳과 같게 되리라",
+      "source_text_hash": "7fb867d83595a19cba0a0a0a75d34026f625202f12e66182d800f5cb54517b30",
+      "translation_text_hash": "24958d480d6b30105144d86f7cd2bdfcd86b38a089071e1c32f193a443f8c776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희로 인하여 시온은 밭 같이 갊을 당하고 예루살렘은 무더기가 되고 성전의 산은 수풀의 높은 곳과 같게 되리라"
+      ],
+      "raw_text_hashes": [
+        "24958d480d6b30105144d86f7cd2bdfcd86b38a089071e1c32f193a443f8c776"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EPH:chapter:001",
+  "unit_ordinal": 1098,
+  "unit_label": "EPH 1",
+  "book_code": "EPH",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EPH:1:1",
+      "sequence": 29204,
+      "chapter_label": "EPH 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Paul, an apostle of Christ Jesus through the will of God, to the saints who are at Ephesus, and the faithful in Christ Jesus:",
+      "ko": "하나님의 뜻으로 말미암아 그리스도 예수의 사도 된 바울은 에베소에 있는 성도들과 그리스도 예수 안의 신실한 자들에게 편지하노니",
+      "source_text_hash": "aa154b50beb056dfffb06692edf2c7fa226091caac329b27f887db676d78edbe",
+      "translation_text_hash": "a7ca075302e3f07c88fdbdf5e28d90122fc55d7e15cd5f7ec177c1588b0d7277",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 뜻으로 말미암아 그리스도 예수의 사도 된 바울은 에베소에 있는 성도들과 그리스도 예수 안의 신실한 자들에게 편지하노니"
+      ],
+      "raw_text_hashes": [
+        "a7ca075302e3f07c88fdbdf5e28d90122fc55d7e15cd5f7ec177c1588b0d7277"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:2",
+      "sequence": 29205,
+      "chapter_label": "EPH 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Grace to you and peace from God our Father and the Lord Jesus Christ.",
+      "ko": "하나님 우리 아버지와 주 예수 그리스도로 좇아 은혜와 평강이 너희에게 있을찌어다",
+      "source_text_hash": "4b0c50bd93c1ece92cdc3eb0ce96aa9db845690c46dccfc6611823b4dce05733",
+      "translation_text_hash": "94e09d075dce1b237843612b23fcc1f04cfa9eedd0e5679c97b2db0d4af5269d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 우리 아버지와 주 예수 그리스도로 좇아 은혜와 평강이 너희에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "94e09d075dce1b237843612b23fcc1f04cfa9eedd0e5679c97b2db0d4af5269d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:3",
+      "sequence": 29206,
+      "chapter_label": "EPH 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Blessed be the God and Father of our Lord Jesus Christ, who has blessed us with every spiritual blessing in the heavenly places in Christ,",
+      "ko": "찬송하리로다 하나님 곧 우리 주 예수 그리스도의 아버지께서 그리스도 안에서 하늘에 속한 모든 신령한 복으로 우리에게 복 주시되",
+      "source_text_hash": "9cd0ab969e65dc9b2c4f352fd72e8b3918e8319e26fc6c6d1374deda285fdde4",
+      "translation_text_hash": "4acbe0472be60fcd4d0a1d4ef2a1b17dd6e45329c096574bfcf29aa87da89a51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "찬송하리로다 하나님 곧 우리 주 예수 그리스도의 아버지께서 그리스도 안에서 하늘에 속한 모든 신령한 복으로 우리에게 복 주시되"
+      ],
+      "raw_text_hashes": [
+        "4acbe0472be60fcd4d0a1d4ef2a1b17dd6e45329c096574bfcf29aa87da89a51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:4",
+      "sequence": 29207,
+      "chapter_label": "EPH 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "even as he chose us in him before the foundation of the world, that we would be holy and without defect before him in love,",
+      "ko": "곧 창세 전에 그리스도 안에서 우리를 택하사 우리로 사랑 안에서 그 앞에 거룩하고 흠이 없게 하시려고",
+      "source_text_hash": "ab4465df6e2efaa48e349307c4cb65a5f7aa8ffc51f229d037fb6a83553730cd",
+      "translation_text_hash": "f4990803ade6e4caa1d23000e69d80e3127c9d82a042cb94d621cf45d99dd63e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 창세 전에 그리스도 안에서 우리를 택하사 우리로 사랑 안에서 그 앞에 거룩하고 흠이 없게 하시려고"
+      ],
+      "raw_text_hashes": [
+        "f4990803ade6e4caa1d23000e69d80e3127c9d82a042cb94d621cf45d99dd63e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:5",
+      "sequence": 29208,
+      "chapter_label": "EPH 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "having predestined us for adoption as children through Jesus Christ to himself, according to the good pleasure of his desire,",
+      "ko": "그 기쁘신 뜻대로 우리를 예정하사 예수 그리스도로 말미암아 자기의 아들들이 되게 하셨으니",
+      "source_text_hash": "34f27c6fad38f1e6d4034b229388333240c7e05b982a6910783c7a0a594686c0",
+      "translation_text_hash": "01b36b327f0de47a4b3f74f98fba9f7e3a29520181b4915ddf84f6fb17105578",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기쁘신 뜻대로 우리를 예정하사 예수 그리스도로 말미암아 자기의 아들들이 되게 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "01b36b327f0de47a4b3f74f98fba9f7e3a29520181b4915ddf84f6fb17105578"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:6",
+      "sequence": 29209,
+      "chapter_label": "EPH 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "to the praise of the glory of his grace, by which he freely gave us favor in the Beloved.",
+      "ko": "이는 그의 사랑하시는 자 안에서 우리에게 거저 주시는바 그의 은혜의 영광을 찬미하게 하려는 것이라",
+      "source_text_hash": "1aa85e0d07ca88860a8c742c5ba44bf328d9ad939e96b1dffeb154c248f4c613",
+      "translation_text_hash": "1ed74025a8565dd7eb28bbb437c642d9debabf176d424b8dca8b554dee2b7e4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그의 사랑하시는 자 안에서 우리에게 거저 주시는바 그의 은혜의 영광을 찬미하게 하려는 것이라"
+      ],
+      "raw_text_hashes": [
+        "1ed74025a8565dd7eb28bbb437c642d9debabf176d424b8dca8b554dee2b7e4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:7",
+      "sequence": 29210,
+      "chapter_label": "EPH 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "In him we have our redemption through his blood, the forgiveness of our trespasses, according to the riches of his grace",
+      "ko": "우리가 그리스도 안에서 그의 은혜의 풍성함을 따라 그의 피로 말미암아 구속 곧 죄 사함을 받았으니",
+      "source_text_hash": "b811d4caa8ce7b81cb88573c5e3da8a47bf532f50a0e1b3f73cd4f64536683e0",
+      "translation_text_hash": "8aadfc49785e775155d735344b6a9c128468cd5628523f35729a0a3c996403d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그리스도 안에서 그의 은혜의 풍성함을 따라 그의 피로 말미암아 구속 곧 죄 사함을 받았으니"
+      ],
+      "raw_text_hashes": [
+        "8aadfc49785e775155d735344b6a9c128468cd5628523f35729a0a3c996403d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:8",
+      "sequence": 29211,
+      "chapter_label": "EPH 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "which he made to abound toward us in all wisdom and prudence,",
+      "ko": "이는 그가 모든 지혜와 총명으로 우리에게 넘치게 하사",
+      "source_text_hash": "babdfcef88b6085577fd70440d09b01bd7bd0154ac5cee4dd03636d97e299cf5",
+      "translation_text_hash": "f44f3eea905f777f97371bebabe76b4bc34b351751273d0489675b7be96ae491",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그가 모든 지혜와 총명으로 우리에게 넘치게 하사"
+      ],
+      "raw_text_hashes": [
+        "f44f3eea905f777f97371bebabe76b4bc34b351751273d0489675b7be96ae491"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:9",
+      "sequence": 29212,
+      "chapter_label": "EPH 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "making known to us the mystery of his will, according to his good pleasure which he purposed in him",
+      "ko": "그 뜻의 비밀을 우리에게 알리셨으니 곧 그 기쁘심을 따라 그리스도 안에서 때가 찬 경륜을 위하여 예정하신 것이니",
+      "source_text_hash": "1774a7ef2366599a0da1af577725ba3891e097babf46755917665af44b437b48",
+      "translation_text_hash": "a5b37fb25c315b30b30e2ab354aa0e62690c41ab87aec9e65086b1fc0b438f3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 뜻의 비밀을 우리에게 알리셨으니 곧 그 기쁘심을 따라 그리스도 안에서 때가 찬 경륜을 위하여 예정하신 것이니"
+      ],
+      "raw_text_hashes": [
+        "a5b37fb25c315b30b30e2ab354aa0e62690c41ab87aec9e65086b1fc0b438f3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:10",
+      "sequence": 29213,
+      "chapter_label": "EPH 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "to an administration of the fullness of the times, to sum up all things in Christ, the things in the heavens and the things on the earth, in him.",
+      "ko": "하늘에 있는 것이나 땅에 있는 것이 다 그리스도 안에서 통일되게 하려 하심이라",
+      "source_text_hash": "f450579a37c5aedc1fa5c1f68df690dd9ccd24595de9430cece737279d3cb64b",
+      "translation_text_hash": "8de696bb1d73f0ddb974365dd15d237097a4cf2a8fd769fb9213d8a2c9088522",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 있는 것이나 땅에 있는 것이 다 그리스도 안에서 통일되게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "8de696bb1d73f0ddb974365dd15d237097a4cf2a8fd769fb9213d8a2c9088522"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:11",
+      "sequence": 29214,
+      "chapter_label": "EPH 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "We were also assigned an inheritance in him, having been foreordained according to the purpose of him who does all things after the counsel of his will,",
+      "ko": "모든 일을 그 마음의 원대로 역사하시는 자의 뜻을 따라 우리가 예정을 입어 그 안에서 기업이 되었으니",
+      "source_text_hash": "29a2fd83fdb4ac3a900af08c20bfb41ddde8a1b7161bc1a4c0c1add9d2c25845",
+      "translation_text_hash": "45265372d19dca1a1182abe802f38f063d4743c902e4768822c58efeb3f8113c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 일을 그 마음의 원대로 역사하시는 자의 뜻을 따라 우리가 예정을 입어 그 안에서 기업이 되었으니"
+      ],
+      "raw_text_hashes": [
+        "45265372d19dca1a1182abe802f38f063d4743c902e4768822c58efeb3f8113c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:12",
+      "sequence": 29215,
+      "chapter_label": "EPH 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "to the end that we should be to the praise of his glory, we who had before hoped in Christ.",
+      "ko": "이는 그리스도 안에서 전부터 바라던 우리로 그의 영광의 찬송이 되게 하려 하심이라",
+      "source_text_hash": "d7efe090e90c7e90f44bd0ae3c1fa0452f544608151d28bffaabfaea917a07f1",
+      "translation_text_hash": "68a5818eaa4f05fd53a6e2ee33c045a78adee80483907d944de32dbecf97701e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그리스도 안에서 전부터 바라던 우리로 그의 영광의 찬송이 되게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "68a5818eaa4f05fd53a6e2ee33c045a78adee80483907d944de32dbecf97701e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:13",
+      "sequence": 29216,
+      "chapter_label": "EPH 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "In him you also, having heard the word of the truth, the Good News of your salvation—in whom, having also believed, you were sealed with the promised Holy Spirit,",
+      "ko": "그 안에서 너희도 진리의 말씀 곧 너희의 구원의 복음을 듣고 그 안에서 또한 믿어 약속의 성령으로 인치심을 받았으니",
+      "source_text_hash": "78200ee3ada36c37b98ac34f1e45da2aed4c069217f86b5d5013caaa92bcac7a",
+      "translation_text_hash": "a6fe4d6419b307f005ddf032fd1978c071e3f8d0f431e4a9718debe0bbcbada7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 안에서 너희도 진리의 말씀 곧 너희의 구원의 복음을 듣고 그 안에서 또한 믿어 약속의 성령으로 인치심을 받았으니"
+      ],
+      "raw_text_hashes": [
+        "a6fe4d6419b307f005ddf032fd1978c071e3f8d0f431e4a9718debe0bbcbada7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:14",
+      "sequence": 29217,
+      "chapter_label": "EPH 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "who is a pledge of our inheritance, to the redemption of God’s own possession, to the praise of his glory.",
+      "ko": "이는 우리의 기업에 보증이 되사 그 얻으신 것을 구속하시고 그의 영광을 찬미하게 하려 하심이라",
+      "source_text_hash": "bd7e23ba96bae3e3b5a8cee6a6827fe76b27b71d38c2153c9794171b963097cd",
+      "translation_text_hash": "ea723ba880e9b13d763dd6cece1c27573cf9b632a1e6c66165ec695beb3c15b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리의 기업에 보증이 되사 그 얻으신 것을 구속하시고 그의 영광을 찬미하게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "ea723ba880e9b13d763dd6cece1c27573cf9b632a1e6c66165ec695beb3c15b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:15",
+      "sequence": 29218,
+      "chapter_label": "EPH 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "For this cause I also, having heard of the faith in the Lord Jesus which is among you and the love which you have toward all the saints,",
+      "ko": "이를 인하여 주 예수 안에서 너희 믿음과 모든 성도를 향한 사랑을 나도 듣고",
+      "source_text_hash": "d9ef70cd23784472e0f291f55586c9ead4304b53c7528da6a3cb136743df9532",
+      "translation_text_hash": "2652641a974a129ef99a0cdd63245116c48f54f59e13d2006f8759fc34fc4fc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 인하여 주 예수 안에서 너희 믿음과 모든 성도를 향한 사랑을 나도 듣고"
+      ],
+      "raw_text_hashes": [
+        "2652641a974a129ef99a0cdd63245116c48f54f59e13d2006f8759fc34fc4fc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:16",
+      "sequence": 29219,
+      "chapter_label": "EPH 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "don’t cease to give thanks for you, making mention of you in my prayers,",
+      "ko": "너희를 인하여 감사하기를 마지아니하고 내가 기도할 때에 너희를 말하노라",
+      "source_text_hash": "15322392baf2cbe6d9730f5578296b1d33ce501b1b7eaeb0c19b670289075fd3",
+      "translation_text_hash": "5ec8edaf78b33c096cae0bcfbaee628644ad44c06d9b486da8ae62e9a8357d89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 인하여 감사하기를 마지아니하고 내가 기도할 때에 너희를 말하노라"
+      ],
+      "raw_text_hashes": [
+        "5ec8edaf78b33c096cae0bcfbaee628644ad44c06d9b486da8ae62e9a8357d89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:17",
+      "sequence": 29220,
+      "chapter_label": "EPH 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "that the God of our Lord Jesus Christ, the Father of glory, may give to you a spirit of wisdom and revelation in the knowledge of him,",
+      "ko": "우리 주 예수 그리스도의 하나님, 영광의 아버지께서 지혜와 계시의 정신을 너희에게 주사 하나님을 알게 하시고",
+      "source_text_hash": "47eb86485f000eab7b3b095f2d6397e323f0b2805e991552259a601a0e0847b2",
+      "translation_text_hash": "30ff1f805632aeb1ab9c1c042704c3ea68777c52fde005d938b291c18ab5da2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도의 하나님, 영광의 아버지께서 지혜와 계시의 정신을 너희에게 주사 하나님을 알게 하시고"
+      ],
+      "raw_text_hashes": [
+        "30ff1f805632aeb1ab9c1c042704c3ea68777c52fde005d938b291c18ab5da2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:18",
+      "sequence": 29221,
+      "chapter_label": "EPH 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "having the eyes of your hearts enlightened, that you may know what is the hope of his calling, and what are the riches of the glory of his inheritance in the saints,",
+      "ko": "너희 마음눈을 밝히사 그의 부르심의 소망이 무엇이며 성도 안에서 그 기업의 영광의 풍성이 무엇이며",
+      "source_text_hash": "12262c980b4b44955ce4bd3740aed364c0c643dba9a6d39a4d411a3087fe1ae3",
+      "translation_text_hash": "5bc06dbaa5ff2204c6308a2afc73787a096045d3dbf6c06761de3439a170f1e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 마음눈을 밝히사 그의 부르심의 소망이 무엇이며 성도 안에서 그 기업의 영광의 풍성이 무엇이며"
+      ],
+      "raw_text_hashes": [
+        "5bc06dbaa5ff2204c6308a2afc73787a096045d3dbf6c06761de3439a170f1e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:19",
+      "sequence": 29222,
+      "chapter_label": "EPH 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "and what is the exceeding greatness of his power toward us who believe, according to that working of the strength of his might",
+      "ko": "그의 힘의 강력으로 역사하심을 따라 믿는 우리에게 베푸신 능력의 지극히 크심이 어떤 것을 너희로 알게 하시기를 구하노라",
+      "source_text_hash": "f4f1e672cbb7fcb6cbbacad9ede84a3ce5c26ef54c8114cea65df384ac1ff6b2",
+      "translation_text_hash": "d482877ca95d4ade81d3145420a392390d7e0898a9a1e1031cf913e68be64eae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 힘의 강력으로 역사하심을 따라 믿는 우리에게 베푸신 능력의 지극히 크심이 어떤 것을 너희로 알게 하시기를 구하노라"
+      ],
+      "raw_text_hashes": [
+        "d482877ca95d4ade81d3145420a392390d7e0898a9a1e1031cf913e68be64eae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:20",
+      "sequence": 29223,
+      "chapter_label": "EPH 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "which he worked in Christ when he raised him from the dead and made him to sit at his right hand in the heavenly places,",
+      "ko": "그 능력이 그리스도 안에서 역사하사 죽은 자들 가운데서 다시 살리시고 하늘에서 자기의 오른편에 앉히사",
+      "source_text_hash": "b00f88cff47cb7d60ce43456c2cc8bbf28ddc8129e839bdf67d56ebf34712064",
+      "translation_text_hash": "29773a3836e04515402e4bf184ae0ab9337acb34f78e3c83b68877e44509901c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 능력이 그리스도 안에서 역사하사 죽은 자들 가운데서 다시 살리시고 하늘에서 자기의 오른편에 앉히사"
+      ],
+      "raw_text_hashes": [
+        "29773a3836e04515402e4bf184ae0ab9337acb34f78e3c83b68877e44509901c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:21",
+      "sequence": 29224,
+      "chapter_label": "EPH 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "far above all rule, authority, power, dominion, and every name that is named, not only in this age, but also in that which is to come.",
+      "ko": "모든 정사와 권세와 능력과 주관하는 자와 이 세상뿐 아니라 오는 세상에 일컫는 모든 이름 위에 뛰어나게 하시고",
+      "source_text_hash": "51d13fce32d5cd6d828e631e92b4ee0ff9cf5d2870ad2d2dbd6bcb57002d5480",
+      "translation_text_hash": "9af3e50ebee955ff296dffec6c4c6b11ea5d0fe613b8c20ed046de6e8e7a48f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 정사와 권세와 능력과 주관하는 자와 이 세상뿐 아니라 오는 세상에 일컫는 모든 이름 위에 뛰어나게 하시고"
+      ],
+      "raw_text_hashes": [
+        "9af3e50ebee955ff296dffec6c4c6b11ea5d0fe613b8c20ed046de6e8e7a48f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:22",
+      "sequence": 29225,
+      "chapter_label": "EPH 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "He put all things in subjection under his feet, and gave him to be head over all things for the assembly,",
+      "ko": "또 만물을 그 발 아래 복종하게 하시고 그를 만물 위에 교회의 머리로 주셨느니라",
+      "source_text_hash": "bb812cf41531175e3da6ccc563ae7b488ca5d9b98e67cc93eb87b1f92427a4da",
+      "translation_text_hash": "37e5ed57ea629b4229adab191b41634bf1a8bd4c2be21926d657284219f1dff4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 만물을 그 발 아래 복종하게 하시고 그를 만물 위에 교회의 머리로 주셨느니라"
+      ],
+      "raw_text_hashes": [
+        "37e5ed57ea629b4229adab191b41634bf1a8bd4c2be21926d657284219f1dff4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:1:23",
+      "sequence": 29226,
+      "chapter_label": "EPH 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "EPH",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "which is his body, the fullness of him who fills all in all.",
+      "ko": "교회는 그의 몸이니 만물 안에서 만물을 충만케 하시는 자의 충만이니라",
+      "source_text_hash": "838a253813e707528f6282433b9be0520392567d92b93b43210b7668c918af4d",
+      "translation_text_hash": "b933945e7c0ef7f50ec4b713734a911628a9cd72dbd82ce1fb336bb85be423bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "교회는 그의 몸이니 만물 안에서 만물을 충만케 하시는 자의 충만이니라"
+      ],
+      "raw_text_hashes": [
+        "b933945e7c0ef7f50ec4b713734a911628a9cd72dbd82ce1fb336bb85be423bc"
+      ]
+    }
+  ]
+}

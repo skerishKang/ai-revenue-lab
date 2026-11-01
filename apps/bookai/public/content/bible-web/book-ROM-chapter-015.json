@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:015",
+  "unit_ordinal": 1061,
+  "unit_label": "ROM 15",
+  "book_code": "ROM",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:15:1",
+      "sequence": 28304,
+      "chapter_label": "ROM 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "Now we who are strong ought to bear the weaknesses of the weak, and not to please ourselves.",
+      "ko": "우리 강한 자가 마땅히 연약한 자의 약점을 담당하고 자기를 기쁘게 하지 아니할 것이라",
+      "source_text_hash": "5c5f86cb1b61989fd1eeb07a319468f87ba3481294ada2c04324b30f17c55405",
+      "translation_text_hash": "0a2450bd90fb3ca4ce230e05dc48fbab7a2169e694e8863b2e9a0b1dcacbcbe2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 강한 자가 마땅히 연약한 자의 약점을 담당하고 자기를 기쁘게 하지 아니할 것이라"
+      ],
+      "raw_text_hashes": [
+        "0a2450bd90fb3ca4ce230e05dc48fbab7a2169e694e8863b2e9a0b1dcacbcbe2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:2",
+      "sequence": 28305,
+      "chapter_label": "ROM 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "Let each one of us please his neighbor for that which is good, to be building him up.",
+      "ko": "우리 각 사람이 이웃을 기쁘게 하되 선을 이루고 덕을 세우도록 할찌니라",
+      "source_text_hash": "af225153d58e92bd886b3af60d955f08df829d6f491f957f5005ffd14a8a6d48",
+      "translation_text_hash": "0ac2461be15478dc80e4a02f703e5553702e0956a3b98407d9ffb3af0ad51a44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 각 사람이 이웃을 기쁘게 하되 선을 이루고 덕을 세우도록 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "0ac2461be15478dc80e4a02f703e5553702e0956a3b98407d9ffb3af0ad51a44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:3",
+      "sequence": 28306,
+      "chapter_label": "ROM 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "For even Christ didn’t please himself. But, as it is written, “The reproaches of those who reproached you fell on me.”",
+      "ko": "그리스도께서 자기를 기쁘게 하지 아니하셨나니 기록된바 주를 비방하는 자들의 비방이 내게 미쳤나이다 함과 같으니라",
+      "source_text_hash": "c445d06929f60a9a592d202dd83305a79e430d0583b373616210a121f4675d1e",
+      "translation_text_hash": "e2b65c9a2d57b38d5ae7d07284f0917ee9f87de1763aeeeb9c9e650848e0aca6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 자기를 기쁘게 하지 아니하셨나니 기록된바 주를 비방하는 자들의 비방이 내게 미쳤나이다 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "e2b65c9a2d57b38d5ae7d07284f0917ee9f87de1763aeeeb9c9e650848e0aca6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:4",
+      "sequence": 28307,
+      "chapter_label": "ROM 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "For whatever things were written before were written for our learning, that through perseverance and through encouragement of the Scriptures we might have hope.",
+      "ko": "무엇이든지 전에 기록한 바는 우리의 교훈을 위하여 기록된 것이니 우리로 하여금 인내로 또는 성경의 안위로 소망을 가지게 함이니라",
+      "source_text_hash": "c67465200c8fd2003584ca4babd99c041d480c51942b6aa24638e2a881959155",
+      "translation_text_hash": "2bfbcaf6f738aeb26882f36179708bea0e8a8a5db11af1ba2db28b1252e4e4cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무엇이든지 전에 기록한 바는 우리의 교훈을 위하여 기록된 것이니 우리로 하여금 인내로 또는 성경의 안위로 소망을 가지게 함이니라"
+      ],
+      "raw_text_hashes": [
+        "2bfbcaf6f738aeb26882f36179708bea0e8a8a5db11af1ba2db28b1252e4e4cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:5",
+      "sequence": 28308,
+      "chapter_label": "ROM 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "Now the God of perseverance and of encouragement grant you to be of the same mind with one another according to Christ Jesus,",
+      "ko": "이제 인내와 안위의 하나님이 너희로 그리스도 예수를 본받아 서로 뜻이 같게 하여 주사",
+      "source_text_hash": "cba3da1f4b4d8da55da298974f2f4bea87b15ceca52f9900e90f815fe8bdfe19",
+      "translation_text_hash": "9425d21ad45a78d8a179d7547ee8b647806ebd533ce625382605fc2892ebc321",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 인내와 안위의 하나님이 너희로 그리스도 예수를 본받아 서로 뜻이 같게 하여 주사"
+      ],
+      "raw_text_hashes": [
+        "9425d21ad45a78d8a179d7547ee8b647806ebd533ce625382605fc2892ebc321"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:6",
+      "sequence": 28309,
+      "chapter_label": "ROM 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "that with one accord you may with one mouth glorify the God and Father of our Lord Jesus Christ.",
+      "ko": "한 마음과 한 입으로 하나님 곧 우리 주 예수 그리스도의 아버지께 영광을 돌리게 하려 하노라",
+      "source_text_hash": "8589253ca4cdcd61bd6752d78be632c48920b3b1f1212b5e973f71d84e3abdf9",
+      "translation_text_hash": "3e2df0e4e83b0bdf7e53dd2cead06254fee7fc231d2d5cfd3ee813475de2bbe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 마음과 한 입으로 하나님 곧 우리 주 예수 그리스도의 아버지께 영광을 돌리게 하려 하노라"
+      ],
+      "raw_text_hashes": [
+        "3e2df0e4e83b0bdf7e53dd2cead06254fee7fc231d2d5cfd3ee813475de2bbe8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:7",
+      "sequence": 28310,
+      "chapter_label": "ROM 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore accept one another, even as Christ also accepted you, to the glory of God.",
+      "ko": "이러므로 그리스도께서 우리를 받아 하나님께 영광을 돌리심과 같이 너희도 서로 받으라",
+      "source_text_hash": "d16f84ca51ba311748de7736b0fd069842c7a1f8b5800017f59044a0e54d5eb3",
+      "translation_text_hash": "671f44503556aefdb39523a63de64b29a9cbd9ab1a1a024e41b339c50416b2e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 그리스도께서 우리를 받아 하나님께 영광을 돌리심과 같이 너희도 서로 받으라"
+      ],
+      "raw_text_hashes": [
+        "671f44503556aefdb39523a63de64b29a9cbd9ab1a1a024e41b339c50416b2e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:8",
+      "sequence": 28311,
+      "chapter_label": "ROM 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "Now I say that Christ has been made a servant of the circumcision for the truth of God, that he might confirm the promises given to the fathers,",
+      "ko": "내가 말하노니 그리스도께서 하나님의 진실하심을 위하여 할례의 수종자가 되셨으니 이는 조상들에게 주신 약속들을 견고케 하시고",
+      "source_text_hash": "43db2f99563ca7afd6031b6decf7fb74177c346076545b470b71433f65cf6614",
+      "translation_text_hash": "ba2c95fb2909c7ee14314f6c141b8f00ad6feae9c1083ab017ec300757b46356",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하노니 그리스도께서 하나님의 진실하심을 위하여 할례의 수종자가 되셨으니 이는 조상들에게 주신 약속들을 견고케 하시고"
+      ],
+      "raw_text_hashes": [
+        "ba2c95fb2909c7ee14314f6c141b8f00ad6feae9c1083ab017ec300757b46356"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:9",
+      "sequence": 28312,
+      "chapter_label": "ROM 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "and that the Gentiles might glorify God for his mercy. As it is written, “Therefore I will give praise to you among the Gentiles and sing to your name.”",
+      "ko": "이방인으로 그 긍휼하심을 인하여 하나님께 영광을 돌리게 하려 하심이라 기록된바 이러므로 내가 열방 중에서 주께 감사하고 주의 이름을 찬송하리로다 함과 같으니라",
+      "source_text_hash": "6abc94810c47a4d2d81cab1378b19aa02c0c7676dcfdc52eac59bf0212f972bf",
+      "translation_text_hash": "3a4ea81335e54853f6f804bd37e2b5ea32eef1f2611f9a088c930aa383b00283",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인으로 그 긍휼하심을 인하여 하나님께 영광을 돌리게 하려 하심이라 기록된바 이러므로 내가 열방 중에서 주께 감사하고 주의 이름을 찬송하리로다 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "3a4ea81335e54853f6f804bd37e2b5ea32eef1f2611f9a088c930aa383b00283"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:10",
+      "sequence": 28313,
+      "chapter_label": "ROM 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "Again he says, “Rejoice, you Gentiles, with his people.”",
+      "ko": "또 가로되 열방들아 주의 백성과 함께 즐거워하라 하였으며",
+      "source_text_hash": "3d2014943490e48dc30c55ab2ecfffee15d5e474cb5c0276f8e6daefa471b0de",
+      "translation_text_hash": "e5dd9020f39b1588a55f8e9729f3b27c72641ad5190144fd9f3be8bafab16dc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 열방들아 주의 백성과 함께 즐거워하라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "e5dd9020f39b1588a55f8e9729f3b27c72641ad5190144fd9f3be8bafab16dc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:11",
+      "sequence": 28314,
+      "chapter_label": "ROM 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "Again, “Praise the Lord, all you Gentiles! Let all the peoples praise him.”",
+      "ko": "또 모든 열방들아 주를 찬양하며 모든 백성들아 저를 찬송하라 하였으며",
+      "source_text_hash": "55e91c2fa98e5243ff4d81976062e75732c6a78cfd68f02993898bfb5ac78ff4",
+      "translation_text_hash": "212a6de68d153582be8696fc26c0f1d9987382e820c4e93bcb7885326380e130",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 모든 열방들아 주를 찬양하며 모든 백성들아 저를 찬송하라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "212a6de68d153582be8696fc26c0f1d9987382e820c4e93bcb7885326380e130"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:12",
+      "sequence": 28315,
+      "chapter_label": "ROM 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "Again, Isaiah says, “There will be the root of Jesse, he who arises to rule over the Gentiles; in him the Gentiles will hope.”",
+      "ko": "또 이사야가 가로되 이새의 뿌리 곧 열방을 다스리기 위하여 일어나시는 이가 있으리니 열방이 그에게 소망을 두리라 하였느니라",
+      "source_text_hash": "f8a56dc81f928617537eb1a42cbf9818538ab749de6b47d711969083671057b6",
+      "translation_text_hash": "b26ebd29c3763ad3e24eba84ad15be06e952db5e27a012f2dbaf4c5db596058b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이사야가 가로되 이새의 뿌리 곧 열방을 다스리기 위하여 일어나시는 이가 있으리니 열방이 그에게 소망을 두리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b26ebd29c3763ad3e24eba84ad15be06e952db5e27a012f2dbaf4c5db596058b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:13",
+      "sequence": 28316,
+      "chapter_label": "ROM 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "Now may the God of hope fill you with all joy and peace in believing, that you may abound in hope in the power of the Holy Spirit.",
+      "ko": "소망의 하나님이 모든 기쁨과 평강을 믿음 안에서 너희에게 충만케 하사 성령의 능력으로 소망이 넘치게 하시기를 원하노라",
+      "source_text_hash": "91405f0c907c910c8720350d065f8db7838f673e4ffc8304a920a5742a98697e",
+      "translation_text_hash": "a17098194f840d15d721e7623d8b280044ce1605c573a3310efec70c355cbcab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소망의 하나님이 모든 기쁨과 평강을 믿음 안에서 너희에게 충만케 하사 성령의 능력으로 소망이 넘치게 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "a17098194f840d15d721e7623d8b280044ce1605c573a3310efec70c355cbcab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:14",
+      "sequence": 28317,
+      "chapter_label": "ROM 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "I myself am also persuaded about you, my brothers, that you yourselves are full of goodness, filled with all knowledge, able also to admonish others.",
+      "ko": "내 형제들아 너희가 스스로 선함이 가득하고 모든 지식이 차서 능히 서로 권하는 자임을 나도 확신하노라",
+      "source_text_hash": "6fcab0936337deac6c852f61b01bc5ca9f3c49dcc93ee55f22d4bbe4ab007992",
+      "translation_text_hash": "dbcedbce1314650f8d6b152c35447b7a7be87d0f673b9d35212bf77234ecf935",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형제들아 너희가 스스로 선함이 가득하고 모든 지식이 차서 능히 서로 권하는 자임을 나도 확신하노라"
+      ],
+      "raw_text_hashes": [
+        "dbcedbce1314650f8d6b152c35447b7a7be87d0f673b9d35212bf77234ecf935"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:15",
+      "sequence": 28318,
+      "chapter_label": "ROM 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "But I write the more boldly to you in part as reminding you, because of the grace that was given to me by God,",
+      "ko": "그러나 내가 너희로 다시 생각나게 하려고 하나님께서 내게 주신 은혜를 인하여 더욱 담대히 대강 너희에게 썼노니",
+      "source_text_hash": "1df9d3620b774b987efce2cbc9be0f4857fe0b626c3464e970a2466bafbde3d2",
+      "translation_text_hash": "2063f7f71c946e5326ed60c0529c25d1015cb61ec6ff10783ee57491a87e40d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 너희로 다시 생각나게 하려고 하나님께서 내게 주신 은혜를 인하여 더욱 담대히 대강 너희에게 썼노니"
+      ],
+      "raw_text_hashes": [
+        "2063f7f71c946e5326ed60c0529c25d1015cb61ec6ff10783ee57491a87e40d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:16",
+      "sequence": 28319,
+      "chapter_label": "ROM 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "that I should be a servant of Christ Jesus to the Gentiles, serving as a priest of the Good News of God, that the offering up of the Gentiles might be made acceptable, sanctified by the Holy Spirit.",
+      "ko": "이 은혜는 곧 나로 이방인을 위하여 그리스도 예수의 일군이 되어 하나님의 복음의 제사장 직무를 하게 하사 이방인을 제물로 드리는 그것이 성령 안에서 거룩하게 되어 받으심직하게 하려 하심이라",
+      "source_text_hash": "0650f1ed94ddeea31aedc002f6039ec15a87ccd7f621cbfe5eb34d17d2774d7f",
+      "translation_text_hash": "7cb99d433af34e7599316815ffb753d0b4dcd2c9d5ffef8f82d1953c852c654c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 은혜는 곧 나로 이방인을 위하여 그리스도 예수의 일군이 되어 하나님의 복음의 제사장 직무를 하게 하사 이방인을 제물로 드리는 그것이 성령 안에서 거룩하게 되어 받으심직하게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "7cb99d433af34e7599316815ffb753d0b4dcd2c9d5ffef8f82d1953c852c654c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:17",
+      "sequence": 28320,
+      "chapter_label": "ROM 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "I have therefore my boasting in Christ Jesus in things pertaining to God.",
+      "ko": "그러므로 내가 그리스도 예수 안에서 하나님의 일에 대하여 자랑하는 것이 있거니와",
+      "source_text_hash": "513b020ba5fc004f176bf9812b48b05e8e5c91ee0873a7e4394396f3a9c1346b",
+      "translation_text_hash": "220d55d3be8e43589a8ea70e2bc676d7d7768930737b7b3b8742b4efaf94aec2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 그리스도 예수 안에서 하나님의 일에 대하여 자랑하는 것이 있거니와"
+      ],
+      "raw_text_hashes": [
+        "220d55d3be8e43589a8ea70e2bc676d7d7768930737b7b3b8742b4efaf94aec2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:18",
+      "sequence": 28321,
+      "chapter_label": "ROM 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "For I will not dare to speak of any things except those which Christ worked through me for the obedience of the Gentiles, by word and deed,",
+      "ko": "그리스도께서 이방인들을 순종케 하기 위하여 나로 말미암아 말과 일이며 표적과 기사의 능력이며 성령의 능력으로 역사하신 것 외에는 내가 감히 말하지 아니하노라",
+      "source_text_hash": "e5ad08ba5115a1fe3f89dc9866705472c1d8eb5125dc329dd89c970009f8b4cb",
+      "translation_text_hash": "2d3a8b57f3fa49aacc111b84552c6c73758f2ae9740a9dd845349105a31cd25a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 이방인들을 순종케 하기 위하여 나로 말미암아 말과 일이며 표적과 기사의 능력이며 성령의 능력으로 역사하신 것 외에는 내가 감히 말하지 아니하노라"
+      ],
+      "raw_text_hashes": [
+        "2d3a8b57f3fa49aacc111b84552c6c73758f2ae9740a9dd845349105a31cd25a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:19",
+      "sequence": 28322,
+      "chapter_label": "ROM 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "in the power of signs and wonders, in the power of God’s Spirit; so that from Jerusalem and around as far as to Illyricum, I have fully preached the Good News of Christ;",
+      "ko": "이 일로 인하여 내가 예루살렘으로부터 두루 행하여 일루리곤까지 그리스도의 복음을 편만하게 전하였노라",
+      "source_text_hash": "4756b8ea1d0f65922c87bc9a2bf89203bf5c596df52fe0ff97cb6a1be00c93b0",
+      "translation_text_hash": "c18c1dc4d29367a3bc5bb546021012cfe0d75bd675615f83545b83d6fa096591",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일로 인하여 내가 예루살렘으로부터 두루 행하여 일루리곤까지 그리스도의 복음을 편만하게 전하였노라"
+      ],
+      "raw_text_hashes": [
+        "c18c1dc4d29367a3bc5bb546021012cfe0d75bd675615f83545b83d6fa096591"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:20",
+      "sequence": 28323,
+      "chapter_label": "ROM 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "yes, making it my aim to preach the Good News, not where Christ was already named, that I might not build on another’s foundation.",
+      "ko": "또 내가 그리스도의 이름을 부르는 곳에는 복음을 전하지 않기로 힘썼노니 이는 남의 터 위에 건축하지 아니하려 함이라",
+      "source_text_hash": "ab245c76f98f8715b66ec25d9b6107b68ebb0a7d25cb18f0383de996856f56b4",
+      "translation_text_hash": "ddc0c1f2866e6b0846845c0fcd493fba96299c5c8fe4bc6fb376862898d0ebb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 그리스도의 이름을 부르는 곳에는 복음을 전하지 않기로 힘썼노니 이는 남의 터 위에 건축하지 아니하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "ddc0c1f2866e6b0846845c0fcd493fba96299c5c8fe4bc6fb376862898d0ebb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:21",
+      "sequence": 28324,
+      "chapter_label": "ROM 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "But, as it is written, “They will see, to whom no news of him came. They who haven’t heard will understand.”",
+      "ko": "기록된바 주의 소식을 받지 못한 자들이 볼 것이요 듣지 못한 자들이 깨달으리라 함과 같으니라",
+      "source_text_hash": "d0f1f1ab1743656b302baca3f25ee2d81320b15c86deea5bfdc9d346e9cc3893",
+      "translation_text_hash": "6f767cebf0bf52098cf578888a8346d96d303d6be4ba811045e53d79b2557b4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 주의 소식을 받지 못한 자들이 볼 것이요 듣지 못한 자들이 깨달으리라 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "6f767cebf0bf52098cf578888a8346d96d303d6be4ba811045e53d79b2557b4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:22",
+      "sequence": 28325,
+      "chapter_label": "ROM 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "Therefore also I was hindered these many times from coming to you,",
+      "ko": "그러므로 또한 내가 너희에게 가려 하던 것이 여러번 막혔더니",
+      "source_text_hash": "cd6c6b6c4446ceb7091cbaf1703410bbcef0d77633c1225136afab5a3454d7f7",
+      "translation_text_hash": "3ce30871df975b2dabfefc65bbaa2568fd16bffcdc824ab908071acd2567a97f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 또한 내가 너희에게 가려 하던 것이 여러번 막혔더니"
+      ],
+      "raw_text_hashes": [
+        "3ce30871df975b2dabfefc65bbaa2568fd16bffcdc824ab908071acd2567a97f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:23",
+      "sequence": 28326,
+      "chapter_label": "ROM 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "but now, no longer having any place in these regions, and having these many years a longing to come to you,",
+      "ko": "이제는 이 지방에 일할 곳이 없고 또 여러 해 전부터 언제든지 서바나로 갈 때에 너희에게 가려는 원이 있었으니",
+      "source_text_hash": "3b57cc102c646ed49e7f58335b5b26b212c737cc64c8158ab719d118922ae2b2",
+      "translation_text_hash": "f3326d260d6f3ce305fcac162605c934103308e16ed95efeed673c7fc54267a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 이 지방에 일할 곳이 없고 또 여러 해 전부터 언제든지 서바나로 갈 때에 너희에게 가려는 원이 있었으니"
+      ],
+      "raw_text_hashes": [
+        "f3326d260d6f3ce305fcac162605c934103308e16ed95efeed673c7fc54267a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:24",
+      "sequence": 28327,
+      "chapter_label": "ROM 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "whenever I travel to Spain, I will come to you. For I hope to see you on my journey, and to be helped on my way there by you, if first I may enjoy your company for a while.",
+      "ko": "이는 지나가는 길에 너희를 보고 먼저 너희와 교제하여 약간 만족을 받은 후에 너희의 그리로 보내줌을 바람이라",
+      "source_text_hash": "314e9e9d33db435074ae6ed699189c0fb6cb56b1b2d3d54a0c50c021803a4fd3",
+      "translation_text_hash": "8fc08a6091626fa5c034400a26e1cb74527e13ada16a15640978fd8b6fa869f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 지나가는 길에 너희를 보고 먼저 너희와 교제하여 약간 만족을 받은 후에 너희의 그리로 보내줌을 바람이라"
+      ],
+      "raw_text_hashes": [
+        "8fc08a6091626fa5c034400a26e1cb74527e13ada16a15640978fd8b6fa869f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:25",
+      "sequence": 28328,
+      "chapter_label": "ROM 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "But now, I say, I am going to Jerusalem, serving the saints.",
+      "ko": "그러나 이제는 내가 성도를 섬기는 일로 예루살렘에 가노니",
+      "source_text_hash": "ef5bc7b35fbe62e139a27d6ddd06bb1a5ca788967279fefabebb64bb39ffd17e",
+      "translation_text_hash": "ca0570368a00df4b3df2d1de0f8f7b58f0272c89f4be299834f1f7f85b16c531",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이제는 내가 성도를 섬기는 일로 예루살렘에 가노니"
+      ],
+      "raw_text_hashes": [
+        "ca0570368a00df4b3df2d1de0f8f7b58f0272c89f4be299834f1f7f85b16c531"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:26",
+      "sequence": 28329,
+      "chapter_label": "ROM 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "For it has been the good pleasure of Macedonia and Achaia to make a certain contribution for the poor among the saints who are at Jerusalem.",
+      "ko": "이는 마게도냐와 아가야 사람들이 예루살렘 성도 중 가난한 자들을 위하여 기쁘게 얼마를 동정하였음이라",
+      "source_text_hash": "89030a62aa488774a915140b534ab57d9249ea2d25bff74086d41c9705d07dde",
+      "translation_text_hash": "332742269c897811d64028d73e211fd40278bf99e711b637cab31c6ab96553f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 마게도냐와 아가야 사람들이 예루살렘 성도 중 가난한 자들을 위하여 기쁘게 얼마를 동정하였음이라"
+      ],
+      "raw_text_hashes": [
+        "332742269c897811d64028d73e211fd40278bf99e711b637cab31c6ab96553f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:27",
+      "sequence": 28330,
+      "chapter_label": "ROM 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "Yes, it has been their good pleasure, and they are their debtors. For if the Gentiles have been made partakers of their spiritual things, they owe it to them also to serve them in material things.",
+      "ko": "저희가 기뻐서 하였거니와 또한 저희는 그들에게 빚진 자니 만일 이방인들이 그들의 신령한 것을 나눠 가졌으면 육신의 것으로 그들을 섬기는 것이 마땅하니라",
+      "source_text_hash": "f93bc80b4bce5dcbfc875ac9ea14cb0089ca17eb09938979210dd58aa3e2da48",
+      "translation_text_hash": "6e00c23c521411ce825cfe9abfa1c5ce755df84abac5144b596081b8e35ed333",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 기뻐서 하였거니와 또한 저희는 그들에게 빚진 자니 만일 이방인들이 그들의 신령한 것을 나눠 가졌으면 육신의 것으로 그들을 섬기는 것이 마땅하니라"
+      ],
+      "raw_text_hashes": [
+        "6e00c23c521411ce825cfe9abfa1c5ce755df84abac5144b596081b8e35ed333"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:28",
+      "sequence": 28331,
+      "chapter_label": "ROM 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "When therefore I have accomplished this, and have sealed to them this fruit, I will go on by way of you to Spain.",
+      "ko": "그러므로 내가 이 일을 마치고 이 열매를 저희에게 확증한 후에 너희에게를 지나 서바나로 가리라",
+      "source_text_hash": "458471a3b587b954ea03ae028032491793157928c4e3fe706e5d86fabb1bf01c",
+      "translation_text_hash": "765bf71b6c3170fbc6f230ad4f31b87f3e0e011b9951b93855ed88a88119e5ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 이 일을 마치고 이 열매를 저희에게 확증한 후에 너희에게를 지나 서바나로 가리라"
+      ],
+      "raw_text_hashes": [
+        "765bf71b6c3170fbc6f230ad4f31b87f3e0e011b9951b93855ed88a88119e5ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:29",
+      "sequence": 28332,
+      "chapter_label": "ROM 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "I know that when I come to you, I will come in the fullness of the blessing of the Good News of Christ.",
+      "ko": "내가 너희에게 나갈 때에 그리스도의 충만한 축복을 가지고 갈줄을 아노라",
+      "source_text_hash": "50b86abde90d5e9f66503040c57660786b4223ff421727efc804d8f73f9b341f",
+      "translation_text_hash": "e7e05cb3f8959ba31a26f13d1d03d884e49ad7ed547a6c5414072b11f94da55d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 나갈 때에 그리스도의 충만한 축복을 가지고 갈줄을 아노라"
+      ],
+      "raw_text_hashes": [
+        "e7e05cb3f8959ba31a26f13d1d03d884e49ad7ed547a6c5414072b11f94da55d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:30",
+      "sequence": 28333,
+      "chapter_label": "ROM 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "Now I beg you, brothers, by our Lord Jesus Christ and by the love of the Spirit, that you strive together with me in your prayers to God for me,",
+      "ko": "형제들아 내가 우리 주 예수 그리스도로 말미암고 성령의 사랑으로 말미암아 너희를 권하노니 너희 기도에 나와 힘을 같이하여 나를 위하여 하나님께 빌어",
+      "source_text_hash": "0a07000df998d532a94242d2a778c3ff29a524bc0724e860b5210e9e14656779",
+      "translation_text_hash": "af8bd635f3c15903ae2f7b8f1b90451e1b42dc1157201418bbdbf7fddcde8e57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 우리 주 예수 그리스도로 말미암고 성령의 사랑으로 말미암아 너희를 권하노니 너희 기도에 나와 힘을 같이하여 나를 위하여 하나님께 빌어"
+      ],
+      "raw_text_hashes": [
+        "af8bd635f3c15903ae2f7b8f1b90451e1b42dc1157201418bbdbf7fddcde8e57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:31",
+      "sequence": 28334,
+      "chapter_label": "ROM 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "that I may be delivered from those who are disobedient in Judea, and that my service which I have for Jerusalem may be acceptable to the saints,",
+      "ko": "나로 유대에 순종치 아니하는 자들에게서 구원을 받게 하고 또 예루살렘에 대한 나의 섬기는 일을 성도들이 받음직하게 하고",
+      "source_text_hash": "cb44f53a52bd7ea5bc613660454ff5114a31275bf70d39c084b01105e5b3aae3",
+      "translation_text_hash": "7a6438e759dd117e83f44991a3eeb20f5842ffeb3d8a54e8e995ba1197025363",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 유대에 순종치 아니하는 자들에게서 구원을 받게 하고 또 예루살렘에 대한 나의 섬기는 일을 성도들이 받음직하게 하고"
+      ],
+      "raw_text_hashes": [
+        "7a6438e759dd117e83f44991a3eeb20f5842ffeb3d8a54e8e995ba1197025363"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:32",
+      "sequence": 28335,
+      "chapter_label": "ROM 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "that I may come to you in joy through the will of God, and together with you, find rest.",
+      "ko": "나로 하나님의 뜻을 좇아 기쁨으로 너희에게 나아가 너희와 함께 편히 쉬게 하라",
+      "source_text_hash": "57f68f01a9e9c34755e701fa40893044369764a63170fb7fe6bc21ff7b9c440c",
+      "translation_text_hash": "384b73863dd675a5944911f58e24a031a6f70f6d0ffc76a033ef4720a5bb0960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 하나님의 뜻을 좇아 기쁨으로 너희에게 나아가 너희와 함께 편히 쉬게 하라"
+      ],
+      "raw_text_hashes": [
+        "384b73863dd675a5944911f58e24a031a6f70f6d0ffc76a033ef4720a5bb0960"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:15:33",
+      "sequence": 28336,
+      "chapter_label": "ROM 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "ROM",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "Now the God of peace be with you all. Amen.",
+      "ko": "평강의 하나님께서 너희 모든 사람과 함께 계실찌어다 아멘",
+      "source_text_hash": "04690f6681d9707ce328e9ec61572c679b90fa8fb58f6697f42facd9a08bb5a8",
+      "translation_text_hash": "13246b4eaf3dd5450d5daae37b8c2bbb617bc389abae8c18858d7adac6b95c6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평강의 하나님께서 너희 모든 사람과 함께 계실찌어다 아멘"
+      ],
+      "raw_text_hashes": [
+        "13246b4eaf3dd5450d5daae37b8c2bbb617bc389abae8c18858d7adac6b95c6c"
+      ]
+    }
+  ]
+}

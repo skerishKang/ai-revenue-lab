@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:046",
+  "unit_ordinal": 524,
+  "unit_label": "PSA 46",
+  "book_code": "PSA",
+  "chapter_number": 46,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:46:1",
+      "sequence": 14616,
+      "chapter_label": "PSA 46",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 1
+        }
+      ],
+      "en": "God is our refuge and strength, a very present help in trouble.",
+      "ko": "하나님은 우리의 피난처시요 힘이시니 환난 중에 만날 큰 도움이시라",
+      "source_text_hash": "c718e973dd14783c1687bc7377dab423bc7ccf94d8d19535d9c90591ff11cde0",
+      "translation_text_hash": "f8e9f7844634405d28c3af769c67f25e4f690e6256e476cf06f747256603d6eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 우리의 피난처시요 힘이시니 환난 중에 만날 큰 도움이시라"
+      ],
+      "raw_text_hashes": [
+        "f8e9f7844634405d28c3af769c67f25e4f690e6256e476cf06f747256603d6eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:46:2",
+      "sequence": 14617,
+      "chapter_label": "PSA 46",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 2
+        }
+      ],
+      "en": "Therefore we won’t be afraid, though the earth changes, though the mountains are shaken into the heart of the seas;",
+      "ko": "그러므로 땅이 변하든지 산이 흔들려 바다 가운데 빠지든지",
+      "source_text_hash": "adf697378a21454ea45814c5ab9850ccf59cd4ee33676e1e543f9a076d5a7089",
+      "translation_text_hash": "0c1bb3434e1325510bfc0191c0b66fc60bc82bf2e9b9c09e8cdf1b728679dccc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 땅이 변하든지 산이 흔들려 바다 가운데 빠지든지"
+      ],
+      "raw_text_hashes": [
+        "0c1bb3434e1325510bfc0191c0b66fc60bc82bf2e9b9c09e8cdf1b728679dccc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:46:3",
+      "sequence": 14618,
+      "chapter_label": "PSA 46",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 3
+        }
+      ],
+      "en": "though its waters roar and are troubled, though the mountains tremble with their swelling. Selah.",
+      "ko": "바닷물이 흉용하고 뛰놀든지 그것이 넘침으로 산이 요동할찌라도 우리는 두려워 아니하리로다(셀라)",
+      "source_text_hash": "c91470c8550a5cb624fa98c7bf1598e6718043865b38e481f973e31b24dce09b",
+      "translation_text_hash": "f21909bb8027e18791e90794f6a4a81edcc1521e3148cb66f5a9467a4a47502b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바닷물이 흉용하고 뛰놀든지 그것이 넘침으로 산이 요동할찌라도 우리는 두려워 아니하리로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "f21909bb8027e18791e90794f6a4a81edcc1521e3148cb66f5a9467a4a47502b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:46:4",
+      "sequence": 14619,
+      "chapter_label": "PSA 46",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 4
+        }
+      ],
+      "en": "There is a river, the streams of which make the city of God glad, the holy place of the tents of the Most High.",
+      "ko": "한 시내가 있어 나뉘어 흘러 하나님의 성 곧 지극히 높으신 자의 장막의 성소를 기쁘게 하도다",
+      "source_text_hash": "ab226564f0b2db1bb07112d3b35ba16547801ec559caa065f5e85b148406356a",
+      "translation_text_hash": "f94deb5af44f26e0f3f9ffaa948f7b6b882cfbf94fdbd78c07724d2e87c6408d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 시내가 있어 나뉘어 흘러 하나님의 성 곧 지극히 높으신 자의 장막의 성소를 기쁘게 하도다"
+      ],
+      "raw_text_hashes": [
+        "f94deb5af44f26e0f3f9ffaa948f7b6b882cfbf94fdbd78c07724d2e87c6408d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:46:5",
+      "sequence": 14620,
+      "chapter_label": "PSA 46",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 5
+        }
+      ],
+      "en": "God is within her. She shall not be moved. God will help her at dawn.",
+      "ko": "하나님이 그 성중에 거하시매 성이 요동치 아니할 것이라 새벽에 하나님이 도우시리로다",
+      "source_text_hash": "7525ad76a7fb22fbddcb3dbcae2acbcef8b1e9afdd7c0abeefa67bca7dbe9b6e",
+      "translation_text_hash": "133b213d3765beb6557b1ed0768c18686c030221812d50f6208e2175b192c159",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 성중에 거하시매 성이 요동치 아니할 것이라 새벽에 하나님이 도우시리로다"
+      ],
+      "raw_text_hashes": [
+        "133b213d3765beb6557b1ed0768c18686c030221812d50f6208e2175b192c159"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:46:6",
+      "sequence": 14621,
+      "chapter_label": "PSA 46",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 6
+        }
+      ],
+      "en": "The nations raged. The kingdoms were moved. He lifted his voice and the earth melted.",
+      "ko": "이방이 훤화하며 왕국이 동하였더니 저가 소리를 발하시매 땅이 녹았도다",
+      "source_text_hash": "2294976d01c254f11c39b5d220c284fc1d09e035179e8800d3c618af9041a8f1",
+      "translation_text_hash": "4707005c4112051a073b0cec01f42d3dd1207cb2e3c87d9ce5548f25b7cb0329",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방이 훤화하며 왕국이 동하였더니 저가 소리를 발하시매 땅이 녹았도다"
+      ],
+      "raw_text_hashes": [
+        "4707005c4112051a073b0cec01f42d3dd1207cb2e3c87d9ce5548f25b7cb0329"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:46:7",
+      "sequence": 14622,
+      "chapter_label": "PSA 46",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD of Armies is with us. The God of Jacob is our refuge. Selah.",
+      "ko": "만군의 여호와께서 우리와 함께 하시니 야곱의 하나님은 우리의 피난처시로다(셀라)",
+      "source_text_hash": "619d27b41e2fd53a55d1cc5a618d3b7db1a484907c2d0e8cec22b24c610bcf90",
+      "translation_text_hash": "1a8ff2c95afb6790d17169c5dcaa195a5e039cb3e1d04ab3179d419e9d15f9d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 우리와 함께 하시니 야곱의 하나님은 우리의 피난처시로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "1a8ff2c95afb6790d17169c5dcaa195a5e039cb3e1d04ab3179d419e9d15f9d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:46:8",
+      "sequence": 14623,
+      "chapter_label": "PSA 46",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 8
+        }
+      ],
+      "en": "Come, see the LORD’s works, what desolations he has made on the earth.",
+      "ko": "와서 여호와의 행적을 볼찌어다 땅을 황무케 하셨도다",
+      "source_text_hash": "7882c763e94a7beb6f9dd7d15222e7922f7d159b8b7fb4ad30c7ef2b846149cd",
+      "translation_text_hash": "daf9f9a96d123e8df381077d053ca2975239ade024fbab3657f8fdb9252b1baa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "와서 여호와의 행적을 볼찌어다 땅을 황무케 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "daf9f9a96d123e8df381077d053ca2975239ade024fbab3657f8fdb9252b1baa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:46:9",
+      "sequence": 14624,
+      "chapter_label": "PSA 46",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 9
+        }
+      ],
+      "en": "He makes wars cease to the end of the earth. He breaks the bow, and shatters the spear. He burns the chariots in the fire.",
+      "ko": "저가 땅 끝까지 전쟁을 쉬게 하심이여 활을 꺾고 창을 끊으며 수레를 불사르시는도다",
+      "source_text_hash": "1e95dafc381979c847c304a0e640edd17dfef632929114052655d2dadfc2eb62",
+      "translation_text_hash": "0957072e8b8d54c55a5fb913c2412050a06ac4e558d4a92784ac6cae4db7f9d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 땅 끝까지 전쟁을 쉬게 하심이여 활을 꺾고 창을 끊으며 수레를 불사르시는도다"
+      ],
+      "raw_text_hashes": [
+        "0957072e8b8d54c55a5fb913c2412050a06ac4e558d4a92784ac6cae4db7f9d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:46:10",
+      "sequence": 14625,
+      "chapter_label": "PSA 46",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 10
+        }
+      ],
+      "en": "“Be still, and know that I am God. I will be exalted among the nations. I will be exalted on the earth.”",
+      "ko": "이르시기를 너희는 가만히 있어 내가 하나님 됨을 알찌어다 내가 열방과 세계 중에서 높임을 받으리라 하시도다",
+      "source_text_hash": "c8289797a1e3498547ab6bdd5ff7eb51c6c5dd66458076db84522832d9906d00",
+      "translation_text_hash": "b98f896c3257af7b7c006429a5f20d4231d0a6d77ac8df8b3c1319c6cdeb8f0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시기를 너희는 가만히 있어 내가 하나님 됨을 알찌어다 내가 열방과 세계 중에서 높임을 받으리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "b98f896c3257af7b7c006429a5f20d4231d0a6d77ac8df8b3c1319c6cdeb8f0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:46:11",
+      "sequence": 14626,
+      "chapter_label": "PSA 46",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 46,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 46,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD of Armies is with us. The God of Jacob is our refuge. Selah.",
+      "ko": "만군의 여호와께서 우리와 함께 하시니 야곱의 하나님은 우리의 피난처시로다(셀라)",
+      "source_text_hash": "619d27b41e2fd53a55d1cc5a618d3b7db1a484907c2d0e8cec22b24c610bcf90",
+      "translation_text_hash": "1a8ff2c95afb6790d17169c5dcaa195a5e039cb3e1d04ab3179d419e9d15f9d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 우리와 함께 하시니 야곱의 하나님은 우리의 피난처시로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "1a8ff2c95afb6790d17169c5dcaa195a5e039cb3e1d04ab3179d419e9d15f9d4"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1517 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:002",
+  "unit_ordinal": 1020,
+  "unit_label": "ACT 2",
+  "book_code": "ACT",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:2:1",
+      "sequence": 26950,
+      "chapter_label": "ACT 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Now when the day of Pentecost had come, they were all with one accord in one place.",
+      "ko": "오순절날이 이미 이르매 저희가 다 같이 한곳에 모였더니",
+      "source_text_hash": "45dcdfb897e90d6982f5d9377f5c33343f9537b48d14780c1e35bbba5b90461d",
+      "translation_text_hash": "14de8e64b3a7ee5f9af6653c88824177782083b5e9aaf74dd8fec841cef9b69d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오순절날이 이미 이르매 저희가 다 같이 한곳에 모였더니"
+      ],
+      "raw_text_hashes": [
+        "14de8e64b3a7ee5f9af6653c88824177782083b5e9aaf74dd8fec841cef9b69d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:2",
+      "sequence": 26951,
+      "chapter_label": "ACT 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "Suddenly there came from the sky a sound like the rushing of a mighty wind, and it filled all the house where they were sitting.",
+      "ko": "홀연히 하늘로부터 급하고 강한 바람 같은 소리가 있어 저희 앉은 온 집에 가득하며",
+      "source_text_hash": "c6994a6941ef753fbdc65a47f045b0c5976600d75e1bb92e4ddc512afd778cc9",
+      "translation_text_hash": "9493ee74336b05f13dbb5db7e3b27e2d29d43e24b08b51942b89ea33b789d47d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홀연히 하늘로부터 급하고 강한 바람 같은 소리가 있어 저희 앉은 온 집에 가득하며"
+      ],
+      "raw_text_hashes": [
+        "9493ee74336b05f13dbb5db7e3b27e2d29d43e24b08b51942b89ea33b789d47d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:3",
+      "sequence": 26952,
+      "chapter_label": "ACT 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Tongues like fire appeared and were distributed to them, and one sat on each of them.",
+      "ko": "불의 혀 같이 갈라지는 것이 저희에게 보여 각 사람 위에 임하여 있더니",
+      "source_text_hash": "fbee2cf2c96341df841e0480f56162aa686311c9dedb7c96faff8053fae18795",
+      "translation_text_hash": "12db1c39b22d7becb250a66965207eff6c91f70bc4692c81744852699271023c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의 혀 같이 갈라지는 것이 저희에게 보여 각 사람 위에 임하여 있더니"
+      ],
+      "raw_text_hashes": [
+        "12db1c39b22d7becb250a66965207eff6c91f70bc4692c81744852699271023c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:4",
+      "sequence": 26953,
+      "chapter_label": "ACT 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "They were all filled with the Holy Spirit and began to speak with other languages, as the Spirit gave them the ability to speak.",
+      "ko": "저희가 다 성령의 충만함을 받고 성령이 말하게 하심을 따라 다른 방언으로 말하기를 시작하니라",
+      "source_text_hash": "915228fee5b7057d8afe5a302334f871e23a793670b7083cfb9c32d9608acfce",
+      "translation_text_hash": "ba80902ef1a7c13b1b1e6d77e2adb86ed4c1fe8495c992353f7bea5dd1e23d9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 다 성령의 충만함을 받고 성령이 말하게 하심을 따라 다른 방언으로 말하기를 시작하니라"
+      ],
+      "raw_text_hashes": [
+        "ba80902ef1a7c13b1b1e6d77e2adb86ed4c1fe8495c992353f7bea5dd1e23d9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:5",
+      "sequence": 26954,
+      "chapter_label": "ACT 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Now there were dwelling in Jerusalem Jews, devout men, from every nation under the sky.",
+      "ko": "그 때에 경건한 유대인이 천하 각국으로부터 와서 예루살렘에 우거하더니",
+      "source_text_hash": "23d00ffae244fd2b112a3919d7cb37af86f7203b3c7ebbab673766efb6b5aa29",
+      "translation_text_hash": "4054c57fb2caf28481778dc7de9fd5e72e6d9da0a186e37779d664675393b3e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 경건한 유대인이 천하 각국으로부터 와서 예루살렘에 우거하더니"
+      ],
+      "raw_text_hashes": [
+        "4054c57fb2caf28481778dc7de9fd5e72e6d9da0a186e37779d664675393b3e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:6",
+      "sequence": 26955,
+      "chapter_label": "ACT 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "When this sound was heard, the multitude came together and were bewildered, because everyone heard them speaking in his own language.",
+      "ko": "이 소리가 나매 큰 무리가 모여 각각 자기의 방언으로 제자들의 말하는 것을 듣고 소동하여",
+      "source_text_hash": "4ff6b57692a54a4dc73b39bb295cbd379ea6e10455c7f673f3d39400ae73b2a0",
+      "translation_text_hash": "acd7010c54243b91477e3a97cf7fd6baa2f0516ec506a8fb5f5eec0e3066d729",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 소리가 나매 큰 무리가 모여 각각 자기의 방언으로 제자들의 말하는 것을 듣고 소동하여"
+      ],
+      "raw_text_hashes": [
+        "acd7010c54243b91477e3a97cf7fd6baa2f0516ec506a8fb5f5eec0e3066d729"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:7",
+      "sequence": 26956,
+      "chapter_label": "ACT 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "They were all amazed and marveled, saying to one another, “Behold, aren’t all these who speak Galileans?",
+      "ko": "다 놀라 기이히 여겨 이르되 보라 이 말하는 사람이 다 갈릴리 사람이 아니냐",
+      "source_text_hash": "c42c53880255c6ba49e1754d08cef03c267af7a95b98c975e653a4804480cc16",
+      "translation_text_hash": "c49aadcbfb2078bb6f0bc0eb59d1dadc0bbbd1034f074ed58c5b378cb9fbf7ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 놀라 기이히 여겨 이르되 보라 이 말하는 사람이 다 갈릴리 사람이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "c49aadcbfb2078bb6f0bc0eb59d1dadc0bbbd1034f074ed58c5b378cb9fbf7ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:8",
+      "sequence": 26957,
+      "chapter_label": "ACT 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "How do we hear, everyone in our own native language?",
+      "ko": "우리가 우리 각 사람의 난 곳 방언으로 듣게 되는 것이 어찜이뇨",
+      "source_text_hash": "3ca8ae816fbf542e2578d212541a750245602aeed30fa20288ed074f14253a63",
+      "translation_text_hash": "6d1770a1406a4a6146880cae6c256098bd42a16ffdbcfe720b0a5a65feeedeab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리 각 사람의 난 곳 방언으로 듣게 되는 것이 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "6d1770a1406a4a6146880cae6c256098bd42a16ffdbcfe720b0a5a65feeedeab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:9",
+      "sequence": 26958,
+      "chapter_label": "ACT 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Parthians, Medes, Elamites, and people from Mesopotamia, Judea, Cappadocia, Pontus, Asia,",
+      "ko": "우리는 바대인과 메대인과 엘림인과 또 메소보다미아, 유대와 가바도기아, 본도와 아시아,",
+      "source_text_hash": "55e8e30c8b441bcf3138e2db209c8a38e0b676c0c946640a7f72755a07666486",
+      "translation_text_hash": "0c937d31b4ccc85d211df99cbe99fb310f7ed97167970576f5c1ecfa1266984e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 바대인과 메대인과 엘림인과 또 메소보다미아, 유대와 가바도기아, 본도와 아시아,"
+      ],
+      "raw_text_hashes": [
+        "0c937d31b4ccc85d211df99cbe99fb310f7ed97167970576f5c1ecfa1266984e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:10",
+      "sequence": 26959,
+      "chapter_label": "ACT 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Phrygia, Pamphylia, Egypt, the parts of Libya around Cyrene, visitors from Rome, both Jews and proselytes,",
+      "ko": "브루기아와 밤빌리아, 애굽과 및 구레네에 가까운 리비야 여러 지방에 사는 사람들과 로마로부터 온 나그네 곧 유대인과 유대교에 들어 온 사람들과",
+      "source_text_hash": "a5b084d1bbad5da34f031b738ad17d1abe05df1f3c3072a4e46928e66314d4a4",
+      "translation_text_hash": "1230dedeb98979a632f1b274211780b6bc76b242fdc153275195d3f062ab56e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브루기아와 밤빌리아, 애굽과 및 구레네에 가까운 리비야 여러 지방에 사는 사람들과 로마로부터 온 나그네 곧 유대인과 유대교에 들어 온 사람들과"
+      ],
+      "raw_text_hashes": [
+        "1230dedeb98979a632f1b274211780b6bc76b242fdc153275195d3f062ab56e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:11",
+      "sequence": 26960,
+      "chapter_label": "ACT 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Cretans and Arabians—we hear them speaking in our languages the mighty works of God!”",
+      "ko": "그레데인과 아라비아인들이라 우리가 다 우리의 각 방언으로 하나님의 큰 일을 말함을 듣는도다 하고",
+      "source_text_hash": "83ccb3372e051668c800150d977ce1b35ff38e9cc75d6f58c18112280c114f42",
+      "translation_text_hash": "ad214b67c1ae9a2c139fe55c218c8470907550a3eae607586d7c4b7d60678c69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그레데인과 아라비아인들이라 우리가 다 우리의 각 방언으로 하나님의 큰 일을 말함을 듣는도다 하고"
+      ],
+      "raw_text_hashes": [
+        "ad214b67c1ae9a2c139fe55c218c8470907550a3eae607586d7c4b7d60678c69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:12",
+      "sequence": 26961,
+      "chapter_label": "ACT 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "They were all amazed and were perplexed, saying to one another, “What does this mean?”",
+      "ko": "다 놀라며 의혹하여 서로 가로되 이 어찐 일이냐 하며",
+      "source_text_hash": "1fa1a300e02db2d4737e8271ba6b11ad5d0a7e57045af03a812a80984df00fe9",
+      "translation_text_hash": "5c7eac726577e07f5a0f3768f37d3f2d2ed7bc1dbc0cf6411fc50f232ebb730b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 놀라며 의혹하여 서로 가로되 이 어찐 일이냐 하며"
+      ],
+      "raw_text_hashes": [
+        "5c7eac726577e07f5a0f3768f37d3f2d2ed7bc1dbc0cf6411fc50f232ebb730b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:13",
+      "sequence": 26962,
+      "chapter_label": "ACT 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Others, mocking, said, “They are filled with new wine.”",
+      "ko": "또 어떤이들은 조롱하여 가로되 저희가 새 술이 취하였다 하더라",
+      "source_text_hash": "47c0cee9291d09284ed8ac748a01bd022407054078663980defce8be3ffd53e6",
+      "translation_text_hash": "e57076584cf97c7aeb0426f6f275452a6fdd02ad55e4e8d99f59aba6780c4e2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어떤이들은 조롱하여 가로되 저희가 새 술이 취하였다 하더라"
+      ],
+      "raw_text_hashes": [
+        "e57076584cf97c7aeb0426f6f275452a6fdd02ad55e4e8d99f59aba6780c4e2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:14",
+      "sequence": 26963,
+      "chapter_label": "ACT 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "But Peter, standing up with the eleven, lifted up his voice and spoke out to them, “You men of Judea and all you who dwell at Jerusalem, let this be known to you, and listen to my words.",
+      "ko": "베드로가 열 한 사도와 같이 서서 소리를 높여 가로되 유대인들과 예루살렘에 사는 모든 사람들아 이 일을 너희로 알게 할 것이니 내 말에 귀를 기울이라",
+      "source_text_hash": "475ca9fbd05ec7c8890acd1d8d594e611b8f644206d28243823874f05e615137",
+      "translation_text_hash": "1dac5e132355f4d0b3478d40bb95d77c74560c6a074668d0339dc40566750ae7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 열 한 사도와 같이 서서 소리를 높여 가로되 유대인들과 예루살렘에 사는 모든 사람들아 이 일을 너희로 알게 할 것이니 내 말에 귀를 기울이라"
+      ],
+      "raw_text_hashes": [
+        "1dac5e132355f4d0b3478d40bb95d77c74560c6a074668d0339dc40566750ae7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:15",
+      "sequence": 26964,
+      "chapter_label": "ACT 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "For these aren’t drunken, as you suppose, seeing it is only the third hour of the day.",
+      "ko": "때가 제 삼시니 너희 생각과 같이 이 사람들이 취한 것이 아니라",
+      "source_text_hash": "2bd2a73dace584fffa00cf185735681653cac54750dc23bfde426c0f41f06f47",
+      "translation_text_hash": "d4785658a0a6b63422d1e78fe73adcfab9f656deea98f5a5550ea1c77b5d1af2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 제 삼시니 너희 생각과 같이 이 사람들이 취한 것이 아니라"
+      ],
+      "raw_text_hashes": [
+        "d4785658a0a6b63422d1e78fe73adcfab9f656deea98f5a5550ea1c77b5d1af2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:16",
+      "sequence": 26965,
+      "chapter_label": "ACT 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "But this is what has been spoken through the prophet Joel:",
+      "ko": "이는 곧 선지자 요엘로 말씀하신 것이니 일렀으되",
+      "source_text_hash": "972821cf49b6abca3ec92d6e860dbfd0f403922e395faca4593906caed7bac36",
+      "translation_text_hash": "76c0e8bcba2a68e86613940e33466d2b4e7251cdcbc41a0e525338aeef851014",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 곧 선지자 요엘로 말씀하신 것이니 일렀으되"
+      ],
+      "raw_text_hashes": [
+        "76c0e8bcba2a68e86613940e33466d2b4e7251cdcbc41a0e525338aeef851014"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:17",
+      "sequence": 26966,
+      "chapter_label": "ACT 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "‘It will be in the last days, says God, that I will pour out my Spirit on all flesh. Your sons and your daughters will prophesy. Your young men will see visions. Your old men will dream dreams.",
+      "ko": "하나님이 가라사대 말세에 내가 내 영으로 모든 육체에게 부어 주리니 너희의 자녀들은 예언할 것이요 너희의 젊은이들은 환상을 보고 너희의 늙은이들은 꿈을 꾸리라",
+      "source_text_hash": "20cae6def2261e5bdd0b7eac6f8eecd24991a68ee60ed7c1a85b8385b2a17a22",
+      "translation_text_hash": "8a1967dbab493571987f33aad8a1fb3666c17a987812302a732ef613d0286da5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 말세에 내가 내 영으로 모든 육체에게 부어 주리니 너희의 자녀들은 예언할 것이요 너희의 젊은이들은 환상을 보고 너희의 늙은이들은 꿈을 꾸리라"
+      ],
+      "raw_text_hashes": [
+        "8a1967dbab493571987f33aad8a1fb3666c17a987812302a732ef613d0286da5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:18",
+      "sequence": 26967,
+      "chapter_label": "ACT 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Yes, and on my servants and on my handmaidens in those days, I will pour out my Spirit, and they will prophesy.",
+      "ko": "그 때에 내가 내 영으로 내 남종과 여종들에게 부어주리니 저희가 예언할 것이요",
+      "source_text_hash": "20a9484c571ec44a37dcb4a134bfda716144c692f856cf0b22aebc13a9c44cd0",
+      "translation_text_hash": "7eacb958f8859374cb655b00538babbedf914b8f1d5f32fd4623daa4291d6282",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 내 영으로 내 남종과 여종들에게 부어주리니 저희가 예언할 것이요"
+      ],
+      "raw_text_hashes": [
+        "7eacb958f8859374cb655b00538babbedf914b8f1d5f32fd4623daa4291d6282"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:19",
+      "sequence": 26968,
+      "chapter_label": "ACT 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "I will show wonders in the sky above, and signs on the earth beneath: blood, and fire, and billows of smoke.",
+      "ko": "또 내가 위로 하늘에서는 기사와 아래로 땅에서는 징조를 베풀리니 곧 피와 불과 연기로다",
+      "source_text_hash": "3adaf875236bc107faa00f349dc5d7e99b8a2a9c4d07219291c42191d09f5ab7",
+      "translation_text_hash": "833d83f2691d2acfd6b9e68455a2c8e9c1216b16f8628509e2d0bd0945717ae4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 위로 하늘에서는 기사와 아래로 땅에서는 징조를 베풀리니 곧 피와 불과 연기로다"
+      ],
+      "raw_text_hashes": [
+        "833d83f2691d2acfd6b9e68455a2c8e9c1216b16f8628509e2d0bd0945717ae4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:20",
+      "sequence": 26969,
+      "chapter_label": "ACT 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "The sun will be turned into darkness, and the moon into blood, before the great and glorious day of the Lord comes.",
+      "ko": "주의 크고 영화로운 날이 이르기 전에 해가 변하여 어두워지고 달이 변하여 피가 되리라",
+      "source_text_hash": "26df9dd9dd3340238418a317cf17d987c905705a7a37b010a609f20d791c0614",
+      "translation_text_hash": "442a8fc083d5524c32af7b8200cad6e5a53114fbce716534d88fe8f018a2b8f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 크고 영화로운 날이 이르기 전에 해가 변하여 어두워지고 달이 변하여 피가 되리라"
+      ],
+      "raw_text_hashes": [
+        "442a8fc083d5524c32af7b8200cad6e5a53114fbce716534d88fe8f018a2b8f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:21",
+      "sequence": 26970,
+      "chapter_label": "ACT 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "It will be that whoever will call on the name of the Lord will be saved.’",
+      "ko": "누구든지 주의 이름을 부르는 자는 구원을 얻으리라하였느니라",
+      "source_text_hash": "d06bbb6216efec47afb7607a572dd298f10a631595ac4e0d1bcbfd43b4a03770",
+      "translation_text_hash": "f453dcdc10c661e1456795f98388076d385852391d3bd19cee7e486ad17f3163",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 주의 이름을 부르는 자는 구원을 얻으리라하였느니라"
+      ],
+      "raw_text_hashes": [
+        "f453dcdc10c661e1456795f98388076d385852391d3bd19cee7e486ad17f3163"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:22",
+      "sequence": 26971,
+      "chapter_label": "ACT 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "“Men of Israel, hear these words! Jesus of Nazareth, a man approved by God to you by mighty works and wonders and signs which God did by him among you, even as you yourselves know,",
+      "ko": "이스라엘 사람들아 이 말을 들으라 너희도 아는바에 하나님께서 나사렛 예수로 큰 권능과 기사와 표적을 너희 가운데서 베푸사 너희 앞에서 그를 증거하셨느니라",
+      "source_text_hash": "b74932c7904446c59c135cdca94ae368a6e0769fcf846643cd783bbbef1f2fe5",
+      "translation_text_hash": "9c98314a34354b9d132263106e9a3bd9201c98802d6d7b5a7c9d7d821f6bca43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람들아 이 말을 들으라 너희도 아는바에 하나님께서 나사렛 예수로 큰 권능과 기사와 표적을 너희 가운데서 베푸사 너희 앞에서 그를 증거하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "9c98314a34354b9d132263106e9a3bd9201c98802d6d7b5a7c9d7d821f6bca43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:23",
+      "sequence": 26972,
+      "chapter_label": "ACT 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "him, being delivered up by the determined counsel and foreknowledge of God, you have taken by the hand of lawless men, crucified and killed;",
+      "ko": "그가 하나님의 정하신 뜻과 미리 아신대로 내어 준바 되었거늘 너희가 법 없는 자들의 손을 빌어 못 박아 죽였으나",
+      "source_text_hash": "a1b22e04281680bce902926573cb753daff7fe5155b8e2fc049a70c63c8c05ee",
+      "translation_text_hash": "993286a7c3caca595089a20944d2749fa45ea61538126bdb6e8fff799e698d9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 하나님의 정하신 뜻과 미리 아신대로 내어 준바 되었거늘 너희가 법 없는 자들의 손을 빌어 못 박아 죽였으나"
+      ],
+      "raw_text_hashes": [
+        "993286a7c3caca595089a20944d2749fa45ea61538126bdb6e8fff799e698d9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:24",
+      "sequence": 26973,
+      "chapter_label": "ACT 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "whom God raised up, having freed him from the agony of death, because it was not possible that he should be held by it.",
+      "ko": "하나님께서 사망의 고통을 풀어 살리셨으니 이는 그가 사망에게 매여 있을 수 없었음이라",
+      "source_text_hash": "bb46a3c3f4b24fc95b1937b1b7eb88c7f5167f736cfa02b1a5cba75d5684af04",
+      "translation_text_hash": "b612a5f5f42e132536d9c6dc1e5add75e3e007c6460e0498e3a967aed9c62982",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께서 사망의 고통을 풀어 살리셨으니 이는 그가 사망에게 매여 있을 수 없었음이라"
+      ],
+      "raw_text_hashes": [
+        "b612a5f5f42e132536d9c6dc1e5add75e3e007c6460e0498e3a967aed9c62982"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:25",
+      "sequence": 26974,
+      "chapter_label": "ACT 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "For David says concerning him, ‘I saw the Lord always before my face, for he is on my right hand, that I should not be moved.",
+      "ko": "다윗이 저를 가리켜 가로되 내가 항상 내 앞에 계신 주를 뵈웠음이여 나로 요동치 않게 하기 위하여 그가 내 우편에 계시도다",
+      "source_text_hash": "d0bfd1306a7198b4c1067bf518d59757b73e4c4f4b9d0a6f7b758829f93fd91b",
+      "translation_text_hash": "bcb32fa103d02f4805465659d2e336f4e75b14b4c0598ba9fcb13da3045f2c36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 저를 가리켜 가로되 내가 항상 내 앞에 계신 주를 뵈웠음이여 나로 요동치 않게 하기 위하여 그가 내 우편에 계시도다"
+      ],
+      "raw_text_hashes": [
+        "bcb32fa103d02f4805465659d2e336f4e75b14b4c0598ba9fcb13da3045f2c36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:26",
+      "sequence": 26975,
+      "chapter_label": "ACT 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "Therefore my heart was glad, and my tongue rejoiced. Moreover my flesh also will dwell in hope,",
+      "ko": "이러므로 내 마음이 기뻐하였고 내 입술도 즐거워하였으며 육체는 희망에 거하리니",
+      "source_text_hash": "ba2027ed734006b4b6c7e79c80c1ed0e492754ad1bda3ad2e9e25c86a4c4cc28",
+      "translation_text_hash": "e33f8aaa56ede5352447663832554e1cc0ec4eb614893f2842490e003815ba51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내 마음이 기뻐하였고 내 입술도 즐거워하였으며 육체는 희망에 거하리니"
+      ],
+      "raw_text_hashes": [
+        "e33f8aaa56ede5352447663832554e1cc0ec4eb614893f2842490e003815ba51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:27",
+      "sequence": 26976,
+      "chapter_label": "ACT 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "because you will not leave my soul in Hades, neither will you allow your Holy One to see decay.",
+      "ko": "이는 내 영혼을 음부에 버리지 아니하시며 주의 거룩한 자로 썩음을 당치 않게 하실 것임이로다",
+      "source_text_hash": "29ec991b17a5fc5d47b08321afa8d33c9e0a14689b6824fddeee8af84a2cbc99",
+      "translation_text_hash": "5ba999435198fbe89abfd2df342b592d3a613b0d2649dae73550fb94c36643ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내 영혼을 음부에 버리지 아니하시며 주의 거룩한 자로 썩음을 당치 않게 하실 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "5ba999435198fbe89abfd2df342b592d3a613b0d2649dae73550fb94c36643ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:28",
+      "sequence": 26977,
+      "chapter_label": "ACT 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "You made known to me the ways of life. You will make me full of gladness with your presence.’",
+      "ko": "주께서 생명의 길로 내게 보이셨으니 주의 앞에서 나로 기쁨이 충만하게 하시리로다 하였으니",
+      "source_text_hash": "bb7bf31758eed469a4783023bc41c9dd3bfb43ce4a1cac696643aa077284d2a8",
+      "translation_text_hash": "426761a85e9ca4eeabc0e65580b7faa20723a7a6992eece1d1c30e38844b6fbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 생명의 길로 내게 보이셨으니 주의 앞에서 나로 기쁨이 충만하게 하시리로다 하였으니"
+      ],
+      "raw_text_hashes": [
+        "426761a85e9ca4eeabc0e65580b7faa20723a7a6992eece1d1c30e38844b6fbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:29",
+      "sequence": 26978,
+      "chapter_label": "ACT 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "“Brothers, I may tell you freely of the patriarch David, that he both died and was buried, and his tomb is with us to this day.",
+      "ko": "형제들아 내가 조상 다윗에 대하여 담대히 말할 수 있노니 다윗이 죽어 장사되어 그 묘가 오늘까지 우리 중에 있도다",
+      "source_text_hash": "0cccd1c4a7065d7acdcd2fd2f2662b249be5dfad6d55476508e3f709f37cd1be",
+      "translation_text_hash": "9771536484eb973a00a9b77e920b328151d50cc8424812adba34ad8b975f59c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 조상 다윗에 대하여 담대히 말할 수 있노니 다윗이 죽어 장사되어 그 묘가 오늘까지 우리 중에 있도다"
+      ],
+      "raw_text_hashes": [
+        "9771536484eb973a00a9b77e920b328151d50cc8424812adba34ad8b975f59c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:30",
+      "sequence": 26979,
+      "chapter_label": "ACT 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "Therefore, being a prophet, and knowing that God had sworn with an oath to him that of the fruit of his body, according to the flesh, he would raise up the Christ to sit on his throne,",
+      "ko": "그는 선지자라 하나님이 이미 맹세하사 그 자손 중에서 한 사람을 그 위에 앉게 하리라 하심을 알고",
+      "source_text_hash": "e804c00564f7f59ce14b34b2939d7463a6ce0eceefb7b486e59c5380f4a1b820",
+      "translation_text_hash": "1026010267d27771f2d64b147d6db39a6eeaf6eb97517e8d6d69af75f2366188",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 선지자라 하나님이 이미 맹세하사 그 자손 중에서 한 사람을 그 위에 앉게 하리라 하심을 알고"
+      ],
+      "raw_text_hashes": [
+        "1026010267d27771f2d64b147d6db39a6eeaf6eb97517e8d6d69af75f2366188"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:31",
+      "sequence": 26980,
+      "chapter_label": "ACT 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "he foreseeing this, spoke about the resurrection of the Christ, that his soul wasn’t left in Hades, and his flesh didn’t see decay.",
+      "ko": "미리 보는 고로 그리스도의 부활하심을 말하되 저가 음부에 버림이 되지 않고 육신이 썩음을 당하지 아니하시리라 하더니",
+      "source_text_hash": "61551293f855527837b1b45505c840e154eda0f3257768e3801510af0f8d5fa1",
+      "translation_text_hash": "ef1a6759f4a6b40d3f4de199aa695dee8ffdeae5b64b719b5cbeaaac59c7aabc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미리 보는 고로 그리스도의 부활하심을 말하되 저가 음부에 버림이 되지 않고 육신이 썩음을 당하지 아니하시리라 하더니"
+      ],
+      "raw_text_hashes": [
+        "ef1a6759f4a6b40d3f4de199aa695dee8ffdeae5b64b719b5cbeaaac59c7aabc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:32",
+      "sequence": 26981,
+      "chapter_label": "ACT 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "This Jesus God raised up, to which we all are witnesses.",
+      "ko": "이 예수를 하나님이 살리신지라 우리가 다 이 일에 증인이로다",
+      "source_text_hash": "046a21c44289c89566bb8c57073993ad203922ea0c68cd53bed6b103ceadda33",
+      "translation_text_hash": "30f1eebf730cd33b403ffabf208271defcbfa7c3cb9afb54769b42688c69d7ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 예수를 하나님이 살리신지라 우리가 다 이 일에 증인이로다"
+      ],
+      "raw_text_hashes": [
+        "30f1eebf730cd33b403ffabf208271defcbfa7c3cb9afb54769b42688c69d7ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:33",
+      "sequence": 26982,
+      "chapter_label": "ACT 2",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 33
+        }
+      ],
+      "en": "Being therefore exalted by the right hand of God, and having received from the Father the promise of the Holy Spirit, he has poured out this which you now see and hear.",
+      "ko": "하나님이 오른손으로 예수를 높이시매 그가 약속하신 성령을 아버지께 받아서 너희 보고 듣는 이것을 부어 주셨느니라",
+      "source_text_hash": "058dd07144069450b3b99dc71ea4e7196da4cee266f4580935ec66bae4684565",
+      "translation_text_hash": "1a638f2d7d6c20f1ccf41734ec0fc044b747ef764feab21ff0042453cc9441bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 오른손으로 예수를 높이시매 그가 약속하신 성령을 아버지께 받아서 너희 보고 듣는 이것을 부어 주셨느니라"
+      ],
+      "raw_text_hashes": [
+        "1a638f2d7d6c20f1ccf41734ec0fc044b747ef764feab21ff0042453cc9441bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:34",
+      "sequence": 26983,
+      "chapter_label": "ACT 2",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 34
+        }
+      ],
+      "en": "For David didn’t ascend into the heavens, but he says himself, ‘The Lord said to my Lord, “Sit by my right hand",
+      "ko": "다윗은 하늘에 올라가지 못하였으나 친히 말하여 가로되 주께서 내 주에게 말씀하시기를",
+      "source_text_hash": "6151cecde36f81b84d0a06fd8bf482b7846059a4ae0e5b7bd7e04a91eea66227",
+      "translation_text_hash": "0e0a5fc2d101a746dd77ba154a892750a65631d0fc3190cd9885679ca976ebed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗은 하늘에 올라가지 못하였으나 친히 말하여 가로되 주께서 내 주에게 말씀하시기를"
+      ],
+      "raw_text_hashes": [
+        "0e0a5fc2d101a746dd77ba154a892750a65631d0fc3190cd9885679ca976ebed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:35",
+      "sequence": 26984,
+      "chapter_label": "ACT 2",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 35
+        }
+      ],
+      "en": "until I make your enemies a footstool for your feet.”’",
+      "ko": "내가 네 원수로 네 발등상 되게 하기까지 너는 내 우편에 앉았으라 하셨도다 하였으니",
+      "source_text_hash": "5944acb6400f9e102d6d84bb8c6eafb02257c13fb32306f0edf7c6f4a9f04637",
+      "translation_text_hash": "bf2a196fd30457e63e2a17aeb3facb2426cfe291fee5d83e3faa9e584660421b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 원수로 네 발등상 되게 하기까지 너는 내 우편에 앉았으라 하셨도다 하였으니"
+      ],
+      "raw_text_hashes": [
+        "bf2a196fd30457e63e2a17aeb3facb2426cfe291fee5d83e3faa9e584660421b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:36",
+      "sequence": 26985,
+      "chapter_label": "ACT 2",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 36
+        }
+      ],
+      "en": "“Let all the house of Israel therefore know certainly that God has made him both Lord and Christ, this Jesus whom you crucified.”",
+      "ko": "그런즉 이스라엘 온 집이 정녕 알찌니 너희가 십자가에 못 박은 이 예수를 하나님이 주와 그리스도가 되게 하셨느니라 하니라",
+      "source_text_hash": "9704a205c38ce64ce43a0a041e26e5aa6b8fcd7fb3a3d485a4af17d3eef58ac5",
+      "translation_text_hash": "21beacd9710ea427c27926ce7da12c07610f90cabb654c0dfbc59dda365798bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 이스라엘 온 집이 정녕 알찌니 너희가 십자가에 못 박은 이 예수를 하나님이 주와 그리스도가 되게 하셨느니라 하니라"
+      ],
+      "raw_text_hashes": [
+        "21beacd9710ea427c27926ce7da12c07610f90cabb654c0dfbc59dda365798bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:37",
+      "sequence": 26986,
+      "chapter_label": "ACT 2",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 37
+        }
+      ],
+      "en": "Now when they heard this, they were cut to the heart, and said to Peter and the rest of the apostles, “Brothers, what shall we do?”",
+      "ko": "저희가 이 말을 듣고 마음에 찔려 베드로와 다른 사도들에게 물어 가로되 형제들아 우리가 어찌할꼬 하거늘",
+      "source_text_hash": "654ed3d0cd08ffd7005cb3629d4a073faf06bc749d13fb820aa5355a34fa40bb",
+      "translation_text_hash": "dc83ab0c1f7a2bcdf53c1b7898506aa6c1e4cb284909dcbebdd7741d517fe832",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이 말을 듣고 마음에 찔려 베드로와 다른 사도들에게 물어 가로되 형제들아 우리가 어찌할꼬 하거늘"
+      ],
+      "raw_text_hashes": [
+        "dc83ab0c1f7a2bcdf53c1b7898506aa6c1e4cb284909dcbebdd7741d517fe832"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:38",
+      "sequence": 26987,
+      "chapter_label": "ACT 2",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 38
+        }
+      ],
+      "en": "Peter said to them, “Repent and be baptized, every one of you, in the name of Jesus Christ for the forgiveness of sins, and you will receive the gift of the Holy Spirit.",
+      "ko": "베드로가 가로되 너희가 회개하여 각각 예수 그리스도의 이름으로 세례를 받고 죄 사함을 얻으라 그리하면 성령을 선물로 받으리니",
+      "source_text_hash": "09ccf443dcaee56dce3267822d760c0307880d113cdd778eb65bed532667f978",
+      "translation_text_hash": "b7db04cb7dd83723af4e6e2b6e92eaec8cd27badb5504b05cf42f986c4d46db6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 너희가 회개하여 각각 예수 그리스도의 이름으로 세례를 받고 죄 사함을 얻으라 그리하면 성령을 선물로 받으리니"
+      ],
+      "raw_text_hashes": [
+        "b7db04cb7dd83723af4e6e2b6e92eaec8cd27badb5504b05cf42f986c4d46db6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:39",
+      "sequence": 26988,
+      "chapter_label": "ACT 2",
+      "verse_label": "39",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 39
+        }
+      ],
+      "en": "For the promise is to you and to your children, and to all who are far off, even as many as the Lord our God will call to himself.”",
+      "ko": "이 약속은 너희와 너희 자녀와 모든 먼데 사람 곧 주 우리 하나님이 얼마든지 부르시는 자들에게 하신 것이라 하고",
+      "source_text_hash": "f8d71f3fe2bcb297cdfeb87550fc599283ef25050077b508c61f2ff9abb6572e",
+      "translation_text_hash": "a8f157bcfe1813764b88001d3c0db8135f703f096e520571f6fb608b221b602a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 약속은 너희와 너희 자녀와 모든 먼데 사람 곧 주 우리 하나님이 얼마든지 부르시는 자들에게 하신 것이라 하고"
+      ],
+      "raw_text_hashes": [
+        "a8f157bcfe1813764b88001d3c0db8135f703f096e520571f6fb608b221b602a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:40",
+      "sequence": 26989,
+      "chapter_label": "ACT 2",
+      "verse_label": "40",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 40
+        }
+      ],
+      "en": "With many other words he testified and exhorted them, saying, “Save yourselves from this crooked generation!”",
+      "ko": "또 여러 말로 확증하며 권하여 가로되 너희가 이 패역한 세대에서 구원을 받으라 하니",
+      "source_text_hash": "dd80aabaea37e6fbf68fdc3e6d505d98b7bd0dcba2d67792bbe775593012c35a",
+      "translation_text_hash": "652752faca6fa7ac40aa34f74836105090a5297879c5c6e27880f0656afbd077",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여러 말로 확증하며 권하여 가로되 너희가 이 패역한 세대에서 구원을 받으라 하니"
+      ],
+      "raw_text_hashes": [
+        "652752faca6fa7ac40aa34f74836105090a5297879c5c6e27880f0656afbd077"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:41",
+      "sequence": 26990,
+      "chapter_label": "ACT 2",
+      "verse_label": "41",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 41
+        }
+      ],
+      "en": "Then those who gladly received his word were baptized. There were added that day about three thousand souls.",
+      "ko": "그 말을 받는 사람들은 세례를 받으매 이 날에 제자의 수가 삼천이나 더하더라",
+      "source_text_hash": "b787c866f1f7c24f62f84ba13ab7683c88d489b920d6c8c32567e00f51346114",
+      "translation_text_hash": "a50911a3fd21605860c6a1964ddf9c6c7a62853e1c6012c393dfe9c51aca468d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 말을 받는 사람들은 세례를 받으매 이 날에 제자의 수가 삼천이나 더하더라"
+      ],
+      "raw_text_hashes": [
+        "a50911a3fd21605860c6a1964ddf9c6c7a62853e1c6012c393dfe9c51aca468d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:42",
+      "sequence": 26991,
+      "chapter_label": "ACT 2",
+      "verse_label": "42",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 42
+        }
+      ],
+      "en": "They continued steadfastly in the apostles’ teaching and fellowship, in the breaking of bread, and prayer.",
+      "ko": "저희가 사도의 가르침을 받아 서로 교제하며 떡을 떼며 기도하기를 전혀 힘쓰니라",
+      "source_text_hash": "436fd8b837c90f12993db5ad0d95e02a7be4ae52c0c9d2f549fa538d5b30fee3",
+      "translation_text_hash": "1881a28ab3239f4eff3f9bce5facbc8e5eac0eb428f8550f8f5c06fb004abf89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 사도의 가르침을 받아 서로 교제하며 떡을 떼며 기도하기를 전혀 힘쓰니라"
+      ],
+      "raw_text_hashes": [
+        "1881a28ab3239f4eff3f9bce5facbc8e5eac0eb428f8550f8f5c06fb004abf89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:43",
+      "sequence": 26992,
+      "chapter_label": "ACT 2",
+      "verse_label": "43",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 43
+        }
+      ],
+      "en": "Fear came on every soul, and many wonders and signs were done through the apostles.",
+      "ko": "사람마다 두려워하는데 사도들로 인하여 기사와 표적이 많이 나타나니",
+      "source_text_hash": "bc8475187017c9ca3778b58f8f2038b9c6e60a2ed91d20e433bb55d451d10f18",
+      "translation_text_hash": "b9a3448da801f0baa61f665cb3430c10f4b21508fbd70e4f134d6a9161ca8abb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람마다 두려워하는데 사도들로 인하여 기사와 표적이 많이 나타나니"
+      ],
+      "raw_text_hashes": [
+        "b9a3448da801f0baa61f665cb3430c10f4b21508fbd70e4f134d6a9161ca8abb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:44",
+      "sequence": 26993,
+      "chapter_label": "ACT 2",
+      "verse_label": "44",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 44
+        }
+      ],
+      "en": "All who believed were together, and had all things in common.",
+      "ko": "믿는 사람이 다 함께 있어 모든 물건을 서로 통용하고",
+      "source_text_hash": "957d421405c022d26eabfe69523197bd604a6ac7fbdd6d85ca0ef9a6fc7f5fcb",
+      "translation_text_hash": "b5a60087efeeb31e5665950e42e32717cebfdd1feabfb06e7c6a10f9b15b5354",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿는 사람이 다 함께 있어 모든 물건을 서로 통용하고"
+      ],
+      "raw_text_hashes": [
+        "b5a60087efeeb31e5665950e42e32717cebfdd1feabfb06e7c6a10f9b15b5354"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:45",
+      "sequence": 26994,
+      "chapter_label": "ACT 2",
+      "verse_label": "45",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 45
+        }
+      ],
+      "en": "They sold their possessions and goods, and distributed them to all, according as anyone had need.",
+      "ko": "또 재산과 소유를 팔아 각 사람의 필요를 따라 나눠 주고",
+      "source_text_hash": "ec9a7271f7551982474f7257cb68b5909b79b63e34a00dd5495d7dabd3e25194",
+      "translation_text_hash": "fd8f0a91345a7c96090ebc31655baa265e3947be12a0456d50c8a67fd566b205",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 재산과 소유를 팔아 각 사람의 필요를 따라 나눠 주고"
+      ],
+      "raw_text_hashes": [
+        "fd8f0a91345a7c96090ebc31655baa265e3947be12a0456d50c8a67fd566b205"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:46",
+      "sequence": 26995,
+      "chapter_label": "ACT 2",
+      "verse_label": "46",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 46
+        }
+      ],
+      "en": "Day by day, continuing steadfastly with one accord in the temple, and breaking bread at home, they took their food with gladness and singleness of heart,",
+      "ko": "날마다 마음을 같이 하여 성전에 모이기를 힘쓰고 집에서 떡을 떼며 기쁨과 순전한 마음으로 음식을 먹고",
+      "source_text_hash": "e4d269cf07caa46ee33e88be817c6306647d80e0aced043cb2fc625c3fbbca2e",
+      "translation_text_hash": "ed693f5b57d4fb7110b0e84b15150d41bdf79ff4e747ec5050a423568017355a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날마다 마음을 같이 하여 성전에 모이기를 힘쓰고 집에서 떡을 떼며 기쁨과 순전한 마음으로 음식을 먹고"
+      ],
+      "raw_text_hashes": [
+        "ed693f5b57d4fb7110b0e84b15150d41bdf79ff4e747ec5050a423568017355a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:2:47",
+      "sequence": 26996,
+      "chapter_label": "ACT 2",
+      "verse_label": "47",
+      "locator": {
+        "book": "ACT",
+        "chapter": 2,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 2,
+          "verse": 47
+        }
+      ],
+      "en": "praising God and having favor with all the people. The Lord added to the assembly day by day those who were being saved.",
+      "ko": "하나님을 찬미하며 또 온 백성에게 칭송을 받으니 주께서 구원 받는 사람을 날마다 더하게 하시니라",
+      "source_text_hash": "2049fa0a6e4c65b94ee75127bc6a0d1261ed9d5b8e732c38d21b20e011b8baa6",
+      "translation_text_hash": "c605a4822103a4ab8540e3e4853694fa1f80b7ef7363ca3d40c8abf5b15d70cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님을 찬미하며 또 온 백성에게 칭송을 받으니 주께서 구원 받는 사람을 날마다 더하게 하시니라"
+      ],
+      "raw_text_hashes": [
+        "c605a4822103a4ab8540e3e4853694fa1f80b7ef7363ca3d40c8abf5b15d70cb"
+      ]
+    }
+  ]
+}

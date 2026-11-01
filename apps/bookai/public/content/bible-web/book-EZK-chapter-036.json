@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:036",
+  "unit_ordinal": 838,
+  "unit_label": "EZK 36",
+  "book_code": "EZK",
+  "chapter_number": 36,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:36:1",
+      "sequence": 21361,
+      "chapter_label": "EZK 36",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 1
+        }
+      ],
+      "en": "You, son of man, prophesy to the mountains of Israel, and say, “You mountains of Israel, hear the LORD’s word.",
+      "ko": "인자야 너는 이스라엘 산들에게 예언하여 이르기를 이스라엘 산들아 여호와의 말씀을 들으라",
+      "source_text_hash": "3098e159aee4a6f3ea90ebda20ecbf2f3c6c3172cf4b0650b31c3b791884e72b",
+      "translation_text_hash": "641aff02bc4b03e507cce9d4583e2ddebfd7050fd5057567b1e34f8b92bc506f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 이스라엘 산들에게 예언하여 이르기를 이스라엘 산들아 여호와의 말씀을 들으라"
+      ],
+      "raw_text_hashes": [
+        "641aff02bc4b03e507cce9d4583e2ddebfd7050fd5057567b1e34f8b92bc506f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:2",
+      "sequence": 21362,
+      "chapter_label": "EZK 36",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 2
+        }
+      ],
+      "en": "The Lord GOD says: ‘Because the enemy has said against you, “Aha!” and, “The ancient high places are ours in possession!”’",
+      "ko": "주 여호와의 말씀에 대적이 네게 대하여 말하기를 하하 옛적 높은 곳이 우리의 기업이 되었도다 하였느니라",
+      "source_text_hash": "b96c0d42f57fd51237194a18e8893c714dc622a7907bd0391c565584bc714db9",
+      "translation_text_hash": "09c1c805be17bf9e6f6aa003f3fc0163c7d006fe7035bdfb19444cc0103d77be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와의 말씀에 대적이 네게 대하여 말하기를 하하 옛적 높은 곳이 우리의 기업이 되었도다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "09c1c805be17bf9e6f6aa003f3fc0163c7d006fe7035bdfb19444cc0103d77be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:3",
+      "sequence": 21363,
+      "chapter_label": "EZK 36",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 3
+        }
+      ],
+      "en": "therefore prophesy, and say, ‘The Lord GOD says: “Because, even because they have made you desolate, and swallowed you up on every side, that you might be a possession to the residue of the nations, and you are taken up in the lips of talkers, and the evil report of the people;”",
+      "ko": "그러므로 너는 예언하여 이르기를 주 여호와의 말씀에 그들이 너희를 황무케 하고 너희 사방을 삼켜서 너희로 남은 이방인의 기업이 되게 하여 사람의 말거리와 백성의 비방거리가 되게 하였도다",
+      "source_text_hash": "3ac59a3472c70907660d2ed44822f6afd5b4b77800d99bd1d04dab0816cec9a7",
+      "translation_text_hash": "52639031afb450061138697558cf444d8cd585fc8736a1559871012dcf0bd740",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 예언하여 이르기를 주 여호와의 말씀에 그들이 너희를 황무케 하고 너희 사방을 삼켜서 너희로 남은 이방인의 기업이 되게 하여 사람의 말거리와 백성의 비방거리가 되게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "52639031afb450061138697558cf444d8cd585fc8736a1559871012dcf0bd740"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:4",
+      "sequence": 21364,
+      "chapter_label": "EZK 36",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 4
+        }
+      ],
+      "en": "therefore, you mountains of Israel, hear the word of the Lord GOD: The Lord GOD says to the mountains and to the hills, to the watercourses and to the valleys, to the desolate wastes and to the cities that are forsaken, which have become a prey and derision to the residue of the nations that are all around;",
+      "ko": "그러므로 이스라엘 산들아 주 여호와의 말씀을 들을찌어다 주 여호와께서 산들과 멧부리들과 시내들과 골짜기들과 황무한 사막들과 사면에 남아 있는 이방인의 노략거리와 조롱거리가 된 버린 성읍들에게 말씀하셨느니라",
+      "source_text_hash": "d8f1ff287e8278d156a707762cfa291cc16ec3933d3b53fa58f0e8a353ca5a50",
+      "translation_text_hash": "5148cd49e0f32a4b8690294c2717e81c587328bf74f7b67964944c4e4cf59483",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이스라엘 산들아 주 여호와의 말씀을 들을찌어다 주 여호와께서 산들과 멧부리들과 시내들과 골짜기들과 황무한 사막들과 사면에 남아 있는 이방인의 노략거리와 조롱거리가 된 버린 성읍들에게 말씀하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "5148cd49e0f32a4b8690294c2717e81c587328bf74f7b67964944c4e4cf59483"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:5",
+      "sequence": 21365,
+      "chapter_label": "EZK 36",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 5
+        }
+      ],
+      "en": "therefore the Lord GOD says: “Surely in the fire of my jealousy I have spoken against the residue of the nations, and against all Edom, that have appointed my land to themselves for a possession with the joy of all their heart, with despite of soul, to cast it out for a prey.”’",
+      "ko": "주 여호와의 말씀에 내가 진실로 내 맹렬한 투기로 남아 있는 이방인과 에돔 온 땅을 쳐서 말하였노니 이는 그들이 심히 즐거워하는 마음과 멸시하는 심령으로 내 땅을 빼앗아 노략하여 자기 소유를 삼았음이니라",
+      "source_text_hash": "209de14d68876fcbbd71caba6f32d3e2311509acd03ac3d69a1f26c09a8e034f",
+      "translation_text_hash": "dfb4c85d3feeb76c227b3a0857ee8fa4ae07db094f724903af558327b5eae3f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와의 말씀에 내가 진실로 내 맹렬한 투기로 남아 있는 이방인과 에돔 온 땅을 쳐서 말하였노니 이는 그들이 심히 즐거워하는 마음과 멸시하는 심령으로 내 땅을 빼앗아 노략하여 자기 소유를 삼았음이니라"
+      ],
+      "raw_text_hashes": [
+        "dfb4c85d3feeb76c227b3a0857ee8fa4ae07db094f724903af558327b5eae3f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:6",
+      "sequence": 21366,
+      "chapter_label": "EZK 36",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore prophesy concerning the land of Israel, and tell the mountains, the hills, the watercourses and the valleys, ‘The Lord GOD says: “Behold, I have spoken in my jealousy and in my wrath, because you have borne the shame of the nations.”",
+      "ko": "그러므로 너는 이스라엘 땅을 대하여 예언하되 그 산들과 멧부리들과 시내들과 골짜기들을 대하여 이르기를 주 여호와의 말씀에 내가 내 투기와 내 분노로 말하였나니 이는 너희가 이방의 수욕을 당하였음이니라",
+      "source_text_hash": "f6f8c438047a6a358f57742cc7051dd3d7d6dd6ed2dcc490fc07eece4eea80ce",
+      "translation_text_hash": "b9723dc8f7257bf74fc6ce607f94c87750cafefe970e0d965f144c4763e91b03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 이스라엘 땅을 대하여 예언하되 그 산들과 멧부리들과 시내들과 골짜기들을 대하여 이르기를 주 여호와의 말씀에 내가 내 투기와 내 분노로 말하였나니 이는 너희가 이방의 수욕을 당하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "b9723dc8f7257bf74fc6ce607f94c87750cafefe970e0d965f144c4763e91b03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:7",
+      "sequence": 21367,
+      "chapter_label": "EZK 36",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore the Lord GOD says: “I have sworn, ‘Surely the nations that are around you will bear their shame.’",
+      "ko": "그러므로 주 여호와의 말씀에 내가 맹세하였은즉 너희 사면에 있는 이방인이 자기 수욕을 정녕 당하리라",
+      "source_text_hash": "86d4649f031aa1551440c80ec979541061d0fabbf13b3a1edc0e4ed38870f12d",
+      "translation_text_hash": "37081aab5521e1367ea44629f13a72acf507ab28b947622747a10fbcf1f34659",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주 여호와의 말씀에 내가 맹세하였은즉 너희 사면에 있는 이방인이 자기 수욕을 정녕 당하리라"
+      ],
+      "raw_text_hashes": [
+        "37081aab5521e1367ea44629f13a72acf507ab28b947622747a10fbcf1f34659"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:8",
+      "sequence": 21368,
+      "chapter_label": "EZK 36",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 8
+        }
+      ],
+      "en": "“‘“But you, mountains of Israel, you shall shoot out your branches and yield your fruit to my people Israel; for they are at hand to come.",
+      "ko": "그러나 너희 이스라엘 산들아 너희는 가지를 내고 내 백성 이스라엘을 위하여 과실을 맺으리니 그들의 올 때가 가까이 이르렀음이니라",
+      "source_text_hash": "cc8280825387e7002f1e3128dd5b4c0c1aa1c612c586a85ce0f8efe83822fbcd",
+      "translation_text_hash": "3f83743183acfc1749a41ff80a767d7e4f0aaccbadcd54018521e5067d56d5a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희 이스라엘 산들아 너희는 가지를 내고 내 백성 이스라엘을 위하여 과실을 맺으리니 그들의 올 때가 가까이 이르렀음이니라"
+      ],
+      "raw_text_hashes": [
+        "3f83743183acfc1749a41ff80a767d7e4f0aaccbadcd54018521e5067d56d5a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:9",
+      "sequence": 21369,
+      "chapter_label": "EZK 36",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 9
+        }
+      ],
+      "en": "For, behold, I am for you, and I will come to you, and you will be tilled and sown.",
+      "ko": "내가 돌이켜 너희와 함께하리니 사람이 너희를 갈고 심을 것이며",
+      "source_text_hash": "08bb0a9f3133883c594db3106b62b145d24d5ec8a080fe7c2dd3ec1175903de6",
+      "translation_text_hash": "6314530dc4f890f5f4fd2ed076b14f8a473aff6f14661524213855458a504228",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌이켜 너희와 함께하리니 사람이 너희를 갈고 심을 것이며"
+      ],
+      "raw_text_hashes": [
+        "6314530dc4f890f5f4fd2ed076b14f8a473aff6f14661524213855458a504228"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:10",
+      "sequence": 21370,
+      "chapter_label": "EZK 36",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 10
+        }
+      ],
+      "en": "I will multiply men on you, all the house of Israel, even all of it. The cities will be inhabited and the waste places will be built.",
+      "ko": "내가 또 사람을 너희 위에 많게 하리니 이들은 이스라엘 온 족속이라 그들로 성읍들에 거하게 하며 빈 땅에 건축하게 하리라",
+      "source_text_hash": "ec44a5e278451e20432e89aba03d825076fa91a5f4313410ace5ad9850bdf127",
+      "translation_text_hash": "0cacf993e346f6753e557068fc16d62d934c9f2726e159af08ce3336499b9fd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 사람을 너희 위에 많게 하리니 이들은 이스라엘 온 족속이라 그들로 성읍들에 거하게 하며 빈 땅에 건축하게 하리라"
+      ],
+      "raw_text_hashes": [
+        "0cacf993e346f6753e557068fc16d62d934c9f2726e159af08ce3336499b9fd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:11",
+      "sequence": 21371,
+      "chapter_label": "EZK 36",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 11
+        }
+      ],
+      "en": "I will multiply man and animal on you. They will increase and be fruitful. I will cause you to be inhabited as you were before, and you will do better than at your beginnings. Then you will know that I am the LORD.",
+      "ko": "내가 너희 위에 사람과 짐승으로 많게 하되 생육이 중다하고 번성하게 할 것이라 너희 전 지위대로 사람이 거하게 하여 너희를 처음보다 낫게 대접하리니 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "ca16b9f8ec38f2883d314a47753f6e63efbef9af8e04f4cb23c0e28af1547d07",
+      "translation_text_hash": "4a73e38af232666b5a5f9a9ac2f2e3fe4ec413c23c54f2bb34e27174f8c4d023",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 위에 사람과 짐승으로 많게 하되 생육이 중다하고 번성하게 할 것이라 너희 전 지위대로 사람이 거하게 하여 너희를 처음보다 낫게 대접하리니 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "4a73e38af232666b5a5f9a9ac2f2e3fe4ec413c23c54f2bb34e27174f8c4d023"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:12",
+      "sequence": 21372,
+      "chapter_label": "EZK 36",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 12
+        }
+      ],
+      "en": "Yes, I will cause men to walk on you, even my people Israel. They will possess you, and you will be their inheritance, and you will never again bereave them of their children.”",
+      "ko": "내가 사람으로 너희 위에 행하게 하리니 그들은 내 백성 이스라엘이라 그들은 너를 얻고 너는 그 기업이 되어 다시는 그들로 자식들을 잃어버리지 않게 하리라",
+      "source_text_hash": "8cfd6ef9af2c736e5125330e06a6cb9de3df5428f457bff60882ce2c352d58c1",
+      "translation_text_hash": "e40cd6fe761b2c1090d465b989348ef682869bfd07ff690d63e672f116048fba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사람으로 너희 위에 행하게 하리니 그들은 내 백성 이스라엘이라 그들은 너를 얻고 너는 그 기업이 되어 다시는 그들로 자식들을 잃어버리지 않게 하리라"
+      ],
+      "raw_text_hashes": [
+        "e40cd6fe761b2c1090d465b989348ef682869bfd07ff690d63e672f116048fba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:13",
+      "sequence": 21373,
+      "chapter_label": "EZK 36",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 13
+        }
+      ],
+      "en": "“‘The Lord GOD says: “Because they say to you, ‘You are a devourer of men, and have been a bereaver of your nation;’",
+      "ko": "나 주 여호와가 말하노라 그들이 너희에게 이르기를 너는 사람을 삼키는 자요 네 나라 백성을 제한 자라 하거니와",
+      "source_text_hash": "3e5835699f968f56aa12d82868d1e2afd4a7fda451c436b36ec2f9269d588eed",
+      "translation_text_hash": "edb340ecea8943329702b40de463e49577462d998eee7a263d5f30940d8d4c69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 그들이 너희에게 이르기를 너는 사람을 삼키는 자요 네 나라 백성을 제한 자라 하거니와"
+      ],
+      "raw_text_hashes": [
+        "edb340ecea8943329702b40de463e49577462d998eee7a263d5f30940d8d4c69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:14",
+      "sequence": 21374,
+      "chapter_label": "EZK 36",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 14
+        }
+      ],
+      "en": "therefore you shall devour men no more, and not bereave your nation any more,” says the Lord GOD.",
+      "ko": "네가 다시는 사람을 삼키지 아니하며 다시는 네 나라 백성을 제하지 아니하리라 나 주 여호와의 말이니라",
+      "source_text_hash": "28f04eb801cbb85b01640b585619053f5b38d8468f4b3c70783fa43270a079bf",
+      "translation_text_hash": "9cb35f681726990d49c8c0113d0d8a6215245630c7ba9acfae9e3034c942f423",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 다시는 사람을 삼키지 아니하며 다시는 네 나라 백성을 제하지 아니하리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "9cb35f681726990d49c8c0113d0d8a6215245630c7ba9acfae9e3034c942f423"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:15",
+      "sequence": 21375,
+      "chapter_label": "EZK 36",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 15
+        }
+      ],
+      "en": "“I won’t let you hear the shame of the nations any more. You won’t bear the reproach of the peoples any more, and you won’t cause your nation to stumble any more,” says the Lord GOD.’”",
+      "ko": "내가 또 너로 열국의 수욕을 듣지 않게 하며 만민의 비방을 다시 받지 않게 하며 네 나라 백성을 다시 넘어뜨리지 않게 하리라 나 주 여호와의 말이니라 하셨다 하라",
+      "source_text_hash": "e8cee9ff70cc19d461bd58295e28e77783d1b43c1b3a52f8fbc55d36e67d1f09",
+      "translation_text_hash": "1f0c272a87961bec31ac59fd1d9d4e19a8a98dab20f30538ba110eb6e138910f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 너로 열국의 수욕을 듣지 않게 하며 만민의 비방을 다시 받지 않게 하며 네 나라 백성을 다시 넘어뜨리지 않게 하리라 나 주 여호와의 말이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "1f0c272a87961bec31ac59fd1d9d4e19a8a98dab20f30538ba110eb6e138910f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:16",
+      "sequence": 21376,
+      "chapter_label": "EZK 36",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 16
+        }
+      ],
+      "en": "Moreover the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "4fe6548be4bc036eef72ed1db86f9dcc8989355e4d608b71dd65965f07c53184",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:17",
+      "sequence": 21377,
+      "chapter_label": "EZK 36",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 17
+        }
+      ],
+      "en": "“Son of man, when the house of Israel lived in their own land, they defiled it by their ways and by their deeds. Their way before me was as the uncleanness of a woman in her impurity.",
+      "ko": "인자야 이스라엘 족속이 그 고토에 거할 때에 그 행위로 그 땅을 더럽혔나니 나 보기에 그 소위가 월경 중에 있는 여인의 부정함과 같았느니라",
+      "source_text_hash": "f0dacfe7f8404d8828bacd1b4e1c410b81e3c9240386527701c4a4b1de0b6bb9",
+      "translation_text_hash": "8d7a751753ce3816e3c4099f63ea063dc58ec52507fb0ed16c31b615e486b7bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 이스라엘 족속이 그 고토에 거할 때에 그 행위로 그 땅을 더럽혔나니 나 보기에 그 소위가 월경 중에 있는 여인의 부정함과 같았느니라"
+      ],
+      "raw_text_hashes": [
+        "8d7a751753ce3816e3c4099f63ea063dc58ec52507fb0ed16c31b615e486b7bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:18",
+      "sequence": 21378,
+      "chapter_label": "EZK 36",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 18
+        }
+      ],
+      "en": "Therefore I poured out my wrath on them for the blood which they had poured out on the land, and because they had defiled it with their idols.",
+      "ko": "그들이 땅 위에 피를 쏟았으며 그 우상들로 더럽혔으므로 내가 분노를 그들의 위에 쏟아",
+      "source_text_hash": "b65d4416a5daa25c34c776783dc5022c8f00b13eaa305668d3d207365f2bfeff",
+      "translation_text_hash": "2703e5ed5843bd06968e9707e365ff9eb9427aabdb0bd9e8a3a432d28c4f2fc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 땅 위에 피를 쏟았으며 그 우상들로 더럽혔으므로 내가 분노를 그들의 위에 쏟아"
+      ],
+      "raw_text_hashes": [
+        "2703e5ed5843bd06968e9707e365ff9eb9427aabdb0bd9e8a3a432d28c4f2fc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:19",
+      "sequence": 21379,
+      "chapter_label": "EZK 36",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 19
+        }
+      ],
+      "en": "I scattered them among the nations, and they were dispersed through the countries. I judged them according to their way and according to their deeds.",
+      "ko": "그들을 그 행위대로 심판하여 각국에 흩으며 열방에 헤쳤더니",
+      "source_text_hash": "c0857600a4d73f6623b399dff7a44b0efe1883140e9616804185b48e66bdc46c",
+      "translation_text_hash": "e8df5737569d2c2428ac42a607a6a0df18d12a389db7836f5d0c6d57d175bfdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 그 행위대로 심판하여 각국에 흩으며 열방에 헤쳤더니"
+      ],
+      "raw_text_hashes": [
+        "e8df5737569d2c2428ac42a607a6a0df18d12a389db7836f5d0c6d57d175bfdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:20",
+      "sequence": 21380,
+      "chapter_label": "EZK 36",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 20
+        }
+      ],
+      "en": "When they came to the nations where they went, they profaned my holy name, in that men said of them, ‘These are the LORD’s people, and have left his land.’",
+      "ko": "그들의 이른바 그 열국에서 내 거룩한 이름이 그들로 인하여 더러워졌나니 곧 사람들이 그들을 가리켜 이르기를 이들은 여호와의 백성이라도 여호와의 땅에서 떠난 자라 하였음이니라",
+      "source_text_hash": "bc0cc763d359ad5ac974996c6a925c02ad5d45c7f84bf1807b74a3b9b5fd5808",
+      "translation_text_hash": "96f9e55375ab120bb20cdbf105b3ac2f2ca94233da584d4e0394824a6e6b3c51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 이른바 그 열국에서 내 거룩한 이름이 그들로 인하여 더러워졌나니 곧 사람들이 그들을 가리켜 이르기를 이들은 여호와의 백성이라도 여호와의 땅에서 떠난 자라 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "96f9e55375ab120bb20cdbf105b3ac2f2ca94233da584d4e0394824a6e6b3c51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:21",
+      "sequence": 21381,
+      "chapter_label": "EZK 36",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 21
+        }
+      ],
+      "en": "But I had respect for my holy name, which the house of Israel had profaned among the nations where they went.",
+      "ko": "그러나 이스라엘 족속이 들어간 그 열국에서 더럽힌 내 거룩한 이름을 내가 아꼈노라",
+      "source_text_hash": "e9f336c2c44712d3d2c72cbcfdf1f2523b9399753f37e3e022537acb8556da94",
+      "translation_text_hash": "3163f7041df37f98a4240d90917693558cf4305896c875b170c8db010e9907e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이스라엘 족속이 들어간 그 열국에서 더럽힌 내 거룩한 이름을 내가 아꼈노라"
+      ],
+      "raw_text_hashes": [
+        "3163f7041df37f98a4240d90917693558cf4305896c875b170c8db010e9907e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:22",
+      "sequence": 21382,
+      "chapter_label": "EZK 36",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 22
+        }
+      ],
+      "en": "“Therefore tell the house of Israel, ‘The Lord GOD says: “I don’t do this for your sake, house of Israel, but for my holy name, which you have profaned among the nations where you went.",
+      "ko": "그러므로 너는 이스라엘 족속에게 이르기를 주 여호와의 말씀에 이스라엘 족속아 내가 이렇게 행함은 너희를 위함이 아니요 너희가 들어간 그 열국에서 더럽힌 나의 거룩한 이름을 위함이라",
+      "source_text_hash": "ec89de15f090a39aa58656c9b5ec52a9fc171d806034dc7e14ad0645099179d0",
+      "translation_text_hash": "dac73a81314bc07fa0bfea86a2c195cda35967031c92ab90797b244d57b726d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 이스라엘 족속에게 이르기를 주 여호와의 말씀에 이스라엘 족속아 내가 이렇게 행함은 너희를 위함이 아니요 너희가 들어간 그 열국에서 더럽힌 나의 거룩한 이름을 위함이라"
+      ],
+      "raw_text_hashes": [
+        "dac73a81314bc07fa0bfea86a2c195cda35967031c92ab90797b244d57b726d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:23",
+      "sequence": 21383,
+      "chapter_label": "EZK 36",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 23
+        }
+      ],
+      "en": "I will sanctify my great name, which has been profaned among the nations, which you have profaned among them. Then the nations will know that I am the LORD,” says the Lord GOD, “when I am proven holy in you before their eyes.",
+      "ko": "열국 가운데서 더럽힘을 받은 이름 곧 너희가 그들 중에서 더럽힌 나의 큰 이름을 내가 거룩하게 할찌라 내가 그들의 목전에서 너희로 인하여 나의 거룩함을 나타내리니 열국 사람이 나를 여호와인줄 알리라 나 주 여호와의 말이니라",
+      "source_text_hash": "c522ed9ffc9cca47fde0b3fbb021fbad635cdef28c70845f7aa11d05a68b7c98",
+      "translation_text_hash": "bceb3574a531b3718c7bd0692c5e592dc168b72836e123dcdf22ca53bda2e823",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국 가운데서 더럽힘을 받은 이름 곧 너희가 그들 중에서 더럽힌 나의 큰 이름을 내가 거룩하게 할찌라 내가 그들의 목전에서 너희로 인하여 나의 거룩함을 나타내리니 열국 사람이 나를 여호와인줄 알리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "bceb3574a531b3718c7bd0692c5e592dc168b72836e123dcdf22ca53bda2e823"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:24",
+      "sequence": 21384,
+      "chapter_label": "EZK 36",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 24
+        }
+      ],
+      "en": "“‘“For I will take you from among the nations and gather you out of all the countries, and will bring you into your own land.",
+      "ko": "내가 너희를 열국 중에서 취하여 내고 열국 중에서 모아 데리고 고토에 들어가서",
+      "source_text_hash": "aa0123103d9652f6ef72a03c0ba223c9ce3d8452082767693baa0065db4c36b4",
+      "translation_text_hash": "bfc67f840e78d5b746b27985df92a5c57db2b2ff6bc083d7b47e19e285c09682",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 열국 중에서 취하여 내고 열국 중에서 모아 데리고 고토에 들어가서"
+      ],
+      "raw_text_hashes": [
+        "bfc67f840e78d5b746b27985df92a5c57db2b2ff6bc083d7b47e19e285c09682"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:25",
+      "sequence": 21385,
+      "chapter_label": "EZK 36",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 25
+        }
+      ],
+      "en": "I will sprinkle clean water on you, and you will be clean. I will cleanse you from all your filthiness and from all your idols.",
+      "ko": "맑은 물로 너희에게 뿌려서 너희로 정결케 하되 곧 너희 모든 더러운 것에서와 모든 우상을 섬김에서 너희를 정결케 할 것이며",
+      "source_text_hash": "c36c99e64d64d17a3d4e4270f49224c951ea78a1748e882af8c6e734c4019ad9",
+      "translation_text_hash": "c08d25b9dcfdb6ce7aebc1a043dc3bf279f6b61b5396b1ba4c2e4b2a371d96a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맑은 물로 너희에게 뿌려서 너희로 정결케 하되 곧 너희 모든 더러운 것에서와 모든 우상을 섬김에서 너희를 정결케 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "c08d25b9dcfdb6ce7aebc1a043dc3bf279f6b61b5396b1ba4c2e4b2a371d96a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:26",
+      "sequence": 21386,
+      "chapter_label": "EZK 36",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 26
+        }
+      ],
+      "en": "I will also give you a new heart, and I will put a new spirit within you. I will take away the stony heart out of your flesh, and I will give you a heart of flesh.",
+      "ko": "또 새 영을 너희 속에 두고 새 마음을 너희에게 주되 너희 육신에서 굳은 마음을 제하고 부드러운 마음을 줄 것이며",
+      "source_text_hash": "98319c0b52f0c47eeb2000fed7ffda8a923227d0a601adf814a91f04dd5f3b78",
+      "translation_text_hash": "2bb78f4d345399b16c18043ff946991c2f38fac6de62bdfacf31c19b2f58ae14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 새 영을 너희 속에 두고 새 마음을 너희에게 주되 너희 육신에서 굳은 마음을 제하고 부드러운 마음을 줄 것이며"
+      ],
+      "raw_text_hashes": [
+        "2bb78f4d345399b16c18043ff946991c2f38fac6de62bdfacf31c19b2f58ae14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:27",
+      "sequence": 21387,
+      "chapter_label": "EZK 36",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 27
+        }
+      ],
+      "en": "I will put my Spirit within you, and cause you to walk in my statutes. You will keep my ordinances and do them.",
+      "ko": "또 내 신을 너희 속에 두어 너희로 내 율례를 행하게 하리니 너희가 내 규례를 지켜 행할찌라",
+      "source_text_hash": "e7e9d3887f0937adfbd889813890f1e0800c15ea478fb44432710d87a44f85ea",
+      "translation_text_hash": "19846e30a9b086201e52e8fb5b70a8cc11892371379318b965d8a4087827b505",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내 신을 너희 속에 두어 너희로 내 율례를 행하게 하리니 너희가 내 규례를 지켜 행할찌라"
+      ],
+      "raw_text_hashes": [
+        "19846e30a9b086201e52e8fb5b70a8cc11892371379318b965d8a4087827b505"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:28",
+      "sequence": 21388,
+      "chapter_label": "EZK 36",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 28
+        }
+      ],
+      "en": "You will dwell in the land that I gave to your fathers. You will be my people, and I will be your God.",
+      "ko": "내가 너희 열조에게 준 땅에 너희가 거하여 내 백성이 되고 나는 너희 하나님이 되리라",
+      "source_text_hash": "0a9083bce521a7579f7fc0843665a0c9ab487bd412c43ebd96ce643448d0df3c",
+      "translation_text_hash": "120757735a119b3d4366700aad4823b9f5faabdd8af2631f7927ba305fabb0f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 열조에게 준 땅에 너희가 거하여 내 백성이 되고 나는 너희 하나님이 되리라"
+      ],
+      "raw_text_hashes": [
+        "120757735a119b3d4366700aad4823b9f5faabdd8af2631f7927ba305fabb0f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:29",
+      "sequence": 21389,
+      "chapter_label": "EZK 36",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 29
+        }
+      ],
+      "en": "I will save you from all your uncleanness. I will call for the grain and will multiply it, and lay no famine on you.",
+      "ko": "내가 너희를 모든 더러운데서 구원하고 곡식으로 풍성하게 하여 기근이 너희에게 임하지 아니하게 할 것이며",
+      "source_text_hash": "3c673db42717bcc6bf0c64f725cbee5a5d0c597ce316d106965024ee8ed68713",
+      "translation_text_hash": "5cfe82c5553377f3741634d325248e1da46d1f72163f6d7ece45c1c98cd10327",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 모든 더러운데서 구원하고 곡식으로 풍성하게 하여 기근이 너희에게 임하지 아니하게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "5cfe82c5553377f3741634d325248e1da46d1f72163f6d7ece45c1c98cd10327"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:30",
+      "sequence": 21390,
+      "chapter_label": "EZK 36",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 30
+        }
+      ],
+      "en": "I will multiply the fruit of the tree and the increase of the field, that you may receive no more the reproach of famine among the nations.",
+      "ko": "또 나무의 실과와 밭의 소산을 풍성케 하여 너희로 다시는 기근의 욕을 열국에게 받지 않게 하리니",
+      "source_text_hash": "4fa253b4ba6475e595983d84985d513bd4ac3bd87c261b35e07b4c5f406a01b9",
+      "translation_text_hash": "ff4146a06ae77a043c35004747d6914950adf907925bff886f047fa153790712",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 나무의 실과와 밭의 소산을 풍성케 하여 너희로 다시는 기근의 욕을 열국에게 받지 않게 하리니"
+      ],
+      "raw_text_hashes": [
+        "ff4146a06ae77a043c35004747d6914950adf907925bff886f047fa153790712"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:31",
+      "sequence": 21391,
+      "chapter_label": "EZK 36",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 31
+        }
+      ],
+      "en": "“‘“Then you will remember your evil ways, and your deeds that were not good; and you will loathe yourselves in your own sight for your iniquities and for your abominations.",
+      "ko": "그 때에 너희가 너희 악한 길과 너희 불선한 행위를 기억하고 너희 모든 죄악과 가증한 일을 인하여 스스로 밉게 보리라",
+      "source_text_hash": "64baa0d73ae27a358c97e101d06c0c0e102df3bc605d7acd3f4e4bb42c4f4fca",
+      "translation_text_hash": "199ae91b2c695c6be60606e9912d15c082e04df8dee96a58b22bba1520504718",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 너희가 너희 악한 길과 너희 불선한 행위를 기억하고 너희 모든 죄악과 가증한 일을 인하여 스스로 밉게 보리라"
+      ],
+      "raw_text_hashes": [
+        "199ae91b2c695c6be60606e9912d15c082e04df8dee96a58b22bba1520504718"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:32",
+      "sequence": 21392,
+      "chapter_label": "EZK 36",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 32
+        }
+      ],
+      "en": "I don’t do this for your sake,” says the Lord GOD. “Let it be known to you. Be ashamed and confounded for your ways, house of Israel.”",
+      "ko": "나 주 여호와가 말하노라 내가 이렇게 행함은 너희를 위함이 아닌줄을 너희가 알리라 이스라엘 족속아 너희 행위를 인하여 부끄러워하고 한탄할찌어다",
+      "source_text_hash": "8590a2016601f931f8e3ea05bdcd8bdbf051fd65d2119ec4e4aa8847ad8a0d47",
+      "translation_text_hash": "f54d1a5f5ecca83bb446ba92531598677a47e00cbdcfe3ea76f49cf435982b13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 이렇게 행함은 너희를 위함이 아닌줄을 너희가 알리라 이스라엘 족속아 너희 행위를 인하여 부끄러워하고 한탄할찌어다"
+      ],
+      "raw_text_hashes": [
+        "f54d1a5f5ecca83bb446ba92531598677a47e00cbdcfe3ea76f49cf435982b13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:33",
+      "sequence": 21393,
+      "chapter_label": "EZK 36",
+      "verse_label": "33",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 33
+        }
+      ],
+      "en": "“‘The Lord GOD says: “In the day that I cleanse you from all your iniquities, I will cause the cities to be inhabited and the waste places will be built.",
+      "ko": "나 주 여호와가 말하노라 내가 너희를 모든 죄악에서 정결케 하는 날에 성읍들에 사람이 거접되게 하며 황폐한 것이 건축되게 할 것인즉",
+      "source_text_hash": "db181000f06552aaeda75b2689b0658784466351a783292f2779c3893995c286",
+      "translation_text_hash": "c985a5536522985c2257add152d476b2a8b895c855add639fa547a8af6970222",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 너희를 모든 죄악에서 정결케 하는 날에 성읍들에 사람이 거접되게 하며 황폐한 것이 건축되게 할 것인즉"
+      ],
+      "raw_text_hashes": [
+        "c985a5536522985c2257add152d476b2a8b895c855add639fa547a8af6970222"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:34",
+      "sequence": 21394,
+      "chapter_label": "EZK 36",
+      "verse_label": "34",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 34
+        }
+      ],
+      "en": "The land that was desolate will be tilled instead of being a desolation in the sight of all who passed by.",
+      "ko": "전에는 지나가는 자의 눈에 황무하게 보이던 그 황무한 땅이 장차 기경이 될찌라",
+      "source_text_hash": "437571e453a01fdd79ea4bdc17bda9474da6e8c94ff95daaca6a506e7b508dea",
+      "translation_text_hash": "8f891177355763b2a288760a7c46502dc32f2d2fbf66747dfdc77ae779796753",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에는 지나가는 자의 눈에 황무하게 보이던 그 황무한 땅이 장차 기경이 될찌라"
+      ],
+      "raw_text_hashes": [
+        "8f891177355763b2a288760a7c46502dc32f2d2fbf66747dfdc77ae779796753"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:35",
+      "sequence": 21395,
+      "chapter_label": "EZK 36",
+      "verse_label": "35",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 35
+        }
+      ],
+      "en": "They will say, ‘This land that was desolate has become like the garden of Eden. The waste, desolate, and ruined cities are fortified and inhabited.’",
+      "ko": "사람이 이르기를 이 땅이 황무하더니 이제는 에덴 동산 같이 되었고 황량하고 적막하고 무너진 성읍들에 성벽과 거민이 있다 하리니",
+      "source_text_hash": "60f78710dcff01d66cd2118d085f3f9952966fbc841f769cc255084acdfcab6c",
+      "translation_text_hash": "fe21d8d7bd66e2ad9ac6baa79fcf04f092e109df37765d940208f59f7fe401a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 이르기를 이 땅이 황무하더니 이제는 에덴 동산 같이 되었고 황량하고 적막하고 무너진 성읍들에 성벽과 거민이 있다 하리니"
+      ],
+      "raw_text_hashes": [
+        "fe21d8d7bd66e2ad9ac6baa79fcf04f092e109df37765d940208f59f7fe401a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:36",
+      "sequence": 21396,
+      "chapter_label": "EZK 36",
+      "verse_label": "36",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 36
+        }
+      ],
+      "en": "Then the nations that are left around you will know that I, the LORD, have built the ruined places and planted that which was desolate. I, the LORD, have spoken it, and I will do it.”",
+      "ko": "너희 사면에 남은 이방 사람이 나 여호와가 무너진 곳을 건축하며 황무한 자리에 심은줄 알리라 나 여호와가 말하였으니 이루리라",
+      "source_text_hash": "6c2453c221a541133cdbb28e84d8ad80e4495b97d54c31560dfcb5f05d7bccff",
+      "translation_text_hash": "1b67429a104e3648b47149bc2216f954a9cc7dedeeda057ccf6dafcb197bb5f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 사면에 남은 이방 사람이 나 여호와가 무너진 곳을 건축하며 황무한 자리에 심은줄 알리라 나 여호와가 말하였으니 이루리라"
+      ],
+      "raw_text_hashes": [
+        "1b67429a104e3648b47149bc2216f954a9cc7dedeeda057ccf6dafcb197bb5f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:37",
+      "sequence": 21397,
+      "chapter_label": "EZK 36",
+      "verse_label": "37",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 37
+        }
+      ],
+      "en": "“‘The Lord GOD says: “For this, moreover, I will be inquired of by the house of Israel, to do it for them: I will increase them with men like a flock.",
+      "ko": "나 주 여호와가 말하노라 그래도 이스라엘 족속이 이와 같이 자기들에게 이루어 주기를 내게 구하여야 할찌라 내가 그들의 인수로 양떼 같이 많아지게 하되",
+      "source_text_hash": "406b65261e445082f5baaba613d353eb671405fbee266f950ab43a4939034fde",
+      "translation_text_hash": "571c4df77ba2e01b4adcb074d34f266d487573466a79be6ae920394e0234bcad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 그래도 이스라엘 족속이 이와 같이 자기들에게 이루어 주기를 내게 구하여야 할찌라 내가 그들의 인수로 양떼 같이 많아지게 하되"
+      ],
+      "raw_text_hashes": [
+        "571c4df77ba2e01b4adcb074d34f266d487573466a79be6ae920394e0234bcad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:36:38",
+      "sequence": 21398,
+      "chapter_label": "EZK 36",
+      "verse_label": "38",
+      "locator": {
+        "book": "EZK",
+        "chapter": 36,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 36,
+          "verse": 38
+        }
+      ],
+      "en": "As the flock for sacrifice, as the flock of Jerusalem in her appointed feasts, so the waste cities will be filled with flocks of men. Then they will know that I am the LORD.’”",
+      "ko": "제사드릴 양떼 곧 예루살렘 정한 절기의 양떼 같이 황폐한 성읍에 사람의 떼로 채우리라 그리한즉 그들이 나를 여호와인줄 알리라 하셨느니라",
+      "source_text_hash": "b1ef1925ebb518c7277cb0cd30706b2c853064836b1fc73d27bc8210adef2043",
+      "translation_text_hash": "f8827eeb1736881741e787a713a7c4d8dd03d6b8fead1fb359639a6e15ca740a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사드릴 양떼 곧 예루살렘 정한 절기의 양떼 같이 황폐한 성읍에 사람의 떼로 채우리라 그리한즉 그들이 나를 여호와인줄 알리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f8827eeb1736881741e787a713a7c4d8dd03d6b8fead1fb359639a6e15ca740a"
+      ]
+    }
+  ]
+}

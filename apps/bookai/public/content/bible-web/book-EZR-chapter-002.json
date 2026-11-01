@@ -1,0 +1,2253 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZR:chapter:002",
+  "unit_ordinal": 405,
+  "unit_label": "EZR 2",
+  "book_code": "EZR",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZR:2:1",
+      "sequence": 12029,
+      "chapter_label": "EZR 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Now these are the children of the province who went up out of the captivity of those who had been carried away, whom Nebuchadnezzar the king of Babylon had carried away to Babylon, and who returned to Jerusalem and Judah, everyone to his city;",
+      "ko": "옛적에 바벨론 왕 느부갓네살에게 사로잡혀 바벨론으로 갔던 자의 자손 중에서 놓임을 받고 예루살렘과 유다 도로 돌아와 각기 본성에 이른 자",
+      "source_text_hash": "62d49429d4f681a1700c252290be8f689122444aece526badbf93cad59a2abf6",
+      "translation_text_hash": "16be5e1ddf0ea35389d82df73af339a3d2e80a82df947af1ce26a3fc94663f8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적에 바벨론 왕 느부갓네살에게 사로잡혀 바벨론으로 갔던 자의 자손 중에서 놓임을 받고 예루살렘과 유다 도로 돌아와 각기 본성에 이른 자"
+      ],
+      "raw_text_hashes": [
+        "16be5e1ddf0ea35389d82df73af339a3d2e80a82df947af1ce26a3fc94663f8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:2",
+      "sequence": 12030,
+      "chapter_label": "EZR 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "who came with Zerubbabel, Jeshua, Nehemiah, Seraiah, Reelaiah, Mordecai, Bilshan, Mispar, Bigvai, Rehum, and Baanah. The number of the men of the people of Israel:",
+      "ko": "곧 스룹바벨과 예수아와 느헤미야와 스라야와 르엘라야와 모르드개와 빌산과 미스발과 비그왜와 르훔과 바아나등과 함께 나온 이스라엘 백성의 명수가 이러하니",
+      "source_text_hash": "9cede0ca7ff5d850da46877bf5aead5b713659ad925cfde9b6a1218511f21071",
+      "translation_text_hash": "66e8bb523271fd9180355ea58e6336bda00f22f260031ecabe667fc8a112e0f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 스룹바벨과 예수아와 느헤미야와 스라야와 르엘라야와 모르드개와 빌산과 미스발과 비그왜와 르훔과 바아나등과 함께 나온 이스라엘 백성의 명수가 이러하니"
+      ],
+      "raw_text_hashes": [
+        "66e8bb523271fd9180355ea58e6336bda00f22f260031ecabe667fc8a112e0f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:3",
+      "sequence": 12031,
+      "chapter_label": "EZR 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "The children of Parosh, two thousand one hundred seventy-two.",
+      "ko": "바로스 자손이 이천 일백 칠십 이명이요",
+      "source_text_hash": "4984ab025546766de94bf773f701fdcaed59e59caa2b27348d8f864b2e8c37a0",
+      "translation_text_hash": "6f3bee682a1716a0b58e4ea52909f71bdc76a542663e1a5ff17afca0c076818f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로스 자손이 이천 일백 칠십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "6f3bee682a1716a0b58e4ea52909f71bdc76a542663e1a5ff17afca0c076818f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:4",
+      "sequence": 12032,
+      "chapter_label": "EZR 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "The children of Shephatiah, three hundred seventy-two.",
+      "ko": "스바댜 자손이 삼백 칠십 이명이요",
+      "source_text_hash": "49c8faa3c05ab7760aed1c4028a4be1a1f9cc3502d4d5e1a721d0eb9a3c282a8",
+      "translation_text_hash": "7d5e63796b0548baeeddcc863ea5e490e6ae46be4e6ac19dc45e961f7d7e7be5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바댜 자손이 삼백 칠십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "7d5e63796b0548baeeddcc863ea5e490e6ae46be4e6ac19dc45e961f7d7e7be5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:5",
+      "sequence": 12033,
+      "chapter_label": "EZR 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "The children of Arah, seven hundred seventy-five.",
+      "ko": "아라 자손이 칠백 칠십 오명이요",
+      "source_text_hash": "c920c9b4c94b5b38d464ac0e484a5438e599f61bbe6359e3690e031d4888e07b",
+      "translation_text_hash": "2f8cb5e216593486c2556cd6d399ac3991abd2c1293a9086bdcccac3c3ba9be1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아라 자손이 칠백 칠십 오명이요"
+      ],
+      "raw_text_hashes": [
+        "2f8cb5e216593486c2556cd6d399ac3991abd2c1293a9086bdcccac3c3ba9be1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:6",
+      "sequence": 12034,
+      "chapter_label": "EZR 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "The children of Pahathmoab, of the children of Jeshua and Joab, two thousand eight hundred twelve.",
+      "ko": "바핫모압 자손 곧 예수아와 요압 자손이 이천 팔백 십 이명이요",
+      "source_text_hash": "b0990446bb99007832c9f263cb06298385976ef328f4fe349e432929277be36c",
+      "translation_text_hash": "b2428a25d31c03903098e4836945f962b52a0a62710a520368e9eb49761e4143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바핫모압 자손 곧 예수아와 요압 자손이 이천 팔백 십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "b2428a25d31c03903098e4836945f962b52a0a62710a520368e9eb49761e4143"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:7",
+      "sequence": 12035,
+      "chapter_label": "EZR 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "The children of Elam, one thousand two hundred fifty-four.",
+      "ko": "엘람 자손이 일천 이백 오십 사명이요",
+      "source_text_hash": "c737dd3afb368768e95bce5fe595f6d8955b247a4383d185bdf26c8398f81535",
+      "translation_text_hash": "df6449c999303adf501c24b2b7c2ee689d154e8b0139d53193c0f7e6930f4d27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘람 자손이 일천 이백 오십 사명이요"
+      ],
+      "raw_text_hashes": [
+        "df6449c999303adf501c24b2b7c2ee689d154e8b0139d53193c0f7e6930f4d27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:8",
+      "sequence": 12036,
+      "chapter_label": "EZR 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "The children of Zattu, nine hundred forty-five.",
+      "ko": "삿두 자손이 구백 사십 오명이요",
+      "source_text_hash": "c3cab8b40a89a2917b56b1d943a594cd6cfa76466fdf936925ee4a32a1d8b4fb",
+      "translation_text_hash": "91657b6e412ca77aa005e26d85901da81ce1fdcd97505e2edaa231cb4d93cbb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삿두 자손이 구백 사십 오명이요"
+      ],
+      "raw_text_hashes": [
+        "91657b6e412ca77aa005e26d85901da81ce1fdcd97505e2edaa231cb4d93cbb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:9",
+      "sequence": 12037,
+      "chapter_label": "EZR 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "The children of Zaccai, seven hundred sixty.",
+      "ko": "삭개 자손이 칠백 육십명이요",
+      "source_text_hash": "044ad760513ec59486185e106da66e2f4001ae3f3b301bcd3da1215b511a9977",
+      "translation_text_hash": "05fd38821471586d64714932b12ef77afa6612a115c7a51b0c1fc74955c4b69a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삭개 자손이 칠백 육십명이요"
+      ],
+      "raw_text_hashes": [
+        "05fd38821471586d64714932b12ef77afa6612a115c7a51b0c1fc74955c4b69a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:10",
+      "sequence": 12038,
+      "chapter_label": "EZR 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "The children of Bani, six hundred forty-two.",
+      "ko": "바니 자손이 육백 사십 이명이요",
+      "source_text_hash": "92ea989ceb858290c66ff9e5b435422c61c7e636538628ad8b083aee9c92646e",
+      "translation_text_hash": "25a0a2f3b41daae53599ef8bc8e7b0d2ff626d660d58d073396fb2de8b81361f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바니 자손이 육백 사십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "25a0a2f3b41daae53599ef8bc8e7b0d2ff626d660d58d073396fb2de8b81361f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:11",
+      "sequence": 12039,
+      "chapter_label": "EZR 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "The children of Bebai, six hundred twenty-three.",
+      "ko": "브배 자손이 육백 이십 삼명이요",
+      "source_text_hash": "b622f7e859807566b3517e8704353d0080f0c708e825a90d006186374f2226c6",
+      "translation_text_hash": "9ab1944746f8c460c5d401d5d9d66448eec4f487c00ccda1e7ca1e3551f70db5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브배 자손이 육백 이십 삼명이요"
+      ],
+      "raw_text_hashes": [
+        "9ab1944746f8c460c5d401d5d9d66448eec4f487c00ccda1e7ca1e3551f70db5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:12",
+      "sequence": 12040,
+      "chapter_label": "EZR 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "The children of Azgad, one thousand two hundred twenty-two.",
+      "ko": "아스갓 자손이 일천 이백 이십 이명이요",
+      "source_text_hash": "09b3db208c9ed6c3d76e20e57b7bd2ecc3cfea5261492473d9fa527d66f6d8a0",
+      "translation_text_hash": "2b340228c12b32feca1bb19d102b7b3224c105720acb0e542e110c7949926b72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스갓 자손이 일천 이백 이십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "2b340228c12b32feca1bb19d102b7b3224c105720acb0e542e110c7949926b72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:13",
+      "sequence": 12041,
+      "chapter_label": "EZR 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "The children of Adonikam, six hundred sixty-six.",
+      "ko": "아도니감 자손이 육백 육십 륙명이요",
+      "source_text_hash": "67ec173cfdd3c48a7918de987bd8925aaf1e998aad65d0fa4f0af71f19db2ec7",
+      "translation_text_hash": "919d2782849fd28a02489d2169fb19c098641bca1614a07dbb52890a13e4556a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아도니감 자손이 육백 육십 륙명이요"
+      ],
+      "raw_text_hashes": [
+        "919d2782849fd28a02489d2169fb19c098641bca1614a07dbb52890a13e4556a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:14",
+      "sequence": 12042,
+      "chapter_label": "EZR 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "The children of Bigvai, two thousand fifty-six.",
+      "ko": "비그왜 자손이 이천 오십 륙명이요",
+      "source_text_hash": "7607f8ef34b9c8e816a69e7328652f0079295d6f1da15c03bb372cfa39756cba",
+      "translation_text_hash": "19144085aac5ebdbd433a7ef9929c639eb916a9c70d57c76158b3a4049feec65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비그왜 자손이 이천 오십 륙명이요"
+      ],
+      "raw_text_hashes": [
+        "19144085aac5ebdbd433a7ef9929c639eb916a9c70d57c76158b3a4049feec65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:15",
+      "sequence": 12043,
+      "chapter_label": "EZR 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "The children of Adin, four hundred fifty-four.",
+      "ko": "아딘 자손이 사백 오십 사명이요",
+      "source_text_hash": "ff4fcc4374c412dabdcc19a8682d90c1ceb3e3cd1be83803561c2efc7c8ab744",
+      "translation_text_hash": "b2e84f0bad6f1a1dd085c2ab797a5b02843ca345f9a6d3b15e92c164875381a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아딘 자손이 사백 오십 사명이요"
+      ],
+      "raw_text_hashes": [
+        "b2e84f0bad6f1a1dd085c2ab797a5b02843ca345f9a6d3b15e92c164875381a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:16",
+      "sequence": 12044,
+      "chapter_label": "EZR 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "The children of Ater, of Hezekiah, ninety-eight.",
+      "ko": "아델 자손 곧 히스기야 자손이 구십 팔명이요",
+      "source_text_hash": "9f77eded2ee62bcda98ed8b0b975ffc297530e5c5c160e2f6b9b6e68069795f2",
+      "translation_text_hash": "b344807fab31438acabc8fc707df42c77182d6b7076bd1abc1317007481f47a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아델 자손 곧 히스기야 자손이 구십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "b344807fab31438acabc8fc707df42c77182d6b7076bd1abc1317007481f47a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:17",
+      "sequence": 12045,
+      "chapter_label": "EZR 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "The children of Bezai, three hundred twenty-three.",
+      "ko": "베새 자손이 삼백 이십 삼명이요",
+      "source_text_hash": "35bae974d6eab192ab47dd7c9676fdb98de00c861bd153d8190b053488c15ca6",
+      "translation_text_hash": "e2cbccdecb7fd2b7e8fc07bc2755062363b59fe95c806c39a185898ab8e5ecf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베새 자손이 삼백 이십 삼명이요"
+      ],
+      "raw_text_hashes": [
+        "e2cbccdecb7fd2b7e8fc07bc2755062363b59fe95c806c39a185898ab8e5ecf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:18",
+      "sequence": 12046,
+      "chapter_label": "EZR 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "The children of Jorah, one hundred twelve.",
+      "ko": "요라 자손이 일백 십 이명이요",
+      "source_text_hash": "e8ad4a10ef9a222409ab7bbe896553ee385f0130c8251fd35f5584f7674b2148",
+      "translation_text_hash": "1de18e969b43a5f224994a8f6bb436295279ed0e0950ec1147cb126d209e0af6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요라 자손이 일백 십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "1de18e969b43a5f224994a8f6bb436295279ed0e0950ec1147cb126d209e0af6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:19",
+      "sequence": 12047,
+      "chapter_label": "EZR 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "The children of Hashum, two hundred twenty-three.",
+      "ko": "하숨 자손이 이백 이십 삼명이요",
+      "source_text_hash": "a72741ac172f4713529ac21134d35a32bb725aa71819cf5aa159ea34e7ad93cc",
+      "translation_text_hash": "06145716b92695615276d6206ce98b140c17c9340b20b233143430428413cdae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하숨 자손이 이백 이십 삼명이요"
+      ],
+      "raw_text_hashes": [
+        "06145716b92695615276d6206ce98b140c17c9340b20b233143430428413cdae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:20",
+      "sequence": 12048,
+      "chapter_label": "EZR 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "The children of Gibbar, ninety-five.",
+      "ko": "깁발 자손이 구십 오명이요",
+      "source_text_hash": "af55da251d4c15e203c55b82f1714eb2be97ce6ea6188621cd5a9c43916846e7",
+      "translation_text_hash": "9a836770678345bcad84d78e8afd0c54de94b7d166db0ebdc2f3cf8e08eaffd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깁발 자손이 구십 오명이요"
+      ],
+      "raw_text_hashes": [
+        "9a836770678345bcad84d78e8afd0c54de94b7d166db0ebdc2f3cf8e08eaffd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:21",
+      "sequence": 12049,
+      "chapter_label": "EZR 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "The children of Bethlehem, one hundred twenty-three.",
+      "ko": "베들레헴 사람이 일백 이십 삼명이요",
+      "source_text_hash": "cc2275443a06a24d33f1a418f8b04e64b5278d6551271cb1128348d58e5cbcd7",
+      "translation_text_hash": "7c6001f2940c67ccfb5a7c1da2b30761cbc1e8f319f0f2ef58468c140b89d47f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베들레헴 사람이 일백 이십 삼명이요"
+      ],
+      "raw_text_hashes": [
+        "7c6001f2940c67ccfb5a7c1da2b30761cbc1e8f319f0f2ef58468c140b89d47f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:22",
+      "sequence": 12050,
+      "chapter_label": "EZR 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "The men of Netophah, fifty-six.",
+      "ko": "느도바 사람이 오십 륙명이요",
+      "source_text_hash": "b951ef0b642b6d586b60686a57f8a69c1e183b95bbbc589783eb977dadba7083",
+      "translation_text_hash": "fd7ea207730a0dc151c868ff6cd7a26d05031dbe64e9cd6596ef940ad51cdaea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느도바 사람이 오십 륙명이요"
+      ],
+      "raw_text_hashes": [
+        "fd7ea207730a0dc151c868ff6cd7a26d05031dbe64e9cd6596ef940ad51cdaea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:23",
+      "sequence": 12051,
+      "chapter_label": "EZR 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "The men of Anathoth, one hundred twenty-eight.",
+      "ko": "아나돗 사람이 일백 이십 팔명이요",
+      "source_text_hash": "b4d21b1124cad1c9bd2da42fd1917ef454bb4c1450c745f441bad81db9928f2e",
+      "translation_text_hash": "bdd32c423fdb3454cf950a59ac76ef310b1bf227d28e90d80f4cd82893d2679d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아나돗 사람이 일백 이십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "bdd32c423fdb3454cf950a59ac76ef310b1bf227d28e90d80f4cd82893d2679d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:24",
+      "sequence": 12052,
+      "chapter_label": "EZR 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "The children of Azmaveth, forty-two.",
+      "ko": "아스마웻 자손이 사십 이명이요",
+      "source_text_hash": "c0db97b38020ae1d93f3732a82eb3274fdc581f2aebbab1e2be35790d43a060b",
+      "translation_text_hash": "004644fb11706d1282a0f29251ca8a05c45883979402958ec05e1c9dbdd27797",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스마웻 자손이 사십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "004644fb11706d1282a0f29251ca8a05c45883979402958ec05e1c9dbdd27797"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:25",
+      "sequence": 12053,
+      "chapter_label": "EZR 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "The children of Kiriath Arim, Chephirah, and Beeroth, seven hundred forty-three.",
+      "ko": "기랴다림과 그비라와 브에롯 자손이 칠백 사십 삼명이요",
+      "source_text_hash": "b70e4eb2b9aadde10cecf3abf0ba25ded41bc1ba00daabe3b165932ff372841b",
+      "translation_text_hash": "87cf7776f361c5578cc86a7e7b00eb24ac07d25f784e121d18b0f31e55931917",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기랴다림과 그비라와 브에롯 자손이 칠백 사십 삼명이요"
+      ],
+      "raw_text_hashes": [
+        "87cf7776f361c5578cc86a7e7b00eb24ac07d25f784e121d18b0f31e55931917"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:26",
+      "sequence": 12054,
+      "chapter_label": "EZR 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "The children of Ramah and Geba, six hundred twenty-one.",
+      "ko": "라마와 게바 자손이 육백 이십 일명이요",
+      "source_text_hash": "78dce746a780ab72ab18f8bfd72721405e71c0a9bf81e8c8c31dfd4ebff6ff90",
+      "translation_text_hash": "a8d9c716261efbc7b7c911c8557f50f036b68ba0889d6799c8876d48e53465c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라마와 게바 자손이 육백 이십 일명이요"
+      ],
+      "raw_text_hashes": [
+        "a8d9c716261efbc7b7c911c8557f50f036b68ba0889d6799c8876d48e53465c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:27",
+      "sequence": 12055,
+      "chapter_label": "EZR 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "The men of Michmas, one hundred twenty-two.",
+      "ko": "믹마스 사람이 일백 이십 이명이요",
+      "source_text_hash": "c624abf45dcf58431c2fce22771bb38a621d609a26d444e7a612620ec7b8dab7",
+      "translation_text_hash": "3e26c868301a7b107de72c0634c4c296b6a12c45c131a2457e698dbfcdb70a33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믹마스 사람이 일백 이십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "3e26c868301a7b107de72c0634c4c296b6a12c45c131a2457e698dbfcdb70a33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:28",
+      "sequence": 12056,
+      "chapter_label": "EZR 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "The men of Bethel and Ai, two hundred twenty-three.",
+      "ko": "벧엘과 아이 사람이 이백 이십 삼명이요",
+      "source_text_hash": "707ba87cae189170d391d1788115fc788832493d7b74984271f9df26709572a7",
+      "translation_text_hash": "e98cf94f52bdede05e60e10a4500babcb43a9329dbaaddb2b04e765a05267a14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧엘과 아이 사람이 이백 이십 삼명이요"
+      ],
+      "raw_text_hashes": [
+        "e98cf94f52bdede05e60e10a4500babcb43a9329dbaaddb2b04e765a05267a14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:29",
+      "sequence": 12057,
+      "chapter_label": "EZR 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "The children of Nebo, fifty-two.",
+      "ko": "느보 자손이 오십 이명이요",
+      "source_text_hash": "e206ed94cb5936323da910b8eca5c1b4e6d103e59bd620b2ec394ffee53645a8",
+      "translation_text_hash": "ca8235e0648609dce4ce1e6189e7c3b0669a73ad5eac932fdd26b5e3b0f0abbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느보 자손이 오십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "ca8235e0648609dce4ce1e6189e7c3b0669a73ad5eac932fdd26b5e3b0f0abbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:30",
+      "sequence": 12058,
+      "chapter_label": "EZR 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "The children of Magbish, one hundred fifty-six.",
+      "ko": "막비스 자손이 일백 오십 륙명이요",
+      "source_text_hash": "6708f2418dc69f5577625fca80d3208d4e1322d077614a3cefdde50f46975545",
+      "translation_text_hash": "c6b807a20446f909582b1ec651855f0f1d661f806b76d45720e4caa58550313f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "막비스 자손이 일백 오십 륙명이요"
+      ],
+      "raw_text_hashes": [
+        "c6b807a20446f909582b1ec651855f0f1d661f806b76d45720e4caa58550313f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:31",
+      "sequence": 12059,
+      "chapter_label": "EZR 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "The children of the other Elam, one thousand two hundred fifty-four.",
+      "ko": "다른 엘람 자손이 일천 이백 오십 사명이요",
+      "source_text_hash": "7fd3d846116cc996fe06ebda9d0841e841c0f6b5bb0fe4e64a857fe2a19dfdfc",
+      "translation_text_hash": "e439c52d6ebc3141e3628bf076ad6a5ab416009148e1894230032c06301a1b39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다른 엘람 자손이 일천 이백 오십 사명이요"
+      ],
+      "raw_text_hashes": [
+        "e439c52d6ebc3141e3628bf076ad6a5ab416009148e1894230032c06301a1b39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:32",
+      "sequence": 12060,
+      "chapter_label": "EZR 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "The children of Harim, three hundred twenty.",
+      "ko": "하림 자손이 삼백 이십명이요",
+      "source_text_hash": "dd064284416bbfb9881583cb4d9a530a7fa4491363d5ad92502d74227b714f6b",
+      "translation_text_hash": "be410144ed71a4a1010f829a2a348a873f877c95836a41fd5e9de1f9e5dd8459",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하림 자손이 삼백 이십명이요"
+      ],
+      "raw_text_hashes": [
+        "be410144ed71a4a1010f829a2a348a873f877c95836a41fd5e9de1f9e5dd8459"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:33",
+      "sequence": 12061,
+      "chapter_label": "EZR 2",
+      "verse_label": "33",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 33
+        }
+      ],
+      "en": "The children of Lod, Hadid, and Ono, seven hundred twenty-five.",
+      "ko": "로드와 하딧과 오노 자손이 칠백 이십 오명이요",
+      "source_text_hash": "ec44150ab5b3da88b130f1a9ecac53067b9db239a4f4d26293a8cc596b0feb2e",
+      "translation_text_hash": "7f0ae80afed44b41718249a883120a6ea7710ee39b9c1fbd0545c4c93b441459",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "로드와 하딧과 오노 자손이 칠백 이십 오명이요"
+      ],
+      "raw_text_hashes": [
+        "7f0ae80afed44b41718249a883120a6ea7710ee39b9c1fbd0545c4c93b441459"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:34",
+      "sequence": 12062,
+      "chapter_label": "EZR 2",
+      "verse_label": "34",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 34
+        }
+      ],
+      "en": "The children of Jericho, three hundred forty-five.",
+      "ko": "여리고 자손이 삼백 사십 오명이요",
+      "source_text_hash": "aac29785682fc592293142b2a1ca564713a4b7e8b2d110bfbaaf8cb46a68eed0",
+      "translation_text_hash": "3b914ad97adb650003e5ced22ed1ec620ddb5628a79bd34c6091c889eaa1b9e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여리고 자손이 삼백 사십 오명이요"
+      ],
+      "raw_text_hashes": [
+        "3b914ad97adb650003e5ced22ed1ec620ddb5628a79bd34c6091c889eaa1b9e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:35",
+      "sequence": 12063,
+      "chapter_label": "EZR 2",
+      "verse_label": "35",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 35
+        }
+      ],
+      "en": "The children of Senaah, three thousand six hundred thirty.",
+      "ko": "스나아 자손이 삼천 육백 삼십명이었더라",
+      "source_text_hash": "d6955cf0237c34aa7ad46ddcc6d5dc0af37938a6df4372fbc984dd85c717e458",
+      "translation_text_hash": "92f7e998acf80e321fac047f1582c90a772b49b4a0185f9e608b9d31e9baf7b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스나아 자손이 삼천 육백 삼십명이었더라"
+      ],
+      "raw_text_hashes": [
+        "92f7e998acf80e321fac047f1582c90a772b49b4a0185f9e608b9d31e9baf7b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:36",
+      "sequence": 12064,
+      "chapter_label": "EZR 2",
+      "verse_label": "36",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 36
+        }
+      ],
+      "en": "The priests: the children of Jedaiah, of the house of Jeshua, nine hundred seventy-three.",
+      "ko": "제사장들은 예수아의 집 여다야 자손이 구백 칠십 삼명이요",
+      "source_text_hash": "f701030be9ec152da29a643c31fc774b91bb9d84dc7f84a2c71a068d66ba6a6f",
+      "translation_text_hash": "42bef380ec2f9f5a8216e095f31fbdcbc06fce6918967cf64c93815a17aaebe6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들은 예수아의 집 여다야 자손이 구백 칠십 삼명이요"
+      ],
+      "raw_text_hashes": [
+        "42bef380ec2f9f5a8216e095f31fbdcbc06fce6918967cf64c93815a17aaebe6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:37",
+      "sequence": 12065,
+      "chapter_label": "EZR 2",
+      "verse_label": "37",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 37
+        }
+      ],
+      "en": "The children of Immer, one thousand fifty-two.",
+      "ko": "임멜 자손이 일천 오십 이명이요",
+      "source_text_hash": "c0ce6946b603ab48047f42c5db37f581024d1d53f752ea8e761da89e48d5e5dc",
+      "translation_text_hash": "2a9a7519bafa64bee7fcdcf871f320a89ff54113718da86e4f315b486af7a621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "임멜 자손이 일천 오십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "2a9a7519bafa64bee7fcdcf871f320a89ff54113718da86e4f315b486af7a621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:38",
+      "sequence": 12066,
+      "chapter_label": "EZR 2",
+      "verse_label": "38",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 38
+        }
+      ],
+      "en": "The children of Pashhur, one thousand two hundred forty-seven.",
+      "ko": "바스훌 자손이 일천 이백 사십 칠명이요",
+      "source_text_hash": "a1029b2629cbce68cfc4ff25d6ea526b4d4b0b034966cb30cde2ddee4e5b9dd7",
+      "translation_text_hash": "d733e8d0194c3b2900f6558f23b19e2f1eec4daea44e275029e4ca019a187245",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바스훌 자손이 일천 이백 사십 칠명이요"
+      ],
+      "raw_text_hashes": [
+        "d733e8d0194c3b2900f6558f23b19e2f1eec4daea44e275029e4ca019a187245"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:39",
+      "sequence": 12067,
+      "chapter_label": "EZR 2",
+      "verse_label": "39",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 39
+        }
+      ],
+      "en": "The children of Harim, one thousand seventeen.",
+      "ko": "하림 자손이 일천 십 칠명이었더라",
+      "source_text_hash": "d2199ee52814e1816c5aac877cf4985dd07ef2dcca48da4f93f88283cadc28f5",
+      "translation_text_hash": "818515636a6bc76b1b58aef379713ad4b2bb0f118196713a8305841e660b3fcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하림 자손이 일천 십 칠명이었더라"
+      ],
+      "raw_text_hashes": [
+        "818515636a6bc76b1b58aef379713ad4b2bb0f118196713a8305841e660b3fcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:40",
+      "sequence": 12068,
+      "chapter_label": "EZR 2",
+      "verse_label": "40",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 40
+        }
+      ],
+      "en": "The Levites: the children of Jeshua and Kadmiel, of the children of Hodaviah, seventy-four.",
+      "ko": "레위 사람은 호다위야 자손 곧 예수아와 갓미엘 자손이 칠십 사명이요",
+      "source_text_hash": "91b08dcea6e479b2578bf19a0f764c5ddd7b7e5876b15da1c5c49c0c5b5788fb",
+      "translation_text_hash": "442a14214b28d900a376d454b486f556b715911860db8625127080dc8dd6de5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람은 호다위야 자손 곧 예수아와 갓미엘 자손이 칠십 사명이요"
+      ],
+      "raw_text_hashes": [
+        "442a14214b28d900a376d454b486f556b715911860db8625127080dc8dd6de5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:41",
+      "sequence": 12069,
+      "chapter_label": "EZR 2",
+      "verse_label": "41",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 41
+        }
+      ],
+      "en": "The singers: the children of Asaph, one hundred twenty-eight.",
+      "ko": "노래하는 자들은 아삽 자손이 일백 이십 팔명이요",
+      "source_text_hash": "627f0fdd8306b20660034e133a2ac1bdf33e015409079159c57cbba2da2e7174",
+      "translation_text_hash": "18204ea4b6122e7b6961be9a295f5af722972c7dbc3e877aebc2a9ad583c2c61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노래하는 자들은 아삽 자손이 일백 이십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "18204ea4b6122e7b6961be9a295f5af722972c7dbc3e877aebc2a9ad583c2c61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:42",
+      "sequence": 12070,
+      "chapter_label": "EZR 2",
+      "verse_label": "42",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 42
+        }
+      ],
+      "en": "The children of the gatekeepers: the children of Shallum, the children of Ater, the children of Talmon, the children of Akkub, the children of Hatita, the children of Shobai, in all one hundred thirty-nine.",
+      "ko": "문지기의 자손들은 살룸과 아델과 달문과 악굽과 하디다와 소배 자손이 모두 일백 삼십 구명이었더라",
+      "source_text_hash": "d735e60d1fa4166f57063f4bd2880ce0681c1b1c6ba6a51653c9ab897cd5b854",
+      "translation_text_hash": "ee086eed1c3ba6f30fde2041152b0089f4d299631ddfe07418152c4dc488eca9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문지기의 자손들은 살룸과 아델과 달문과 악굽과 하디다와 소배 자손이 모두 일백 삼십 구명이었더라"
+      ],
+      "raw_text_hashes": [
+        "ee086eed1c3ba6f30fde2041152b0089f4d299631ddfe07418152c4dc488eca9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:43",
+      "sequence": 12071,
+      "chapter_label": "EZR 2",
+      "verse_label": "43",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 43
+        }
+      ],
+      "en": "The temple servants: the children of Ziha, the children of Hasupha, the children of Tabbaoth,",
+      "ko": "느디님 사람들은 시하 자손과 하수바 자손과 답바옷 자손과",
+      "source_text_hash": "e64791af3a20f38a2404ed248310ae26cb4ca2690d965f59eb837d5789d2b339",
+      "translation_text_hash": "70b17e2fa104f1e493c5b7ee4b4f74b005f1787b1de18450835ca61a1ab7f990",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느디님 사람들은 시하 자손과 하수바 자손과 답바옷 자손과"
+      ],
+      "raw_text_hashes": [
+        "70b17e2fa104f1e493c5b7ee4b4f74b005f1787b1de18450835ca61a1ab7f990"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:44",
+      "sequence": 12072,
+      "chapter_label": "EZR 2",
+      "verse_label": "44",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 44
+        }
+      ],
+      "en": "the children of Keros, the children of Siaha, the children of Padon,",
+      "ko": "게로스 자손과 시아하 자손과 바돈 자손과",
+      "source_text_hash": "ae9f5731aae103f79001e3c8b5572ba38af46ca8a014e38f847fa08659c3f6cf",
+      "translation_text_hash": "e66f84e8a7fdc1cacf3ffd0e552d7ce895e823a60acd1237347719ae90edbb35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게로스 자손과 시아하 자손과 바돈 자손과"
+      ],
+      "raw_text_hashes": [
+        "e66f84e8a7fdc1cacf3ffd0e552d7ce895e823a60acd1237347719ae90edbb35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:45",
+      "sequence": 12073,
+      "chapter_label": "EZR 2",
+      "verse_label": "45",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 45
+        }
+      ],
+      "en": "the children of Lebanah, the children of Hagabah, the children of Akkub,",
+      "ko": "르바나 자손과 하가바 자손과 악굽 자손과",
+      "source_text_hash": "bd7b4f4f0de996f1d12d35f065d0acdb1d707ece7f4a06d8b01b1269e71e3793",
+      "translation_text_hash": "ec2f387f721e71aef409abb9e69adaf473c76c77571b6704426fadd970c9a729",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르바나 자손과 하가바 자손과 악굽 자손과"
+      ],
+      "raw_text_hashes": [
+        "ec2f387f721e71aef409abb9e69adaf473c76c77571b6704426fadd970c9a729"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:46",
+      "sequence": 12074,
+      "chapter_label": "EZR 2",
+      "verse_label": "46",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 46
+        }
+      ],
+      "en": "the children of Hagab, the children of Shamlai, the children of Hanan,",
+      "ko": "하갑 자손과 사믈래 자손과 하난 자손과",
+      "source_text_hash": "2e3226394bc5f266dd8c1ccb3840d7ab2d583ed12f0ab6411a14bfa536c580e6",
+      "translation_text_hash": "226ec25310a1ac9634048d1d88c639553b037607d0299b9f7e067b60df6ab804",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하갑 자손과 사믈래 자손과 하난 자손과"
+      ],
+      "raw_text_hashes": [
+        "226ec25310a1ac9634048d1d88c639553b037607d0299b9f7e067b60df6ab804"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:47",
+      "sequence": 12075,
+      "chapter_label": "EZR 2",
+      "verse_label": "47",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 47
+        }
+      ],
+      "en": "the children of Giddel, the children of Gahar, the children of Reaiah,",
+      "ko": "깃델 자손과 가할 자손과 르아야 자손과",
+      "source_text_hash": "19bc011bf6de6c9f910e503d215981e51761616b3437cddcd7f468c757c9a8f5",
+      "translation_text_hash": "f7e613e89636ae6d0779eaf63b20b2aaa251aaadf420bb7bf02f9262879630db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깃델 자손과 가할 자손과 르아야 자손과"
+      ],
+      "raw_text_hashes": [
+        "f7e613e89636ae6d0779eaf63b20b2aaa251aaadf420bb7bf02f9262879630db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:48",
+      "sequence": 12076,
+      "chapter_label": "EZR 2",
+      "verse_label": "48",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 48
+        }
+      ],
+      "en": "the children of Rezin, the children of Nekoda, the children of Gazzam,",
+      "ko": "르신 자손과 느고다 자손과 갓삼 자손과",
+      "source_text_hash": "bf1b2ec58d37e3ad2f4a75ef5235b5bb6188d8219899cba8f381513f686363bc",
+      "translation_text_hash": "cf08a02ac6a18adfff3b42c883afed203f7cd3262627ac0fd4f0f3915a3217a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르신 자손과 느고다 자손과 갓삼 자손과"
+      ],
+      "raw_text_hashes": [
+        "cf08a02ac6a18adfff3b42c883afed203f7cd3262627ac0fd4f0f3915a3217a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:49",
+      "sequence": 12077,
+      "chapter_label": "EZR 2",
+      "verse_label": "49",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 49
+        }
+      ],
+      "en": "the children of Uzza, the children of Paseah, the children of Besai,",
+      "ko": "웃사 자손과 바세아 자손과 베새 자손과",
+      "source_text_hash": "ae878eea1e2f1d17e3c92d0e594702d0fcc3c9d4825aa2f4c559728ec2baefa8",
+      "translation_text_hash": "bfa4e57b0b9f12919612d1e0e7c78eab3d415fc0347cd55a4460d92b1f439fe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃사 자손과 바세아 자손과 베새 자손과"
+      ],
+      "raw_text_hashes": [
+        "bfa4e57b0b9f12919612d1e0e7c78eab3d415fc0347cd55a4460d92b1f439fe5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:50",
+      "sequence": 12078,
+      "chapter_label": "EZR 2",
+      "verse_label": "50",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 50
+        }
+      ],
+      "en": "the children of Asnah, the children of Meunim, the children of Nephisim,",
+      "ko": "아스나 자손과 므우님 자손과 느부심 자손과",
+      "source_text_hash": "fc577e13a8dd7a9f541e80a73e934a8d9cfdf92d1e6c0f75b2fc4167f820fff2",
+      "translation_text_hash": "b19fc4a27799c5c48225db51b74c2d1dfa91055b0d58c73a5a63821afe74ef1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스나 자손과 므우님 자손과 느부심 자손과"
+      ],
+      "raw_text_hashes": [
+        "b19fc4a27799c5c48225db51b74c2d1dfa91055b0d58c73a5a63821afe74ef1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:51",
+      "sequence": 12079,
+      "chapter_label": "EZR 2",
+      "verse_label": "51",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 51
+        }
+      ],
+      "en": "the children of Bakbuk, the children of Hakupha, the children of Harhur,",
+      "ko": "박북 자손과 하그바 자손과 할훌 자손과",
+      "source_text_hash": "b1252394dbb51686847e448bad4537d92d5dd5768e759a6f0a96cd27d61617b6",
+      "translation_text_hash": "f57b7280e61e89ba940e29d104cacbe764c5113788cf2e84d6ebc696ff1e7f53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "박북 자손과 하그바 자손과 할훌 자손과"
+      ],
+      "raw_text_hashes": [
+        "f57b7280e61e89ba940e29d104cacbe764c5113788cf2e84d6ebc696ff1e7f53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:52",
+      "sequence": 12080,
+      "chapter_label": "EZR 2",
+      "verse_label": "52",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 52
+        }
+      ],
+      "en": "the children of Bazluth, the children of Mehida, the children of Harsha,",
+      "ko": "바슬룻 자손과 므히다 자손과 하르사 자손과",
+      "source_text_hash": "fdbff5f5b03440597f53e3dd8b22f0e8b9f8518c0bb8982012a7944e8f0f60b6",
+      "translation_text_hash": "5243996051191f6c2f8a6b4445d301c664d82f2b88c1ef80791f6ff709fb2e82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바슬룻 자손과 므히다 자손과 하르사 자손과"
+      ],
+      "raw_text_hashes": [
+        "5243996051191f6c2f8a6b4445d301c664d82f2b88c1ef80791f6ff709fb2e82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:53",
+      "sequence": 12081,
+      "chapter_label": "EZR 2",
+      "verse_label": "53",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 53
+        }
+      ],
+      "en": "the children of Barkos, the children of Sisera, the children of Temah,",
+      "ko": "바르고스 자손과 시스라 자손과 데마 자손과",
+      "source_text_hash": "97225ea85351eda01ab679903e3aa46e8fae6ee247d3342d794ca375a112856c",
+      "translation_text_hash": "938854ed5389db9f89491ad2b019b0edcdbf11b1d1e2f7e1b4173449b53e6589",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바르고스 자손과 시스라 자손과 데마 자손과"
+      ],
+      "raw_text_hashes": [
+        "938854ed5389db9f89491ad2b019b0edcdbf11b1d1e2f7e1b4173449b53e6589"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:54",
+      "sequence": 12082,
+      "chapter_label": "EZR 2",
+      "verse_label": "54",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 54
+        }
+      ],
+      "en": "the children of Neziah, the children of Hatipha.",
+      "ko": "느시야 자손과 하디바 자손이었더라",
+      "source_text_hash": "33eeefcdfe3fbb0236c3dad53cb567a93e6cb8e6c8ef1af913021bede7d3ba34",
+      "translation_text_hash": "e907d52b88d91f357af5ebcd7388123023c1178d68a90f80564420ec958ea93b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느시야 자손과 하디바 자손이었더라"
+      ],
+      "raw_text_hashes": [
+        "e907d52b88d91f357af5ebcd7388123023c1178d68a90f80564420ec958ea93b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:55",
+      "sequence": 12083,
+      "chapter_label": "EZR 2",
+      "verse_label": "55",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 55
+        }
+      ],
+      "en": "The children of Solomon’s servants: the children of Sotai, the children of Hassophereth, the children of Peruda,",
+      "ko": "솔로몬의 신복의 자손은 소대 자손과 하소베렛 자손과 브루다 자손과",
+      "source_text_hash": "7488a641e99ecef5b8efc440db52c10f4fed6daa3910356de527f446e6c78cba",
+      "translation_text_hash": "512b343f654d5a3cc234cc34d35b0cd9fb8ae81a86a0356bd44eb90aa08d9f77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 신복의 자손은 소대 자손과 하소베렛 자손과 브루다 자손과"
+      ],
+      "raw_text_hashes": [
+        "512b343f654d5a3cc234cc34d35b0cd9fb8ae81a86a0356bd44eb90aa08d9f77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:56",
+      "sequence": 12084,
+      "chapter_label": "EZR 2",
+      "verse_label": "56",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 56
+        }
+      ],
+      "en": "the children of Jaalah, the children of Darkon, the children of Giddel,",
+      "ko": "야알라 자손과 다르곤 자손과 깃델 자손과",
+      "source_text_hash": "35cb21e2035b680d53fa5fbd0459452cfe3c2aa90928ea7becf672472f77f6d9",
+      "translation_text_hash": "eb346026f866375845321e3289953d14f021e5e4741fb8daade342586fcb2dd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야알라 자손과 다르곤 자손과 깃델 자손과"
+      ],
+      "raw_text_hashes": [
+        "eb346026f866375845321e3289953d14f021e5e4741fb8daade342586fcb2dd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:57",
+      "sequence": 12085,
+      "chapter_label": "EZR 2",
+      "verse_label": "57",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 57
+        }
+      ],
+      "en": "the children of Shephatiah, the children of Hattil, the children of Pochereth Hazzebaim, the children of Ami.",
+      "ko": "스바댜 자손과 하딜 자손과 보게렛하스바임 자손과 아미 자손이니",
+      "source_text_hash": "afec4ff5d8cdb09d42f31a2556cf45371eeb0b0d5c560327ac8749bda66a9709",
+      "translation_text_hash": "bb3fdd6889cc4fcdd03b6c9bb1fec0601457afbb8b1304021f3ab498c9539dc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바댜 자손과 하딜 자손과 보게렛하스바임 자손과 아미 자손이니"
+      ],
+      "raw_text_hashes": [
+        "bb3fdd6889cc4fcdd03b6c9bb1fec0601457afbb8b1304021f3ab498c9539dc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:58",
+      "sequence": 12086,
+      "chapter_label": "EZR 2",
+      "verse_label": "58",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 58
+        }
+      ],
+      "en": "All the temple servants, and the children of Solomon’s servants, were three hundred ninety-two.",
+      "ko": "모든 느디님 사람과 솔로몬의 신복의 자손이 삼백 구십 이명이었더라",
+      "source_text_hash": "44c96607032caa74c371bb95ce4bf62904640e6cdd8048bcdd4d2a7c3e86dd26",
+      "translation_text_hash": "94bb294078b533de2549e781c00d498261e6372c6d3e598d8651e3f189ab5cc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 느디님 사람과 솔로몬의 신복의 자손이 삼백 구십 이명이었더라"
+      ],
+      "raw_text_hashes": [
+        "94bb294078b533de2549e781c00d498261e6372c6d3e598d8651e3f189ab5cc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:59",
+      "sequence": 12087,
+      "chapter_label": "EZR 2",
+      "verse_label": "59",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 59
+        }
+      ],
+      "en": "These were those who went up from Tel Melah, Tel Harsha, Cherub, Addan, and Immer; but they could not show their fathers’ houses and their offspring, whether they were of Israel:",
+      "ko": "델멜라와 델하르사와 그룹과 앗단과 임멜에서 올라온 자가 있으나 그 종족과 보계가 이스라엘에 속하였는지는 증거할 수 없으니",
+      "source_text_hash": "5b7ab0f15c3ba90f743dafc4b3ff8ce92576107659f4beaa5081a5232d279161",
+      "translation_text_hash": "00ff4b522ce1fd99561940a36f92609ce6def27330631afb08b20e2490d84d40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "델멜라와 델하르사와 그룹과 앗단과 임멜에서 올라온 자가 있으나 그 종족과 보계가 이스라엘에 속하였는지는 증거할 수 없으니"
+      ],
+      "raw_text_hashes": [
+        "00ff4b522ce1fd99561940a36f92609ce6def27330631afb08b20e2490d84d40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:60",
+      "sequence": 12088,
+      "chapter_label": "EZR 2",
+      "verse_label": "60",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 60
+        }
+      ],
+      "en": "the children of Delaiah, the children of Tobiah, the children of Nekoda, six hundred fifty-two.",
+      "ko": "저희는 들라야 자손과 도비야 자손과 느고다 자손이라 도합이 육백 오십 이명이요",
+      "source_text_hash": "9cafc89a0bf7b92464e507b051c569920d97d62e5f7386c0cec2cd48ed2813cf",
+      "translation_text_hash": "f81137a07f27afe43e9e4494a7e0d76ddabc60db5bf9f583be409a781752b80c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 들라야 자손과 도비야 자손과 느고다 자손이라 도합이 육백 오십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "f81137a07f27afe43e9e4494a7e0d76ddabc60db5bf9f583be409a781752b80c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:61",
+      "sequence": 12089,
+      "chapter_label": "EZR 2",
+      "verse_label": "61",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 61
+        }
+      ],
+      "en": "Of the children of the priests: the children of Habaiah, the children of Hakkoz, and the children of Barzillai, who took a wife of the daughters of Barzillai the Gileadite, and was called after their name.",
+      "ko": "제사장 중에는 하바야 자손과 학고스 자손과 바르실래 자손이니 바르실래는 길르앗 사람 바르실래의 딸 중에 하나로 아내를 삼고 바르실래의 이름으로 이름한 자라",
+      "source_text_hash": "3708b1bfb7c0cc10e2ae0e11d0dbb2af160ffb1d6499c2bab2ecbd877105b87d",
+      "translation_text_hash": "f516cb61805dbaf24c683a2ea0f59c272ac5e418b6e76b724bb96448a003f812",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 중에는 하바야 자손과 학고스 자손과 바르실래 자손이니 바르실래는 길르앗 사람 바르실래의 딸 중에 하나로 아내를 삼고 바르실래의 이름으로 이름한 자라"
+      ],
+      "raw_text_hashes": [
+        "f516cb61805dbaf24c683a2ea0f59c272ac5e418b6e76b724bb96448a003f812"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:62",
+      "sequence": 12090,
+      "chapter_label": "EZR 2",
+      "verse_label": "62",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 62
+        }
+      ],
+      "en": "These sought their place among those who were registered by genealogy, but they were not found; therefore they were deemed disqualified and removed from the priesthood.",
+      "ko": "이 사람들이 보계 중에서 자기 이름을 찾아도 얻지 못한고로 저희를 부정하게 여겨 제사장의 직분을 행치 못하게 하고",
+      "source_text_hash": "671793c92bd467130a10f927e2b8957a9dd3b905762d3668b379e699980e079c",
+      "translation_text_hash": "0c97187609ddb1ba773fde0a82bced520527cffead1052faeae6a40ab61ed7e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들이 보계 중에서 자기 이름을 찾아도 얻지 못한고로 저희를 부정하게 여겨 제사장의 직분을 행치 못하게 하고"
+      ],
+      "raw_text_hashes": [
+        "0c97187609ddb1ba773fde0a82bced520527cffead1052faeae6a40ab61ed7e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:63",
+      "sequence": 12091,
+      "chapter_label": "EZR 2",
+      "verse_label": "63",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 63
+        }
+      ],
+      "en": "The governor told them that they should not eat of the most holy things until a priest stood up to serve with Urim and with Thummim.",
+      "ko": "방백이 저희에게 명하여 우림과 둠밈을 가진 제사장이 일어나기 전에는 지성물을 먹지 말라 하였느니라",
+      "source_text_hash": "434a6e6d734378f4a685dfba13659c19ccd8d479d936b78775f660cc49cd9e38",
+      "translation_text_hash": "e431f64458962a1d2f9048402c3b0fed0dadb9ed91eecfe17887619a09f39b48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백이 저희에게 명하여 우림과 둠밈을 가진 제사장이 일어나기 전에는 지성물을 먹지 말라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e431f64458962a1d2f9048402c3b0fed0dadb9ed91eecfe17887619a09f39b48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:64",
+      "sequence": 12092,
+      "chapter_label": "EZR 2",
+      "verse_label": "64",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 64
+        }
+      ],
+      "en": "The whole assembly together was forty-two thousand three hundred sixty,",
+      "ko": "온 회중의 합계가 사만 이천 삼백 육십명이요",
+      "source_text_hash": "ca078831d3e27cec0429847bf3dd1b8092c1c99cb00f92b1faab838a4080e4b3",
+      "translation_text_hash": "ccb35f438b994fc22deaa00eb5188f00d2e87fb40dd1092f2f3cf4ca983bd0c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 회중의 합계가 사만 이천 삼백 육십명이요"
+      ],
+      "raw_text_hashes": [
+        "ccb35f438b994fc22deaa00eb5188f00d2e87fb40dd1092f2f3cf4ca983bd0c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:65",
+      "sequence": 12093,
+      "chapter_label": "EZR 2",
+      "verse_label": "65",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 65
+        }
+      ],
+      "en": "in addition to their male servants and their female servants, of whom there were seven thousand three hundred thirty-seven; and they had two hundred singing men and singing women.",
+      "ko": "그 외에 노비가 칠천 삼백 삼십 칠명이요 노래하는 남녀가 이백명이요",
+      "source_text_hash": "8cbaa604356086cabc0c0addea1d1de3a19788ec32e4711ebe1bd84862f811ea",
+      "translation_text_hash": "2c9dc006d0d2407cf8508166a30036a795a3a0a4594cd1493704af04bc89b725",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 외에 노비가 칠천 삼백 삼십 칠명이요 노래하는 남녀가 이백명이요"
+      ],
+      "raw_text_hashes": [
+        "2c9dc006d0d2407cf8508166a30036a795a3a0a4594cd1493704af04bc89b725"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:66",
+      "sequence": 12094,
+      "chapter_label": "EZR 2",
+      "verse_label": "66",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 66
+        }
+      ],
+      "en": "Their horses were seven hundred thirty-six; their mules, two hundred forty-five;",
+      "ko": "말이 칠백 삼십 륙이요 노새가 이백 사십 오요",
+      "source_text_hash": "f86bd89f60f84f28e51a54380364c50bc9452e28e97fc25b74888680de8cd4e2",
+      "translation_text_hash": "a2868670ca7412b07172dc33f570f553a81fa979e7a69a3e7f22d71791bf5929",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말이 칠백 삼십 륙이요 노새가 이백 사십 오요"
+      ],
+      "raw_text_hashes": [
+        "a2868670ca7412b07172dc33f570f553a81fa979e7a69a3e7f22d71791bf5929"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:67",
+      "sequence": 12095,
+      "chapter_label": "EZR 2",
+      "verse_label": "67",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 67
+        }
+      ],
+      "en": "their camels, four hundred thirty-five; their donkeys, six thousand seven hundred twenty.",
+      "ko": "약대가 사백 삼십 오요 나귀가 육천 칠백 이십이었더라",
+      "source_text_hash": "a0aaecf1bcb8dead9d3f2026ffdec43e250f30e10d355854e743ea0a64672280",
+      "translation_text_hash": "b77e588e81927304b8994a4c042e55de0f428f2ac8e4b24470d09d29a8111cdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "약대가 사백 삼십 오요 나귀가 육천 칠백 이십이었더라"
+      ],
+      "raw_text_hashes": [
+        "b77e588e81927304b8994a4c042e55de0f428f2ac8e4b24470d09d29a8111cdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:68",
+      "sequence": 12096,
+      "chapter_label": "EZR 2",
+      "verse_label": "68",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 68
+        }
+      ],
+      "en": "Some of the heads of fathers’ households, when they came to the LORD’s house which is in Jerusalem, offered willingly for God’s house to set it up in its place.",
+      "ko": "어떤 족장들이 예루살렘 여호와의 전터에 이르러 하나님의 전을 그곳에 다시 건축하려고 예물을 즐거이 드리되",
+      "source_text_hash": "cf8c3d2de3b7381e38abcbe798d18cd582f03c0025d44607ef5227ea3910042d",
+      "translation_text_hash": "dc611a0a610ff38feea32c42e36dc33b12595bf8fad7bbd6224e72d491243947",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 족장들이 예루살렘 여호와의 전터에 이르러 하나님의 전을 그곳에 다시 건축하려고 예물을 즐거이 드리되"
+      ],
+      "raw_text_hashes": [
+        "dc611a0a610ff38feea32c42e36dc33b12595bf8fad7bbd6224e72d491243947"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:69",
+      "sequence": 12097,
+      "chapter_label": "EZR 2",
+      "verse_label": "69",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 69
+        }
+      ],
+      "en": "They gave according to their ability into the treasury of the work sixty-one thousand darics of gold, five thousand minas of silver, and one hundred priests’ garments.",
+      "ko": "역량대로 역사하는 곳간에 드리니 금이 육만 일천 다릭이요 은이 오천 마네요 제사장의 옷이 일백 벌이었더라",
+      "source_text_hash": "4ac7aa6bd8e4bb80248bc6f6dea61630338b49c95e8f29d9d30b2c860925f52b",
+      "translation_text_hash": "b21ae74cee4fcab0830dead88862e4ea514ee81f804daeeba9444ec9e10dff3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "역량대로 역사하는 곳간에 드리니 금이 육만 일천 다릭이요 은이 오천 마네요 제사장의 옷이 일백 벌이었더라"
+      ],
+      "raw_text_hashes": [
+        "b21ae74cee4fcab0830dead88862e4ea514ee81f804daeeba9444ec9e10dff3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:2:70",
+      "sequence": 12098,
+      "chapter_label": "EZR 2",
+      "verse_label": "70",
+      "locator": {
+        "book": "EZR",
+        "chapter": 2,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 2,
+          "verse": 70
+        }
+      ],
+      "en": "So the priests and the Levites, with some of the people, the singers, the gatekeepers, and the temple servants, lived in their cities, and all Israel in their cities.",
+      "ko": "이에 제사장들과 레위 사람들과 백성 몇과 노래하는 자들과 문지기들과 느디님 사람들이 그 본성들에 거하고 이스라엘 무리도 그 본성들에 거하였느니라",
+      "source_text_hash": "b5312f08a1ad8d0e27f13db1b5a130f0c070fd9ac9d57a668a86c77e33a36a21",
+      "translation_text_hash": "b8e091e75befaf2568ab2ecb8ae7e3a80d00f1ded38e859c93e73599f23027fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 제사장들과 레위 사람들과 백성 몇과 노래하는 자들과 문지기들과 느디님 사람들이 그 본성들에 거하고 이스라엘 무리도 그 본성들에 거하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b8e091e75befaf2568ab2ecb8ae7e3a80d00f1ded38e859c93e73599f23027fa"
+      ]
+    }
+  ]
+}

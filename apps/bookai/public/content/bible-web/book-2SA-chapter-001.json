@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:001",
+  "unit_ordinal": 268,
+  "unit_label": "2SA 1",
+  "book_code": "2SA",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:1:1",
+      "sequence": 8024,
+      "chapter_label": "2SA 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "After the death of Saul, when David had returned from the slaughter of the Amalekites, and David had stayed two days in Ziklag,",
+      "ko": "사울의 죽은 후라 다윗이 아말렉 사람을 도륙하고 돌아와서 시글락에서 이틀을 유하더니",
+      "source_text_hash": "9409213dee1eb746505b281b24c69b9f60dceded1c945f609dfa05515929deb9",
+      "translation_text_hash": "0c590b752af75521c3920c615673c72fd2cfcac72a7255e69ff28343793c2f07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 죽은 후라 다윗이 아말렉 사람을 도륙하고 돌아와서 시글락에서 이틀을 유하더니"
+      ],
+      "raw_text_hashes": [
+        "0c590b752af75521c3920c615673c72fd2cfcac72a7255e69ff28343793c2f07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:2",
+      "sequence": 8025,
+      "chapter_label": "2SA 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "on the third day, behold, a man came out of the camp from Saul, with his clothes torn and earth on his head. When he came to David, he fell to the earth and showed respect.",
+      "ko": "제 삼일에 한 사람이 사울의 진에서 나왔는데 그 옷은 찢어졌고 머리에는 흙이 있더라 저가 다윗에게 나아와 땅에 엎드려 절하매",
+      "source_text_hash": "579e9c6add9142038afcd766e480286536ed5bf8d88136024086a703b9cc2005",
+      "translation_text_hash": "eb2997cee535805bb3d0a2d8df94e0777ab3ff83ba37bd7985316594a498e530",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 삼일에 한 사람이 사울의 진에서 나왔는데 그 옷은 찢어졌고 머리에는 흙이 있더라 저가 다윗에게 나아와 땅에 엎드려 절하매"
+      ],
+      "raw_text_hashes": [
+        "eb2997cee535805bb3d0a2d8df94e0777ab3ff83ba37bd7985316594a498e530"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:3",
+      "sequence": 8026,
+      "chapter_label": "2SA 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "David said to him, “Where do you come from?” He said to him, “I have escaped out of the camp of Israel.”",
+      "ko": "다윗이 저에게 묻되 너는 어디서 왔느냐 대답하되 이스라엘 진에서 도망하여 왔나이다",
+      "source_text_hash": "8001c14ef97e6ef7d4453d7cdd9ccbcb11ffc57b19d7e441b0c50b4304ea633a",
+      "translation_text_hash": "02f2b9dd60cd8819d6669d1f36f7159417125df09f4a9b19a227fc4d4b6580e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 저에게 묻되 너는 어디서 왔느냐 대답하되 이스라엘 진에서 도망하여 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "02f2b9dd60cd8819d6669d1f36f7159417125df09f4a9b19a227fc4d4b6580e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:4",
+      "sequence": 8027,
+      "chapter_label": "2SA 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "David said to him, “How did it go? Please tell me.” He answered, “The people have fled from the battle, and many of the people also have fallen and are dead. Saul and Jonathan his son are dead also.”",
+      "ko": "다윗이 가로되 일이 어떻게 되었느뇨 너는 내게 고하라 저가 대답하되 군사가 전쟁 중에서 도망하기도 하였고 무리 중에 엎드러져 죽은 자도 많았고 사울과 그 아들 요나단도 죽었나이다",
+      "source_text_hash": "adbb26e2c8ad7fe824715b4c9a362999829a96c7dc4e94435792b2f3e98ea546",
+      "translation_text_hash": "37363240ecb386801e0a7ebb8eb65568f57ccb09b527adc5d3b2a23fa6ed2e5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 일이 어떻게 되었느뇨 너는 내게 고하라 저가 대답하되 군사가 전쟁 중에서 도망하기도 하였고 무리 중에 엎드러져 죽은 자도 많았고 사울과 그 아들 요나단도 죽었나이다"
+      ],
+      "raw_text_hashes": [
+        "37363240ecb386801e0a7ebb8eb65568f57ccb09b527adc5d3b2a23fa6ed2e5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:5",
+      "sequence": 8028,
+      "chapter_label": "2SA 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "David said to the young man who told him, “How do you know that Saul and Jonathan his son are dead?”",
+      "ko": "다윗이 자기에게 고하는 소년에게 묻되 사울과 그 아들 요나단의 죽은 줄을 네가 어떻게 아느냐",
+      "source_text_hash": "394d251baf0eb99d28fe3815a58aac2cbe448efacacc501de98644d9144d1a15",
+      "translation_text_hash": "2bec2922ec19d02ebc8a1403ea45c1a8a7da9743b290a6c338a56a40d8d9ed45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 자기에게 고하는 소년에게 묻되 사울과 그 아들 요나단의 죽은 줄을 네가 어떻게 아느냐"
+      ],
+      "raw_text_hashes": [
+        "2bec2922ec19d02ebc8a1403ea45c1a8a7da9743b290a6c338a56a40d8d9ed45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:6",
+      "sequence": 8029,
+      "chapter_label": "2SA 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "The young man who told him said, “As I happened by chance on Mount Gilboa, behold, Saul was leaning on his spear; and behold, the chariots and the horsemen followed close behind him.",
+      "ko": "그에게 고하는 소년이 가로되 내가 우연히 길보아산에 올라보니 사울이 자기 창을 의지하였고 병거와 기병은 저를 촉급히 따르는데",
+      "source_text_hash": "01f176265a8142a72b9ff060fc4db994d14f89c030ca9753fe99314da71bfc7c",
+      "translation_text_hash": "8d19a7e4c5670f695cc718bf3d074c6c5e4ef8fc48c213e3e3b1d0d843df6cbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 고하는 소년이 가로되 내가 우연히 길보아산에 올라보니 사울이 자기 창을 의지하였고 병거와 기병은 저를 촉급히 따르는데"
+      ],
+      "raw_text_hashes": [
+        "8d19a7e4c5670f695cc718bf3d074c6c5e4ef8fc48c213e3e3b1d0d843df6cbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:7",
+      "sequence": 8030,
+      "chapter_label": "2SA 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "When he looked behind him, he saw me and called to me. I answered, ‘Here I am.’",
+      "ko": "사울이 뒤로 돌이켜 나를 보고 부르시기로 내가 대답하되 내가 여기 있나이다 한즉",
+      "source_text_hash": "c9814b6825a46f4e336f71c2626d6f0dbb6b9dfcfbb25cf868e83d56e59ed8a9",
+      "translation_text_hash": "4a0c88aadeacfbd741a703a9f4e415cfebf2899518a35007346158e4346f816c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 뒤로 돌이켜 나를 보고 부르시기로 내가 대답하되 내가 여기 있나이다 한즉"
+      ],
+      "raw_text_hashes": [
+        "4a0c88aadeacfbd741a703a9f4e415cfebf2899518a35007346158e4346f816c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:8",
+      "sequence": 8031,
+      "chapter_label": "2SA 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "He said to me, ‘Who are you?’ I answered him, ‘I am an Amalekite.’",
+      "ko": "내게 이르되 너는 누구냐 하시기로 내가 대답하되 나는 아말렉 사람이니이다 한즉",
+      "source_text_hash": "880055f5806ff36437f6d11e9e49dcbcd088549aa98b5d3b853a31b34b877e13",
+      "translation_text_hash": "b1b18742ac84342d1b2e340167ca2b52e09cbc26f551a90d39ba761ce2618e9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르되 너는 누구냐 하시기로 내가 대답하되 나는 아말렉 사람이니이다 한즉"
+      ],
+      "raw_text_hashes": [
+        "b1b18742ac84342d1b2e340167ca2b52e09cbc26f551a90d39ba761ce2618e9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:9",
+      "sequence": 8032,
+      "chapter_label": "2SA 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "He said to me, ‘Please stand beside me, and kill me, for anguish has taken hold of me because my life lingers in me.’",
+      "ko": "또 내게 이르되 내 목숨이 아직 내게 완전히 있으므로 내가 고통에 들었나니 너는 내 곁에 서서 나를 죽이라 하시기로",
+      "source_text_hash": "0e287184a6fa7ad7df491556f1858bd28bb905a8a47ee1edd2328a6abd26de79",
+      "translation_text_hash": "ef100b563fcad227bba74830325fbf7afedd6551eb3a2987548f692ac2851f25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 이르되 내 목숨이 아직 내게 완전히 있으므로 내가 고통에 들었나니 너는 내 곁에 서서 나를 죽이라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "ef100b563fcad227bba74830325fbf7afedd6551eb3a2987548f692ac2851f25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:10",
+      "sequence": 8033,
+      "chapter_label": "2SA 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "So I stood beside him and killed him, because I was sure that he could not live after he had fallen. I took the crown that was on his head and the bracelet that was on his arm, and have brought them here to my lord.”",
+      "ko": "저가 엎드러진 후에는 살 수 없는 줄을 내가 알고 그 곁에 서서 죽이고 그 머리에 있는 면류관과 팔에 있는 고리를 벗겨서 내 주께로 가져왔나이다",
+      "source_text_hash": "b194a5aec52f933ba90fb33ce5500654131ffa474cd772443019facd814b3abf",
+      "translation_text_hash": "4cdeee63ce69a9c3bbd0ffa6d4dab8f4c3785b4a0e4d2fa54ef575cc1eae06d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 엎드러진 후에는 살 수 없는 줄을 내가 알고 그 곁에 서서 죽이고 그 머리에 있는 면류관과 팔에 있는 고리를 벗겨서 내 주께로 가져왔나이다"
+      ],
+      "raw_text_hashes": [
+        "4cdeee63ce69a9c3bbd0ffa6d4dab8f4c3785b4a0e4d2fa54ef575cc1eae06d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:11",
+      "sequence": 8034,
+      "chapter_label": "2SA 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Then David took hold of his clothes and tore them; and all the men who were with him did likewise.",
+      "ko": "이에 다윗이 자기 옷을 잡아 찢으매 함께 있는 모든 사람도 그리하고",
+      "source_text_hash": "82c8f29650fb6f018a497881dc73f29859cfa1f1b18f71ee455af71aafedeb3b",
+      "translation_text_hash": "ac50f3b3c1b0fcaaa0bbaf95bcc90c4d6c0d6e14246cb2530aee2ab2edafbaeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗이 자기 옷을 잡아 찢으매 함께 있는 모든 사람도 그리하고"
+      ],
+      "raw_text_hashes": [
+        "ac50f3b3c1b0fcaaa0bbaf95bcc90c4d6c0d6e14246cb2530aee2ab2edafbaeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:12",
+      "sequence": 8035,
+      "chapter_label": "2SA 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "They mourned, wept, and fasted until evening for Saul and for Jonathan his son, and for the people of the LORD, and for the house of Israel, because they had fallen by the sword.",
+      "ko": "사울과 그 아들 요나단과 여호와의 백성과 이스라엘 족속이 칼에 죽음을 인하여 저녁때까지 슬퍼하여 울며 금식하니라",
+      "source_text_hash": "262a37ddaa51169693b4b7ee90da0dbf246d097bf95c55da7a82f4e249c5a92d",
+      "translation_text_hash": "cf10f3067647a65b0e43fefcfed736c44047531a43d91da5b6388d6bdd5e2043",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울과 그 아들 요나단과 여호와의 백성과 이스라엘 족속이 칼에 죽음을 인하여 저녁때까지 슬퍼하여 울며 금식하니라"
+      ],
+      "raw_text_hashes": [
+        "cf10f3067647a65b0e43fefcfed736c44047531a43d91da5b6388d6bdd5e2043"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:13",
+      "sequence": 8036,
+      "chapter_label": "2SA 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "David said to the young man who told him, “Where are you from?” He answered, “I am the son of a foreigner, an Amalekite.”",
+      "ko": "다윗이 그 고한 소년에게 묻되 너는 어디 사람이냐 대답하되 나는 아말렉 사람 곧 외국인의 아들이니이다",
+      "source_text_hash": "cd60bb48e19938c4af4f2570ef491f1ee176f2404a8cd5f01c82c30b8782737f",
+      "translation_text_hash": "bb4e13074b001ec8e85757d1328adbc338240d5b7102d67aca973ff58025763e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 고한 소년에게 묻되 너는 어디 사람이냐 대답하되 나는 아말렉 사람 곧 외국인의 아들이니이다"
+      ],
+      "raw_text_hashes": [
+        "bb4e13074b001ec8e85757d1328adbc338240d5b7102d67aca973ff58025763e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:14",
+      "sequence": 8037,
+      "chapter_label": "2SA 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "David said to him, “Why were you not afraid to stretch out your hand to destroy the LORD’s anointed?”",
+      "ko": "다윗이 저에게 이르되 네가 어찌하여 손을 들어 여호와의 기름부음 받은 자 죽이기를 두려워하지 아니하였느냐 하고",
+      "source_text_hash": "27e137b253e1bb7cbe61d727ca429057eeb0aef7a783949456a3689d63efc071",
+      "translation_text_hash": "caad8f698aec6dbdf327d22c3a270d1a5a79152be9320cf952d0765e37a5cba1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 저에게 이르되 네가 어찌하여 손을 들어 여호와의 기름부음 받은 자 죽이기를 두려워하지 아니하였느냐 하고"
+      ],
+      "raw_text_hashes": [
+        "caad8f698aec6dbdf327d22c3a270d1a5a79152be9320cf952d0765e37a5cba1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:15",
+      "sequence": 8038,
+      "chapter_label": "2SA 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "David called one of the young men and said, “Go near, and cut him down!” He struck him so that he died.",
+      "ko": "소년 중 하나를 불러 이르되 가까이 가서 저를 죽이라 하매 그가 치매 곧 죽으니라",
+      "source_text_hash": "b08a8733d4bd4eefa5a5b3485d216b8f1bd7513257a20a67432e8d5a75edeead",
+      "translation_text_hash": "9b8da3d987deef3c810ecc46139108d67529d5ac9c602f54b39e3bae1e360419",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소년 중 하나를 불러 이르되 가까이 가서 저를 죽이라 하매 그가 치매 곧 죽으니라"
+      ],
+      "raw_text_hashes": [
+        "9b8da3d987deef3c810ecc46139108d67529d5ac9c602f54b39e3bae1e360419"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:16",
+      "sequence": 8039,
+      "chapter_label": "2SA 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "David said to him, “Your blood be on your head, for your mouth has testified against you, saying, ‘I have slain the LORD’s anointed.’”",
+      "ko": "다윗이 저에게 이르기를 네 피가 네 머리로 돌아갈찌어다 네 입이 네게 대하여 증거하기를 내가 여호와의 기름 부음 받은 자를 죽였노라 함이니라 하였더라",
+      "source_text_hash": "6ae9d842659472176ecd1a2c62e6b815d7d83739acff391cfac6b6a80a49bf44",
+      "translation_text_hash": "1070e40e7d05c269c8f62e6164d167e96f6acce64a37bd3a0f3aa90668e66c06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 저에게 이르기를 네 피가 네 머리로 돌아갈찌어다 네 입이 네게 대하여 증거하기를 내가 여호와의 기름 부음 받은 자를 죽였노라 함이니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "1070e40e7d05c269c8f62e6164d167e96f6acce64a37bd3a0f3aa90668e66c06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:17",
+      "sequence": 8040,
+      "chapter_label": "2SA 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "David lamented with this lamentation over Saul and over Jonathan his son",
+      "ko": "다윗이 이 슬픈 노래로 사울과 그 아들 요나단을 조상하고",
+      "source_text_hash": "8dd89e906afbc1caddbf188c9b8fbeb2b98bce24a4321feafca39731b77f622f",
+      "translation_text_hash": "d59586cb346f2d9539f293641273bb60b6f5bc5c1dd0e252208b5ffda5eebaa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 이 슬픈 노래로 사울과 그 아들 요나단을 조상하고"
+      ],
+      "raw_text_hashes": [
+        "d59586cb346f2d9539f293641273bb60b6f5bc5c1dd0e252208b5ffda5eebaa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:18",
+      "sequence": 8041,
+      "chapter_label": "2SA 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "(and he commanded them to teach the children of Judah the song of the bow; behold, it is written in the book of Jashar):",
+      "ko": "명하여 그것을 유다 족속에게 가르치라 하였으니 곧 활 노래라 야살의 책에 기록되었으되",
+      "source_text_hash": "02405cc8c6e7b075714a7b00e05142b84bcfd88a1aae156b37cbe41a8789031d",
+      "translation_text_hash": "a8b62375ce1d9fae015bdcfea0444408edfd6b0e12cb4eeb6ae6d7c60f1b05ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명하여 그것을 유다 족속에게 가르치라 하였으니 곧 활 노래라 야살의 책에 기록되었으되"
+      ],
+      "raw_text_hashes": [
+        "a8b62375ce1d9fae015bdcfea0444408edfd6b0e12cb4eeb6ae6d7c60f1b05ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:19",
+      "sequence": 8042,
+      "chapter_label": "2SA 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "“Your glory, Israel, was slain on your high places! How the mighty have fallen!",
+      "ko": "이스라엘아 너의 영광이 산 위에서 죽임을 당하였도다 오호라 두 용사가 엎드러졌도다",
+      "source_text_hash": "c3ee7e4de41e5a2582a623568321ba02360dc778b4321bcac33a8c3ad64098e4",
+      "translation_text_hash": "7290aa2e84849bc3bb7ef2791e04909e37e28ff99c6c70887b4feafedd446405",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 너의 영광이 산 위에서 죽임을 당하였도다 오호라 두 용사가 엎드러졌도다"
+      ],
+      "raw_text_hashes": [
+        "7290aa2e84849bc3bb7ef2791e04909e37e28ff99c6c70887b4feafedd446405"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:20",
+      "sequence": 8043,
+      "chapter_label": "2SA 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "Don’t tell it in Gath. Don’t publish it in the streets of Ashkelon, lest the daughters of the Philistines rejoice, lest the daughters of the uncircumcised triumph.",
+      "ko": "이 일을 가드에도 고하지 말며 아스글론 거리에도 전파하지 말찌어다 블레셋 사람의 딸들이 즐거워할까, 할례 받지 못한 자의 딸들이 개가를 부를까 염려로다",
+      "source_text_hash": "034049ebae29e8a77bf9246fb94912d66bebac0a5fae85f6269077079eaedde1",
+      "translation_text_hash": "6f5859bea15061e2c006266868b1adfae7e1c1df47066923c4904bf8252fd3e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일을 가드에도 고하지 말며 아스글론 거리에도 전파하지 말찌어다 블레셋 사람의 딸들이 즐거워할까, 할례 받지 못한 자의 딸들이 개가를 부를까 염려로다"
+      ],
+      "raw_text_hashes": [
+        "6f5859bea15061e2c006266868b1adfae7e1c1df47066923c4904bf8252fd3e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:21",
+      "sequence": 8044,
+      "chapter_label": "2SA 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "You mountains of Gilboa, let there be no dew or rain on you, and no fields of offerings; for there the shield of the mighty was defiled and cast away, the shield of Saul was not anointed with oil.",
+      "ko": "길보아산들아 너희 위에 우로가 내리지 아니하며 제물 낼 밭도 없을찌어다 거기서 두 용사의 방패가 버린바 됨이라 곧 사울의 방패가 기름 부음을 받지 않음 같이 됨이로다",
+      "source_text_hash": "1b118cd665d8c17e67ad84138ac7e8d4d0a080b4d475d80ad07a2d14e9ee91fe",
+      "translation_text_hash": "fa96ce3774204050e47a87bb9af2acdeee18db6e7f55489b5c7b9d480db28290",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길보아산들아 너희 위에 우로가 내리지 아니하며 제물 낼 밭도 없을찌어다 거기서 두 용사의 방패가 버린바 됨이라 곧 사울의 방패가 기름 부음을 받지 않음 같이 됨이로다"
+      ],
+      "raw_text_hashes": [
+        "fa96ce3774204050e47a87bb9af2acdeee18db6e7f55489b5c7b9d480db28290"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:22",
+      "sequence": 8045,
+      "chapter_label": "2SA 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "From the blood of the slain, from the fat of the mighty, Jonathan’s bow didn’t turn back. Saul’s sword didn’t return empty.",
+      "ko": "죽은 자의 피에서, 용사의 기름에서 요나단의 활이 물러가지 아니하였으며 사울의 칼이 헛되이 돌아오지 아니하였도다",
+      "source_text_hash": "82b5ffbbb0b000a65c74a3fb2a494db569bdb8c16f852dc5d2ce309e94811a6d",
+      "translation_text_hash": "105b40e3f705dd374bff99b3b16b688fa4decc7e10a640dab09c9afd32f5ba1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자의 피에서, 용사의 기름에서 요나단의 활이 물러가지 아니하였으며 사울의 칼이 헛되이 돌아오지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "105b40e3f705dd374bff99b3b16b688fa4decc7e10a640dab09c9afd32f5ba1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:23",
+      "sequence": 8046,
+      "chapter_label": "2SA 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "Saul and Jonathan were lovely and pleasant in their lives. In their death, they were not divided. They were swifter than eagles. They were stronger than lions.",
+      "ko": "사울과 요나단이 생전에 사랑스럽고 아름다운 자러니 죽을 때에도 서로 떠나지 아니하였도다 저희는 독수리보다 빠르고 사자보다 강하였도다",
+      "source_text_hash": "31dbf6c51701d7b59bba15548beb5baa8509b2931cb528f03ad14491739e71b3",
+      "translation_text_hash": "1388ec06ab9e90bd4bac70a05574b6daad268d2c8170ae829fd35b7656361ee6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울과 요나단이 생전에 사랑스럽고 아름다운 자러니 죽을 때에도 서로 떠나지 아니하였도다 저희는 독수리보다 빠르고 사자보다 강하였도다"
+      ],
+      "raw_text_hashes": [
+        "1388ec06ab9e90bd4bac70a05574b6daad268d2c8170ae829fd35b7656361ee6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:24",
+      "sequence": 8047,
+      "chapter_label": "2SA 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "You daughters of Israel, weep over Saul, who clothed you delicately in scarlet, who put ornaments of gold on your clothing.",
+      "ko": "이스라엘 딸들아 사울을 슬퍼하여 울찌어다 저가 붉은 옷으로 너희에게 화려하게 입혔고 금 노리개를 너희 옷에 채웠도다",
+      "source_text_hash": "4f12f6b8636cf91d6e1021b8b18b95a6a13aaa4aac9d8db8e08f96904f9f8a99",
+      "translation_text_hash": "cb3bc0098813464abcaecf090c733bfe12455b17ae7b8725b557a847dd9f525b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 딸들아 사울을 슬퍼하여 울찌어다 저가 붉은 옷으로 너희에게 화려하게 입혔고 금 노리개를 너희 옷에 채웠도다"
+      ],
+      "raw_text_hashes": [
+        "cb3bc0098813464abcaecf090c733bfe12455b17ae7b8725b557a847dd9f525b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:25",
+      "sequence": 8048,
+      "chapter_label": "2SA 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "How the mighty have fallen in the middle of the battle! Jonathan was slain on your high places.",
+      "ko": "오호라 두 용사가 전쟁 중에 엎드러졌도다 요나단이 너의 산 위에서 죽임을 당하였도다",
+      "source_text_hash": "9e5913bd20decf6e9be7614887cb52cbf666ad729593ed8b03ebf61cdf5c868f",
+      "translation_text_hash": "d0b796a3532b9eddac273a13dbc3f2719e43b5be1a85668ee20f6167bc959edf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오호라 두 용사가 전쟁 중에 엎드러졌도다 요나단이 너의 산 위에서 죽임을 당하였도다"
+      ],
+      "raw_text_hashes": [
+        "d0b796a3532b9eddac273a13dbc3f2719e43b5be1a85668ee20f6167bc959edf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:26",
+      "sequence": 8049,
+      "chapter_label": "2SA 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "I am distressed for you, my brother Jonathan. You have been very pleasant to me. Your love to me was wonderful, surpassing the love of women.",
+      "ko": "내 형 요나단이여 내가 그대를 애통함은 그대는 내게 심히 아름다움이라 그대가 나를 사랑함이 기이하여 여인의 사랑보다 승하였도다",
+      "source_text_hash": "f90a5235d9d92d3272ec039af7e6a47fab35069d8db196cde74d55d7138ef09f",
+      "translation_text_hash": "e0eab7d2b36b3dce1b5fc5f63777ff102736caadd72edcf030d963746cc0fe6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형 요나단이여 내가 그대를 애통함은 그대는 내게 심히 아름다움이라 그대가 나를 사랑함이 기이하여 여인의 사랑보다 승하였도다"
+      ],
+      "raw_text_hashes": [
+        "e0eab7d2b36b3dce1b5fc5f63777ff102736caadd72edcf030d963746cc0fe6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:1:27",
+      "sequence": 8050,
+      "chapter_label": "2SA 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "How the mighty have fallen, and the weapons of war have perished!”",
+      "ko": "오호라 두 용사가 엎드러졌으며 싸우는 병기가 망하였도다 하였더라",
+      "source_text_hash": "79237c114c04c8cc5d3b8e5d88bfd6edcd8cdecd68fb49139cfe298673168a29",
+      "translation_text_hash": "1a429706f41a796772bd64e9c5665fd98a7b6af50ce3b9c2751ee9251010a6d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오호라 두 용사가 엎드러졌으며 싸우는 병기가 망하였도다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "1a429706f41a796772bd64e9c5665fd98a7b6af50ce3b9c2751ee9251010a6d0"
+      ]
+    }
+  ]
+}

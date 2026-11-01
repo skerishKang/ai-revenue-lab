@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:009",
+  "unit_ordinal": 754,
+  "unit_label": "JER 9",
+  "book_code": "JER",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:9:1",
+      "sequence": 19177,
+      "chapter_label": "JER 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Oh that my head were waters, and my eyes a spring of tears, that I might weep day and night for the slain of the daughter of my people!",
+      "ko": "어찌하면 내 머리는 물이 되고 내 눈은 눈물 근원이 될꼬 그렇게 되면 살륙 당한 딸 내 백성을 위하여 주야로 곡읍하리로다",
+      "source_text_hash": "000002a9cbe2280e2bc63f83863cdc6cba4900b3026917fa743c419bd6467cca",
+      "translation_text_hash": "fc4f532b02f31928ee75b5d9f707190296ddf98b6810a8a19184d674ba61e8ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하면 내 머리는 물이 되고 내 눈은 눈물 근원이 될꼬 그렇게 되면 살륙 당한 딸 내 백성을 위하여 주야로 곡읍하리로다"
+      ],
+      "raw_text_hashes": [
+        "fc4f532b02f31928ee75b5d9f707190296ddf98b6810a8a19184d674ba61e8ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:2",
+      "sequence": 19178,
+      "chapter_label": "JER 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "Oh that I had in the wilderness a lodging place of wayfaring men, that I might leave my people and go from them! For they are all adulterers, an assembly of treacherous men.",
+      "ko": "어찌하면 내가 광야에서 나그네의 유할 곳을 얻을꼬 그렇게 되면 내 백성을 떠나 가리니 그들은 다 행음하는 자요 패역한 자의 무리가 됨이로다",
+      "source_text_hash": "9b5515264b25d7f1fba597643f2968a652834c219c7a192519260fd220149b40",
+      "translation_text_hash": "de2a2153c5bbbe6ecbd741bbedef921042050f3e5529077e4b1be7905f8cf7ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하면 내가 광야에서 나그네의 유할 곳을 얻을꼬 그렇게 되면 내 백성을 떠나 가리니 그들은 다 행음하는 자요 패역한 자의 무리가 됨이로다"
+      ],
+      "raw_text_hashes": [
+        "de2a2153c5bbbe6ecbd741bbedef921042050f3e5529077e4b1be7905f8cf7ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:3",
+      "sequence": 19179,
+      "chapter_label": "JER 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "“They bend their tongue, as their bow, for falsehood. They have grown strong in the land, but not for truth; for they proceed from evil to evil, and they don’t know me,” says the LORD.",
+      "ko": "여호와께서 말씀하시되 그들이 활을 당김 같이 그 혀를 놀려 거짓을 말하며 그들이 이 땅에서 강성하나 진실하지 아니하고 악에서 악으로 진행하며 또 나를 알지 아니하느니라",
+      "source_text_hash": "ffd3f15fc6c2d5de7feaf331bb62942cad4a604a5a36a080c2d6db01a20a7bc6",
+      "translation_text_hash": "a49e2f9645540ef9c2eb3cdd1a9449bb42e1c9dfdac39eeb2af9f912b1b73dd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 그들이 활을 당김 같이 그 혀를 놀려 거짓을 말하며 그들이 이 땅에서 강성하나 진실하지 아니하고 악에서 악으로 진행하며 또 나를 알지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "a49e2f9645540ef9c2eb3cdd1a9449bb42e1c9dfdac39eeb2af9f912b1b73dd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:4",
+      "sequence": 19180,
+      "chapter_label": "JER 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "“Everyone beware of his neighbor, and don’t trust in any brother; for every brother will utterly supplant, and every neighbor will go around like a slanderer.",
+      "ko": "너희는 각기 이웃을 삼가며 아무 형제든지 믿지 말라 형제마다 온전히 속이며 이웃마다 다니며 비방함이니라",
+      "source_text_hash": "754238cc193b2ca7ad7f8ad40b2c431440f4681c495f5881d955b86c8d824cc7",
+      "translation_text_hash": "2b2f8b61e19f9955519c7f79d6cc9331896907692e440481cd098ea37881c597",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 각기 이웃을 삼가며 아무 형제든지 믿지 말라 형제마다 온전히 속이며 이웃마다 다니며 비방함이니라"
+      ],
+      "raw_text_hashes": [
+        "2b2f8b61e19f9955519c7f79d6cc9331896907692e440481cd098ea37881c597"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:5",
+      "sequence": 19181,
+      "chapter_label": "JER 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "Friends deceive each other, and will not speak the truth. They have taught their tongue to speak lies. They weary themselves committing iniquity.",
+      "ko": "그들은 각기 이웃을 속이며 진실을 말하지 아니하며 그 혀로 거짓말 하기를 가르치며 악을 행하기에 수고하거늘",
+      "source_text_hash": "baae3772758db9f15597e91d09fb9edef2f2fd4c7f231715b9d9c63fdc8e6193",
+      "translation_text_hash": "b1eab8f835fdcab400bfde4bf99a955388b75e5f7b7aaf218b8c6e69511a9d63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 각기 이웃을 속이며 진실을 말하지 아니하며 그 혀로 거짓말 하기를 가르치며 악을 행하기에 수고하거늘"
+      ],
+      "raw_text_hashes": [
+        "b1eab8f835fdcab400bfde4bf99a955388b75e5f7b7aaf218b8c6e69511a9d63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:6",
+      "sequence": 19182,
+      "chapter_label": "JER 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Your habitation is in the middle of deceit. Through deceit, they refuse to know me,” says the LORD.",
+      "ko": "네 처소는 궤휼 가운데 있도다 그들은 궤휼로 인하여 나 알기를 싫어하느니라 나 여호와의 말이니라 하시니라",
+      "source_text_hash": "cbfd951f405ce28c4b12bcb1b50149db7d1fb9640f64ea84c5b7deaffb821951",
+      "translation_text_hash": "f8b2ccd884dc03d709790fc596e6f17675498f10388cbb5488a1b8f19c9f0364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 처소는 궤휼 가운데 있도다 그들은 궤휼로 인하여 나 알기를 싫어하느니라 나 여호와의 말이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "f8b2ccd884dc03d709790fc596e6f17675498f10388cbb5488a1b8f19c9f0364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:7",
+      "sequence": 19183,
+      "chapter_label": "JER 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore the LORD of Armies says, “Behold, I will melt them and test them; for how should I deal with the daughter of my people?",
+      "ko": "만군의 여호와께서 이같이 말씀하시되 보라 내가 내 딸 백성을 어떻게 처치할꼬 그들을 녹이고 연단하리라",
+      "source_text_hash": "de45a546f9a3c51e641d2cca3db0091c8a166c94c46ea165e592703a87601bdc",
+      "translation_text_hash": "8f04004598fc499d8b215f4f99d2b4d981fb93ce88636d0aa7fd7b8d45f0ca52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 이같이 말씀하시되 보라 내가 내 딸 백성을 어떻게 처치할꼬 그들을 녹이고 연단하리라"
+      ],
+      "raw_text_hashes": [
+        "8f04004598fc499d8b215f4f99d2b4d981fb93ce88636d0aa7fd7b8d45f0ca52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:8",
+      "sequence": 19184,
+      "chapter_label": "JER 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Their tongue is a deadly arrow. It speaks deceit. One speaks peaceably to his neighbor with his mouth, but in his heart, he waits to ambush him.",
+      "ko": "그들의 혀는 죽이는 살이라 거짓을 말하며 입으로는 그 이웃에게 평화를 말하나 중심에는 해를 도모하는도다",
+      "source_text_hash": "3de07521ee98c953eae7f80893cabd6661644439bb61c0e80d8c10cfc181f4e1",
+      "translation_text_hash": "b62edc79d1a03d2a5155c360dad9a4ce7326f034729295a06d2c260101ce4010",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 혀는 죽이는 살이라 거짓을 말하며 입으로는 그 이웃에게 평화를 말하나 중심에는 해를 도모하는도다"
+      ],
+      "raw_text_hashes": [
+        "b62edc79d1a03d2a5155c360dad9a4ce7326f034729295a06d2c260101ce4010"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:9",
+      "sequence": 19185,
+      "chapter_label": "JER 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "Shouldn’t I punish them for these things?” says the LORD. “Shouldn’t my soul be avenged on a nation such as this?",
+      "ko": "내가 이 일들을 인하여 그들에게 벌하지 아니하겠으며 내 마음이 이런 나라에 보수하지 않겠느냐 여호와의 말이니라",
+      "source_text_hash": "87b6e36f066b49a7b14a113f5c844860238a3ed2fbf463bc37e8bb7c8a0521d0",
+      "translation_text_hash": "c55bf59173a498142578628e9820829033976032298c3d5838f253a3f3ca8085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 일들을 인하여 그들에게 벌하지 아니하겠으며 내 마음이 이런 나라에 보수하지 않겠느냐 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "c55bf59173a498142578628e9820829033976032298c3d5838f253a3f3ca8085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:10",
+      "sequence": 19186,
+      "chapter_label": "JER 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "I will weep and wail for the mountains, and lament for the pastures of the wilderness, because they are burned up, so that no one passes through; Men can’t hear the voice of the livestock. Both the birds of the sky and the animals have fled. They are gone.",
+      "ko": "내가 산들을 위하여 곡하며 부르짖으며 광야 목장을 위하여 슬퍼하나니 이는 그것들이 불에 탔으므로 지나는 자가 없으며 거기서 가축의 소리가 들리지 아니하며 공중의 새도 짐승도 다 도망하여 없어졌음이니라",
+      "source_text_hash": "fd095bc051ffe8e1f4bd41a34b1d274ae7da70970d7a064aaae0a93488ae6320",
+      "translation_text_hash": "6165e81c659614c0bf8d611cccf392b104231077e255e27b1facaa32e466f862",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 산들을 위하여 곡하며 부르짖으며 광야 목장을 위하여 슬퍼하나니 이는 그것들이 불에 탔으므로 지나는 자가 없으며 거기서 가축의 소리가 들리지 아니하며 공중의 새도 짐승도 다 도망하여 없어졌음이니라"
+      ],
+      "raw_text_hashes": [
+        "6165e81c659614c0bf8d611cccf392b104231077e255e27b1facaa32e466f862"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:11",
+      "sequence": 19187,
+      "chapter_label": "JER 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "“I will make Jerusalem heaps, a dwelling place of jackals. I will make the cities of Judah a desolation, without inhabitant.”",
+      "ko": "내가 예루살렘으로 무더기를 만들며 시랑의 굴혈이 되게 하겠고 유다 성읍들로 황폐케 하여 거민이 없게 하리라",
+      "source_text_hash": "fad6203cd9c358599fa3ae014fcb55ab48a9c954e5dbdde2cf698705b90d801c",
+      "translation_text_hash": "914bffaf121b17953461eb6c2d2bafec86754772f6e1d16d0d769e10c947952f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 예루살렘으로 무더기를 만들며 시랑의 굴혈이 되게 하겠고 유다 성읍들로 황폐케 하여 거민이 없게 하리라"
+      ],
+      "raw_text_hashes": [
+        "914bffaf121b17953461eb6c2d2bafec86754772f6e1d16d0d769e10c947952f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:12",
+      "sequence": 19188,
+      "chapter_label": "JER 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "Who is wise enough to understand this? Who is he to whom the mouth of the LORD has spoken, that he may declare it? Why has the land perished and burned up like a wilderness, so that no one passes through?",
+      "ko": "지혜가 있어서 이 일을 깨달을만한 자가 누구며 여호와의 입의 말씀을 받아서 광포할 자가 누구인고 이 땅이 어찌하여 멸망하여 광야 같이 타서 지나는 자가 없게 되었느뇨",
+      "source_text_hash": "324375ad00916241559bafaddb47682f07ac6837ce4f527795090789039519f8",
+      "translation_text_hash": "efcd968ca679dd4f84957e96cf3565de3935354330a71f64b554db7a252ce3a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜가 있어서 이 일을 깨달을만한 자가 누구며 여호와의 입의 말씀을 받아서 광포할 자가 누구인고 이 땅이 어찌하여 멸망하여 광야 같이 타서 지나는 자가 없게 되었느뇨"
+      ],
+      "raw_text_hashes": [
+        "efcd968ca679dd4f84957e96cf3565de3935354330a71f64b554db7a252ce3a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:13",
+      "sequence": 19189,
+      "chapter_label": "JER 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD says, “Because they have forsaken my law which I set before them, and have not obeyed my voice or walked in my ways,",
+      "ko": "여호와께서 말씀하시되 이는 그들이 내가 그들의 앞에 세운 나의 법을 버리고 내 목소리를 청종치 아니하며 그대로 행치 아니하고",
+      "source_text_hash": "3645856672adb54c2a46a5693ccd7615f35b693584432fd2accdcf479178cdf8",
+      "translation_text_hash": "71ba73d0dd8156ecc5609d02a271bd0011b008823972a5d236d776fb3d648b38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 이는 그들이 내가 그들의 앞에 세운 나의 법을 버리고 내 목소리를 청종치 아니하며 그대로 행치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "71ba73d0dd8156ecc5609d02a271bd0011b008823972a5d236d776fb3d648b38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:14",
+      "sequence": 19190,
+      "chapter_label": "JER 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "but have walked after the stubbornness of their own heart and after the Baals, which their fathers taught them.”",
+      "ko": "그 마음의 강퍅함을 따라 그 열조가 자기에게 가르친 바알들을 좇았음이라",
+      "source_text_hash": "0aafd7a14ce4aa0276453feb463cdb93fa7d2ccfea4a0144a31040c0d04ca133",
+      "translation_text_hash": "ba7237196a847a550bb73c8f9e59a087d04dea465edcd417730becfd7160548b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음의 강퍅함을 따라 그 열조가 자기에게 가르친 바알들을 좇았음이라"
+      ],
+      "raw_text_hashes": [
+        "ba7237196a847a550bb73c8f9e59a087d04dea465edcd417730becfd7160548b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:15",
+      "sequence": 19191,
+      "chapter_label": "JER 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "Therefore the LORD of Armies, the God of Israel, says, “Behold, I will feed them, even this people, with wormwood and give them poisoned water to drink.",
+      "ko": "그러므로 만군의 여호와 이스라엘의 하나님 내가 말하노라 보라 내가 그들 곧 이 백성에게 쑥을 먹이며 독한 물을 마시우고",
+      "source_text_hash": "810dcde0f1e88aff30c101a15b532ab3da2445b435523d618db1a1bf7e7117df",
+      "translation_text_hash": "9179a27bdb3236dd997ca1691b990a1a0d3e5ae9f4bda545f2df3d720c8104d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 만군의 여호와 이스라엘의 하나님 내가 말하노라 보라 내가 그들 곧 이 백성에게 쑥을 먹이며 독한 물을 마시우고"
+      ],
+      "raw_text_hashes": [
+        "9179a27bdb3236dd997ca1691b990a1a0d3e5ae9f4bda545f2df3d720c8104d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:16",
+      "sequence": 19192,
+      "chapter_label": "JER 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "I will scatter them also among the nations, whom neither they nor their fathers have known. I will send the sword after them, until I have consumed them.”",
+      "ko": "그들과 그들의 조상이 알지 못하던 열국 중에 그들을 헤치고 진멸되기까지 그 뒤로 칼을 보내리라 하셨느니라",
+      "source_text_hash": "0fe8b3fbb59176bbc15b3b1cc80353b9ebabb0d02d868ee46665e2648f3ff866",
+      "translation_text_hash": "432f0a6f39c050b8adf632737ec4d0ef6087655ea7288df694f0e3a19f4eadc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들과 그들의 조상이 알지 못하던 열국 중에 그들을 헤치고 진멸되기까지 그 뒤로 칼을 보내리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "432f0a6f39c050b8adf632737ec4d0ef6087655ea7288df694f0e3a19f4eadc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:17",
+      "sequence": 19193,
+      "chapter_label": "JER 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD of Armies says, “Consider, and call for the mourning women, that they may come. Send for the skillful women, that they may come.",
+      "ko": "만군의 여호와께서 이같이 말씀하시되 너희는 잘 생각하고 곡하는 부녀를 불러오며 또 보내어 지혜로운 부녀를 불러오되",
+      "source_text_hash": "7d5f303119340824757fd2e1ade1e51d2a999b7101e5f19a4428e6fbb9c2f39f",
+      "translation_text_hash": "34c52306a026fe843661dc69f3140fc8dfa732967d27f0e673550ff329b54ee5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 이같이 말씀하시되 너희는 잘 생각하고 곡하는 부녀를 불러오며 또 보내어 지혜로운 부녀를 불러오되"
+      ],
+      "raw_text_hashes": [
+        "34c52306a026fe843661dc69f3140fc8dfa732967d27f0e673550ff329b54ee5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:18",
+      "sequence": 19194,
+      "chapter_label": "JER 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "Let them make haste and take up a wailing for us, that our eyes may run down with tears and our eyelids gush out with waters.",
+      "ko": "그들로 빨리 와서 우리를 위하여 애곡하게 하여 우리의 눈에서 눈물이 떨어지게 하며 우리 눈꺼풀에서 물이 쏟아지게 하라",
+      "source_text_hash": "d648b5ae7e54b0675e152bb47e782041d591941ed2c43d30827040d70c598cea",
+      "translation_text_hash": "96d57bd16338360102d47beade8fff8b788aed5c2f916b32bb59a8c9da2f1779",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들로 빨리 와서 우리를 위하여 애곡하게 하여 우리의 눈에서 눈물이 떨어지게 하며 우리 눈꺼풀에서 물이 쏟아지게 하라"
+      ],
+      "raw_text_hashes": [
+        "96d57bd16338360102d47beade8fff8b788aed5c2f916b32bb59a8c9da2f1779"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:19",
+      "sequence": 19195,
+      "chapter_label": "JER 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "For a voice of wailing is heard out of Zion, ‘How we are ruined! We are greatly confounded because we have forsaken the land, because they have cast down our dwellings.’”",
+      "ko": "이는 시온에서 호곡하는 소리가 들려 이르기를 우리가 아주 망하였구나 우리가 크게 수욕을 당하였구나 우리가 그 땅을 떠난 것은 그들이 우리 주택을 헐었음이로다 함이로다",
+      "source_text_hash": "b34554cce468f446fa010bcf17355ce6bc2df9a678b295fe0f3022ba4c873ed2",
+      "translation_text_hash": "a9681b47ab1d24e04848ada05e470b7fc6f0606ae7e26fd6279e2b3556e60915",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 시온에서 호곡하는 소리가 들려 이르기를 우리가 아주 망하였구나 우리가 크게 수욕을 당하였구나 우리가 그 땅을 떠난 것은 그들이 우리 주택을 헐었음이로다 함이로다"
+      ],
+      "raw_text_hashes": [
+        "a9681b47ab1d24e04848ada05e470b7fc6f0606ae7e26fd6279e2b3556e60915"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:20",
+      "sequence": 19196,
+      "chapter_label": "JER 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "Yet hear the LORD’s word, you women. Let your ear receive the word of his mouth. Teach your daughters wailing. Everyone teach her neighbor a lamentation.",
+      "ko": "부녀들이여 여호와의 말씀을 들으라 너희 귀에 그 입의 말씀을 받으라 너희 딸들에게 애곡을 가르치며 각기 이웃에게 애가를 가르치라",
+      "source_text_hash": "6c3e71f96d320d21f9c611e6a66b094928fa44de7e2e2b4b73f4a8e0e07ed876",
+      "translation_text_hash": "8e686ca318026b964e5c2bd21966919ce4e3bbf9aa82021e54a847c759860b12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부녀들이여 여호와의 말씀을 들으라 너희 귀에 그 입의 말씀을 받으라 너희 딸들에게 애곡을 가르치며 각기 이웃에게 애가를 가르치라"
+      ],
+      "raw_text_hashes": [
+        "8e686ca318026b964e5c2bd21966919ce4e3bbf9aa82021e54a847c759860b12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:21",
+      "sequence": 19197,
+      "chapter_label": "JER 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "For death has come up into our windows. It has entered into our palaces to cut off the children from outside, and the young men from the streets.",
+      "ko": "대저 사망이 우리 창문에 올라오며 우리 궁실에 들어오며 밖에서는 자녀와 거리에서는 청년들을 멸절하려 하느니라",
+      "source_text_hash": "7f1458fc9c2016644e60c4444b7e80524cf8e9f4a47dc6c9cd69ce3c20c562a7",
+      "translation_text_hash": "2a2941f46afca8ef3787a89d61df5b2c6d42bc487aaa6209fa47deee8c1b7183",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 사망이 우리 창문에 올라오며 우리 궁실에 들어오며 밖에서는 자녀와 거리에서는 청년들을 멸절하려 하느니라"
+      ],
+      "raw_text_hashes": [
+        "2a2941f46afca8ef3787a89d61df5b2c6d42bc487aaa6209fa47deee8c1b7183"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:22",
+      "sequence": 19198,
+      "chapter_label": "JER 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "Speak, “The LORD says, “‘The dead bodies of men will fall as dung on the open field, and as the handful after the harvester. No one will gather them.’”",
+      "ko": "너는 이같이 이르라 여호와의 말씀에 사람의 시체가 분토 같이 들에 떨어질 것이며 추수하는 자의 뒤에 떨어지고 거두지 못한 뭇 같이 되리라 하셨느니라",
+      "source_text_hash": "9597f36effc172b9333ffa8254a0818a35d4303cf8ab9216ebddb6faae00bdf4",
+      "translation_text_hash": "c8623573a337ca101b764b9d9fda3772d6e3251d47b566cbacc50b8aa3c43360",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이같이 이르라 여호와의 말씀에 사람의 시체가 분토 같이 들에 떨어질 것이며 추수하는 자의 뒤에 떨어지고 거두지 못한 뭇 같이 되리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "c8623573a337ca101b764b9d9fda3772d6e3251d47b566cbacc50b8aa3c43360"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:23",
+      "sequence": 19199,
+      "chapter_label": "JER 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD says, “Don’t let the wise man glory in his wisdom. Don’t let the mighty man glory in his might. Don’t let the rich man glory in his riches.",
+      "ko": "여호와께서 이같이 말씀하시되 지혜로운 자는 그 지혜를 자랑치 말라 용사는 그 용맹을 자랑치 말라 부자는 그 부함을 자랑치 말라",
+      "source_text_hash": "52473de984539a0dd54143ea8334490302c7fcdd945298f469be888a9cf4977f",
+      "translation_text_hash": "56e9621b7cd4a5616280945bd94207477e4c2609065d467e74b7fb3b3786b580",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 지혜로운 자는 그 지혜를 자랑치 말라 용사는 그 용맹을 자랑치 말라 부자는 그 부함을 자랑치 말라"
+      ],
+      "raw_text_hashes": [
+        "56e9621b7cd4a5616280945bd94207477e4c2609065d467e74b7fb3b3786b580"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:24",
+      "sequence": 19200,
+      "chapter_label": "JER 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "But let him who glories glory in this, that he has understanding, and knows me, that I am the LORD who exercises loving kindness, justice, and righteousness on the earth, for I delight in these things,” says the LORD.",
+      "ko": "자랑하는 자는 이것으로 자랑할찌니 곧 명철하여 나를 아는 것과 나 여호와는 인애와 공평과 정직을 땅에 행하는 자인줄 깨닫는 것이라 나는 이 일을 기뻐하노라 여호와의 말이니라",
+      "source_text_hash": "34200ecb936aa3efc30d7e901729a7e0531c5933052196d89c1df269668e4817",
+      "translation_text_hash": "239a85037437fc25f6b2dfb655cf05024e420faeffaf5f2784128c82aee9514b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자랑하는 자는 이것으로 자랑할찌니 곧 명철하여 나를 아는 것과 나 여호와는 인애와 공평과 정직을 땅에 행하는 자인줄 깨닫는 것이라 나는 이 일을 기뻐하노라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "239a85037437fc25f6b2dfb655cf05024e420faeffaf5f2784128c82aee9514b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:25",
+      "sequence": 19201,
+      "chapter_label": "JER 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "“Behold, the days come,” says the LORD, “that I will punish all those who are circumcised only in their flesh:",
+      "ko": "여호와께서 말씀하시되 날이 이르면 할례 받은 자와 할례 받지 못한 자를 내가 다 벌하리니",
+      "source_text_hash": "ffe769e3f42269691855d40c4e72ca59f1d623e1faec54b9e94993a481d897b8",
+      "translation_text_hash": "c85ae3c2c4e29349d42942137ce062e2844af881647608f36d8cb1fec2a9e204",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 날이 이르면 할례 받은 자와 할례 받지 못한 자를 내가 다 벌하리니"
+      ],
+      "raw_text_hashes": [
+        "c85ae3c2c4e29349d42942137ce062e2844af881647608f36d8cb1fec2a9e204"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:9:26",
+      "sequence": 19202,
+      "chapter_label": "JER 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "Egypt, Judah, Edom, the children of Ammon, Moab, and all who have the corners of their hair cut off, who dwell in the wilderness, for all the nations are uncircumcised, and all the house of Israel are uncircumcised in heart.”",
+      "ko": "곧 애굽과 유다와 에돔과 암몬 자손과 모압과 및 광야에 거하여 그 머리털을 모지게 깎은 자들에게라 대저 열방은 할례를 받지 못하였고 이스라엘은 마음에 할례를 받지 못하였느니라 하셨느니라",
+      "source_text_hash": "050a131302e3630aa7dea0a15bad92c96840ca67658f4efedf12edc34478b8fd",
+      "translation_text_hash": "a53aff12ce5a1eb2cfc1d9daf7ec2df82b4e9c845b5a51a79356f5f0771b3954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 애굽과 유다와 에돔과 암몬 자손과 모압과 및 광야에 거하여 그 머리털을 모지게 깎은 자들에게라 대저 열방은 할례를 받지 못하였고 이스라엘은 마음에 할례를 받지 못하였느니라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "a53aff12ce5a1eb2cfc1d9daf7ec2df82b4e9c845b5a51a79356f5f0771b3954"
+      ]
+    }
+  ]
+}

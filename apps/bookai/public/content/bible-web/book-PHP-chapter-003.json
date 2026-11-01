@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PHP:chapter:003",
+  "unit_ordinal": 1106,
+  "unit_label": "PHP 3",
+  "book_code": "PHP",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PHP:3:1",
+      "sequence": 29419,
+      "chapter_label": "PHP 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Finally, my brothers, rejoice in the Lord! To write the same things to you, to me indeed is not tiresome, but for you it is safe.",
+      "ko": "종말로 나의 형제들아 주 안에서 기뻐하라 너희에게 같은 말을 쓰는 것이 내게는 수고로움이 없고 너희에게는 안전하니라",
+      "source_text_hash": "83ed73994ac7a0412fba7863c4edceae9baeed372a074c74669f719e8e768528",
+      "translation_text_hash": "a3a594e37acf1b778450bf5157ce836b6a14e7f4def38483e51570a84eef5a0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종말로 나의 형제들아 주 안에서 기뻐하라 너희에게 같은 말을 쓰는 것이 내게는 수고로움이 없고 너희에게는 안전하니라"
+      ],
+      "raw_text_hashes": [
+        "a3a594e37acf1b778450bf5157ce836b6a14e7f4def38483e51570a84eef5a0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:2",
+      "sequence": 29420,
+      "chapter_label": "PHP 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Beware of the dogs; beware of the evil workers; beware of the false circumcision.",
+      "ko": "개들을 삼가고 행악하는 자들을 삼가고 손할례당을 삼가라",
+      "source_text_hash": "55035148bc94094e7deaa64cb8a176152165eaf3afec441dd98fee49f14eac08",
+      "translation_text_hash": "a13d104526239fd9e059589f08c031670309f8b6f73ec6fa3330c358e64bfb4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "개들을 삼가고 행악하는 자들을 삼가고 손할례당을 삼가라"
+      ],
+      "raw_text_hashes": [
+        "a13d104526239fd9e059589f08c031670309f8b6f73ec6fa3330c358e64bfb4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:3",
+      "sequence": 29421,
+      "chapter_label": "PHP 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "For we are the circumcision, who worship God in the Spirit, and rejoice in Christ Jesus, and have no confidence in the flesh;",
+      "ko": "하나님의 성령으로 봉사하며 그리스도 예수로 자랑하고 육체를 신뢰하지 아니하는 우리가 곧 할례당이라",
+      "source_text_hash": "e5ac6e657c313f4329b515f8733b2f53adb96b6bd63ca8887e8b1601526e3c9e",
+      "translation_text_hash": "d3e7f00c5c7a6ecf5e01721851269cf2229c2e6a6dc68d2b8a2e898f7fe86b7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 성령으로 봉사하며 그리스도 예수로 자랑하고 육체를 신뢰하지 아니하는 우리가 곧 할례당이라"
+      ],
+      "raw_text_hashes": [
+        "d3e7f00c5c7a6ecf5e01721851269cf2229c2e6a6dc68d2b8a2e898f7fe86b7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:4",
+      "sequence": 29422,
+      "chapter_label": "PHP 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "though I myself might have confidence even in the flesh. If any other man thinks that he has confidence in the flesh, I yet more:",
+      "ko": "그러나 나도 육체를 신뢰할만하니 만일 누구든지 다른이가 육체를 신뢰할 것이 있는 줄로 생각하면 나는 더욱 그러하리니",
+      "source_text_hash": "08c1ef7081aeae483cb36d8a3d389219aa4fde304a99c1e8bba5591867a6d47b",
+      "translation_text_hash": "5491b56aea2778bc25ca10b882ec0ad8a8cf192c7fb5d593c28d28542f67c08f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나도 육체를 신뢰할만하니 만일 누구든지 다른이가 육체를 신뢰할 것이 있는 줄로 생각하면 나는 더욱 그러하리니"
+      ],
+      "raw_text_hashes": [
+        "5491b56aea2778bc25ca10b882ec0ad8a8cf192c7fb5d593c28d28542f67c08f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:5",
+      "sequence": 29423,
+      "chapter_label": "PHP 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "circumcised the eighth day, of the stock of Israel, of the tribe of Benjamin, a Hebrew of Hebrews; concerning the law, a Pharisee;",
+      "ko": "내가 팔일만에 할례를 받고 이스라엘의 족속이요 베냐민의 지파요 히브리인 중의 히브리인이요 율법으로는 바리새인이요",
+      "source_text_hash": "4e795649bcdfd465e0d7766dd6d8a589412cb2852c871a4a3c0ff6a4cf628a73",
+      "translation_text_hash": "e94ef1ca76d3c2f8be8b26d3c2da2f3feec130861cf1364aaff90e1c88a55871",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 팔일만에 할례를 받고 이스라엘의 족속이요 베냐민의 지파요 히브리인 중의 히브리인이요 율법으로는 바리새인이요"
+      ],
+      "raw_text_hashes": [
+        "e94ef1ca76d3c2f8be8b26d3c2da2f3feec130861cf1364aaff90e1c88a55871"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:6",
+      "sequence": 29424,
+      "chapter_label": "PHP 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "concerning zeal, persecuting the assembly; concerning the righteousness which is in the law, found blameless.",
+      "ko": "열심으로는 교회를 핍박하고 율법의 의로는 흠이 없는 자로라",
+      "source_text_hash": "ae936970cfc69b16899713d003238beb733365ebc090cf27d65a0df5834a3f75",
+      "translation_text_hash": "9758b8ef8256da28b2829e2a78a4e9b863fcc0ceb797155a646d1963164bf180",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열심으로는 교회를 핍박하고 율법의 의로는 흠이 없는 자로라"
+      ],
+      "raw_text_hashes": [
+        "9758b8ef8256da28b2829e2a78a4e9b863fcc0ceb797155a646d1963164bf180"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:7",
+      "sequence": 29425,
+      "chapter_label": "PHP 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "However, I consider those things that were gain to me as a loss for Christ.",
+      "ko": "그러나 무엇이든지 내게 유익하던 것을 내가 그리스도를 위하여 다 해로 여길뿐더러",
+      "source_text_hash": "a9a7b02d7291a148c824aeaf823cfb17f1472c04e40cee5c579e3fdf1bcc7dbb",
+      "translation_text_hash": "a372143f0910f41cb80bbb18a2da31a80711e60ec1ad893ac6fe0165314c337f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 무엇이든지 내게 유익하던 것을 내가 그리스도를 위하여 다 해로 여길뿐더러"
+      ],
+      "raw_text_hashes": [
+        "a372143f0910f41cb80bbb18a2da31a80711e60ec1ad893ac6fe0165314c337f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:8",
+      "sequence": 29426,
+      "chapter_label": "PHP 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Yes most certainly, and I count all things to be a loss for the excellency of the knowledge of Christ Jesus, my Lord, for whom I suffered the loss of all things, and count them nothing but refuse, that I may gain Christ",
+      "ko": "또한 모든 것을 해로 여김은 내 주 그리스도 예수를 아는 지식이 가장 고상함을 인함이라 내가 그를 위하여 모든 것을 잃어버리고 배설물로 여김은 그리스도를 얻고",
+      "source_text_hash": "fb1323e3ca1c9cab6dcc7934702277eea071df263ea95c07a35c481b3623894d",
+      "translation_text_hash": "aa43cd23b49461037096194bcd817b4c48dab23c5964a45e5319fb0d1cc71bfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 모든 것을 해로 여김은 내 주 그리스도 예수를 아는 지식이 가장 고상함을 인함이라 내가 그를 위하여 모든 것을 잃어버리고 배설물로 여김은 그리스도를 얻고"
+      ],
+      "raw_text_hashes": [
+        "aa43cd23b49461037096194bcd817b4c48dab23c5964a45e5319fb0d1cc71bfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:9",
+      "sequence": 29427,
+      "chapter_label": "PHP 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "and be found in him, not having a righteousness of my own, that which is of the law, but that which is through faith in Christ, the righteousness which is from God by faith,",
+      "ko": "그 안에서 발견되려 함이니 내가 가진 의는 율법에서 난 것이 아니요 오직 그리스도를 믿음으로 말미암은 것이니 곧 믿음으로 하나님께로서 난 의라",
+      "source_text_hash": "2c85d7573be5d0d12888a64547099126fb20202ed824904e7ce2944e0c3cf7bd",
+      "translation_text_hash": "bc0069f978e22f198689ba347cf07fe9201ff6efb9c23305cadc35f5bb6c3380",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 안에서 발견되려 함이니 내가 가진 의는 율법에서 난 것이 아니요 오직 그리스도를 믿음으로 말미암은 것이니 곧 믿음으로 하나님께로서 난 의라"
+      ],
+      "raw_text_hashes": [
+        "bc0069f978e22f198689ba347cf07fe9201ff6efb9c23305cadc35f5bb6c3380"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:10",
+      "sequence": 29428,
+      "chapter_label": "PHP 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "that I may know him and the power of his resurrection, and the fellowship of his sufferings, becoming conformed to his death,",
+      "ko": "내가 그리스도와 그 부활의 권능과 그 고난에 참예함을 알려하여 그의 죽으심을 본받아",
+      "source_text_hash": "6a820906e8ae2fde5cd056eb76e69e3913ec77effafcec4863723895ad35150d",
+      "translation_text_hash": "485d3816b55dad1d2eafd1af2fedbab8a9ed33324506ce4db370652462189a0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그리스도와 그 부활의 권능과 그 고난에 참예함을 알려하여 그의 죽으심을 본받아"
+      ],
+      "raw_text_hashes": [
+        "485d3816b55dad1d2eafd1af2fedbab8a9ed33324506ce4db370652462189a0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:11",
+      "sequence": 29429,
+      "chapter_label": "PHP 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "if by any means I may attain to the resurrection from the dead.",
+      "ko": "어찌하든지 죽은 자 가운데서 부활에 이르려 하노니",
+      "source_text_hash": "38465196c224787111be4b2eda6aa2b76f6568a5f3af098978b5653fdf46aae8",
+      "translation_text_hash": "8109fcb66ab5ecef9895eb8945e4bffc467f582a895a684bb1237ac03d108e05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하든지 죽은 자 가운데서 부활에 이르려 하노니"
+      ],
+      "raw_text_hashes": [
+        "8109fcb66ab5ecef9895eb8945e4bffc467f582a895a684bb1237ac03d108e05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:12",
+      "sequence": 29430,
+      "chapter_label": "PHP 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Not that I have already obtained, or am already made perfect; but I press on, that I may take hold of that for which also I was taken hold of by Christ Jesus.",
+      "ko": "내가 이미 얻었다 함도 아니요 온전히 이루었다 함도 아니라 오직 내가 그리스도 예수께 잡힌바 된 그것을 잡으려고 좇아가노라",
+      "source_text_hash": "f477ecfa307d99ae958b169ecb907f7f0e3e8ff202d0c79209f96982a924e884",
+      "translation_text_hash": "02a152d11e3477750a55e13e6c8a343e5fb129cfdabeef948c7475823c0be208",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이미 얻었다 함도 아니요 온전히 이루었다 함도 아니라 오직 내가 그리스도 예수께 잡힌바 된 그것을 잡으려고 좇아가노라"
+      ],
+      "raw_text_hashes": [
+        "02a152d11e3477750a55e13e6c8a343e5fb129cfdabeef948c7475823c0be208"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:13",
+      "sequence": 29431,
+      "chapter_label": "PHP 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Brothers, I don’t regard myself as yet having taken hold, but one thing I do: forgetting the things which are behind and stretching forward to the things which are before,",
+      "ko": "형제들아 나는 아직 내가 잡은 줄로 여기지 아니하고 오직 한 일 즉 뒤에 있는 것은 잊어버리고 앞에 있는 것을 잡으려고",
+      "source_text_hash": "0b48b7d4dc8c257e0a1434a0a10bc5de5fc806d7089b3bba5b1468d985208333",
+      "translation_text_hash": "1d5215c8cfac258a17ae296230e3c9048a1d0e38c7a43eee4d5afb1674268edb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 나는 아직 내가 잡은 줄로 여기지 아니하고 오직 한 일 즉 뒤에 있는 것은 잊어버리고 앞에 있는 것을 잡으려고"
+      ],
+      "raw_text_hashes": [
+        "1d5215c8cfac258a17ae296230e3c9048a1d0e38c7a43eee4d5afb1674268edb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:14",
+      "sequence": 29432,
+      "chapter_label": "PHP 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "I press on toward the goal for the prize of the high calling of God in Christ Jesus.",
+      "ko": "푯대를 향하여 그리스도 예수 안에서 하나님이 위에서 부르신 부름의 상을 위하여 좇아가노라",
+      "source_text_hash": "bc04d55c6edf27bde7b3186f4bb1de7e70b599f42e126fe8b97a8206c1835420",
+      "translation_text_hash": "8c802afee72d7bfd4bb96d512cf0424863ca47f277a93d6199c369d981b62b44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "푯대를 향하여 그리스도 예수 안에서 하나님이 위에서 부르신 부름의 상을 위하여 좇아가노라"
+      ],
+      "raw_text_hashes": [
+        "8c802afee72d7bfd4bb96d512cf0424863ca47f277a93d6199c369d981b62b44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:15",
+      "sequence": 29433,
+      "chapter_label": "PHP 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Let us therefore, as many as are perfect, think this way. If in anything you think otherwise, God will also reveal that to you.",
+      "ko": "그러므로 누구든지 우리 온전히 이룬 자들은 이렇게 생각할찌니 만일 무슨 일에 너희가 달리 생각하면 하나님이 이것도 너희에게 나타내시리라",
+      "source_text_hash": "af8df809c582077692fa5e8127a129bd98338be9d926570fc9b4c4b10f632d16",
+      "translation_text_hash": "9da080f9e90bbc30bc8e928e0b4f23497becf2fe8333064d91268a6a911a0f3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 누구든지 우리 온전히 이룬 자들은 이렇게 생각할찌니 만일 무슨 일에 너희가 달리 생각하면 하나님이 이것도 너희에게 나타내시리라"
+      ],
+      "raw_text_hashes": [
+        "9da080f9e90bbc30bc8e928e0b4f23497becf2fe8333064d91268a6a911a0f3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:16",
+      "sequence": 29434,
+      "chapter_label": "PHP 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Nevertheless, to the extent that we have already attained, let’s walk by the same rule. Let’s be of the same mind.",
+      "ko": "오직 우리가 어디까지 이르렀든지 그대로 행할 것이라",
+      "source_text_hash": "9a4696ee8b6d6ca5e5717f76109b60be8ba70131ea9bc8efc794d497a74f63b7",
+      "translation_text_hash": "b7ee61f8a31e519db0272e5edfa119584bb454586e5835f5d218b71383c1dd71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 우리가 어디까지 이르렀든지 그대로 행할 것이라"
+      ],
+      "raw_text_hashes": [
+        "b7ee61f8a31e519db0272e5edfa119584bb454586e5835f5d218b71383c1dd71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:17",
+      "sequence": 29435,
+      "chapter_label": "PHP 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "Brothers, be imitators together of me, and note those who walk this way, even as you have us for an example.",
+      "ko": "형제들아 너희는 함께 나를 본받으라 또 우리로 본을 삼은 것 같이 그대로 행하는 자들을 보이라",
+      "source_text_hash": "c5b6e402117438708a6cd3fa91d73b78d56b6fbe4d02e6a3a5f4e749b651cbad",
+      "translation_text_hash": "e5c7dd2053d9caf38c5413aae54f90b58643fa65abf1231876f798c3ee2f7448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희는 함께 나를 본받으라 또 우리로 본을 삼은 것 같이 그대로 행하는 자들을 보이라"
+      ],
+      "raw_text_hashes": [
+        "e5c7dd2053d9caf38c5413aae54f90b58643fa65abf1231876f798c3ee2f7448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:18",
+      "sequence": 29436,
+      "chapter_label": "PHP 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "For many walk, of whom I told you often, and now tell you even weeping, as the enemies of the cross of Christ,",
+      "ko": "내가 여러 번 너희에게 말하였거니와 이제도 눈물을 흘리며 말하노니 여러 사람들이 그리스도 십자가의 원수로 행하느니라",
+      "source_text_hash": "9e946779e368dcbbbae4894105170b9a6ce7ef5ff6c5b6a7447a12090069cdbd",
+      "translation_text_hash": "695b2b63cb406a45d643263ca24847853ec9fb2263d48bb46bd03a57c3d79b10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여러 번 너희에게 말하였거니와 이제도 눈물을 흘리며 말하노니 여러 사람들이 그리스도 십자가의 원수로 행하느니라"
+      ],
+      "raw_text_hashes": [
+        "695b2b63cb406a45d643263ca24847853ec9fb2263d48bb46bd03a57c3d79b10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:19",
+      "sequence": 29437,
+      "chapter_label": "PHP 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "whose end is destruction, whose god is the belly, and whose glory is in their shame, who think about earthly things.",
+      "ko": "저희의 마침은 멸망이요 저희의 신은 배요 그 영광은 저희의 부끄러움에 있고 땅의 일을 생각하는 자라",
+      "source_text_hash": "508e49f2b124552beb15a81cd5d04882df345a2280fb35a14e89897785466fec",
+      "translation_text_hash": "74d7ab93f3fc11d8b9926efe9e63eb2e94c8c8f1c378d445578f72e7e3781d16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 마침은 멸망이요 저희의 신은 배요 그 영광은 저희의 부끄러움에 있고 땅의 일을 생각하는 자라"
+      ],
+      "raw_text_hashes": [
+        "74d7ab93f3fc11d8b9926efe9e63eb2e94c8c8f1c378d445578f72e7e3781d16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:20",
+      "sequence": 29438,
+      "chapter_label": "PHP 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "For our citizenship is in heaven, from where we also wait for a Savior, the Lord Jesus Christ,",
+      "ko": "오직 우리의 시민권은 하늘에 있는지라 거기로서 구원하는 자 곧 주 예수 그리스도를 기다리노니",
+      "source_text_hash": "1db1f24a8e71b2107db969d074025ec51a4af45ce7637c90819ab6c5539ab9ae",
+      "translation_text_hash": "a120c438cc22e6ee6f30bd405b52c389973f24cca8511f66ad2e3eeb5dc4029f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 우리의 시민권은 하늘에 있는지라 거기로서 구원하는 자 곧 주 예수 그리스도를 기다리노니"
+      ],
+      "raw_text_hashes": [
+        "a120c438cc22e6ee6f30bd405b52c389973f24cca8511f66ad2e3eeb5dc4029f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHP:3:21",
+      "sequence": 29439,
+      "chapter_label": "PHP 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "PHP",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PHP",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "who will change the body of our humiliation to be conformed to the body of his glory, according to the working by which he is able even to subject all things to himself.",
+      "ko": "그가 만물을 자기에게 복종케 하실 수 있는 자의 역사로 우리의 낮은 몸을 자기 영광의 몸의 형체와 같이 변케 하시리라",
+      "source_text_hash": "349d6f3c1772d75c7af8902e55549dd968a4d4e7200d3978dd6b6b8a6c6de855",
+      "translation_text_hash": "81f4d3819cda4a161965d560cdcc18b2d7bc5115a1fd422dba49189925f257d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 만물을 자기에게 복종케 하실 수 있는 자의 역사로 우리의 낮은 몸을 자기 영광의 몸의 형체와 같이 변케 하시리라"
+      ],
+      "raw_text_hashes": [
+        "81f4d3819cda4a161965d560cdcc18b2d7bc5115a1fd422dba49189925f257d8"
+      ]
+    }
+  ]
+}

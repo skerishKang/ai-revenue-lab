@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:024",
+  "unit_ordinal": 502,
+  "unit_label": "PSA 24",
+  "book_code": "PSA",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:24:1",
+      "sequence": 14243,
+      "chapter_label": "PSA 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "The earth is the LORD’s, with its fullness; the world, and those who dwell in it.",
+      "ko": "땅과 거기 충만한 것과 세계와 그 중에 거하는 자가 다 여호와의 것이로다",
+      "source_text_hash": "a50a242dc17233ed4eb0efe9c44860aea15fc81719f75859dc7c7635ed7bf2ab",
+      "translation_text_hash": "9755376f22a680be9d26d6d628250f781e35d01f1a915a773f26727c1719376f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅과 거기 충만한 것과 세계와 그 중에 거하는 자가 다 여호와의 것이로다"
+      ],
+      "raw_text_hashes": [
+        "9755376f22a680be9d26d6d628250f781e35d01f1a915a773f26727c1719376f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:24:2",
+      "sequence": 14244,
+      "chapter_label": "PSA 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "For he has founded it on the seas, and established it on the floods.",
+      "ko": "여호와께서 그 터를 바다 위에 세우심이여 강들 위에 건설하셨도다",
+      "source_text_hash": "ccc4a1067a4d933226538b5cdf9c0f080dffbf966825759dae7a89c4bdbd567d",
+      "translation_text_hash": "6944709bd4f5677a6da388494d705f3cc170f70452c02b8a7857ef00a82a1318",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 터를 바다 위에 세우심이여 강들 위에 건설하셨도다"
+      ],
+      "raw_text_hashes": [
+        "6944709bd4f5677a6da388494d705f3cc170f70452c02b8a7857ef00a82a1318"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:24:3",
+      "sequence": 14245,
+      "chapter_label": "PSA 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "Who may ascend to the LORD’s hill? Who may stand in his holy place?",
+      "ko": "여호와의 산에 오를 자 누구며 그 거룩한 곳에 설 자가 누군고",
+      "source_text_hash": "f4ea899b4d21be4b30cdd441fe5a58052e0b8071f60467a5ce1b5d9039258800",
+      "translation_text_hash": "3e04503edde49a21c464f2ab3033cfabaa5d3c77d14bfd4b6961c473d59cf7fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 산에 오를 자 누구며 그 거룩한 곳에 설 자가 누군고"
+      ],
+      "raw_text_hashes": [
+        "3e04503edde49a21c464f2ab3033cfabaa5d3c77d14bfd4b6961c473d59cf7fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:24:4",
+      "sequence": 14246,
+      "chapter_label": "PSA 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "He who has clean hands and a pure heart; who has not lifted up his soul to falsehood, and has not sworn deceitfully.",
+      "ko": "곧 손이 깨끗하며 마음이 청결하며 뜻을 허탄한데 두지 아니하며 거짓 맹세치 아니하는 자로다",
+      "source_text_hash": "7f830176378307f22f0fb3d552b04187c3655a9aa73b4ab2e9dffa51fd6f7c13",
+      "translation_text_hash": "18102a9945dc97eb01fff9a97d6b0fac5a0184bef3830d8b60336751e74c2474",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 손이 깨끗하며 마음이 청결하며 뜻을 허탄한데 두지 아니하며 거짓 맹세치 아니하는 자로다"
+      ],
+      "raw_text_hashes": [
+        "18102a9945dc97eb01fff9a97d6b0fac5a0184bef3830d8b60336751e74c2474"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:24:5",
+      "sequence": 14247,
+      "chapter_label": "PSA 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "He shall receive a blessing from the LORD, righteousness from the God of his salvation.",
+      "ko": "저는 여호와께 복을 받고 구원의 하나님께 의를 얻으리니",
+      "source_text_hash": "2fa3ec94a46b434601c9e4929789815824f62f1412fcc52d13003c52dfd14602",
+      "translation_text_hash": "bc59d708fde065be0d211df547ef936ff68e32ef61f4ec0f2f4208b6b7189434",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 여호와께 복을 받고 구원의 하나님께 의를 얻으리니"
+      ],
+      "raw_text_hashes": [
+        "bc59d708fde065be0d211df547ef936ff68e32ef61f4ec0f2f4208b6b7189434"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:24:6",
+      "sequence": 14248,
+      "chapter_label": "PSA 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "This is the generation of those who seek Him, who seek your face—even Jacob. Selah.",
+      "ko": "이는 여호와를 찾는 족속이요 야곱의 하나님의 얼굴을 구하는 자로다(셀라)",
+      "source_text_hash": "f64f39487210757272fd891590a999b1409636b3618a6db40a1f565d5a4b016b",
+      "translation_text_hash": "bb43c6a8cbb451c943949d585959249a64cde2589e8a8e917491470e968393b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와를 찾는 족속이요 야곱의 하나님의 얼굴을 구하는 자로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "bb43c6a8cbb451c943949d585959249a64cde2589e8a8e917491470e968393b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:24:7",
+      "sequence": 14249,
+      "chapter_label": "PSA 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "Lift up your heads, you gates! Be lifted up, you everlasting doors, and the King of glory will come in.",
+      "ko": "문들아 너희 머리를 들찌어다 영원한 문들아 들릴찌어다 영광의 왕이 들어 가시리로다",
+      "source_text_hash": "18b0e7b9c898f3aa7af80a0c70ed9ce9e1e0c14951041d6522f7627a90ee2ed3",
+      "translation_text_hash": "9b18f3df94095855fb78647e3d3c7ec99d45aab16f35c21c34c51465ef3229f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문들아 너희 머리를 들찌어다 영원한 문들아 들릴찌어다 영광의 왕이 들어 가시리로다"
+      ],
+      "raw_text_hashes": [
+        "9b18f3df94095855fb78647e3d3c7ec99d45aab16f35c21c34c51465ef3229f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:24:8",
+      "sequence": 14250,
+      "chapter_label": "PSA 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "Who is the King of glory? The LORD strong and mighty, the LORD mighty in battle.",
+      "ko": "영광의 왕이 뉘시뇨 강하고 능한 여호와시요 전쟁에 능한 여호와시로다",
+      "source_text_hash": "cc4dbaea0657f50b3c7ed22a50df1e061fec61cc76f04b172c4c226dca4b6a06",
+      "translation_text_hash": "862b7f5a168c4741d4e1108a45cae257686fa14a6c90fd30f1ed5c7a651a2834",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영광의 왕이 뉘시뇨 강하고 능한 여호와시요 전쟁에 능한 여호와시로다"
+      ],
+      "raw_text_hashes": [
+        "862b7f5a168c4741d4e1108a45cae257686fa14a6c90fd30f1ed5c7a651a2834"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:24:9",
+      "sequence": 14251,
+      "chapter_label": "PSA 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "Lift up your heads, you gates; yes, lift them up, you everlasting doors, and the King of glory will come in.",
+      "ko": "문들아 너희 머리를 들찌어다 영원한 문들아 들릴찌어다 영광의 왕이 들어 가시리로다",
+      "source_text_hash": "11d3034c617bd2558ca0105355b09105551b310cbe04d73e5af792ba402a28e8",
+      "translation_text_hash": "9b18f3df94095855fb78647e3d3c7ec99d45aab16f35c21c34c51465ef3229f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문들아 너희 머리를 들찌어다 영원한 문들아 들릴찌어다 영광의 왕이 들어 가시리로다"
+      ],
+      "raw_text_hashes": [
+        "9b18f3df94095855fb78647e3d3c7ec99d45aab16f35c21c34c51465ef3229f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:24:10",
+      "sequence": 14252,
+      "chapter_label": "PSA 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "Who is this King of glory? The LORD of Armies is the King of glory! Selah.",
+      "ko": "영광의 왕이 뉘시뇨 만군의 여호와께서 곧 영광의 왕이시로다(셀라)",
+      "source_text_hash": "65b3a3917aa3ad3aecc8a5fe2dea2aaabe410f67c89a764ca9b04e4116ec2cfc",
+      "translation_text_hash": "6581cc6ad0c867aec975935d0ddf6be4e64f14e2a5003bfec9b47358f7d8f707",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영광의 왕이 뉘시뇨 만군의 여호와께서 곧 영광의 왕이시로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "6581cc6ad0c867aec975935d0ddf6be4e64f14e2a5003bfec9b47358f7d8f707"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:023",
+  "unit_ordinal": 259,
+  "unit_label": "1SA 23",
+  "book_code": "1SA",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:23:1",
+      "sequence": 7812,
+      "chapter_label": "1SA 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "David was told, “Behold, the Philistines are fighting against Keilah, and are robbing the threshing floors.”",
+      "ko": "혹이 다윗에게 고하여 가로되 보소서 블레셋 사람이 그일라를 쳐서 그 타작마당을 탈취하더이다",
+      "source_text_hash": "d7772883931683704957fdc2c776992cc18c9aece4bcdc5be8073c6379960ddb",
+      "translation_text_hash": "b0b556def8c023b42404520e9582f0d4e44c48b313116c1840f8b47a93192bac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 다윗에게 고하여 가로되 보소서 블레셋 사람이 그일라를 쳐서 그 타작마당을 탈취하더이다"
+      ],
+      "raw_text_hashes": [
+        "b0b556def8c023b42404520e9582f0d4e44c48b313116c1840f8b47a93192bac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:2",
+      "sequence": 7813,
+      "chapter_label": "1SA 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "Therefore David inquired of the LORD, saying, “Shall I go and strike these Philistines?” The LORD said to David, “Go strike the Philistines, and save Keilah.”",
+      "ko": "이에 다윗이 여호와께 묻자와 가로되 내가 가서 이 블레셋 사람을 치리이까 여호와께서 다윗에게 이르시되 가서 블레셋 사람을 치고 그일라를 구원하라 하시니",
+      "source_text_hash": "91d16cbde80b9dcf66f141bfbfb896243aced0ca5f3ed1bff245c2859cd9eb26",
+      "translation_text_hash": "1a9de9e805b48047ea5d53d947c190f034109000ba35e31bec9cb8daaa1c7b34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗이 여호와께 묻자와 가로되 내가 가서 이 블레셋 사람을 치리이까 여호와께서 다윗에게 이르시되 가서 블레셋 사람을 치고 그일라를 구원하라 하시니"
+      ],
+      "raw_text_hashes": [
+        "1a9de9e805b48047ea5d53d947c190f034109000ba35e31bec9cb8daaa1c7b34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:3",
+      "sequence": 7814,
+      "chapter_label": "1SA 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "David’s men said to him, “Behold, we are afraid here in Judah. How much more then if we go to Keilah against the armies of the Philistines?”",
+      "ko": "다윗의 사람들이 그에게 이르되 보소서 우리가 유다에 있기도 두렵거든 하물며 그일라에 가서 블레셋 사람의 군대를 치는 일이리이까",
+      "source_text_hash": "969359d1c67dbbb0cc7426bd0fdfe057cc8a6d5ef0485efb9ffc0a0a62f3c793",
+      "translation_text_hash": "5c56781efd1e62761d5051212c0897a3e6a30c204124fe32791113976e3f8d2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 사람들이 그에게 이르되 보소서 우리가 유다에 있기도 두렵거든 하물며 그일라에 가서 블레셋 사람의 군대를 치는 일이리이까"
+      ],
+      "raw_text_hashes": [
+        "5c56781efd1e62761d5051212c0897a3e6a30c204124fe32791113976e3f8d2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:4",
+      "sequence": 7815,
+      "chapter_label": "1SA 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "Then David inquired of the LORD yet again. The LORD answered him, and said, “Arise, go down to Keilah; for I will deliver the Philistines into your hand.”",
+      "ko": "다윗이 여호와께 다시 묻자온대 여호와께서 대답하여 가라사대 일어나 그일라로 내려가라 내가 블레셋 사람을 네 손에 붙이리라 하신지라",
+      "source_text_hash": "9c76fa11a71c6878f0caef952ab0d3751773ebce0aa2b01ae76d900000b25524",
+      "translation_text_hash": "5492166463dd29fd4fe5a9760b83c0b66be920ab87f2aad4a48d4cb32c129960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 여호와께 다시 묻자온대 여호와께서 대답하여 가라사대 일어나 그일라로 내려가라 내가 블레셋 사람을 네 손에 붙이리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "5492166463dd29fd4fe5a9760b83c0b66be920ab87f2aad4a48d4cb32c129960"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:5",
+      "sequence": 7816,
+      "chapter_label": "1SA 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "David and his men went to Keilah and fought with the Philistines, and brought away their livestock, and killed them with a great slaughter. So David saved the inhabitants of Keilah.",
+      "ko": "다윗과 그의 사람들이 그일라로 가서 블레셋 사람과 싸워 그들을 크게 도륙하고 그들의 가축을 끌어오니라 다윗이 이와 같이 그일라 거민을 구원하니라",
+      "source_text_hash": "5b5f5dd4c1f67bee558b4df1c4ec183b6fc59d7c95fe0429544e7a2bf5570cdb",
+      "translation_text_hash": "198a9e73b66cca9ab8f95360bff6b534306ff8c00ba2cff2f69bc140f708baf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 그의 사람들이 그일라로 가서 블레셋 사람과 싸워 그들을 크게 도륙하고 그들의 가축을 끌어오니라 다윗이 이와 같이 그일라 거민을 구원하니라"
+      ],
+      "raw_text_hashes": [
+        "198a9e73b66cca9ab8f95360bff6b534306ff8c00ba2cff2f69bc140f708baf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:6",
+      "sequence": 7817,
+      "chapter_label": "1SA 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "When Abiathar the son of Ahimelech fled to David to Keilah, he came down with an ephod in his hand.",
+      "ko": "아히멜렉의 아들 아비아달이 그일라 다윗에게로 도망할 때에 손에 에봇을 가지고 내려왔었더라",
+      "source_text_hash": "ca1f810982223e5358dd2bb74fbd9aaf017a407b57ae0c6b1a3ee96f7569ab96",
+      "translation_text_hash": "06c8dc384c8f8c96a4d996c5c2f3aeb4d224948f7ec1812d1b25de348010bae3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히멜렉의 아들 아비아달이 그일라 다윗에게로 도망할 때에 손에 에봇을 가지고 내려왔었더라"
+      ],
+      "raw_text_hashes": [
+        "06c8dc384c8f8c96a4d996c5c2f3aeb4d224948f7ec1812d1b25de348010bae3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:7",
+      "sequence": 7818,
+      "chapter_label": "1SA 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "Saul was told that David had come to Keilah. Saul said, “God has delivered him into my hand, for he is shut in by entering into a town that has gates and bars.”",
+      "ko": "다윗이 그일라에 온것을 혹이 사울에게 고하매 사울이 가로되 하나님이 그를 내 손에 붙이셨도다 그가 문과 문빗장이 있는 성에 들어갔으니 갇혔도다",
+      "source_text_hash": "c7412e5a9256c8c82615b23afb2ccf2d2389bc263f277933a64786a6f75ea922",
+      "translation_text_hash": "f420f3c38b28a8b25920f9fdbee6cabe14fd6f869e51170ddb480b92c009bd18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그일라에 온것을 혹이 사울에게 고하매 사울이 가로되 하나님이 그를 내 손에 붙이셨도다 그가 문과 문빗장이 있는 성에 들어갔으니 갇혔도다"
+      ],
+      "raw_text_hashes": [
+        "f420f3c38b28a8b25920f9fdbee6cabe14fd6f869e51170ddb480b92c009bd18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:8",
+      "sequence": 7819,
+      "chapter_label": "1SA 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "Saul summoned all the people to war, to go down to Keilah to besiege David and his men.",
+      "ko": "사울이 모든 백성을 군사로 불러 모으고 그일라로 내려가서 다윗과 그의 사람들을 에워싸려 하더니",
+      "source_text_hash": "492d41a16a37919ce9cdbe0e55dc005eb70ced0ff071097bbe2835ab00c63ace",
+      "translation_text_hash": "35f7ee4eb9204b7e8c4d3276ff1c4b19089c9f3a225488063c30191a5cb5b2ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 모든 백성을 군사로 불러 모으고 그일라로 내려가서 다윗과 그의 사람들을 에워싸려 하더니"
+      ],
+      "raw_text_hashes": [
+        "35f7ee4eb9204b7e8c4d3276ff1c4b19089c9f3a225488063c30191a5cb5b2ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:9",
+      "sequence": 7820,
+      "chapter_label": "1SA 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "David knew that Saul was devising mischief against him. He said to Abiathar the priest, “Bring the ephod here.”",
+      "ko": "다윗이 사울의 자기를 해하려 하는 계교를 알고 제사장 아비아달에게 이르되 에봇을 이리로 가져오라 하고",
+      "source_text_hash": "17de2876e283b218231514154738d29920370b587931fc8e27043b8b8438fa25",
+      "translation_text_hash": "0126cdd4f463b426bbdbdd161b6f567364e1d05de93f6ea94752820313854090",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사울의 자기를 해하려 하는 계교를 알고 제사장 아비아달에게 이르되 에봇을 이리로 가져오라 하고"
+      ],
+      "raw_text_hashes": [
+        "0126cdd4f463b426bbdbdd161b6f567364e1d05de93f6ea94752820313854090"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:10",
+      "sequence": 7821,
+      "chapter_label": "1SA 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "Then David said, “O LORD, the God of Israel, your servant has surely heard that Saul seeks to come to Keilah to destroy the city for my sake.",
+      "ko": "다윗이 가로되 이스라엘 하나님 여호와여 사울이 나의 연고로 이 성을 멸하려고 그일라로 내려오기를 꾀한다 함을 주의 종이 분명히 들었나이다",
+      "source_text_hash": "521443efe4dddc52e5d7e773971754b0e1e3eba80574c27ee468602d887110cd",
+      "translation_text_hash": "f9b8c3136d7db7d4f71295caa232fa410086f375992f480e4aebfdebd1d99aca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 이스라엘 하나님 여호와여 사울이 나의 연고로 이 성을 멸하려고 그일라로 내려오기를 꾀한다 함을 주의 종이 분명히 들었나이다"
+      ],
+      "raw_text_hashes": [
+        "f9b8c3136d7db7d4f71295caa232fa410086f375992f480e4aebfdebd1d99aca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:11",
+      "sequence": 7822,
+      "chapter_label": "1SA 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "Will the men of Keilah deliver me up into his hand? Will Saul come down, as your servant has heard? LORD, the God of Israel, I beg you, tell your servant.” The LORD said, “He will come down.”",
+      "ko": "그일라 사람들이 나를 그의 손에 붙이겠나이까 주의 종의 들은대로 사울이 내려 오겠나이까 이스라엘의 하나님 여호와여 원컨대 주의 종에게 일러 주옵소서 여호와께서 가라사대 그가 내려 오리라",
+      "source_text_hash": "04b5af695562a6f7049b6a1d42b4121d03d2f9b4a7723dfceb892cbe9692ee5f",
+      "translation_text_hash": "307d45f403da998907792cd28763c2e56899f437b2c0311e29ff072528ab5e15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그일라 사람들이 나를 그의 손에 붙이겠나이까 주의 종의 들은대로 사울이 내려 오겠나이까 이스라엘의 하나님 여호와여 원컨대 주의 종에게 일러 주옵소서 여호와께서 가라사대 그가 내려 오리라"
+      ],
+      "raw_text_hashes": [
+        "307d45f403da998907792cd28763c2e56899f437b2c0311e29ff072528ab5e15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:12",
+      "sequence": 7823,
+      "chapter_label": "1SA 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "Then David said, “Will the men of Keilah deliver me and my men into the hand of Saul?” The LORD said, “They will deliver you up.”",
+      "ko": "다윗이 가로되 그일라 사람들이 나와 내 사람들을 사울의 손에 붙이겠나이까 여호와께서 가라사대 그들이 너를 붙이리라",
+      "source_text_hash": "2bc2e491a605ea77cc5ebb86e361f020e3ca934a2a1587fd497245b8c57704cd",
+      "translation_text_hash": "e2b440dcecbba996862ad5b8a971dc788de907eda38ea220fb6b52afa57c9e43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 그일라 사람들이 나와 내 사람들을 사울의 손에 붙이겠나이까 여호와께서 가라사대 그들이 너를 붙이리라"
+      ],
+      "raw_text_hashes": [
+        "e2b440dcecbba996862ad5b8a971dc788de907eda38ea220fb6b52afa57c9e43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:13",
+      "sequence": 7824,
+      "chapter_label": "1SA 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "Then David and his men, who were about six hundred, arose and departed out of Keilah and went wherever they could go. Saul was told that David had escaped from Keilah; and he gave up going there.",
+      "ko": "다윗과 그의 사람 육백명 가량이 일어나 그일라를 떠나서 갈 수 있는 곳으로 갔더니 다윗이 그일라에서 피한 것을 혹이 사울에게 고하매 사울이 가기를 그치니라",
+      "source_text_hash": "f64d54f4406b483000f9082d080aaa2fe5aa11548360c1c9129da74f740fade7",
+      "translation_text_hash": "888c03a8a051e884e01df6ade331967bb58f0ef317069d9e5690b52cd03e4d3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 그의 사람 육백명 가량이 일어나 그일라를 떠나서 갈 수 있는 곳으로 갔더니 다윗이 그일라에서 피한 것을 혹이 사울에게 고하매 사울이 가기를 그치니라"
+      ],
+      "raw_text_hashes": [
+        "888c03a8a051e884e01df6ade331967bb58f0ef317069d9e5690b52cd03e4d3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:14",
+      "sequence": 7825,
+      "chapter_label": "1SA 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "David stayed in the wilderness in the strongholds, and remained in the hill country in the wilderness of Ziph. Saul sought him every day, but God didn’t deliver him into his hand.",
+      "ko": "다윗이 황무지 요새에도 있었고 또 십황무지 산골에도 유하였으므로 사울이 매일 찾되 하나님이 그를 그의 손에 붙이지 아니하시니라",
+      "source_text_hash": "6c2303beca387e05a1eef694426e847ee027c45d5930ff6d65f5ecb483e74c76",
+      "translation_text_hash": "ce9e37ee27a169cd977ea8ffee78b878523ab892d70374ee05968d8717440630",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 황무지 요새에도 있었고 또 십황무지 산골에도 유하였으므로 사울이 매일 찾되 하나님이 그를 그의 손에 붙이지 아니하시니라"
+      ],
+      "raw_text_hashes": [
+        "ce9e37ee27a169cd977ea8ffee78b878523ab892d70374ee05968d8717440630"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:15",
+      "sequence": 7826,
+      "chapter_label": "1SA 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "David saw that Saul had come out to seek his life. David was in the wilderness of Ziph in the woods.",
+      "ko": "다윗이 사울의 자기 생명을 찾으려고 나온 것을 보았으므로 그가 십황무지 수풀에 있었더니",
+      "source_text_hash": "6388a5fd0b312615cc970af5555c6bd6843f8d414f6169cdac87153de3318304",
+      "translation_text_hash": "aa6b54229b2317069ea27ee769c774e99135121401649d030299faff5db272e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사울의 자기 생명을 찾으려고 나온 것을 보았으므로 그가 십황무지 수풀에 있었더니"
+      ],
+      "raw_text_hashes": [
+        "aa6b54229b2317069ea27ee769c774e99135121401649d030299faff5db272e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:16",
+      "sequence": 7827,
+      "chapter_label": "1SA 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "Jonathan, Saul’s son, arose and went to David into the woods, and strengthened his hand in God.",
+      "ko": "사울의 아들 요나단이 일어나 수풀에 들어가서 다윗에게 이르러 그로 하나님을 힘있게 의지하게 하였는데",
+      "source_text_hash": "28ce8fd72e92d53f0d83ca6b394c06ade196ec532fc10cb63ed85c4b6d49ebdb",
+      "translation_text_hash": "f2f76a649b80f933726afd8852344c15c3430f55f614cbfe4b2cf83d1e2fe4b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 아들 요나단이 일어나 수풀에 들어가서 다윗에게 이르러 그로 하나님을 힘있게 의지하게 하였는데"
+      ],
+      "raw_text_hashes": [
+        "f2f76a649b80f933726afd8852344c15c3430f55f614cbfe4b2cf83d1e2fe4b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:17",
+      "sequence": 7828,
+      "chapter_label": "1SA 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "He said to him, “Don’t be afraid, for the hand of Saul my father won’t find you; and you will be king over Israel, and I will be next to you; and Saul my father knows that also.”",
+      "ko": "곧 요나단이 그에게 이르기를 두려워 말라 내 부친 사울의 손이 네게 미치지 못할 것이요 너는 이스라엘 왕이 되고 나는 네 다음이 될 것을 내 부친 사울도 안다 하니라",
+      "source_text_hash": "44c2117655cec2f7b7bbb5733ee88e12f5485cfc9a37d2c3e0c9df92379a236b",
+      "translation_text_hash": "02daa98854b5146fbc002e9dd4e12966993b8498f7c31da1d28fa3121ef75b8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 요나단이 그에게 이르기를 두려워 말라 내 부친 사울의 손이 네게 미치지 못할 것이요 너는 이스라엘 왕이 되고 나는 네 다음이 될 것을 내 부친 사울도 안다 하니라"
+      ],
+      "raw_text_hashes": [
+        "02daa98854b5146fbc002e9dd4e12966993b8498f7c31da1d28fa3121ef75b8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:18",
+      "sequence": 7829,
+      "chapter_label": "1SA 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "They both made a covenant before the LORD. Then David stayed in the woods and Jonathan went to his house.",
+      "ko": "두 사람이 여호와 앞에서 언약하고 다윗은 수풀에 거하고 요나단은 자기 집으로 돌아가니라",
+      "source_text_hash": "fa76393683cbad295bc7825f22f34421b6f27945e0d7d759f14f04a7081bef9e",
+      "translation_text_hash": "f5279cc4b75a93ba4731435655549de78220e16b6c39d4fc1cb2998a888c51a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 여호와 앞에서 언약하고 다윗은 수풀에 거하고 요나단은 자기 집으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "f5279cc4b75a93ba4731435655549de78220e16b6c39d4fc1cb2998a888c51a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:19",
+      "sequence": 7830,
+      "chapter_label": "1SA 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "Then the Ziphites came up to Saul to Gibeah, saying, “Doesn’t David hide himself with us in the strongholds in the woods, in the hill of Hachilah, which is on the south of the desert?",
+      "ko": "때에 십 사람들이 기브아에 이르러 사울에게 나아와 가로되 다윗이 우리와 함께 광야 남편 하길라산 수풀 요새에 숨지 아니하였나이까",
+      "source_text_hash": "1dce906c034561fb0eab0e7f4356221937f87b9f682d17efde325b504e6422a5",
+      "translation_text_hash": "58875d5c4734f3f9affaa155a4191ed966fca69fffbdc49fc6a878677166ddec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 십 사람들이 기브아에 이르러 사울에게 나아와 가로되 다윗이 우리와 함께 광야 남편 하길라산 수풀 요새에 숨지 아니하였나이까"
+      ],
+      "raw_text_hashes": [
+        "58875d5c4734f3f9affaa155a4191ed966fca69fffbdc49fc6a878677166ddec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:20",
+      "sequence": 7831,
+      "chapter_label": "1SA 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "Now therefore, O king, come down. According to all the desire of your soul to come down; and our part will be to deliver him up into the king’s hand.”",
+      "ko": "그러하온즉 왕은 내려오시기를 원하시는대로 내려 오소서 그를 왕의 손에 붙일 것이 우리의 의무니이다",
+      "source_text_hash": "f71b3cf5b300faa18fd32b75789cc0497a811e5e807358e2e7dfc8d5136084d0",
+      "translation_text_hash": "c38c5eff5e7684d387bb911cf7436f8e8dcd3bb70b086a2c712ab9b560e8e63b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하온즉 왕은 내려오시기를 원하시는대로 내려 오소서 그를 왕의 손에 붙일 것이 우리의 의무니이다"
+      ],
+      "raw_text_hashes": [
+        "c38c5eff5e7684d387bb911cf7436f8e8dcd3bb70b086a2c712ab9b560e8e63b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:21",
+      "sequence": 7832,
+      "chapter_label": "1SA 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "Saul said, “You are blessed by the LORD, for you have had compassion on me.",
+      "ko": "사울이 가로되 너희가 나를 긍휼히 여겼으니 여호와께 복 받기를 원하노라",
+      "source_text_hash": "ad4f93daf299df3682ce6e5d6fb155360f326ada6195dbe1a940277cdbb6aaeb",
+      "translation_text_hash": "473fea66b8c7d63ee106cd5e677431794e5a9084dfbbda14b60fa19d7b259454",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 너희가 나를 긍휼히 여겼으니 여호와께 복 받기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "473fea66b8c7d63ee106cd5e677431794e5a9084dfbbda14b60fa19d7b259454"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:22",
+      "sequence": 7833,
+      "chapter_label": "1SA 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "Please go make yet more sure, and know and see his place where his haunt is, and who has seen him there; for I have been told that he is very cunning.",
+      "ko": "혹이 내게 말하기를 그가 심히 공교히 행동한다 하나니 너희는 가서 더 자세히 살펴서 그가 어디 은적하였으며 누가 거기서 그를 보았는지 알아보고",
+      "source_text_hash": "268df388c28fc5c659c5443b6a406d3a7a372b909c78cbb912106134125935d4",
+      "translation_text_hash": "12e72fed0c3d4efdb66daf766447a87f068994e35a40c740f94efddd579d295e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 내게 말하기를 그가 심히 공교히 행동한다 하나니 너희는 가서 더 자세히 살펴서 그가 어디 은적하였으며 누가 거기서 그를 보았는지 알아보고"
+      ],
+      "raw_text_hashes": [
+        "12e72fed0c3d4efdb66daf766447a87f068994e35a40c740f94efddd579d295e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:23",
+      "sequence": 7834,
+      "chapter_label": "1SA 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "See therefore, and take knowledge of all the lurking places where he hides himself; and come again to me with certainty, and I will go with you. It shall happen, if he is in the land, that I will search him out among all the thousands of Judah.”",
+      "ko": "그가 숨어 있는 모든 곳을 탐지하고 실상을 내게 회보하라 내가 너희와 함께 가리니 그가 이 땅에 있으면 유다 천천인 중에서 그를 찾아내리라",
+      "source_text_hash": "e3ead35b821e2164340e2e8f1e6ba7c1dd58f854edd46c76fdf29559c246d895",
+      "translation_text_hash": "d23a8284eedd3281218d3c9e7eafac6a584f66af4e2b98551cd3b0175c1c0472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 숨어 있는 모든 곳을 탐지하고 실상을 내게 회보하라 내가 너희와 함께 가리니 그가 이 땅에 있으면 유다 천천인 중에서 그를 찾아내리라"
+      ],
+      "raw_text_hashes": [
+        "d23a8284eedd3281218d3c9e7eafac6a584f66af4e2b98551cd3b0175c1c0472"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:24",
+      "sequence": 7835,
+      "chapter_label": "1SA 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "They arose, and went to Ziph before Saul; but David and his men were in the wilderness of Maon, in the Arabah on the south of the desert.",
+      "ko": "그들이 일어나 사울보다 먼저 십으로 가니라 다윗과 그의 사람들이 광야 남편 마온 황무지 아라바에 있더니",
+      "source_text_hash": "465ce86ca3629799ff514191331e6d4fa34e582e4ad334e1e3902169077d4104",
+      "translation_text_hash": "53f4bddbcafe2eb6bb4062ec3c9d5e36cca81735726047466e9ca6019028ab5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 일어나 사울보다 먼저 십으로 가니라 다윗과 그의 사람들이 광야 남편 마온 황무지 아라바에 있더니"
+      ],
+      "raw_text_hashes": [
+        "53f4bddbcafe2eb6bb4062ec3c9d5e36cca81735726047466e9ca6019028ab5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:25",
+      "sequence": 7836,
+      "chapter_label": "1SA 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "Saul and his men went to seek him. When David was told, he went down to the rock, and stayed in the wilderness of Maon. When Saul heard that, he pursued David in the wilderness of Maon.",
+      "ko": "사울과 그의 사람들이 찾으러 온것을 혹이 다윗에게 고하매 이에 다윗이 바위로 내려 마온 황무지에 있더니 사울이 듣고 마온 황무지로 다윗을 따라가서는",
+      "source_text_hash": "f9953155a4f4176f4497735e5f10320c33bf368b2074184ed84c09a9639c47e2",
+      "translation_text_hash": "335922025f2a6d52aa892991ed9d7ea1d38c1e80d3c7e9ad3fe419c584cdcb7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울과 그의 사람들이 찾으러 온것을 혹이 다윗에게 고하매 이에 다윗이 바위로 내려 마온 황무지에 있더니 사울이 듣고 마온 황무지로 다윗을 따라가서는"
+      ],
+      "raw_text_hashes": [
+        "335922025f2a6d52aa892991ed9d7ea1d38c1e80d3c7e9ad3fe419c584cdcb7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:26",
+      "sequence": 7837,
+      "chapter_label": "1SA 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "Saul went on this side of the mountain, and David and his men on that side of the mountain; and David hurried to get away for fear of Saul, for Saul and his men surrounded David and his men to take them.",
+      "ko": "사울이 산 이편으로 가매 다윗과 그의 사람들은 산 저편으로 가며 다윗이 사울을 두려워하여 급히 피하려 하였으니 이는 사울과 그의 사람들이 다윗과 그의 사람들을 에워싸고 잡으려 함이었더라",
+      "source_text_hash": "489c179a8fd46bae5643b1c9ed348eb6be436cacd84419f417219d9816e10979",
+      "translation_text_hash": "5346549b07c736baa9b0f0e99245294892726bc4c1606786f5a9a8db658d6981",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 산 이편으로 가매 다윗과 그의 사람들은 산 저편으로 가며 다윗이 사울을 두려워하여 급히 피하려 하였으니 이는 사울과 그의 사람들이 다윗과 그의 사람들을 에워싸고 잡으려 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "5346549b07c736baa9b0f0e99245294892726bc4c1606786f5a9a8db658d6981"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:27",
+      "sequence": 7838,
+      "chapter_label": "1SA 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "But a messenger came to Saul, saying, “Hurry and come, for the Philistines have made a raid on the land!”",
+      "ko": "사자가 사울에게 와서 가로되 급히 오소서 블레셋 사람이 땅을 침로하나이다",
+      "source_text_hash": "c9b88eb4ace745ef86d7f1cc5eca2ba4ff89554575b25b73c7f34273dcd61d39",
+      "translation_text_hash": "b0f7248f328cba468e12e1c53471ba77c2c3035fa68407206024a66eb13b6cf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 사울에게 와서 가로되 급히 오소서 블레셋 사람이 땅을 침로하나이다"
+      ],
+      "raw_text_hashes": [
+        "b0f7248f328cba468e12e1c53471ba77c2c3035fa68407206024a66eb13b6cf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:28",
+      "sequence": 7839,
+      "chapter_label": "1SA 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "So Saul returned from pursuing David, and went against the Philistines. Therefore they called that place Sela Hammahlekoth.",
+      "ko": "이에 사울이 다윗 쫓기를 그치고 돌아와서 블레셋 사람을 치러 갔으므로 그 곳을 셀라하마느곳이라 칭하니라",
+      "source_text_hash": "c3278502deea39badd7d7801ca724ccb7fa0a69feb9050113a0f19ad0b44d2ac",
+      "translation_text_hash": "fd5fb42662746e6bf6e683b653d74fc8c0185130ebcf512d0c0129e3a9510154",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 사울이 다윗 쫓기를 그치고 돌아와서 블레셋 사람을 치러 갔으므로 그 곳을 셀라하마느곳이라 칭하니라"
+      ],
+      "raw_text_hashes": [
+        "fd5fb42662746e6bf6e683b653d74fc8c0185130ebcf512d0c0129e3a9510154"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:23:29",
+      "sequence": 7840,
+      "chapter_label": "1SA 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "1SA",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "David went up from there and lived in the strongholds of En Gedi.",
+      "ko": "다윗이 거기서 올라가서 엔게디 요새에 거하니라",
+      "source_text_hash": "2a92c3c4cabb4ff5b1bbdcd91bdd1eacdd3be3ce5a05d407d014f6ca4d6bf28e",
+      "translation_text_hash": "3223247d450943ea1c3a52dab41864fda2566755671a708126a4b8455248b0a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 거기서 올라가서 엔게디 요새에 거하니라"
+      ],
+      "raw_text_hashes": [
+        "3223247d450943ea1c3a52dab41864fda2566755671a708126a4b8455248b0a4"
+      ]
+    }
+  ]
+}

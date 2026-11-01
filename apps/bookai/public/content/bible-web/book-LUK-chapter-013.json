@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:013",
+  "unit_ordinal": 986,
+  "unit_label": "LUK 13",
+  "book_code": "LUK",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:13:1",
+      "sequence": 25520,
+      "chapter_label": "LUK 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "Now there were some present at the same time who told him about the Galileans whose blood Pilate had mixed with their sacrifices.",
+      "ko": "그 때 마침 두어 사람이 와서 빌라도가 어떤 갈릴리 사람들의 피를 저희의 제물에 섞은 일로 예수께 고하니",
+      "source_text_hash": "220d0d83c294ce2ac983fec7e8cbdbff3c60c16cddb049fd2e0ff798b1d3f892",
+      "translation_text_hash": "8ecaaa62b39c4b77ca9c0ba1d4138320540d3c0a0e22ef86275fad7156f159f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때 마침 두어 사람이 와서 빌라도가 어떤 갈릴리 사람들의 피를 저희의 제물에 섞은 일로 예수께 고하니"
+      ],
+      "raw_text_hashes": [
+        "8ecaaa62b39c4b77ca9c0ba1d4138320540d3c0a0e22ef86275fad7156f159f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:2",
+      "sequence": 25521,
+      "chapter_label": "LUK 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "Jesus answered them, “Do you think that these Galileans were worse sinners than all the other Galileans, because they suffered such things?",
+      "ko": "대답하여 가라사대 너희는 이 갈릴리 사람들이 이 같이 해 받음으로써 모든 갈릴리 사람보다 죄가 더 있는줄 아느냐",
+      "source_text_hash": "826356241cf08f196fd387146ac1de14f5b736872f7f7ed9bbb426056411f2f9",
+      "translation_text_hash": "4727e437ae2705029a1ffd981ce9ee49f503901abc1b3905a4a51bc581da53b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 너희는 이 갈릴리 사람들이 이 같이 해 받음으로써 모든 갈릴리 사람보다 죄가 더 있는줄 아느냐"
+      ],
+      "raw_text_hashes": [
+        "4727e437ae2705029a1ffd981ce9ee49f503901abc1b3905a4a51bc581da53b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:3",
+      "sequence": 25522,
+      "chapter_label": "LUK 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "I tell you, no, but unless you repent, you will all perish in the same way.",
+      "ko": "너희에게 이르노니 아니라 너희도 만일 회개치 아니하면 다 이와 같이 망하리라",
+      "source_text_hash": "04f1c928a880cbe51f337146233a2679754816008ce28826c40e8d215c0e37da",
+      "translation_text_hash": "7a21b567d73967b12049a3012dd2fed0d91a2dbbe80cdf782e7a3abb5e5c3e17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게 이르노니 아니라 너희도 만일 회개치 아니하면 다 이와 같이 망하리라"
+      ],
+      "raw_text_hashes": [
+        "7a21b567d73967b12049a3012dd2fed0d91a2dbbe80cdf782e7a3abb5e5c3e17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:4",
+      "sequence": 25523,
+      "chapter_label": "LUK 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "Or those eighteen on whom the tower in Siloam fell and killed them—do you think that they were worse offenders than all the men who dwell in Jerusalem?",
+      "ko": "또 실로암에서 망대가 무너져 치어 죽은 열 여덟 사람이 예루살렘에 거한 모든 사람보다 죄가 더 있는줄 아느냐",
+      "source_text_hash": "3f3ed6e6ad6d2966a814498537365ba515f4648f4c254b70f3a0488a86692164",
+      "translation_text_hash": "d366326792d8296155ebecf9d5439251799b94e53f5ce0e62510acab645df61a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 실로암에서 망대가 무너져 치어 죽은 열 여덟 사람이 예루살렘에 거한 모든 사람보다 죄가 더 있는줄 아느냐"
+      ],
+      "raw_text_hashes": [
+        "d366326792d8296155ebecf9d5439251799b94e53f5ce0e62510acab645df61a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:5",
+      "sequence": 25524,
+      "chapter_label": "LUK 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "I tell you, no, but, unless you repent, you will all perish in the same way.”",
+      "ko": "너희에게 이르노니 아니라 너희도 만일 회개치 아니하면 다 이와 같이 망하리라",
+      "source_text_hash": "715fe2fef6d5463b2a604bb2df92dca926801c4ac98a2c05018c8980280f7faa",
+      "translation_text_hash": "7a21b567d73967b12049a3012dd2fed0d91a2dbbe80cdf782e7a3abb5e5c3e17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게 이르노니 아니라 너희도 만일 회개치 아니하면 다 이와 같이 망하리라"
+      ],
+      "raw_text_hashes": [
+        "7a21b567d73967b12049a3012dd2fed0d91a2dbbe80cdf782e7a3abb5e5c3e17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:6",
+      "sequence": 25525,
+      "chapter_label": "LUK 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "He spoke this parable. “A certain man had a fig tree planted in his vineyard, and he came seeking fruit on it and found none.",
+      "ko": "이에 비유로 말씀하시되 한 사람이 포도원에 무화과나무를 심은 것이 있더니 와서 그 열매를 구하였으나 얻지 못한지라",
+      "source_text_hash": "7994627affe5c64bcbe2decf313f11b1f574fc4af472e1e3c9360cddf736f4b9",
+      "translation_text_hash": "29118209a8b721f952eebb081bc65535090855dab322842b053df54cd6643601",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 비유로 말씀하시되 한 사람이 포도원에 무화과나무를 심은 것이 있더니 와서 그 열매를 구하였으나 얻지 못한지라"
+      ],
+      "raw_text_hashes": [
+        "29118209a8b721f952eebb081bc65535090855dab322842b053df54cd6643601"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:7",
+      "sequence": 25526,
+      "chapter_label": "LUK 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "He said to the vine dresser, ‘Behold, these three years I have come looking for fruit on this fig tree, and found none. Cut it down! Why does it waste the soil?’",
+      "ko": "과원지기에게 이르되 내가 삼 년을 와서 이 무화과나무에 실과를 구하되 얻지 못하니 찍어버리라 어찌 땅만 버리느냐",
+      "source_text_hash": "d204a65d9f47587ac34ad0a13c23861ea70b90050ae6800110bf5444a340eb8e",
+      "translation_text_hash": "c47f6b3add36b6740f797506222a6e2d3100746ad02681b7d24dcf24469d51e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과원지기에게 이르되 내가 삼 년을 와서 이 무화과나무에 실과를 구하되 얻지 못하니 찍어버리라 어찌 땅만 버리느냐"
+      ],
+      "raw_text_hashes": [
+        "c47f6b3add36b6740f797506222a6e2d3100746ad02681b7d24dcf24469d51e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:8",
+      "sequence": 25527,
+      "chapter_label": "LUK 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "He answered, ‘Lord, leave it alone this year also, until I dig around it and fertilize it.",
+      "ko": "대답하여 가로되 주인이여 금년에도 그대로 두소서 내가 두루 파고 거름을 주리니",
+      "source_text_hash": "a9d649daebccb8c5fe8d2859c87213aa3d21ed03f0249edf47a9458f00aed4ef",
+      "translation_text_hash": "64880599806402160f086f2d9cd47f65332643540c08706db9db430f06d95ab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가로되 주인이여 금년에도 그대로 두소서 내가 두루 파고 거름을 주리니"
+      ],
+      "raw_text_hashes": [
+        "64880599806402160f086f2d9cd47f65332643540c08706db9db430f06d95ab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:9",
+      "sequence": 25528,
+      "chapter_label": "LUK 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "If it bears fruit, fine; but if not, after that, you can cut it down.’”",
+      "ko": "이 후에 만일 실과가 열면이어니와 그렇지 않으면 찍어버리소서 하였다 하시니라",
+      "source_text_hash": "2277df3262dcfd75dd96b558270b948ea2b9986f11bfa78ddb233e5f3474a790",
+      "translation_text_hash": "3d49e5f4b624f4b8f0d4f9a2f7dfc98e55733e20e31d48c6d06c8f993df6500b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 만일 실과가 열면이어니와 그렇지 않으면 찍어버리소서 하였다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "3d49e5f4b624f4b8f0d4f9a2f7dfc98e55733e20e31d48c6d06c8f993df6500b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:10",
+      "sequence": 25529,
+      "chapter_label": "LUK 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "He was teaching in one of the synagogues on the Sabbath day.",
+      "ko": "안식일에 한 회당에서 가르치실 때에",
+      "source_text_hash": "2b02dc5791f408e5cc782834f4bad76e7c795a8e9187b3fbaf3c28ad28227d16",
+      "translation_text_hash": "9368d5b42812dbf8424f74cb7ec784688901a9152cf697f852fbfce2b96e76a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일에 한 회당에서 가르치실 때에"
+      ],
+      "raw_text_hashes": [
+        "9368d5b42812dbf8424f74cb7ec784688901a9152cf697f852fbfce2b96e76a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:11",
+      "sequence": 25530,
+      "chapter_label": "LUK 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, there was a woman who had a spirit of infirmity eighteen years. She was bent over and could in no way straighten herself up.",
+      "ko": "십 팔년 동안을 귀신들려 앓으며 꼬부라져 조금도 펴지 못하는 한 여자가 있더라",
+      "source_text_hash": "0cea01451b57e44c7e660ff0a08dd11afe40824e67bf03c32f134e3f065ab049",
+      "translation_text_hash": "d2171174814577b07f8740fc57f2cff8d9cb51e60544a8d736171870f12ce417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십 팔년 동안을 귀신들려 앓으며 꼬부라져 조금도 펴지 못하는 한 여자가 있더라"
+      ],
+      "raw_text_hashes": [
+        "d2171174814577b07f8740fc57f2cff8d9cb51e60544a8d736171870f12ce417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:12",
+      "sequence": 25531,
+      "chapter_label": "LUK 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "When Jesus saw her, he called her and said to her, “Woman, you are freed from your infirmity.”",
+      "ko": "예수께서 보시고 불러 이르시되 여자여 네가 네 병에서 놓였다 하시고",
+      "source_text_hash": "8a065716b270480eb2ba6af56a6af9ecff4fb31462843084ce2cde86f86d2881",
+      "translation_text_hash": "37db2e4c5e39b71f99572ce39e44483c24f5c2a5ee5477edc39dbcd07234b519",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 보시고 불러 이르시되 여자여 네가 네 병에서 놓였다 하시고"
+      ],
+      "raw_text_hashes": [
+        "37db2e4c5e39b71f99572ce39e44483c24f5c2a5ee5477edc39dbcd07234b519"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:13",
+      "sequence": 25532,
+      "chapter_label": "LUK 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "He laid his hands on her, and immediately she stood up straight and glorified God.",
+      "ko": "안수하시매 여자가 곧 펴고 하나님께 영광을 돌리는지라",
+      "source_text_hash": "70fcd5dfbe20579c90cad1e1aab2e83172fbfdb1c55f17f1208563ddad0acc9c",
+      "translation_text_hash": "65ae20537378dba85547ee4e8275179a4a82544cbb6ee62083c976d89d418341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안수하시매 여자가 곧 펴고 하나님께 영광을 돌리는지라"
+      ],
+      "raw_text_hashes": [
+        "65ae20537378dba85547ee4e8275179a4a82544cbb6ee62083c976d89d418341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:14",
+      "sequence": 25533,
+      "chapter_label": "LUK 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "The ruler of the synagogue, being indignant because Jesus had healed on the Sabbath, said to the multitude, “There are six days in which men ought to work. Therefore come on those days and be healed, and not on the Sabbath day!”",
+      "ko": "회당장이 예수께서 안식일에 병 고치시는 것을 분내어 무리에게 이르되 일할 날이 엿새가 있으니 그 동안에 와서 고침을 받을 것이요 안식일에는 말 것이니라 하거늘",
+      "source_text_hash": "35aebfb3d6ca2d7c31d98ee5fb30a761d4448672ebaf6408db0f2f9250fe1703",
+      "translation_text_hash": "e01bbe2ba9bd201588b1031673c6829058f781e51bdf7d640a4bcb7a7269fe93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회당장이 예수께서 안식일에 병 고치시는 것을 분내어 무리에게 이르되 일할 날이 엿새가 있으니 그 동안에 와서 고침을 받을 것이요 안식일에는 말 것이니라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "e01bbe2ba9bd201588b1031673c6829058f781e51bdf7d640a4bcb7a7269fe93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:15",
+      "sequence": 25534,
+      "chapter_label": "LUK 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Therefore the Lord answered him, “You hypocrites! Doesn’t each one of you free his ox or his donkey from the stall on the Sabbath and lead him away to water?",
+      "ko": "주께서 대답하여 가라사대 외식하는 자들아 너희가 각각 안식일에 자기의 소나 나귀나 마구에서 풀어내어 이끌고 가서 물을 먹이지 아니하느냐",
+      "source_text_hash": "dabee8810904e3b5a5f5146fd5e1b8808e2f1dac3137378b5baf244550d265c5",
+      "translation_text_hash": "c424e712b48c206f2569713a7c1485f873454aebe5226b2b4476405d27c488c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 대답하여 가라사대 외식하는 자들아 너희가 각각 안식일에 자기의 소나 나귀나 마구에서 풀어내어 이끌고 가서 물을 먹이지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "c424e712b48c206f2569713a7c1485f873454aebe5226b2b4476405d27c488c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:16",
+      "sequence": 25535,
+      "chapter_label": "LUK 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "Ought not this woman, being a daughter of Abraham whom Satan had bound eighteen long years, be freed from this bondage on the Sabbath day?”",
+      "ko": "그러면 십 팔년 동안 사단에게 매인바 된 이 아브라함의 딸을 안식일에 이 매임에서 푸는 것이 합당치 아니하냐",
+      "source_text_hash": "2a458cf977899ec4c2304fbe41616cd6cd427ff9dc39fa3aadaff87799983e17",
+      "translation_text_hash": "d5f8d0b6ce4138f457c9f805f870e8ea4b90dd263562f2f66eeb701d39e60019",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 십 팔년 동안 사단에게 매인바 된 이 아브라함의 딸을 안식일에 이 매임에서 푸는 것이 합당치 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "d5f8d0b6ce4138f457c9f805f870e8ea4b90dd263562f2f66eeb701d39e60019"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:17",
+      "sequence": 25536,
+      "chapter_label": "LUK 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "As he said these things, all his adversaries were disappointed; and all the multitude rejoiced for all the glorious things that were done by him.",
+      "ko": "예수께서 이 말씀을 하시매 모든 반대하는 자들은 부끄러워하고 온 무리는 그 하시는 모든 영광스러운 일을 기뻐하니라",
+      "source_text_hash": "47b6e144b7856696da61c179c7472c3f03a419d8eba5d0c2508eb70a9ff5ebba",
+      "translation_text_hash": "d5e47997ce256d5981fb00c07ff8e38fe4b9956e0aeeb9fd5aa1e4227259f60e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 말씀을 하시매 모든 반대하는 자들은 부끄러워하고 온 무리는 그 하시는 모든 영광스러운 일을 기뻐하니라"
+      ],
+      "raw_text_hashes": [
+        "d5e47997ce256d5981fb00c07ff8e38fe4b9956e0aeeb9fd5aa1e4227259f60e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:18",
+      "sequence": 25537,
+      "chapter_label": "LUK 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "He said, “What is God’s Kingdom like? To what shall I compare it?",
+      "ko": "그러므로 가라사대 하나님의 나라가 무엇과 같을꼬 내가 무엇으로 비할꼬",
+      "source_text_hash": "298398fdb64ea5be06b3ee95e36ad1fda3d764ca5806f84a0bb3a866fb27e1f5",
+      "translation_text_hash": "508718c9ee265b61f7dd32d734397343f5d91729fca67612856ba1565f360534",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 가라사대 하나님의 나라가 무엇과 같을꼬 내가 무엇으로 비할꼬"
+      ],
+      "raw_text_hashes": [
+        "508718c9ee265b61f7dd32d734397343f5d91729fca67612856ba1565f360534"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:19",
+      "sequence": 25538,
+      "chapter_label": "LUK 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "It is like a grain of mustard seed which a man took and put in his own garden. It grew and became a large tree, and the birds of the sky live in its branches.”",
+      "ko": "마치 사람이 자기 채전에 갖다 심은 겨자씨 한 알 같으니 자라 나무가 되어 공중의 새들이 그 가지에 깃들였느니라",
+      "source_text_hash": "53d9c2ae6d91103645cb57bdcb889ec089fa33d37b80ddfd3da87c6b822503a0",
+      "translation_text_hash": "ac16bbdae50092710ae77972a34e2fe105d2e7841056f79c342d8a167a83c5ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마치 사람이 자기 채전에 갖다 심은 겨자씨 한 알 같으니 자라 나무가 되어 공중의 새들이 그 가지에 깃들였느니라"
+      ],
+      "raw_text_hashes": [
+        "ac16bbdae50092710ae77972a34e2fe105d2e7841056f79c342d8a167a83c5ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:20",
+      "sequence": 25539,
+      "chapter_label": "LUK 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "Again he said, “To what shall I compare God’s Kingdom?",
+      "ko": "또 가라사대 내가 하나님의 나라를 무엇으로 비할꼬",
+      "source_text_hash": "b0a82173c84992ea2f2989906a74d3d8b851f64d93af3548230b8a3d40ae0079",
+      "translation_text_hash": "479e59b4184d0948d5037d50ba735d7dd850598bdb85bc234263ac73d819af2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 내가 하나님의 나라를 무엇으로 비할꼬"
+      ],
+      "raw_text_hashes": [
+        "479e59b4184d0948d5037d50ba735d7dd850598bdb85bc234263ac73d819af2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:21",
+      "sequence": 25540,
+      "chapter_label": "LUK 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "It is like yeast, which a woman took and hid in three measures of flour, until it was all leavened.”",
+      "ko": "마치 여자가 가루 서 말 속에 갖다 넣어 전부 부풀게 한 누룩과 같으니라 하셨더라",
+      "source_text_hash": "51c939ee893daf4f7d1599c4fd9c668ec2341f02d7ce514752d6aaad9f6bfcde",
+      "translation_text_hash": "b481018b5964f146472c6f8bf4b57f403360dc9a46eae0f984b80b420920c296",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마치 여자가 가루 서 말 속에 갖다 넣어 전부 부풀게 한 누룩과 같으니라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "b481018b5964f146472c6f8bf4b57f403360dc9a46eae0f984b80b420920c296"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:22",
+      "sequence": 25541,
+      "chapter_label": "LUK 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "He went on his way through cities and villages, teaching, and traveling on to Jerusalem.",
+      "ko": "예수께서 각성 각촌으로 다니사 가르치시며 예루살렘으로 여행하시더니",
+      "source_text_hash": "e27e674056f0f896e11e1afefcf5eb9a89b9be7c878264c18eef8b2e29f585da",
+      "translation_text_hash": "a99d3f3f0f472215dc05cea2d553d63d3a88d636aea0df631e245ce6eaabde55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 각성 각촌으로 다니사 가르치시며 예루살렘으로 여행하시더니"
+      ],
+      "raw_text_hashes": [
+        "a99d3f3f0f472215dc05cea2d553d63d3a88d636aea0df631e245ce6eaabde55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:23",
+      "sequence": 25542,
+      "chapter_label": "LUK 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "One said to him, “Lord, are they few who are saved?” He said to them,",
+      "ko": "혹이 여짜오되 주여 구원을 얻는 자가 적으니이까 저희에게 이르시되",
+      "source_text_hash": "9d54c1e5286195955d8511af3e81c6090de09ad39825fa18a338a4701ebf03af",
+      "translation_text_hash": "1dbf651dfa4650ac9b477ebaeab6d4275a41d505d16ad4d915dbf7efd8a9363b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 여짜오되 주여 구원을 얻는 자가 적으니이까 저희에게 이르시되"
+      ],
+      "raw_text_hashes": [
+        "1dbf651dfa4650ac9b477ebaeab6d4275a41d505d16ad4d915dbf7efd8a9363b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:24",
+      "sequence": 25543,
+      "chapter_label": "LUK 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "“Strive to enter in by the narrow door, for many, I tell you, will seek to enter in and will not be able.",
+      "ko": "좁은 문으로 들어가기를 힘쓰라 내가 너희에게 이르노니 들어가기를 구하여도 못하는 자가 많으리라",
+      "source_text_hash": "9dbff210e2b21ddd45f16922aee59ab7936efabdbd205064fc1c9c82e0af910e",
+      "translation_text_hash": "c243477e6a1cb8b6b0a2fc5e890f1b413a3419b10ae9fa80b2e6febd8d80bc89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좁은 문으로 들어가기를 힘쓰라 내가 너희에게 이르노니 들어가기를 구하여도 못하는 자가 많으리라"
+      ],
+      "raw_text_hashes": [
+        "c243477e6a1cb8b6b0a2fc5e890f1b413a3419b10ae9fa80b2e6febd8d80bc89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:25",
+      "sequence": 25544,
+      "chapter_label": "LUK 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "When once the master of the house has risen up and has shut the door, and you begin to stand outside and to knock at the door, saying, ‘Lord, Lord, open to us!’ then he will answer and tell you, ‘I don’t know you or where you come from.’",
+      "ko": "집 주인이 일어나 문을 한번 닫은 후에 너희가 밖에 서서 문을 두드리며 주여 열어 주소서 하면 저가 대답하여 가로되 나는 너희가 어디로서 온 자인지 알지 못하노라 하리니",
+      "source_text_hash": "0aef83379da63e5c42ae7463ca7b154a2401b65285415c0de0042d3eaef9c824",
+      "translation_text_hash": "dbf96ecd906c74ba80fea855bdcbf82f5a247d2be8ca5517fe722bef72ee6c81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집 주인이 일어나 문을 한번 닫은 후에 너희가 밖에 서서 문을 두드리며 주여 열어 주소서 하면 저가 대답하여 가로되 나는 너희가 어디로서 온 자인지 알지 못하노라 하리니"
+      ],
+      "raw_text_hashes": [
+        "dbf96ecd906c74ba80fea855bdcbf82f5a247d2be8ca5517fe722bef72ee6c81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:26",
+      "sequence": 25545,
+      "chapter_label": "LUK 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "Then you will begin to say, ‘We ate and drank in your presence, and you taught in our streets.’",
+      "ko": "그 때에 너희가 말하되 우리는 주 앞에서 먹고 마셨으며 주는 또한 우리 길거리에서 가르치셨나이다 하나",
+      "source_text_hash": "eb6f9a085bf7773da9f4a925a6a092929242bd7e4ca92e954b500569ac38ee4d",
+      "translation_text_hash": "a2eeb7c160f4009dab7250ab97d2a69f80ac3ca1b559a124b4df11d5dbd814c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 너희가 말하되 우리는 주 앞에서 먹고 마셨으며 주는 또한 우리 길거리에서 가르치셨나이다 하나"
+      ],
+      "raw_text_hashes": [
+        "a2eeb7c160f4009dab7250ab97d2a69f80ac3ca1b559a124b4df11d5dbd814c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:27",
+      "sequence": 25546,
+      "chapter_label": "LUK 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "He will say, ‘I tell you, I don’t know where you come from. Depart from me, all you workers of iniquity.’",
+      "ko": "저가 너희에게 일러 가로되 나는 너희가 어디로서 왔는지 알지 못하노라 행악하는 모든 자들아 나를 떠나 가라 하리라",
+      "source_text_hash": "4ac6f018117b9ddbc588d776425d139d037798e36640805f64818490f59ab12b",
+      "translation_text_hash": "0937944acafc5f4ec0be091b0faf7df14d9f7128ab8941a8aabc3b5abd58c3b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 너희에게 일러 가로되 나는 너희가 어디로서 왔는지 알지 못하노라 행악하는 모든 자들아 나를 떠나 가라 하리라"
+      ],
+      "raw_text_hashes": [
+        "0937944acafc5f4ec0be091b0faf7df14d9f7128ab8941a8aabc3b5abd58c3b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:28",
+      "sequence": 25547,
+      "chapter_label": "LUK 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "There will be weeping and gnashing of teeth when you see Abraham, Isaac, Jacob, and all the prophets in God’s Kingdom, and yourselves being thrown outside.",
+      "ko": "너희가 아브라함과 이삭과 야곱과 모든 선지자는 하나님 나라에 있고 오직 너희는 밖에 쫓겨난 것을 볼 때에 거기서 슬피 울며 이를 갊이 있으리라",
+      "source_text_hash": "39ee62d6276244156b864069cea0323f7de762d5f37d0d9959b956a9bf7146e1",
+      "translation_text_hash": "52e5cf599dad243634fb62ffa0cc8d0cafa669dc2d4cb518299b23c8b91152fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 아브라함과 이삭과 야곱과 모든 선지자는 하나님 나라에 있고 오직 너희는 밖에 쫓겨난 것을 볼 때에 거기서 슬피 울며 이를 갊이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "52e5cf599dad243634fb62ffa0cc8d0cafa669dc2d4cb518299b23c8b91152fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:29",
+      "sequence": 25548,
+      "chapter_label": "LUK 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "They will come from the east, west, north, and south, and will sit down in God’s Kingdom.",
+      "ko": "사람들이 동서 남북으로부터 와서 하나님의 나라 잔치에 참석하리니",
+      "source_text_hash": "294501ebef92a163a2e9b3bc21ef09c823c58ff6ccedacbbf7214d13fef00cd7",
+      "translation_text_hash": "a54f7d6f71ad49a27f9d6c8efcce9c61cfefd38c25350e0d68dfb40d9b57af94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 동서 남북으로부터 와서 하나님의 나라 잔치에 참석하리니"
+      ],
+      "raw_text_hashes": [
+        "a54f7d6f71ad49a27f9d6c8efcce9c61cfefd38c25350e0d68dfb40d9b57af94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:30",
+      "sequence": 25549,
+      "chapter_label": "LUK 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "Behold, there are some who are last who will be first, and there are some who are first who will be last.”",
+      "ko": "보라 나중 된 자로서 먼저 될 자도 있고 먼저 된 자로서 나중 될 자도 있느니라 하시더라",
+      "source_text_hash": "0dcfb40d396b6313ef5ff9bd2d0a82f330cd922380cd075560486c986f6c6b72",
+      "translation_text_hash": "9656a09bba775e9067b1f70efdc522c223937d9b873f13f7d231d440d6637ec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 나중 된 자로서 먼저 될 자도 있고 먼저 된 자로서 나중 될 자도 있느니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "9656a09bba775e9067b1f70efdc522c223937d9b873f13f7d231d440d6637ec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:31",
+      "sequence": 25550,
+      "chapter_label": "LUK 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "On that same day, some Pharisees came, saying to him, “Get out of here and go away, for Herod wants to kill you.”",
+      "ko": "곧 그 때에 어떤 바리새인들이 나아와서 이르되 나가서 여기를 떠나소서 헤롯이 당신을 죽이고자 하나이다",
+      "source_text_hash": "d27e8c76ce17c99747362a74c84a3660834f76901b982ad54a1c9e91bcca8ad5",
+      "translation_text_hash": "25240cfa46a80433000e38ddca5413c8c910093f1ed677d9163ada8e907fc285",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 때에 어떤 바리새인들이 나아와서 이르되 나가서 여기를 떠나소서 헤롯이 당신을 죽이고자 하나이다"
+      ],
+      "raw_text_hashes": [
+        "25240cfa46a80433000e38ddca5413c8c910093f1ed677d9163ada8e907fc285"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:32",
+      "sequence": 25551,
+      "chapter_label": "LUK 13",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 32
+        }
+      ],
+      "en": "He said to them, “Go and tell that fox, ‘Behold, I cast out demons and perform cures today and tomorrow, and the third day I complete my mission.",
+      "ko": "가라사대 가서 저 여우에게 이르되 오늘과 내일 내가 귀신을 쫓아내며 병을 낫게 하다가 제 삼일에는 완전하여지리라 하라",
+      "source_text_hash": "5448d48e659883ff6d12f7523dd74fb8a364dc6e74c4cc991975d5742d39fb51",
+      "translation_text_hash": "4603dc35dbb1aef97eedb2d02bb8144e790054075598de12aff815be9d3d313e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 가서 저 여우에게 이르되 오늘과 내일 내가 귀신을 쫓아내며 병을 낫게 하다가 제 삼일에는 완전하여지리라 하라"
+      ],
+      "raw_text_hashes": [
+        "4603dc35dbb1aef97eedb2d02bb8144e790054075598de12aff815be9d3d313e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:33",
+      "sequence": 25552,
+      "chapter_label": "LUK 13",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 33
+        }
+      ],
+      "en": "Nevertheless I must go on my way today and tomorrow and the next day, for it can’t be that a prophet would perish outside of Jerusalem.’",
+      "ko": "그러나 오늘과 내일과 모레는 내가 갈 길을 가야 하리니 선지자가 예루살렘 밖에서는 죽는 법이 없느니라",
+      "source_text_hash": "7ad53aa62f70ff75d7007f3cde3738c9871ae99f056b536405a2e79c5286f19d",
+      "translation_text_hash": "0dc9497aa0c5c69d475ce68e4a80a9aaa4404dc3a46d9fae02154650c913c9f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 오늘과 내일과 모레는 내가 갈 길을 가야 하리니 선지자가 예루살렘 밖에서는 죽는 법이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "0dc9497aa0c5c69d475ce68e4a80a9aaa4404dc3a46d9fae02154650c913c9f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:34",
+      "sequence": 25553,
+      "chapter_label": "LUK 13",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 34
+        }
+      ],
+      "en": "“Jerusalem, Jerusalem, you who kills the prophets and stones those who are sent to her! How often I wanted to gather your children together, like a hen gathers her own brood under her wings, and you refused!",
+      "ko": "예루살렘아 예루살렘아 선지자들을 죽이고 네게 파송된 자들을 돌로 치는 자여 암탉이 제새끼를 날개 아래 모음 같이 내가 너희의 자녀를 모으려한일이 몇 번이냐 그러나 너희가 원치 아니하였도다",
+      "source_text_hash": "2efc39cd1f02f4ba90f9f76fb3ab960a6c6205530bf34a889b6d7dd9846909d0",
+      "translation_text_hash": "cbfd2c35a2e9be7197eeb3cb044fee53ea572db0cc9ed7fbcd23b75abf78bada",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘아 예루살렘아 선지자들을 죽이고 네게 파송된 자들을 돌로 치는 자여 암탉이 제새끼를 날개 아래 모음 같이 내가 너희의 자녀를 모으려한일이 몇 번이냐 그러나 너희가 원치 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "cbfd2c35a2e9be7197eeb3cb044fee53ea572db0cc9ed7fbcd23b75abf78bada"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:13:35",
+      "sequence": 25554,
+      "chapter_label": "LUK 13",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 13,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 13,
+          "verse": 35
+        }
+      ],
+      "en": "Behold, your house is left to you desolate. I tell you, you will not see me until you say, ‘Blessed is he who comes in the name of the Lord!’”",
+      "ko": "보라 너희 집이 황폐하여 버린바 되리라 내가 너희에게 이르노니 너희가 주의 이름으로 오시는 이를 찬송하리로다 할 때까지는 나를 보지 못하리라 하시니라",
+      "source_text_hash": "470d6b68a0baab4a6b30d15b1ebf11f9451d89fe2ec26829b74f406bcd137c40",
+      "translation_text_hash": "e6458273d784c7ec8123a8a473f78eef91287f66948e0eb598e30e3f5d1f1604",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 너희 집이 황폐하여 버린바 되리라 내가 너희에게 이르노니 너희가 주의 이름으로 오시는 이를 찬송하리로다 할 때까지는 나를 보지 못하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "e6458273d784c7ec8123a8a473f78eef91287f66948e0eb598e30e3f5d1f1604"
+      ]
+    }
+  ]
+}

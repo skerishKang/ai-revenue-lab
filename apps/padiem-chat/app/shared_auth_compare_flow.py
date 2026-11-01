@@ -37,6 +37,9 @@ async def _await(value):
     return await value if inspect.isawaitable(value) else value
 
 
+SERVER_HEADERS = {'User-Agent': 'PADIEM-Chat/1.0 (+https://chat.padiem.net)', 'Accept': 'application/json'}
+
+
 async def exchange_with_httpx(url, data):
     """Fixed-origin server-side exchange; never log the request or response."""
     if url != TOKEN_URL:
@@ -44,8 +47,12 @@ async def exchange_with_httpx(url, data):
     from . import httpx_compat as httpx
     from .auth import MAX_AUTH_RESPONSE_BYTES
     async with httpx.AsyncClient(follow_redirects=False) as client:
-        async with client.stream('POST', TOKEN_URL, data=data) as response:
+        # An explicit product User-Agent: auth.padiem.net sits behind Cloudflare's
+        # browser-integrity check, which refuses default library agents (error 1010).
+        async with client.stream('POST', TOKEN_URL, data=data, headers=SERVER_HEADERS) as response:
             if response.status_code != 200:
+                # Status only: the body may carry token material.
+                print(f"[shared_login] token exchange status={response.status_code}", flush=True)
                 raise ValueError('exchange_failed')
             body = bytearray()
             async for chunk in response.aiter_bytes():

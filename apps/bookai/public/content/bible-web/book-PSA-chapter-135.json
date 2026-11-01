@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:135",
+  "unit_ordinal": 613,
+  "unit_label": "PSA 135",
+  "book_code": "PSA",
+  "chapter_number": 135,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:135:1",
+      "sequence": 16177,
+      "chapter_label": "PSA 135",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD! Praise the LORD’s name! Praise him, you servants of the LORD,",
+      "ko": "할렐루야 여호와의 이름을 찬송하라 여호와의 종들아 찬송하라",
+      "source_text_hash": "7f8016b293f9f0a96a82dcf686edad67c12b69dcdc85578af9e6775d989e55de",
+      "translation_text_hash": "bcb78c32a42f0e1da8480d559e817fe28b78cfce002ab6f1c658a106851f0d4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할렐루야 여호와의 이름을 찬송하라 여호와의 종들아 찬송하라"
+      ],
+      "raw_text_hashes": [
+        "bcb78c32a42f0e1da8480d559e817fe28b78cfce002ab6f1c658a106851f0d4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:2",
+      "sequence": 16178,
+      "chapter_label": "PSA 135",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 2
+        }
+      ],
+      "en": "you who stand in the LORD’s house, in the courts of our God’s house.",
+      "ko": "여호와의 집 우리 하나님의 전정에 섰는 너희여",
+      "source_text_hash": "b83be8d2db23a2c48d1dbe61a6296c48ab7613f4d6e954bcb6c51b1b308e92a5",
+      "translation_text_hash": "70266f98233e32821b4fd166e47eee54d663709c5a9f6ca22ad1bef16a3fe786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 집 우리 하나님의 전정에 섰는 너희여"
+      ],
+      "raw_text_hashes": [
+        "70266f98233e32821b4fd166e47eee54d663709c5a9f6ca22ad1bef16a3fe786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:3",
+      "sequence": 16179,
+      "chapter_label": "PSA 135",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 3
+        }
+      ],
+      "en": "Praise the LORD, for the LORD is good. Sing praises to his name, for that is pleasant.",
+      "ko": "여호와를 찬송하라 여호와는 선하시며 그 이름이 아름다우니 그 이름을 찬양하라",
+      "source_text_hash": "f88a0fbe6978f2b17deea0f962d57a5bc3fbf62d1ebad7a2e60dd4d389d0af05",
+      "translation_text_hash": "e03a93d0fc80b409cf0b71c1c64961b354eb89286d0b28e60dc8174a0fbe2d3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 찬송하라 여호와는 선하시며 그 이름이 아름다우니 그 이름을 찬양하라"
+      ],
+      "raw_text_hashes": [
+        "e03a93d0fc80b409cf0b71c1c64961b354eb89286d0b28e60dc8174a0fbe2d3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:4",
+      "sequence": 16180,
+      "chapter_label": "PSA 135",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 4
+        }
+      ],
+      "en": "For the LORD has chosen Jacob for himself, Israel for his own possession.",
+      "ko": "여호와께서 자기를 위하여 야곱 곧 이스라엘을 자기의 특별한 소유로 택하셨음이로다",
+      "source_text_hash": "33832688724a2f5d942e3f7950975cc8b0980afa572231d8780f7a22d998d847",
+      "translation_text_hash": "e613a9dfd16dea2c74fd1650bd086c9731d26fcfa397cb6cf8367768beace049",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기를 위하여 야곱 곧 이스라엘을 자기의 특별한 소유로 택하셨음이로다"
+      ],
+      "raw_text_hashes": [
+        "e613a9dfd16dea2c74fd1650bd086c9731d26fcfa397cb6cf8367768beace049"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:5",
+      "sequence": 16181,
+      "chapter_label": "PSA 135",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 5
+        }
+      ],
+      "en": "For I know that the LORD is great, that our Lord is above all gods.",
+      "ko": "내가 알거니와 여호와께서는 광대하시며 우리 주는 모든 신보다 높으시도다",
+      "source_text_hash": "aa9c9c7ec17d2f0c77f1af3f674a652cf768d5abf7e76bb387980039ec8f5795",
+      "translation_text_hash": "ce5529a2826643ed3ec1a27d13294e40d8b45fda68d712ec8f3382e49356b88b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 알거니와 여호와께서는 광대하시며 우리 주는 모든 신보다 높으시도다"
+      ],
+      "raw_text_hashes": [
+        "ce5529a2826643ed3ec1a27d13294e40d8b45fda68d712ec8f3382e49356b88b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:6",
+      "sequence": 16182,
+      "chapter_label": "PSA 135",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 6
+        }
+      ],
+      "en": "Whatever the LORD pleased, that he has done, in heaven and in earth, in the seas and in all deeps.",
+      "ko": "여호와께서 무릇 기뻐하시는 일을 천지와 바다와 모든 깊은데서 다 행하셨도다",
+      "source_text_hash": "6a33a8079f734fb268457795ce162f8fda5c7901368154c1d42243b644bc76e3",
+      "translation_text_hash": "f0075afd40e107a133260cd575f0a488a65a3902db747e706f9cb028c0affa92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 무릇 기뻐하시는 일을 천지와 바다와 모든 깊은데서 다 행하셨도다"
+      ],
+      "raw_text_hashes": [
+        "f0075afd40e107a133260cd575f0a488a65a3902db747e706f9cb028c0affa92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:7",
+      "sequence": 16183,
+      "chapter_label": "PSA 135",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 7
+        }
+      ],
+      "en": "He causes the clouds to rise from the ends of the earth. He makes lightnings with the rain. He brings the wind out of his treasuries.",
+      "ko": "안개를 땅끝에서 일으키시며 비를 위하여 번개를 만드시며 바람을 그 곳간에서 내시는도다",
+      "source_text_hash": "b83110cb459e888a29b291516082edde70280a49095a1849f1b29db16f62454a",
+      "translation_text_hash": "f61b793697927af3361e48cb1dbaa8d22b1c908c3e59d12d304b5e6a4cf8690a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안개를 땅끝에서 일으키시며 비를 위하여 번개를 만드시며 바람을 그 곳간에서 내시는도다"
+      ],
+      "raw_text_hashes": [
+        "f61b793697927af3361e48cb1dbaa8d22b1c908c3e59d12d304b5e6a4cf8690a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:8",
+      "sequence": 16184,
+      "chapter_label": "PSA 135",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 8
+        }
+      ],
+      "en": "He struck the firstborn of Egypt, both of man and animal.",
+      "ko": "저가 애굽의 처음 난 자를 사람부터 짐승까지 치셨도다",
+      "source_text_hash": "d31615432a6e7efddcbf49e3bc9808bc280f3a287eb33a7a0575a6fa1f1cce6e",
+      "translation_text_hash": "2eceb90628c50030b611dc8a03e5736df4f6a69a41922b3647b4f23947ce240a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 애굽의 처음 난 자를 사람부터 짐승까지 치셨도다"
+      ],
+      "raw_text_hashes": [
+        "2eceb90628c50030b611dc8a03e5736df4f6a69a41922b3647b4f23947ce240a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:9",
+      "sequence": 16185,
+      "chapter_label": "PSA 135",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 9
+        }
+      ],
+      "en": "He sent signs and wonders into the middle of you, Egypt, on Pharaoh, and on all his servants.",
+      "ko": "애굽이여 여호와께서 너의 중에 징조와 기사를 보내사 바로와 그 모든 신복에게 임하게 하셨도다",
+      "source_text_hash": "17f3114de026d0edc79cd2f246a71a1e6e4fe4d912001daa429586f0c5740445",
+      "translation_text_hash": "5c8db5d4671d83026a34b2964b8a2b51d444839b17431b7141fa0f0a31a17f2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽이여 여호와께서 너의 중에 징조와 기사를 보내사 바로와 그 모든 신복에게 임하게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "5c8db5d4671d83026a34b2964b8a2b51d444839b17431b7141fa0f0a31a17f2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:10",
+      "sequence": 16186,
+      "chapter_label": "PSA 135",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 10
+        }
+      ],
+      "en": "He struck many nations, and killed mighty kings—",
+      "ko": "저가 많은 나라를 치시고 강한 왕들을 죽이셨나니",
+      "source_text_hash": "ba7b2eb8217496414c77aeb8cb8473b3914f75cea33874af9b08556641862cd3",
+      "translation_text_hash": "573db0a8ad0980edc7ee8578fc8658898df6cd82233f0fa539d8b0f380c61e1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 많은 나라를 치시고 강한 왕들을 죽이셨나니"
+      ],
+      "raw_text_hashes": [
+        "573db0a8ad0980edc7ee8578fc8658898df6cd82233f0fa539d8b0f380c61e1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:11",
+      "sequence": 16187,
+      "chapter_label": "PSA 135",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 11
+        }
+      ],
+      "en": "Sihon king of the Amorites, Og king of Bashan, and all the kingdoms of Canaan—",
+      "ko": "곧 아모리인의 왕 시혼과 바산 왕 옥과 가나안의 모든 국왕이로다",
+      "source_text_hash": "089cb70ba040faf35a8127cacd5ac477db84d325bde5af3a54aa507580d30f49",
+      "translation_text_hash": "3dd7dd1b097f9830ea400c8209662108890482f9513b2676b16fc04baf95c248",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 아모리인의 왕 시혼과 바산 왕 옥과 가나안의 모든 국왕이로다"
+      ],
+      "raw_text_hashes": [
+        "3dd7dd1b097f9830ea400c8209662108890482f9513b2676b16fc04baf95c248"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:12",
+      "sequence": 16188,
+      "chapter_label": "PSA 135",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 12
+        }
+      ],
+      "en": "and gave their land for a heritage, a heritage to Israel, his people.",
+      "ko": "저희의 땅을 기업으로 주시되 자기 백성 이스라엘에게 기업으로 주셨도다",
+      "source_text_hash": "e3b34db0fb07b8a18f61fdae0d03c912290870ba11b7feab352c7711f2fe0a0c",
+      "translation_text_hash": "17e7f678fcaa36a1b464d536c6fc48d8fe96ecdc363ce90931d79becdfc165f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 땅을 기업으로 주시되 자기 백성 이스라엘에게 기업으로 주셨도다"
+      ],
+      "raw_text_hashes": [
+        "17e7f678fcaa36a1b464d536c6fc48d8fe96ecdc363ce90931d79becdfc165f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:13",
+      "sequence": 16189,
+      "chapter_label": "PSA 135",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 13
+        }
+      ],
+      "en": "Your name, LORD, endures forever; your renown, LORD, throughout all generations.",
+      "ko": "여호와여 주의 이름이 영원하시니이다 여호와여 주의 기념이 대대에 이르리이다",
+      "source_text_hash": "94b75e0be87a69ec54151d42750d1e1680ab3f87089fc70f50f1481fe2ebb44c",
+      "translation_text_hash": "cebc98deb73cdc2f13c8f62400503b6bb9c80813f18397ca41050d083636c08b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 이름이 영원하시니이다 여호와여 주의 기념이 대대에 이르리이다"
+      ],
+      "raw_text_hashes": [
+        "cebc98deb73cdc2f13c8f62400503b6bb9c80813f18397ca41050d083636c08b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:14",
+      "sequence": 16190,
+      "chapter_label": "PSA 135",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 14
+        }
+      ],
+      "en": "For the LORD will judge his people and have compassion on his servants.",
+      "ko": "여호와께서 자기 백성을 판단하시며 그 종들을 긍휼히 여기시리로다",
+      "source_text_hash": "150890578e04b61e7b160e6a688d3dcc1107b55320c21e35de06de712a8903d1",
+      "translation_text_hash": "b93f8734e89f39abfd692ca2c80f95c2a7ca5d658f9c3f33f970943b9c3c1ff9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기 백성을 판단하시며 그 종들을 긍휼히 여기시리로다"
+      ],
+      "raw_text_hashes": [
+        "b93f8734e89f39abfd692ca2c80f95c2a7ca5d658f9c3f33f970943b9c3c1ff9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:15",
+      "sequence": 16191,
+      "chapter_label": "PSA 135",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 15
+        }
+      ],
+      "en": "The idols of the nations are silver and gold, the work of men’s hands.",
+      "ko": "열방의 우상은 은금이요 사람의 수공물이라",
+      "source_text_hash": "ecd65e1e5233069523fc11b88a435c412520a84da8454c7f78f912aeda99dca0",
+      "translation_text_hash": "ee2360f9af3c8f943d6e478de7d60dedae2fefd34e866f7269a375224a019057",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방의 우상은 은금이요 사람의 수공물이라"
+      ],
+      "raw_text_hashes": [
+        "ee2360f9af3c8f943d6e478de7d60dedae2fefd34e866f7269a375224a019057"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:16",
+      "sequence": 16192,
+      "chapter_label": "PSA 135",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 16
+        }
+      ],
+      "en": "They have mouths, but they can’t speak. They have eyes, but they can’t see.",
+      "ko": "입이 있어도 말하지 못하며 눈이 있어도 보지 못하며",
+      "source_text_hash": "acdeed6f191e893b012b9d256ef745bc60dcc780bcd808b8baee74ba5ca495ae",
+      "translation_text_hash": "5a14239067eb5de107d70a665b30de3708d552e536772e8681f1b6d60125e94d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입이 있어도 말하지 못하며 눈이 있어도 보지 못하며"
+      ],
+      "raw_text_hashes": [
+        "5a14239067eb5de107d70a665b30de3708d552e536772e8681f1b6d60125e94d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:17",
+      "sequence": 16193,
+      "chapter_label": "PSA 135",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 17
+        }
+      ],
+      "en": "They have ears, but they can’t hear, neither is there any breath in their mouths.",
+      "ko": "귀가 있어도 듣지 못하며 그 입에는 아무 기식도 없나니",
+      "source_text_hash": "cbd47a9018a52a493223b69912829153d2416f2674f05a3304b33a55261c6b7b",
+      "translation_text_hash": "f944ae515e25a404b16aea37de37983b048910af82fc2af7179680161d010587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀가 있어도 듣지 못하며 그 입에는 아무 기식도 없나니"
+      ],
+      "raw_text_hashes": [
+        "f944ae515e25a404b16aea37de37983b048910af82fc2af7179680161d010587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:18",
+      "sequence": 16194,
+      "chapter_label": "PSA 135",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 18
+        }
+      ],
+      "en": "Those who make them will be like them, yes, everyone who trusts in them.",
+      "ko": "그것을 만든 자와 그것을 의지하는 자가 다 그것과 같으리로다",
+      "source_text_hash": "401c16f1671bb6b5078c5728ff991c44738c79c3cf52744906317e95d5df64cd",
+      "translation_text_hash": "2427ca06e540163315108789d3bdca3b7401ab857f8e013340a9ce7289c51633",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 만든 자와 그것을 의지하는 자가 다 그것과 같으리로다"
+      ],
+      "raw_text_hashes": [
+        "2427ca06e540163315108789d3bdca3b7401ab857f8e013340a9ce7289c51633"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:19",
+      "sequence": 16195,
+      "chapter_label": "PSA 135",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 19
+        }
+      ],
+      "en": "House of Israel, praise the LORD! House of Aaron, praise the LORD!",
+      "ko": "이스라엘 족속아 여호와를 송축하라 아론의 족속아 여호와를 송축하라",
+      "source_text_hash": "63f8a4d933b8bc4aa66101fd929f28abd18a1ed3bf221136b94f11ededed2bae",
+      "translation_text_hash": "fb5075c199ff1f4d09081d5e8f42cb1dbac83f4acb39a54f69c525d1994858c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속아 여호와를 송축하라 아론의 족속아 여호와를 송축하라"
+      ],
+      "raw_text_hashes": [
+        "fb5075c199ff1f4d09081d5e8f42cb1dbac83f4acb39a54f69c525d1994858c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:20",
+      "sequence": 16196,
+      "chapter_label": "PSA 135",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 20
+        }
+      ],
+      "en": "House of Levi, praise the LORD! You who fear the LORD, praise the LORD!",
+      "ko": "레위 족속아 여호와를 송축하라 여호와를 경외하는 너희들아 여호와를 송축하라",
+      "source_text_hash": "e512f340b526e62c420038729a71c52fc34a4f2349fa70e7626fa227da682ad6",
+      "translation_text_hash": "1f4334336bcf67658a74820660f3a5ba417ed16b86edbdc3d90960b624abf93c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 족속아 여호와를 송축하라 여호와를 경외하는 너희들아 여호와를 송축하라"
+      ],
+      "raw_text_hashes": [
+        "1f4334336bcf67658a74820660f3a5ba417ed16b86edbdc3d90960b624abf93c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:135:21",
+      "sequence": 16197,
+      "chapter_label": "PSA 135",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 135,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 135,
+          "verse": 21
+        }
+      ],
+      "en": "Blessed be the LORD from Zion, who dwells in Jerusalem. Praise the LORD!",
+      "ko": "예루살렘에 거하신 여호와는 시온에서 찬송을 받으실찌어다 할렐루야",
+      "source_text_hash": "96083b1cbaac1049845bc6869dbf803693a5e909de45cdf3c8e1272eef34e037",
+      "translation_text_hash": "be28408da25f099891dbd5713b414fbe1484417724664fad8302266ce4c68363",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 거하신 여호와는 시온에서 찬송을 받으실찌어다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "be28408da25f099891dbd5713b414fbe1484417724664fad8302266ce4c68363"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:091",
+  "unit_ordinal": 569,
+  "unit_label": "PSA 91",
+  "book_code": "PSA",
+  "chapter_number": 91,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:91:1",
+      "sequence": 15397,
+      "chapter_label": "PSA 91",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 1
+        }
+      ],
+      "en": "He who dwells in the secret place of the Most High will rest in the shadow of the Almighty.",
+      "ko": "지존자의 은밀한 곳에 거하는 자는 전능하신 자의 그늘 아래 거하리로다",
+      "source_text_hash": "3e20c5c1c939ac5824cfc01f78fe4da8db0703fa36d36469b96a42e3f2402750",
+      "translation_text_hash": "a95117aebe6fa8c6c33796cad3904add846ab242713fdc9cd2d53cc12f7ed227",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지존자의 은밀한 곳에 거하는 자는 전능하신 자의 그늘 아래 거하리로다"
+      ],
+      "raw_text_hashes": [
+        "a95117aebe6fa8c6c33796cad3904add846ab242713fdc9cd2d53cc12f7ed227"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:2",
+      "sequence": 15398,
+      "chapter_label": "PSA 91",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 2
+        }
+      ],
+      "en": "I will say of the LORD, “He is my refuge and my fortress; my God, in whom I trust.”",
+      "ko": "내가 여호와를 가리켜 말하기를 저는 나의 피난처요 나의 요새요 나의 의뢰하는 하나님이라 하리니",
+      "source_text_hash": "09c04d020b23d9375adfe126a26ee303f3c56c8601b2a64a76092b1a2a3d03af",
+      "translation_text_hash": "553f87ae9c36103187f8aed57954ace8a96fbd12829b0611128d531e8e6138b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와를 가리켜 말하기를 저는 나의 피난처요 나의 요새요 나의 의뢰하는 하나님이라 하리니"
+      ],
+      "raw_text_hashes": [
+        "553f87ae9c36103187f8aed57954ace8a96fbd12829b0611128d531e8e6138b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:3",
+      "sequence": 15399,
+      "chapter_label": "PSA 91",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 3
+        }
+      ],
+      "en": "For he will deliver you from the snare of the fowler, and from the deadly pestilence.",
+      "ko": "이는 저가 너를 새 사냥군의 올무에서와 극한 염병에서 건지실 것임이로다",
+      "source_text_hash": "6642a3d37fcbe2422eecd13cf338d3c1f55bf4c58e61a75bf8e48d0afbeccf57",
+      "translation_text_hash": "67df5eba58014c777987a752896da47abaa848971ad970eab5470532a608a453",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저가 너를 새 사냥군의 올무에서와 극한 염병에서 건지실 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "67df5eba58014c777987a752896da47abaa848971ad970eab5470532a608a453"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:4",
+      "sequence": 15400,
+      "chapter_label": "PSA 91",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 4
+        }
+      ],
+      "en": "He will cover you with his feathers. Under his wings you will take refuge. His faithfulness is your shield and rampart.",
+      "ko": "저가 너를 그 깃으로 덮으시리니 네가 그 날개 아래 피하리로다 그의 진실함은 방패와 손 방패가 되나니",
+      "source_text_hash": "2943e4b6d245bb51ee5fc8e33517796e99d700e510463e55d8d6c66e1375cc78",
+      "translation_text_hash": "b902df78fcc53dd0b68764a0c3bb3b97eb11fd4967c0af46af00732fe3aa22f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 너를 그 깃으로 덮으시리니 네가 그 날개 아래 피하리로다 그의 진실함은 방패와 손 방패가 되나니"
+      ],
+      "raw_text_hashes": [
+        "b902df78fcc53dd0b68764a0c3bb3b97eb11fd4967c0af46af00732fe3aa22f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:5",
+      "sequence": 15401,
+      "chapter_label": "PSA 91",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 5
+        }
+      ],
+      "en": "You shall not be afraid of the terror by night, nor of the arrow that flies by day,",
+      "ko": "너는 밤에 놀램과 낮에 흐르는 살과",
+      "source_text_hash": "ae9be842c74e9d9f540e69de31659c6d9ec7d30f2273713cc6c98ac5bb895ad1",
+      "translation_text_hash": "77649c19eb656b37a1238fb89745f466897665ef42979dec73028ac8956af23e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 밤에 놀램과 낮에 흐르는 살과"
+      ],
+      "raw_text_hashes": [
+        "77649c19eb656b37a1238fb89745f466897665ef42979dec73028ac8956af23e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:6",
+      "sequence": 15402,
+      "chapter_label": "PSA 91",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 6
+        }
+      ],
+      "en": "nor of the pestilence that walks in darkness, nor of the destruction that wastes at noonday.",
+      "ko": "흑암 중에 행하는 염병과 백주에 황폐케 하는 파멸을 두려워 아니하리로다",
+      "source_text_hash": "c246b1965c8ce54f3eff8e8e84285dc065db52710b7336f78b2ddf208ecdc920",
+      "translation_text_hash": "9d5ec3bffefa56055f166f16f8448fbae2691ce8b005b34cb38601a728b5e67e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흑암 중에 행하는 염병과 백주에 황폐케 하는 파멸을 두려워 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "9d5ec3bffefa56055f166f16f8448fbae2691ce8b005b34cb38601a728b5e67e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:7",
+      "sequence": 15403,
+      "chapter_label": "PSA 91",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 7
+        }
+      ],
+      "en": "A thousand may fall at your side, and ten thousand at your right hand; but it will not come near you.",
+      "ko": "천인이 네 곁에서, 만인이 네 우편에서 엎드러지나 이 재앙이 네게 가까이 못하리로다",
+      "source_text_hash": "8b4b59a54624cda5eee3a21896a9ae3d3f5bcf36e37c9abf27504761af018b24",
+      "translation_text_hash": "a0edfbfeed2cd888cc3f9a1f921662473310c928b3f6b85b9dc14f6664364e28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천인이 네 곁에서, 만인이 네 우편에서 엎드러지나 이 재앙이 네게 가까이 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "a0edfbfeed2cd888cc3f9a1f921662473310c928b3f6b85b9dc14f6664364e28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:8",
+      "sequence": 15404,
+      "chapter_label": "PSA 91",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 8
+        }
+      ],
+      "en": "You will only look with your eyes, and see the recompense of the wicked.",
+      "ko": "오직 너는 목도하리니 악인의 보응이 네게 보이리로다",
+      "source_text_hash": "6b608f188f3697296de8e10c3a68bcabf327f4cce0d3f792ad497ff21e665e4f",
+      "translation_text_hash": "44fc0f594e89aabb2a38efe2ff688ff6b4fa5541d108226c7d5f09fd4a2b0472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너는 목도하리니 악인의 보응이 네게 보이리로다"
+      ],
+      "raw_text_hashes": [
+        "44fc0f594e89aabb2a38efe2ff688ff6b4fa5541d108226c7d5f09fd4a2b0472"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:9",
+      "sequence": 15405,
+      "chapter_label": "PSA 91",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 9
+        }
+      ],
+      "en": "Because you have made the LORD your refuge, and the Most High your dwelling place,",
+      "ko": "네가 말하기를 여호와는 나의 피난처시라 하고 지존자로 거처를 삼았으므로",
+      "source_text_hash": "d95eb61fc7ffdbec01ce3e5301e40e72991c533bb6e568e73539b92ea5abf165",
+      "translation_text_hash": "2d9dfb7c62ad4147bc15b70e6befa00aabc12bd40a028952c1bef96063d0c541",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 말하기를 여호와는 나의 피난처시라 하고 지존자로 거처를 삼았으므로"
+      ],
+      "raw_text_hashes": [
+        "2d9dfb7c62ad4147bc15b70e6befa00aabc12bd40a028952c1bef96063d0c541"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:10",
+      "sequence": 15406,
+      "chapter_label": "PSA 91",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 10
+        }
+      ],
+      "en": "no evil shall happen to you, neither shall any plague come near your dwelling.",
+      "ko": "화가 네게 미치지 못하며 재앙이 네 장막에 가까이 오지 못하리니",
+      "source_text_hash": "5f2e5f620063ae4518eb663e6b9b7423b80305d55a65e147799214cfa8b0c150",
+      "translation_text_hash": "f07184a12bd38bae4e359236f9015efd307147c4ba4d2b2f527e01c1599bdf66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화가 네게 미치지 못하며 재앙이 네 장막에 가까이 오지 못하리니"
+      ],
+      "raw_text_hashes": [
+        "f07184a12bd38bae4e359236f9015efd307147c4ba4d2b2f527e01c1599bdf66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:11",
+      "sequence": 15407,
+      "chapter_label": "PSA 91",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 11
+        }
+      ],
+      "en": "For he will put his angels in charge of you, to guard you in all your ways.",
+      "ko": "저가 너를 위하여 그 사자들을 명하사 네 모든 길에 너를 지키게 하심이라",
+      "source_text_hash": "a82a8a8112045ef26f1b6360ed016122f8889ea209d9035346f8a603b1290515",
+      "translation_text_hash": "a07b5c3bca96395c930403b6bd3d9fd25894a48f67ee2a990f3feeea3b61c6d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 너를 위하여 그 사자들을 명하사 네 모든 길에 너를 지키게 하심이라"
+      ],
+      "raw_text_hashes": [
+        "a07b5c3bca96395c930403b6bd3d9fd25894a48f67ee2a990f3feeea3b61c6d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:12",
+      "sequence": 15408,
+      "chapter_label": "PSA 91",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 12
+        }
+      ],
+      "en": "They will bear you up in their hands, so that you won’t dash your foot against a stone.",
+      "ko": "저희가 그 손으로 너를 붙들어 발이 돌에 부딪히지 않게 하리로다",
+      "source_text_hash": "ce6c9da0214374646a2ac0af9673af8c52d855ee22a44a3b3eea9c1854692fce",
+      "translation_text_hash": "59746d50d7a73275a49f1f795ac8c4f35c8f4db3ea51471605c55d10839a246a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 손으로 너를 붙들어 발이 돌에 부딪히지 않게 하리로다"
+      ],
+      "raw_text_hashes": [
+        "59746d50d7a73275a49f1f795ac8c4f35c8f4db3ea51471605c55d10839a246a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:13",
+      "sequence": 15409,
+      "chapter_label": "PSA 91",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 13
+        }
+      ],
+      "en": "You will tread on the lion and cobra. You will trample the young lion and the serpent underfoot.",
+      "ko": "네가 사자와 독사를 밟으며 젊은 사자와 뱀을 발로 누르리로다",
+      "source_text_hash": "6268add87efceadf096c369114114eb56868b0db376ce75b163826460f43704f",
+      "translation_text_hash": "1d60b6a669c50be0f2dcf8e16cecc07d67eb6d8943b40aeb48f3370c3b7000a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 사자와 독사를 밟으며 젊은 사자와 뱀을 발로 누르리로다"
+      ],
+      "raw_text_hashes": [
+        "1d60b6a669c50be0f2dcf8e16cecc07d67eb6d8943b40aeb48f3370c3b7000a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:14",
+      "sequence": 15410,
+      "chapter_label": "PSA 91",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 14
+        }
+      ],
+      "en": "“Because he has set his love on me, therefore I will deliver him. I will set him on high, because he has known my name.",
+      "ko": "하나님이 가라사대 저가 나를 사랑한즉 내가 저를 건지리라 저가 내 이름을 안즉 내가 저를 높이리라",
+      "source_text_hash": "ece0187bde028df27ca2ef7c1b75cb45b5e70be4604e019f939e4d45d7808614",
+      "translation_text_hash": "407c89bf7586b2f3cbbc077eda57e1eac2ee5873af9d41f8d59f85e7536c7720",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 저가 나를 사랑한즉 내가 저를 건지리라 저가 내 이름을 안즉 내가 저를 높이리라"
+      ],
+      "raw_text_hashes": [
+        "407c89bf7586b2f3cbbc077eda57e1eac2ee5873af9d41f8d59f85e7536c7720"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:15",
+      "sequence": 15411,
+      "chapter_label": "PSA 91",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 15
+        }
+      ],
+      "en": "He will call on me, and I will answer him. I will be with him in trouble. I will deliver him, and honor him.",
+      "ko": "저가 내게 간구하리니 내가 응답하리라 저희 환난 때에 내가 저와 함께하여 저를 건지고 영화롭게 하리라",
+      "source_text_hash": "02f3c8c02c074a56f445360c204507c384ba4c36c2a7aed36853b354c1495068",
+      "translation_text_hash": "1da263904c7548a0c265bf76266525c8f5ec0fd2457b5ec4d72000bf0f302ac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 내게 간구하리니 내가 응답하리라 저희 환난 때에 내가 저와 함께하여 저를 건지고 영화롭게 하리라"
+      ],
+      "raw_text_hashes": [
+        "1da263904c7548a0c265bf76266525c8f5ec0fd2457b5ec4d72000bf0f302ac5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:91:16",
+      "sequence": 15412,
+      "chapter_label": "PSA 91",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 91,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 91,
+          "verse": 16
+        }
+      ],
+      "en": "I will satisfy him with long life, and show him my salvation.”",
+      "ko": "내가 장수함으로 저를 만족케 하며 나의 구원으로 보이리라 하시도다",
+      "source_text_hash": "6a2f0d7b2c4a4726cbed3b927ed6339f0393a33d05f1b74f70a44178a4b14567",
+      "translation_text_hash": "947fbbb077453d2bc0bc6b2c341052aec4bbb1389002ff2bc472559034108c6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 장수함으로 저를 만족케 하며 나의 구원으로 보이리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "947fbbb077453d2bc0bc6b2c341052aec4bbb1389002ff2bc472559034108c6d"
+      ]
+    }
+  ]
+}

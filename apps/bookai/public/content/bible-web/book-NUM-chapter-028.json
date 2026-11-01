@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:028",
+  "unit_ordinal": 145,
+  "unit_label": "NUM 28",
+  "book_code": "NUM",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:28:1",
+      "sequence": 4579,
+      "chapter_label": "NUM 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:2",
+      "sequence": 4580,
+      "chapter_label": "NUM 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "“Command the children of Israel, and tell them, ‘See that you present my offering, my food for my offerings made by fire, as a pleasant aroma to me, in their due season.’",
+      "ko": "이스라엘 자손에게 명하여 그들에게 이르라 나의 예물, 나의 식물 되는 화제, 나의 향기로운 것은 너희가 그 정한 시기에 삼가 내게 드릴찌니라",
+      "source_text_hash": "c92d2ff3a3e5a64f61dc3cb1b8f0f10dff6da44c5b40deee2215e9eee8783dd3",
+      "translation_text_hash": "26deec26b2c3708d7ced58e13bab8b69decb7b8eb489016c478543152d5ef0f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 명하여 그들에게 이르라 나의 예물, 나의 식물 되는 화제, 나의 향기로운 것은 너희가 그 정한 시기에 삼가 내게 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "26deec26b2c3708d7ced58e13bab8b69decb7b8eb489016c478543152d5ef0f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:3",
+      "sequence": 4581,
+      "chapter_label": "NUM 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "You shall tell them, ‘This is the offering made by fire which you shall offer to the LORD: male lambs a year old without defect, two day by day, for a continual burnt offering.",
+      "ko": "또 그들에게 이르라 너희가 여호와께 드릴 화제는 이러하니 일년 되고 흠 없는 수양을 매일 둘씩 상번제로 드리되",
+      "source_text_hash": "0c58b7efd4bf7400f8926f11406651f876f7ef09ec202d156ab15a4ecd0a448b",
+      "translation_text_hash": "9f169444b7dae0e9c625e7f513a6ded04bdf3d7f804a14a4421b7c67cc76a41c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들에게 이르라 너희가 여호와께 드릴 화제는 이러하니 일년 되고 흠 없는 수양을 매일 둘씩 상번제로 드리되"
+      ],
+      "raw_text_hashes": [
+        "9f169444b7dae0e9c625e7f513a6ded04bdf3d7f804a14a4421b7c67cc76a41c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:4",
+      "sequence": 4582,
+      "chapter_label": "NUM 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "You shall offer the one lamb in the morning, and you shall offer the other lamb at evening,",
+      "ko": "한 어린 양은 아침에 드리고 한 어린 양은 해 질 때에 드릴 것이요",
+      "source_text_hash": "e956260e677e5cc663cede649d9fc06492e3d09211326769a797f8e5a3248db3",
+      "translation_text_hash": "b30f8ad3dc73ef32e4a6ff0e1ac8bf91e0e0bb695e13bd8835e95f835e373d44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 어린 양은 아침에 드리고 한 어린 양은 해 질 때에 드릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "b30f8ad3dc73ef32e4a6ff0e1ac8bf91e0e0bb695e13bd8835e95f835e373d44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:5",
+      "sequence": 4583,
+      "chapter_label": "NUM 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "with one tenth of an ephah of fine flour for a meal offering, mixed with the fourth part of a hin of beaten oil.",
+      "ko": "또 고운 가루 에바 십분지 일에 빻아낸 기름 힌 사분지 일을 섞어서 소제로 드릴 것이니",
+      "source_text_hash": "e6bc6bf3a08083a097b0bece409724106664aae2c823a555d9f62e12c678719c",
+      "translation_text_hash": "2d65dc8db9f2178ad782b6305d8ac9b30ba0cad036c3799b9e6f738dfb981c4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 고운 가루 에바 십분지 일에 빻아낸 기름 힌 사분지 일을 섞어서 소제로 드릴 것이니"
+      ],
+      "raw_text_hashes": [
+        "2d65dc8db9f2178ad782b6305d8ac9b30ba0cad036c3799b9e6f738dfb981c4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:6",
+      "sequence": 4584,
+      "chapter_label": "NUM 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "It is a continual burnt offering which was ordained in Mount Sinai for a pleasant aroma, an offering made by fire to the LORD.",
+      "ko": "이는 시내산에서 정한 상번제로서 여호와께 드리는 향기로운 화제며",
+      "source_text_hash": "b8b10bee5f13cc88b30b87fc799d02e4fdd7ede42ef903f5766ab79036c37459",
+      "translation_text_hash": "ea30f3a8e94371c4d6c15a3c88c7fb04fe6c603a5e64a233acab7e5bed403fd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 시내산에서 정한 상번제로서 여호와께 드리는 향기로운 화제며"
+      ],
+      "raw_text_hashes": [
+        "ea30f3a8e94371c4d6c15a3c88c7fb04fe6c603a5e64a233acab7e5bed403fd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:7",
+      "sequence": 4585,
+      "chapter_label": "NUM 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "Its drink offering shall be the fourth part of a hin for each lamb. You shall pour out a drink offering of strong drink to the LORD in the holy place.",
+      "ko": "또 그 전제는 어린 양 하나에 힌 사분지 일을 드리되 거룩한 곳에서 여호와께 독주의 전제를 부어 드릴 것이며",
+      "source_text_hash": "bbeb12916a1ab32d6137323f7b80e2f5acd53bdc0c49eeda100e373f1b5c41a5",
+      "translation_text_hash": "ada2b48f1d019e6d39c1c91b8d931ab9bb41606c9864511e88483cb7b07c6082",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 전제는 어린 양 하나에 힌 사분지 일을 드리되 거룩한 곳에서 여호와께 독주의 전제를 부어 드릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "ada2b48f1d019e6d39c1c91b8d931ab9bb41606c9864511e88483cb7b07c6082"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:8",
+      "sequence": 4586,
+      "chapter_label": "NUM 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "The other lamb you shall offer at evening. As the meal offering of the morning, and as its drink offering, you shall offer it, an offering made by fire, for a pleasant aroma to the LORD.",
+      "ko": "해 질 때에는 그 한 어린 양을 드리되 그 소제와 전제를 아침것 같이 여호와께 향기로운 화제로 드릴 것이니라",
+      "source_text_hash": "92f73fb20af9004d82752ac3b44222cb5923f54a264c2cb7eacde662d4f31f45",
+      "translation_text_hash": "7f2be931629abbf145aea4d4a8939a6e14c7f7706ae42b0104ea14e77ed726cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해 질 때에는 그 한 어린 양을 드리되 그 소제와 전제를 아침것 같이 여호와께 향기로운 화제로 드릴 것이니라"
+      ],
+      "raw_text_hashes": [
+        "7f2be931629abbf145aea4d4a8939a6e14c7f7706ae42b0104ea14e77ed726cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:9",
+      "sequence": 4587,
+      "chapter_label": "NUM 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "“‘On the Sabbath day, you shall offer two male lambs a year old without defect, and two tenths of an ephah of fine flour for a meal offering mixed with oil, and its drink offering:",
+      "ko": "안식일에는 일년 되고 흠 없는 수양 둘과 고운 가루 에바 십분지 이에 기름 섞은 소제와 그 전제를 드릴 것이니",
+      "source_text_hash": "0e1bb4ad8d7e5e6a5e4720372b4b116a4d18a283566774f0806c4b2f3bbbb12b",
+      "translation_text_hash": "48970b4612cf4c53e0339a0e250429c637eb678daf829dd823bb258b10ccf1d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일에는 일년 되고 흠 없는 수양 둘과 고운 가루 에바 십분지 이에 기름 섞은 소제와 그 전제를 드릴 것이니"
+      ],
+      "raw_text_hashes": [
+        "48970b4612cf4c53e0339a0e250429c637eb678daf829dd823bb258b10ccf1d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:10",
+      "sequence": 4588,
+      "chapter_label": "NUM 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "this is the burnt offering of every Sabbath, in addition to the continual burnt offering and its drink offering.",
+      "ko": "이는 매 안식일의 번제라 상번제와 그 전제 외에니라",
+      "source_text_hash": "73fb8790dd5dd92c6184fc012ad5c82dff0828e0baf435da11a810f3ded7f471",
+      "translation_text_hash": "c3721785085aa0e19fe2f83e5346ebe7ad24c572678680baa58160c56548d30b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 매 안식일의 번제라 상번제와 그 전제 외에니라"
+      ],
+      "raw_text_hashes": [
+        "c3721785085aa0e19fe2f83e5346ebe7ad24c572678680baa58160c56548d30b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:11",
+      "sequence": 4589,
+      "chapter_label": "NUM 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "“‘In the beginnings of your months, you shall offer a burnt offering to the LORD: two young bulls, one ram, seven male lambs a year old without defect,",
+      "ko": "월삭에는 수송아지 둘과 수양 하나와 일년 되고 흠 없는 수양 일곱으로 여호와께 번제를 드리되",
+      "source_text_hash": "88212e03202362dbf12f8a25a697fbd3556293fb76c164dfb389f9033572a0bb",
+      "translation_text_hash": "7c40839eec25bc370e3b356a9422dd68da2894cf7ad7af304d70b00345461ea8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "월삭에는 수송아지 둘과 수양 하나와 일년 되고 흠 없는 수양 일곱으로 여호와께 번제를 드리되"
+      ],
+      "raw_text_hashes": [
+        "7c40839eec25bc370e3b356a9422dd68da2894cf7ad7af304d70b00345461ea8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:12",
+      "sequence": 4590,
+      "chapter_label": "NUM 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "and three tenths of an ephah of fine flour for a meal offering mixed with oil, for each bull; and two tenth parts of fine flour for a meal offering mixed with oil, for the one ram;",
+      "ko": "매 수송아지에는 고운 가루 에바 십분지 삼에 기름 섞은 소제와 수양 하나에는 고운 가루 에바 십분지 이에 기름 섞은 소제와",
+      "source_text_hash": "7385024a93d2413f3c855806b86bcce3121a85ede5a66e2e9d2846768edae37f",
+      "translation_text_hash": "4770018a1498c44311d3a57bb3fd71c922e8cc6e4c4cb1ce22bd67b1ed6bd373",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매 수송아지에는 고운 가루 에바 십분지 삼에 기름 섞은 소제와 수양 하나에는 고운 가루 에바 십분지 이에 기름 섞은 소제와"
+      ],
+      "raw_text_hashes": [
+        "4770018a1498c44311d3a57bb3fd71c922e8cc6e4c4cb1ce22bd67b1ed6bd373"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:13",
+      "sequence": 4591,
+      "chapter_label": "NUM 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "and one tenth part of fine flour mixed with oil for a meal offering to every lamb, as a burnt offering of a pleasant aroma, an offering made by fire to the LORD.",
+      "ko": "매 어린 양에는 고운 가루 에바 십분지 일에 기름 섞은 소제를 향기로운 번제로 여호와께 화제를 드릴 것이며",
+      "source_text_hash": "c4af3a21b4f51d916c7c3b6f9fab95ef95ecce2ba94c107809e96831633bf33f",
+      "translation_text_hash": "a47455895ad9ed90940d8e6cc80e7ec7e0c4c10eaea1da8d75a9c58e362b2f49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매 어린 양에는 고운 가루 에바 십분지 일에 기름 섞은 소제를 향기로운 번제로 여호와께 화제를 드릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "a47455895ad9ed90940d8e6cc80e7ec7e0c4c10eaea1da8d75a9c58e362b2f49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:14",
+      "sequence": 4592,
+      "chapter_label": "NUM 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "Their drink offerings shall be half a hin of wine for a bull, the third part of a hin for the ram, and the fourth part of a hin for a lamb. This is the burnt offering of every month throughout the months of the year.",
+      "ko": "그 전제는 수송아지 하나에 포도주 반 힌이요 수양 하나에 삼분지 일 힌이요 어린 양 하나에 사분지 일 힌이니 이는 일년중 매 월삭의 번제며",
+      "source_text_hash": "ab1af5e134945d0e94ae7cda49968b1e69df1881e8cc0ffb833edeb4d4dbb9d5",
+      "translation_text_hash": "b0a53d82769fe6e4078b8a8708d78bcf013794a81b94f98c2375b54e170551f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 전제는 수송아지 하나에 포도주 반 힌이요 수양 하나에 삼분지 일 힌이요 어린 양 하나에 사분지 일 힌이니 이는 일년중 매 월삭의 번제며"
+      ],
+      "raw_text_hashes": [
+        "b0a53d82769fe6e4078b8a8708d78bcf013794a81b94f98c2375b54e170551f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:15",
+      "sequence": 4593,
+      "chapter_label": "NUM 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "Also, one male goat for a sin offering to the LORD shall be offered in addition to the continual burnt offering and its drink offering.",
+      "ko": "또 상번제와 그 전제 외에 수염소 하나를 속죄제로 여호와께 드릴 것이니라",
+      "source_text_hash": "2c7da92d328d90b068fab7b8c11448c067910084c36631c0ae314fb8f89a617d",
+      "translation_text_hash": "bf0dfd386b91a1f2ff2bcf12bf629e48130e562d9a805ebd38f412acc6c9def8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 상번제와 그 전제 외에 수염소 하나를 속죄제로 여호와께 드릴 것이니라"
+      ],
+      "raw_text_hashes": [
+        "bf0dfd386b91a1f2ff2bcf12bf629e48130e562d9a805ebd38f412acc6c9def8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:16",
+      "sequence": 4594,
+      "chapter_label": "NUM 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "“‘In the first month, on the fourteenth day of the month, is the LORD’s Passover.",
+      "ko": "정월 십사일은 여호와의 유월절이며",
+      "source_text_hash": "f350c803cbc5fd693ce2e89fd93258adf7582b42746887f54f6af5bc5c4aa4a5",
+      "translation_text_hash": "dc97a382a58aac0c44a6b9b578918931d487e2b8c3d67a13cb529f92e235b342",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월 십사일은 여호와의 유월절이며"
+      ],
+      "raw_text_hashes": [
+        "dc97a382a58aac0c44a6b9b578918931d487e2b8c3d67a13cb529f92e235b342"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:17",
+      "sequence": 4595,
+      "chapter_label": "NUM 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "On the fifteenth day of this month shall be a feast. Unleavened bread shall be eaten for seven days.",
+      "ko": "또 그 달 십오일부터는 절일이니 칠일 동안 무교병을 먹을 것이며",
+      "source_text_hash": "199220115b644dd06cf07364376d15df25001987890ac2c43bb8b41cdeadafe1",
+      "translation_text_hash": "14dfb4ff3579cb31866424819cda817479dcf48b0f4d51ea8a90f74757190afd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 달 십오일부터는 절일이니 칠일 동안 무교병을 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "14dfb4ff3579cb31866424819cda817479dcf48b0f4d51ea8a90f74757190afd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:18",
+      "sequence": 4596,
+      "chapter_label": "NUM 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "In the first day shall be a holy convocation. You shall do no regular work,",
+      "ko": "그 첫날에는 성회로 모일 것이요 아무 노동도 하지 말 것이며",
+      "source_text_hash": "63ba3494cba5d7c063923ce55f2f058704664a97c8ab53d9e226be2d4f25a1c1",
+      "translation_text_hash": "edfc3a4eb96fc2dffb65457e958b787c2c329cf54ffc1c256d2ee2883287c3b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 첫날에는 성회로 모일 것이요 아무 노동도 하지 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "edfc3a4eb96fc2dffb65457e958b787c2c329cf54ffc1c256d2ee2883287c3b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:19",
+      "sequence": 4597,
+      "chapter_label": "NUM 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "but you shall offer an offering made by fire, a burnt offering to the LORD: two young bulls, one ram, and seven male lambs a year old. They shall be without defect,",
+      "ko": "수송아지 둘과 수양 하나와 일년 된 수양 일곱을 다 흠 없는 것으로 여호와께 화제를 드려 번제가 되게 할 것이며",
+      "source_text_hash": "f8f61c96c2ae2b8c8802f29e40ca88cb10d583cfc75b13695a72ef56f2f4b16b",
+      "translation_text_hash": "91397a94b48bffbaf4332fdbbc31264416c197572e7fc25da9fb03e97bd22636",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수송아지 둘과 수양 하나와 일년 된 수양 일곱을 다 흠 없는 것으로 여호와께 화제를 드려 번제가 되게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "91397a94b48bffbaf4332fdbbc31264416c197572e7fc25da9fb03e97bd22636"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:20",
+      "sequence": 4598,
+      "chapter_label": "NUM 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "with their meal offering, fine flour mixed with oil. You shall offer three tenths for a bull, and two tenths for the ram.",
+      "ko": "그 소제로는 고운 가루에 기름을 섞어서 쓰되 수송아지 하나에는 에바 십분지 삼이요 수양 하나에는 에바 십분지 이를 드리고",
+      "source_text_hash": "f20b7f1759aa2a9202e13528b479a42904427ea636282af197570a9d87d0945b",
+      "translation_text_hash": "b9ba14cbf9459f61adb11640348ad106fb504e7748452e868be6c4a6ce23508d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소제로는 고운 가루에 기름을 섞어서 쓰되 수송아지 하나에는 에바 십분지 삼이요 수양 하나에는 에바 십분지 이를 드리고"
+      ],
+      "raw_text_hashes": [
+        "b9ba14cbf9459f61adb11640348ad106fb504e7748452e868be6c4a6ce23508d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:21",
+      "sequence": 4599,
+      "chapter_label": "NUM 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "You shall offer one tenth for every lamb of the seven lambs;",
+      "ko": "어린 양 일곱에는 매 어린 양에 에바 십분지 일을 드릴 것이며",
+      "source_text_hash": "764b32db98b60c2bef45921aeb303e938ee9f8ea162b8b38014f69904078e9a3",
+      "translation_text_hash": "ffe98b0205f3fb617380366e1312c31cb275953f2e197814012e1bc8d22dcde3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어린 양 일곱에는 매 어린 양에 에바 십분지 일을 드릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "ffe98b0205f3fb617380366e1312c31cb275953f2e197814012e1bc8d22dcde3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:22",
+      "sequence": 4600,
+      "chapter_label": "NUM 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "and one male goat for a sin offering, to make atonement for you.",
+      "ko": "또 너희를 속하기 위하여 수염소 하나로 속죄제를 드리되",
+      "source_text_hash": "0edba45d62f2a6263981127a60a04d7895bf2b0f8b1ac5bd9f70aacb5a5cf177",
+      "translation_text_hash": "92a65eeb7a23bc0e1c2982d8015f41eb598d8d5792673191456ac3b824fe175e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희를 속하기 위하여 수염소 하나로 속죄제를 드리되"
+      ],
+      "raw_text_hashes": [
+        "92a65eeb7a23bc0e1c2982d8015f41eb598d8d5792673191456ac3b824fe175e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:23",
+      "sequence": 4601,
+      "chapter_label": "NUM 28",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 23
+        }
+      ],
+      "en": "You shall offer these in addition to the burnt offering of the morning, which is for a continual burnt offering.",
+      "ko": "아침의 번제 곧 상번제 외에 그것들을 드릴 것이니라",
+      "source_text_hash": "7caaef3e64f57160367bdc7ece1cb43b90a183961c7a18e8991022740a072228",
+      "translation_text_hash": "087868ec0b2101ef6e5b79b35269e588ff93ef1ed573d1fe4c99e28ed07502af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침의 번제 곧 상번제 외에 그것들을 드릴 것이니라"
+      ],
+      "raw_text_hashes": [
+        "087868ec0b2101ef6e5b79b35269e588ff93ef1ed573d1fe4c99e28ed07502af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:24",
+      "sequence": 4602,
+      "chapter_label": "NUM 28",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 24
+        }
+      ],
+      "en": "In this way you shall offer daily, for seven days, the food of the offering made by fire, of a pleasant aroma to the LORD. It shall be offered in addition to the continual burnt offering and its drink offering.",
+      "ko": "너희는 이 순서대로 칠일 동안 매일 여호와께 향기로운 화제의 식물을 드리되 상번제와 그 전제 외에 드릴 것이며",
+      "source_text_hash": "5868667ab4d41a9023916ea5bfcdc2232238d2fcfa983be6d19a5b4590a771cf",
+      "translation_text_hash": "83afd9a7fe81df2396a162f3695daedd7e5c3fcdc3fd6db688c847dac39e5813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 순서대로 칠일 동안 매일 여호와께 향기로운 화제의 식물을 드리되 상번제와 그 전제 외에 드릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "83afd9a7fe81df2396a162f3695daedd7e5c3fcdc3fd6db688c847dac39e5813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:25",
+      "sequence": 4603,
+      "chapter_label": "NUM 28",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 25
+        }
+      ],
+      "en": "On the seventh day you shall have a holy convocation. You shall do no regular work.",
+      "ko": "제 칠일에는 성회로 모일 것이요 아무 노동도 하지 말 것이니라",
+      "source_text_hash": "4e29b78703529579a3fb3ddd789659fe051d39a9bffcac0e1061d4dbda2a224b",
+      "translation_text_hash": "906c070921f93551a74f9ca0e203459911b35b68d02b5b34eed85e0d91366666",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠일에는 성회로 모일 것이요 아무 노동도 하지 말 것이니라"
+      ],
+      "raw_text_hashes": [
+        "906c070921f93551a74f9ca0e203459911b35b68d02b5b34eed85e0d91366666"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:26",
+      "sequence": 4604,
+      "chapter_label": "NUM 28",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 26
+        }
+      ],
+      "en": "“‘Also in the day of the first fruits, when you offer a new meal offering to the LORD in your feast of weeks, you shall have a holy convocation. You shall do no regular work;",
+      "ko": "칠칠절 처음 익은 열매 드리는 날에 너희가 여호와께 새 소제를 드릴 때에도 성회로 모일 것이요 아무 노동도 하지 말 것이며",
+      "source_text_hash": "bdc9fbd8728572bdf6940c98a567cee36e63b8a22f4c64a124b8561cb9b0c79a",
+      "translation_text_hash": "ea71f8cf352a81f76cdf718f1dd19344c5f7c8ca28313dc5017abbcdfed50069",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠칠절 처음 익은 열매 드리는 날에 너희가 여호와께 새 소제를 드릴 때에도 성회로 모일 것이요 아무 노동도 하지 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "ea71f8cf352a81f76cdf718f1dd19344c5f7c8ca28313dc5017abbcdfed50069"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:27",
+      "sequence": 4605,
+      "chapter_label": "NUM 28",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 27
+        }
+      ],
+      "en": "but you shall offer a burnt offering for a pleasant aroma to the LORD: two young bulls, one ram, seven male lambs a year old;",
+      "ko": "수송아지 둘과 수양 하나와 일년 된 수양 일곱으로 여호와께 향기로운 번제를 드릴 것이며",
+      "source_text_hash": "e6cf58717bcb4e6604b74314db01d5e61b0e3805c36e72a36e54dac662dbfb30",
+      "translation_text_hash": "f4214537843ec9d8e8140438ff8b1cb08807c2195de25701803fb80b2d10f09b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수송아지 둘과 수양 하나와 일년 된 수양 일곱으로 여호와께 향기로운 번제를 드릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "f4214537843ec9d8e8140438ff8b1cb08807c2195de25701803fb80b2d10f09b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:28",
+      "sequence": 4606,
+      "chapter_label": "NUM 28",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 28
+        }
+      ],
+      "en": "and their meal offering, fine flour mixed with oil, three tenths for each bull, two tenths for the one ram,",
+      "ko": "그 소제로는 고운 가루에 기름을 섞어서 쓰되 매 수송아지에는 에바 십분지 삼이요 수양 하나에는 에바 십분지 이요",
+      "source_text_hash": "c4caf1400b8102025e5deac77ab4240c828bd36c0e8f132341f64dc4e356cc5c",
+      "translation_text_hash": "6dacb84fb80713430df6436e6a34f07515a787a84174152cdc39dd9142c1c305",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소제로는 고운 가루에 기름을 섞어서 쓰되 매 수송아지에는 에바 십분지 삼이요 수양 하나에는 에바 십분지 이요"
+      ],
+      "raw_text_hashes": [
+        "6dacb84fb80713430df6436e6a34f07515a787a84174152cdc39dd9142c1c305"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:29",
+      "sequence": 4607,
+      "chapter_label": "NUM 28",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 29
+        }
+      ],
+      "en": "one tenth for every lamb of the seven lambs;",
+      "ko": "어린 양 일곱에는 매 어린 양에 에바 십분지 일을 드릴 것이며",
+      "source_text_hash": "2b738c3fe6f07e54abaa15dd0bc513fa1f4b5eb24be8fe3518567e08271bc387",
+      "translation_text_hash": "ffe98b0205f3fb617380366e1312c31cb275953f2e197814012e1bc8d22dcde3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어린 양 일곱에는 매 어린 양에 에바 십분지 일을 드릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "ffe98b0205f3fb617380366e1312c31cb275953f2e197814012e1bc8d22dcde3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:30",
+      "sequence": 4608,
+      "chapter_label": "NUM 28",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 30
+        }
+      ],
+      "en": "and one male goat, to make atonement for you.",
+      "ko": "또 너희를 속하기 위하여 수염소 하나를 드리되",
+      "source_text_hash": "959bb1af14701cd5e9c539079b4f711af3e475f768eb1c3c1b82ab6a457b0acb",
+      "translation_text_hash": "2419f006a859dc2100c802e197d83a19c030669aa80406bf0dbde0880a04f5c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희를 속하기 위하여 수염소 하나를 드리되"
+      ],
+      "raw_text_hashes": [
+        "2419f006a859dc2100c802e197d83a19c030669aa80406bf0dbde0880a04f5c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:28:31",
+      "sequence": 4609,
+      "chapter_label": "NUM 28",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 28,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 28,
+          "verse": 31
+        }
+      ],
+      "en": "Besides the continual burnt offering and its meal offering, you shall offer them and their drink offerings. See that they are without defect.",
+      "ko": "너희는 다 흠 없는 것으로 상번제와 그 소제와 전제 외에 그것들을 드릴 것이니라",
+      "source_text_hash": "46fdf6d59ba1c7bc51956f7a0f9cba3537363a4554da1d4d88cd30c6b3f97f61",
+      "translation_text_hash": "8ab14cba62d2be8628251e0ea833205731d537ef7178acf538f8e0b3091b8955",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 다 흠 없는 것으로 상번제와 그 소제와 전제 외에 그것들을 드릴 것이니라"
+      ],
+      "raw_text_hashes": [
+        "8ab14cba62d2be8628251e0ea833205731d537ef7178acf538f8e0b3091b8955"
+      ]
+    }
+  ]
+}

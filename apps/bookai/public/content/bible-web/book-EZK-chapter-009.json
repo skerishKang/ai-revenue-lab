@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:009",
+  "unit_ordinal": 811,
+  "unit_label": "EZK 9",
+  "book_code": "EZK",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:9:1",
+      "sequence": 20624,
+      "chapter_label": "EZK 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Then he cried in my ears with a loud voice, saying, “Cause those who are in charge of the city to draw near, each man with his destroying weapon in his hand.”",
+      "ko": "그가 또 큰 소리로 내 귀에 외쳐 가라사대 이 성읍을 관할하는 자들로 각기 살륙하는 기계를 손에 들고 나아오게 하라 하시더라",
+      "source_text_hash": "36f2483389edaa820e5b7415cbaacb67958c5a0cd83050faceaaaadfbb1fd27d",
+      "translation_text_hash": "ef3d44eaadda9f8ed60878bf7f41d6e02e505603144c3d2b8b1a565995624c02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 큰 소리로 내 귀에 외쳐 가라사대 이 성읍을 관할하는 자들로 각기 살륙하는 기계를 손에 들고 나아오게 하라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "ef3d44eaadda9f8ed60878bf7f41d6e02e505603144c3d2b8b1a565995624c02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:9:2",
+      "sequence": 20625,
+      "chapter_label": "EZK 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, six men came from the way of the upper gate, which lies toward the north, every man with his slaughter weapon in his hand. One man in the middle of them was clothed in linen, with a writer’s inkhorn by his side. They went in, and stood beside the bronze altar.",
+      "ko": "내가 본즉 여섯 사람이 북향한 윗문 길로 좇아 오는데 각 사람의 손에 살륙하는 기계를 잡았고 그 중에 한 사람은 가는 베옷을 입고 허리에 서기관의 먹 그릇을 찼더라 그들이 들어 와서 놋 제단 곁에 서더라",
+      "source_text_hash": "7376d2057f31530618c9c97b93066736b419931fa8edb107ee410f8eae3470d1",
+      "translation_text_hash": "ad43a02260d8f1a7289ed1e9b0ec279d17fa0c5c447fef88d3e1f8bf54f2b62c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 여섯 사람이 북향한 윗문 길로 좇아 오는데 각 사람의 손에 살륙하는 기계를 잡았고 그 중에 한 사람은 가는 베옷을 입고 허리에 서기관의 먹 그릇을 찼더라 그들이 들어 와서 놋 제단 곁에 서더라"
+      ],
+      "raw_text_hashes": [
+        "ad43a02260d8f1a7289ed1e9b0ec279d17fa0c5c447fef88d3e1f8bf54f2b62c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:9:3",
+      "sequence": 20626,
+      "chapter_label": "EZK 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "The glory of the God of Israel went up from the cherub, whereupon it was, to the threshold of the house; and he called to the man clothed in linen, who had the writer’s inkhorn by his side.",
+      "ko": "그룹에 머물러 있던 이스라엘 하나님의 영광이 올라 성전 문지방에 이르더니 여호와께서 그 가는 베옷을 입고 서기관의 먹 그릇을 찬 사람을 불러",
+      "source_text_hash": "2e8a1ec1fa6cf6ad9eb0259f3fd8ddd4dee47241fccdf90ac72c6c64bfa3c80b",
+      "translation_text_hash": "c87d902946c50ba9456bc9d4efc23883a4ec0973efe7a2f62cf5b21f9886ba17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹에 머물러 있던 이스라엘 하나님의 영광이 올라 성전 문지방에 이르더니 여호와께서 그 가는 베옷을 입고 서기관의 먹 그릇을 찬 사람을 불러"
+      ],
+      "raw_text_hashes": [
+        "c87d902946c50ba9456bc9d4efc23883a4ec0973efe7a2f62cf5b21f9886ba17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:9:4",
+      "sequence": 20627,
+      "chapter_label": "EZK 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD said to him, “Go through the middle of the city, through the middle of Jerusalem, and set a mark on the foreheads of the men that sigh and that cry over all the abominations that are done within it.”",
+      "ko": "이르시되 너는 예루살렘 성읍 중에 순행하여 그 가운데서 행하는 모든 가증한 일로 인하여 탄식하며 우는 자의 이마에 표하라 하시고",
+      "source_text_hash": "06c28ab5d868762c8bc35a1d2ec1b41f35059aa70ea3d7bd6b6aff69ff1a1764",
+      "translation_text_hash": "976dcbd4f6ed226f1382ff42928ef53b0037951247ff1c3ba9fb7f0d4dabe033",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 너는 예루살렘 성읍 중에 순행하여 그 가운데서 행하는 모든 가증한 일로 인하여 탄식하며 우는 자의 이마에 표하라 하시고"
+      ],
+      "raw_text_hashes": [
+        "976dcbd4f6ed226f1382ff42928ef53b0037951247ff1c3ba9fb7f0d4dabe033"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:9:5",
+      "sequence": 20628,
+      "chapter_label": "EZK 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "To the others he said in my hearing, “Go through the city after him, and strike. Don’t let your eye spare, neither have pity.",
+      "ko": "나의 듣는데 또 그 남은 자에게 이르시되 너희는 그 뒤를 좇아 성읍 중에 순행하며 아껴 보지도 말며 긍휼을 베풀지도 말고 쳐서",
+      "source_text_hash": "7b37a2ad74456517932ce378eccdd17e2bbced512cab18786700c112fae81fd8",
+      "translation_text_hash": "c8bd0f7dcc75aee85f8f7ce65dd0b41778af15ffe72bebc7a83d9177ef06eabe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 듣는데 또 그 남은 자에게 이르시되 너희는 그 뒤를 좇아 성읍 중에 순행하며 아껴 보지도 말며 긍휼을 베풀지도 말고 쳐서"
+      ],
+      "raw_text_hashes": [
+        "c8bd0f7dcc75aee85f8f7ce65dd0b41778af15ffe72bebc7a83d9177ef06eabe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:9:6",
+      "sequence": 20629,
+      "chapter_label": "EZK 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Kill utterly the old man, the young man, the virgin, little children and women; but don’t come near any man on whom is the mark. Begin at my sanctuary.” Then they began at the old men who were before the house.",
+      "ko": "늙은 자와 젊은 자와 처녀와 어린 아이와 부녀를 다 죽이되 이마에 표 있는 자에게는 가까이 말라 내 성소에서 시작할찌니라 하시매 그들이 성전 앞에 있는 늙은 자들로부터 시작하더라",
+      "source_text_hash": "1652eb1e6834e7e61997d5fd7e09c61bc36ccea2efe975fba5bf56015a9e25ea",
+      "translation_text_hash": "b332142136fd4ec75d2a959f99f267c6cafca93eb727bc3a29b0e1d5dd965212",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늙은 자와 젊은 자와 처녀와 어린 아이와 부녀를 다 죽이되 이마에 표 있는 자에게는 가까이 말라 내 성소에서 시작할찌니라 하시매 그들이 성전 앞에 있는 늙은 자들로부터 시작하더라"
+      ],
+      "raw_text_hashes": [
+        "b332142136fd4ec75d2a959f99f267c6cafca93eb727bc3a29b0e1d5dd965212"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:9:7",
+      "sequence": 20630,
+      "chapter_label": "EZK 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "He said to them, “Defile the house, and fill the courts with the slain. Go out!” They went out, and struck in the city.",
+      "ko": "그가 또 그들에게 이르시되 너희는 성전을 더럽혀 시체로 모든 뜰에 채우라 너희는 나가라 하시매 그들이 나가서 성읍 중에서 치더라",
+      "source_text_hash": "7213394a164b3e114f579983f14678d63ac7254e9c1abb0489ecd2b669c5a4cd",
+      "translation_text_hash": "9c77466fa707d23008483ed1afe5f9e166f93c7125b488f55c16a57aca43b767",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 그들에게 이르시되 너희는 성전을 더럽혀 시체로 모든 뜰에 채우라 너희는 나가라 하시매 그들이 나가서 성읍 중에서 치더라"
+      ],
+      "raw_text_hashes": [
+        "9c77466fa707d23008483ed1afe5f9e166f93c7125b488f55c16a57aca43b767"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:9:8",
+      "sequence": 20631,
+      "chapter_label": "EZK 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "While they were killing, and I was left, I fell on my face, and cried, and said, “Ah Lord GOD! Will you destroy all the residue of Israel in your pouring out of your wrath on Jerusalem?”",
+      "ko": "그들이 칠 때에 내가 홀로 있는지라 엎드리어 부르짖어 가로되 오호라 주 여호와여 예루살렘을 향하여 분노를 쏟으시오니 이스라엘 남은 자를 모두 멸하려 하시나이까",
+      "source_text_hash": "fc2d37f845ff7e6194557901be351cd1906d9449b01e4866a2eada33177b619d",
+      "translation_text_hash": "9ce48465e691a2a5d923080afb91c89de88c55272a498743f2b25322f72ee685",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 칠 때에 내가 홀로 있는지라 엎드리어 부르짖어 가로되 오호라 주 여호와여 예루살렘을 향하여 분노를 쏟으시오니 이스라엘 남은 자를 모두 멸하려 하시나이까"
+      ],
+      "raw_text_hashes": [
+        "9ce48465e691a2a5d923080afb91c89de88c55272a498743f2b25322f72ee685"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:9:9",
+      "sequence": 20632,
+      "chapter_label": "EZK 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "Then he said to me, “The iniquity of the house of Israel and Judah is exceedingly great, and the land is full of blood, and the city full of perversion; for they say, ‘The LORD has forsaken the land, and the LORD doesn’t see.’",
+      "ko": "그가 내게 이르시되 이스라엘과 유다 족속의 죄악이 심히 중하여 그 땅에 피가 가득하며 그 성읍에 불법이 찼나니 이는 그들이 이르기를 여호와께서 이 땅을 버리셨으며 보지 아니하신다 함이라",
+      "source_text_hash": "9e3eb34cf76166e7f61eb2ce9353d1177fef26e545292cc0f16a6be24f5daabe",
+      "translation_text_hash": "aa582c324739f94b9e74a0abfc1997a9f9778290493642ce4a6becf84ee32133",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 이스라엘과 유다 족속의 죄악이 심히 중하여 그 땅에 피가 가득하며 그 성읍에 불법이 찼나니 이는 그들이 이르기를 여호와께서 이 땅을 버리셨으며 보지 아니하신다 함이라"
+      ],
+      "raw_text_hashes": [
+        "aa582c324739f94b9e74a0abfc1997a9f9778290493642ce4a6becf84ee32133"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:9:10",
+      "sequence": 20633,
+      "chapter_label": "EZK 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "As for me also, my eye won’t spare, neither will I have pity, but I will bring their way on their head.”",
+      "ko": "그러므로 내가 그들을 아껴 보지 아니하며 긍휼을 베풀지 아니하고 그 행위대로 그 머리에 갚으리라 하시더라",
+      "source_text_hash": "4e9fe2b42453fee10015a9cd1403bff5e91ef27fb9f784325add9dcf98bf0f72",
+      "translation_text_hash": "0dfe1144f375cc64da364fbedbafc13f62bf52afc0efab2af172bae2534bfca9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 그들을 아껴 보지 아니하며 긍휼을 베풀지 아니하고 그 행위대로 그 머리에 갚으리라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "0dfe1144f375cc64da364fbedbafc13f62bf52afc0efab2af172bae2534bfca9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:9:11",
+      "sequence": 20634,
+      "chapter_label": "EZK 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, the man clothed in linen, who had the inkhorn by his side, reported the matter, saying, “I have done as you have commanded me.”",
+      "ko": "가는 베옷을 입고 허리에 먹 그릇을 찬 사람이 복명하여 가로되 주께서 내게 명하신대로 내가 준행하였나이다 하더라",
+      "source_text_hash": "9c88d07801131497a2d68410f3dbb51c99e50389fb6955bb261cbdaca115d199",
+      "translation_text_hash": "9d3004206230718d75af597c970f98e21ed7ae1c43edbe9284e9754b9899847d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가는 베옷을 입고 허리에 먹 그릇을 찬 사람이 복명하여 가로되 주께서 내게 명하신대로 내가 준행하였나이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "9d3004206230718d75af597c970f98e21ed7ae1c43edbe9284e9754b9899847d"
+      ]
+    }
+  ]
+}

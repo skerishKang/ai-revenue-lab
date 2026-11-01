@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:025",
+  "unit_ordinal": 25,
+  "unit_label": "GEN 25",
+  "book_code": "GEN",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:25:1",
+      "sequence": 660,
+      "chapter_label": "GEN 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "Abraham took another wife, and her name was Keturah.",
+      "ko": "아브라함이 후처를 취하였으니 그 이름은 그두라라",
+      "source_text_hash": "8ac254df7419a597bb36189e92b284d7dffd0e3348a8460b1fe04bcd0162491a",
+      "translation_text_hash": "19eb442f4aedb97d51dcee0b161cc92ebffb72d10914bb8cc6ffc134ad0b661f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 후처를 취하였으니 그 이름은 그두라라"
+      ],
+      "raw_text_hashes": [
+        "19eb442f4aedb97d51dcee0b161cc92ebffb72d10914bb8cc6ffc134ad0b661f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:2",
+      "sequence": 661,
+      "chapter_label": "GEN 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "She bore him Zimran, Jokshan, Medan, Midian, Ishbak, and Shuah.",
+      "ko": "그가 시므란과 욕산과 므단과 미디안과 이스박과 수아를 낳았고",
+      "source_text_hash": "e9df4d3fe234a866bf962807de7bc69068699fea0c9204bba2eb61a63b18407f",
+      "translation_text_hash": "0e7f15d5280894414576401a355a59250473e92694d025f87511982ac481eb23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 시므란과 욕산과 므단과 미디안과 이스박과 수아를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "0e7f15d5280894414576401a355a59250473e92694d025f87511982ac481eb23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:3",
+      "sequence": 662,
+      "chapter_label": "GEN 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "Jokshan became the father of Sheba, and Dedan. The sons of Dedan were Asshurim, Letushim, and Leummim.",
+      "ko": "욕산은 스바와 드단을 낳았으며 드단의 자손은 앗수르 족속과 르두시 족속과 르움미 족속이며",
+      "source_text_hash": "49798d35db3b402abb0f8d2c31453a5a2df37b7dce5447bfe5d533b46c5e5110",
+      "translation_text_hash": "1f317a3d8f00cf2bbccfb8022fe090ac497ae655dd2fde82cdcafe1c148537a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욕산은 스바와 드단을 낳았으며 드단의 자손은 앗수르 족속과 르두시 족속과 르움미 족속이며"
+      ],
+      "raw_text_hashes": [
+        "1f317a3d8f00cf2bbccfb8022fe090ac497ae655dd2fde82cdcafe1c148537a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:4",
+      "sequence": 663,
+      "chapter_label": "GEN 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "The sons of Midian were Ephah, Epher, Hanoch, Abida, and Eldaah. All these were the children of Keturah.",
+      "ko": "미디안의 아들은 에바와 에벨과 하녹과 아비다와 엘다아니 다 그두라의 자손이었더라",
+      "source_text_hash": "f224a903db729076e2725d929418cb70cdd2328aee47ccb0eac418822301db37",
+      "translation_text_hash": "743ad762e2b529d4ea35147e5e2823e0fbe7a20241d22ec843e270c24fa53ae3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미디안의 아들은 에바와 에벨과 하녹과 아비다와 엘다아니 다 그두라의 자손이었더라"
+      ],
+      "raw_text_hashes": [
+        "743ad762e2b529d4ea35147e5e2823e0fbe7a20241d22ec843e270c24fa53ae3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:5",
+      "sequence": 664,
+      "chapter_label": "GEN 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "Abraham gave all that he had to Isaac,",
+      "ko": "아브라함이 이삭에게 자기 모든 소유를 주었고",
+      "source_text_hash": "6e74083fecbe198cd2e4f5c9823aeb093835e85fce13eaf39a452c5b03289876",
+      "translation_text_hash": "aeecfe9a2504ec422a196c66067980bc8e43f9c89d77502d120b508870d45844",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 이삭에게 자기 모든 소유를 주었고"
+      ],
+      "raw_text_hashes": [
+        "aeecfe9a2504ec422a196c66067980bc8e43f9c89d77502d120b508870d45844"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:6",
+      "sequence": 665,
+      "chapter_label": "GEN 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "but Abraham gave gifts to the sons of Abraham’s concubines. While he still lived, he sent them away from Isaac his son, eastward, to the east country.",
+      "ko": "자기 서자들에게도 재물을 주어 자기 생전에 그들로 자기 아들 이삭을 떠나 동방 곧 동국으로 가게 하였더라",
+      "source_text_hash": "8faaa000a2bc338106ee2d2a3ac5685102e68f6f7bff31391fcd4e2c1481e8d2",
+      "translation_text_hash": "48e5bc09ccfb95c5c9c6115bd40dedd8602c82e61ecb1a2dd0fdc19a99c0d37d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 서자들에게도 재물을 주어 자기 생전에 그들로 자기 아들 이삭을 떠나 동방 곧 동국으로 가게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "48e5bc09ccfb95c5c9c6115bd40dedd8602c82e61ecb1a2dd0fdc19a99c0d37d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:7",
+      "sequence": 666,
+      "chapter_label": "GEN 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "These are the days of the years of Abraham’s life which he lived: one hundred seventy-five years.",
+      "ko": "아브라함의 향년이 일백 칠십 오세라",
+      "source_text_hash": "06193505495eba65ca7e214b854c83e6a783a859fefe318d3b3d844b3c055693",
+      "translation_text_hash": "998b94cd590f8e7c7e9dd7b5be31e52db1261d4dddc93125099671c9a83b5141",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함의 향년이 일백 칠십 오세라"
+      ],
+      "raw_text_hashes": [
+        "998b94cd590f8e7c7e9dd7b5be31e52db1261d4dddc93125099671c9a83b5141"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:8",
+      "sequence": 667,
+      "chapter_label": "GEN 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "Abraham gave up his spirit, and died at a good old age, an old man, and full of years, and was gathered to his people.",
+      "ko": "그가 수가 높고 나이 많아 기운이 진하여 죽어 자기 열조에게로 돌아가매",
+      "source_text_hash": "ffc05d7fc77210356d3b8b3fc843bdfd58bd0218f5a26aecf8f63d7190505bf0",
+      "translation_text_hash": "5026fae835ceaa20bbfc70afd5c0adc02e03655e4a4c3b9a248181e06de45600",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 수가 높고 나이 많아 기운이 진하여 죽어 자기 열조에게로 돌아가매"
+      ],
+      "raw_text_hashes": [
+        "5026fae835ceaa20bbfc70afd5c0adc02e03655e4a4c3b9a248181e06de45600"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:9",
+      "sequence": 668,
+      "chapter_label": "GEN 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "Isaac and Ishmael, his sons, buried him in the cave of Machpelah, in the field of Ephron, the son of Zohar the Hittite, which is near Mamre,",
+      "ko": "그 아들 이삭과 이스마엘이 그를 마므레 앞 헷 족속 소할의 아들 에브론의 밭에 있는 막벨라 굴에 장사하였으니",
+      "source_text_hash": "449c8b8e66b6ca70f1cd5a4a3dfc43cf6e56c395da8a6441a34d44afe97a43ae",
+      "translation_text_hash": "2887136fa1953cc31f4589f26134371d38d7ea72b440aed0c06a101b6198177d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들 이삭과 이스마엘이 그를 마므레 앞 헷 족속 소할의 아들 에브론의 밭에 있는 막벨라 굴에 장사하였으니"
+      ],
+      "raw_text_hashes": [
+        "2887136fa1953cc31f4589f26134371d38d7ea72b440aed0c06a101b6198177d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:10",
+      "sequence": 669,
+      "chapter_label": "GEN 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "the field which Abraham purchased from the children of Heth. Abraham was buried there with Sarah, his wife.",
+      "ko": "이것은 아브라함이 헷 족속에게서 산 밭이라 아브라함과 그 아내 사라가 거기 장사되니라",
+      "source_text_hash": "c53e916207f1530a806624d801e56291cd800605650f5431ac41fa8672eac5bb",
+      "translation_text_hash": "0511af4f9ec8ec8ee2fc2c6121c973b559cd47ed63f90bea8bd417868a702237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 아브라함이 헷 족속에게서 산 밭이라 아브라함과 그 아내 사라가 거기 장사되니라"
+      ],
+      "raw_text_hashes": [
+        "0511af4f9ec8ec8ee2fc2c6121c973b559cd47ed63f90bea8bd417868a702237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:11",
+      "sequence": 670,
+      "chapter_label": "GEN 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "After the death of Abraham, God blessed Isaac, his son. Isaac lived by Beer Lahai Roi.",
+      "ko": "아브라함이 죽은 후에 하나님이 그 아들 이삭에게 복을 주셨고 이삭은 브엘 라해로이 근처에 거하였더라",
+      "source_text_hash": "839857bee2ab2e3538060a98932c9882636ea6c50169eee7dd455d11e7579e14",
+      "translation_text_hash": "825b56db6d1b8be0a9b43a2d15f0df2f3dc3e6c0b882cc6520a7a4f3767c8385",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 죽은 후에 하나님이 그 아들 이삭에게 복을 주셨고 이삭은 브엘 라해로이 근처에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "825b56db6d1b8be0a9b43a2d15f0df2f3dc3e6c0b882cc6520a7a4f3767c8385"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:12",
+      "sequence": 671,
+      "chapter_label": "GEN 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "Now this is the history of the generations of Ishmael, Abraham’s son, whom Hagar the Egyptian, Sarah’s servant, bore to Abraham.",
+      "ko": "사라의 여종 애굽인 하갈이 아브라함에게 낳은 아들 이스마엘의 후예는 이러하고",
+      "source_text_hash": "952a0247fbbbc2c7f6f83ea6ccbd8bea88ff5dfa955458435a9598932bf9643a",
+      "translation_text_hash": "d6f0d0c176e821b84b3a9bc5460bd291a03e06b7d6e33b029efd2ad9ae1b5883",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사라의 여종 애굽인 하갈이 아브라함에게 낳은 아들 이스마엘의 후예는 이러하고"
+      ],
+      "raw_text_hashes": [
+        "d6f0d0c176e821b84b3a9bc5460bd291a03e06b7d6e33b029efd2ad9ae1b5883"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:13",
+      "sequence": 672,
+      "chapter_label": "GEN 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "These are the names of the sons of Ishmael, by their names, according to the order of their birth: the firstborn of Ishmael, Nebaioth, then Kedar, Adbeel, Mibsam,",
+      "ko": "이스마엘의 아들들의 이름은 그 이름과 그 세대대로 이와 같으니라 이스마엘의 장자는 느바욧이요 그 다음은 게달과 앗브엘과 밉삼과",
+      "source_text_hash": "10aacd5413a21dc583273bc83b91bb791977de5e77dbde1ca480fa99789508e9",
+      "translation_text_hash": "a619cdc16e185a0dbad2a34625a335eb02abc481bc1e719dea8f156cfc26cae4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스마엘의 아들들의 이름은 그 이름과 그 세대대로 이와 같으니라 이스마엘의 장자는 느바욧이요 그 다음은 게달과 앗브엘과 밉삼과"
+      ],
+      "raw_text_hashes": [
+        "a619cdc16e185a0dbad2a34625a335eb02abc481bc1e719dea8f156cfc26cae4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:14",
+      "sequence": 673,
+      "chapter_label": "GEN 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "Mishma, Dumah, Massa,",
+      "ko": "미스마와 두마와 맛사와",
+      "source_text_hash": "aa0ad9dd73fe0ab2418e0769300c1237a0960a183b1aba10d77aba630ddde6eb",
+      "translation_text_hash": "22580dd06603205e66da2ebbbdc7139cb69c6aa8884a726163948f6b400c2df9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미스마와 두마와 맛사와"
+      ],
+      "raw_text_hashes": [
+        "22580dd06603205e66da2ebbbdc7139cb69c6aa8884a726163948f6b400c2df9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:15",
+      "sequence": 674,
+      "chapter_label": "GEN 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "Hadad, Tema, Jetur, Naphish, and Kedemah.",
+      "ko": "하닷과 데마와 여둘과 나비스와 게드마니",
+      "source_text_hash": "7b9abaedab80d9a1160e127703dcbf9156c8c0f8e837d4676c9ef4b55d45babf",
+      "translation_text_hash": "ceb11d6a787ed38ba7f3943416e9a8eaa65c0d86c556e42e7a98a972cfcfad31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하닷과 데마와 여둘과 나비스와 게드마니"
+      ],
+      "raw_text_hashes": [
+        "ceb11d6a787ed38ba7f3943416e9a8eaa65c0d86c556e42e7a98a972cfcfad31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:16",
+      "sequence": 675,
+      "chapter_label": "GEN 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "These are the sons of Ishmael, and these are their names, by their villages, and by their encampments: twelve princes, according to their nations.",
+      "ko": "이들은 이스마엘의 아들들이요 그 촌과 부락대로 된 이름이며 그 족속대로는 십 이 방백이었더라",
+      "source_text_hash": "eca929445a5157795e816c49df50c47105d79edf521c82d8ba8b97f7ba7badd7",
+      "translation_text_hash": "86b30230ecafb9139ca05db68dd4b075674f6b6b4b6020409de6edc4c0cd5364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 이스마엘의 아들들이요 그 촌과 부락대로 된 이름이며 그 족속대로는 십 이 방백이었더라"
+      ],
+      "raw_text_hashes": [
+        "86b30230ecafb9139ca05db68dd4b075674f6b6b4b6020409de6edc4c0cd5364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:17",
+      "sequence": 676,
+      "chapter_label": "GEN 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "These are the years of the life of Ishmael: one hundred thirty-seven years. He gave up his spirit and died, and was gathered to his people.",
+      "ko": "이스마엘은 향년이 일백 삼십 칠세에 기운이 진하여 죽어 자기 열조에게로 돌아갔고",
+      "source_text_hash": "6ea365c1da06549db63cc1c686d0cfbb1c09cadd498c1f7fb8b38517f8ca4971",
+      "translation_text_hash": "efe076fc7fc79f055fb24139c50a4f39bb1d83c0f6d20c849c72f5995332d433",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스마엘은 향년이 일백 삼십 칠세에 기운이 진하여 죽어 자기 열조에게로 돌아갔고"
+      ],
+      "raw_text_hashes": [
+        "efe076fc7fc79f055fb24139c50a4f39bb1d83c0f6d20c849c72f5995332d433"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:18",
+      "sequence": 677,
+      "chapter_label": "GEN 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "They lived from Havilah to Shur that is before Egypt, as you go toward Assyria. He lived opposite all his relatives.",
+      "ko": "그 자손들은 하윌라에서부터 앗수르로 통하는 애굽 앞 술까지 이르러 그 모든 형제의 맞은편에 거하였더라",
+      "source_text_hash": "ab3c6df343f88227489dd187b96c04d0fa8121cc51d316c8f3e2137ae7283ec0",
+      "translation_text_hash": "479ddc13b195ea65184c54d28fca7d090f2cdad591ac6c4f2f54868518d70032",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자손들은 하윌라에서부터 앗수르로 통하는 애굽 앞 술까지 이르러 그 모든 형제의 맞은편에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "479ddc13b195ea65184c54d28fca7d090f2cdad591ac6c4f2f54868518d70032"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:19",
+      "sequence": 678,
+      "chapter_label": "GEN 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "This is the history of the generations of Isaac, Abraham’s son. Abraham became the father of Isaac.",
+      "ko": "아브라함의 아들 이삭의 후예는 이러하니라 아브라함이 이삭을 낳았고",
+      "source_text_hash": "0fb25eb22d04e5f36a3968548c7469660b25cd8b2e43a64490f4e73c7f1450bb",
+      "translation_text_hash": "864d17a5a5331dc2ee3ec7b8ae7bf68edc0a104ff8c4e59aa805ab23ed59169f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함의 아들 이삭의 후예는 이러하니라 아브라함이 이삭을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "864d17a5a5331dc2ee3ec7b8ae7bf68edc0a104ff8c4e59aa805ab23ed59169f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:20",
+      "sequence": 679,
+      "chapter_label": "GEN 25",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 20
+        }
+      ],
+      "en": "Isaac was forty years old when he took Rebekah, the daughter of Bethuel the Syrian of Paddan Aram, the sister of Laban the Syrian, to be his wife.",
+      "ko": "이삭은 사십세에 리브가를 취하여 아내를 삼았으니 리브가는 밧단 아람의 아람 족속 중 브두엘의 딸이요 아람 족속 중 라반의 누이였더라",
+      "source_text_hash": "4115aaa6a0369c336142a634a694fbddb95720146b9a2d795ed85ea6335947b5",
+      "translation_text_hash": "2c4689f28ca00e592b2832f64881c770edd15b04976d2a84c024399bf731415e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭은 사십세에 리브가를 취하여 아내를 삼았으니 리브가는 밧단 아람의 아람 족속 중 브두엘의 딸이요 아람 족속 중 라반의 누이였더라"
+      ],
+      "raw_text_hashes": [
+        "2c4689f28ca00e592b2832f64881c770edd15b04976d2a84c024399bf731415e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:21",
+      "sequence": 680,
+      "chapter_label": "GEN 25",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 21
+        }
+      ],
+      "en": "Isaac entreated the LORD for his wife, because she was barren. The LORD was entreated by him, and Rebekah his wife conceived.",
+      "ko": "이삭이 그 아내가 잉태하지 못하므로 그를 위하여 여호와께 간구하매 여호와께서 그 간구를 들으셨으므로 그 아내 리브가가 잉태하였더니",
+      "source_text_hash": "ca1041c1c786c8a1577ccfb4509b3f0edc7bab9c3f9ab9f95386ec5e2892631a",
+      "translation_text_hash": "5d25fec5f1840307cda5b5a44bebdba9d34d342c2b930c3673e23d3302f0ee75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 그 아내가 잉태하지 못하므로 그를 위하여 여호와께 간구하매 여호와께서 그 간구를 들으셨으므로 그 아내 리브가가 잉태하였더니"
+      ],
+      "raw_text_hashes": [
+        "5d25fec5f1840307cda5b5a44bebdba9d34d342c2b930c3673e23d3302f0ee75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:22",
+      "sequence": 681,
+      "chapter_label": "GEN 25",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 22
+        }
+      ],
+      "en": "The children struggled together within her. She said, “If it is like this, why do I live?” She went to inquire of the LORD.",
+      "ko": "아이들이 그의 태 속에서 서로 싸우는지라 그가 가로되 이같으면 내가 어찌할꼬 하고 가서 여호와께 묻자온대",
+      "source_text_hash": "5ad60db9719b92139b77b7ddd7b268312ad104f974adff2e10f3eff257f38244",
+      "translation_text_hash": "137d188d28e8e0cd9a054bedd965040479a926689c341689b5177a01d30d5293",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이들이 그의 태 속에서 서로 싸우는지라 그가 가로되 이같으면 내가 어찌할꼬 하고 가서 여호와께 묻자온대"
+      ],
+      "raw_text_hashes": [
+        "137d188d28e8e0cd9a054bedd965040479a926689c341689b5177a01d30d5293"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:23",
+      "sequence": 682,
+      "chapter_label": "GEN 25",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD said to her, “Two nations are in your womb. Two peoples will be separated from your body. The one people will be stronger than the other people. The elder will serve the younger.”",
+      "ko": "여호와께서 그에게 이르시되 두 국민이 네 태중에 있구나 두 민족이 네 복중에서부터 나누이리라 이 족속이 저 족속보다 강하겠고 큰 자는 어린 자를 섬기리라 하셨더라",
+      "source_text_hash": "f60441425cc7d896b6cee4a220367f6b343154fc487518c9e1d27168278a267b",
+      "translation_text_hash": "f0cda828adc2311ff7c1a29745515f93fa169d904287a5812fde7b1bfe1f44dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그에게 이르시되 두 국민이 네 태중에 있구나 두 민족이 네 복중에서부터 나누이리라 이 족속이 저 족속보다 강하겠고 큰 자는 어린 자를 섬기리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "f0cda828adc2311ff7c1a29745515f93fa169d904287a5812fde7b1bfe1f44dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:24",
+      "sequence": 683,
+      "chapter_label": "GEN 25",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 24
+        }
+      ],
+      "en": "When her days to be delivered were fulfilled, behold, there were twins in her womb.",
+      "ko": "그 해산 기한이 찬즉 태에 쌍동이가 있었는데",
+      "source_text_hash": "91b9854fcd2289671775a1039d41955056b6ddc5114499026f057611d58606f5",
+      "translation_text_hash": "c6dd1f4d2d57df38ce85097b186cd18b5283ec480f4f7e36fc8d27f8e74a34de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 해산 기한이 찬즉 태에 쌍동이가 있었는데"
+      ],
+      "raw_text_hashes": [
+        "c6dd1f4d2d57df38ce85097b186cd18b5283ec480f4f7e36fc8d27f8e74a34de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:25",
+      "sequence": 684,
+      "chapter_label": "GEN 25",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 25
+        }
+      ],
+      "en": "The first came out red all over, like a hairy garment. They named him Esau.",
+      "ko": "먼저 나온 자는 붉고 전신이 갖옷 같아서 이름을 에서라 하였고",
+      "source_text_hash": "d8582750e550583c07df8e987e980589c71de25455a3662322d72d5cae2fb606",
+      "translation_text_hash": "7832bfaea6283f4c6e6fabd2676417034ff745c144a25e30b3f58c021c382412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼저 나온 자는 붉고 전신이 갖옷 같아서 이름을 에서라 하였고"
+      ],
+      "raw_text_hashes": [
+        "7832bfaea6283f4c6e6fabd2676417034ff745c144a25e30b3f58c021c382412"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:26",
+      "sequence": 685,
+      "chapter_label": "GEN 25",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 26
+        }
+      ],
+      "en": "After that, his brother came out, and his hand had hold on Esau’s heel. He was named Jacob. Isaac was sixty years old when she bore them.",
+      "ko": "후에 나온 아우는 손으로 에서의 발꿈치를 잡았으므로 그 이름을 야곱이라 하였으며 리브가가 그들을 낳을 때에 이삭이 육십세이었더라",
+      "source_text_hash": "0401efd7c1d906df623dea63d412348dbe7cfd76afbf89a59a9b8edc84a914d0",
+      "translation_text_hash": "f0dea8d094b35a1276e42abd7be60edea6a93c0856d45c7877e9ab7ca239fb52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후에 나온 아우는 손으로 에서의 발꿈치를 잡았으므로 그 이름을 야곱이라 하였으며 리브가가 그들을 낳을 때에 이삭이 육십세이었더라"
+      ],
+      "raw_text_hashes": [
+        "f0dea8d094b35a1276e42abd7be60edea6a93c0856d45c7877e9ab7ca239fb52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:27",
+      "sequence": 686,
+      "chapter_label": "GEN 25",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 27
+        }
+      ],
+      "en": "The boys grew. Esau was a skillful hunter, a man of the field. Jacob was a quiet man, living in tents.",
+      "ko": "그 아이들이 장성하매 에서는 익숙한 사냥군인고로 들사람이 되고 야곱은 종용한 사람인고로 장막에 거하니",
+      "source_text_hash": "aeb50922c4b18dede622f4f2863e4f1f1410ff3c0d9438abf37e275b7951bcae",
+      "translation_text_hash": "59d6743dfe4cc05609fd19705ac510c6102ebe0dd4a7478b9b2043670f192454",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아이들이 장성하매 에서는 익숙한 사냥군인고로 들사람이 되고 야곱은 종용한 사람인고로 장막에 거하니"
+      ],
+      "raw_text_hashes": [
+        "59d6743dfe4cc05609fd19705ac510c6102ebe0dd4a7478b9b2043670f192454"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:28",
+      "sequence": 687,
+      "chapter_label": "GEN 25",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 28
+        }
+      ],
+      "en": "Now Isaac loved Esau, because he ate his venison. Rebekah loved Jacob.",
+      "ko": "이삭은 에서의 사냥한 고기를 좋아하므로 그를 사랑하고 리브가는 야곱을 사랑하였더라",
+      "source_text_hash": "9496da5e82c8baf081a5243b74bd48e137f44b9600020501638fe46a673c7db7",
+      "translation_text_hash": "fd08982a892e8b30e29247bb56be88b9f447acb913cd92fe4ff3e12591f4eb01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭은 에서의 사냥한 고기를 좋아하므로 그를 사랑하고 리브가는 야곱을 사랑하였더라"
+      ],
+      "raw_text_hashes": [
+        "fd08982a892e8b30e29247bb56be88b9f447acb913cd92fe4ff3e12591f4eb01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:29",
+      "sequence": 688,
+      "chapter_label": "GEN 25",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 29
+        }
+      ],
+      "en": "Jacob boiled stew. Esau came in from the field, and he was famished.",
+      "ko": "야곱이 죽을 쑤었더니 에서가 들에서부터 돌아와서 심히 곤비하여",
+      "source_text_hash": "4e04ee9406bee2c017c68f78209db9415a6cb8c271cec400d41fc14d633aa8ab",
+      "translation_text_hash": "fab1516c804d39a5558203ea9ea32ecaabfa2cfbfc7cafcfb322c2946c299254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 죽을 쑤었더니 에서가 들에서부터 돌아와서 심히 곤비하여"
+      ],
+      "raw_text_hashes": [
+        "fab1516c804d39a5558203ea9ea32ecaabfa2cfbfc7cafcfb322c2946c299254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:30",
+      "sequence": 689,
+      "chapter_label": "GEN 25",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 30
+        }
+      ],
+      "en": "Esau said to Jacob, “Please feed me with some of that red stew, for I am famished.” Therefore his name was called Edom.",
+      "ko": "야곱에게 이르되 내가 곤비하니 그 붉은 것을 나로 먹게 하라 한지라 그러므로 에서의 별명은 에돔이더라",
+      "source_text_hash": "1f5644d886dd4d9995b219986afd0b7f1058de90d66b083e10f739ac3e34dc44",
+      "translation_text_hash": "4fefe27627f88607ac5a2cc9b5f0109eb88737c655421a1dad00e537dff0722a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱에게 이르되 내가 곤비하니 그 붉은 것을 나로 먹게 하라 한지라 그러므로 에서의 별명은 에돔이더라"
+      ],
+      "raw_text_hashes": [
+        "4fefe27627f88607ac5a2cc9b5f0109eb88737c655421a1dad00e537dff0722a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:31",
+      "sequence": 690,
+      "chapter_label": "GEN 25",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 31
+        }
+      ],
+      "en": "Jacob said, “First, sell me your birthright.”",
+      "ko": "야곱이 가로되 형의 장자의 명분을 오늘날 내게 팔라",
+      "source_text_hash": "70b52c3867bc704c27e607a08146861c2d9ce794fc35b45358d4900e5ae9db67",
+      "translation_text_hash": "42ac9db57d532abe38231b92c96bae87f18bfee654ec4150ddd06665689083d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 가로되 형의 장자의 명분을 오늘날 내게 팔라"
+      ],
+      "raw_text_hashes": [
+        "42ac9db57d532abe38231b92c96bae87f18bfee654ec4150ddd06665689083d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:32",
+      "sequence": 691,
+      "chapter_label": "GEN 25",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 32
+        }
+      ],
+      "en": "Esau said, “Behold, I am about to die. What good is the birthright to me?”",
+      "ko": "에서가 가로되 내가 죽게 되었으니 이 장자의 명분이 내게 무엇이 유익하리요",
+      "source_text_hash": "afc09ccba93c2dde3b92f63185d2522653f262a631a54d8925f12979e5e6de6f",
+      "translation_text_hash": "b824b1fd363ffff40c877d92c42ee3995a5b135c1ba0ba7e52fbe19bb4b1ceb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서가 가로되 내가 죽게 되었으니 이 장자의 명분이 내게 무엇이 유익하리요"
+      ],
+      "raw_text_hashes": [
+        "b824b1fd363ffff40c877d92c42ee3995a5b135c1ba0ba7e52fbe19bb4b1ceb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:33",
+      "sequence": 692,
+      "chapter_label": "GEN 25",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 33
+        }
+      ],
+      "en": "Jacob said, “Swear to me first.” He swore to him. He sold his birthright to Jacob.",
+      "ko": "야곱이 가로되 오늘 내게 맹세하라 에서가 맹세하고 장자의 명분을 야곱에게 판지라",
+      "source_text_hash": "aa55f52bd49d27ecbe20d27190d029341849e2ff4f974b3a6db6957e544a3407",
+      "translation_text_hash": "4373d5b206fcb44f02034e72e4430b2d32d2a2e0fcbbfb8fe8047c8febecc30a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 가로되 오늘 내게 맹세하라 에서가 맹세하고 장자의 명분을 야곱에게 판지라"
+      ],
+      "raw_text_hashes": [
+        "4373d5b206fcb44f02034e72e4430b2d32d2a2e0fcbbfb8fe8047c8febecc30a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:25:34",
+      "sequence": 693,
+      "chapter_label": "GEN 25",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 25,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 25,
+          "verse": 34
+        }
+      ],
+      "en": "Jacob gave Esau bread and lentil stew. He ate and drank, rose up, and went his way. So Esau despised his birthright.",
+      "ko": "야곱이 떡과 팥죽을 에서에게 주매 에서가 먹으며 마시고 일어나서 갔으니 에서가 장자의 명분을 경홀히 여김이었더라",
+      "source_text_hash": "0ee643f2af5fc20b31f3d33233e730a1e7487f097cf17cfe9b866e9c03d8491f",
+      "translation_text_hash": "2170808e0fd476f91301644ec68e01fa1160c89f3a37a23f644ca17d7bd07231",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 떡과 팥죽을 에서에게 주매 에서가 먹으며 마시고 일어나서 갔으니 에서가 장자의 명분을 경홀히 여김이었더라"
+      ],
+      "raw_text_hashes": [
+        "2170808e0fd476f91301644ec68e01fa1160c89f3a37a23f644ca17d7bd07231"
+      ]
+    }
+  ]
+}

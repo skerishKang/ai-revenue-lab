@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:017",
+  "unit_ordinal": 204,
+  "unit_label": "JOS 17",
+  "book_code": "JOS",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:17:1",
+      "sequence": 6277,
+      "chapter_label": "JOS 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "This was the lot for the tribe of Manasseh, for he was the firstborn of Joseph. As for Machir the firstborn of Manasseh, the father of Gilead, because he was a man of war, therefore he had Gilead and Bashan.",
+      "ko": "므낫세 지파를 위하여 제비 뽑은 것은 이러하니라 므낫세는 요셉의 장자이었고 므낫세의 장자 마길은 길르앗의 아비라 그는 무사이어서 길르앗과 바산을 얻었으므로",
+      "source_text_hash": "b49ff5730450d4133b2c2dcfe552c440ce8000a4b4eff10a3406dc41a6dc8d21",
+      "translation_text_hash": "ffe749879d581411ef225e2da14473872f65c49669e87105eef99e7aad0f919b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세 지파를 위하여 제비 뽑은 것은 이러하니라 므낫세는 요셉의 장자이었고 므낫세의 장자 마길은 길르앗의 아비라 그는 무사이어서 길르앗과 바산을 얻었으므로"
+      ],
+      "raw_text_hashes": [
+        "ffe749879d581411ef225e2da14473872f65c49669e87105eef99e7aad0f919b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:2",
+      "sequence": 6278,
+      "chapter_label": "JOS 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "So this was for the rest of the children of Manasseh according to their families: for the children of Abiezer, for the children of Helek, for the children of Asriel, for the children of Shechem, for the children of Hepher, and for the children of Shemida. These were the male children of Manasseh the son of Joseph according to their families.",
+      "ko": "므낫세의 남은 자손을 위하여 그 가족대로 제비를 뽑았는데 그들은 곧 아비에셀의 자손과 헬렉의 자손과 아스리엘의 자손과 세겜의 자손과 헤벨의 자손과 스미다의 자손이니 그들의 가족대로 요셉의 아들 므낫세의 남 자손이며",
+      "source_text_hash": "fc8c8e78d9293d3ca2e02fdf8db2d1b8f85e12d76d62c37247eabb9bb3ccfdbb",
+      "translation_text_hash": "05133b7ccb9c3bd8fb9f6d15538f6c3d6448467ae4c182fd5eed5231009e4937",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세의 남은 자손을 위하여 그 가족대로 제비를 뽑았는데 그들은 곧 아비에셀의 자손과 헬렉의 자손과 아스리엘의 자손과 세겜의 자손과 헤벨의 자손과 스미다의 자손이니 그들의 가족대로 요셉의 아들 므낫세의 남 자손이며"
+      ],
+      "raw_text_hashes": [
+        "05133b7ccb9c3bd8fb9f6d15538f6c3d6448467ae4c182fd5eed5231009e4937"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:3",
+      "sequence": 6279,
+      "chapter_label": "JOS 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "But Zelophehad, the son of Hepher, the son of Gilead, the son of Machir, the son of Manasseh, had no sons, but daughters. These are the names of his daughters: Mahlah, Noah, Hoglah, Milcah, and Tirzah.",
+      "ko": "헤벨의 아들 길르앗의 손자 마길의 증손 므낫세의 현손 슬로브핫은 아들이 없고 딸 뿐이요 그 딸들의 이름은 말라와 노아와 호글라와 밀가와 디르사라",
+      "source_text_hash": "41a5fb0cf9355252f8a4975fb421165de6b3d190a756f0585b7432c02bc9cea2",
+      "translation_text_hash": "48ef3d11f097a39e653bd6735f710eec447c883048679a821f46f8f91bb07a38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤벨의 아들 길르앗의 손자 마길의 증손 므낫세의 현손 슬로브핫은 아들이 없고 딸 뿐이요 그 딸들의 이름은 말라와 노아와 호글라와 밀가와 디르사라"
+      ],
+      "raw_text_hashes": [
+        "48ef3d11f097a39e653bd6735f710eec447c883048679a821f46f8f91bb07a38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:4",
+      "sequence": 6280,
+      "chapter_label": "JOS 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "They came to Eleazar the priest, and to Joshua the son of Nun, and to the princes, saying, “The LORD commanded Moses to give us an inheritance among our brothers.” Therefore according to the commandment of the LORD he gave them an inheritance among the brothers of their father.",
+      "ko": "그들이 제사장 엘르아살과 눈의 아들 여호수아와 방백들 앞에 나아와서 말하기를 여호와께서 모세에게 명하사 우리 형제 중에서 우리에게 기업을 주라 하셨다 하매 여호와의 명령을 따라 그들에게 기업을 그 아비 형제 중에서 주므로",
+      "source_text_hash": "d94a883bdebf3786f070b54fe55332c7b95ac001a1f28d322032526870834474",
+      "translation_text_hash": "088bc85b102098327389fd982e9bbc33e565ce27099589e83b77b0e91305e35e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 제사장 엘르아살과 눈의 아들 여호수아와 방백들 앞에 나아와서 말하기를 여호와께서 모세에게 명하사 우리 형제 중에서 우리에게 기업을 주라 하셨다 하매 여호와의 명령을 따라 그들에게 기업을 그 아비 형제 중에서 주므로"
+      ],
+      "raw_text_hashes": [
+        "088bc85b102098327389fd982e9bbc33e565ce27099589e83b77b0e91305e35e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:5",
+      "sequence": 6281,
+      "chapter_label": "JOS 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "Ten parts fell to Manasseh, in addition to the land of Gilead and Bashan, which is beyond the Jordan;",
+      "ko": "요단 동편 길르앗과 바산 외에 므낫세에게 열 분깃이 돌아갔으니",
+      "source_text_hash": "a76101f235e1d0945cb5eade4e4852bf1b3ea5d9a4bde2633b2582726df9eba3",
+      "translation_text_hash": "1199b42425a7500792b2a7116df952e7a7af04509920244b1d61013fa7210d17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요단 동편 길르앗과 바산 외에 므낫세에게 열 분깃이 돌아갔으니"
+      ],
+      "raw_text_hashes": [
+        "1199b42425a7500792b2a7116df952e7a7af04509920244b1d61013fa7210d17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:6",
+      "sequence": 6282,
+      "chapter_label": "JOS 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "because the daughters of Manasseh had an inheritance among his sons. The land of Gilead belonged to the rest of the sons of Manasseh.",
+      "ko": "므낫세의 여손들이 그 남 자손 중에서 기업을 얻은 까닭이었으며 길르앗 땅은 므낫세의 남은 자손에게 속하였더라",
+      "source_text_hash": "e45d9426f5eea319977e2e34bb7a1676ec0f6d69fb14598188d3e33dd0ec7789",
+      "translation_text_hash": "1b8a8e7af7ee6d4151de4ddeb954770058cc0aeaf20f041cd4ffe1b673098b44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세의 여손들이 그 남 자손 중에서 기업을 얻은 까닭이었으며 길르앗 땅은 므낫세의 남은 자손에게 속하였더라"
+      ],
+      "raw_text_hashes": [
+        "1b8a8e7af7ee6d4151de4ddeb954770058cc0aeaf20f041cd4ffe1b673098b44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:7",
+      "sequence": 6283,
+      "chapter_label": "JOS 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "The border of Manasseh was from Asher to Michmethath, which is before Shechem. The border went along to the right hand, to the inhabitants of En Tappuah.",
+      "ko": "므낫세의 경계는 아셀에서부터 세겜 앞 믹므닷에 미치고 우편으로 가서 엔답부아 거민의 땅에 이르나니",
+      "source_text_hash": "a40af71121c78a6a3b1066648ee39c6273a2d2acf90e158a7fed0515b55204e0",
+      "translation_text_hash": "c3dd14ead939701d02b5b55ca8ccd6220cdd8f1a3160276bf0b1e0f8d7206a76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세의 경계는 아셀에서부터 세겜 앞 믹므닷에 미치고 우편으로 가서 엔답부아 거민의 땅에 이르나니"
+      ],
+      "raw_text_hashes": [
+        "c3dd14ead939701d02b5b55ca8ccd6220cdd8f1a3160276bf0b1e0f8d7206a76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:8",
+      "sequence": 6284,
+      "chapter_label": "JOS 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "The land of Tappuah belonged to Manasseh; but Tappuah on the border of Manasseh belonged to the children of Ephraim.",
+      "ko": "답부아 땅은 므낫세에게 속하였으되 므낫세 경계에 있는 답부아 읍은 에브라임 자손에게 속하였으며",
+      "source_text_hash": "ca9bde61291704937ddec41c6125458b0a19c859af4531ff6ac04bd7ed95f2c1",
+      "translation_text_hash": "901e3efb8002973a737c65c364b3f1e001c3ef2fd0a1e3e1cd34f4b76058a83b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "답부아 땅은 므낫세에게 속하였으되 므낫세 경계에 있는 답부아 읍은 에브라임 자손에게 속하였으며"
+      ],
+      "raw_text_hashes": [
+        "901e3efb8002973a737c65c364b3f1e001c3ef2fd0a1e3e1cd34f4b76058a83b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:9",
+      "sequence": 6285,
+      "chapter_label": "JOS 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "The border went down to the brook of Kanah, southward of the brook. These cities belonged to Ephraim among the cities of Manasseh. The border of Manasseh was on the north side of the brook, and ended at the sea.",
+      "ko": "또 경계가 가나 시내로 내려가서 그 시내 남편에 이르나니 므낫세의 성읍 중에 이 성읍들은 에브라임에게 속하였으며 므낫세의 경계는 그 시내 북편이요 그 끝은 바다며",
+      "source_text_hash": "bc37e4d20dce6a1afe9c9bdf2868b35678cc1a33191d161b80ee1fa2f6866527",
+      "translation_text_hash": "76a3f7aedf166c0b253fa499b23859bd48d9283309e464cdb3a344d3812064ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 경계가 가나 시내로 내려가서 그 시내 남편에 이르나니 므낫세의 성읍 중에 이 성읍들은 에브라임에게 속하였으며 므낫세의 경계는 그 시내 북편이요 그 끝은 바다며"
+      ],
+      "raw_text_hashes": [
+        "76a3f7aedf166c0b253fa499b23859bd48d9283309e464cdb3a344d3812064ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:10",
+      "sequence": 6286,
+      "chapter_label": "JOS 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "Southward it was Ephraim’s, and northward it was Manasseh’s, and the sea was his border. They reached to Asher on the north, and to Issachar on the east.",
+      "ko": "그 남편은 에브라임에 속하였고 북편은 므낫세에 속하였고 바다가 그 경계가 되었으며 그들의 땅의 북은 아셀에 미쳤고 동은 잇사갈에 미쳤으며",
+      "source_text_hash": "a4a57c55c0ba97f5edcf66908bed2818b0437a85e495b99fb00c2b1b3a6a4b9c",
+      "translation_text_hash": "2b18342c11da22cef1ce022c030d5d003936f2c9d61f783577acaab0c564166f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편은 에브라임에 속하였고 북편은 므낫세에 속하였고 바다가 그 경계가 되었으며 그들의 땅의 북은 아셀에 미쳤고 동은 잇사갈에 미쳤으며"
+      ],
+      "raw_text_hashes": [
+        "2b18342c11da22cef1ce022c030d5d003936f2c9d61f783577acaab0c564166f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:11",
+      "sequence": 6287,
+      "chapter_label": "JOS 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "Manasseh had three heights in Issachar, in Asher Beth Shean and its towns, and Ibleam and its towns, and the inhabitants of Dor and its towns, and the inhabitants of Endor and its towns, and the inhabitants of Taanach and its towns, and the inhabitants of Megiddo and its towns.",
+      "ko": "잇사갈과 아셀에도 므낫세의 소유가 있으니 곧 벧 스안과 그 향리와 이블르암과 그 향리와 돌의 거민과 그 향리요 또 엔돌 거민과 그 향리와 다아낙 거민과 그 향리와 므깃도 거민과 그 향리들 세 높은 곳이라",
+      "source_text_hash": "7834ddf28591725de7bc2c1eb94dbbdc881b3d868902ff8a7d548be87632ad77",
+      "translation_text_hash": "8353cd92029e4c2a079b881720be62931efe3b357ed1be956e266798e63bbffa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈과 아셀에도 므낫세의 소유가 있으니 곧 벧 스안과 그 향리와 이블르암과 그 향리와 돌의 거민과 그 향리요 또 엔돌 거민과 그 향리와 다아낙 거민과 그 향리와 므깃도 거민과 그 향리들 세 높은 곳이라"
+      ],
+      "raw_text_hashes": [
+        "8353cd92029e4c2a079b881720be62931efe3b357ed1be956e266798e63bbffa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:12",
+      "sequence": 6288,
+      "chapter_label": "JOS 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "Yet the children of Manasseh couldn’t drive out the inhabitants of those cities; but the Canaanites would dwell in that land.",
+      "ko": "그러나 므낫세 자손이 그 성읍들의 거민을 쫓아내지 못하매 가나안 사람이 결심하고 그 땅에 거하였더니",
+      "source_text_hash": "72c7c3e19f1178190b9b61bf5337374b0f10be613a2338a146059054d9fe58cb",
+      "translation_text_hash": "f4390d88c0d5cd040561815b7a3496e067b97a846471416494c186c9055a4a2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 므낫세 자손이 그 성읍들의 거민을 쫓아내지 못하매 가나안 사람이 결심하고 그 땅에 거하였더니"
+      ],
+      "raw_text_hashes": [
+        "f4390d88c0d5cd040561815b7a3496e067b97a846471416494c186c9055a4a2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:13",
+      "sequence": 6289,
+      "chapter_label": "JOS 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "When the children of Israel had grown strong, they put the Canaanites to forced labor, and didn’t utterly drive them out.",
+      "ko": "이스라엘 자손이 강성한 후에야 가나안 사람에게 사역을 시켰고 다 쫓아내지 아니하였더라",
+      "source_text_hash": "f1b96eb358487ec8d2bb734173d27ff0057d08d61c7c3b6424a6bab2ef7f9e55",
+      "translation_text_hash": "0291f2884ee95a61d96fdca2997ebc6508da673d1b6002ea8c012f9c3eaff51c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 강성한 후에야 가나안 사람에게 사역을 시켰고 다 쫓아내지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "0291f2884ee95a61d96fdca2997ebc6508da673d1b6002ea8c012f9c3eaff51c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:14",
+      "sequence": 6290,
+      "chapter_label": "JOS 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "The children of Joseph spoke to Joshua, saying, “Why have you given me just one lot and one part for an inheritance, since we are a numerous people, because the LORD has blessed us so far?”",
+      "ko": "요셉 자손이 여호수아에게 말하여 가로되 여호와께서 지금까지 내게 복을 주시므로 내가 큰 민족이 되었거늘 당신이 나의 기업을 위하여 한 제비, 한 분깃으로만 내게 주심은 어찜이니이까",
+      "source_text_hash": "5b57222383e33fd9fcbfadda2b7f0b375f2b8178b5b05aa976a24b3c4dedae10",
+      "translation_text_hash": "91e38fc63a488035ea0c614040981b9b550ec04f6534ada14bd9f278cd9b45f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉 자손이 여호수아에게 말하여 가로되 여호와께서 지금까지 내게 복을 주시므로 내가 큰 민족이 되었거늘 당신이 나의 기업을 위하여 한 제비, 한 분깃으로만 내게 주심은 어찜이니이까"
+      ],
+      "raw_text_hashes": [
+        "91e38fc63a488035ea0c614040981b9b550ec04f6534ada14bd9f278cd9b45f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:15",
+      "sequence": 6291,
+      "chapter_label": "JOS 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "Joshua said to them, “If you are a numerous people, go up to the forest, and clear land for yourself there in the land of the Perizzites and of the Rephaim, since the hill country of Ephraim is too narrow for you.”",
+      "ko": "여호수아가 그들에게 이르되 네가 큰 민족이 되므로 에브라임 산지가 네게 너무 좁을찐대 브리스 사람과 르바임 사람의 땅 삼림에 올라가서 스스로 개척하라",
+      "source_text_hash": "fad11df879d5ffbb689000f5014e2b78db709c5a1fddb4fc573d4405bf7f703c",
+      "translation_text_hash": "c1b7dd9becad091fa6573658e829fe98ccfe2e7392475da84749c56e9a93b4ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 그들에게 이르되 네가 큰 민족이 되므로 에브라임 산지가 네게 너무 좁을찐대 브리스 사람과 르바임 사람의 땅 삼림에 올라가서 스스로 개척하라"
+      ],
+      "raw_text_hashes": [
+        "c1b7dd9becad091fa6573658e829fe98ccfe2e7392475da84749c56e9a93b4ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:16",
+      "sequence": 6292,
+      "chapter_label": "JOS 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "The children of Joseph said, “The hill country is not enough for us. All the Canaanites who dwell in the land of the valley have chariots of iron, both those who are in Beth Shean and its towns, and those who are in the valley of Jezreel.”",
+      "ko": "요셉 자손이 가로되 그 산지는 우리에게 넉넉지도 못하고 골짜기 땅에 거하는 가나안 사람에게는 벧 스안과 그 향리에 거하는 자든지 이스르엘 골짜기에 거하는 자든지 다 철병거가 있나이다",
+      "source_text_hash": "9e910082db5d0bebec5581f14172f15f4fe4acbfddaaf3810de5a02726030c18",
+      "translation_text_hash": "9c49cec6d3f99f7f472330e1359a56221cb7c510addf5047bac1577836ce703f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉 자손이 가로되 그 산지는 우리에게 넉넉지도 못하고 골짜기 땅에 거하는 가나안 사람에게는 벧 스안과 그 향리에 거하는 자든지 이스르엘 골짜기에 거하는 자든지 다 철병거가 있나이다"
+      ],
+      "raw_text_hashes": [
+        "9c49cec6d3f99f7f472330e1359a56221cb7c510addf5047bac1577836ce703f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:17",
+      "sequence": 6293,
+      "chapter_label": "JOS 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "Joshua spoke to the house of Joseph, that is, to Ephraim and to Manasseh, saying, “You are a numerous people, and have great power. You shall not have one lot only;",
+      "ko": "여호수아가 다시 요셉의 족속 곧 에브라임과 므낫세에게 일러 가로되 너는 큰 민족이요 큰 권능이 있은즉 한 분깃만 가질 것이 아니라",
+      "source_text_hash": "aa1a43475121ad092a821e9872c680304359aaa126a8c5b239d9aba19268e2ab",
+      "translation_text_hash": "6a2ce8265c776b2e608dd1d61100549ea654066b1a979e08aecf82f7326fb4e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 다시 요셉의 족속 곧 에브라임과 므낫세에게 일러 가로되 너는 큰 민족이요 큰 권능이 있은즉 한 분깃만 가질 것이 아니라"
+      ],
+      "raw_text_hashes": [
+        "6a2ce8265c776b2e608dd1d61100549ea654066b1a979e08aecf82f7326fb4e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:17:18",
+      "sequence": 6294,
+      "chapter_label": "JOS 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "but the hill country shall be yours. Although it is a forest, you shall cut it down, and it’s farthest extent shall be yours; for you shall drive out the Canaanites, though they have chariots of iron, and though they are strong.”",
+      "ko": "그 산지도 네 것이 되리니 비록 삼림이라도 네가 개척하라 그 끝까지 네 것이 되리라 가나안 사람이 비록 철병거를 가졌고 강할찌라도 네가 능히 그를 쫓아내리라",
+      "source_text_hash": "aab99d07c17f60888e0a81253c9bb0aae9ac7bcb296329ffd216a6f6f6fd614a",
+      "translation_text_hash": "beaf8e3a28a4da4ad072b13d5a60ee5d183a078919f24eed39a91f269df25ad0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 산지도 네 것이 되리니 비록 삼림이라도 네가 개척하라 그 끝까지 네 것이 되리라 가나안 사람이 비록 철병거를 가졌고 강할찌라도 네가 능히 그를 쫓아내리라"
+      ],
+      "raw_text_hashes": [
+        "beaf8e3a28a4da4ad072b13d5a60ee5d183a078919f24eed39a91f269df25ad0"
+      ]
+    }
+  ]
+}

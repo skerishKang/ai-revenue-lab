@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:003",
+  "unit_ordinal": 932,
+  "unit_label": "MAT 3",
+  "book_code": "MAT",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:3:1",
+      "sequence": 23194,
+      "chapter_label": "MAT 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "In those days, John the Baptizer came, preaching in the wilderness of Judea, saying,",
+      "ko": "그 때에 세례 요한이 이르러 유대 광야에서 전파하여 가로되",
+      "source_text_hash": "e758725cc56669986a83be6e62e9130598e6bdd083f1dcf3cb8d3b678a4f79fb",
+      "translation_text_hash": "886b50867213489e7a613db07d4395e8e404ac85f270f9547981044a3f3d1e76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 세례 요한이 이르러 유대 광야에서 전파하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "886b50867213489e7a613db07d4395e8e404ac85f270f9547981044a3f3d1e76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:2",
+      "sequence": 23195,
+      "chapter_label": "MAT 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "“Repent, for the Kingdom of Heaven is at hand!”",
+      "ko": "회개하라 천국이 가까왔느니라 하였으니",
+      "source_text_hash": "a712768ec507214a1a6eb6ed233357a55909d6f4a4b359b239b8d05dd6488121",
+      "translation_text_hash": "a9deb5d58b4e80a0ac9b5cd09ce80cfc7d5978b6007ee7e37c42813aa9003e1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회개하라 천국이 가까왔느니라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "a9deb5d58b4e80a0ac9b5cd09ce80cfc7d5978b6007ee7e37c42813aa9003e1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:3",
+      "sequence": 23196,
+      "chapter_label": "MAT 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "For this is he who was spoken of by Isaiah the prophet, saying, “The voice of one crying in the wilderness, make the way of the Lord ready! Make his paths straight!”",
+      "ko": "저는 선지자 이사야로 말씀하신 자라 일렀으되 광야에 외치는 자의 소리가 있어 가로되 너희는 주의 길을 예비하라 그의 첩경을 평탄케 하라 하였느니라",
+      "source_text_hash": "d5fed14d87ae17b20a0f325a80fc14116a53a3f0db7b68e34c15b2b78439277d",
+      "translation_text_hash": "2c85d159cf3b3ab7592ee4ab1cef83e991e51fc8ef441f921aed137933927a2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 선지자 이사야로 말씀하신 자라 일렀으되 광야에 외치는 자의 소리가 있어 가로되 너희는 주의 길을 예비하라 그의 첩경을 평탄케 하라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "2c85d159cf3b3ab7592ee4ab1cef83e991e51fc8ef441f921aed137933927a2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:4",
+      "sequence": 23197,
+      "chapter_label": "MAT 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Now John himself wore clothing made of camel’s hair with a leather belt around his waist. His food was locusts and wild honey.",
+      "ko": "이 요한은 약대 털옷을 입고 허리에 가죽띠를 띠고 음식은 메뚜기와 석청이었더라",
+      "source_text_hash": "6dca2bbcc751c1cdead0c539b216d1f6522675be01bdeff636034e78b0194c2a",
+      "translation_text_hash": "23991bfe7c4a9fa9782e45e51b7de4b21c486d1e05c4cd42907319cbb3fc8519",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 요한은 약대 털옷을 입고 허리에 가죽띠를 띠고 음식은 메뚜기와 석청이었더라"
+      ],
+      "raw_text_hashes": [
+        "23991bfe7c4a9fa9782e45e51b7de4b21c486d1e05c4cd42907319cbb3fc8519"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:5",
+      "sequence": 23198,
+      "chapter_label": "MAT 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Then people from Jerusalem, all of Judea, and all the region around the Jordan went out to him.",
+      "ko": "이때에 예루살렘과 온 유대와 요단강 사방에서 다 그에게 나아와",
+      "source_text_hash": "9cffd24affc7580beee7b60e88bd3d699c3633c7ad2ec3c393be6b2fa3e22a9f",
+      "translation_text_hash": "a2bea1cb0874bbc5b4ac555f76cc2fa5ffdccc50837db2509ca00110f8495c2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이때에 예루살렘과 온 유대와 요단강 사방에서 다 그에게 나아와"
+      ],
+      "raw_text_hashes": [
+        "a2bea1cb0874bbc5b4ac555f76cc2fa5ffdccc50837db2509ca00110f8495c2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:6",
+      "sequence": 23199,
+      "chapter_label": "MAT 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "They were baptized by him in the Jordan, confessing their sins.",
+      "ko": "자기들의 죄를 자복하고 요단강에서 그에게 세례를 받더니",
+      "source_text_hash": "3a1ad9afc80f7f14d8461406c5ba254c8895faa183de90796869102272015ebe",
+      "translation_text_hash": "a4307c69639bd6d531640d695dce4cb1fd1242948addbedaa20c33476f7ab17f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기들의 죄를 자복하고 요단강에서 그에게 세례를 받더니"
+      ],
+      "raw_text_hashes": [
+        "a4307c69639bd6d531640d695dce4cb1fd1242948addbedaa20c33476f7ab17f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:7",
+      "sequence": 23200,
+      "chapter_label": "MAT 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "But when he saw many of the Pharisees and Sadducees coming for his baptism, he said to them, “You offspring of vipers, who warned you to flee from the wrath to come?",
+      "ko": "요한이 많은 바리새인과 사두개인이 세례 베푸는데 오는 것을 보고 이르되 독사의 자식들아 누가 너희를 가르쳐 임박한 진노를 피하라 하더냐",
+      "source_text_hash": "2846a9b57661d90f964a27a915a975b6c6535d4caf8ebc359bc3400b2ae5e22e",
+      "translation_text_hash": "da4472570e82cc68d93504a7828a6b9c3b51416b934bee94b24f730514c51459",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 많은 바리새인과 사두개인이 세례 베푸는데 오는 것을 보고 이르되 독사의 자식들아 누가 너희를 가르쳐 임박한 진노를 피하라 하더냐"
+      ],
+      "raw_text_hashes": [
+        "da4472570e82cc68d93504a7828a6b9c3b51416b934bee94b24f730514c51459"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:8",
+      "sequence": 23201,
+      "chapter_label": "MAT 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore produce fruit worthy of repentance!",
+      "ko": "그러므로 회개에 합당한 열매를 맺고",
+      "source_text_hash": "212658a6d8c07c5047ea8fac5e1178124d87531f327b751a9ff82d1d59099ef3",
+      "translation_text_hash": "ef4638a9304bc269d6ea278e9366df8753b7a0b63289f65f40640977e16c1190",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 회개에 합당한 열매를 맺고"
+      ],
+      "raw_text_hashes": [
+        "ef4638a9304bc269d6ea278e9366df8753b7a0b63289f65f40640977e16c1190"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:9",
+      "sequence": 23202,
+      "chapter_label": "MAT 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t think to yourselves, ‘We have Abraham for our father,’ for I tell you that God is able to raise up children to Abraham from these stones.",
+      "ko": "속으로 아브라함이 우리 조상이라고 생각지 말라 내가 너희에게 이르노니 하나님이 능히 이 돌들로도 아브라함의 자손이 되게 하시리라",
+      "source_text_hash": "ff7c42c0aadeb9e2a44e752526f37851bed3d395c08bea93937a7bb1d6ea2623",
+      "translation_text_hash": "2abc978cff28d6db2cc119779c79d89a615bcc3546d21ba1bd948e500bd791dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속으로 아브라함이 우리 조상이라고 생각지 말라 내가 너희에게 이르노니 하나님이 능히 이 돌들로도 아브라함의 자손이 되게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "2abc978cff28d6db2cc119779c79d89a615bcc3546d21ba1bd948e500bd791dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:10",
+      "sequence": 23203,
+      "chapter_label": "MAT 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Even now the ax lies at the root of the trees. Therefore every tree that doesn’t produce good fruit is cut down, and cast into the fire.",
+      "ko": "이미 도끼가 나무 뿌리에 놓였으니 좋은 열매 맺지 아니하는 나무마다 찍어 불에 던지우리라",
+      "source_text_hash": "dd857866344653f8e760e44e233e4416fdb5dd3d46a369fca30b83b01d06b3ab",
+      "translation_text_hash": "0ee5c8e06c8b1cc8224375db3ce7bddc61e28f8f4f9e94e9190875b48c7b499e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 도끼가 나무 뿌리에 놓였으니 좋은 열매 맺지 아니하는 나무마다 찍어 불에 던지우리라"
+      ],
+      "raw_text_hashes": [
+        "0ee5c8e06c8b1cc8224375db3ce7bddc61e28f8f4f9e94e9190875b48c7b499e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:11",
+      "sequence": 23204,
+      "chapter_label": "MAT 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "“I indeed baptize you in water for repentance, but he who comes after me is mightier than I, whose sandals I am not worthy to carry. He will baptize you in the Holy Spirit.",
+      "ko": "나는 너희로 회개케 하기 위하여 물로 세례를 주거니와 내 뒤에 오시는 이는 나보다 능력이 많으시니 나는 그의 신을 들기도 감당치 못하겠노라 그는 성령과 불로 너희에게 세례를 주실 것이요",
+      "source_text_hash": "de24c1414ce9a8683d63dcb4bdc490ce9444277e2f1094bed79250a8ddf89e02",
+      "translation_text_hash": "70932c86009bb6520071043817ca186467fd109c570bfbeaa309e70abd330402",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희로 회개케 하기 위하여 물로 세례를 주거니와 내 뒤에 오시는 이는 나보다 능력이 많으시니 나는 그의 신을 들기도 감당치 못하겠노라 그는 성령과 불로 너희에게 세례를 주실 것이요"
+      ],
+      "raw_text_hashes": [
+        "70932c86009bb6520071043817ca186467fd109c570bfbeaa309e70abd330402"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:12",
+      "sequence": 23205,
+      "chapter_label": "MAT 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "His winnowing fork is in his hand, and he will thoroughly cleanse his threshing floor. He will gather his wheat into the barn, but the chaff he will burn up with unquenchable fire.”",
+      "ko": "손에 키를 들고 자기의 타작 마당을 정하게 하사 알곡은 모아 곡간에 들이고 쭉정이는 꺼지지 않는 불에 태우시리라",
+      "source_text_hash": "25e891945142b3b5406acee100728cb580f6d3f5ec2e9935b07bf4d4868976f2",
+      "translation_text_hash": "f26066910051e7aebdbcc6bc72c753ea0a82b128e51c1ea56db7ed59b77ccbf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손에 키를 들고 자기의 타작 마당을 정하게 하사 알곡은 모아 곡간에 들이고 쭉정이는 꺼지지 않는 불에 태우시리라"
+      ],
+      "raw_text_hashes": [
+        "f26066910051e7aebdbcc6bc72c753ea0a82b128e51c1ea56db7ed59b77ccbf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:13",
+      "sequence": 23206,
+      "chapter_label": "MAT 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Then Jesus came from Galilee to the Jordan to John, to be baptized by him.",
+      "ko": "이 때에 예수께서 갈릴리로서 요단강에 이르러 요한에게 세례를 받으려 하신대",
+      "source_text_hash": "3a81388342ca6707a96e0caac7c4d67d0b5b9727e11d87d37df321aef1958a46",
+      "translation_text_hash": "11735fb4a4f5ecdfdda4d88131d3f34b1e4f300ab21d56d632dff5688c593bfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 예수께서 갈릴리로서 요단강에 이르러 요한에게 세례를 받으려 하신대"
+      ],
+      "raw_text_hashes": [
+        "11735fb4a4f5ecdfdda4d88131d3f34b1e4f300ab21d56d632dff5688c593bfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:14",
+      "sequence": 23207,
+      "chapter_label": "MAT 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "But John would have hindered him, saying, “I need to be baptized by you, and you come to me?”",
+      "ko": "요한이 말려 가로되 내가 당신에게 세례를 받아야 할 터인데 당신이 내게로 오시나이까",
+      "source_text_hash": "fef581bc0608da751665d05450c663ba9a5ee55bc4533b57884697dc1523e7eb",
+      "translation_text_hash": "13e9cc5a451934e3341af25997e0859ad9334b0255c830ccf8901ae4836d7a46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 말려 가로되 내가 당신에게 세례를 받아야 할 터인데 당신이 내게로 오시나이까"
+      ],
+      "raw_text_hashes": [
+        "13e9cc5a451934e3341af25997e0859ad9334b0255c830ccf8901ae4836d7a46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:15",
+      "sequence": 23208,
+      "chapter_label": "MAT 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "But Jesus, answering, said to him, “Allow it now, for this is the fitting way for us to fulfill all righteousness.”Then he allowed him.",
+      "ko": "예수께서 대답하여 가라사대 이제 허락하라 우리가 이와 같이 하여 모든 의를 이루는 것이 합당하니라 하신대 이에 요한이 허락하는지라",
+      "source_text_hash": "2e07fb7e06c5bb1add18b08e9a171580f8ed3a45e676b0358a1c56e7b9f544c4",
+      "translation_text_hash": "c2b2cf9216d706f1a72e996ca63ea03bf2b2c289faa5b43fb6bf62114304b486",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 이제 허락하라 우리가 이와 같이 하여 모든 의를 이루는 것이 합당하니라 하신대 이에 요한이 허락하는지라"
+      ],
+      "raw_text_hashes": [
+        "c2b2cf9216d706f1a72e996ca63ea03bf2b2c289faa5b43fb6bf62114304b486"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:16",
+      "sequence": 23209,
+      "chapter_label": "MAT 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Jesus, when he was baptized, went up directly from the water: and behold, the heavens were opened to him. He saw the Spirit of God descending as a dove, and coming on him.",
+      "ko": "예수께서 세례를 받으시고 곧 물에서 올라 오실쌔 하늘이 열리고 하나님의 성령이 비둘기 같이 내려 자기 위에 임하심을 보시더니",
+      "source_text_hash": "7feda397db5b2ad8ba7303ccf7c146ddd56f2637231206a603a826278e84e83d",
+      "translation_text_hash": "5f72a29ea4e897a884f2a0d84007f757de6a77001802a7736e4fe5969489d261",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 세례를 받으시고 곧 물에서 올라 오실쌔 하늘이 열리고 하나님의 성령이 비둘기 같이 내려 자기 위에 임하심을 보시더니"
+      ],
+      "raw_text_hashes": [
+        "5f72a29ea4e897a884f2a0d84007f757de6a77001802a7736e4fe5969489d261"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:3:17",
+      "sequence": 23210,
+      "chapter_label": "MAT 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "Behold, a voice out of the heavens said, “This is my beloved Son, with whom I am well pleased.”",
+      "ko": "하늘로서 소리가 있어 말씀하시되 이는 내 사랑하는 아들이요 내 기뻐하는 자라 하시니라",
+      "source_text_hash": "e64d774f25181bf21480f307d9dfda8e9eb614d1065e73a558cea5a4d1f93e15",
+      "translation_text_hash": "fee40ee6b756421578c871dd266a6e79b6eaec8d5417dd3428b40bee02c2064c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘로서 소리가 있어 말씀하시되 이는 내 사랑하는 아들이요 내 기뻐하는 자라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "fee40ee6b756421578c871dd266a6e79b6eaec8d5417dd3428b40bee02c2064c"
+      ]
+    }
+  ]
+}

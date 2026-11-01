@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:061",
+  "unit_ordinal": 740,
+  "unit_label": "ISA 61",
+  "book_code": "ISA",
+  "chapter_number": 61,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:61:1",
+      "sequence": 18845,
+      "chapter_label": "ISA 61",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 1
+        }
+      ],
+      "en": "The Lord GOD’s Spirit is on me, because the LORD has anointed me to preach good news to the humble. He has sent me to bind up the broken hearted, to proclaim liberty to the captives and release to those who are bound,",
+      "ko": "주 여호와의 신이 내게 임하셨으니 이는 여호와께서 내게 기름을 부으사 가난한 자에게 아름다운 소식을 전하게 하려 하심이라 나를 보내사 마음이 상한 자를 고치며 포로된 자에게 자유를, 갇힌 자에게 놓임을 전파하며",
+      "source_text_hash": "0cc08501462620a36fad1b451f6028d2f685a52ef4f05308f95bed4d80565a62",
+      "translation_text_hash": "61340968a19d646a1e97a1a6cedbaae37998f363a43f600fa1e09959cc1686a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와의 신이 내게 임하셨으니 이는 여호와께서 내게 기름을 부으사 가난한 자에게 아름다운 소식을 전하게 하려 하심이라 나를 보내사 마음이 상한 자를 고치며 포로된 자에게 자유를, 갇힌 자에게 놓임을 전파하며"
+      ],
+      "raw_text_hashes": [
+        "61340968a19d646a1e97a1a6cedbaae37998f363a43f600fa1e09959cc1686a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:61:2",
+      "sequence": 18846,
+      "chapter_label": "ISA 61",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 2
+        }
+      ],
+      "en": "to proclaim the year of the LORD’s favor and the day of vengeance of our God, to comfort all who mourn,",
+      "ko": "여호와의 은혜의 해와 우리 하나님의 신원의 날을 전파하여 모든 슬픈 자를 위로하되",
+      "source_text_hash": "242107001284b9ee5a252371839b7278c2e0355b675efa979b3407e6c7c7d11c",
+      "translation_text_hash": "d909b211a808748772a11e442fe75cefde7d902ffa732079b33f1ef47737ed50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 은혜의 해와 우리 하나님의 신원의 날을 전파하여 모든 슬픈 자를 위로하되"
+      ],
+      "raw_text_hashes": [
+        "d909b211a808748772a11e442fe75cefde7d902ffa732079b33f1ef47737ed50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:61:3",
+      "sequence": 18847,
+      "chapter_label": "ISA 61",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 3
+        }
+      ],
+      "en": "to provide for those who mourn in Zion, to give to them a garland for ashes, the oil of joy for mourning, the garment of praise for the spirit of heaviness, that they may be called trees of righteousness, the planting of the LORD, that he may be glorified.",
+      "ko": "무릇 시온에서 슬퍼하는 자에게 화관을 주어 그 재를 대신하며 희락의 기름으로 그 슬픔을 대신하며 찬송의 옷으로 그 근심을 대신하시고 그들로 의의 나무 곧 여호와의 심으신바 그 영광을 나타낼 자라 일컬음을 얻게 하려 하심이니라",
+      "source_text_hash": "3585f38d5b6c2b81ac0c748170ee681f72efb6457ee07a2cb54842eb69577dd4",
+      "translation_text_hash": "af69327e742804f124c1602915a84072b51be507f360d00508d1dfab34e33a04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 시온에서 슬퍼하는 자에게 화관을 주어 그 재를 대신하며 희락의 기름으로 그 슬픔을 대신하며 찬송의 옷으로 그 근심을 대신하시고 그들로 의의 나무 곧 여호와의 심으신바 그 영광을 나타낼 자라 일컬음을 얻게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "af69327e742804f124c1602915a84072b51be507f360d00508d1dfab34e33a04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:61:4",
+      "sequence": 18848,
+      "chapter_label": "ISA 61",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 4
+        }
+      ],
+      "en": "They will rebuild the old ruins. They will raise up the former devastated places. They will repair the ruined cities that have been devastated for many generations.",
+      "ko": "그들은 오래 황폐하였던 곳을 다시 쌓을 것이며 예로부터 무너진 곳을 다시 일으킬 것이며 황폐한 성읍 곧 대대로 무너져 있던 것들을 중수할 것이며",
+      "source_text_hash": "193e8d9f3e945b07e51f6beefe4ae8a31461bc24b86d5a1e3ce34a00bb1790ef",
+      "translation_text_hash": "9fb5cdb8cff8e74c5606c5581cf8b06f37dcd3c0763a2d09740022eaee395e72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 오래 황폐하였던 곳을 다시 쌓을 것이며 예로부터 무너진 곳을 다시 일으킬 것이며 황폐한 성읍 곧 대대로 무너져 있던 것들을 중수할 것이며"
+      ],
+      "raw_text_hashes": [
+        "9fb5cdb8cff8e74c5606c5581cf8b06f37dcd3c0763a2d09740022eaee395e72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:61:5",
+      "sequence": 18849,
+      "chapter_label": "ISA 61",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 5
+        }
+      ],
+      "en": "Strangers will stand and feed your flocks. Foreigners will work your fields and your vineyards.",
+      "ko": "외인은 서서 너희 양떼를 칠 것이요 이방 사람은 너희 농부와 포도원지기가 될 것이나",
+      "source_text_hash": "ba588dc855cd3c58aabae86374cafc3b41134ed8f710f882d26201749b7c2f5e",
+      "translation_text_hash": "5c7c0b3975d025eccd7e6d01ab42e778f5778f1a8fcf9bfe419f851ecef54ef6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외인은 서서 너희 양떼를 칠 것이요 이방 사람은 너희 농부와 포도원지기가 될 것이나"
+      ],
+      "raw_text_hashes": [
+        "5c7c0b3975d025eccd7e6d01ab42e778f5778f1a8fcf9bfe419f851ecef54ef6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:61:6",
+      "sequence": 18850,
+      "chapter_label": "ISA 61",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 6
+        }
+      ],
+      "en": "But you will be called the LORD’s priests. Men will call you the servants of our God. You will eat the wealth of the nations. You will boast in their glory.",
+      "ko": "오직 너희는 여호와의 제사장이라 일컬음을 얻을 것이라 사람들이 너희를 우리 하나님의 봉사자라 할 것이며 너희가 열방의 재물을 먹으며 그들의 영광을 얻어 자랑할 것이며",
+      "source_text_hash": "4fbb875957361a4913af9c22d0c0c041d0b31991f46bd67f85585d44dd1222de",
+      "translation_text_hash": "686450c2d90bd52ca1d3d8080e6c18849e289d5d8a4cd9e91f910e3ccc45d986",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희는 여호와의 제사장이라 일컬음을 얻을 것이라 사람들이 너희를 우리 하나님의 봉사자라 할 것이며 너희가 열방의 재물을 먹으며 그들의 영광을 얻어 자랑할 것이며"
+      ],
+      "raw_text_hashes": [
+        "686450c2d90bd52ca1d3d8080e6c18849e289d5d8a4cd9e91f910e3ccc45d986"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:61:7",
+      "sequence": 18851,
+      "chapter_label": "ISA 61",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 7
+        }
+      ],
+      "en": "Instead of your shame you will have double. Instead of dishonor, they will rejoice in their portion. Therefore in their land they will possess double. Everlasting joy will be to them.",
+      "ko": "너희가 수치 대신에 배나 얻으며 능욕 대신에 분깃을 인하여 즐거워할 것이라 그리하여 고토에서 배나 얻고 영영한 기쁨이 있으리라",
+      "source_text_hash": "66ec69e8cfc18f459127da6e1dc483f7a7fcf3dc2b214548dce2b33a049e96aa",
+      "translation_text_hash": "f8e2215b8ba57a9edb36818c8d802ab134a71e25ec98912860c6815597e80bf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 수치 대신에 배나 얻으며 능욕 대신에 분깃을 인하여 즐거워할 것이라 그리하여 고토에서 배나 얻고 영영한 기쁨이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "f8e2215b8ba57a9edb36818c8d802ab134a71e25ec98912860c6815597e80bf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:61:8",
+      "sequence": 18852,
+      "chapter_label": "ISA 61",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 8
+        }
+      ],
+      "en": "“For I, the LORD, love justice. I hate robbery and iniquity. I will give them their reward in truth and I will make an everlasting covenant with them.",
+      "ko": "대저 나 여호와는 공의를 사랑하며 불의의 강탈을 미워하여 성실히 그들에게 갚아 주고 그들과 영영한 언약을 세울 것이라",
+      "source_text_hash": "510d67839e1176388725be90594074f7134c88d19fc3a2f2e53390e24efd07e0",
+      "translation_text_hash": "6811bb4b5e5f34e5e7d76a3d8451452d6882c0a0b437656bf95c633621d337c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 나 여호와는 공의를 사랑하며 불의의 강탈을 미워하여 성실히 그들에게 갚아 주고 그들과 영영한 언약을 세울 것이라"
+      ],
+      "raw_text_hashes": [
+        "6811bb4b5e5f34e5e7d76a3d8451452d6882c0a0b437656bf95c633621d337c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:61:9",
+      "sequence": 18853,
+      "chapter_label": "ISA 61",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 9
+        }
+      ],
+      "en": "Their offspring will be known among the nations, and their offspring among the peoples. All who see them will acknowledge them, that they are the offspring which the LORD has blessed.”",
+      "ko": "그 자손을 열방 중에, 그 후손을 만민 중에 알리리니 무릇 이를 보는 자가 그들은 여호와께 복 받은 자손이라 인정하리라",
+      "source_text_hash": "4834bfbd98c6807f563904d10ec8eb1b7b24bef746cb48caedefe6fbdbc04048",
+      "translation_text_hash": "9c9b23c11532b129b9aa151b6e416f80afdd091deb90d896fa58ef33a4dd25a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자손을 열방 중에, 그 후손을 만민 중에 알리리니 무릇 이를 보는 자가 그들은 여호와께 복 받은 자손이라 인정하리라"
+      ],
+      "raw_text_hashes": [
+        "9c9b23c11532b129b9aa151b6e416f80afdd091deb90d896fa58ef33a4dd25a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:61:10",
+      "sequence": 18854,
+      "chapter_label": "ISA 61",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 10
+        }
+      ],
+      "en": "I will greatly rejoice in the LORD! My soul will be joyful in my God, for he has clothed me with the garments of salvation. He has covered me with the robe of righteousness, as a bridegroom decks himself with a garland and as a bride adorns herself with her jewels.",
+      "ko": "내가 여호와로 인하여 크게 기뻐하며 내 영혼이 나의 하나님으로 인하여 즐거워하리니 이는 그가 구원의 옷으로 내게 입히시며 의의 겉옷으로 내게 더하심이 신랑이 사모를 쓰며 신부가 자기 보물로 단장함 같게 하셨음이라",
+      "source_text_hash": "210e3e0db72daa18f8e398fce3a965e7cf518c284619b7d455ec9ba42f540da0",
+      "translation_text_hash": "7e475749bf98fc9f60051f855e17f0a46253129db2d6fc4e6515a48a877ceed7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와로 인하여 크게 기뻐하며 내 영혼이 나의 하나님으로 인하여 즐거워하리니 이는 그가 구원의 옷으로 내게 입히시며 의의 겉옷으로 내게 더하심이 신랑이 사모를 쓰며 신부가 자기 보물로 단장함 같게 하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "7e475749bf98fc9f60051f855e17f0a46253129db2d6fc4e6515a48a877ceed7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:61:11",
+      "sequence": 18855,
+      "chapter_label": "ISA 61",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 61,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 61,
+          "verse": 11
+        }
+      ],
+      "en": "For as the earth produces its bud, and as the garden causes the things that are sown in it to spring up, so the Lord GOD will cause righteousness and praise to spring up before all the nations.",
+      "ko": "땅이 싹을 내며 동산이 거기 뿌린 것을 움돋게 함 같이 주 여호와께서 의와 찬송을 열방 앞에 발생하게 하시리라",
+      "source_text_hash": "c1dc7f1fa616d9cf1fc02531856d3f45c09311ed55a46b5ffcf545b99f0ad462",
+      "translation_text_hash": "d339aa5230f85960833723585f155b05b40943cc9fa68bcf1c4cc9ab026d9062",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 싹을 내며 동산이 거기 뿌린 것을 움돋게 함 같이 주 여호와께서 의와 찬송을 열방 앞에 발생하게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "d339aa5230f85960833723585f155b05b40943cc9fa68bcf1c4cc9ab026d9062"
+      ]
+    }
+  ]
+}

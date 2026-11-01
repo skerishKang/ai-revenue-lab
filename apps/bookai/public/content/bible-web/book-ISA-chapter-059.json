@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:059",
+  "unit_ordinal": 738,
+  "unit_label": "ISA 59",
+  "book_code": "ISA",
+  "chapter_number": 59,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:59:1",
+      "sequence": 18802,
+      "chapter_label": "ISA 59",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 1
+        }
+      ],
+      "en": "Behold, the LORD’s hand is not shortened, that it can’t save; nor his ear dull, that it can’t hear.",
+      "ko": "여호와의 손이 짧아 구원치 못하심도 아니요 귀가 둔하여 듣지 못하심도 아니라",
+      "source_text_hash": "7106bdb9150b1f39abafefe6a2f2b5ba4c275cef83cdd6c1fb026bcd6e397c46",
+      "translation_text_hash": "f4fb39f46f367e5b25feb1e8c1a5d1a6e503e225d2fb9af563d2cbd2766f6717",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 손이 짧아 구원치 못하심도 아니요 귀가 둔하여 듣지 못하심도 아니라"
+      ],
+      "raw_text_hashes": [
+        "f4fb39f46f367e5b25feb1e8c1a5d1a6e503e225d2fb9af563d2cbd2766f6717"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:2",
+      "sequence": 18803,
+      "chapter_label": "ISA 59",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 2
+        }
+      ],
+      "en": "But your iniquities have separated you and your God, and your sins have hidden his face from you, so that he will not hear.",
+      "ko": "오직 너희 죄악이 너희와 너희 하나님 사이를 내었고 너희 죄가 그 얼굴을 가리워서 너희를 듣지 않으시게 함이니",
+      "source_text_hash": "1df2b8802df210264ffcbe6ba608ae9ec3bec4fc70b7d8114dbb2a1d02ab3b7a",
+      "translation_text_hash": "c829f5e5cfbc50da3f534ca43fca87b78de5c8387abaa072ff6e5b93d46030e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희 죄악이 너희와 너희 하나님 사이를 내었고 너희 죄가 그 얼굴을 가리워서 너희를 듣지 않으시게 함이니"
+      ],
+      "raw_text_hashes": [
+        "c829f5e5cfbc50da3f534ca43fca87b78de5c8387abaa072ff6e5b93d46030e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:3",
+      "sequence": 18804,
+      "chapter_label": "ISA 59",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 3
+        }
+      ],
+      "en": "For your hands are defiled with blood, and your fingers with iniquity. Your lips have spoken lies. Your tongue mutters wickedness.",
+      "ko": "이는 너희 손이 피에, 너희 손가락이 죄악에 더러웠으며 너희 입술은 거짓을 말하며 너희 혀는 악독을 발함이라",
+      "source_text_hash": "2dfc9295a2718d74b8e1b714c42ca8ce0058d222b210300bf25400dcc55f629c",
+      "translation_text_hash": "e5d6c6c106606f9595e99c9d6bf835d5bfb81758322246b393ac025ee41712a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희 손이 피에, 너희 손가락이 죄악에 더러웠으며 너희 입술은 거짓을 말하며 너희 혀는 악독을 발함이라"
+      ],
+      "raw_text_hashes": [
+        "e5d6c6c106606f9595e99c9d6bf835d5bfb81758322246b393ac025ee41712a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:4",
+      "sequence": 18805,
+      "chapter_label": "ISA 59",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 4
+        }
+      ],
+      "en": "No one sues in righteousness, and no one pleads in truth. They trust in vanity and speak lies. They conceive mischief and give birth to iniquity.",
+      "ko": "공의대로 소송하는 자도 없고 진리대로 판결하는 자도 없으며 허망한 것을 의뢰하며 거짓을 말하며 잔해를 잉태하여 죄악을 생산하며",
+      "source_text_hash": "a49cc2b46f0d58372530ee49b1f90114fb57ddefa3649b6d2a337d3a9c915824",
+      "translation_text_hash": "aa943465e9a9f1ebc0e129e7f2f6dcdf9c88b053adc1df5936d23e3460813398",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공의대로 소송하는 자도 없고 진리대로 판결하는 자도 없으며 허망한 것을 의뢰하며 거짓을 말하며 잔해를 잉태하여 죄악을 생산하며"
+      ],
+      "raw_text_hashes": [
+        "aa943465e9a9f1ebc0e129e7f2f6dcdf9c88b053adc1df5936d23e3460813398"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:5",
+      "sequence": 18806,
+      "chapter_label": "ISA 59",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 5
+        }
+      ],
+      "en": "They hatch adders’ eggs and weave the spider’s web. He who eats of their eggs dies; and that which is crushed breaks out into a viper.",
+      "ko": "독사의 알을 품으며 거미줄을 짜나니 그 알을 먹는 자는 죽을 것이요 그 알이 밟힌즉 터져서 독사가 나올 것이니라",
+      "source_text_hash": "a1822ea58a673708487b69524ed5e17d9b369ae2baa7b69619111fe474fde665",
+      "translation_text_hash": "ded16ef02b855165a476017a4ccd3353bacb3a5ce6756944b2ba5a30654d9460",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "독사의 알을 품으며 거미줄을 짜나니 그 알을 먹는 자는 죽을 것이요 그 알이 밟힌즉 터져서 독사가 나올 것이니라"
+      ],
+      "raw_text_hashes": [
+        "ded16ef02b855165a476017a4ccd3353bacb3a5ce6756944b2ba5a30654d9460"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:6",
+      "sequence": 18807,
+      "chapter_label": "ISA 59",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 6
+        }
+      ],
+      "en": "Their webs won’t become garments. They won’t cover themselves with their works. Their works are works of iniquity, and acts of violence are in their hands.",
+      "ko": "그 짠 것으로는 옷을 이룰 수 없을 것이요 그 행위로는 자기를 가리울 수 없을 것이며 그 행위는 죄악의 행위라 그 손에는 강포한 행습이 있으며",
+      "source_text_hash": "95f16a917b422078959cac6553a7c30c64fed73504bc49913bd91d9e3610508b",
+      "translation_text_hash": "d48ea3f0a69f63abaa88ff63a6ad886055c5d1cf40e1a1064223eeecf7c2ab4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 짠 것으로는 옷을 이룰 수 없을 것이요 그 행위로는 자기를 가리울 수 없을 것이며 그 행위는 죄악의 행위라 그 손에는 강포한 행습이 있으며"
+      ],
+      "raw_text_hashes": [
+        "d48ea3f0a69f63abaa88ff63a6ad886055c5d1cf40e1a1064223eeecf7c2ab4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:7",
+      "sequence": 18808,
+      "chapter_label": "ISA 59",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 7
+        }
+      ],
+      "en": "Their feet run to evil, and they hurry to shed innocent blood. Their thoughts are thoughts of iniquity. Desolation and destruction are in their paths.",
+      "ko": "그 발은 행악하기에 빠르고 무죄한 피를 흘리기에 신속하며 그 사상은 죄악의 사상이라 황폐와 파멸이 그 길에 끼쳐졌으며",
+      "source_text_hash": "ef40ba2590d0d86a70ca80c98e4da7f90994c80b6e81caa18333a07379b7545f",
+      "translation_text_hash": "2852198cd69aeaf740d35653dc0806d2f57f7206f847aaf2b81303191f4de35c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 발은 행악하기에 빠르고 무죄한 피를 흘리기에 신속하며 그 사상은 죄악의 사상이라 황폐와 파멸이 그 길에 끼쳐졌으며"
+      ],
+      "raw_text_hashes": [
+        "2852198cd69aeaf740d35653dc0806d2f57f7206f847aaf2b81303191f4de35c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:8",
+      "sequence": 18809,
+      "chapter_label": "ISA 59",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 8
+        }
+      ],
+      "en": "They don’t know the way of peace; and there is no justice in their ways. They have made crooked paths for themselves; whoever goes in them doesn’t know peace.",
+      "ko": "그들은 평강의 길을 알지 못하며 그들의 행하는 곳에는 공의가 없으며 굽은 길을 스스로 만드나니 무릇 이 길을 밟는 자는 평강을 알지 못하느니라",
+      "source_text_hash": "6b6ace2462a0da1d3ad492bb1cb183df88d2131fa53eac7724c4cba9c2729b25",
+      "translation_text_hash": "48571b14d6f195bb30aa977402659bc32421729c5f14688f6375ca3ea64b4312",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 평강의 길을 알지 못하며 그들의 행하는 곳에는 공의가 없으며 굽은 길을 스스로 만드나니 무릇 이 길을 밟는 자는 평강을 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "48571b14d6f195bb30aa977402659bc32421729c5f14688f6375ca3ea64b4312"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:9",
+      "sequence": 18810,
+      "chapter_label": "ISA 59",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore justice is far from us, and righteousness doesn’t overtake us. We look for light, but see darkness; for brightness, but we walk in obscurity.",
+      "ko": "그러므로 공평이 우리에게서 멀고 의가 우리에게 미치지 못한즉 우리가 빛을 바라나 어두움 뿐이요 밝은 것을 바라나 캄캄한 가운데 행하므로",
+      "source_text_hash": "bf5c987ca1a01d7bb9973ed25228a2b276eb148782a2baa739cce526a76982c0",
+      "translation_text_hash": "2b712f47cd862ced58ce117f6a2d94f8a318436e7f78e892ae73cf919ea666e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 공평이 우리에게서 멀고 의가 우리에게 미치지 못한즉 우리가 빛을 바라나 어두움 뿐이요 밝은 것을 바라나 캄캄한 가운데 행하므로"
+      ],
+      "raw_text_hashes": [
+        "2b712f47cd862ced58ce117f6a2d94f8a318436e7f78e892ae73cf919ea666e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:10",
+      "sequence": 18811,
+      "chapter_label": "ISA 59",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 10
+        }
+      ],
+      "en": "We grope for the wall like the blind. Yes, we grope as those who have no eyes. We stumble at noon as if it were twilight. Among those who are strong, we are like dead men.",
+      "ko": "우리가 소경 같이 담을 더듬으며 눈 없는 자 같이 두루 더듬으며 낮에도 황혼때 같이 넘어지니 우리는 강장한 자 중에서도 죽은 자 같은지라",
+      "source_text_hash": "80a34506197d17e5a9d0e3d465b670ac118d48ecf1a66823a3103cbf8c8a65cf",
+      "translation_text_hash": "ebe02fa55f5bbda89bbd51bd6da8e53324f6cbd336f08d47f34ea848db1f439f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 소경 같이 담을 더듬으며 눈 없는 자 같이 두루 더듬으며 낮에도 황혼때 같이 넘어지니 우리는 강장한 자 중에서도 죽은 자 같은지라"
+      ],
+      "raw_text_hashes": [
+        "ebe02fa55f5bbda89bbd51bd6da8e53324f6cbd336f08d47f34ea848db1f439f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:11",
+      "sequence": 18812,
+      "chapter_label": "ISA 59",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 11
+        }
+      ],
+      "en": "We all roar like bears and moan sadly like doves. We look for justice, but there is none, for salvation, but it is far off from us.",
+      "ko": "우리가 곰 같이 부르짖으며 비둘기 같이 슬피 울며 공평을 바라나 없고 구원을 바라나 우리에게서 멀도다",
+      "source_text_hash": "b2210085ad7f66490bc366616fabb60a3d3fbb5a1bbe7b8fe98bf79bd19c1c9b",
+      "translation_text_hash": "1c4bd079adbe0652b4a110ab906e4575f46031357ebc0f387380e2d3060b61de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 곰 같이 부르짖으며 비둘기 같이 슬피 울며 공평을 바라나 없고 구원을 바라나 우리에게서 멀도다"
+      ],
+      "raw_text_hashes": [
+        "1c4bd079adbe0652b4a110ab906e4575f46031357ebc0f387380e2d3060b61de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:12",
+      "sequence": 18813,
+      "chapter_label": "ISA 59",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 12
+        }
+      ],
+      "en": "For our transgressions are multiplied before you, and our sins testify against us; for our transgressions are with us, and as for our iniquities, we know them:",
+      "ko": "대저 우리의 허물이 주의 앞에 심히 많으며 우리의 죄가 우리를 쳐서 증거하오니 이는 우리의 허물이 우리와 함께 있음이라 우리의 죄악을 우리가 아나이다",
+      "source_text_hash": "1410fc0ba4dc73fb7f1d2476e64f1d8d769ec282c6162a657efce302e9d7ac7a",
+      "translation_text_hash": "ffcb29901cebf63f44dc54ee960f815aa40aad4d8ad9884397662498bbc4e649",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 우리의 허물이 주의 앞에 심히 많으며 우리의 죄가 우리를 쳐서 증거하오니 이는 우리의 허물이 우리와 함께 있음이라 우리의 죄악을 우리가 아나이다"
+      ],
+      "raw_text_hashes": [
+        "ffcb29901cebf63f44dc54ee960f815aa40aad4d8ad9884397662498bbc4e649"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:13",
+      "sequence": 18814,
+      "chapter_label": "ISA 59",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 13
+        }
+      ],
+      "en": "transgressing and denying the LORD, and turning away from following our God, speaking oppression and revolt, conceiving and uttering from the heart words of falsehood.",
+      "ko": "우리가 여호와를 배반하고 인정치 아니하며 우리 하나님을 좇는데서 돌이켜 포학과 패역을 말하며 거짓말을 마음에 잉태하여 발하니",
+      "source_text_hash": "bd0c7fa68c6a526b92e07cebdc1b1cc0a315e428bd08dccfd21ec42acff49cc5",
+      "translation_text_hash": "73a98dfc29cf9f4bee9a5dd31bdcea51d8bab9adba167c13a66af93a1a981fdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 여호와를 배반하고 인정치 아니하며 우리 하나님을 좇는데서 돌이켜 포학과 패역을 말하며 거짓말을 마음에 잉태하여 발하니"
+      ],
+      "raw_text_hashes": [
+        "73a98dfc29cf9f4bee9a5dd31bdcea51d8bab9adba167c13a66af93a1a981fdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:14",
+      "sequence": 18815,
+      "chapter_label": "ISA 59",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 14
+        }
+      ],
+      "en": "Justice is turned away backward, and righteousness stands far away; for truth has fallen in the street, and uprightness can’t enter.",
+      "ko": "공평이 뒤로 물리침이 되고 의가 멀리 섰으며 성실이 거리에 엎드러지고 정직이 들어가지 못하는도다",
+      "source_text_hash": "0f59c15a0d18d26f67bfe8c310ef5e37a3da5c47d5929a553c582c983c2d82bb",
+      "translation_text_hash": "a04058434d82851e9eb76cb38bd63840e2cb4a4d0e67ca9ad415c6cbf5bf80f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공평이 뒤로 물리침이 되고 의가 멀리 섰으며 성실이 거리에 엎드러지고 정직이 들어가지 못하는도다"
+      ],
+      "raw_text_hashes": [
+        "a04058434d82851e9eb76cb38bd63840e2cb4a4d0e67ca9ad415c6cbf5bf80f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:15",
+      "sequence": 18816,
+      "chapter_label": "ISA 59",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 15
+        }
+      ],
+      "en": "Yes, truth is lacking; and he who departs from evil makes himself a prey. The LORD saw it, and it displeased him that there was no justice.",
+      "ko": "성실이 없어지므로 악을 떠나는 자가 탈취를 당하는도다 여호와께서 이를 감찰하시고 그 공평이 없은 것을 기뻐 아니하시고",
+      "source_text_hash": "af4859ba2d3fe9962e15deda5c677de129935b33a14b8c52af97c3ea71e51cab",
+      "translation_text_hash": "8e5098119045e8e208632e07172ccd0b6ec115a1d50801e75ecce8431f691d44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성실이 없어지므로 악을 떠나는 자가 탈취를 당하는도다 여호와께서 이를 감찰하시고 그 공평이 없은 것을 기뻐 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "8e5098119045e8e208632e07172ccd0b6ec115a1d50801e75ecce8431f691d44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:16",
+      "sequence": 18817,
+      "chapter_label": "ISA 59",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 16
+        }
+      ],
+      "en": "He saw that there was no man, and wondered that there was no intercessor. Therefore his own arm brought salvation to him; and his righteousness sustained him.",
+      "ko": "사람이 없음을 보시며 중재자 없음을 이상히 여기셨으므로 자기 팔로 스스로 구원을 베푸시며 자기의 의를 스스로 의지하사",
+      "source_text_hash": "6b4e01683a01e690d8ccc0ffe45cdd4f47eb3609667b0f72d68d54870ab02dff",
+      "translation_text_hash": "6861cffe89257a7fed0317011832d05ce5cca8adefbc6102deb02e257510f21c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 없음을 보시며 중재자 없음을 이상히 여기셨으므로 자기 팔로 스스로 구원을 베푸시며 자기의 의를 스스로 의지하사"
+      ],
+      "raw_text_hashes": [
+        "6861cffe89257a7fed0317011832d05ce5cca8adefbc6102deb02e257510f21c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:17",
+      "sequence": 18818,
+      "chapter_label": "ISA 59",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 17
+        }
+      ],
+      "en": "He put on righteousness as a breastplate, and a helmet of salvation on his head. He put on garments of vengeance for clothing, and was clad with zeal as a mantle.",
+      "ko": "의로 호심경을 삼으시며 구원을 그 머리에 써서 투구를 삼으시며 보수로 속옷을 삼으시며 열심을 입어 겉옷을 삼으시고",
+      "source_text_hash": "70f5df1323d211e708e988eb064d25ba7ab8c2080fe91b95dac331baba544ead",
+      "translation_text_hash": "d7f3d683c30ad8e3a079312a0c1a19593bbed7e6256a14e0f443b4c1e60a6639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의로 호심경을 삼으시며 구원을 그 머리에 써서 투구를 삼으시며 보수로 속옷을 삼으시며 열심을 입어 겉옷을 삼으시고"
+      ],
+      "raw_text_hashes": [
+        "d7f3d683c30ad8e3a079312a0c1a19593bbed7e6256a14e0f443b4c1e60a6639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:18",
+      "sequence": 18819,
+      "chapter_label": "ISA 59",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 18
+        }
+      ],
+      "en": "According to their deeds, he will repay as appropriate: wrath to his adversaries, recompense to his enemies. He will repay the islands their due.",
+      "ko": "그들의 행위대로 갚으시되 그 대적에게 분노하시며 그 원수에게 보응하시며 섬들에게 보복하실 것이라",
+      "source_text_hash": "7f342f86766bb845113fd0528da768f1fcb970db1378b337632ad73f0ec10ad4",
+      "translation_text_hash": "1d33e799e0403a0eba24570cc5e486cc0c4a72b1732a5ea5ef84d035d7a8ce21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 행위대로 갚으시되 그 대적에게 분노하시며 그 원수에게 보응하시며 섬들에게 보복하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "1d33e799e0403a0eba24570cc5e486cc0c4a72b1732a5ea5ef84d035d7a8ce21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:19",
+      "sequence": 18820,
+      "chapter_label": "ISA 59",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 19
+        }
+      ],
+      "en": "So they will fear the LORD’s name from the west, and his glory from the rising of the sun; for he will come as a rushing stream, which the LORD’s breath drives.",
+      "ko": "서방에서 여호와의 이름을 두려워하겠고 해돋는 편에서 그의 영광을 두려워할 것은 여호와께서 그 기운에 몰려 급히 흐르는 하수 같이 오실 것임이로다",
+      "source_text_hash": "4716cef26849cb01320e8918aa4ccf67fcdf32f383fb813ed837b9d4fd2d57f4",
+      "translation_text_hash": "0b8bcfbcfb22f57d234f18199fbe965edac2f14ce25a1f7bad34a1cbc9e1ec8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서방에서 여호와의 이름을 두려워하겠고 해돋는 편에서 그의 영광을 두려워할 것은 여호와께서 그 기운에 몰려 급히 흐르는 하수 같이 오실 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "0b8bcfbcfb22f57d234f18199fbe965edac2f14ce25a1f7bad34a1cbc9e1ec8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:20",
+      "sequence": 18821,
+      "chapter_label": "ISA 59",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 20
+        }
+      ],
+      "en": "“A Redeemer will come to Zion, and to those who turn from disobedience in Jacob,” says the LORD.",
+      "ko": "여호와께서 가라사대 구속자가 시온에 임하며 야곱 중에 죄과를 떠나는 자에게 임하리라",
+      "source_text_hash": "8ba2d5d66954de583d0b1a41e66d8229ae4271fd8d5595d84b465a5caa8350a3",
+      "translation_text_hash": "09294b78d2841a0621c1001508a84694a74e2c5d3187229bfd8c28d55a781029",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 구속자가 시온에 임하며 야곱 중에 죄과를 떠나는 자에게 임하리라"
+      ],
+      "raw_text_hashes": [
+        "09294b78d2841a0621c1001508a84694a74e2c5d3187229bfd8c28d55a781029"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:59:21",
+      "sequence": 18822,
+      "chapter_label": "ISA 59",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 59,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 59,
+          "verse": 21
+        }
+      ],
+      "en": "“As for me, this is my covenant with them,” says the LORD. “My Spirit who is on you, and my words which I have put in your mouth shall not depart out of your mouth, nor out of the mouth of your offspring, nor out of the mouth of your offspring’s offspring,” says the LORD, “from now on and forever.”",
+      "ko": "여호와께서 또 가라사대 내가 그들과 세운 나의 언약이 이러하니 곧 네 위에 있는 나의 신과 네 입에 둔 나의 말이 이제부터 영영토록 네 입에서와 네 후손의 입에서와 네 후손의 후손의 입에서 떠나지 아니하리라 하시니라 여호와의 말씀이니라",
+      "source_text_hash": "d58bdaab82e6be191bef21c33c1974c9e101c08f3984c6cc93c94e2579cfc07f",
+      "translation_text_hash": "f7d9231ff6f70f52c812bb12d4987a7050a46c0ea168377807c14ce90d3ab175",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 가라사대 내가 그들과 세운 나의 언약이 이러하니 곧 네 위에 있는 나의 신과 네 입에 둔 나의 말이 이제부터 영영토록 네 입에서와 네 후손의 입에서와 네 후손의 후손의 입에서 떠나지 아니하리라 하시니라 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "f7d9231ff6f70f52c812bb12d4987a7050a46c0ea168377807c14ce90d3ab175"
+      ]
+    }
+  ]
+}

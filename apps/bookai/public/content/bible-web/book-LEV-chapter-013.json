@@ -1,0 +1,1901 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:013",
+  "unit_ordinal": 103,
+  "unit_label": "LEV 13",
+  "book_code": "LEV",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:13:1",
+      "sequence": 3054,
+      "chapter_label": "LEV 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying,",
+      "ko": "여호와께서 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "e6c7cd4c60d1b58d8caa7e02e4352f1d925cf188a6f005f934b711230470272a",
+      "translation_text_hash": "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:2",
+      "sequence": 3055,
+      "chapter_label": "LEV 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "“When a man shall have a swelling in his body’s skin, or a scab, or a bright spot, and it becomes in the skin of his body the plague of leprosy, then he shall be brought to Aaron the priest or to one of his sons, the priests.",
+      "ko": "사람의 피부에 무엇이 돋거나 딱지가 앉거나 색점이 생겨서 그 피부에 문둥병 같이 되거든 곧 제사장 아론에게나 그 자손중 한 제사장에게로 데리고 갈 것이요",
+      "source_text_hash": "1b18816a810642badcd8ab49ed6ec7a79c8396359b4feb42bade5e5b07f522e6",
+      "translation_text_hash": "58eae7547eb60aa8962ee215226aaa47cb1711534e0cb820d375290600588c75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 피부에 무엇이 돋거나 딱지가 앉거나 색점이 생겨서 그 피부에 문둥병 같이 되거든 곧 제사장 아론에게나 그 자손중 한 제사장에게로 데리고 갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "58eae7547eb60aa8962ee215226aaa47cb1711534e0cb820d375290600588c75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:3",
+      "sequence": 3056,
+      "chapter_label": "LEV 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "The priest shall examine the plague in the skin of the body. If the hair in the plague has turned white, and the appearance of the plague is deeper than the body’s skin, it is the plague of leprosy; so the priest shall examine him and pronounce him unclean.",
+      "ko": "제사장은 그 피부의 병을 진찰할찌니 환처의 털이 희어졌고 환처가 피부보다 우묵하여졌으면 이는 문둥병의 환처라 제사장이 진단하여 그를 부정하다 할 것이요",
+      "source_text_hash": "cf6f35a6367331c16c75e9c923814ec86db8ce46021aad321e30ac857b922234",
+      "translation_text_hash": "393e916c7b0df5914ccf7cd8104ffd8f255a0c5ba0187ea4de51248801f56e4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 피부의 병을 진찰할찌니 환처의 털이 희어졌고 환처가 피부보다 우묵하여졌으면 이는 문둥병의 환처라 제사장이 진단하여 그를 부정하다 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "393e916c7b0df5914ccf7cd8104ffd8f255a0c5ba0187ea4de51248801f56e4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:4",
+      "sequence": 3057,
+      "chapter_label": "LEV 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "If the bright spot is white in the skin of his body, and its appearance isn’t deeper than the skin, and its hair hasn’t turned white, then the priest shall isolate the infected person for seven days.",
+      "ko": "피부에 색점이 희나 우묵하지 아니하고 그 털이 희지 아니하면 제사장은 그 환자를 칠일 동안 금고할 것이며",
+      "source_text_hash": "e46157e5d3df3e020f885d34d6f9b858a349bd6d8027fe29e5bd8ce46bcae236",
+      "translation_text_hash": "fe38db242b141450b5a4967e57d902c64fc1cae467127adeb7f246eebedfc70f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피부에 색점이 희나 우묵하지 아니하고 그 털이 희지 아니하면 제사장은 그 환자를 칠일 동안 금고할 것이며"
+      ],
+      "raw_text_hashes": [
+        "fe38db242b141450b5a4967e57d902c64fc1cae467127adeb7f246eebedfc70f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:5",
+      "sequence": 3058,
+      "chapter_label": "LEV 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "The priest shall examine him on the seventh day. Behold, if in his eyes the plague is arrested and the plague hasn’t spread in the skin, then the priest shall isolate him for seven more days.",
+      "ko": "칠일만에 제사장이 그를 진찰할찌니 그의 보기에 그 환처가 변하지 아니하고 병색이 피부에 퍼지지 아니하였으면 제사장이 그를 또 칠일 동안을 금고할 것이며",
+      "source_text_hash": "48255a2878b2244cf50eacd851004e5a4bff44355a2acb8664b2d72c1d06565b",
+      "translation_text_hash": "c37bd382cc2003c0b236a3be1f8d780e2f54c9251fcd8d3640d16897ab8a23c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일만에 제사장이 그를 진찰할찌니 그의 보기에 그 환처가 변하지 아니하고 병색이 피부에 퍼지지 아니하였으면 제사장이 그를 또 칠일 동안을 금고할 것이며"
+      ],
+      "raw_text_hashes": [
+        "c37bd382cc2003c0b236a3be1f8d780e2f54c9251fcd8d3640d16897ab8a23c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:6",
+      "sequence": 3059,
+      "chapter_label": "LEV 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "The priest shall examine him again on the seventh day. Behold, if the plague has faded and the plague hasn’t spread in the skin, then the priest shall pronounce him clean. It is a scab. He shall wash his clothes, and be clean.",
+      "ko": "칠일만에 제사장이 또 진찰할찌니 그 환처가 엷어졌고 병색이 피부에 퍼지지 아니하였으면 피부병이라 제사장이 그를 정하다 할 것이요 그는 옷을 빨 것이라 그리하면 정하리라",
+      "source_text_hash": "ad1c13c72d78d5f794f04b9658858d49b903000c214a323d335b599233641138",
+      "translation_text_hash": "9d869209bdc04e7dc0eecacfc99e439b7cca845dce6318b1bb9474b003f7b9f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일만에 제사장이 또 진찰할찌니 그 환처가 엷어졌고 병색이 피부에 퍼지지 아니하였으면 피부병이라 제사장이 그를 정하다 할 것이요 그는 옷을 빨 것이라 그리하면 정하리라"
+      ],
+      "raw_text_hashes": [
+        "9d869209bdc04e7dc0eecacfc99e439b7cca845dce6318b1bb9474b003f7b9f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:7",
+      "sequence": 3060,
+      "chapter_label": "LEV 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "But if the scab spreads on the skin after he has shown himself to the priest for his cleansing, he shall show himself to the priest again.",
+      "ko": "그러나 정결한 여부를 위하여 제사장에게 보인 후에 병이 피부에 퍼지면 제사장에게 다시 보일 것이요",
+      "source_text_hash": "cf5773f46e0eb2487bdaeb93034b94264a5f7c72ab6a4fb1cecb2d2544e36252",
+      "translation_text_hash": "1952f25986ebf2cc50bf3420765ddde1299e1658b5f24ed32c57fe6ff5d51e1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 정결한 여부를 위하여 제사장에게 보인 후에 병이 피부에 퍼지면 제사장에게 다시 보일 것이요"
+      ],
+      "raw_text_hashes": [
+        "1952f25986ebf2cc50bf3420765ddde1299e1658b5f24ed32c57fe6ff5d51e1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:8",
+      "sequence": 3061,
+      "chapter_label": "LEV 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "The priest shall examine him; and behold, if the scab has spread on the skin, then the priest shall pronounce him unclean. It is leprosy.",
+      "ko": "제사장은 진찰할찌니 그 병이 피부에 퍼졌으면 그를 부정하다 진단할 것이라 이는 문둥병임이니라",
+      "source_text_hash": "b0fe08a19228df4808ce205d2500cc6308e8e447dfbb44faef334cca38b014d9",
+      "translation_text_hash": "f7722989d86960781c6f44689a730c75bf3687bbcb6dd21f7310939bbb0a138d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 진찰할찌니 그 병이 피부에 퍼졌으면 그를 부정하다 진단할 것이라 이는 문둥병임이니라"
+      ],
+      "raw_text_hashes": [
+        "f7722989d86960781c6f44689a730c75bf3687bbcb6dd21f7310939bbb0a138d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:9",
+      "sequence": 3062,
+      "chapter_label": "LEV 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "“When the plague of leprosy is in a man, then he shall be brought to the priest;",
+      "ko": "사람에게 문둥병이 들었거든 그를 제사장에게로 데려갈 것이요",
+      "source_text_hash": "268d966daa205b0e9d5b0bd1ba00e87c7b29b151ed9700a3759d21501e7c934b",
+      "translation_text_hash": "4922ac97d71a7efa43ee408bdf536bd137cb957f4f54edd9a797bfe3f5ec121a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람에게 문둥병이 들었거든 그를 제사장에게로 데려갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "4922ac97d71a7efa43ee408bdf536bd137cb957f4f54edd9a797bfe3f5ec121a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:10",
+      "sequence": 3063,
+      "chapter_label": "LEV 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "and the priest shall examine him. Behold, if there is a white swelling in the skin, and it has turned the hair white, and there is raw flesh in the swelling,",
+      "ko": "제사장은 진찰할찌니 피부에 흰 점이 돋고 털이 희어지고 거기 난육이 생겼으면",
+      "source_text_hash": "ee18c4bd81d330b652df24d4e0407eeb55b600af1643ee87ec3a70f813656d9b",
+      "translation_text_hash": "69046d8e63c0ad17edeb81a179afc4ecaef4d32b880c2d99cd96782f7e4c1407",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 진찰할찌니 피부에 흰 점이 돋고 털이 희어지고 거기 난육이 생겼으면"
+      ],
+      "raw_text_hashes": [
+        "69046d8e63c0ad17edeb81a179afc4ecaef4d32b880c2d99cd96782f7e4c1407"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:11",
+      "sequence": 3064,
+      "chapter_label": "LEV 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "it is a chronic leprosy in the skin of his body, and the priest shall pronounce him unclean. He shall not isolate him, for he is already unclean.",
+      "ko": "이는 그의 피부의 오랜 문둥병이라 제사장이 부정하다 진단할 것이요 그가 이미 부정하였은즉 금고하지는 않을 것이며",
+      "source_text_hash": "3d5befd5f9b82c5276e1fbc771dfbf4f3021fc4e7fc17730444ec74548b652aa",
+      "translation_text_hash": "15294958facda53313b7aebcccd10b858addef77f2c58c1db03b2b978a516acf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그의 피부의 오랜 문둥병이라 제사장이 부정하다 진단할 것이요 그가 이미 부정하였은즉 금고하지는 않을 것이며"
+      ],
+      "raw_text_hashes": [
+        "15294958facda53313b7aebcccd10b858addef77f2c58c1db03b2b978a516acf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:12",
+      "sequence": 3065,
+      "chapter_label": "LEV 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "“If the leprosy breaks out all over the skin, and the leprosy covers all the skin of the infected person from his head even to his feet, as far as it appears to the priest,",
+      "ko": "제사장의 보기에 문둥병이 그 피부에 크게 발하였으되 그 환자의 머리부터 발까지 퍼졌거든",
+      "source_text_hash": "e4ebd2d3edb2da5568d10fe4688bc04f94cdd8bc6fb110bffe6775ad43ec0aa0",
+      "translation_text_hash": "28ea6d8b26bbbff16f318c452a2d4ca11afb65f2d79d3814cb2de57b79c9d7d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장의 보기에 문둥병이 그 피부에 크게 발하였으되 그 환자의 머리부터 발까지 퍼졌거든"
+      ],
+      "raw_text_hashes": [
+        "28ea6d8b26bbbff16f318c452a2d4ca11afb65f2d79d3814cb2de57b79c9d7d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:13",
+      "sequence": 3066,
+      "chapter_label": "LEV 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "then the priest shall examine him. Behold, if the leprosy has covered all his flesh, he shall pronounce him clean of the plague. It has all turned white: he is clean.",
+      "ko": "그가 진찰할 것이요 문둥병이 과연 그 전신에 퍼졌으면 그 환자를 정하다 할찌니 다 희어진 자인즉 정하거니와",
+      "source_text_hash": "f97fc85f49ec6fa83b79ca8e1b9eae51e541bd8ffec1a106b6dda319ee861718",
+      "translation_text_hash": "d3532cf5faae1f5b59acf9c0a3907308fc428d8bdc6c7242f368cbc191920914",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 진찰할 것이요 문둥병이 과연 그 전신에 퍼졌으면 그 환자를 정하다 할찌니 다 희어진 자인즉 정하거니와"
+      ],
+      "raw_text_hashes": [
+        "d3532cf5faae1f5b59acf9c0a3907308fc428d8bdc6c7242f368cbc191920914"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:14",
+      "sequence": 3067,
+      "chapter_label": "LEV 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "But whenever raw flesh appears in him, he shall be unclean.",
+      "ko": "아무 때든지 그에게 난육이 발생하면 그는 부정한즉",
+      "source_text_hash": "2dac00a50480fb9dcbda9b6ab2d59e4aa87ecf4085b5057c14903aa71d22389a",
+      "translation_text_hash": "1fe81d5183aee3f7986eebaba514342098eee84a362cc4980dfb4e3914b47e76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무 때든지 그에게 난육이 발생하면 그는 부정한즉"
+      ],
+      "raw_text_hashes": [
+        "1fe81d5183aee3f7986eebaba514342098eee84a362cc4980dfb4e3914b47e76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:15",
+      "sequence": 3068,
+      "chapter_label": "LEV 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "The priest shall examine the raw flesh, and pronounce him unclean: the raw flesh is unclean. It is leprosy.",
+      "ko": "제사장이 난육을 보고 그를 부정하다 진단할찌니 그 난육은 부정한 것인즉 이는 문둥병이며",
+      "source_text_hash": "b20c22747959b6654e88a2278e175f58ea415d8bbe97241417ceae4bc4f96e46",
+      "translation_text_hash": "c73c8f5182df95013066f9ac20d913aca4643364193f3bb172d41fe4c9aa15e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 난육을 보고 그를 부정하다 진단할찌니 그 난육은 부정한 것인즉 이는 문둥병이며"
+      ],
+      "raw_text_hashes": [
+        "c73c8f5182df95013066f9ac20d913aca4643364193f3bb172d41fe4c9aa15e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:16",
+      "sequence": 3069,
+      "chapter_label": "LEV 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "Or if the raw flesh turns again, and is changed to white, then he shall come to the priest.",
+      "ko": "그 난육이 변하여 다시 희어지면 제사장에게로 갈 것이요",
+      "source_text_hash": "a1556360f7748f1941c14b5d4a3be942a5110801a2a5c6e261fd82836dadee49",
+      "translation_text_hash": "3b2109e049f8a520c775c90c2f2d9fec4c0b5b6fa8adccd19701529a3e6df595",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 난육이 변하여 다시 희어지면 제사장에게로 갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "3b2109e049f8a520c775c90c2f2d9fec4c0b5b6fa8adccd19701529a3e6df595"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:17",
+      "sequence": 3070,
+      "chapter_label": "LEV 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "The priest shall examine him. Behold, if the plague has turned white, then the priest shall pronounce him clean of the plague. He is clean.",
+      "ko": "제사장은 그를 진찰하여서 그 환처가 희어졌으면 환자를 정하다 할찌니 그는 정하니라",
+      "source_text_hash": "2cade44e86c1de6cdea60f0c6227de734a35ce5dd77e7211ae81b8c680e682da",
+      "translation_text_hash": "be850404cf152e742904b0c5a07681b4d50dcb32c688e8f6d2e1f775d1d565a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그를 진찰하여서 그 환처가 희어졌으면 환자를 정하다 할찌니 그는 정하니라"
+      ],
+      "raw_text_hashes": [
+        "be850404cf152e742904b0c5a07681b4d50dcb32c688e8f6d2e1f775d1d565a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:18",
+      "sequence": 3071,
+      "chapter_label": "LEV 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "“When the body has a boil on its skin, and it has healed,",
+      "ko": "피부에 종기가 생겼다가 나았고",
+      "source_text_hash": "c0727a30220a6370fa3914560882af43d34d093e252ce0b4916f25cf88947e20",
+      "translation_text_hash": "76843c30a2751b5f56616f278ee80a731393ebb5dc8d3980546faa073290c5cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피부에 종기가 생겼다가 나았고"
+      ],
+      "raw_text_hashes": [
+        "76843c30a2751b5f56616f278ee80a731393ebb5dc8d3980546faa073290c5cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:19",
+      "sequence": 3072,
+      "chapter_label": "LEV 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "and in the place of the boil there is a white swelling, or a bright spot, reddish-white, then it shall be shown to the priest.",
+      "ko": "그 종처에 흰 점이 돋거나 희고 불그스름한 색점이 생겼으면 제사장에게 보일 것이요",
+      "source_text_hash": "dd353bca27ac9b97d1f71ae1b29c193fc0ce36b3c21cc8aeace54f9820324c4b",
+      "translation_text_hash": "4c3ab905146782e1aa5d3a73f2509bfe3fd0cae7b616cb160a107d1d7792f80d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 종처에 흰 점이 돋거나 희고 불그스름한 색점이 생겼으면 제사장에게 보일 것이요"
+      ],
+      "raw_text_hashes": [
+        "4c3ab905146782e1aa5d3a73f2509bfe3fd0cae7b616cb160a107d1d7792f80d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:20",
+      "sequence": 3073,
+      "chapter_label": "LEV 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "The priest shall examine it. Behold, if its appearance is deeper than the skin, and its hair has turned white, then the priest shall pronounce him unclean. It is the plague of leprosy. It has broken out in the boil.",
+      "ko": "그는 진찰하여 피부보다 얕고 그 털이 희면 그를 부정하다 진단할찌니 이는 종기로 된 문둥병의 환처임이니라",
+      "source_text_hash": "4def792eb2f89378dbae997ba1d1ac6cd9e1168d2144d8c47bbe9669152f6f2a",
+      "translation_text_hash": "6990d460c84b9c709d57b96ee2542b6384f7a420b1787d9602ed598f9940c449",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 진찰하여 피부보다 얕고 그 털이 희면 그를 부정하다 진단할찌니 이는 종기로 된 문둥병의 환처임이니라"
+      ],
+      "raw_text_hashes": [
+        "6990d460c84b9c709d57b96ee2542b6384f7a420b1787d9602ed598f9940c449"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:21",
+      "sequence": 3074,
+      "chapter_label": "LEV 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "But if the priest examines it, and behold, there are no white hairs in it, and it isn’t deeper than the skin, but is dim, then the priest shall isolate him seven days.",
+      "ko": "그러나 제사장의 보기에 거기 흰 털이 없고 피부보다 얕지 아니하고 빛이 엷으면 제사장은 그를 칠일 동안 금고할 것이며",
+      "source_text_hash": "b85ce6a0218910465cb2eda7030b1c353f6411d94bf26de7260b1c5c905b96f0",
+      "translation_text_hash": "8cd0d5ec9f654faab588d8ac2f3d62e4993beb6897ec50edb809b343be9fdb59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 제사장의 보기에 거기 흰 털이 없고 피부보다 얕지 아니하고 빛이 엷으면 제사장은 그를 칠일 동안 금고할 것이며"
+      ],
+      "raw_text_hashes": [
+        "8cd0d5ec9f654faab588d8ac2f3d62e4993beb6897ec50edb809b343be9fdb59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:22",
+      "sequence": 3075,
+      "chapter_label": "LEV 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "If it spreads in the skin, then the priest shall pronounce him unclean. It is a plague.",
+      "ko": "그 병이 크게 피부에 퍼졌으면 제사장은 그를 부정하다 진단할찌니 이는 그 환처임이니라",
+      "source_text_hash": "5a9a6ffbe4345e52080c78c5eb03b15e9c530e32fc537e163a851dcaddb69731",
+      "translation_text_hash": "203dafa0d9bcb696a47d8462a82be52ec37d84429b4da46a61cc8d5085804d74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 병이 크게 피부에 퍼졌으면 제사장은 그를 부정하다 진단할찌니 이는 그 환처임이니라"
+      ],
+      "raw_text_hashes": [
+        "203dafa0d9bcb696a47d8462a82be52ec37d84429b4da46a61cc8d5085804d74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:23",
+      "sequence": 3076,
+      "chapter_label": "LEV 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "But if the bright spot stays in its place, and hasn’t spread, it is the scar from the boil; and the priest shall pronounce him clean.",
+      "ko": "그러나 그 색점이 여전하고 퍼지지 아니하였으면 이는 종기 흔적이니 제사장은 그를 정하다 진단할찌니라",
+      "source_text_hash": "df78642263b0ae713ad790e949ad4bf91ab0e26d413bd3fe356b601be5b504dc",
+      "translation_text_hash": "2f364ae551adec600507c965f61e2ff0de286be431ae8ed0483f0b1397a8b276",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 색점이 여전하고 퍼지지 아니하였으면 이는 종기 흔적이니 제사장은 그를 정하다 진단할찌니라"
+      ],
+      "raw_text_hashes": [
+        "2f364ae551adec600507c965f61e2ff0de286be431ae8ed0483f0b1397a8b276"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:24",
+      "sequence": 3077,
+      "chapter_label": "LEV 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "“Or when the body has a burn from fire on its skin, and the raw flesh of the burn becomes a bright spot, reddish-white, or white,",
+      "ko": "피부를 불에 데었는데 그 덴 곳에 불그스름하고 희거나 순전히 흰 색점이 생기면",
+      "source_text_hash": "abcf5d9afc379e7d122b8b84966808ebdbf36c5687ba8ec61792f41943f33b58",
+      "translation_text_hash": "e570544e4c282f836652d8312021673b34471de14b21a4f4f8f0a5f6e339347a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피부를 불에 데었는데 그 덴 곳에 불그스름하고 희거나 순전히 흰 색점이 생기면"
+      ],
+      "raw_text_hashes": [
+        "e570544e4c282f836652d8312021673b34471de14b21a4f4f8f0a5f6e339347a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:25",
+      "sequence": 3078,
+      "chapter_label": "LEV 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "then the priest shall examine it; and behold, if the hair in the bright spot has turned white, and its appearance is deeper than the skin, it is leprosy. It has broken out in the burning, and the priest shall pronounce him unclean. It is the plague of leprosy.",
+      "ko": "제사장은 진찰할찌니 그 색점의 털이 희고 그 자리가 피부보다 우묵하면 이는 화상에서 발한 문둥병인즉 제사장은 그를 부정하다 할것은 문둥병의 환처가 됨이니라",
+      "source_text_hash": "2094f327d544e27b8469092900feb9a94362369ba4091a0e475a7e2697bd2fbe",
+      "translation_text_hash": "4831b311d6860122cbdf9265d573f50e5fc0885d08a82dac50d6179d7638413e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 진찰할찌니 그 색점의 털이 희고 그 자리가 피부보다 우묵하면 이는 화상에서 발한 문둥병인즉 제사장은 그를 부정하다 할것은 문둥병의 환처가 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "4831b311d6860122cbdf9265d573f50e5fc0885d08a82dac50d6179d7638413e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:26",
+      "sequence": 3079,
+      "chapter_label": "LEV 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "But if the priest examines it, and behold, there is no white hair in the bright spot, and it isn’t deeper than the skin, but has faded, then the priest shall isolate him seven days.",
+      "ko": "그러나 제사장의 보기에 그 색점에 흰 털이 없으며 그 자리가 피부보다 얕지 아니하고 빛이 엷으면 그는 그를 칠일 동안 금고할 것이며",
+      "source_text_hash": "1d8dabb6af49348c817e32489aeeda10fe825d2a02ae9deb0c277d005f9625ef",
+      "translation_text_hash": "845276fb214e39c1c1182b8c85fc8e64b1413d0b4ba9f45107ca85847e14fc50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 제사장의 보기에 그 색점에 흰 털이 없으며 그 자리가 피부보다 얕지 아니하고 빛이 엷으면 그는 그를 칠일 동안 금고할 것이며"
+      ],
+      "raw_text_hashes": [
+        "845276fb214e39c1c1182b8c85fc8e64b1413d0b4ba9f45107ca85847e14fc50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:27",
+      "sequence": 3080,
+      "chapter_label": "LEV 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "The priest shall examine him on the seventh day. If it has spread in the skin, then the priest shall pronounce him unclean. It is the plague of leprosy.",
+      "ko": "칠일만에 제사장이 그를 진찰할찌니 만일 병이 크게 피부에 퍼졌으면 그는 그를 부정하다 진단할 것은 문둥병의 환처임이니라",
+      "source_text_hash": "01622bcc04237607fc963d011fa9553cd7b98430364fa6a5d84004359d04ebe6",
+      "translation_text_hash": "9007ba31db36f8360b27b18e9e9b3e7d2c8a1a45d39ea162e6174e6ccec78525",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일만에 제사장이 그를 진찰할찌니 만일 병이 크게 피부에 퍼졌으면 그는 그를 부정하다 진단할 것은 문둥병의 환처임이니라"
+      ],
+      "raw_text_hashes": [
+        "9007ba31db36f8360b27b18e9e9b3e7d2c8a1a45d39ea162e6174e6ccec78525"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:28",
+      "sequence": 3081,
+      "chapter_label": "LEV 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "If the bright spot stays in its place, and hasn’t spread in the skin, but is faded, it is the swelling from the burn, and the priest shall pronounce him clean, for it is the scar from the burn.",
+      "ko": "만일 색점이 여전하여 피부에 퍼지지 아니하고 빛이 엷으면 화상으로 부은 것이니 제사장은 그를 정하다 할 것은 이는 화상의 흔적임이니라",
+      "source_text_hash": "b4b68088a02f76cccec310664cb66b34f6de19449c6eac6106c6f9decec9b19d",
+      "translation_text_hash": "0749fa6d5885b51ae610ac22b9a6839903f96e89135a6ceb57e92ec46f48f603",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 색점이 여전하여 피부에 퍼지지 아니하고 빛이 엷으면 화상으로 부은 것이니 제사장은 그를 정하다 할 것은 이는 화상의 흔적임이니라"
+      ],
+      "raw_text_hashes": [
+        "0749fa6d5885b51ae610ac22b9a6839903f96e89135a6ceb57e92ec46f48f603"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:29",
+      "sequence": 3082,
+      "chapter_label": "LEV 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "“When a man or woman has a plague on the head or on the beard,",
+      "ko": "남자나 여자의 머리에나 수염에 환처가 있으면",
+      "source_text_hash": "027081c71aacb3cb6a05fab826c5faa62445af7a882a87571a6b6a9db12cef29",
+      "translation_text_hash": "890bd35766258d74cff9f4772effc94ba2cee21ed929181709666b011bd16fe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자나 여자의 머리에나 수염에 환처가 있으면"
+      ],
+      "raw_text_hashes": [
+        "890bd35766258d74cff9f4772effc94ba2cee21ed929181709666b011bd16fe4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:30",
+      "sequence": 3083,
+      "chapter_label": "LEV 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "then the priest shall examine the plague; and behold, if its appearance is deeper than the skin, and the hair in it is yellow and thin, then the priest shall pronounce him unclean. It is an itch. It is leprosy of the head or of the beard.",
+      "ko": "제사장은 진찰할찌니 환처가 피부보다 우묵하고 그 자리에 누르고 가는 털이 있으면 그는 그를 부정하다 할 것은 이는 옴이라 머리에나 수염에 발한 문둥병임이니라",
+      "source_text_hash": "505d3f2a6695be211074d6951477561c906c3d22921022a4b7ae0ce13d8f5072",
+      "translation_text_hash": "9ee2aec26affa5fd80e6947549abc31c4753b899808766543027b9e7c02ce1c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 진찰할찌니 환처가 피부보다 우묵하고 그 자리에 누르고 가는 털이 있으면 그는 그를 부정하다 할 것은 이는 옴이라 머리에나 수염에 발한 문둥병임이니라"
+      ],
+      "raw_text_hashes": [
+        "9ee2aec26affa5fd80e6947549abc31c4753b899808766543027b9e7c02ce1c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:31",
+      "sequence": 3084,
+      "chapter_label": "LEV 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "If the priest examines the plague of itching, and behold, its appearance isn’t deeper than the skin, and there is no black hair in it, then the priest shall isolate the person infected with itching seven days.",
+      "ko": "만일 제사장의 보기에 그 옴의 환처가 피부보다 우묵하지 아니하고 그 자리에 검은 털이 없으면 제사장은 그 옴 환자를 칠일 동안 금고할 것이며",
+      "source_text_hash": "e9e61a8588323bf69e2607d0c02e0ba0aaef4a880fcd5ca8211365e26a3529cb",
+      "translation_text_hash": "4498614299c6414b1c20efc3dd25bf0e3fe142141b2d363d1afa9dfeed890c2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 제사장의 보기에 그 옴의 환처가 피부보다 우묵하지 아니하고 그 자리에 검은 털이 없으면 제사장은 그 옴 환자를 칠일 동안 금고할 것이며"
+      ],
+      "raw_text_hashes": [
+        "4498614299c6414b1c20efc3dd25bf0e3fe142141b2d363d1afa9dfeed890c2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:32",
+      "sequence": 3085,
+      "chapter_label": "LEV 13",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 32
+        }
+      ],
+      "en": "On the seventh day the priest shall examine the plague; and behold, if the itch hasn’t spread, and there is no yellow hair in it, and the appearance of the itch isn’t deeper than the skin,",
+      "ko": "칠일만에 제사장은 그 환처를 진찰할찌니 그 옴이 퍼지지 아니하고 그 자리에 누른 털이 없고 피부보다 우묵하지 아니하거든",
+      "source_text_hash": "0db9541ef7e237bbbafc2f28814c5bc9040943958e5be41acdeb8e0177c64468",
+      "translation_text_hash": "8e967cdbd8d988636658b258bd04be7656652c12e2542f6423aa17ffa76b4c22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일만에 제사장은 그 환처를 진찰할찌니 그 옴이 퍼지지 아니하고 그 자리에 누른 털이 없고 피부보다 우묵하지 아니하거든"
+      ],
+      "raw_text_hashes": [
+        "8e967cdbd8d988636658b258bd04be7656652c12e2542f6423aa17ffa76b4c22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:33",
+      "sequence": 3086,
+      "chapter_label": "LEV 13",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 33
+        }
+      ],
+      "en": "then he shall be shaved, but he shall not shave the itch. Then the priest shall isolate the one who has the itch seven more days.",
+      "ko": "그는 모발을 밀되 환처는 밀지 말 것이요 제사장은 옴 환자를 또 칠일 동안 금고할 것이며",
+      "source_text_hash": "50c30d88bbd214b1b6c0f24c9731d8d5094c5af35eb5a0ffb455a174eaaedacb",
+      "translation_text_hash": "7d9c5138e14d8cd90b85c37eb8845e66be33df31878311b6ec8c41ea9272fd04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 모발을 밀되 환처는 밀지 말 것이요 제사장은 옴 환자를 또 칠일 동안 금고할 것이며"
+      ],
+      "raw_text_hashes": [
+        "7d9c5138e14d8cd90b85c37eb8845e66be33df31878311b6ec8c41ea9272fd04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:34",
+      "sequence": 3087,
+      "chapter_label": "LEV 13",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 34
+        }
+      ],
+      "en": "On the seventh day, the priest shall examine the itch; and behold, if the itch hasn’t spread in the skin, and its appearance isn’t deeper than the skin, then the priest shall pronounce him clean. He shall wash his clothes and be clean.",
+      "ko": "칠일만에 제사장은 그 옴을 또 진찰할찌니 그 옴이 피부에 퍼지지 아니하고 피부보다 우묵하지 아니하면 그는 그를 정하다 진단할 것이요 그는 그 옷을 빨찌니 정하려니와",
+      "source_text_hash": "4d876a7bf05b8788c2c4660636cda60f7f2acca5cccacd52466f8265018b596e",
+      "translation_text_hash": "beb0a8abc7dffdbdd9bf473a736617b510139d5fd654fa36775a3ea156eb3f20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일만에 제사장은 그 옴을 또 진찰할찌니 그 옴이 피부에 퍼지지 아니하고 피부보다 우묵하지 아니하면 그는 그를 정하다 진단할 것이요 그는 그 옷을 빨찌니 정하려니와"
+      ],
+      "raw_text_hashes": [
+        "beb0a8abc7dffdbdd9bf473a736617b510139d5fd654fa36775a3ea156eb3f20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:35",
+      "sequence": 3088,
+      "chapter_label": "LEV 13",
+      "verse_label": "35",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 35
+        }
+      ],
+      "en": "But if the itch spreads in the skin after his cleansing,",
+      "ko": "깨끗한 후에라도 옴이 크게 피부에 퍼지면",
+      "source_text_hash": "f2295e008bf1beffded529f6d10414f4604914f70b361a8a979ce2e04dbfa7b7",
+      "translation_text_hash": "46b4b656eb430c8c980561aef8366250091d33171d86b1cb4e34e7d329731d94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨끗한 후에라도 옴이 크게 피부에 퍼지면"
+      ],
+      "raw_text_hashes": [
+        "46b4b656eb430c8c980561aef8366250091d33171d86b1cb4e34e7d329731d94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:36",
+      "sequence": 3089,
+      "chapter_label": "LEV 13",
+      "verse_label": "36",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 36
+        }
+      ],
+      "en": "then the priest shall examine him; and behold, if the itch has spread in the skin, the priest shall not look for the yellow hair; he is unclean.",
+      "ko": "제사장은 그를 진찰할찌니 과연 옴이 피부에 퍼졌으면 누른 털을 찾을 것 없이 그는 부정하니라",
+      "source_text_hash": "1f4a43b29fde9b01315cdeb6a310448dbe3c513cba83bd3abb6eab81c6ce552c",
+      "translation_text_hash": "cebe18576f898f2fe626f39b2d132cd06754f5e3ffb252405e59c588043b0246",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그를 진찰할찌니 과연 옴이 피부에 퍼졌으면 누른 털을 찾을 것 없이 그는 부정하니라"
+      ],
+      "raw_text_hashes": [
+        "cebe18576f898f2fe626f39b2d132cd06754f5e3ffb252405e59c588043b0246"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:37",
+      "sequence": 3090,
+      "chapter_label": "LEV 13",
+      "verse_label": "37",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 37
+        }
+      ],
+      "en": "But if in his eyes the itch is arrested and black hair has grown in it, then the itch is healed. He is clean. The priest shall pronounce him clean.",
+      "ko": "그러나 제사장의 보기에 옴이 여전하고 그 자리에 검은 털이 났으면 그 옴은 나았고 그 사람은 정하니 제사장은 그를 정하다 진단할찌니라",
+      "source_text_hash": "ee9c0035b9935bcf5a8ea7ef00ba47a66823bd5242d7c9704dacfd6913f836c8",
+      "translation_text_hash": "44168ad41ac347f61e23344f1ff620e6b110b66b276bdc121dff5d69e19acec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 제사장의 보기에 옴이 여전하고 그 자리에 검은 털이 났으면 그 옴은 나았고 그 사람은 정하니 제사장은 그를 정하다 진단할찌니라"
+      ],
+      "raw_text_hashes": [
+        "44168ad41ac347f61e23344f1ff620e6b110b66b276bdc121dff5d69e19acec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:38",
+      "sequence": 3091,
+      "chapter_label": "LEV 13",
+      "verse_label": "38",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 38
+        }
+      ],
+      "en": "“When a man or a woman has bright spots in the skin of the body, even white bright spots,",
+      "ko": "남자나 여자의 피부에 색점 곧 흰 색점이 있으면",
+      "source_text_hash": "d97007819b69c98b5442be782401a2ceee92a468290bc8158d8a81bccd86de78",
+      "translation_text_hash": "ebfb05b79130af75b9aa04dcfa67d3bae2c02bb74578f1da78e998fcd8bdd552",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자나 여자의 피부에 색점 곧 흰 색점이 있으면"
+      ],
+      "raw_text_hashes": [
+        "ebfb05b79130af75b9aa04dcfa67d3bae2c02bb74578f1da78e998fcd8bdd552"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:39",
+      "sequence": 3092,
+      "chapter_label": "LEV 13",
+      "verse_label": "39",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 39
+        }
+      ],
+      "en": "then the priest shall examine them. Behold, if the bright spots on the skin of their body are a dull white, it is a harmless rash. It has broken out in the skin. He is clean.",
+      "ko": "제사장은 진찰할찌니 그 피부의 색점이 부유스름하면 이는 피부에 발한 어루러기라 그는 정하니라",
+      "source_text_hash": "612c5fcd65c1ad2e0f40666d6f4a4243d5ae4510be1f38bf0ef80a24ea288632",
+      "translation_text_hash": "3fcf73bb2c96f088371e5829dc60ae4c67355ef6d41fa8694edf0077d1bdb643",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 진찰할찌니 그 피부의 색점이 부유스름하면 이는 피부에 발한 어루러기라 그는 정하니라"
+      ],
+      "raw_text_hashes": [
+        "3fcf73bb2c96f088371e5829dc60ae4c67355ef6d41fa8694edf0077d1bdb643"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:40",
+      "sequence": 3093,
+      "chapter_label": "LEV 13",
+      "verse_label": "40",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 40
+        }
+      ],
+      "en": "“If a man’s hair has fallen from his head, he is bald. He is clean.",
+      "ko": "누구든지 그 머리털이 빠지면 그는 대머리니 정하고",
+      "source_text_hash": "e789bd23dd335cba8b77b17e00227d0989f02d499028f30029909382ef6c003f",
+      "translation_text_hash": "adbbfc3912a08b73a74c66ebcad33508f6d010133330d5fa4a8f23846cc6a3b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 그 머리털이 빠지면 그는 대머리니 정하고"
+      ],
+      "raw_text_hashes": [
+        "adbbfc3912a08b73a74c66ebcad33508f6d010133330d5fa4a8f23846cc6a3b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:41",
+      "sequence": 3094,
+      "chapter_label": "LEV 13",
+      "verse_label": "41",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 41
+        }
+      ],
+      "en": "If his hair has fallen off from the front part of his head, his forehead is bald. He is clean.",
+      "ko": "앞머리가 빠져도 그는 이마 대머리니 정하니라",
+      "source_text_hash": "245eb50f20d5995c7f834ba412b9e22c137515d5f8c94bca2dfe4aae62dbb8e7",
+      "translation_text_hash": "c229c08e9f1dcc46e927b81f611d66b3a97f3a587b71928b78ca8683cd2c9536",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앞머리가 빠져도 그는 이마 대머리니 정하니라"
+      ],
+      "raw_text_hashes": [
+        "c229c08e9f1dcc46e927b81f611d66b3a97f3a587b71928b78ca8683cd2c9536"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:42",
+      "sequence": 3095,
+      "chapter_label": "LEV 13",
+      "verse_label": "42",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 42
+        }
+      ],
+      "en": "But if a reddish-white plague is in the bald head or the bald forehead, it is leprosy breaking out in his bald head or his bald forehead.",
+      "ko": "그러나 대머리나 이마 대머리에 희고 불그스름한 색점이 있으면 이는 문둥병이 대머리에나 이마 대머리에 발함이라",
+      "source_text_hash": "b90d312f3389af6cdf41d652c4807dc758c209b8e4efe4af4de082523af379a1",
+      "translation_text_hash": "782cc4b3ff0a979b8f9b309567968ea5a082e638a2749e97b3dc467184ed8840",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 대머리나 이마 대머리에 희고 불그스름한 색점이 있으면 이는 문둥병이 대머리에나 이마 대머리에 발함이라"
+      ],
+      "raw_text_hashes": [
+        "782cc4b3ff0a979b8f9b309567968ea5a082e638a2749e97b3dc467184ed8840"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:43",
+      "sequence": 3096,
+      "chapter_label": "LEV 13",
+      "verse_label": "43",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 43
+        }
+      ],
+      "en": "Then the priest shall examine him. Behold, if the swelling of the plague is reddish-white in his bald head, or in his bald forehead, like the appearance of leprosy in the skin of the body,",
+      "ko": "제사장은 그를 진찰할찌니 그 대머리에나 이마 대머리에 돋은 색점이 희고 불그스름하여 피부에 발한 문둥병과 같으면",
+      "source_text_hash": "a6711fbeae907a7e1b271d0fbf0200ac8804a20b01fd75933acdbacbd7df88ac",
+      "translation_text_hash": "2eb8bae5a728fb007d4bafa6a33be5273af75e392ee547d27aeeef1dbae649d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그를 진찰할찌니 그 대머리에나 이마 대머리에 돋은 색점이 희고 불그스름하여 피부에 발한 문둥병과 같으면"
+      ],
+      "raw_text_hashes": [
+        "2eb8bae5a728fb007d4bafa6a33be5273af75e392ee547d27aeeef1dbae649d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:44",
+      "sequence": 3097,
+      "chapter_label": "LEV 13",
+      "verse_label": "44",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 44
+        }
+      ],
+      "en": "he is a leprous man. He is unclean. The priest shall surely pronounce him unclean. His plague is on his head.",
+      "ko": "이는 문둥 환자라 부정하니 제사장은 그를 부정하다 확실히 진단할 것은 그 환처가 그 머리에 있음이니라",
+      "source_text_hash": "5fad9f36a1633a3d07a9d1235c84a9233c9f311d8399f236a86e95c7dcc4a5aa",
+      "translation_text_hash": "e5ae1ce64875c4966f917fb84804b506a1d2626fa284fff4b7fa439924e2af53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 문둥 환자라 부정하니 제사장은 그를 부정하다 확실히 진단할 것은 그 환처가 그 머리에 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "e5ae1ce64875c4966f917fb84804b506a1d2626fa284fff4b7fa439924e2af53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:45",
+      "sequence": 3098,
+      "chapter_label": "LEV 13",
+      "verse_label": "45",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 45
+        }
+      ],
+      "en": "“The leper in whom the plague is shall wear torn clothes, and the hair of his head shall hang loose. He shall cover his upper lip, and shall cry, ‘Unclean! Unclean!’",
+      "ko": "문둥 환자는 옷을 찢고 머리를 풀며 윗입술을 가리우고 외치기를 부정하다 부정하다 할 것이요",
+      "source_text_hash": "c60d890fdde0deac12a5368ac8e89e52347bc10805373ac2b5852ec9d65ecf4b",
+      "translation_text_hash": "d78cd273fcf69b58541341e51c516d1a3d19ff6351ec6b1fb0b869b7692af70d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문둥 환자는 옷을 찢고 머리를 풀며 윗입술을 가리우고 외치기를 부정하다 부정하다 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "d78cd273fcf69b58541341e51c516d1a3d19ff6351ec6b1fb0b869b7692af70d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:46",
+      "sequence": 3099,
+      "chapter_label": "LEV 13",
+      "verse_label": "46",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 46
+        }
+      ],
+      "en": "All the days in which the plague is in him he shall be unclean. He is unclean. He shall dwell alone. His dwelling shall be outside of the camp.",
+      "ko": "병 있는 날 동안은 늘 부정할 것이라 그가 부정한즉 혼자 살되 진 밖에 살찌니라",
+      "source_text_hash": "e1a8f702348781e0c29128e264837e863231409485229edac5e945bb4ce20d3d",
+      "translation_text_hash": "fc3e67f25b3c04da592047f104656ddb07f88b210960d6e91b3b3c97fde861f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "병 있는 날 동안은 늘 부정할 것이라 그가 부정한즉 혼자 살되 진 밖에 살찌니라"
+      ],
+      "raw_text_hashes": [
+        "fc3e67f25b3c04da592047f104656ddb07f88b210960d6e91b3b3c97fde861f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:47",
+      "sequence": 3100,
+      "chapter_label": "LEV 13",
+      "verse_label": "47",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 47
+        }
+      ],
+      "en": "“The garment also that the plague of leprosy is in, whether it is a woolen garment, or a linen garment;",
+      "ko": "만일 의복에 문둥병 색점이 발하여 털옷에나 베옷에나",
+      "source_text_hash": "b6e6140b004a85b1aab0cb03774fac2d2cba159edfe108ea785440289cd47e3d",
+      "translation_text_hash": "3ef33eb8a818433e4bff5ff7757588f9bb95dd9d8029b56b15e1913d0e6044f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 의복에 문둥병 색점이 발하여 털옷에나 베옷에나"
+      ],
+      "raw_text_hashes": [
+        "3ef33eb8a818433e4bff5ff7757588f9bb95dd9d8029b56b15e1913d0e6044f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:48",
+      "sequence": 3101,
+      "chapter_label": "LEV 13",
+      "verse_label": "48",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 48
+        }
+      ],
+      "en": "whether it is in warp or woof; of linen or of wool; whether in leather, or in anything made of leather;",
+      "ko": "베나 털의 날에나 씨에나 혹 가죽에나 무릇 가죽으로 만든 것에 있되",
+      "source_text_hash": "07cb9339a3f12f6a19c2786933fd382b0db7ae04ff05c3288589306cc3544b2e",
+      "translation_text_hash": "4872b81d30bbdb991474b2772a727733dd53be3e1333de57440de538f49d6d82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베나 털의 날에나 씨에나 혹 가죽에나 무릇 가죽으로 만든 것에 있되"
+      ],
+      "raw_text_hashes": [
+        "4872b81d30bbdb991474b2772a727733dd53be3e1333de57440de538f49d6d82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:49",
+      "sequence": 3102,
+      "chapter_label": "LEV 13",
+      "verse_label": "49",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 49
+        }
+      ],
+      "en": "if the plague is greenish or reddish in the garment, or in the leather, or in the warp, or in the woof, or in anything made of leather; it is the plague of leprosy, and shall be shown to the priest.",
+      "ko": "그 의복에나 가죽에나 그 날에나 씨에나 무릇 가죽으로 만든 것에 병색이 푸르거나 붉으면 이는 문둥병의 색점이라 제사장에게 보일 것이요",
+      "source_text_hash": "7abb1dc085972152ef1c23fbc51e8571e928f41c68cce13cd2f13715c4a8a8ae",
+      "translation_text_hash": "5981c8ec3f955697986fd46f10206c3aad40318b8c5b20bcce427481dfae122b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 의복에나 가죽에나 그 날에나 씨에나 무릇 가죽으로 만든 것에 병색이 푸르거나 붉으면 이는 문둥병의 색점이라 제사장에게 보일 것이요"
+      ],
+      "raw_text_hashes": [
+        "5981c8ec3f955697986fd46f10206c3aad40318b8c5b20bcce427481dfae122b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:50",
+      "sequence": 3103,
+      "chapter_label": "LEV 13",
+      "verse_label": "50",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 50
+        }
+      ],
+      "en": "The priest shall examine the plague, and isolate the plague seven days.",
+      "ko": "제사장은 그 색점을 살피고 그것을 칠일 동안 간직하였다가",
+      "source_text_hash": "d71eac7fda1d7bb69f86f5bf0852204e9d1902fd9bb5e894ff85979e9101307e",
+      "translation_text_hash": "c27f4a24c0727ffff10ed8b7a18e57f17a6ec00c31a39b4e955af6d503115d59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 색점을 살피고 그것을 칠일 동안 간직하였다가"
+      ],
+      "raw_text_hashes": [
+        "c27f4a24c0727ffff10ed8b7a18e57f17a6ec00c31a39b4e955af6d503115d59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:51",
+      "sequence": 3104,
+      "chapter_label": "LEV 13",
+      "verse_label": "51",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 51
+        }
+      ],
+      "en": "He shall examine the plague on the seventh day. If the plague has spread in the garment, either in the warp, or in the woof, or in the skin, whatever use the skin is used for, the plague is a destructive mildew. It is unclean.",
+      "ko": "칠일만에 그 색점을 살필찌니 그 색점이 그 의복의 날에나 씨에나 가죽에나 가죽으로 만든 것에 퍼졌으면 이는 악성 문둥병이라 그것이 부정하니",
+      "source_text_hash": "cfe64ec0713fd37d39be4f9add5d7f86fa06a84389d9d979e6ab10372afd89f5",
+      "translation_text_hash": "f59c4cc2454bd2d2ddcdb8a12d83eb5befe424f948d9b8fb334f0fe76a271f31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일만에 그 색점을 살필찌니 그 색점이 그 의복의 날에나 씨에나 가죽에나 가죽으로 만든 것에 퍼졌으면 이는 악성 문둥병이라 그것이 부정하니"
+      ],
+      "raw_text_hashes": [
+        "f59c4cc2454bd2d2ddcdb8a12d83eb5befe424f948d9b8fb334f0fe76a271f31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:52",
+      "sequence": 3105,
+      "chapter_label": "LEV 13",
+      "verse_label": "52",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 52
+        }
+      ],
+      "en": "He shall burn the garment, whether the warp or the woof, in wool or in linen, or anything of leather, in which the plague is, for it is a destructive mildew. It shall be burned in the fire.",
+      "ko": "그는 그 색점 있는 의복이나 털이나 베의 날이나 씨나 무릇 가죽으로 만든 것을 불사를찌니 이는 악성 문둥병인즉 그것을 불사를찌니라",
+      "source_text_hash": "502efb72bf3d94e29413745e0d965d52edc05d7b5e610ae3e4952e8734801563",
+      "translation_text_hash": "5772a15457304108839e87f3c0e2ffb1897d72752084bbee5d3d9b47e6261efa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 그 색점 있는 의복이나 털이나 베의 날이나 씨나 무릇 가죽으로 만든 것을 불사를찌니 이는 악성 문둥병인즉 그것을 불사를찌니라"
+      ],
+      "raw_text_hashes": [
+        "5772a15457304108839e87f3c0e2ffb1897d72752084bbee5d3d9b47e6261efa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:53",
+      "sequence": 3106,
+      "chapter_label": "LEV 13",
+      "verse_label": "53",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 53
+        }
+      ],
+      "en": "“If the priest examines it, and behold, the plague hasn’t spread in the garment, either in the warp, or in the woof, or in anything of skin;",
+      "ko": "그러나 제사장의 보기에 그 색점이 그 의복의 날에나 씨에나 무릇 가죽으로 만든 것에 퍼지지 아니하였으면",
+      "source_text_hash": "5462c72b12b00522d9e7ac84860bad364e9752626dbeb39aa1e5bd5e5d8cac22",
+      "translation_text_hash": "ec89638585fdb9afccdae5e8bad3e1fe22296bc47e3447400f1141c9059685f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 제사장의 보기에 그 색점이 그 의복의 날에나 씨에나 무릇 가죽으로 만든 것에 퍼지지 아니하였으면"
+      ],
+      "raw_text_hashes": [
+        "ec89638585fdb9afccdae5e8bad3e1fe22296bc47e3447400f1141c9059685f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:54",
+      "sequence": 3107,
+      "chapter_label": "LEV 13",
+      "verse_label": "54",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 54
+        }
+      ],
+      "en": "then the priest shall command that they wash the thing that the plague is in, and he shall isolate it seven more days.",
+      "ko": "제사장은 명하여 그 색점 있는 것을 빨게하고 또 칠일 동안 간직하였다가",
+      "source_text_hash": "ddfcad647624724c713cdf164964ae33795edb8509dd019a56d58bfc01a65043",
+      "translation_text_hash": "e3938eadad3a96838631f99c4a9cd959a5d1869683a336da7de1236c8a66cc62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 명하여 그 색점 있는 것을 빨게하고 또 칠일 동안 간직하였다가"
+      ],
+      "raw_text_hashes": [
+        "e3938eadad3a96838631f99c4a9cd959a5d1869683a336da7de1236c8a66cc62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:55",
+      "sequence": 3108,
+      "chapter_label": "LEV 13",
+      "verse_label": "55",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 55
+        }
+      ],
+      "en": "Then the priest shall examine it, after the plague is washed; and behold, if the plague hasn’t changed its color, and the plague hasn’t spread, it is unclean; you shall burn it in the fire. It is a mildewed spot, whether the bareness is inside or outside.",
+      "ko": "그 빤 곳을 볼찌니 그 색점의 빛이 변치 아니하고 그 색점이 퍼지지 아니하였으면 부정하니 너는 그것을 불사르라 이는 거죽에 있든지 속에 있든지 악성 문둥병이니라",
+      "source_text_hash": "06869658a4baf6f833573ea200f32dd9e2f68bdafe9efb4c994821e97560fc2e",
+      "translation_text_hash": "46544f3e6c7c8ce136dd649bdceffce0ef7c39f6afa31f8cf26787c6614f0f4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 빤 곳을 볼찌니 그 색점의 빛이 변치 아니하고 그 색점이 퍼지지 아니하였으면 부정하니 너는 그것을 불사르라 이는 거죽에 있든지 속에 있든지 악성 문둥병이니라"
+      ],
+      "raw_text_hashes": [
+        "46544f3e6c7c8ce136dd649bdceffce0ef7c39f6afa31f8cf26787c6614f0f4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:56",
+      "sequence": 3109,
+      "chapter_label": "LEV 13",
+      "verse_label": "56",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 56
+        }
+      ],
+      "en": "If the priest looks, and behold, the plague has faded after it is washed, then he shall tear it out of the garment, or out of the skin, or out of the warp, or out of the woof;",
+      "ko": "빤 후에 제사장의 보기에 그 색점이 엷으면 그 의복에서나 가죽에서나 그 날에서나 씨에서나 그 색점을 찢어 버릴 것이요",
+      "source_text_hash": "60d3ffb3669c059f43f6085ddae9ff533a79fd31f64c74796507124661f9f808",
+      "translation_text_hash": "eb9c5a0bb8241e26e3009c4518b5c4b0755004a9319b814013b61bc49546a922",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빤 후에 제사장의 보기에 그 색점이 엷으면 그 의복에서나 가죽에서나 그 날에서나 씨에서나 그 색점을 찢어 버릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "eb9c5a0bb8241e26e3009c4518b5c4b0755004a9319b814013b61bc49546a922"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:57",
+      "sequence": 3110,
+      "chapter_label": "LEV 13",
+      "verse_label": "57",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 57
+        }
+      ],
+      "en": "and if it appears again in the garment, either in the warp, or in the woof, or in anything of skin, it is spreading. You shall burn what the plague is in with fire.",
+      "ko": "그 의복의 날에나 씨에나 무릇 가죽으로 만든 것에 색점이 여전히 보이면 복발하는 것이니 너는 그 색점 있는 것을 불사를찌니라",
+      "source_text_hash": "8c78304dc01e8a008f1aec0330d42103bdef6e3edd7b2d33d7d5aea86c6f2d0d",
+      "translation_text_hash": "8261e5a385db270c4e5745459122f9e7185da956011f4c16acfd5dbe45c30137",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 의복의 날에나 씨에나 무릇 가죽으로 만든 것에 색점이 여전히 보이면 복발하는 것이니 너는 그 색점 있는 것을 불사를찌니라"
+      ],
+      "raw_text_hashes": [
+        "8261e5a385db270c4e5745459122f9e7185da956011f4c16acfd5dbe45c30137"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:58",
+      "sequence": 3111,
+      "chapter_label": "LEV 13",
+      "verse_label": "58",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 58
+        }
+      ],
+      "en": "The garment, either the warp, or the woof, or whatever thing of skin it is, which you shall wash, if the plague has departed from them, then it shall be washed the second time, and it will be clean.”",
+      "ko": "네가 빤 의복의 날에나 씨에나 무릇 가죽으로 만든 것에 그 색점이 벗어졌으면 그것을 다시 빨아야 정하리라",
+      "source_text_hash": "a770930bcd7e47a8b437f34123b30e095eca9820968816c97264b05febb93edc",
+      "translation_text_hash": "772d1d4e7f60510df239802d5649e2a4bd5a1223dde760ba1f3679eb9c21c2d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 빤 의복의 날에나 씨에나 무릇 가죽으로 만든 것에 그 색점이 벗어졌으면 그것을 다시 빨아야 정하리라"
+      ],
+      "raw_text_hashes": [
+        "772d1d4e7f60510df239802d5649e2a4bd5a1223dde760ba1f3679eb9c21c2d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:13:59",
+      "sequence": 3112,
+      "chapter_label": "LEV 13",
+      "verse_label": "59",
+      "locator": {
+        "book": "LEV",
+        "chapter": 13,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 13,
+          "verse": 59
+        }
+      ],
+      "en": "This is the law of the plague of mildew in a garment of wool or linen, either in the warp, or the woof, or in anything of skin, to pronounce it clean, or to pronounce it unclean.",
+      "ko": "이는 털옷에나 베옷에나 그 날에나 씨에나 무릇 가죽으로 만든 것에 발한 문둥병 색점의 정하고 부정한 것을 단정하는 규례니라",
+      "source_text_hash": "ef8ac5d897553b53985032f5ee13539affc9eeb017cebdf19978f6aebf336c75",
+      "translation_text_hash": "bb40540acbc5622f0b34bd1f804e6933bebd432efebad0fe975674eeb08919d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 털옷에나 베옷에나 그 날에나 씨에나 무릇 가죽으로 만든 것에 발한 문둥병 색점의 정하고 부정한 것을 단정하는 규례니라"
+      ],
+      "raw_text_hashes": [
+        "bb40540acbc5622f0b34bd1f804e6933bebd432efebad0fe975674eeb08919d4"
+      ]
+    }
+  ]
+}

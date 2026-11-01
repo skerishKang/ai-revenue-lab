@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:003",
+  "unit_ordinal": 853,
+  "unit_label": "DAN 3",
+  "book_code": "DAN",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:3:1",
+      "sequence": 21809,
+      "chapter_label": "DAN 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Nebuchadnezzar the king made an image of gold, whose height was sixty cubits and its width six cubits. He set it up in the plain of Dura, in the province of Babylon.",
+      "ko": "느부갓네살왕이 금으로 신상을 만들었으니 고는 육십 규빗이요 광은 여섯 규빗이라 그것을 바벨론 도의 두라 평지에 세웠더라",
+      "source_text_hash": "e38472891a6624f603c636eb9c9705d50382c6593855c81c850b374946e3fb98",
+      "translation_text_hash": "d130d0bb8abe5960452790949c9a5835c9d78aa3ff60706169ff8d84883e243e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살왕이 금으로 신상을 만들었으니 고는 육십 규빗이요 광은 여섯 규빗이라 그것을 바벨론 도의 두라 평지에 세웠더라"
+      ],
+      "raw_text_hashes": [
+        "d130d0bb8abe5960452790949c9a5835c9d78aa3ff60706169ff8d84883e243e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:2",
+      "sequence": 21810,
+      "chapter_label": "DAN 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Then Nebuchadnezzar the king sent to gather together the local governors, the deputies, and the governors, the judges, the treasurers, the counselors, the sheriffs, and all the rulers of the provinces, to come to the dedication of the image which Nebuchadnezzar the king had set up.",
+      "ko": "느부갓네살왕이 보내어 방백과 수령과 도백과 재판관과 재무관과 모사와 법률사와 각 도 모든 관원을 자기 느부갓네살왕의 세운 신상의 낙성 예식에 참집하게 하매",
+      "source_text_hash": "6047e859ea52622e5f82bf00c2037883242a5fc74a79c2c37187b9e82f8fb7cd",
+      "translation_text_hash": "0489673baac4c68c0a32b8b8f14ee9959411ad6aa4132f1122e46854f341adf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살왕이 보내어 방백과 수령과 도백과 재판관과 재무관과 모사와 법률사와 각 도 모든 관원을 자기 느부갓네살왕의 세운 신상의 낙성 예식에 참집하게 하매"
+      ],
+      "raw_text_hashes": [
+        "0489673baac4c68c0a32b8b8f14ee9959411ad6aa4132f1122e46854f341adf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:3",
+      "sequence": 21811,
+      "chapter_label": "DAN 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Then the local governors, the deputies, and the governors, the judges, the treasurers, the counselors, the sheriffs, and all the rulers of the provinces were gathered together to the dedication of the image that Nebuchadnezzar the king had set up; and they stood before the image that Nebuchadnezzar had set up.",
+      "ko": "이에 방백과 수령과 도백과 재판관과 재무관과 모사와 법률사와 각 도 모든 관원이 느부갓네살왕의 세운 신상의 낙성 예식에 참집하여 느부갓네살왕의 세운 신상 앞에 서니라",
+      "source_text_hash": "c5619c11aa834df9e37769289235678fe32fb9bbd081aa70f85c7f958a2f17f3",
+      "translation_text_hash": "089fb1727bd7bfd4ef0df60ad72cca725468f6aa269886a191abbc35640d70eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 방백과 수령과 도백과 재판관과 재무관과 모사와 법률사와 각 도 모든 관원이 느부갓네살왕의 세운 신상의 낙성 예식에 참집하여 느부갓네살왕의 세운 신상 앞에 서니라"
+      ],
+      "raw_text_hashes": [
+        "089fb1727bd7bfd4ef0df60ad72cca725468f6aa269886a191abbc35640d70eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:4",
+      "sequence": 21812,
+      "chapter_label": "DAN 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Then the herald cried aloud, “To you it is commanded, peoples, nations, and languages,",
+      "ko": "반포하는 자가 크게 외쳐 가로되 백성들과 나라들과 각 방언하는 자들아 왕이 너희 무리에게 명하시나니",
+      "source_text_hash": "58a2f54b1f7364bb12cae26469c8ccaaf2ef47057540e57f11cfd43d81fcd6af",
+      "translation_text_hash": "2b3da83d412a743ee48eb50ff9b4c875e06d1043fe794079e38f49d4d3d5e382",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "반포하는 자가 크게 외쳐 가로되 백성들과 나라들과 각 방언하는 자들아 왕이 너희 무리에게 명하시나니"
+      ],
+      "raw_text_hashes": [
+        "2b3da83d412a743ee48eb50ff9b4c875e06d1043fe794079e38f49d4d3d5e382"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:5",
+      "sequence": 21813,
+      "chapter_label": "DAN 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "that whenever you hear the sound of the horn, flute, zither, lyre, harp, pipe, and all kinds of music, you fall down and worship the golden image that Nebuchadnezzar the king has set up.",
+      "ko": "너희는 나팔과 피리와 수금과 삼현금과 양금과 생황과 및 모든 악기 소리를 들을 때에 엎드리어 느부갓네살왕의 세운 금신상에게 절하라",
+      "source_text_hash": "b315385cf0c31770211f2651db949c10128c9ac4b2586cc6c6d14124a50a55c7",
+      "translation_text_hash": "7a21dd28258dc1126cb69e8599459efa70326a0f1ee77218283e2f2063ec430d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나팔과 피리와 수금과 삼현금과 양금과 생황과 및 모든 악기 소리를 들을 때에 엎드리어 느부갓네살왕의 세운 금신상에게 절하라"
+      ],
+      "raw_text_hashes": [
+        "7a21dd28258dc1126cb69e8599459efa70326a0f1ee77218283e2f2063ec430d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:6",
+      "sequence": 21814,
+      "chapter_label": "DAN 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Whoever doesn’t fall down and worship shall be cast into the middle of a burning fiery furnace the same hour.”",
+      "ko": "누구든지 엎드리어 절하지 아니하는 자는 즉시 극렬히 타는 풀무에 던져 넣으리라 하매",
+      "source_text_hash": "9d0b3f3a16b374cf201ee9684db9c39447ec4e4c7285793d331e583d473e7893",
+      "translation_text_hash": "d0412d25645d7a2d65b472c3cd56a58940b10ad0b14ca1cb2c74e42f5f4d0e2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 엎드리어 절하지 아니하는 자는 즉시 극렬히 타는 풀무에 던져 넣으리라 하매"
+      ],
+      "raw_text_hashes": [
+        "d0412d25645d7a2d65b472c3cd56a58940b10ad0b14ca1cb2c74e42f5f4d0e2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:7",
+      "sequence": 21815,
+      "chapter_label": "DAN 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore at that time, when all the peoples heard the sound of the horn, flute, zither, lyre, harp, pipe, and all kinds of music, all the peoples, the nations, and the languages fell down and worshiped the golden image that Nebuchadnezzar the king had set up.",
+      "ko": "모든 백성과 나라들과 각 방언하는 자들이 나팔과 피리와 수금과 삼현금과 양금과 및 모든 악기 소리를 듣자 곧 느부갓네살왕의 세운 금 신상에게 엎드리어 절하니라",
+      "source_text_hash": "506927e9111f018de0da8ad0ac35aaaad5ab98b909b253c82f6886edacb37f4e",
+      "translation_text_hash": "85f4d4b6f5bc0c1c1ef6e9c4bc64f3999b9ebf999480079737f31424d2121bd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성과 나라들과 각 방언하는 자들이 나팔과 피리와 수금과 삼현금과 양금과 및 모든 악기 소리를 듣자 곧 느부갓네살왕의 세운 금 신상에게 엎드리어 절하니라"
+      ],
+      "raw_text_hashes": [
+        "85f4d4b6f5bc0c1c1ef6e9c4bc64f3999b9ebf999480079737f31424d2121bd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:8",
+      "sequence": 21816,
+      "chapter_label": "DAN 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore at that time certain Chaldeans came near and brought accusation against the Jews.",
+      "ko": "그 때에 어떤 갈대아 사람들이 나아와 유다 사람들을 참소하니라",
+      "source_text_hash": "c7d303a89f7c71aa18805718c00759fd3b6d535b2f90487f3e29d7d2f4d94986",
+      "translation_text_hash": "13f13f80c43492e9b7cd1945ed11e19ee279f063f63e6bf8a3e7535cf7aa7ace",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 어떤 갈대아 사람들이 나아와 유다 사람들을 참소하니라"
+      ],
+      "raw_text_hashes": [
+        "13f13f80c43492e9b7cd1945ed11e19ee279f063f63e6bf8a3e7535cf7aa7ace"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:9",
+      "sequence": 21817,
+      "chapter_label": "DAN 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "They answered Nebuchadnezzar the king, “O king, live for ever!",
+      "ko": "그들이 느부갓네살왕에게 고하여 가로되 왕이여 만세수를 하옵소서",
+      "source_text_hash": "ff6826e5fa9ae1caaf3f03ebd53d44289cd6d12f7fa02ad5c3523417a8ab9635",
+      "translation_text_hash": "0e1d270c011a970a9be58bbc16387b37dba2435a311579a61928dbad3a54d2f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 느부갓네살왕에게 고하여 가로되 왕이여 만세수를 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "0e1d270c011a970a9be58bbc16387b37dba2435a311579a61928dbad3a54d2f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:10",
+      "sequence": 21818,
+      "chapter_label": "DAN 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "You, O king, have made a decree that every man who hears the sound of the horn, flute, zither, lyre, harp, pipe, and all kinds of music shall fall down and worship the golden image;",
+      "ko": "왕이여 왕이 명령을 내리사 무릇 사람마다 나팔과 피리와 수금과 삼현금과 양금과 생황과 및 모든 악기 소리를 듣거든 엎드리어 금 신상에게 절할 것이라",
+      "source_text_hash": "a947ad8999089013644e98cb54fe6313abb9e83c030dcba285af6a36a21dcc92",
+      "translation_text_hash": "167d400fb2309bf7d093fa7450d4f12c862b2ea92ecd9ff6937144702309fd55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이여 왕이 명령을 내리사 무릇 사람마다 나팔과 피리와 수금과 삼현금과 양금과 생황과 및 모든 악기 소리를 듣거든 엎드리어 금 신상에게 절할 것이라"
+      ],
+      "raw_text_hashes": [
+        "167d400fb2309bf7d093fa7450d4f12c862b2ea92ecd9ff6937144702309fd55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:11",
+      "sequence": 21819,
+      "chapter_label": "DAN 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "and whoever doesn’t fall down and worship shall be cast into the middle of a burning fiery furnace.",
+      "ko": "누구든지 엎드리어 절하지 아니하는 자는 극렬히 타는 풀무 가운데 던져 넣음을 당하리라 하지 아니하셨나이까",
+      "source_text_hash": "80cd699fa92b9174e15de04a63ba2d9eb1cd998098ff713bc900368599c3c388",
+      "translation_text_hash": "edea9090ad7cabf2bf8044f3902e4f1129df170a4f738a3bb780adafee996043",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 엎드리어 절하지 아니하는 자는 극렬히 타는 풀무 가운데 던져 넣음을 당하리라 하지 아니하셨나이까"
+      ],
+      "raw_text_hashes": [
+        "edea9090ad7cabf2bf8044f3902e4f1129df170a4f738a3bb780adafee996043"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:12",
+      "sequence": 21820,
+      "chapter_label": "DAN 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "There are certain Jews whom you have appointed over the affairs of the province of Babylon: Shadrach, Meshach, and Abednego. These men, O king, have not respected you. They don’t serve your gods, and don’t worship the golden image which you have set up.”",
+      "ko": "이제 몇 유다 사람 사드락과 메삭과 아벳느고는 왕이 세워 바벨론 도를 다스리게 하신 자이어늘 왕이여 이 사람들이 왕을 높이지 아니하며 왕의 신들을 섬기지 아니하며 왕이 세우신 금 신상에게 절하지 아니하나이다",
+      "source_text_hash": "b5bda49e6a0dd82b2f9ccf8cc3c42acebfed2f7f114c7df4c280770e96061355",
+      "translation_text_hash": "fa5f225eb07bfa5a7b45b053dc671380012d31044acfe678f3c096ec8efa9000",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 몇 유다 사람 사드락과 메삭과 아벳느고는 왕이 세워 바벨론 도를 다스리게 하신 자이어늘 왕이여 이 사람들이 왕을 높이지 아니하며 왕의 신들을 섬기지 아니하며 왕이 세우신 금 신상에게 절하지 아니하나이다"
+      ],
+      "raw_text_hashes": [
+        "fa5f225eb07bfa5a7b45b053dc671380012d31044acfe678f3c096ec8efa9000"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:13",
+      "sequence": 21821,
+      "chapter_label": "DAN 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Then Nebuchadnezzar in rage and fury commanded that Shadrach, Meshach, and Abednego be brought. Then these men were brought before the king.",
+      "ko": "느부갓네살왕이 노하고 분하여 사드락과 메삭과 아벳느고를 끌어 오라 명하매 드디어 그 사람들을 왕의 앞으로 끌어 온지라",
+      "source_text_hash": "a15d20e5f58f0ce25115ad4492701141923de633a588df8162786f11a8d9ce26",
+      "translation_text_hash": "da33321726a92b5923d1ae83776d6f2c47671f47b621d6e2acfe25d0bcce0899",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살왕이 노하고 분하여 사드락과 메삭과 아벳느고를 끌어 오라 명하매 드디어 그 사람들을 왕의 앞으로 끌어 온지라"
+      ],
+      "raw_text_hashes": [
+        "da33321726a92b5923d1ae83776d6f2c47671f47b621d6e2acfe25d0bcce0899"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:14",
+      "sequence": 21822,
+      "chapter_label": "DAN 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "Nebuchadnezzar answered them, “Is it true, Shadrach, Meshach, and Abednego, that you don’t serve my gods and you don’t worship the golden image which I have set up?",
+      "ko": "느부갓네살이 그들에게 물어 가로되 사드락, 메삭, 아벳느고야 너희가 내 신을 섬기지 아니하며 내가 세운 금 신상에게 절하지 아니하니 짐짓 그리하였느냐",
+      "source_text_hash": "108716a4456f5458e4dd571c0d2a67ed16fd29f00508ac4637a6ca250bf5d4a2",
+      "translation_text_hash": "1257532d8fe77601c350cba568ccdd15c21b2aeffc103dc4ae0b30bfd9c294f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살이 그들에게 물어 가로되 사드락, 메삭, 아벳느고야 너희가 내 신을 섬기지 아니하며 내가 세운 금 신상에게 절하지 아니하니 짐짓 그리하였느냐"
+      ],
+      "raw_text_hashes": [
+        "1257532d8fe77601c350cba568ccdd15c21b2aeffc103dc4ae0b30bfd9c294f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:15",
+      "sequence": 21823,
+      "chapter_label": "DAN 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Now if you are ready whenever you hear the sound of the horn, flute, zither, lyre, harp, pipe, and all kinds of music to fall down and worship the image which I have made, good; but if you don’t worship, you shall be cast the same hour into the middle of a burning fiery furnace. Who is that god who will deliver you out of my hands?”",
+      "ko": "이제라도 너희가 예비하였다가 언제든지 나팔과 피리와 수금과 삼현금과 양금과 생황과 및 모든 악기 소리를 듣거든 내가 만든 신상 앞에 엎드리어 절하면 좋거니와 너희가 만일 절하지 아니하면 즉시 너희를 극렬히 타는 풀무 가운데 던져 넣을 것이니 능히 너희를 내 손에서 건져 낼 신이 어떤 신이겠느냐",
+      "source_text_hash": "3b88d3e83eba42aa9b36a21c94cac50cdd452ce6de291f55cd1caaf508d158c4",
+      "translation_text_hash": "e7dad15f731aa49a942eecef6bcd38d90ff955a10b29aad5601317ed336e9179",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제라도 너희가 예비하였다가 언제든지 나팔과 피리와 수금과 삼현금과 양금과 생황과 및 모든 악기 소리를 듣거든 내가 만든 신상 앞에 엎드리어 절하면 좋거니와 너희가 만일 절하지 아니하면 즉시 너희를 극렬히 타는 풀무 가운데 던져 넣을 것이니 능히 너희를 내 손에서 건져 낼 신이 어떤 신이겠느냐"
+      ],
+      "raw_text_hashes": [
+        "e7dad15f731aa49a942eecef6bcd38d90ff955a10b29aad5601317ed336e9179"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:16",
+      "sequence": 21824,
+      "chapter_label": "DAN 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Shadrach, Meshach, and Abednego answered the king, “Nebuchadnezzar, we have no need to answer you in this matter.",
+      "ko": "사드락과 메삭과 아벳느고가 왕에게 대답하여 가로되 느부갓네살이여 우리가 이 일에 대하여 왕에게 대답할 필요가 없나이다",
+      "source_text_hash": "959c89e7c0b5bf2c1c790a12e718c05919ca2529d2e838c6675f13bca3fb1c5d",
+      "translation_text_hash": "2d0badbff09d8d0eb71fe46962ac4bd1222a3c3c2b4416339ad9f4b4d2e7c74c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사드락과 메삭과 아벳느고가 왕에게 대답하여 가로되 느부갓네살이여 우리가 이 일에 대하여 왕에게 대답할 필요가 없나이다"
+      ],
+      "raw_text_hashes": [
+        "2d0badbff09d8d0eb71fe46962ac4bd1222a3c3c2b4416339ad9f4b4d2e7c74c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:17",
+      "sequence": 21825,
+      "chapter_label": "DAN 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "If it happens, our God whom we serve is able to deliver us from the burning fiery furnace; and he will deliver us out of your hand, O king.",
+      "ko": "만일 그럴 것이면 왕이여 우리가 섬기는 우리 하나님이 우리를 극렬히 타는 풀무 가운데서 능히 건져내시겠고 왕의 손에서도 건져내시리이다",
+      "source_text_hash": "543c63bab4d63924c6084c10a30d12344a66a961f3b8dc85381fb98968dd8913",
+      "translation_text_hash": "b63ae691d9655d773af186da1e2513275f52126d0bc15002875a57914bc3d652",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그럴 것이면 왕이여 우리가 섬기는 우리 하나님이 우리를 극렬히 타는 풀무 가운데서 능히 건져내시겠고 왕의 손에서도 건져내시리이다"
+      ],
+      "raw_text_hashes": [
+        "b63ae691d9655d773af186da1e2513275f52126d0bc15002875a57914bc3d652"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:18",
+      "sequence": 21826,
+      "chapter_label": "DAN 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "But if not, let it be known to you, O king, that we will not serve your gods or worship the golden image which you have set up.”",
+      "ko": "그리 아니하실찌라도 왕이여 우리가 왕의 신들을 섬기지도 아니하고 왕의 세우신 금 신상에게 절하지도 아니할 줄을 아옵소서",
+      "source_text_hash": "8f3673f04914c19d39690d627534a8eebca7c7d7eb1427a669502909112a0d09",
+      "translation_text_hash": "c8919d614e8b8c3b6044790e33d66f21a3f6a785df89701beed9803b0c1974ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리 아니하실찌라도 왕이여 우리가 왕의 신들을 섬기지도 아니하고 왕의 세우신 금 신상에게 절하지도 아니할 줄을 아옵소서"
+      ],
+      "raw_text_hashes": [
+        "c8919d614e8b8c3b6044790e33d66f21a3f6a785df89701beed9803b0c1974ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:19",
+      "sequence": 21827,
+      "chapter_label": "DAN 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "Then Nebuchadnezzar was full of fury, and the form of his appearance was changed against Shadrach, Meshach, and Abednego. He spoke, and commanded that they should heat the furnace seven times more than it was usually heated.",
+      "ko": "느부갓네살이 분이 가득하여 사드락과 메삭과 아벳느고를 향하여 낯빛을 변하고 명하여 이르되 그 풀무를 뜨겁게 하기를 평일보다 칠배나 뜨겁게 하라하고",
+      "source_text_hash": "71b59679d1480a900776196b53adae6adb08c91440c28f03a4655c599d845ae4",
+      "translation_text_hash": "63817e1855bced56e3809b32f06f2e1a7add543794d607e06db7b9218150c9bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살이 분이 가득하여 사드락과 메삭과 아벳느고를 향하여 낯빛을 변하고 명하여 이르되 그 풀무를 뜨겁게 하기를 평일보다 칠배나 뜨겁게 하라하고"
+      ],
+      "raw_text_hashes": [
+        "63817e1855bced56e3809b32f06f2e1a7add543794d607e06db7b9218150c9bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:20",
+      "sequence": 21828,
+      "chapter_label": "DAN 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "He commanded certain mighty men who were in his army to bind Shadrach, Meshach, and Abednego, and to cast them into the burning fiery furnace.",
+      "ko": "군대 중 용사 몇 사람을 명하여 사드락과 메삭과 아벳느고를 결박하여 극렬히 타는 풀무 가운데 던지라 하니",
+      "source_text_hash": "c6caf84e2c27980305905697f46181c1a3c22e38258607443f6d84dd475af216",
+      "translation_text_hash": "99b4441d8e77a89b54cb6f5bee57b6d0d118ba2cb8b2fd9f3ba36178721b1a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군대 중 용사 몇 사람을 명하여 사드락과 메삭과 아벳느고를 결박하여 극렬히 타는 풀무 가운데 던지라 하니"
+      ],
+      "raw_text_hashes": [
+        "99b4441d8e77a89b54cb6f5bee57b6d0d118ba2cb8b2fd9f3ba36178721b1a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:21",
+      "sequence": 21829,
+      "chapter_label": "DAN 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "Then these men were bound in their pants, their tunics, and their mantles, and their other clothes, and were cast into the middle of the burning fiery furnace.",
+      "ko": "이 사람들을 고의와 속옷과 겉옷과 별다른 옷을 입은채 결박하여 극렬히 타는 풀무 가운데 던질 때에",
+      "source_text_hash": "4fcc2aef6e08ff10a940e74e6e2b8f46c9277addc56737f2c0842124eb948df4",
+      "translation_text_hash": "ee167e82dc1c0677e043cb74c8bf817371a1bb385b83b5fb7f4c95880082e88c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들을 고의와 속옷과 겉옷과 별다른 옷을 입은채 결박하여 극렬히 타는 풀무 가운데 던질 때에"
+      ],
+      "raw_text_hashes": [
+        "ee167e82dc1c0677e043cb74c8bf817371a1bb385b83b5fb7f4c95880082e88c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:22",
+      "sequence": 21830,
+      "chapter_label": "DAN 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "Therefore because the king’s commandment was urgent and the furnace exceedingly hot, the flame of the fire killed those men who took up Shadrach, Meshach, and Abednego.",
+      "ko": "왕의 명령이 엄하고 풀무가 심히 뜨거우므로 불꽃이 사드락과 메삭과 아벳느고를 붙든 사람을 태워 죽였고",
+      "source_text_hash": "b839edb6dbf01a2cf073cb2ac2ea5012d041856be99b9d026caa35d4327a7790",
+      "translation_text_hash": "acc0c4d37f275e5cce851589adba3b4d5406305e44bb7dd26805b241fdbd913f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 명령이 엄하고 풀무가 심히 뜨거우므로 불꽃이 사드락과 메삭과 아벳느고를 붙든 사람을 태워 죽였고"
+      ],
+      "raw_text_hashes": [
+        "acc0c4d37f275e5cce851589adba3b4d5406305e44bb7dd26805b241fdbd913f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:23",
+      "sequence": 21831,
+      "chapter_label": "DAN 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "These three men, Shadrach, Meshach, and Abednego, fell down bound into the middle of the burning fiery furnace.",
+      "ko": "이 세 사람 사드락과 메삭과 아벳느고는 결박된채 극렬히 타는 풀무 가운데 떨어졌더라",
+      "source_text_hash": "2b28b39511c137b7171cd7bf92f4b925fdf2e5626b3f52335827c5d41bbb91d8",
+      "translation_text_hash": "43b184c70c6b7bee46d57c36c1c79b093baf845b3f25cf7a46c3ba0393753262",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 세 사람 사드락과 메삭과 아벳느고는 결박된채 극렬히 타는 풀무 가운데 떨어졌더라"
+      ],
+      "raw_text_hashes": [
+        "43b184c70c6b7bee46d57c36c1c79b093baf845b3f25cf7a46c3ba0393753262"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:24",
+      "sequence": 21832,
+      "chapter_label": "DAN 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "Then Nebuchadnezzar the king was astonished and rose up in haste. He spoke and said to his counselors, “Didn’t we cast three men bound into the middle of the fire?” They answered the king, “True, O king.”",
+      "ko": "때에 느부갓네살왕이 놀라 급히 일어나서 모사들에게 물어가로되 우리가 결박하여 불 가운데 던진 자는 세 사람이 아니었느냐 그들이 왕에게 대답하여 가로되 왕이여 옳소이다",
+      "source_text_hash": "5a1e0a81318a4ac8c1324fb6d05fada9cea581db243a1992fd8c9044b55aef35",
+      "translation_text_hash": "28ebcd254e459d18901d62747b50d63cc427fc96e4d529ebcf98bdf9cb1a799c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 느부갓네살왕이 놀라 급히 일어나서 모사들에게 물어가로되 우리가 결박하여 불 가운데 던진 자는 세 사람이 아니었느냐 그들이 왕에게 대답하여 가로되 왕이여 옳소이다"
+      ],
+      "raw_text_hashes": [
+        "28ebcd254e459d18901d62747b50d63cc427fc96e4d529ebcf98bdf9cb1a799c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:25",
+      "sequence": 21833,
+      "chapter_label": "DAN 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "He answered, “Look, I see four men loose, walking in the middle of the fire, and they are unharmed. The appearance of the fourth is like a son of the gods.”",
+      "ko": "왕이 또 말하여 가로되 내가 보니 결박되지 아니한 네 사람이 불 가운데로 다니는데 상하지도 아니하였고 그 네째의 모양은 신들의 아들과 같도다 하고",
+      "source_text_hash": "1d0ac87bdc38696a85584e27d60a0643b2e2ec35bcd1c12d5f06d1cfb97d2195",
+      "translation_text_hash": "8d141eb578d135e092f737bf2db857b3d2a64e42a917c1e86f2240879a5b7914",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 또 말하여 가로되 내가 보니 결박되지 아니한 네 사람이 불 가운데로 다니는데 상하지도 아니하였고 그 네째의 모양은 신들의 아들과 같도다 하고"
+      ],
+      "raw_text_hashes": [
+        "8d141eb578d135e092f737bf2db857b3d2a64e42a917c1e86f2240879a5b7914"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:26",
+      "sequence": 21834,
+      "chapter_label": "DAN 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "Then Nebuchadnezzar came near to the mouth of the burning fiery furnace. He spoke and said, “Shadrach, Meshach, and Abednego, you servants of the Most High God, come out, and come here!” Then Shadrach, Meshach, and Abednego came out of the middle of the fire.",
+      "ko": "느부갓네살이 극렬히 타는 풀무 아구 가까이 가서 불러 가로되 지극히 높으신 하나님의 종 사드락, 메삭, 아벳느고야 나와서 이리로 오라 하매 사드락과 메삭과 아벳느고가 불 가운데서 나온지라",
+      "source_text_hash": "07ebeea35adc0eafc5040487c0b4fc030ecd7ac20ffaf02df0a785c07a54845d",
+      "translation_text_hash": "04360f7b379bc2f1bbba8c89f3bbf3a17ae2554ed28766fe82460f4260ddb93c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살이 극렬히 타는 풀무 아구 가까이 가서 불러 가로되 지극히 높으신 하나님의 종 사드락, 메삭, 아벳느고야 나와서 이리로 오라 하매 사드락과 메삭과 아벳느고가 불 가운데서 나온지라"
+      ],
+      "raw_text_hashes": [
+        "04360f7b379bc2f1bbba8c89f3bbf3a17ae2554ed28766fe82460f4260ddb93c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:27",
+      "sequence": 21835,
+      "chapter_label": "DAN 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "The local governors, the deputies, and the governors, and the king’s counselors, being gathered together, saw these men, that the fire had no power on their bodies. The hair of their head wasn’t singed. Their pants weren’t changed. The smell of fire wasn’t even on them.",
+      "ko": "방백과 수령과 도백과 왕의 모사들이 모여 이 사람들을 본즉 불이 능히 그 몸을 해하지 못하였고 머리털도 그슬리지 아니하였고 고의 빛도 변하지 아니하였고 불 탄 냄새도 없었더라",
+      "source_text_hash": "70def302c388bf226585060ea53874bf87fee9330372012b160d3d725d64e082",
+      "translation_text_hash": "16754ad95c99432e2365c1d025beb577ad317bf128b9ad541bdc9b6bc78c2637",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백과 수령과 도백과 왕의 모사들이 모여 이 사람들을 본즉 불이 능히 그 몸을 해하지 못하였고 머리털도 그슬리지 아니하였고 고의 빛도 변하지 아니하였고 불 탄 냄새도 없었더라"
+      ],
+      "raw_text_hashes": [
+        "16754ad95c99432e2365c1d025beb577ad317bf128b9ad541bdc9b6bc78c2637"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:28",
+      "sequence": 21836,
+      "chapter_label": "DAN 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "Nebuchadnezzar spoke and said, “Blessed be the God of Shadrach, Meshach, and Abednego, who has sent his angel and delivered his servants who trusted in him, and have changed the king’s word, and have yielded their bodies, that they might not serve nor worship any god except their own God.",
+      "ko": "느부갓네살이 말하여 가로되 사드락과 메삭과 아벳느고의 하나님을 찬송할찌로다 그가 그 사자를 보내사 자기를 의뢰하고 그 몸을 버려서 왕의 명을 거역하고 그 하나님 밖에는 다른 신을 섬기지 아니하며 그에게 절하지 아니한 종들을 구원하셨도다",
+      "source_text_hash": "92ddac212956890451f9afaf92b8c85ea4009c64fefdb24b75e80c1a2fdb2476",
+      "translation_text_hash": "c572cc10fe674aa4f7cb9916aa2938d7f12a322be2b18bbb27d180dba1746f3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살이 말하여 가로되 사드락과 메삭과 아벳느고의 하나님을 찬송할찌로다 그가 그 사자를 보내사 자기를 의뢰하고 그 몸을 버려서 왕의 명을 거역하고 그 하나님 밖에는 다른 신을 섬기지 아니하며 그에게 절하지 아니한 종들을 구원하셨도다"
+      ],
+      "raw_text_hashes": [
+        "c572cc10fe674aa4f7cb9916aa2938d7f12a322be2b18bbb27d180dba1746f3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:29",
+      "sequence": 21837,
+      "chapter_label": "DAN 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "Therefore I make a decree that every people, nation, and language which speak anything evil against the God of Shadrach, Meshach, and Abednego shall be cut in pieces, and their houses shall be made a dunghill, because there is no other god who is able to deliver like this.”",
+      "ko": "그러므로 내가 이제 조서를 내리노니 각 백성과 각 나라와 각 방언하는 자가 무릇 사드락과 메삭과 아벳느고의 하나님께 설만히 말하거든 그 몸을 쪼개고 그 집으로 거름터를 삼을찌니 이는 이같이 사람을 구원할 다른 신이 없음이니라 하고",
+      "source_text_hash": "31db93cfdb241da3fde95f0e3182b9e24892aecfefe5e358be539dc116a21181",
+      "translation_text_hash": "6ec105f23e30ff7b3cb60c32412b2ebc3f3641fdb0d69b313cfb6924ff634fe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 이제 조서를 내리노니 각 백성과 각 나라와 각 방언하는 자가 무릇 사드락과 메삭과 아벳느고의 하나님께 설만히 말하거든 그 몸을 쪼개고 그 집으로 거름터를 삼을찌니 이는 이같이 사람을 구원할 다른 신이 없음이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "6ec105f23e30ff7b3cb60c32412b2ebc3f3641fdb0d69b313cfb6924ff634fe4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:3:30",
+      "sequence": 21838,
+      "chapter_label": "DAN 3",
+      "verse_label": "30",
+      "locator": {
+        "book": "DAN",
+        "chapter": 3,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 30
+        }
+      ],
+      "en": "Then the king promoted Shadrach, Meshach, and Abednego in the province of Babylon.",
+      "ko": "왕이 드디어 사드락과 메삭과 아벳느고를 바벨론 도에서 더욱 높이니라",
+      "source_text_hash": "59e405f830b98b4f1607412c029b63fceff13e9d7f81f3288f11d6c1498abf28",
+      "translation_text_hash": "7bc46861cf90050c76175d595157313b5362c214e9bb1b675dee2dea706ad782",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 드디어 사드락과 메삭과 아벳느고를 바벨론 도에서 더욱 높이니라"
+      ],
+      "raw_text_hashes": [
+        "7bc46861cf90050c76175d595157313b5362c214e9bb1b675dee2dea706ad782"
+      ]
+    }
+  ]
+}

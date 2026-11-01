@@ -1,0 +1,1453 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:011",
+  "unit_ordinal": 861,
+  "unit_label": "DAN 11",
+  "book_code": "DAN",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:11:1",
+      "sequence": 22038,
+      "chapter_label": "DAN 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "“As for me, in the first year of Darius the Mede, I stood up to confirm and strengthen him.",
+      "ko": "내가 또 메대 사람 다리오 원년에 일어나 그를 돕고 강하게 한 일이 있었느니라",
+      "source_text_hash": "154d61eac96750981cd57491191e05aa154e87f008d4b737ad8dc8bec7a02bef",
+      "translation_text_hash": "29490f4f101eb8d6192984aa94b32de3c405886a6aa181242d6c8ef40ebc82b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 메대 사람 다리오 원년에 일어나 그를 돕고 강하게 한 일이 있었느니라"
+      ],
+      "raw_text_hashes": [
+        "29490f4f101eb8d6192984aa94b32de3c405886a6aa181242d6c8ef40ebc82b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:2",
+      "sequence": 22039,
+      "chapter_label": "DAN 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "“Now I will show you the truth. Behold, three more kings will stand up in Persia. The fourth will be far richer than all of them. When he has grown strong through his riches, he will stir up all against the realm of Greece.",
+      "ko": "이제 내가 참된 것을 네게 보이리라 보라 바사에서 또 세 왕이 일어날 것이요 그 후의 네째는 그들보다 심히 부요할 것이며 그가 그 부요함으로 강하여진 후에는 모든 사람을 격동시켜 헬라국을 칠 것이며",
+      "source_text_hash": "b0bd95c5747b549bacd789c691e3bd42d94f635de115b10a5df4fcdcf6fc2ed8",
+      "translation_text_hash": "e27a0aaba2f9981e5c4f283e05f63c391995344531d8955514ebca3c953ec75d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 참된 것을 네게 보이리라 보라 바사에서 또 세 왕이 일어날 것이요 그 후의 네째는 그들보다 심히 부요할 것이며 그가 그 부요함으로 강하여진 후에는 모든 사람을 격동시켜 헬라국을 칠 것이며"
+      ],
+      "raw_text_hashes": [
+        "e27a0aaba2f9981e5c4f283e05f63c391995344531d8955514ebca3c953ec75d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:3",
+      "sequence": 22040,
+      "chapter_label": "DAN 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "A mighty king will stand up, who will rule with great dominion, and do according to his will.",
+      "ko": "장차 한 능력 있는 왕이 일어나서 큰 권세로 다스리며 임의로 행하리라",
+      "source_text_hash": "d52f606ae9ca1a8d67785af1ea8b33d56d4305a9aecb0b9b699dcc7f3774386c",
+      "translation_text_hash": "02bcf0e2be55f1d76ecdc874d4b596735987ff7bf3953820cc69fafa19ba4d7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장차 한 능력 있는 왕이 일어나서 큰 권세로 다스리며 임의로 행하리라"
+      ],
+      "raw_text_hashes": [
+        "02bcf0e2be55f1d76ecdc874d4b596735987ff7bf3953820cc69fafa19ba4d7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:4",
+      "sequence": 22041,
+      "chapter_label": "DAN 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "When he stands up, his kingdom will be broken and will be divided toward the four winds of the sky, but not to his posterity, nor according to his dominion with which he ruled; for his kingdom will be plucked up, even for others besides these.",
+      "ko": "그러나 그가 강성할 때에 그 나라가 갈라져 천하 사방에 나누일 것이나 그 자손에게로 돌아가지도 아니할 것이요 또 자기가 주장하던 권세대로도 되지 아니하리니 이는 그 나라가 뽑혀서 이 외의 사람들에게로 돌아갈 것임이니라",
+      "source_text_hash": "c71649866ca61ba688546306a2065971cc8242f4359403514f839f2b28392b1b",
+      "translation_text_hash": "49a76c23b53daae979432a75e0c08bbf4bf946c99d96302271589775960a3462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그가 강성할 때에 그 나라가 갈라져 천하 사방에 나누일 것이나 그 자손에게로 돌아가지도 아니할 것이요 또 자기가 주장하던 권세대로도 되지 아니하리니 이는 그 나라가 뽑혀서 이 외의 사람들에게로 돌아갈 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "49a76c23b53daae979432a75e0c08bbf4bf946c99d96302271589775960a3462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:5",
+      "sequence": 22042,
+      "chapter_label": "DAN 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "“The king of the south will be strong. One of his princes will become stronger than him, and have dominion. His dominion will be a great dominion.",
+      "ko": "남방의 왕은 강할 것이나 그 군들 중에 하나는 그보다 강하여 권세를 떨치리니 그 권세가 심히 클 것이요",
+      "source_text_hash": "9da062fe8929388c804ee97f378b96b02c38c052b76514e92a979d965b2e4829",
+      "translation_text_hash": "b1ce47e14a4d696162e8faf5c41e196cd39f5f6f6bebaf73a75dc93ef98454fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남방의 왕은 강할 것이나 그 군들 중에 하나는 그보다 강하여 권세를 떨치리니 그 권세가 심히 클 것이요"
+      ],
+      "raw_text_hashes": [
+        "b1ce47e14a4d696162e8faf5c41e196cd39f5f6f6bebaf73a75dc93ef98454fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:6",
+      "sequence": 22043,
+      "chapter_label": "DAN 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "At the end of years they will join themselves together; and the daughter of the king of the south will come to the king of the north to make an agreement, but she will not retain the strength of her arm. He will also not stand, nor will his arm; but she will be given up, with those who brought her, and he who became the father of her, and he who strengthened her in those times.",
+      "ko": "몇 해 후에 그들이 서로 맹약하리니 곧 남방 왕의 딸이 북방 왕에게 나아가서 화친하리라 그러나 이 공주의 힘이 쇠하고 그 왕은 서지도 못하며 권세가 없어질뿐 아니라 이 공주와 그를 데리고 온 자와 그를 낳은 자와 그 때에 도와주던 자가 다 버림을 당하리라",
+      "source_text_hash": "a84cf77b9d1c1eee5c9cc6d8870f440d808fe01b889e8a8e92688c8306d11cd9",
+      "translation_text_hash": "f1d756fee2f75d7dcdd67dfc20d8ab62d7ef78a3c3c452825c5296f5f721e909",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몇 해 후에 그들이 서로 맹약하리니 곧 남방 왕의 딸이 북방 왕에게 나아가서 화친하리라 그러나 이 공주의 힘이 쇠하고 그 왕은 서지도 못하며 권세가 없어질뿐 아니라 이 공주와 그를 데리고 온 자와 그를 낳은 자와 그 때에 도와주던 자가 다 버림을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "f1d756fee2f75d7dcdd67dfc20d8ab62d7ef78a3c3c452825c5296f5f721e909"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:7",
+      "sequence": 22044,
+      "chapter_label": "DAN 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "“But out of a shoot from her roots one will stand up in his place, who will come to the army and will enter into the fortress of the king of the north, and will deal against them and will prevail.",
+      "ko": "그러나 이 공주의 본족에서 난 자 중에 하나가 그의 위를 이어 북방 왕의 군대를 치러 와서 그의 성에 들어가서 그들을 쳐서 이기고",
+      "source_text_hash": "bfb840d472b108d95122057b218cc3cadf2a2d4cdf550a0326676438c9b0166f",
+      "translation_text_hash": "76b6efb2d850ce725ab8352406460e9154f929b8aabf42de756fba2492a4df96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이 공주의 본족에서 난 자 중에 하나가 그의 위를 이어 북방 왕의 군대를 치러 와서 그의 성에 들어가서 그들을 쳐서 이기고"
+      ],
+      "raw_text_hashes": [
+        "76b6efb2d850ce725ab8352406460e9154f929b8aabf42de756fba2492a4df96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:8",
+      "sequence": 22045,
+      "chapter_label": "DAN 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "He will also carry their gods with their molten images, and with their goodly vessels of silver and of gold, captive into Egypt. He will refrain some years from the king of the north.",
+      "ko": "그 신들과 부어만든 우상들과 그 은과 금의 아름다운 기구를 다 노략하여 애굽으로 가져갈 것이요 몇해 동안은 그가 북방 왕을 치지 아니하리라",
+      "source_text_hash": "a84d5a5623e4113c5452bebf36a55d3bc7e275b0b5adf011a1f6dc6b52d8f54c",
+      "translation_text_hash": "a8083e5ee32e13ac2c2110578eade4737d97c70e21a5d82d3b87e717628e967f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신들과 부어만든 우상들과 그 은과 금의 아름다운 기구를 다 노략하여 애굽으로 가져갈 것이요 몇해 동안은 그가 북방 왕을 치지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "a8083e5ee32e13ac2c2110578eade4737d97c70e21a5d82d3b87e717628e967f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:9",
+      "sequence": 22046,
+      "chapter_label": "DAN 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "He will come into the realm of the king of the south, but he will return into his own land.",
+      "ko": "북방 왕이 남방 왕의 나라로 쳐 들어갈 것이나 자기 본국으로 물러가리라",
+      "source_text_hash": "5ae7603cb6520f95aa5fcdecfeca6ca9a2cae3157711c151cbfe8f6257f4cc81",
+      "translation_text_hash": "8f08a9b38aee07962faeeaf570f3b0a706684a43072e62fb8c12c4adc5772c54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북방 왕이 남방 왕의 나라로 쳐 들어갈 것이나 자기 본국으로 물러가리라"
+      ],
+      "raw_text_hashes": [
+        "8f08a9b38aee07962faeeaf570f3b0a706684a43072e62fb8c12c4adc5772c54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:10",
+      "sequence": 22047,
+      "chapter_label": "DAN 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "His sons will wage war, and will assemble a multitude of great forces which will come on, and overflow, and pass through. They will return and wage war, even to his fortress.",
+      "ko": "그 아들들이 전쟁을 준비하고 심히 많은 군대를 모아서 물의 넘침 같이 나아올 것이며 그가 또 와서 남방 왕의 견고한 성까지 칠 것이요",
+      "source_text_hash": "d34e51aff28e6487c40da3541e1e7249135ad60cc5fa8da9b862430e96352510",
+      "translation_text_hash": "707613fd6321461b373fc24e916a8b865234011562725098050e0a8979c8ad7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들들이 전쟁을 준비하고 심히 많은 군대를 모아서 물의 넘침 같이 나아올 것이며 그가 또 와서 남방 왕의 견고한 성까지 칠 것이요"
+      ],
+      "raw_text_hashes": [
+        "707613fd6321461b373fc24e916a8b865234011562725098050e0a8979c8ad7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:11",
+      "sequence": 22048,
+      "chapter_label": "DAN 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "“The king of the south will be moved with anger and will come out and fight with him, even with the king of the north. He will send out a great multitude, and the multitude will be given into his hand.",
+      "ko": "남방 왕은 크게 노하여 나와서 북방 왕과 싸울 것이라 북방 왕이 큰 무리를 일으킬 것이나 그 무리가 그의 손에 붙인바 되리라",
+      "source_text_hash": "be6beb4554889918aacd5055893568af79185007320f09739bdc5d0c20ce3d93",
+      "translation_text_hash": "907f2690e5795f7e220a31b624a0491a474d1906f8a41cc8a4b0f98999e963ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남방 왕은 크게 노하여 나와서 북방 왕과 싸울 것이라 북방 왕이 큰 무리를 일으킬 것이나 그 무리가 그의 손에 붙인바 되리라"
+      ],
+      "raw_text_hashes": [
+        "907f2690e5795f7e220a31b624a0491a474d1906f8a41cc8a4b0f98999e963ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:12",
+      "sequence": 22049,
+      "chapter_label": "DAN 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "The multitude will be carried off, and his heart will be exalted. He will cast down tens of thousands, but he won’t prevail.",
+      "ko": "그가 큰 무리를 사로잡은 후에 그 마음이 스스로 높아져서 수만명을 엎드러뜨릴 것이나 그 세력은 더하지 못할 것이요",
+      "source_text_hash": "73c8e0db882106ea495420cbb659fe6914134c1680da31c09de7bfbbfea2f868",
+      "translation_text_hash": "a1d79435a30bc3014d5d0edbacbcdafa91fe64997520f80552cb2fd201fd6abd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 큰 무리를 사로잡은 후에 그 마음이 스스로 높아져서 수만명을 엎드러뜨릴 것이나 그 세력은 더하지 못할 것이요"
+      ],
+      "raw_text_hashes": [
+        "a1d79435a30bc3014d5d0edbacbcdafa91fe64997520f80552cb2fd201fd6abd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:13",
+      "sequence": 22050,
+      "chapter_label": "DAN 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "The king of the north will return, and will send out a multitude greater than the former. He will come on at the end of the times, even of years, with a great army and with abundant supplies.",
+      "ko": "북방 왕은 돌아가서 다시 대군을 전보다 더 많이 준비하였다가 몇 때 곧 몇 해 후에 대군과 많은 물건을 거느리고 오리라",
+      "source_text_hash": "71d6887950a1382963e4f29260471541106382472fd7c0877f4c45bb7e559f4b",
+      "translation_text_hash": "d34ab55ece9f0feb5d6dc9b98323608f8f2b2281e8215504727bcd31ff2100a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북방 왕은 돌아가서 다시 대군을 전보다 더 많이 준비하였다가 몇 때 곧 몇 해 후에 대군과 많은 물건을 거느리고 오리라"
+      ],
+      "raw_text_hashes": [
+        "d34ab55ece9f0feb5d6dc9b98323608f8f2b2281e8215504727bcd31ff2100a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:14",
+      "sequence": 22051,
+      "chapter_label": "DAN 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "“In those times many will stand up against the king of the south. Also the children of the violent among your people will lift themselves up to establish the vision, but they will fall.",
+      "ko": "그 때에 여러 사람이 일어나서 남방 왕을 칠 것이요 네 백성 중에서도 강포한 자가 스스로 높아져서 이상을 이루려 할 것이나 그들이 도리어 넘어지리라",
+      "source_text_hash": "be246806924859d2c4d0a6a0926ae85451c17bbba19d311fdf2e6eff7d8f89ee",
+      "translation_text_hash": "61a379132464c8bff24dbff8c619e513cc7ae304a4e277793c1bb2a7379e61d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여러 사람이 일어나서 남방 왕을 칠 것이요 네 백성 중에서도 강포한 자가 스스로 높아져서 이상을 이루려 할 것이나 그들이 도리어 넘어지리라"
+      ],
+      "raw_text_hashes": [
+        "61a379132464c8bff24dbff8c619e513cc7ae304a4e277793c1bb2a7379e61d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:15",
+      "sequence": 22052,
+      "chapter_label": "DAN 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "So the king of the north will come and cast up a mound, and take a well-fortified city. The forces of the south won’t stand, neither will his select troops, neither will there be any strength to stand.",
+      "ko": "이에 북방 왕은 와서 토성을 쌓고 견고한 성읍을 취할 것이요 남방 군대는 그를 당할 수 없으며 또 그 택한 군대라도 그를 당할 힘이 없을 것이므로",
+      "source_text_hash": "0a95894862f9d3cff5c46e8079bce5aa6112c42850837fafc92557932675d750",
+      "translation_text_hash": "279a5f4df302ecbd213a8b2876c4f6b933e7a6efc1d03b57e885f1e3fe8dd558",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 북방 왕은 와서 토성을 쌓고 견고한 성읍을 취할 것이요 남방 군대는 그를 당할 수 없으며 또 그 택한 군대라도 그를 당할 힘이 없을 것이므로"
+      ],
+      "raw_text_hashes": [
+        "279a5f4df302ecbd213a8b2876c4f6b933e7a6efc1d03b57e885f1e3fe8dd558"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:16",
+      "sequence": 22053,
+      "chapter_label": "DAN 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "But he who comes against him will do according to his own will, and no one will stand before him. He will stand in the glorious land, and destruction will be in his hand.",
+      "ko": "오직 와서 치는 자가 임의로 행하리니 능히 그 앞에 설 사람이 없겠고 그가 영화로운 땅에 설 것이요 그 손에 멸망이 있으리라",
+      "source_text_hash": "78512520e5f6137745099dd38c43c31ebaea415d28ed89878638d62ab3df68fe",
+      "translation_text_hash": "80510c8beb835ecce8853dd580d69334acb74de0863417e2a409af962bad8456",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 와서 치는 자가 임의로 행하리니 능히 그 앞에 설 사람이 없겠고 그가 영화로운 땅에 설 것이요 그 손에 멸망이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "80510c8beb835ecce8853dd580d69334acb74de0863417e2a409af962bad8456"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:17",
+      "sequence": 22054,
+      "chapter_label": "DAN 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "He will set his face to come with the strength of his whole kingdom, and with him equitable conditions. He will perform them. He will give him the daughter of women, to destroy the kingdom, but she will not stand, and won’t be for him.",
+      "ko": "그가 결심하고 전국의 힘을 다하여 이르렀다가 그와 화친할 것이요 또 여자의 딸을 그에게 주어 그 나라를 패망케 하려 할 것이나 이루지 못하리니 그에게 무익하리라",
+      "source_text_hash": "b429f25f7efe74cddc6f2f6f166be730634cae29446b5ca0302c4cddc13771ea",
+      "translation_text_hash": "3c1d6d500968c3b247ec38027abd099370302c054c7f771b8d07d44b7ffe5977",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 결심하고 전국의 힘을 다하여 이르렀다가 그와 화친할 것이요 또 여자의 딸을 그에게 주어 그 나라를 패망케 하려 할 것이나 이루지 못하리니 그에게 무익하리라"
+      ],
+      "raw_text_hashes": [
+        "3c1d6d500968c3b247ec38027abd099370302c054c7f771b8d07d44b7ffe5977"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:18",
+      "sequence": 22055,
+      "chapter_label": "DAN 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "After this he will turn his face to the islands, and will take many, but a prince will cause the reproach offered by him to cease. Yes, moreover, he will cause his reproach to turn on him.",
+      "ko": "그 후에 그가 얼굴을 섬들로 돌이켜 많이 취할 것이나 한 대장이 있어서 그의 보이는 수욕을 씻고 그 수욕을 그에게로 돌릴 것이므로",
+      "source_text_hash": "5ec6ad1b06d8de91ba7609fb84953d5d4800a45482aa8392ac6f1ff800de5849",
+      "translation_text_hash": "9f15ece7663a88ac44dba0ae36a862c7a88f86c6235a4bae79d8933b95ed55ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 그가 얼굴을 섬들로 돌이켜 많이 취할 것이나 한 대장이 있어서 그의 보이는 수욕을 씻고 그 수욕을 그에게로 돌릴 것이므로"
+      ],
+      "raw_text_hashes": [
+        "9f15ece7663a88ac44dba0ae36a862c7a88f86c6235a4bae79d8933b95ed55ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:19",
+      "sequence": 22056,
+      "chapter_label": "DAN 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "Then he will turn his face toward the fortresses of his own land; but he will stumble and fall, and won’t be found.",
+      "ko": "그가 드디어 그 얼굴을 돌이켜 자기 땅 산성들로 향할 것이나 거쳐 넘어지고 다시는 보이지 아니하리라",
+      "source_text_hash": "9d0ca43515bd61e5fe632ad6dcd5b51c0dd23abd382725418130ca57ccfa92df",
+      "translation_text_hash": "1a5a90fd0be0178c251122cd38de93e91526ce004445d32ab86676ca2329538c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 드디어 그 얼굴을 돌이켜 자기 땅 산성들로 향할 것이나 거쳐 넘어지고 다시는 보이지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "1a5a90fd0be0178c251122cd38de93e91526ce004445d32ab86676ca2329538c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:20",
+      "sequence": 22057,
+      "chapter_label": "DAN 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "“Then one who will cause a tax collector to pass through the kingdom to maintain its glory will stand up in his place; but within few days he shall be destroyed, not in anger, and not in battle.",
+      "ko": "그 위를 이을 자가 토색하는 자로 그 나라의 아름다운 곳으로 두루 다니게 할 것이나 그는 분노함이나 싸움이 없이 몇 날이 못되어 망할 것이요",
+      "source_text_hash": "ce592255ab11a8bd6c195fbf63f1424ca2cd8b11e3cdb0a055eb3fdcd2ca9e38",
+      "translation_text_hash": "5bb6b4205b3007cb58c37fd09a0b35d773322b45f2377a86efd2bca402ef8104",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 위를 이을 자가 토색하는 자로 그 나라의 아름다운 곳으로 두루 다니게 할 것이나 그는 분노함이나 싸움이 없이 몇 날이 못되어 망할 것이요"
+      ],
+      "raw_text_hashes": [
+        "5bb6b4205b3007cb58c37fd09a0b35d773322b45f2377a86efd2bca402ef8104"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:21",
+      "sequence": 22058,
+      "chapter_label": "DAN 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "“In his place a contemptible person will stand up, to whom they had not given the honor of the kingdom; but he will come in time of security, and will obtain the kingdom by flatteries.",
+      "ko": "또 그 위를 이을 자는 한 비천한 사람이라 나라 영광을 그에게 주지 아니할 것이나 그가 평안한 때를 타서 궤휼로 그 나라를 얻을 것이며",
+      "source_text_hash": "934f8910e2d54fa85844dac3379d03c3bc0e8067268f33743bd1920cb08babfb",
+      "translation_text_hash": "4403b2a046c3ff3edb99bb83abf20ee2cd6e26720a0710211b93583911a9b6b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 위를 이을 자는 한 비천한 사람이라 나라 영광을 그에게 주지 아니할 것이나 그가 평안한 때를 타서 궤휼로 그 나라를 얻을 것이며"
+      ],
+      "raw_text_hashes": [
+        "4403b2a046c3ff3edb99bb83abf20ee2cd6e26720a0710211b93583911a9b6b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:22",
+      "sequence": 22059,
+      "chapter_label": "DAN 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "The overwhelming forces will be overwhelmed from before him, and will be broken. Yes, also the prince of the covenant.",
+      "ko": "넘치는 물 같은 군대가 그에게 넘침을 입어 패할 것이요 동맹한 왕도 그렇게 될 것이며",
+      "source_text_hash": "0d2a113c4e2a17ad03c7cbe8a351fc692ddc65dfe7bebed6cbd3d614bbae1fb2",
+      "translation_text_hash": "c34cd00ef727b7f6dc395778b8832f8a7395ded331580d508f6ba1f7f330da58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "넘치는 물 같은 군대가 그에게 넘침을 입어 패할 것이요 동맹한 왕도 그렇게 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "c34cd00ef727b7f6dc395778b8832f8a7395ded331580d508f6ba1f7f330da58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:23",
+      "sequence": 22060,
+      "chapter_label": "DAN 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "After the treaty made with him he will work deceitfully; for he will come up and will become strong with few people.",
+      "ko": "그와 약조한 후에 그는 거짓을 행하여 올라올 것이요 적은 백성을 거느리고 강하게 될 것이며",
+      "source_text_hash": "923d578b5f5b73e7797c4777e0cb84e9446c70cd149d6afe8ce2de1e19952168",
+      "translation_text_hash": "4def7e46a7fd526e28b7d8ab7dec21dd3305b70dc683d14fd65b0b9e8ada5146",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그와 약조한 후에 그는 거짓을 행하여 올라올 것이요 적은 백성을 거느리고 강하게 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "4def7e46a7fd526e28b7d8ab7dec21dd3305b70dc683d14fd65b0b9e8ada5146"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:24",
+      "sequence": 22061,
+      "chapter_label": "DAN 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "In time of security he will come even on the fattest places of the province. He will do that which his fathers have not done, nor his fathers’ fathers. He will scatter among them prey, plunder, and wealth. Yes, he will devise his plans against the strongholds, but only for a time.",
+      "ko": "그가 평안한 때에 그 도의 가장 기름진 곳에 들어와서 그 열조와 열조의 조상이 행하지 못하던 것을 행할 것이요 그는 노략하며 탈취한 재물을 무리에게 흩어주며 모략을 베풀어 얼마 동안 산성들을 칠 것인데 때가 이르기까지 그리하리라",
+      "source_text_hash": "eceebcbefbfcfb571cc1e5d8afd673d289fe8b8119c431886c2d70979239a749",
+      "translation_text_hash": "856b723427511971423de958fb4a4f9633e27ead6cdefbef614298727155d89b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 평안한 때에 그 도의 가장 기름진 곳에 들어와서 그 열조와 열조의 조상이 행하지 못하던 것을 행할 것이요 그는 노략하며 탈취한 재물을 무리에게 흩어주며 모략을 베풀어 얼마 동안 산성들을 칠 것인데 때가 이르기까지 그리하리라"
+      ],
+      "raw_text_hashes": [
+        "856b723427511971423de958fb4a4f9633e27ead6cdefbef614298727155d89b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:25",
+      "sequence": 22062,
+      "chapter_label": "DAN 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "“He will stir up his power and his courage against the king of the south with a great army; and the king of the south will wage war in battle with an exceedingly great and mighty army, but he won’t stand; for they will devise plans against him.",
+      "ko": "그가 그 힘을 떨치며 용맹을 발하여 큰 군대를 거느리고 남방 왕을 칠 것이요 남방 왕도 심히 크고 강한 군대를 거느리고 맞아 싸울 것이나 능히 당하지 못하리니 이는 그들이 모략을 베풀어 그를 침이니라",
+      "source_text_hash": "364ee42d922add9fed871a8071c6677defeddafda217c43d715445a2ebdae1ee",
+      "translation_text_hash": "e56b538aa7db803eac85f616150613719334e7cc2b57a20597301e768c8e7069",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 힘을 떨치며 용맹을 발하여 큰 군대를 거느리고 남방 왕을 칠 것이요 남방 왕도 심히 크고 강한 군대를 거느리고 맞아 싸울 것이나 능히 당하지 못하리니 이는 그들이 모략을 베풀어 그를 침이니라"
+      ],
+      "raw_text_hashes": [
+        "e56b538aa7db803eac85f616150613719334e7cc2b57a20597301e768c8e7069"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:26",
+      "sequence": 22063,
+      "chapter_label": "DAN 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "Yes, those who eat of his delicacies will destroy him, and his army will be swept away. Many will fall down slain.",
+      "ko": "자기의 진미를 먹는 자가 그를 멸하리니 그 군대가 흩어질 것이요 많은 자가 엎드러져 죽으리라",
+      "source_text_hash": "95d8c17bf276fb17e929172b2e1fc3efd1eaa485fe2767fc294ebb6145589f2e",
+      "translation_text_hash": "f3fae26695ed714eeda5496604cd077f3a06cf88ea02e9e910402edbaeb192f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 진미를 먹는 자가 그를 멸하리니 그 군대가 흩어질 것이요 많은 자가 엎드러져 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "f3fae26695ed714eeda5496604cd077f3a06cf88ea02e9e910402edbaeb192f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:27",
+      "sequence": 22064,
+      "chapter_label": "DAN 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "As for both these kings, their hearts will be to do evil, and they will speak lies at one table; but it won’t prosper, for the end will still be at the appointed time.",
+      "ko": "이 두 왕이 마음에 서로 해하고자 하여 한 밥상에 앉았을 때에 거짓말을 할 것이라 일이 형통하지 못하리니 이는 작정된 기한에 미쳐서 그 일이 끝날 것임이니라",
+      "source_text_hash": "466cb658463dfad078b6f9683925697db5928b1cec7f18b248f38c9c5e3210f6",
+      "translation_text_hash": "dcb7ee0b1cdd9bf29a0d0f95c80335761b19f74bc40060db012039ea444d8479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 두 왕이 마음에 서로 해하고자 하여 한 밥상에 앉았을 때에 거짓말을 할 것이라 일이 형통하지 못하리니 이는 작정된 기한에 미쳐서 그 일이 끝날 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "dcb7ee0b1cdd9bf29a0d0f95c80335761b19f74bc40060db012039ea444d8479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:28",
+      "sequence": 22065,
+      "chapter_label": "DAN 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "Then he will return into his land with great wealth. His heart will be against the holy covenant. He will take action, and return to his own land.",
+      "ko": "북방 왕은 많은 재물을 가지고 본국으로 돌아가리니 그는 마음으로 거룩한 언약을 거스리며 임의로 행하고 본토로 돌아갈 것이며",
+      "source_text_hash": "8b9443bcae4e2b441fc5d2a3f39162572da4745fac847b59fe8eebf2de4f0202",
+      "translation_text_hash": "f68a71d62dba392e9340d0003aa262df275147c00950a15a2390e9f7c243bcc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북방 왕은 많은 재물을 가지고 본국으로 돌아가리니 그는 마음으로 거룩한 언약을 거스리며 임의로 행하고 본토로 돌아갈 것이며"
+      ],
+      "raw_text_hashes": [
+        "f68a71d62dba392e9340d0003aa262df275147c00950a15a2390e9f7c243bcc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:29",
+      "sequence": 22066,
+      "chapter_label": "DAN 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "“He will return at the appointed time and come into the south; but it won’t be in the latter time as it was in the former.",
+      "ko": "작정된 기한에 그가 다시 나와서 남방에 이를 것이나 이번이 그 전번만 못하리니",
+      "source_text_hash": "67381788811cb7914b8471a21bf152a4fbbdbde91706a569c14b197474f08733",
+      "translation_text_hash": "35c11fd05d8ff04f1051cca45d966ff625215de4e1b8ec72ac85f39d31339756",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "작정된 기한에 그가 다시 나와서 남방에 이를 것이나 이번이 그 전번만 못하리니"
+      ],
+      "raw_text_hashes": [
+        "35c11fd05d8ff04f1051cca45d966ff625215de4e1b8ec72ac85f39d31339756"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:30",
+      "sequence": 22067,
+      "chapter_label": "DAN 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "For ships of Kittim will come against him. Therefore he will be grieved, and will return, and have indignation against the holy covenant, and will take action. He will even return, and have regard to those who forsake the holy covenant.",
+      "ko": "이는 깃딤의 배들이 이르러 그를 칠 것임이라 그가 낙심하고 돌아가며 거룩한 언약을 한하고 임의로 행하며 돌아가서는 거룩한 언약을 배반하는 자를 중히 여길 것이며",
+      "source_text_hash": "9af909b8a7e1c801f3eaec0c4e236b53552fa1c138daf5b62040d67a832b01c3",
+      "translation_text_hash": "9725da30cbfd26b1ecfe922b2f7cf4112f44852138dc4e7bf540f929dd6cc448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 깃딤의 배들이 이르러 그를 칠 것임이라 그가 낙심하고 돌아가며 거룩한 언약을 한하고 임의로 행하며 돌아가서는 거룩한 언약을 배반하는 자를 중히 여길 것이며"
+      ],
+      "raw_text_hashes": [
+        "9725da30cbfd26b1ecfe922b2f7cf4112f44852138dc4e7bf540f929dd6cc448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:31",
+      "sequence": 22068,
+      "chapter_label": "DAN 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "“Forces from him will profane the sanctuary, even the fortress, and will take away the continual burnt offering. Then they will set up the abomination that makes desolate.",
+      "ko": "군대는 그의 편에 서서 성소 곧 견고한 곳을 더럽히며 매일 드리는 제사를 폐하며 멸망케 하는 미운 물건을 세울 것이며",
+      "source_text_hash": "e65f70ba2d6e3e925e94720554f582bed7d651b52f961ad2e3655493332c4e1c",
+      "translation_text_hash": "7438b9ef0188c868f07fa88534174d676e181909fdd90879d1d8e5a43d842771",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군대는 그의 편에 서서 성소 곧 견고한 곳을 더럽히며 매일 드리는 제사를 폐하며 멸망케 하는 미운 물건을 세울 것이며"
+      ],
+      "raw_text_hashes": [
+        "7438b9ef0188c868f07fa88534174d676e181909fdd90879d1d8e5a43d842771"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:32",
+      "sequence": 22069,
+      "chapter_label": "DAN 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "He will corrupt those who do wickedly against the covenant by flatteries; but the people who know their God will be strong and take action.",
+      "ko": "그가 또 언약을 배반하고 악행하는 자를 궤휼로 타락시킬 것이나 오직 자기의 하나님을 아는 백성은 강하여 용맹을 발하리라",
+      "source_text_hash": "b67281b82318fbc3a5cb7e665a86a9f9592c09a3aa781c451e29eaf845d460ce",
+      "translation_text_hash": "f13585526152b04b6e8c02173a8c1f54e528a1b49d642c64e1cc3b748368cca9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 언약을 배반하고 악행하는 자를 궤휼로 타락시킬 것이나 오직 자기의 하나님을 아는 백성은 강하여 용맹을 발하리라"
+      ],
+      "raw_text_hashes": [
+        "f13585526152b04b6e8c02173a8c1f54e528a1b49d642c64e1cc3b748368cca9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:33",
+      "sequence": 22070,
+      "chapter_label": "DAN 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "“Those who are wise among the people will instruct many; yet they will fall by the sword and by flame, by captivity and by plunder, many days.",
+      "ko": "백성 중에 지혜로운 자가 많은 사람을 가르칠 것이나 그들이 칼날과 불꽃과 사로잡힘과 약탈을 당하여 여러 날 동안 쇠패하리라",
+      "source_text_hash": "9b2908b41377d88fd6347d9cf0e250ae0a35b7f09205c42cf3ece69fa786b7bb",
+      "translation_text_hash": "0b1a9f661f28bde02c67d9c00fcfb51f8b82f64370aac7a44a41546375331fa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성 중에 지혜로운 자가 많은 사람을 가르칠 것이나 그들이 칼날과 불꽃과 사로잡힘과 약탈을 당하여 여러 날 동안 쇠패하리라"
+      ],
+      "raw_text_hashes": [
+        "0b1a9f661f28bde02c67d9c00fcfb51f8b82f64370aac7a44a41546375331fa0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:34",
+      "sequence": 22071,
+      "chapter_label": "DAN 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "Now when they fall, they will be helped with a little help; but many will join themselves to them with flatteries.",
+      "ko": "그들이 쇠패할 때에 도움을 조금 얻을 것이나 많은 사람은 궤휼로 그들과 친합할 것이며",
+      "source_text_hash": "8856db5fc424cef120b03d589c74be6338bab12175619af02a8b2544b43659d0",
+      "translation_text_hash": "c745a2392e8557a99bd8decee636831071e1a10217a8ceb784333bec1e96857b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 쇠패할 때에 도움을 조금 얻을 것이나 많은 사람은 궤휼로 그들과 친합할 것이며"
+      ],
+      "raw_text_hashes": [
+        "c745a2392e8557a99bd8decee636831071e1a10217a8ceb784333bec1e96857b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:35",
+      "sequence": 22072,
+      "chapter_label": "DAN 11",
+      "verse_label": "35",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 35
+        }
+      ],
+      "en": "Some of those who are wise will fall—to refine them, and to purify, and to make them white, even to the time of the end, because it is yet for the time appointed.",
+      "ko": "또 그들 중 지혜로운 자 몇 사람이 쇠패하여 무리로 연단되며 정결케 되며 희게 되어 마지막 때까지 이르게 하리니 이는 작정된 기한이 있음이니라",
+      "source_text_hash": "2a8d6c79fb8fa67dae71fad2d657b34b08eeae83ff4dd4164f242820c16141af",
+      "translation_text_hash": "9d4f46a38a87fede0ef28f4c3a16a987db45670618fb655a1f4b15659c1ed9aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들 중 지혜로운 자 몇 사람이 쇠패하여 무리로 연단되며 정결케 되며 희게 되어 마지막 때까지 이르게 하리니 이는 작정된 기한이 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "9d4f46a38a87fede0ef28f4c3a16a987db45670618fb655a1f4b15659c1ed9aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:36",
+      "sequence": 22073,
+      "chapter_label": "DAN 11",
+      "verse_label": "36",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 36
+        }
+      ],
+      "en": "“The king will do according to his will. He will exalt himself and magnify himself above every god, and will speak marvelous things against the God of gods. He will prosper until the indignation is accomplished, for that which is determined will be done.",
+      "ko": "이 왕이 자기 뜻대로 행하며 스스로 높여 모든 신보다 크다 하며 비상한 말로 신들의 신을 대적하며 형통하기를 분노하심이 쉴 때까지 하리니 이는 그 작정된 일이 반드시 이룰 것임이니라",
+      "source_text_hash": "1d5ca654aa0a25c81a6d62bbb0f47ecd15d12bd8f564a3af39d9cfe587d36adc",
+      "translation_text_hash": "d0d76c40f167e455f5cd48cef4051bcfc6fe50c94832b16e632a76b73e828e11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 왕이 자기 뜻대로 행하며 스스로 높여 모든 신보다 크다 하며 비상한 말로 신들의 신을 대적하며 형통하기를 분노하심이 쉴 때까지 하리니 이는 그 작정된 일이 반드시 이룰 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "d0d76c40f167e455f5cd48cef4051bcfc6fe50c94832b16e632a76b73e828e11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:37",
+      "sequence": 22074,
+      "chapter_label": "DAN 11",
+      "verse_label": "37",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 37
+        }
+      ],
+      "en": "He won’t regard the gods of his fathers, or the desire of women, or regard any god; for he will magnify himself above all.",
+      "ko": "그가 모든 것보다 스스로 크다 하고 그 열조의 신들과 여자의 사모하는 것을 돌아보지 아니하며 아무 신이든지 돌아보지 아니할 것이나",
+      "source_text_hash": "f2bca91755ed636a13d4762d83a75c4d7fe735d25b628f5ab1563c5795cce9c7",
+      "translation_text_hash": "0e8974a942df32e12c93b6499195e29e9417cc01bbd8c503105a2f17b8f1e48d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 모든 것보다 스스로 크다 하고 그 열조의 신들과 여자의 사모하는 것을 돌아보지 아니하며 아무 신이든지 돌아보지 아니할 것이나"
+      ],
+      "raw_text_hashes": [
+        "0e8974a942df32e12c93b6499195e29e9417cc01bbd8c503105a2f17b8f1e48d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:38",
+      "sequence": 22075,
+      "chapter_label": "DAN 11",
+      "verse_label": "38",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 38
+        }
+      ],
+      "en": "But in their place, he will honor the god of fortresses. He will honor a god whom his fathers didn’t know with gold, silver, and with precious stones and pleasant things.",
+      "ko": "그 대신에 세력의 신을 공경할 것이요 또 그 열조가 알지 못하던 신에게 금 은 보석과 보물을 드려 공경할 것이며",
+      "source_text_hash": "6a0a4ef6bcf2ef329edca618e638ed33141eadbccebb67b6a5fcfbfc40380ef7",
+      "translation_text_hash": "9034cdc950f11319c17289d1ab6431510bf53f9694782c1257989d3480e66c47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 대신에 세력의 신을 공경할 것이요 또 그 열조가 알지 못하던 신에게 금 은 보석과 보물을 드려 공경할 것이며"
+      ],
+      "raw_text_hashes": [
+        "9034cdc950f11319c17289d1ab6431510bf53f9694782c1257989d3480e66c47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:39",
+      "sequence": 22076,
+      "chapter_label": "DAN 11",
+      "verse_label": "39",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 39
+        }
+      ],
+      "en": "He will deal with the strongest fortresses by the help of a foreign god. He will increase with glory whoever acknowledges him. He will cause them to rule over many, and will divide the land for a price.",
+      "ko": "그는 이방신을 힘입어 크게 견고한 산성들을 취할 것이요 무릇 그를 안다 하는 자에게는 영광을 더하여 여러 백성을 다스리게도 하며 그에게서 뇌물을 받고 땅을 나눠 주기도 하리라",
+      "source_text_hash": "faca9f71363a5a33aecc6374b47f8c18e6341f69ac5e62d3310cf6c02f7d18e7",
+      "translation_text_hash": "71c98b9e5d60783f1cd94ed3e6959a76c745d9d56be6cb3c283d758033fd8d47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 이방신을 힘입어 크게 견고한 산성들을 취할 것이요 무릇 그를 안다 하는 자에게는 영광을 더하여 여러 백성을 다스리게도 하며 그에게서 뇌물을 받고 땅을 나눠 주기도 하리라"
+      ],
+      "raw_text_hashes": [
+        "71c98b9e5d60783f1cd94ed3e6959a76c745d9d56be6cb3c283d758033fd8d47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:40",
+      "sequence": 22077,
+      "chapter_label": "DAN 11",
+      "verse_label": "40",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 40
+        }
+      ],
+      "en": "“At the time of the end the king of the south will contend with him; and the king of the north will come against him like a whirlwind, with chariots, with horsemen, and with many ships. He will enter into the countries, and will overflow and pass through.",
+      "ko": "마지막 때에 남방 왕이 그를 찌르리니 북방 왕이 병거와 마병과 많은 배로 회리바람처럼 그에게로 마주 와서 그 여러 나라에 들어가며 물이 넘침 같이 지나갈 것이요",
+      "source_text_hash": "0b7e18cab2e89b91cacbd00919bab21832d0832eec77992d9b56d46ef515a43e",
+      "translation_text_hash": "382bc48f1b119b44988cd7a27b1689121dc826754a2e9f438355ea28733ea732",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마지막 때에 남방 왕이 그를 찌르리니 북방 왕이 병거와 마병과 많은 배로 회리바람처럼 그에게로 마주 와서 그 여러 나라에 들어가며 물이 넘침 같이 지나갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "382bc48f1b119b44988cd7a27b1689121dc826754a2e9f438355ea28733ea732"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:41",
+      "sequence": 22078,
+      "chapter_label": "DAN 11",
+      "verse_label": "41",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 41
+        }
+      ],
+      "en": "He will enter also into the glorious land, and many countries will be overthrown; but these will be delivered out of his hand: Edom, Moab, and the chief of the children of Ammon.",
+      "ko": "그가 또 영화로운 땅에 들어갈 것이요 많은 나라를 패망케 할 것이나 오직 에돔과 모압과 암몬 자손의 존귀한 자들은 그 손에서 벗어나리라",
+      "source_text_hash": "b2c6a3e406985096bf988722ed8335f98fd5b879d5d415231407ecbb9725a05a",
+      "translation_text_hash": "91b6d2407eaf6df0588a8523cde2d4984008e25f7291e84141c5ef6d816c7bd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 영화로운 땅에 들어갈 것이요 많은 나라를 패망케 할 것이나 오직 에돔과 모압과 암몬 자손의 존귀한 자들은 그 손에서 벗어나리라"
+      ],
+      "raw_text_hashes": [
+        "91b6d2407eaf6df0588a8523cde2d4984008e25f7291e84141c5ef6d816c7bd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:42",
+      "sequence": 22079,
+      "chapter_label": "DAN 11",
+      "verse_label": "42",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 42
+        }
+      ],
+      "en": "He will also stretch out his hand on the countries. The land of Egypt won’t escape.",
+      "ko": "그가 열국에 그 손을 펴리니 애굽 땅도 면치 못할 것이므로",
+      "source_text_hash": "bb38e351faf9db6cb132e8718e835ac6841ef4ba3912db36856c24e55a36fac9",
+      "translation_text_hash": "149571925b8e22ffa58188ed1735e138610fc228a595d800edae16777bcba9a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 열국에 그 손을 펴리니 애굽 땅도 면치 못할 것이므로"
+      ],
+      "raw_text_hashes": [
+        "149571925b8e22ffa58188ed1735e138610fc228a595d800edae16777bcba9a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:43",
+      "sequence": 22080,
+      "chapter_label": "DAN 11",
+      "verse_label": "43",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 43
+        }
+      ],
+      "en": "But he will have power over the treasures of gold and of silver, and over all the precious things of Egypt. The Libyans and the Ethiopians will follow his steps.",
+      "ko": "그가 권세로 애굽의 금 은과 모든 보물을 잡을 것이요 리비아 사람과 구스 사람이 그의 시종이 되리라",
+      "source_text_hash": "b199fc22ea75d947b912becb2d33be618d23ae8c4a332586d61498cdec5b8bf9",
+      "translation_text_hash": "100108676b54230bbeb4edc0af09b72f0b296934e3e6ad4c8fd042f5e18e5803",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 권세로 애굽의 금 은과 모든 보물을 잡을 것이요 리비아 사람과 구스 사람이 그의 시종이 되리라"
+      ],
+      "raw_text_hashes": [
+        "100108676b54230bbeb4edc0af09b72f0b296934e3e6ad4c8fd042f5e18e5803"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:44",
+      "sequence": 22081,
+      "chapter_label": "DAN 11",
+      "verse_label": "44",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 44
+        }
+      ],
+      "en": "But news out of the east and out of the north will trouble him; and he will go out with great fury to destroy and utterly to sweep away many.",
+      "ko": "그러나 동북에서부터 소문이 이르러 그로 번민케 하므로 그가 분노하여 나가서 많은 무리를 다 도륙하며 진멸코자 할 것이요",
+      "source_text_hash": "7bd5682ba2648beceeea6fb0ccad143da4248a42ab85a3b37055f96349069e09",
+      "translation_text_hash": "8db1d09a7962bf4710c07c390e3e8b92c6f92389a6d9e26148e5a4ef114fc696",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 동북에서부터 소문이 이르러 그로 번민케 하므로 그가 분노하여 나가서 많은 무리를 다 도륙하며 진멸코자 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "8db1d09a7962bf4710c07c390e3e8b92c6f92389a6d9e26148e5a4ef114fc696"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:11:45",
+      "sequence": 22082,
+      "chapter_label": "DAN 11",
+      "verse_label": "45",
+      "locator": {
+        "book": "DAN",
+        "chapter": 11,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 11,
+          "verse": 45
+        }
+      ],
+      "en": "He will plant the tents of his palace between the sea and the glorious holy mountain; yet he will come to his end, and no one will help him.",
+      "ko": "그가 장막 궁전을 바다와 영화롭고 거룩한 산 사이에 베풀 것이나 그의 끝이 이르리니 도와줄 자가 없으리라",
+      "source_text_hash": "703cc1634de41085e3432796827bf2969b82712d53b5bb777cbbf14c6691bd16",
+      "translation_text_hash": "971c12433b1e04b00a90b22232f71d158b65b852896da4bf97ba12540df81e98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 장막 궁전을 바다와 영화롭고 거룩한 산 사이에 베풀 것이나 그의 끝이 이르리니 도와줄 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "971c12433b1e04b00a90b22232f71d158b65b852896da4bf97ba12540df81e98"
+      ]
+    }
+  ]
+}

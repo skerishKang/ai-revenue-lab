@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:027",
+  "unit_ordinal": 117,
+  "unit_label": "LEV 27",
+  "book_code": "LEV",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:27:1",
+      "sequence": 3572,
+      "chapter_label": "LEV 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:2",
+      "sequence": 3573,
+      "chapter_label": "LEV 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, and say to them, ‘When a man consecrates a person to the LORD in a vow, according to your valuation,",
+      "ko": "이스라엘 자손에게 고하여 이르라 사람을 여호와께 드리기로 서원하였으면 너는 그 값을 정할찌니",
+      "source_text_hash": "a09373d6909af276e1b5119c612f35710432253d71ca8b72565a330128776086",
+      "translation_text_hash": "c7abfe47252ae21c8ec7f0d4288b4fb4b62ed0eeafc1cfb93fcece402fe8a8ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 사람을 여호와께 드리기로 서원하였으면 너는 그 값을 정할찌니"
+      ],
+      "raw_text_hashes": [
+        "c7abfe47252ae21c8ec7f0d4288b4fb4b62ed0eeafc1cfb93fcece402fe8a8ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:3",
+      "sequence": 3574,
+      "chapter_label": "LEV 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "your valuation of a male from twenty years old to sixty years old shall be fifty shekels of silver, according to the shekel of the sanctuary.",
+      "ko": "너의 정한 값은 이십세로 육십세까지는 남자이면 성소의 세겔대로 은 오십 세겔로 하고",
+      "source_text_hash": "c66fd99f13553dc093997fa2b6e0e9ace4dea959b3b62d4b4552c33b35590313",
+      "translation_text_hash": "c27aa30bf69cf4c9cdd431d767b56a75956aa86cc64d0c537e2b8ea48cf4b816",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 정한 값은 이십세로 육십세까지는 남자이면 성소의 세겔대로 은 오십 세겔로 하고"
+      ],
+      "raw_text_hashes": [
+        "c27aa30bf69cf4c9cdd431d767b56a75956aa86cc64d0c537e2b8ea48cf4b816"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:4",
+      "sequence": 3575,
+      "chapter_label": "LEV 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "If she is a female, then your valuation shall be thirty shekels.",
+      "ko": "여자이면 그 값을 삼십 세겔로 하며",
+      "source_text_hash": "265ee4ca63ee7bcc7ebabcbcfd6a3ea92cd04273b407585b48a33c414e7da339",
+      "translation_text_hash": "f64b91b4874ffb79abebb0d21345cbbf56d12c07c23155d20132670997fcbbba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자이면 그 값을 삼십 세겔로 하며"
+      ],
+      "raw_text_hashes": [
+        "f64b91b4874ffb79abebb0d21345cbbf56d12c07c23155d20132670997fcbbba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:5",
+      "sequence": 3576,
+      "chapter_label": "LEV 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "If the person is from five years old to twenty years old, then your valuation shall be for a male twenty shekels, and for a female ten shekels.",
+      "ko": "오세로 이십세까지는 남자이면 그 값을 이십 세겔로 하고 여자이면 십 세겔로 하며",
+      "source_text_hash": "7329cd1007b21a2136ec8c5e6cdebb652b8e57648a30698ab33d58cc65a99b99",
+      "translation_text_hash": "aaed4b7750095d9cf3d6b314ff39bad6eb3e4d1d977f2989c7c515df339490a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오세로 이십세까지는 남자이면 그 값을 이십 세겔로 하고 여자이면 십 세겔로 하며"
+      ],
+      "raw_text_hashes": [
+        "aaed4b7750095d9cf3d6b314ff39bad6eb3e4d1d977f2989c7c515df339490a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:6",
+      "sequence": 3577,
+      "chapter_label": "LEV 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "If the person is from a month old to five years old, then your valuation shall be for a male five shekels of silver, and for a female your valuation shall be three shekels of silver.",
+      "ko": "일개월로 오세까지는 남자이면 그 값을 은 오 세겔로 하고 여자이면 그 값을 은 삼 세겔로 하며",
+      "source_text_hash": "12893cc16374941b4140b611fe3673197ed11b554ce89115d10668cded4b3dbb",
+      "translation_text_hash": "8b6a4c81ac473e95fa613d488c05dbe12c01341381c41ebb366dfa1f9af3b98e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일개월로 오세까지는 남자이면 그 값을 은 오 세겔로 하고 여자이면 그 값을 은 삼 세겔로 하며"
+      ],
+      "raw_text_hashes": [
+        "8b6a4c81ac473e95fa613d488c05dbe12c01341381c41ebb366dfa1f9af3b98e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:7",
+      "sequence": 3578,
+      "chapter_label": "LEV 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "If the person is from sixty years old and upward; if he is a male, then your valuation shall be fifteen shekels, and for a female ten shekels.",
+      "ko": "육십세 이상은 남자이면 그 값을 십 오 세겔로 하고 여자는 십 세겔로 하라",
+      "source_text_hash": "a3547496618aa468bc43ce934673c5b747174fb69a83174e33f2a4378a653d97",
+      "translation_text_hash": "70e67fe03585342fce0b58e05455b513f612e33e8bc9c85c3b1ef2001d74c621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육십세 이상은 남자이면 그 값을 십 오 세겔로 하고 여자는 십 세겔로 하라"
+      ],
+      "raw_text_hashes": [
+        "70e67fe03585342fce0b58e05455b513f612e33e8bc9c85c3b1ef2001d74c621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:8",
+      "sequence": 3579,
+      "chapter_label": "LEV 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "But if he is poorer than your valuation, then he shall be set before the priest, and the priest shall assign a value to him. The priest shall assign a value according to his ability to pay.",
+      "ko": "그러나 서원자가 가난하여 너의 정가를 감당치 못하겠으면 그를 제사장의 앞으로 데리고 갈 것이요 제사장은 그 값을 정하되 그 서원자의 형세대로 값을 정할찌니라",
+      "source_text_hash": "fbe3f711bc0827dc9186d404f5b39770c1a0a6219dcdead6c21998f2a1ae7580",
+      "translation_text_hash": "6afb3cc6ea6afe0c18dac84f740860ee84de9b0f8ed80844bee9a449a2409a19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 서원자가 가난하여 너의 정가를 감당치 못하겠으면 그를 제사장의 앞으로 데리고 갈 것이요 제사장은 그 값을 정하되 그 서원자의 형세대로 값을 정할찌니라"
+      ],
+      "raw_text_hashes": [
+        "6afb3cc6ea6afe0c18dac84f740860ee84de9b0f8ed80844bee9a449a2409a19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:9",
+      "sequence": 3580,
+      "chapter_label": "LEV 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "“‘If it is an animal of which men offer an offering to the LORD, all that any man gives of such to the LORD becomes holy.",
+      "ko": "사람이 예물로 여호와께 드리는 것이 생축이면 서원물로 여호와께 드릴 때는 다 거룩하니",
+      "source_text_hash": "aca66de055e57a8a3fe4031ce50c2c22af4cf3399ad1b6dfec7599550a331691",
+      "translation_text_hash": "75a69cc5d56ea50b6f5b5d9f73f34dd674a075eaa2e8bad9846fa3c6703b08ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 예물로 여호와께 드리는 것이 생축이면 서원물로 여호와께 드릴 때는 다 거룩하니"
+      ],
+      "raw_text_hashes": [
+        "75a69cc5d56ea50b6f5b5d9f73f34dd674a075eaa2e8bad9846fa3c6703b08ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:10",
+      "sequence": 3581,
+      "chapter_label": "LEV 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "He shall not alter it, nor exchange it, a good for a bad, or a bad for a good. If he shall at all exchange animal for animal, then both it and that for which it is exchanged shall be holy.",
+      "ko": "그것을 변개하여 우열간 바꾸지 못할 것이요 혹 생축으로 생축을 바꾸면 둘 다 거룩할 것이며",
+      "source_text_hash": "354503bf5b34bcf35ad6f6c1a0236b307849031dcda17522ab193016511b43b0",
+      "translation_text_hash": "96c08b1b328226e2b85f2378bdff7b4e42d5fa80859285faabf8d6fb6e0d302f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 변개하여 우열간 바꾸지 못할 것이요 혹 생축으로 생축을 바꾸면 둘 다 거룩할 것이며"
+      ],
+      "raw_text_hashes": [
+        "96c08b1b328226e2b85f2378bdff7b4e42d5fa80859285faabf8d6fb6e0d302f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:11",
+      "sequence": 3582,
+      "chapter_label": "LEV 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "If it is any unclean animal, of which they do not offer as an offering to the LORD, then he shall set the animal before the priest;",
+      "ko": "부정하여 여호와께 예물로 드리지 못할 생축이면 그 생축을 제사장 앞으로 끌어 갈 것이요",
+      "source_text_hash": "a4aade7756bf5552f0a62711131b5b491e368995078d7b1e8e54692f4670d860",
+      "translation_text_hash": "586c46a4b93c517a21327a6e60b4de6c459ee43f7fc740d438a2fe30833f4ab3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부정하여 여호와께 예물로 드리지 못할 생축이면 그 생축을 제사장 앞으로 끌어 갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "586c46a4b93c517a21327a6e60b4de6c459ee43f7fc740d438a2fe30833f4ab3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:12",
+      "sequence": 3583,
+      "chapter_label": "LEV 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "and the priest shall evaluate it, whether it is good or bad. As the priest evaluates it, so it shall be.",
+      "ko": "제사장은 그 우열간에 정가할찌니 그 값이 제사장의 정한대로 될 것이며",
+      "source_text_hash": "d5dab291f29029d6f31bbfdabc68956d46817dfd4d4e68993ba9264ee0ee4dea",
+      "translation_text_hash": "d246e7de9bc84e69cef870437deec4081c9a217343b1fcb1a409a75925338e76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 우열간에 정가할찌니 그 값이 제사장의 정한대로 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "d246e7de9bc84e69cef870437deec4081c9a217343b1fcb1a409a75925338e76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:13",
+      "sequence": 3584,
+      "chapter_label": "LEV 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "But if he will indeed redeem it, then he shall add the fifth part of it to its valuation.",
+      "ko": "그가 그것을 무르려면 정가에 그 오분 일을 더할찌니라",
+      "source_text_hash": "ad8917782701a88cc15cec289da009aaa4d7929725e83cf09567c0031c827506",
+      "translation_text_hash": "01ec7a373d85645ab38623483ffea0e72aa469f4ff71cbd23a6506767c308caf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그것을 무르려면 정가에 그 오분 일을 더할찌니라"
+      ],
+      "raw_text_hashes": [
+        "01ec7a373d85645ab38623483ffea0e72aa469f4ff71cbd23a6506767c308caf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:14",
+      "sequence": 3585,
+      "chapter_label": "LEV 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "“‘When a man dedicates his house to be holy to the LORD, then the priest shall evaluate it, whether it is good or bad. As the priest evaluates it, so it shall stand.",
+      "ko": "사람이 자기 집을 구별하여 여호와께 드리려면 제사장이 그 우열간에 정가할찌니 그 값이 제사장의 정한대로 될 것이며",
+      "source_text_hash": "894999642e8f1681ba4d9c92aaf82453d6b1623ea2e77f442ead54c41f18d419",
+      "translation_text_hash": "2096b2242f74aac40d6fb81aa9731e6d4bc4eac4d6f48dcb04b4d4b5178409e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 자기 집을 구별하여 여호와께 드리려면 제사장이 그 우열간에 정가할찌니 그 값이 제사장의 정한대로 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "2096b2242f74aac40d6fb81aa9731e6d4bc4eac4d6f48dcb04b4d4b5178409e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:15",
+      "sequence": 3586,
+      "chapter_label": "LEV 27",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 15
+        }
+      ],
+      "en": "If he who dedicates it will redeem his house, then he shall add the fifth part of the money of your valuation to it, and it shall be his.",
+      "ko": "그 사람이 자기 집을 무르려면 정가한 돈에 그 오분 일을 더할찌니 그리하면 자기 소유가 되리라",
+      "source_text_hash": "c4769a415da0d2ce90b5809007e2e36d56e9d88e681296c15ff3a3ab6f608f7c",
+      "translation_text_hash": "e971783433b297f05d0affb24e801a1b6511212078a4b7aa7496d8e159a54cce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 자기 집을 무르려면 정가한 돈에 그 오분 일을 더할찌니 그리하면 자기 소유가 되리라"
+      ],
+      "raw_text_hashes": [
+        "e971783433b297f05d0affb24e801a1b6511212078a4b7aa7496d8e159a54cce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:16",
+      "sequence": 3587,
+      "chapter_label": "LEV 27",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 16
+        }
+      ],
+      "en": "“‘If a man dedicates to the LORD part of the field of his possession, then your valuation shall be according to the seed for it. The sowing of a homer of barley shall be valued at fifty shekels of silver.",
+      "ko": "사람이 자기 기업된 밭 얼마를 구별하여 여호와께 드리려면 두락수대로 정가하되 보리 한 호멜지기에는 은 오십 세겔로 계산할찌며",
+      "source_text_hash": "d82b1c34042a88bb11af0f1fd8c3fa4ebf1da908b34f6258b0a5e16fb31ab61a",
+      "translation_text_hash": "d9e2afb3f611519bc77a2d3d2a9315c77e905f1e52bf441fb9547ca99679d4ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 자기 기업된 밭 얼마를 구별하여 여호와께 드리려면 두락수대로 정가하되 보리 한 호멜지기에는 은 오십 세겔로 계산할찌며"
+      ],
+      "raw_text_hashes": [
+        "d9e2afb3f611519bc77a2d3d2a9315c77e905f1e52bf441fb9547ca99679d4ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:17",
+      "sequence": 3588,
+      "chapter_label": "LEV 27",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 17
+        }
+      ],
+      "en": "If he dedicates his field from the Year of Jubilee, according to your valuation it shall stand.",
+      "ko": "그가 그 밭을 희년부터 구별하여 드렸으면 그 값을 네가 정한 대로 할 것이요",
+      "source_text_hash": "9ca7ccce65b7480660dea863fcacfcf344a319989122f0b53179f061a4a5a8cc",
+      "translation_text_hash": "b0fb70358364b15f083348e69baa5ef9e82b38c11f30feaeb9f90e8ae015727b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 밭을 희년부터 구별하여 드렸으면 그 값을 네가 정한 대로 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "b0fb70358364b15f083348e69baa5ef9e82b38c11f30feaeb9f90e8ae015727b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:18",
+      "sequence": 3589,
+      "chapter_label": "LEV 27",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 18
+        }
+      ],
+      "en": "But if he dedicates his field after the Jubilee, then the priest shall reckon to him the money according to the years that remain to the Year of Jubilee; and an abatement shall be made from your valuation.",
+      "ko": "그 밭을 희년 후에 구별하여 드렸으면 제사장이 다음 희년까지 남은 년수를 따라 그 값을 계산하고 정가에서 그 값에 상당하게 감할 것이며",
+      "source_text_hash": "fe711c15269307e14cef078b55e1cc8f7df6085aa08e41a234c877eee69e6f38",
+      "translation_text_hash": "c83ae3d3dd326cabbc2ba2ecb692cf25a60839de0e32efd23d1ab25f6ac7eca6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밭을 희년 후에 구별하여 드렸으면 제사장이 다음 희년까지 남은 년수를 따라 그 값을 계산하고 정가에서 그 값에 상당하게 감할 것이며"
+      ],
+      "raw_text_hashes": [
+        "c83ae3d3dd326cabbc2ba2ecb692cf25a60839de0e32efd23d1ab25f6ac7eca6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:19",
+      "sequence": 3590,
+      "chapter_label": "LEV 27",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 19
+        }
+      ],
+      "en": "If he who dedicated the field will indeed redeem it, then he shall add the fifth part of the money of your valuation to it, and it shall remain his.",
+      "ko": "밭을 구별하여 드린 자가 그것을 무르려면 정가한 돈에 그 오분 일을 더할찌니 그리하면 그것이 자기 소유가 될 것이요",
+      "source_text_hash": "b30394cc54113864c862360620526d3dbb3fb73e5c9ab808270d4263808b0f14",
+      "translation_text_hash": "8f3399172fa7b8f28200cff61a977b9e690d9c9f01d7eddd39db681474058236",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭을 구별하여 드린 자가 그것을 무르려면 정가한 돈에 그 오분 일을 더할찌니 그리하면 그것이 자기 소유가 될 것이요"
+      ],
+      "raw_text_hashes": [
+        "8f3399172fa7b8f28200cff61a977b9e690d9c9f01d7eddd39db681474058236"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:20",
+      "sequence": 3591,
+      "chapter_label": "LEV 27",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 20
+        }
+      ],
+      "en": "If he will not redeem the field, or if he has sold the field to another man, it shall not be redeemed any more;",
+      "ko": "그가 그 밭을 무르지 아니하려거나 타인에게 팔았으면 다시는 무르지 못하고",
+      "source_text_hash": "ec7e95730a4b91a69c42f84fd4c50a2a1e097273de70eef84379b55e1eb00c95",
+      "translation_text_hash": "0f27ab211306d6370c19841560aae7e55b2a34670baedea25025751083d394ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 밭을 무르지 아니하려거나 타인에게 팔았으면 다시는 무르지 못하고"
+      ],
+      "raw_text_hashes": [
+        "0f27ab211306d6370c19841560aae7e55b2a34670baedea25025751083d394ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:21",
+      "sequence": 3592,
+      "chapter_label": "LEV 27",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 21
+        }
+      ],
+      "en": "but the field, when it goes out in the Jubilee, shall be holy to the LORD, as a devoted field. It shall be owned by the priests.",
+      "ko": "희년이 되어서 그 밭이 돌아오게 될 때에는 여호와께 바친 성물이 되어 영영히 드린 땅과 같이 제사장의 기업이 될 것이며",
+      "source_text_hash": "1ce2561e2df69a7ed4ba6f927006e6870ef68074804c143ec10472a346ca3032",
+      "translation_text_hash": "2a77a9a6576b2ae0f964100c73a87579bd410dc1341b529102fb46a226d6ec48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "희년이 되어서 그 밭이 돌아오게 될 때에는 여호와께 바친 성물이 되어 영영히 드린 땅과 같이 제사장의 기업이 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "2a77a9a6576b2ae0f964100c73a87579bd410dc1341b529102fb46a226d6ec48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:22",
+      "sequence": 3593,
+      "chapter_label": "LEV 27",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 22
+        }
+      ],
+      "en": "“‘If he dedicates a field to the LORD which he has bought, which is not of the field of his possession,",
+      "ko": "사람에게 샀고 자기 기업이 아닌 밭을 여호와께 구별하여 드렸으면",
+      "source_text_hash": "ae437cc088faec0abaeedc50d1e485898b45d23555c9f0af9d32190fd24c8611",
+      "translation_text_hash": "ff9151328e70cf0b617f8024884f59684cc86dc21d1ead83df932cb57b40cbcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람에게 샀고 자기 기업이 아닌 밭을 여호와께 구별하여 드렸으면"
+      ],
+      "raw_text_hashes": [
+        "ff9151328e70cf0b617f8024884f59684cc86dc21d1ead83df932cb57b40cbcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:23",
+      "sequence": 3594,
+      "chapter_label": "LEV 27",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 23
+        }
+      ],
+      "en": "then the priest shall reckon to him the worth of your valuation up to the Year of Jubilee; and he shall give your valuation on that day, as a holy thing to the LORD.",
+      "ko": "너는 정가하고 제사장은 그를 위하여 희년까지 계산하고 그는 너의 정가한 돈을 그 날에 여호와께 드려 성물을 삼을찌며",
+      "source_text_hash": "d8970f2a316828d507f6d2af983a6aea8a7e8a8a6f8b99a9ad06810ffaea5e4c",
+      "translation_text_hash": "a6ad4986a5876f67a7509e90634acd6856f0aa525cf78f0aeefeb6e62c59aaf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 정가하고 제사장은 그를 위하여 희년까지 계산하고 그는 너의 정가한 돈을 그 날에 여호와께 드려 성물을 삼을찌며"
+      ],
+      "raw_text_hashes": [
+        "a6ad4986a5876f67a7509e90634acd6856f0aa525cf78f0aeefeb6e62c59aaf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:24",
+      "sequence": 3595,
+      "chapter_label": "LEV 27",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 24
+        }
+      ],
+      "en": "In the Year of Jubilee the field shall return to him from whom it was bought, even to him to whom the possession of the land belongs.",
+      "ko": "그 밭은 희년에 판 사람 곧 그 기업의 본주에게로 돌아 갈찌니라",
+      "source_text_hash": "b56d1bd82807f2ee53fcd918f175bf3e5118f20f15483632e60aa866e60b88fa",
+      "translation_text_hash": "3431c02ac4e447eb157aace3c78c5709ec3ac474291df1b11b0bd40b20dfe6aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밭은 희년에 판 사람 곧 그 기업의 본주에게로 돌아 갈찌니라"
+      ],
+      "raw_text_hashes": [
+        "3431c02ac4e447eb157aace3c78c5709ec3ac474291df1b11b0bd40b20dfe6aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:25",
+      "sequence": 3596,
+      "chapter_label": "LEV 27",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 25
+        }
+      ],
+      "en": "All your valuations shall be according to the shekel of the sanctuary: twenty gerahs to the shekel.",
+      "ko": "너의 모든 정가를 성소의 세겔대로 하되 이십 게라를 한 세겔로 할찌니라",
+      "source_text_hash": "e55b6334459daf344128149936cec77d545f979f6ff7c1991abd4269f53d8a46",
+      "translation_text_hash": "c7a6908154502d9efc0f6898de3ac95c3dfb230fafc29cb54a403ea3a8fe725b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 모든 정가를 성소의 세겔대로 하되 이십 게라를 한 세겔로 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c7a6908154502d9efc0f6898de3ac95c3dfb230fafc29cb54a403ea3a8fe725b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:26",
+      "sequence": 3597,
+      "chapter_label": "LEV 27",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 26
+        }
+      ],
+      "en": "“‘However the firstborn among animals, which belongs to the LORD as a firstborn, no man may dedicate, whether an ox or a sheep. It is the LORD’s.",
+      "ko": "오직 생축의 첫새끼는 여호와께 돌릴 첫새끼라 우 양을 물론하고 여호와의 것이니 누구든지 그것으로는 구별하여 드리지 못할 것이며",
+      "source_text_hash": "6bc91e0e239928b613f6aa32af96b2d9b0e218bfedec892393defe1092c118db",
+      "translation_text_hash": "412063b1389d8d5b0ddf604071cea5828f8e5377a9e951fa19a326aeda8ca720",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 생축의 첫새끼는 여호와께 돌릴 첫새끼라 우 양을 물론하고 여호와의 것이니 누구든지 그것으로는 구별하여 드리지 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "412063b1389d8d5b0ddf604071cea5828f8e5377a9e951fa19a326aeda8ca720"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:27",
+      "sequence": 3598,
+      "chapter_label": "LEV 27",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 27
+        }
+      ],
+      "en": "If it is an unclean animal, then he shall buy it back according to your valuation, and shall add to it the fifth part of it; or if it isn’t redeemed, then it shall be sold according to your valuation.",
+      "ko": "부정한 짐승이면 너의 정가에 그 오분 일을 더하여 속할 것이요 만일 속하지 아니하거든 너의 정가대로 팔찌니라",
+      "source_text_hash": "b17e6705328a914ae935dcfce3b7e9db99ce829e0bfa996b2ab0e7afb7c5e083",
+      "translation_text_hash": "37bb73036d5cf120c33deb77f4b7abf8f9c71a0e30e09abe63bcd7a9d8cf428f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부정한 짐승이면 너의 정가에 그 오분 일을 더하여 속할 것이요 만일 속하지 아니하거든 너의 정가대로 팔찌니라"
+      ],
+      "raw_text_hashes": [
+        "37bb73036d5cf120c33deb77f4b7abf8f9c71a0e30e09abe63bcd7a9d8cf428f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:28",
+      "sequence": 3599,
+      "chapter_label": "LEV 27",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 28
+        }
+      ],
+      "en": "“‘Notwithstanding, no devoted thing that a man devotes to the LORD of all that he has, whether of man or animal, or of the field of his possession, shall be sold or redeemed. Everything that is permanently devoted is most holy to the LORD.",
+      "ko": "오직 여호와께 아주 바친 그 물건은 사람이든지 생축이든지 기업의 밭이든지 팔지도 못하고 속하지도 못하나니 바친 것은 다 여호와께 지극히 거룩함이며",
+      "source_text_hash": "966e839dc6efe0142c9c83c79ff11b21631dc74604d86874b952e91591f1f69e",
+      "translation_text_hash": "037dc2e96980969a4b1fdf6d45386d9f4b3ac80dee12ef916c55064a536a3164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 여호와께 아주 바친 그 물건은 사람이든지 생축이든지 기업의 밭이든지 팔지도 못하고 속하지도 못하나니 바친 것은 다 여호와께 지극히 거룩함이며"
+      ],
+      "raw_text_hashes": [
+        "037dc2e96980969a4b1fdf6d45386d9f4b3ac80dee12ef916c55064a536a3164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:29",
+      "sequence": 3600,
+      "chapter_label": "LEV 27",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 29
+        }
+      ],
+      "en": "“‘No one devoted to destruction, who shall be devoted from among men, shall be ransomed. He shall surely be put to death.",
+      "ko": "아주 바친 그 사람은 다시 속하지 못하나니 반드시 죽일찌니라",
+      "source_text_hash": "daacbfb7d844983e858cbfb8a6e63c7c4ad2be73c99441011508aed8764c9ca8",
+      "translation_text_hash": "75e5ea1df91c80341946a62e4b77d93f51417e7dce98bd8cc03b983e09bf81bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아주 바친 그 사람은 다시 속하지 못하나니 반드시 죽일찌니라"
+      ],
+      "raw_text_hashes": [
+        "75e5ea1df91c80341946a62e4b77d93f51417e7dce98bd8cc03b983e09bf81bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:30",
+      "sequence": 3601,
+      "chapter_label": "LEV 27",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 30
+        }
+      ],
+      "en": "“‘All the tithe of the land, whether of the seed of the land or of the fruit of the trees, is the LORD’s. It is holy to the LORD.",
+      "ko": "땅의 십분 일 곧 땅의 곡식이나 나무의 과실이나 그 십분 일은 여호와의 것이니 여호와께 성물이라",
+      "source_text_hash": "6d85b732750bac2448b9ebc1c8be1143a4de475d0e219ca86e03efc5f86107f2",
+      "translation_text_hash": "3d962bb6ddd7b4ad4595199a1945b9d06895d7c2ada2a71cafe859d4ac6dfb1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 십분 일 곧 땅의 곡식이나 나무의 과실이나 그 십분 일은 여호와의 것이니 여호와께 성물이라"
+      ],
+      "raw_text_hashes": [
+        "3d962bb6ddd7b4ad4595199a1945b9d06895d7c2ada2a71cafe859d4ac6dfb1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:31",
+      "sequence": 3602,
+      "chapter_label": "LEV 27",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 31
+        }
+      ],
+      "en": "If a man redeems anything of his tithe, he shall add a fifth part to it.",
+      "ko": "사람이 그 십분 일을 속하려면 그것에 그 오분 일을 더할 것이요",
+      "source_text_hash": "384391417f46edf0f382b7e1dd9b0d0ae3fa0c26e056804d347f1651f184e032",
+      "translation_text_hash": "c1a8deb264fca962dabbc95f3197394674194749946ffb0d714616ab5f795916",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 그 십분 일을 속하려면 그것에 그 오분 일을 더할 것이요"
+      ],
+      "raw_text_hashes": [
+        "c1a8deb264fca962dabbc95f3197394674194749946ffb0d714616ab5f795916"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:32",
+      "sequence": 3603,
+      "chapter_label": "LEV 27",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 32
+        }
+      ],
+      "en": "All the tithe of the herds or the flocks, whatever passes under the rod, the tenth shall be holy to the LORD.",
+      "ko": "소나 양의 십분 일은 막대기 아래로 통과하는 것의 열째마다 여호와의 거룩한 것이 되리니",
+      "source_text_hash": "ee5742db6ad3185e783c35c7dcb549edf661a646df933e45ab5c28db72b742f8",
+      "translation_text_hash": "d93b10020d890ed57b69d23444dcce901055316a6d7c5a472d6a12853dda78d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소나 양의 십분 일은 막대기 아래로 통과하는 것의 열째마다 여호와의 거룩한 것이 되리니"
+      ],
+      "raw_text_hashes": [
+        "d93b10020d890ed57b69d23444dcce901055316a6d7c5a472d6a12853dda78d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:33",
+      "sequence": 3604,
+      "chapter_label": "LEV 27",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 33
+        }
+      ],
+      "en": "He shall not examine whether it is good or bad, neither shall he exchange it. If he exchanges it at all, then both it and that for which it is exchanged shall be holy. It shall not be redeemed.’”",
+      "ko": "그 우열을 교계하거나 바꾸거나 하지 말라 바꾸면 둘 다 거룩하리니 속하지 못하리라",
+      "source_text_hash": "5f27286fa8df34a70c3235c73ae003d3a47ba2356f97b096b8af26f3b16247ee",
+      "translation_text_hash": "ee8372ab0583236bce664128c5c24b0b253d6acdfa11e40059cda6828afe53f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 우열을 교계하거나 바꾸거나 하지 말라 바꾸면 둘 다 거룩하리니 속하지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "ee8372ab0583236bce664128c5c24b0b253d6acdfa11e40059cda6828afe53f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:27:34",
+      "sequence": 3605,
+      "chapter_label": "LEV 27",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 27,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 27,
+          "verse": 34
+        }
+      ],
+      "en": "These are the commandments which the LORD commanded Moses for the children of Israel on Mount Sinai.",
+      "ko": "이상은 여호와께서 시내산에서 이스라엘 자손을 위하여 모세에게 명하신 계명이니라",
+      "source_text_hash": "1616c1fa332e4d8118253fd9375d102976eaf1c2162d0258131f3db4a178e375",
+      "translation_text_hash": "98b70eb6c66ec7339339aa2b12c99db34e5afe45a514569884ceb849e962fa30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이상은 여호와께서 시내산에서 이스라엘 자손을 위하여 모세에게 명하신 계명이니라"
+      ],
+      "raw_text_hashes": [
+        "98b70eb6c66ec7339339aa2b12c99db34e5afe45a514569884ceb849e962fa30"
+      ]
+    }
+  ]
+}

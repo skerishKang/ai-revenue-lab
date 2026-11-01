@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:034",
+  "unit_ordinal": 836,
+  "unit_label": "EZK 34",
+  "book_code": "EZK",
+  "chapter_number": 34,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:34:1",
+      "sequence": 21315,
+      "chapter_label": "EZK 34",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:2",
+      "sequence": 21316,
+      "chapter_label": "EZK 34",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, prophesy against the shepherds of Israel. Prophesy, and tell them, even the shepherds, ‘The Lord GOD says: “Woe to the shepherds of Israel who feed themselves! Shouldn’t the shepherds feed the sheep?",
+      "ko": "인자야 너는 이스라엘 목자들을 쳐서 예언하라 그들 곧 목자들에게 예언하여 이르기를 주 여호와의 말씀에 자기만 먹이는 이스라엘 목자들은 화 있을찐저 목자들이 양의 무리를 먹이는 것이 마땅치 아니하냐",
+      "source_text_hash": "368ca2fd0d3ee8053a5d2163766d2416ca64cabf47bdcb6c12505ac34711fed4",
+      "translation_text_hash": "095806852fd057c90d5faa8f2659956f2bc530b254d81d1342a2503d902c94ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 이스라엘 목자들을 쳐서 예언하라 그들 곧 목자들에게 예언하여 이르기를 주 여호와의 말씀에 자기만 먹이는 이스라엘 목자들은 화 있을찐저 목자들이 양의 무리를 먹이는 것이 마땅치 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "095806852fd057c90d5faa8f2659956f2bc530b254d81d1342a2503d902c94ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:3",
+      "sequence": 21317,
+      "chapter_label": "EZK 34",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 3
+        }
+      ],
+      "en": "You eat the fat. You clothe yourself with the wool. You kill the fatlings, but you don’t feed the sheep.",
+      "ko": "너희가 살진 양을 잡아 그 기름을 먹으며 그 털을 입되 양의 무리는 먹이지 아니하는도다",
+      "source_text_hash": "e8f21ed4dcf65f0d3f6e050a575a3ff0b8a61867197d49cb6f9da76e9f0f6c24",
+      "translation_text_hash": "0ee797f89761a351157bae5ebe7df5908e75f3991a0fa2fcaaa8a9f3d04fb1ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 살진 양을 잡아 그 기름을 먹으며 그 털을 입되 양의 무리는 먹이지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "0ee797f89761a351157bae5ebe7df5908e75f3991a0fa2fcaaa8a9f3d04fb1ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:4",
+      "sequence": 21318,
+      "chapter_label": "EZK 34",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 4
+        }
+      ],
+      "en": "You haven’t strengthened the diseased. You haven’t healed that which was sick. You haven’t bound up that which was broken. You haven’t brought back that which was driven away. You haven’t sought that which was lost, but you have ruled over them with force and with rigor.",
+      "ko": "너희가 그 연약한 자를 강하게 아니하며 병든 자를 고치지 아니하며 상한 자를 싸매어 주지 아니하며 쫓긴 자를 돌아오게 아니하며 잃어버린 자를 찾지 아니하고 다만 강포로 그것들을 다스렸도다",
+      "source_text_hash": "4373340a98fe4b0ff031a2f8f205c72bd8100d4082b3864adbe7c38ce4bde034",
+      "translation_text_hash": "8ba6ecf1f37859929342df0694bd0833d407f5fba29f3827b82ced29f91c5dcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그 연약한 자를 강하게 아니하며 병든 자를 고치지 아니하며 상한 자를 싸매어 주지 아니하며 쫓긴 자를 돌아오게 아니하며 잃어버린 자를 찾지 아니하고 다만 강포로 그것들을 다스렸도다"
+      ],
+      "raw_text_hashes": [
+        "8ba6ecf1f37859929342df0694bd0833d407f5fba29f3827b82ced29f91c5dcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:5",
+      "sequence": 21319,
+      "chapter_label": "EZK 34",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 5
+        }
+      ],
+      "en": "They were scattered, because there was no shepherd. They became food to all the animals of the field, and were scattered.",
+      "ko": "목자가 없으므로 그것들이 흩어지며 흩어져서 모든 들짐승의 밥이 되었도다",
+      "source_text_hash": "bddcaa9337a330bcafc27bd5b68d4da3493bd618611df6fea46189c7bdd1d584",
+      "translation_text_hash": "cf50ae051d812079ec00ffd068f7dbc0d45e96d417d3e7190bf82ae780a68126",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목자가 없으므로 그것들이 흩어지며 흩어져서 모든 들짐승의 밥이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "cf50ae051d812079ec00ffd068f7dbc0d45e96d417d3e7190bf82ae780a68126"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:6",
+      "sequence": 21320,
+      "chapter_label": "EZK 34",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 6
+        }
+      ],
+      "en": "My sheep wandered through all the mountains and on every high hill. Yes, my sheep were scattered on all the surface of the earth. There was no one who searched or sought.”",
+      "ko": "내 양의 무리가 모든 산과 높은 멧부리에마다 유리되었고 내 양의 무리가 온 지면에 흩어졌으되 찾고 찾는 자가 없었도다",
+      "source_text_hash": "822b40ed3e9c29248c18d909725312b0dcaeb5e24f4af20a2fca5c96f62b457a",
+      "translation_text_hash": "ec08f91041c6cb58d5ea7aa467c17853107a209cb66b89bbb1c1f35bd8694ff9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 양의 무리가 모든 산과 높은 멧부리에마다 유리되었고 내 양의 무리가 온 지면에 흩어졌으되 찾고 찾는 자가 없었도다"
+      ],
+      "raw_text_hashes": [
+        "ec08f91041c6cb58d5ea7aa467c17853107a209cb66b89bbb1c1f35bd8694ff9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:7",
+      "sequence": 21321,
+      "chapter_label": "EZK 34",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 7
+        }
+      ],
+      "en": "“‘Therefore, you shepherds, hear the LORD’s word:",
+      "ko": "그러므로 목자들아 여호와의 말씀을 들을찌어다",
+      "source_text_hash": "9a33fdd1cfe42b3f2acbcc428776f866b29fd897a84538233d2ceee93b4e073b",
+      "translation_text_hash": "4a1ab5b124564af3f1066a800fb0cfea821ffe1d43199c4292939c6d73ea8253",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 목자들아 여호와의 말씀을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "4a1ab5b124564af3f1066a800fb0cfea821ffe1d43199c4292939c6d73ea8253"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:8",
+      "sequence": 21322,
+      "chapter_label": "EZK 34",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 8
+        }
+      ],
+      "en": "“As I live,” says the Lord GOD, “surely because my sheep became a prey, and my sheep became food to all the animals of the field, because there was no shepherd, and my shepherds didn’t search for my sheep, but the shepherds fed themselves, and didn’t feed my sheep,",
+      "ko": "주 여호와의 말씀에 내가 나의 삶을 두고 맹세하노라 내 양의 무리가 노략거리가 되고 모든 들짐승의 밥이 된 것은 목자가 없음이라 내 목자들이 내 양을 찾지 아니하고 자기만 먹이고 내 양의 무리를 먹이지 아니하였도다",
+      "source_text_hash": "80d757ce0d2988665b93658cee0491c27ecba784b5fff14303430181e8c6e3b1",
+      "translation_text_hash": "e1aa4ebbf8ad7251c2761a641964146980ed2ef7e7c0be694cda2350a5f24d4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와의 말씀에 내가 나의 삶을 두고 맹세하노라 내 양의 무리가 노략거리가 되고 모든 들짐승의 밥이 된 것은 목자가 없음이라 내 목자들이 내 양을 찾지 아니하고 자기만 먹이고 내 양의 무리를 먹이지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "e1aa4ebbf8ad7251c2761a641964146980ed2ef7e7c0be694cda2350a5f24d4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:9",
+      "sequence": 21323,
+      "chapter_label": "EZK 34",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 9
+        }
+      ],
+      "en": "therefore, you shepherds, hear the LORD’s word!”",
+      "ko": "그러므로 너희 목자들아 여호와의 말씀을 들을찌어다",
+      "source_text_hash": "578a68bb7bfeab1cef1ca9788416863a63685a8f3ba4b889efab61db09fcce17",
+      "translation_text_hash": "2696ab1b612e95cb50109067a7416d094a93d6867b08a58865f6dcc33b1d28b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희 목자들아 여호와의 말씀을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "2696ab1b612e95cb50109067a7416d094a93d6867b08a58865f6dcc33b1d28b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:10",
+      "sequence": 21324,
+      "chapter_label": "EZK 34",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 10
+        }
+      ],
+      "en": "The Lord GOD says: “Behold, I am against the shepherds. I will require my sheep at their hand, and cause them to cease from feeding the sheep. The shepherds won’t feed themselves any more. I will deliver my sheep from their mouth, that they may not be food for them.”",
+      "ko": "주 여호와의 말씀에 내가 목자들을 대적하여 내 양의 무리를 그들의 손에서 찾으리니 목자들이 양을 먹이지 못할 뿐 아니라 그들이 다시는 자기를 먹이지 못할찌라 내가 내 양을 그들의 입에서 건져내어서 다시는 그 식물이 되지 않게 하리라",
+      "source_text_hash": "32c9706b58794c94c8af3ba22e289198d8a59e0faae64bcfd6add716153caf0c",
+      "translation_text_hash": "ebe7464c9d532a09624eb41ea646143d80e444649c05a3cb074e2eff69cbced6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와의 말씀에 내가 목자들을 대적하여 내 양의 무리를 그들의 손에서 찾으리니 목자들이 양을 먹이지 못할 뿐 아니라 그들이 다시는 자기를 먹이지 못할찌라 내가 내 양을 그들의 입에서 건져내어서 다시는 그 식물이 되지 않게 하리라"
+      ],
+      "raw_text_hashes": [
+        "ebe7464c9d532a09624eb41ea646143d80e444649c05a3cb074e2eff69cbced6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:11",
+      "sequence": 21325,
+      "chapter_label": "EZK 34",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 11
+        }
+      ],
+      "en": "“‘For the Lord GOD says: “Behold, I myself, even I, will search for my sheep, and will seek them out.",
+      "ko": "나 주 여호와가 말하노라 나 곧 내가 내 양을 찾고 찾되",
+      "source_text_hash": "a9f3635c7cc386ce5454f1e2deb96cfdb3f0c66977e237e9e730364c122c422a",
+      "translation_text_hash": "ca64d7ef845c066fd538fe1673e406a1ff004375f051192965bef727a96526c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 나 곧 내가 내 양을 찾고 찾되"
+      ],
+      "raw_text_hashes": [
+        "ca64d7ef845c066fd538fe1673e406a1ff004375f051192965bef727a96526c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:12",
+      "sequence": 21326,
+      "chapter_label": "EZK 34",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 12
+        }
+      ],
+      "en": "As a shepherd seeks out his flock in the day that he is among his sheep that are scattered abroad, so I will seek out my sheep. I will deliver them out of all places where they have been scattered in the cloudy and dark day.",
+      "ko": "목자가 양 가운데 있는 날에 양이 흩어졌으면 그 떼를 찾는 것 같이 내가 내 양을 찾아서 흐리고 캄캄한 날에 그 흩어진 모든 곳에서 그것들을 건져낼찌라",
+      "source_text_hash": "b66d87624bd7e23aca2f10dd11673bcedd5e6c68d851dc319934440f09881c20",
+      "translation_text_hash": "3367ae4750b60cfd80a2498216639c91e8bf53a6ed2869b1868ed39eb9cad30f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목자가 양 가운데 있는 날에 양이 흩어졌으면 그 떼를 찾는 것 같이 내가 내 양을 찾아서 흐리고 캄캄한 날에 그 흩어진 모든 곳에서 그것들을 건져낼찌라"
+      ],
+      "raw_text_hashes": [
+        "3367ae4750b60cfd80a2498216639c91e8bf53a6ed2869b1868ed39eb9cad30f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:13",
+      "sequence": 21327,
+      "chapter_label": "EZK 34",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 13
+        }
+      ],
+      "en": "I will bring them out from the peoples, and gather them from the countries, and will bring them into their own land. I will feed them on the mountains of Israel, by the watercourses, and in all the inhabited places of the country.",
+      "ko": "내가 그것들을 만민 중에서 끌어내며 열방 중에서 모아 그 본토로 데리고 가서 이스라엘 산 위에와 시냇가에와 그 땅 모든 거주지에서 먹이되",
+      "source_text_hash": "e186eeff270f5eb50ae369db2234ef2ff04a564a4f86501704c16c2e43124895",
+      "translation_text_hash": "f9ce78bfb07d76b42894b85543887e62276aa17b2595150257d7350e34f1c816",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그것들을 만민 중에서 끌어내며 열방 중에서 모아 그 본토로 데리고 가서 이스라엘 산 위에와 시냇가에와 그 땅 모든 거주지에서 먹이되"
+      ],
+      "raw_text_hashes": [
+        "f9ce78bfb07d76b42894b85543887e62276aa17b2595150257d7350e34f1c816"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:14",
+      "sequence": 21328,
+      "chapter_label": "EZK 34",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 14
+        }
+      ],
+      "en": "I will feed them with good pasture, and their fold will be on the mountains of the height of Israel. There they will lie down in a good fold. They will feed on rich pasture on the mountains of Israel.",
+      "ko": "좋은 꼴로 먹이고 그 우리를 이스라엘 높은 산 위에 두리니 그것들이 거기서 좋은 우리에 누워 있으며 이스라엘 산 위에서 살진 꼴을 먹으리라",
+      "source_text_hash": "aab7765cc75b6b69408bf1c350118946a1a9eba9c70b0e67451e60b9f239825f",
+      "translation_text_hash": "bab5f91bea05190b498239731dfccec2fa4dc041b6494c6011c2a37e52e1e890",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좋은 꼴로 먹이고 그 우리를 이스라엘 높은 산 위에 두리니 그것들이 거기서 좋은 우리에 누워 있으며 이스라엘 산 위에서 살진 꼴을 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "bab5f91bea05190b498239731dfccec2fa4dc041b6494c6011c2a37e52e1e890"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:15",
+      "sequence": 21329,
+      "chapter_label": "EZK 34",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 15
+        }
+      ],
+      "en": "I myself will be the shepherd of my sheep, and I will cause them to lie down,” says the Lord GOD.",
+      "ko": "나 주 여호와가 말하노라 내가 친히 내 양의 목자가 되어 그것들로 누워 있게 할찌라",
+      "source_text_hash": "b7ecffc4b466d1944bd8868e11c0adc54d32005a43e6ee871547cad5cd1da858",
+      "translation_text_hash": "9915c5efbb31192fa94fa3bd8601de18927f752fa02ea1f5bf5d3f33c1ecc36c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 친히 내 양의 목자가 되어 그것들로 누워 있게 할찌라"
+      ],
+      "raw_text_hashes": [
+        "9915c5efbb31192fa94fa3bd8601de18927f752fa02ea1f5bf5d3f33c1ecc36c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:16",
+      "sequence": 21330,
+      "chapter_label": "EZK 34",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 16
+        }
+      ],
+      "en": "“I will seek that which was lost, and will bring back that which was driven away, and will bind up that which was broken, and will strengthen that which was sick; but I will destroy the fat and the strong. I will feed them in justice.”’",
+      "ko": "그 잃어버린 자를 내가 찾으며 쫓긴 자를 내가 돌아 오게 하며 상한 자를 내가 싸매어 주며 병든 자를 내가 강하게 하려니와 살찐 자와 강한 자는 내가 멸하고 공의대로 그것들을 먹이리라",
+      "source_text_hash": "9d0f64f907620952133c39df6deb7492cf9baecbbaa3ede23a841edb975711fb",
+      "translation_text_hash": "3bf2ac6f8f97dee3101b80d44c3240f0e20a8bcdc086f17ab232515c9863a835",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 잃어버린 자를 내가 찾으며 쫓긴 자를 내가 돌아 오게 하며 상한 자를 내가 싸매어 주며 병든 자를 내가 강하게 하려니와 살찐 자와 강한 자는 내가 멸하고 공의대로 그것들을 먹이리라"
+      ],
+      "raw_text_hashes": [
+        "3bf2ac6f8f97dee3101b80d44c3240f0e20a8bcdc086f17ab232515c9863a835"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:17",
+      "sequence": 21331,
+      "chapter_label": "EZK 34",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 17
+        }
+      ],
+      "en": "“As for you, O my flock, the Lord GOD says: ‘Behold, I judge between sheep and sheep, the rams and the male goats.",
+      "ko": "나 주 여호와가 말하노라 나의 양떼 너희여 내가 양과 양의 사이와 수양과 수염소의 사이에 심판하노라",
+      "source_text_hash": "7dcb568bb3ea2d230fdaad05c2500be2cc979dee1232ed68ee4dfdbc362cec4b",
+      "translation_text_hash": "3b37df647fef9892508cd9a571c6590ee81addf6b97234a16c5a89eeec810764",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 나의 양떼 너희여 내가 양과 양의 사이와 수양과 수염소의 사이에 심판하노라"
+      ],
+      "raw_text_hashes": [
+        "3b37df647fef9892508cd9a571c6590ee81addf6b97234a16c5a89eeec810764"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:18",
+      "sequence": 21332,
+      "chapter_label": "EZK 34",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 18
+        }
+      ],
+      "en": "Does it seem a small thing to you to have fed on the good pasture, but you must tread down with your feet the residue of your pasture? And to have drunk of the clear waters, but must you foul the residue with your feet?",
+      "ko": "너희가 좋은 꼴 먹은 것을 작은 일로 여기느냐 어찌하여 남은 꼴을 발로 밟았느냐 너희가 맑은 물 마신 것을 작은 일로 여기느냐 어찌하여 남은 물을 발로 더럽혔느냐",
+      "source_text_hash": "7e828f74e4b1f3adc361c7d3cbd68cf6471f9b584f7063c1d53ac9366d6669ba",
+      "translation_text_hash": "42dc9a0d95bacc104ca68a69618471757f29c96c62e4157f7edd0bdd12877341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 좋은 꼴 먹은 것을 작은 일로 여기느냐 어찌하여 남은 꼴을 발로 밟았느냐 너희가 맑은 물 마신 것을 작은 일로 여기느냐 어찌하여 남은 물을 발로 더럽혔느냐"
+      ],
+      "raw_text_hashes": [
+        "42dc9a0d95bacc104ca68a69618471757f29c96c62e4157f7edd0bdd12877341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:19",
+      "sequence": 21333,
+      "chapter_label": "EZK 34",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 19
+        }
+      ],
+      "en": "As for my sheep, they eat that which you have trodden with your feet, and they drink that which you have fouled with your feet.’",
+      "ko": "나의 양은 너희 발로 밟은 것을 먹으며 너희 발로 더럽힌 것을 마시는도다 하셨느니라",
+      "source_text_hash": "3598cefb3e8c4cecc467d592f3bc5f6f27609d9e12b87daf90a621cb1dec5fee",
+      "translation_text_hash": "1ffaa75544c679c7d32939ad789f0a34b3f9ad2a7a5e947eb398e8a4516dd129",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 양은 너희 발로 밟은 것을 먹으며 너희 발로 더럽힌 것을 마시는도다 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "1ffaa75544c679c7d32939ad789f0a34b3f9ad2a7a5e947eb398e8a4516dd129"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:20",
+      "sequence": 21334,
+      "chapter_label": "EZK 34",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 20
+        }
+      ],
+      "en": "“Therefore the Lord GOD says to them: ‘Behold, I, even I, will judge between the fat sheep and the lean sheep.",
+      "ko": "그러므로 주 여호와께서 그들에게 대하여 말씀하시기를 나 곧 내가 살찐 양과 파리한 양 사이에 심판하리라",
+      "source_text_hash": "b29f0551203c48f135d44749e2e79541828279e91005eeefe989d750b04fd99c",
+      "translation_text_hash": "fff079fec8c922a392177fea0c36c3ab07eddd787d95407c2402c1514fac5066",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주 여호와께서 그들에게 대하여 말씀하시기를 나 곧 내가 살찐 양과 파리한 양 사이에 심판하리라"
+      ],
+      "raw_text_hashes": [
+        "fff079fec8c922a392177fea0c36c3ab07eddd787d95407c2402c1514fac5066"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:21",
+      "sequence": 21335,
+      "chapter_label": "EZK 34",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 21
+        }
+      ],
+      "en": "Because you thrust with side and with shoulder, and push all the diseased with your horns, until you have scattered them abroad,",
+      "ko": "너희가 옆구리와 어깨로 밀뜨리고 모든 병든 자를 뿔로 받아 무리로 밖으로 흩어지게 하는도다",
+      "source_text_hash": "07e275021137c2386c8087ab4c8ab2195f38ffd4312108dbdb264eb911694909",
+      "translation_text_hash": "74106aaf06e5f8f7d5b6553873d8815192eeaffab48a30278d185a5b41cd6b7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 옆구리와 어깨로 밀뜨리고 모든 병든 자를 뿔로 받아 무리로 밖으로 흩어지게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "74106aaf06e5f8f7d5b6553873d8815192eeaffab48a30278d185a5b41cd6b7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:22",
+      "sequence": 21336,
+      "chapter_label": "EZK 34",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 22
+        }
+      ],
+      "en": "therefore I will save my flock, and they will no more be a prey. I will judge between sheep and sheep.",
+      "ko": "그러므로 내가 내 양떼를 구원하여 그들로 다시는 노략거리가 되지 않게 하고 양과 양 사이에 심판하리라",
+      "source_text_hash": "9471a2290820f60072ef46351e251c3a619385cde84133cbe165ea485efbce08",
+      "translation_text_hash": "6b883ecfb9ce66a0d9a3d32b7239b581e979bd546096a7824400d5512c1858c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 내 양떼를 구원하여 그들로 다시는 노략거리가 되지 않게 하고 양과 양 사이에 심판하리라"
+      ],
+      "raw_text_hashes": [
+        "6b883ecfb9ce66a0d9a3d32b7239b581e979bd546096a7824400d5512c1858c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:23",
+      "sequence": 21337,
+      "chapter_label": "EZK 34",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 23
+        }
+      ],
+      "en": "I will set up one shepherd over them, and he will feed them, even my servant David. He will feed them, and he will be their shepherd.",
+      "ko": "내가 한 목자를 그들의 위에 세워 먹이게 하리니 그는 내 종 다윗이라 그가 그들을 먹이고 그들의 목자가 될찌라",
+      "source_text_hash": "93967ed2d177e73d9e5a8618118da52141028d7f57e10f9ae0d837d575845553",
+      "translation_text_hash": "178f879882d6906c1646dbdcecce7aa048dd4dd75cd047fa94af11c46affeef6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 한 목자를 그들의 위에 세워 먹이게 하리니 그는 내 종 다윗이라 그가 그들을 먹이고 그들의 목자가 될찌라"
+      ],
+      "raw_text_hashes": [
+        "178f879882d6906c1646dbdcecce7aa048dd4dd75cd047fa94af11c46affeef6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:24",
+      "sequence": 21338,
+      "chapter_label": "EZK 34",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 24
+        }
+      ],
+      "en": "I, the LORD, will be their God, and my servant David prince among them. I, the LORD, have spoken it.",
+      "ko": "나 여호와는 그들의 하나님이 되고 내 종 다윗은 그들 중에 왕이 되리라 나 여호와의 말이니라",
+      "source_text_hash": "13796c9d65fcee05a3bc7987b6c3a315df259dfeeb89507007377948717a975a",
+      "translation_text_hash": "42b892d9c55b4a785ea32edbac1845279597ba072417b14123400d7ab645dc53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와는 그들의 하나님이 되고 내 종 다윗은 그들 중에 왕이 되리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "42b892d9c55b4a785ea32edbac1845279597ba072417b14123400d7ab645dc53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:25",
+      "sequence": 21339,
+      "chapter_label": "EZK 34",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 25
+        }
+      ],
+      "en": "“‘I will make with them a covenant of peace, and will cause evil animals to cease out of the land. They will dwell securely in the wilderness and sleep in the woods.",
+      "ko": "내가 또 그들과 화평의 언약을 세우고 악한 짐승을 그 땅에서 그치게 하리니 그들이 빈 들에 평안히 거하며 수풀 가운데서 잘찌라",
+      "source_text_hash": "5b3c226bec995d092b362a8ceb43be98dc9bcc71d9aeeffefe4a63d3ca4e2033",
+      "translation_text_hash": "640ed60b845cf25e6914b15dbc2e8d5a42794d0e55ec92d3953c4f1e881e320a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 그들과 화평의 언약을 세우고 악한 짐승을 그 땅에서 그치게 하리니 그들이 빈 들에 평안히 거하며 수풀 가운데서 잘찌라"
+      ],
+      "raw_text_hashes": [
+        "640ed60b845cf25e6914b15dbc2e8d5a42794d0e55ec92d3953c4f1e881e320a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:26",
+      "sequence": 21340,
+      "chapter_label": "EZK 34",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 26
+        }
+      ],
+      "en": "I will make them and the places around my hill a blessing. I will cause the shower to come down in its season. There will be showers of blessing.",
+      "ko": "내가 그들에게 복을 내리며 내 산 사면 모든 곳도 복되게 하여 때를 따라 비를 내리되 복된 장마비를 내리리라",
+      "source_text_hash": "123e4ba301a7cc3f7c3741d1c426793e0575269de496c81907f415bb8b4be4ab",
+      "translation_text_hash": "d3e07e934af29ce9fe220c48e13684b7df775c2a1bc35da3f67ea6204faa7cd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들에게 복을 내리며 내 산 사면 모든 곳도 복되게 하여 때를 따라 비를 내리되 복된 장마비를 내리리라"
+      ],
+      "raw_text_hashes": [
+        "d3e07e934af29ce9fe220c48e13684b7df775c2a1bc35da3f67ea6204faa7cd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:27",
+      "sequence": 21341,
+      "chapter_label": "EZK 34",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 27
+        }
+      ],
+      "en": "The tree of the field will yield its fruit, and the earth will yield its increase, and they will be secure in their land. Then they will know that I am the LORD, when I have broken the bars of their yoke, and have delivered them out of the hand of those who made slaves of them.",
+      "ko": "그리한즉 밭에 나무가 열매를 맺으며 땅이 그 소산을 내리니 그들이 그 땅에서 평안할찌라 내가 그들의 멍엣목을 꺾고 그들로 종을 삼은 자의 손에서 그들을 건져낸 후에 그들이 나를 여호와인줄 알겠고",
+      "source_text_hash": "9615e3ef3f452623fcb77bce096f65de409b4a3b016058e9a5d6f98e32e988b1",
+      "translation_text_hash": "3f17cf4164830d551d5b99767d1d42582a4ce26885ef7ba9841c3f40a9eba946",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리한즉 밭에 나무가 열매를 맺으며 땅이 그 소산을 내리니 그들이 그 땅에서 평안할찌라 내가 그들의 멍엣목을 꺾고 그들로 종을 삼은 자의 손에서 그들을 건져낸 후에 그들이 나를 여호와인줄 알겠고"
+      ],
+      "raw_text_hashes": [
+        "3f17cf4164830d551d5b99767d1d42582a4ce26885ef7ba9841c3f40a9eba946"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:28",
+      "sequence": 21342,
+      "chapter_label": "EZK 34",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 28
+        }
+      ],
+      "en": "They will no more be a prey to the nations, neither will the animals of the earth devour them; but they will dwell securely, and no one will make them afraid.",
+      "ko": "그들이 다시는 이방의 노략거리가 되지 아니하며 땅의 짐승의 삼킨바 되지 아니하고 평안히 거하리니 놀랠 사람이 없으리라",
+      "source_text_hash": "2ed00533dcad1f6ee8cdaf70d1fdbdfef2c805e48640e764f6b64a8562de9fe0",
+      "translation_text_hash": "2e006abeae341b4589f2683812c71ef078484397c545dfff449e2d157e34aedc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 다시는 이방의 노략거리가 되지 아니하며 땅의 짐승의 삼킨바 되지 아니하고 평안히 거하리니 놀랠 사람이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "2e006abeae341b4589f2683812c71ef078484397c545dfff449e2d157e34aedc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:29",
+      "sequence": 21343,
+      "chapter_label": "EZK 34",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 29
+        }
+      ],
+      "en": "I will raise up to them a plantation for renown, and they will no more be consumed with famine in the land, and not bear the shame of the nations any more.",
+      "ko": "내가 그들을 위하여 유명한 종식할 땅을 일으키리니 그들이 다시는 그 땅에서 기근으로 멸망하지 아니할찌며 다시는 열국의 수치를 받지 아니할찌라",
+      "source_text_hash": "98c09df9bbbcd5c5a45d9579ca909141d933c29840775ac56278e4c01b05c5d2",
+      "translation_text_hash": "592a1a00947e6b4a0d977f4d3b600d5ac1004c3fa39452a059ae38917b4987bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 위하여 유명한 종식할 땅을 일으키리니 그들이 다시는 그 땅에서 기근으로 멸망하지 아니할찌며 다시는 열국의 수치를 받지 아니할찌라"
+      ],
+      "raw_text_hashes": [
+        "592a1a00947e6b4a0d977f4d3b600d5ac1004c3fa39452a059ae38917b4987bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:30",
+      "sequence": 21344,
+      "chapter_label": "EZK 34",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 30
+        }
+      ],
+      "en": "They will know that I, the LORD, their God am with them, and that they, the house of Israel, are my people, says the Lord GOD.",
+      "ko": "그들이 나 여호와 그들의 하나님이 그들과 함께 있는 줄을 알며 그들 곧 이스라엘 족속이 내 백성인줄 알리라 나 주 여호와의 말이라",
+      "source_text_hash": "0ef00d291723d44dfdefc52fa6ed11f0df9b2b5ab22ab79b9ca4444b97bc6463",
+      "translation_text_hash": "c4d8f76f7c8feb6abb8687869b54fc293298a0d84d0289048f4413dcbb0ad11e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 나 여호와 그들의 하나님이 그들과 함께 있는 줄을 알며 그들 곧 이스라엘 족속이 내 백성인줄 알리라 나 주 여호와의 말이라"
+      ],
+      "raw_text_hashes": [
+        "c4d8f76f7c8feb6abb8687869b54fc293298a0d84d0289048f4413dcbb0ad11e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:34:31",
+      "sequence": 21345,
+      "chapter_label": "EZK 34",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 34,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 34,
+          "verse": 31
+        }
+      ],
+      "en": "You my sheep, the sheep of my pasture, are men, and I am your God,’ says the Lord GOD.”",
+      "ko": "내 양 곧 내 초장의 양 너희는 사람이요 나는 너희 하나님이라 나 주 여호와의 말이니라",
+      "source_text_hash": "e4464eb6a802df68f15e33b89346024f038d03b663ac815031ddefc99d33dfc1",
+      "translation_text_hash": "70ff163bfc3283de7f3359e1869477cf3e8ca0aa9510fbd50723a305583934ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 양 곧 내 초장의 양 너희는 사람이요 나는 너희 하나님이라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "70ff163bfc3283de7f3359e1869477cf3e8ca0aa9510fbd50723a305583934ca"
+      ]
+    }
+  ]
+}

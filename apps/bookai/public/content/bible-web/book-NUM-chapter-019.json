@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:019",
+  "unit_ordinal": 136,
+  "unit_label": "NUM 19",
+  "book_code": "NUM",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:19:1",
+      "sequence": 4291,
+      "chapter_label": "NUM 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying,",
+      "ko": "여호와께서 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "e6c7cd4c60d1b58d8caa7e02e4352f1d925cf188a6f005f934b711230470272a",
+      "translation_text_hash": "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:2",
+      "sequence": 4292,
+      "chapter_label": "NUM 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "“This is the statute of the law which the LORD has commanded. Tell the children of Israel to bring you a red heifer without spot, in which is no defect, and which was never yoked.",
+      "ko": "여호와의 명하는 법의 율례를 이제 이르노니 이스라엘 자손에게 일러서 온전하여 흠이 없고 아직 멍에 메지 아니한 붉은 암송아지를 네게로 끌어오게 하고",
+      "source_text_hash": "0281046605d2dbc52ff3b8057cbd924fccb1cebafcb23d080b2c0bc5c726df97",
+      "translation_text_hash": "35be03b75f604445308668532ed7ff6eb3eb703ba489053e0416feb3caacdc5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 명하는 법의 율례를 이제 이르노니 이스라엘 자손에게 일러서 온전하여 흠이 없고 아직 멍에 메지 아니한 붉은 암송아지를 네게로 끌어오게 하고"
+      ],
+      "raw_text_hashes": [
+        "35be03b75f604445308668532ed7ff6eb3eb703ba489053e0416feb3caacdc5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:3",
+      "sequence": 4293,
+      "chapter_label": "NUM 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "You shall give her to Eleazar the priest, and he shall bring her outside of the camp, and one shall kill her before his face.",
+      "ko": "너는 그것을 제사장 엘르아살에게 줄 것이요 그는 그것을 진 밖으로 끌어 내어서 자기 목전에서 잡게 할것이며",
+      "source_text_hash": "79a8dce2e6299e593ae35447137bf79d0f41797649033833dd19fc8a06baca7a",
+      "translation_text_hash": "0d65999d5023561396dc3d8fb93e2b57147e096cbe81a3fde3c942e3712e656a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그것을 제사장 엘르아살에게 줄 것이요 그는 그것을 진 밖으로 끌어 내어서 자기 목전에서 잡게 할것이며"
+      ],
+      "raw_text_hashes": [
+        "0d65999d5023561396dc3d8fb93e2b57147e096cbe81a3fde3c942e3712e656a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:4",
+      "sequence": 4294,
+      "chapter_label": "NUM 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "Eleazar the priest shall take some of her blood with his finger, and sprinkle her blood toward the front of the Tent of Meeting seven times.",
+      "ko": "제사장 엘르아살은 손가락에 그 피를 찍고 그 피를 회막 앞을 향하여 일곱번 뿌리고",
+      "source_text_hash": "393ebe3c6ded13e3be618b941de3d61a8c5a5d9e8359062698a66c07c2121bb1",
+      "translation_text_hash": "36d3c49f35035e0dc46b9dc8eee828d1feb090abc21a5d891ae61ac9a35932db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 엘르아살은 손가락에 그 피를 찍고 그 피를 회막 앞을 향하여 일곱번 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "36d3c49f35035e0dc46b9dc8eee828d1feb090abc21a5d891ae61ac9a35932db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:5",
+      "sequence": 4295,
+      "chapter_label": "NUM 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "One shall burn the heifer in his sight; her skin, and her meat, and her blood, with her dung, shall he burn.",
+      "ko": "그 암소를 자기 목전에서 불사르게 하되 그 가죽과 고기와 피와 똥을 불사르게 하고",
+      "source_text_hash": "e868dad6c888899de2ab7663b96eab9d7ae9141a411efa917b36dd989fd234a0",
+      "translation_text_hash": "48777d458ac45c6e1c7f5a10fa3b5c4b08198ef57e38cf086e3a5e7e8003e287",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 암소를 자기 목전에서 불사르게 하되 그 가죽과 고기와 피와 똥을 불사르게 하고"
+      ],
+      "raw_text_hashes": [
+        "48777d458ac45c6e1c7f5a10fa3b5c4b08198ef57e38cf086e3a5e7e8003e287"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:6",
+      "sequence": 4296,
+      "chapter_label": "NUM 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "The priest shall take cedar wood, hyssop, and scarlet, and cast it into the middle of the burning of the heifer.",
+      "ko": "동시에 제사장은 백향목과 우슬초와 홍색실을 취하여 암송아지를 사르는 불가운데 던질 것이며",
+      "source_text_hash": "735acea62c4b7ac1b6c9d82b68873f8a0424d000743868b135708e8df3506647",
+      "translation_text_hash": "15f0b1dd327efdbabb31dc9d9fcbe9e93b3c7997ee0ffcf368b7f0c11fd021cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동시에 제사장은 백향목과 우슬초와 홍색실을 취하여 암송아지를 사르는 불가운데 던질 것이며"
+      ],
+      "raw_text_hashes": [
+        "15f0b1dd327efdbabb31dc9d9fcbe9e93b3c7997ee0ffcf368b7f0c11fd021cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:7",
+      "sequence": 4297,
+      "chapter_label": "NUM 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "Then the priest shall wash his clothes, and he shall bathe his flesh in water, and afterward he shall come into the camp, and the priest shall be unclean until the evening.",
+      "ko": "제사장은 그 옷을 빨고 물로 몸을 씻은 후에 진에 들어갈 것이라 그는 저녁까지 부정하리라",
+      "source_text_hash": "137ddc9b899c236993060d14085151570708d0854e7260e1b03b7c149717d4e6",
+      "translation_text_hash": "6cb06747084938a03c22958ad90c8ace0f959bdfe82bf3b862fadd669881cd80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 옷을 빨고 물로 몸을 씻은 후에 진에 들어갈 것이라 그는 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "6cb06747084938a03c22958ad90c8ace0f959bdfe82bf3b862fadd669881cd80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:8",
+      "sequence": 4298,
+      "chapter_label": "NUM 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "He who burns her shall wash his clothes in water, and bathe his flesh in water, and shall be unclean until the evening.",
+      "ko": "송아지를 불사른 자도 그 옷을 물로 빨고 물로 그 몸을 씻을 것이라 그도 저녁까지 부정하리라",
+      "source_text_hash": "a3ba2d9169b1f45a6d448c650c39f35a844dacdeae844254af7e39f37acf7884",
+      "translation_text_hash": "8a582c5fa8dd3c3802068b7988391099ea8e7296c7f3c3f5063c9315e27750b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "송아지를 불사른 자도 그 옷을 물로 빨고 물로 그 몸을 씻을 것이라 그도 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "8a582c5fa8dd3c3802068b7988391099ea8e7296c7f3c3f5063c9315e27750b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:9",
+      "sequence": 4299,
+      "chapter_label": "NUM 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "“A man who is clean shall gather up the ashes of the heifer, and lay them up outside of the camp in a clean place; and it shall be kept for the congregation of the children of Israel for use in water for cleansing impurity. It is a sin offering.",
+      "ko": "이에 정한 자가 암송아지의 재를 거두어 진 밖 정한 곳에 둘찌니 이것은 이스라엘 자손 회중을 위하여 간직하였다가 부정을 깨끗케 하는 물을 만드는데 쓸 것이니 곧 속죄제니라",
+      "source_text_hash": "ed50cb905c1f86e83c2009cd3822440fbed6b0e059171007873b2e39c25a227b",
+      "translation_text_hash": "27485e0265060c01e544814bdb656ae2aa4e95b984eebba7708c071873f7aadb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 정한 자가 암송아지의 재를 거두어 진 밖 정한 곳에 둘찌니 이것은 이스라엘 자손 회중을 위하여 간직하였다가 부정을 깨끗케 하는 물을 만드는데 쓸 것이니 곧 속죄제니라"
+      ],
+      "raw_text_hashes": [
+        "27485e0265060c01e544814bdb656ae2aa4e95b984eebba7708c071873f7aadb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:10",
+      "sequence": 4300,
+      "chapter_label": "NUM 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "He who gathers the ashes of the heifer shall wash his clothes, and be unclean until the evening. It shall be to the children of Israel, and to the stranger who lives as a foreigner among them, for a statute forever.",
+      "ko": "암송아지의 재를 거둔 자도 그 옷을 빨 것이며 저녁까지 부정하리라 이는 이스라엘 자손과 그 중에 우거하는 외인에게 영원한 율례니라",
+      "source_text_hash": "505578cdd7d90119e5578c89d4411bcb0acf135368aeb7b4f8697b08947b6b0d",
+      "translation_text_hash": "7028dc25d4eeb9ed0e1c580096ab35b3492bf50f82b89bdffd0c4881569d46d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암송아지의 재를 거둔 자도 그 옷을 빨 것이며 저녁까지 부정하리라 이는 이스라엘 자손과 그 중에 우거하는 외인에게 영원한 율례니라"
+      ],
+      "raw_text_hashes": [
+        "7028dc25d4eeb9ed0e1c580096ab35b3492bf50f82b89bdffd0c4881569d46d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:11",
+      "sequence": 4301,
+      "chapter_label": "NUM 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "“He who touches the dead body of any man shall be unclean seven days.",
+      "ko": "사람의 시체를 만진 자는 칠일을 부정하리니",
+      "source_text_hash": "1d46b123922c02393bcae37461b55fa39ad42af15b252ef4c3263fe353641523",
+      "translation_text_hash": "a60b7fae6178afe255f0dd590e87d916e4c23f86376a18486e4d9e1c17241bff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 시체를 만진 자는 칠일을 부정하리니"
+      ],
+      "raw_text_hashes": [
+        "a60b7fae6178afe255f0dd590e87d916e4c23f86376a18486e4d9e1c17241bff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:12",
+      "sequence": 4302,
+      "chapter_label": "NUM 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "He shall purify himself with water on the third day, and on the seventh day he shall be clean; but if he doesn’t purify himself the third day, then the seventh day he shall not be clean.",
+      "ko": "그는 제 삼일과 제 칠일에 이 잿물로 스스로 정결케 할 것이라 그리하면 정하려니와 제 삼일과 제 칠일에 스스로 정결케 아니하면 그냥 부정하니",
+      "source_text_hash": "67931263b5c35694731693b004b9f3f36556222b5fee268b02d241406a8c2a12",
+      "translation_text_hash": "3da6b219e6b27fd603603dd6757ab1e8707f0b12ae07bf881b1f5df89bf5afa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 제 삼일과 제 칠일에 이 잿물로 스스로 정결케 할 것이라 그리하면 정하려니와 제 삼일과 제 칠일에 스스로 정결케 아니하면 그냥 부정하니"
+      ],
+      "raw_text_hashes": [
+        "3da6b219e6b27fd603603dd6757ab1e8707f0b12ae07bf881b1f5df89bf5afa7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:13",
+      "sequence": 4303,
+      "chapter_label": "NUM 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "Whoever touches a dead person, the body of a man who has died, and doesn’t purify himself, defiles the LORD’s tabernacle; and that soul shall be cut off from Israel; because the water for impurity was not sprinkled on him, he shall be unclean. His uncleanness is yet on him.",
+      "ko": "누구든지 죽은 사람의 시체를 만지고 스스로 정결케 아니하는 자는 여호와의 성막을 더럽힘이라 그가 이스라엘에서 끊쳐질 것은 정결케 하는 물을 그에게 뿌리지 아니하므로 깨끗케 되지 못하고 그 부정함이 그저 있음이니라",
+      "source_text_hash": "94fb4f687f031ab8186926499e4464c1c7ec0a1041c6a744e43cba6eb2a9c6ac",
+      "translation_text_hash": "eaafef80ed4093805e3f0fdc21cb2b8fb3a0774d6305ef7030c731eb6b0fa6f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 죽은 사람의 시체를 만지고 스스로 정결케 아니하는 자는 여호와의 성막을 더럽힘이라 그가 이스라엘에서 끊쳐질 것은 정결케 하는 물을 그에게 뿌리지 아니하므로 깨끗케 되지 못하고 그 부정함이 그저 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "eaafef80ed4093805e3f0fdc21cb2b8fb3a0774d6305ef7030c731eb6b0fa6f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:14",
+      "sequence": 4304,
+      "chapter_label": "NUM 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "“This is the law when a man dies in a tent: everyone who comes into the tent, and everyone who is in the tent, shall be unclean seven days.",
+      "ko": "장막에서 사람이 죽을 때의 법은 이러하니 무릇 그 장막에 들어가는 자와 무릇 그 장막에 있는 자가 칠일 동안 부정할 것이며",
+      "source_text_hash": "c0e6a67cfe184f883612d6cb78cab15cfea8bcca59a38f2026bd6de1aaeb8367",
+      "translation_text_hash": "08bb5e4c4cba3268155a58dff8a5b43ba1a1299978422fb05853aa89ecde5eca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장막에서 사람이 죽을 때의 법은 이러하니 무릇 그 장막에 들어가는 자와 무릇 그 장막에 있는 자가 칠일 동안 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "08bb5e4c4cba3268155a58dff8a5b43ba1a1299978422fb05853aa89ecde5eca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:15",
+      "sequence": 4305,
+      "chapter_label": "NUM 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "Every open vessel, which has no covering bound on it, is unclean.",
+      "ko": "무릇 뚜껑을 열어 놓고 덮지 아니한 그릇도 부정하니라",
+      "source_text_hash": "4a3c1e12c62e4c974e60749f2da4e06c5ce187c0736419a16158577fa11a63eb",
+      "translation_text_hash": "95d59df272484126c04880d0421730e7b8326d20e240030bf96488b86eb3e178",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 뚜껑을 열어 놓고 덮지 아니한 그릇도 부정하니라"
+      ],
+      "raw_text_hashes": [
+        "95d59df272484126c04880d0421730e7b8326d20e240030bf96488b86eb3e178"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:16",
+      "sequence": 4306,
+      "chapter_label": "NUM 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "“Whoever in the open field touches one who is slain with a sword, or a dead body, or a bone of a man, or a grave, shall be unclean seven days.",
+      "ko": "누구든지 들에서 칼에 죽이운 자나 시체나 사람의 뼈나 무덤을 만졌으면 칠일 동안 부정하리니",
+      "source_text_hash": "b887e70f3fbff248801f2e44b3d13a0a17e4f88a9142ef12551efe45256f50b3",
+      "translation_text_hash": "1f74752a5d706bfc4f09faf7829b9649e67b37d6e8031c9481cfc0792eed86ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 들에서 칼에 죽이운 자나 시체나 사람의 뼈나 무덤을 만졌으면 칠일 동안 부정하리니"
+      ],
+      "raw_text_hashes": [
+        "1f74752a5d706bfc4f09faf7829b9649e67b37d6e8031c9481cfc0792eed86ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:17",
+      "sequence": 4307,
+      "chapter_label": "NUM 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "“For the unclean, they shall take of the ashes of the burning of the sin offering; and running water shall be poured on them in a vessel.",
+      "ko": "그 부정한 자를 위하여 죄를 깨끗하게 하려고 불사른 재를 취하여 흐르는 물과 함께 그릇에 담고",
+      "source_text_hash": "a60156a7ae26967aae137194fcdf448ffb0a34133bf761c39de6b9e31a0d3602",
+      "translation_text_hash": "16fa6f83e948fb07d5deec138d038aa7d1a49eaac97967126cb0a35e107117b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부정한 자를 위하여 죄를 깨끗하게 하려고 불사른 재를 취하여 흐르는 물과 함께 그릇에 담고"
+      ],
+      "raw_text_hashes": [
+        "16fa6f83e948fb07d5deec138d038aa7d1a49eaac97967126cb0a35e107117b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:18",
+      "sequence": 4308,
+      "chapter_label": "NUM 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "A clean person shall take hyssop, dip it in the water, and sprinkle it on the tent, on all the vessels, on the persons who were there, and on him who touched the bone, or the slain, or the dead, or the grave.",
+      "ko": "정한 자가 우슬초를 취하여 그 물을 찍어서 장막과 그 모든 기구와 거기 있는 사람들에게 뿌리고 또 뼈나 죽임을 당한 자나 시체나 무덤을 만진 자에게 뿌리되",
+      "source_text_hash": "eb07bbdb9f9b20c66238bb6e1000a43fd551877995b1b8c54aa1c9f4edcc72ce",
+      "translation_text_hash": "86a38ecb5c1128193181245220aa19d1bc25f1b3a5172eef1fecf97151d0386a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정한 자가 우슬초를 취하여 그 물을 찍어서 장막과 그 모든 기구와 거기 있는 사람들에게 뿌리고 또 뼈나 죽임을 당한 자나 시체나 무덤을 만진 자에게 뿌리되"
+      ],
+      "raw_text_hashes": [
+        "86a38ecb5c1128193181245220aa19d1bc25f1b3a5172eef1fecf97151d0386a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:19",
+      "sequence": 4309,
+      "chapter_label": "NUM 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "The clean person shall sprinkle on the unclean on the third day, and on the seventh day. On the seventh day, he shall purify him. He shall wash his clothes and bathe himself in water, and shall be clean at evening.",
+      "ko": "그 정한 자가 제 삼일과 제 칠일에 그 부정한 자에게 뿌려서 제 칠일에 그를 정결케 할 것이며 그는 자기 옷을 빨고 물로 몸을 씻을 것이라 저녁이면 정하리라",
+      "source_text_hash": "5373f3753e7d06bfde856570e1d3fdde36032c32d324fa215b6edfdc5c8bb965",
+      "translation_text_hash": "24f5525e845d30e0a204238dc5e1530b029829e11837b9d41702649bf0ceba9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 정한 자가 제 삼일과 제 칠일에 그 부정한 자에게 뿌려서 제 칠일에 그를 정결케 할 것이며 그는 자기 옷을 빨고 물로 몸을 씻을 것이라 저녁이면 정하리라"
+      ],
+      "raw_text_hashes": [
+        "24f5525e845d30e0a204238dc5e1530b029829e11837b9d41702649bf0ceba9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:20",
+      "sequence": 4310,
+      "chapter_label": "NUM 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "But the man who shall be unclean, and shall not purify himself, that soul shall be cut off from among the assembly, because he has defiled the sanctuary of the LORD. The water for impurity has not been sprinkled on him. He is unclean.",
+      "ko": "사람이 부정하고도 스스로 정결케 아니하면 여호와의 성소를 더럽힘이니 그러므로 총회 중에서 끊쳐질 것이니라 그는 정결케 하는 물로 뿌리움을 받지 아니하였은즉 부정하니라",
+      "source_text_hash": "381e02ed7ab04c8cb66ec630b1ffbe37ee81a431d1c62cdd79cc7f80a697d970",
+      "translation_text_hash": "79052ef86dbb039ead823840cacbc37c89db14434395a9540526fc53a2cbfa17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 부정하고도 스스로 정결케 아니하면 여호와의 성소를 더럽힘이니 그러므로 총회 중에서 끊쳐질 것이니라 그는 정결케 하는 물로 뿌리움을 받지 아니하였은즉 부정하니라"
+      ],
+      "raw_text_hashes": [
+        "79052ef86dbb039ead823840cacbc37c89db14434395a9540526fc53a2cbfa17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:21",
+      "sequence": 4311,
+      "chapter_label": "NUM 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "It shall be a perpetual statute to them. He who sprinkles the water for impurity shall wash his clothes, and he who touches the water for impurity shall be unclean until evening.",
+      "ko": "이는 그들의 영영한 율례니라 정결케 하는 물을 뿌린 자는 그 옷을 빨 것이며 정결케 하는 물을 만지는 자는 저녁까지 부정할 것이며",
+      "source_text_hash": "e55b258d98a3b28bcfa72151485d533884d0053b7bf8e329bb04809db6f24fdf",
+      "translation_text_hash": "f234f906ce189b5a240eed4b19113ca96f3a034a8d5cfc3403a418c4b3ed9f31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그들의 영영한 율례니라 정결케 하는 물을 뿌린 자는 그 옷을 빨 것이며 정결케 하는 물을 만지는 자는 저녁까지 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "f234f906ce189b5a240eed4b19113ca96f3a034a8d5cfc3403a418c4b3ed9f31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:19:22",
+      "sequence": 4312,
+      "chapter_label": "NUM 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "“Whatever the unclean person touches shall be unclean; and the soul that touches it shall be unclean until evening.”",
+      "ko": "부정한 자가 만진 것은 무엇이든지 부정할 것이며 그것을 만지는 자도 저녁까지 부정하리라",
+      "source_text_hash": "2e8f980085de81f5ac629d9bd50622fb5dc43d503d16398b414825566e8903dd",
+      "translation_text_hash": "12497334ac1b7cb543a9758f6ab4e8a802ac118548978a3d11958e699c09e998",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부정한 자가 만진 것은 무엇이든지 부정할 것이며 그것을 만지는 자도 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "12497334ac1b7cb543a9758f6ab4e8a802ac118548978a3d11958e699c09e998"
+      ]
+    }
+  ]
+}

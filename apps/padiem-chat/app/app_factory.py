@@ -149,7 +149,9 @@ from .claw_office_preview_routes import (
 )
 from .claw_web_xlsx_source_routes import (
     WEB_SOURCES_PATH, WEB_SOURCE_DOWNLOAD_PATH,
+    WEB_SOURCE_UPLOAD_TICKET_PATH, WEB_SOURCE_REGISTER_PATH,
     web_xlsx_sources, web_xlsx_download,
+    web_xlsx_upload_ticket, web_xlsx_register,
 )
 from .claw_web_xlsx_selection_routes import (
     WEB_SELECTIONS_PATH, WEB_SELECTION_PATH,
@@ -807,6 +809,8 @@ def create_app(
             methods=["DELETE"],
         ),
         Route(WEB_SOURCES_PATH, web_xlsx_sources, methods=["GET", "POST"]),
+        Route(WEB_SOURCE_UPLOAD_TICKET_PATH, web_xlsx_upload_ticket, methods=["POST"]),
+        Route(WEB_SOURCE_REGISTER_PATH, web_xlsx_register, methods=["POST"]),
         Route(WEB_SOURCE_DOWNLOAD_PATH, web_xlsx_download, methods=["GET"]),
         Route(WEB_SELECTIONS_PATH, web_xlsx_selections, methods=["GET", "POST"]),
         Route(WEB_SELECTION_PATH, web_xlsx_selection_detail, methods=["GET"]),

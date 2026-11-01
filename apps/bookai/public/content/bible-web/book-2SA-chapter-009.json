@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:009",
+  "unit_ordinal": 276,
+  "unit_label": "2SA 9",
+  "book_code": "2SA",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:9:1",
+      "sequence": 8229,
+      "chapter_label": "2SA 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "David said, “Is there yet any who is left of Saul’s house, that I may show him kindness for Jonathan’s sake?”",
+      "ko": "다윗이 가로되 사울의 집에 오히려 남은 사람이 있느냐 내가 요나단을 인하여 그 사람에게 은총을 베풀리라 하니라",
+      "source_text_hash": "fb565fc9ec1028daf23f05ca147ee1a3fe3da145e5c62ea0567098e598fcae45",
+      "translation_text_hash": "ae63c68d134b4dc0f89da17fd94a618f9e22187c7325340de201aa4aa557adf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 사울의 집에 오히려 남은 사람이 있느냐 내가 요나단을 인하여 그 사람에게 은총을 베풀리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "ae63c68d134b4dc0f89da17fd94a618f9e22187c7325340de201aa4aa557adf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:2",
+      "sequence": 8230,
+      "chapter_label": "2SA 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "There was of Saul’s house a servant whose name was Ziba, and they called him to David; and the king said to him, “Are you Ziba?” He said, “I am your servant.”",
+      "ko": "사울의 종 하나가 있으니 그 이름은 시바라 저를 다윗의 앞으로 부르매 왕이 저에게 묻되 네가 시바냐 가로되 종이 그로소이다",
+      "source_text_hash": "c3ddb3931c6ebd7c8c7987686d818e215bad8f608116d20a1d923d267ad18188",
+      "translation_text_hash": "a4c8c2fbdf5affd13a2e071131a6600399dd8e9c795384d1c68aa1d03820edfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 종 하나가 있으니 그 이름은 시바라 저를 다윗의 앞으로 부르매 왕이 저에게 묻되 네가 시바냐 가로되 종이 그로소이다"
+      ],
+      "raw_text_hashes": [
+        "a4c8c2fbdf5affd13a2e071131a6600399dd8e9c795384d1c68aa1d03820edfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:3",
+      "sequence": 8231,
+      "chapter_label": "2SA 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "The king said, “Is there not yet any of Saul’s house, that I may show the kindness of God to him?” Ziba said to the king, “Jonathan still has a son, who is lame in his feet.”",
+      "ko": "왕이 가로되 사울의 집에 남은 사람이 없느냐 내가 그 사람에게 하나님의 은총을 베풀고자 하노라 시바가 왕께 고하되 요나단의 아들 하나가 있는데 절뚝발이니이다",
+      "source_text_hash": "cf0dce65720f543b2f49b28155f90fe79adf006aed36b21bac6c6a02a88da22b",
+      "translation_text_hash": "ccc2e2088cf80e781a5089088955e55aab366e9ec8abb3960804fbaf951c7a50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 사울의 집에 남은 사람이 없느냐 내가 그 사람에게 하나님의 은총을 베풀고자 하노라 시바가 왕께 고하되 요나단의 아들 하나가 있는데 절뚝발이니이다"
+      ],
+      "raw_text_hashes": [
+        "ccc2e2088cf80e781a5089088955e55aab366e9ec8abb3960804fbaf951c7a50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:4",
+      "sequence": 8232,
+      "chapter_label": "2SA 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "The king said to him, “Where is he?” Ziba said to the king, “Behold, he is in the house of Machir the son of Ammiel, in Lo Debar.”",
+      "ko": "왕이 저에게 묻되 그가 어디 있느냐 시바가 왕에게 고하되 로드발 암미엘의 아들 마길의 집에 있나이다",
+      "source_text_hash": "dba15e3a3157f4558b228748879b34fa3f92a744cae8f2b57612a663fdad293b",
+      "translation_text_hash": "6503c21db3758bd3796803331d0ec1b6fa3c161e17bf66f8bed1ed6ce59c08b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 저에게 묻되 그가 어디 있느냐 시바가 왕에게 고하되 로드발 암미엘의 아들 마길의 집에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "6503c21db3758bd3796803331d0ec1b6fa3c161e17bf66f8bed1ed6ce59c08b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:5",
+      "sequence": 8233,
+      "chapter_label": "2SA 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "Then King David sent and brought him out of the house of Machir the son of Ammiel, from Lo Debar.",
+      "ko": "다윗왕이 사람을 보내어 로드발 암미엘의 아들 마길의 집에서 저를 데려오니",
+      "source_text_hash": "25e1e71164a82ecd3ff9cf538fae5222084a67da19fe962a27e3369fe2a31f55",
+      "translation_text_hash": "458d1762dfc6af18d87905aa03d550a75fe8218510f4255ea640c0f433ecd04b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗왕이 사람을 보내어 로드발 암미엘의 아들 마길의 집에서 저를 데려오니"
+      ],
+      "raw_text_hashes": [
+        "458d1762dfc6af18d87905aa03d550a75fe8218510f4255ea640c0f433ecd04b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:6",
+      "sequence": 8234,
+      "chapter_label": "2SA 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Mephibosheth, the son of Jonathan, the son of Saul, came to David, fell on his face, and showed respect. David said, “Mephibosheth?” He answered, “Behold, your servant!”",
+      "ko": "사울의 손자 요나단의 아들 므비보셋이 다윗에게 나아와서 엎드려 절하매 다윗이 가로되 므비보셋이여 하니 대답하되 주의 종이 여기 있나이다",
+      "source_text_hash": "f600c541e53226a3ee3d659efd948b3d777bab22c7c19a5add4e93ff3968824b",
+      "translation_text_hash": "9408d5e7c82bf67bf78d742229a304f8a768640102ed58a4fdc40112ef550aac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 손자 요나단의 아들 므비보셋이 다윗에게 나아와서 엎드려 절하매 다윗이 가로되 므비보셋이여 하니 대답하되 주의 종이 여기 있나이다"
+      ],
+      "raw_text_hashes": [
+        "9408d5e7c82bf67bf78d742229a304f8a768640102ed58a4fdc40112ef550aac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:7",
+      "sequence": 8235,
+      "chapter_label": "2SA 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "David said to him, “Don’t be afraid, for I will surely show you kindness for Jonathan your father’s sake, and will restore to you all the land of Saul your father. You will eat bread at my table continually.”",
+      "ko": "다윗이 가로되 무서워 말라 내가 반드시 네 아비 요나단을 인하여 네게 은총을 베풀리라 내가 네 조부 사울의 밭을 다 네게 도로 주겠고 또 너는 항상 내 상에서 먹을찌니라",
+      "source_text_hash": "a8c5657ae4a30dba8172b7600074aaa423abceed9c8ec4e4ec6bb429dbc7305b",
+      "translation_text_hash": "9e6584dbf50383f48820b22c21eff4f606b2e341992e0152b7a0e49c95ebf54c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 무서워 말라 내가 반드시 네 아비 요나단을 인하여 네게 은총을 베풀리라 내가 네 조부 사울의 밭을 다 네게 도로 주겠고 또 너는 항상 내 상에서 먹을찌니라"
+      ],
+      "raw_text_hashes": [
+        "9e6584dbf50383f48820b22c21eff4f606b2e341992e0152b7a0e49c95ebf54c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:8",
+      "sequence": 8236,
+      "chapter_label": "2SA 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "He bowed down, and said, “What is your servant, that you should look at such a dead dog as I am?”",
+      "ko": "저가 절하여 가로되 이 종이 무엇이관대 왕께서 죽은 개 같은 나를 돌아 보시나이까",
+      "source_text_hash": "215131f67f14a35ea4935838d6eb91e9ce7143384397f2ac1ce43aec1ca72f34",
+      "translation_text_hash": "4a5d3aaefbc22fa2568fd447e33cde00ff6508e653f4fc2cf3a5caa8e15c7bc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 절하여 가로되 이 종이 무엇이관대 왕께서 죽은 개 같은 나를 돌아 보시나이까"
+      ],
+      "raw_text_hashes": [
+        "4a5d3aaefbc22fa2568fd447e33cde00ff6508e653f4fc2cf3a5caa8e15c7bc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:9",
+      "sequence": 8237,
+      "chapter_label": "2SA 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "Then the king called to Ziba, Saul’s servant, and said to him, “All that belonged to Saul and to all his house I have given to your master’s son.",
+      "ko": "왕이 사울의 사환 시바를 불러서 이르되 사울과 그 온 집에 속한 것은 내가 다 네 주인의 아들에게 주었노니",
+      "source_text_hash": "743a353d4d5afa7a872935a1d24290ed5fbc3a445f5619dae42dd7f263c6cf60",
+      "translation_text_hash": "68ee45e4f22807fe560e254e6810cc78b81806c02c6420640b28780b18db6245",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 사울의 사환 시바를 불러서 이르되 사울과 그 온 집에 속한 것은 내가 다 네 주인의 아들에게 주었노니"
+      ],
+      "raw_text_hashes": [
+        "68ee45e4f22807fe560e254e6810cc78b81806c02c6420640b28780b18db6245"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:10",
+      "sequence": 8238,
+      "chapter_label": "2SA 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "Till the land for him—you, your sons, and your servants. Bring in the harvest, that your master’s son may have bread to eat; but Mephibosheth your master’s son will always eat bread at my table.” Now Ziba had fifteen sons and twenty servants.",
+      "ko": "너와 네 아들들과 네 종들은 저를 위하여 밭을 갈고 거두어 네 주인의 아들을 공궤하라 그러나 네 주인의 아들 므비보셋은 항상 내 상에서 먹으리라 하니라 시바는 아들이 열 다섯이요 종이 스물이라",
+      "source_text_hash": "854b41988bb5ca98dca949c0141b2f55606321deaceff43f900aeb328f41d8f8",
+      "translation_text_hash": "03cc4cf07963153425ef477936843f47fa5060499c6f1c69d0ae5c9f9d0cc778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 네 아들들과 네 종들은 저를 위하여 밭을 갈고 거두어 네 주인의 아들을 공궤하라 그러나 네 주인의 아들 므비보셋은 항상 내 상에서 먹으리라 하니라 시바는 아들이 열 다섯이요 종이 스물이라"
+      ],
+      "raw_text_hashes": [
+        "03cc4cf07963153425ef477936843f47fa5060499c6f1c69d0ae5c9f9d0cc778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:11",
+      "sequence": 8239,
+      "chapter_label": "2SA 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "Then Ziba said to the king, “According to all that my lord the king commands his servant, so your servant will do.” So Mephibosheth ate at the king’s table like one of the king’s sons.",
+      "ko": "시바가 왕께 고하되 내 주 왕께서 온갖 일을 종에게 명하신대로 종이 준행하겠나이다 하니라 므비보셋은 왕자 중 하나처럼 왕의 상에서 먹으니라",
+      "source_text_hash": "07b805583fa8b3ea3ce04edca50be69eb51f27b3a816b4f8a7ef8222a3a5146d",
+      "translation_text_hash": "0e82dc6501ed8c6049e337159c8c36c86af474bb9d226d86b3c4d6869f7067fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시바가 왕께 고하되 내 주 왕께서 온갖 일을 종에게 명하신대로 종이 준행하겠나이다 하니라 므비보셋은 왕자 중 하나처럼 왕의 상에서 먹으니라"
+      ],
+      "raw_text_hashes": [
+        "0e82dc6501ed8c6049e337159c8c36c86af474bb9d226d86b3c4d6869f7067fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:12",
+      "sequence": 8240,
+      "chapter_label": "2SA 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "Mephibosheth had a young son, whose name was Mica. All who lived in Ziba’s house were servants to Mephibosheth.",
+      "ko": "므비보셋에게 젊은 아들 하나가 있으니 이름은 미가더라 무릇 시바의 집에 거하는 자들은 므비보셋의 종이 되니라",
+      "source_text_hash": "0ae3e3b3c42d55b65ad7c3901d715ece8f684b70c1fba84e449a7f3be10ec012",
+      "translation_text_hash": "9f690cc32a8e691d592aac6e423487d47835985836696ab03d055aa40ad1a9c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므비보셋에게 젊은 아들 하나가 있으니 이름은 미가더라 무릇 시바의 집에 거하는 자들은 므비보셋의 종이 되니라"
+      ],
+      "raw_text_hashes": [
+        "9f690cc32a8e691d592aac6e423487d47835985836696ab03d055aa40ad1a9c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:9:13",
+      "sequence": 8241,
+      "chapter_label": "2SA 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "So Mephibosheth lived in Jerusalem, for he ate continually at the king’s table. He was lame in both his feet.",
+      "ko": "므비보셋이 항상 왕의 상에서 먹으므로 예루살렘에 거하니라 그는 두 발이 다 절뚝이더라",
+      "source_text_hash": "da03e791eae338c01ebdaa7b11ab1274609b6d4224825c37d79f2f9f0fcfa641",
+      "translation_text_hash": "1e3881f80ea60feb76e6a57c2b76fdd440ab7f965d2dd89ae709e0044a52a7d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므비보셋이 항상 왕의 상에서 먹으므로 예루살렘에 거하니라 그는 두 발이 다 절뚝이더라"
+      ],
+      "raw_text_hashes": [
+        "1e3881f80ea60feb76e6a57c2b76fdd440ab7f965d2dd89ae709e0044a52a7d7"
+      ]
+    }
+  ]
+}

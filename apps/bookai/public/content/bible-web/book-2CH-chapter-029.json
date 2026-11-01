@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:029",
+  "unit_ordinal": 396,
+  "unit_label": "2CH 29",
+  "book_code": "2CH",
+  "chapter_number": 29,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:29:1",
+      "sequence": 11793,
+      "chapter_label": "2CH 29",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 1
+        }
+      ],
+      "en": "Hezekiah began to reign when he was twenty-five years old, and he reigned twenty-nine years in Jerusalem. His mother’s name was Abijah, the daughter of Zechariah.",
+      "ko": "히스기야가 위에 나아갈 때에 나이 이십 오세라 예루살렘에서 이십 구년을 치리하니라 그 모친의 이름은 아비야라 스가랴의 딸이더라",
+      "source_text_hash": "d18ee365ef97cd577d18a1d05ef8670ee048b4d1a8b6083db5a659ea0ddb9304",
+      "translation_text_hash": "beed2fc9c700ba7a74f716387d0538410188dce4595189c52793e9295fbf3431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 위에 나아갈 때에 나이 이십 오세라 예루살렘에서 이십 구년을 치리하니라 그 모친의 이름은 아비야라 스가랴의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "beed2fc9c700ba7a74f716387d0538410188dce4595189c52793e9295fbf3431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:2",
+      "sequence": 11794,
+      "chapter_label": "2CH 29",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 2
+        }
+      ],
+      "en": "He did that which was right in the LORD’s eyes, according to all that David his father had done.",
+      "ko": "히스기야가 그 조상 다윗의 모든 행위와 같이 여호와 보시기에 정직히 행하여",
+      "source_text_hash": "e36f2d530ca1c3b8e3d540ff5e9ec793e5f3e3990fa53a14bcf1de3b3dc566ef",
+      "translation_text_hash": "220ee1aab10ec691096cf83860650d1011e1affc618438dce17243d7e6b4b72a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 그 조상 다윗의 모든 행위와 같이 여호와 보시기에 정직히 행하여"
+      ],
+      "raw_text_hashes": [
+        "220ee1aab10ec691096cf83860650d1011e1affc618438dce17243d7e6b4b72a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:3",
+      "sequence": 11795,
+      "chapter_label": "2CH 29",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 3
+        }
+      ],
+      "en": "In the first year of his reign, in the first month, he opened the doors of the LORD’s house and repaired them.",
+      "ko": "원년 정월에 여호와의 전 문들을 열고 수리하고",
+      "source_text_hash": "51c9f46089d396772284f683c87bd9a748b3b8e88e918815db6b1059873b6dcb",
+      "translation_text_hash": "bfada5a6c2f6dbab8ab5d2f8cae48b7deb87c41057a6218ae42681d599bc1c52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원년 정월에 여호와의 전 문들을 열고 수리하고"
+      ],
+      "raw_text_hashes": [
+        "bfada5a6c2f6dbab8ab5d2f8cae48b7deb87c41057a6218ae42681d599bc1c52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:4",
+      "sequence": 11796,
+      "chapter_label": "2CH 29",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 4
+        }
+      ],
+      "en": "He brought in the priests and the Levites and gathered them together into the wide place on the east,",
+      "ko": "제사장들과 레위 사람들을 동편 광장에 모으고",
+      "source_text_hash": "4e3db03b3b23288421f11aff7a23488490b5e9e2eeab73dafeccad4013888461",
+      "translation_text_hash": "aa13286ba773165f10922c9e0b84c484dda16b25c39d2a736fa3931afe8718b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들과 레위 사람들을 동편 광장에 모으고"
+      ],
+      "raw_text_hashes": [
+        "aa13286ba773165f10922c9e0b84c484dda16b25c39d2a736fa3931afe8718b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:5",
+      "sequence": 11797,
+      "chapter_label": "2CH 29",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 5
+        }
+      ],
+      "en": "and said to them, “Listen to me, you Levites! Now sanctify yourselves, and sanctify the house of the LORD, the God of your fathers, and carry the filthiness out of the holy place.",
+      "ko": "저희에게 이르되 레위 사람들아 내 말을 들으라 이제 너희는 성결케 하고 또 너희 열조의 하나님 여호와의 전을 성결케 하여 그 더러운 것을 성소에서 없이하라",
+      "source_text_hash": "88a568577a2551e9645678a02075c6dd25a75e7fe756c484b4b30dd819f1caf3",
+      "translation_text_hash": "6e5468949d55a4f80a42364280889979d9beec9b15e293c40f48a3e3223c3041",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 이르되 레위 사람들아 내 말을 들으라 이제 너희는 성결케 하고 또 너희 열조의 하나님 여호와의 전을 성결케 하여 그 더러운 것을 성소에서 없이하라"
+      ],
+      "raw_text_hashes": [
+        "6e5468949d55a4f80a42364280889979d9beec9b15e293c40f48a3e3223c3041"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:6",
+      "sequence": 11798,
+      "chapter_label": "2CH 29",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 6
+        }
+      ],
+      "en": "For our fathers were unfaithful, and have done that which was evil in the LORD our God’s sight, and have forsaken him, and have turned away their faces from the habitation of the LORD, and turned their backs.",
+      "ko": "우리 열조가 범죄하여 우리 하나님 여호와 보시기에 악을 행하여 하나님을 버리고 얼굴을 돌이켜 여호와의 성소를 등지고",
+      "source_text_hash": "f9de827ce3bce2c74befb483fe210aa565fd3c3e2316a8b9d67d465123abac06",
+      "translation_text_hash": "89fe0753a974eea1ac6c55331fcf538f3c8aa2196369849d6fd1a4f52bf50c87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 열조가 범죄하여 우리 하나님 여호와 보시기에 악을 행하여 하나님을 버리고 얼굴을 돌이켜 여호와의 성소를 등지고"
+      ],
+      "raw_text_hashes": [
+        "89fe0753a974eea1ac6c55331fcf538f3c8aa2196369849d6fd1a4f52bf50c87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:7",
+      "sequence": 11799,
+      "chapter_label": "2CH 29",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 7
+        }
+      ],
+      "en": "Also they have shut up the doors of the porch, and put out the lamps, and have not burned incense nor offered burnt offerings in the holy place to the God of Israel.",
+      "ko": "또 낭실 문을 닫으며 등불을 끄고 성소에서 분향하지 아니하며 이스라엘 하나님께 번제를 드리지 아니한고로",
+      "source_text_hash": "813bd89b57359efdd1e653c06d329c6a5c89c8fef11f00b109213971895242e2",
+      "translation_text_hash": "31ef0ba1cc5d45c70c71b199511ff83ef8ab9065a5575fa0c4063f845c94a8a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 낭실 문을 닫으며 등불을 끄고 성소에서 분향하지 아니하며 이스라엘 하나님께 번제를 드리지 아니한고로"
+      ],
+      "raw_text_hashes": [
+        "31ef0ba1cc5d45c70c71b199511ff83ef8ab9065a5575fa0c4063f845c94a8a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:8",
+      "sequence": 11800,
+      "chapter_label": "2CH 29",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore the LORD’s wrath was on Judah and Jerusalem, and he has delivered them to be tossed back and forth, to be an astonishment and a hissing, as you see with your eyes.",
+      "ko": "여호와께서 유다와 예루살렘을 진노하시고 내어버리사 두려움과 놀람과 비웃음거리가 되게 하신 것을 너희가 목도하는바라",
+      "source_text_hash": "bb8fda6cbe8e06f06bf8b1d4a438f954b821c95760d7bcd5d6eb25f1c53cd142",
+      "translation_text_hash": "95cf4efa1107c17772f208648aed5e3dea4686277a5e3daa199a2437764b4ff6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 유다와 예루살렘을 진노하시고 내어버리사 두려움과 놀람과 비웃음거리가 되게 하신 것을 너희가 목도하는바라"
+      ],
+      "raw_text_hashes": [
+        "95cf4efa1107c17772f208648aed5e3dea4686277a5e3daa199a2437764b4ff6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:9",
+      "sequence": 11801,
+      "chapter_label": "2CH 29",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 9
+        }
+      ],
+      "en": "For behold, our fathers have fallen by the sword, and our sons and our daughters and our wives are in captivity for this.",
+      "ko": "이로 인하여 우리의 열조가 칼에 엎드러지며 우리의 자녀와 아내가 사로잡혔느니라",
+      "source_text_hash": "4b6d771d1a1ef14ded0531c7588be7b5ac2dabb3b94332cf64469a1144ce73b7",
+      "translation_text_hash": "a1853f5ea93d47925617cd4693a2c1664bd22d064a8a63be9fc4cee45e0648e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로 인하여 우리의 열조가 칼에 엎드러지며 우리의 자녀와 아내가 사로잡혔느니라"
+      ],
+      "raw_text_hashes": [
+        "a1853f5ea93d47925617cd4693a2c1664bd22d064a8a63be9fc4cee45e0648e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:10",
+      "sequence": 11802,
+      "chapter_label": "2CH 29",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 10
+        }
+      ],
+      "en": "Now it is in my heart to make a covenant with the LORD, the God of Israel, that his fierce anger may turn away from us.",
+      "ko": "이제 이스라엘 하나님 여호와로 더불어 언약을 세워 그 맹렬한 노로 우리에게서 떠나게 할 마음이 내게 있노니",
+      "source_text_hash": "73da1c6eabf93452d951d200232c4ac3ae33c53bf1725dcc6f1b3cb06391130c",
+      "translation_text_hash": "f812e22949535cd46beb50b30c4f7b6b68dbdbc218a43a90685351a1b1fa7eee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 이스라엘 하나님 여호와로 더불어 언약을 세워 그 맹렬한 노로 우리에게서 떠나게 할 마음이 내게 있노니"
+      ],
+      "raw_text_hashes": [
+        "f812e22949535cd46beb50b30c4f7b6b68dbdbc218a43a90685351a1b1fa7eee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:11",
+      "sequence": 11803,
+      "chapter_label": "2CH 29",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 11
+        }
+      ],
+      "en": "My sons, don’t be negligent now; for the LORD has chosen you to stand before him, to minister to him, and that you should be his ministers and burn incense.”",
+      "ko": "내 아들들아 이제는 게으르지 말라 여호와께서 이미 너희를 택하사 그 앞에 서서 수종들어 섬기며 분향하게 하셨느니라",
+      "source_text_hash": "27870fcc3d36442207b124d2d721f08c4f97f76cb46e82485f8d84ddb28533ad",
+      "translation_text_hash": "d22bad080f9693b4aa2ca602e210119d38fa8a93e8ac9f86e7f1eb9b4bd9af27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들들아 이제는 게으르지 말라 여호와께서 이미 너희를 택하사 그 앞에 서서 수종들어 섬기며 분향하게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "d22bad080f9693b4aa2ca602e210119d38fa8a93e8ac9f86e7f1eb9b4bd9af27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:12",
+      "sequence": 11804,
+      "chapter_label": "2CH 29",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 12
+        }
+      ],
+      "en": "Then the Levites arose: Mahath, the son of Amasai, and Joel the son of Azariah, of the sons of the Kohathites; and of the sons of Merari, Kish the son of Abdi, and Azariah the son of Jehallelel; and of the Gershonites, Joah the son of Zimmah, and Eden the son of Joah;",
+      "ko": "이에 레위 사람들이 일어나니 곧 그핫의 자손 중 아마새의 아들 마핫과 아사랴의 아들 요엘과 므라리의 자손 중 압디의 아들 기스와 여할렐렐의 아들 아사랴와 게르손 사람 중 심마의 아들 요아와 요아의 아들 에덴과",
+      "source_text_hash": "3c1fe3b717d26a9075279e3cbfd07378e6ccbeeb9cc31f5665d8af9f92dd48e4",
+      "translation_text_hash": "cdc141ee3f6ddf41b6437600655bf591f45045e5098a52ec9a63d5a8904a3ee9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 레위 사람들이 일어나니 곧 그핫의 자손 중 아마새의 아들 마핫과 아사랴의 아들 요엘과 므라리의 자손 중 압디의 아들 기스와 여할렐렐의 아들 아사랴와 게르손 사람 중 심마의 아들 요아와 요아의 아들 에덴과"
+      ],
+      "raw_text_hashes": [
+        "cdc141ee3f6ddf41b6437600655bf591f45045e5098a52ec9a63d5a8904a3ee9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:13",
+      "sequence": 11805,
+      "chapter_label": "2CH 29",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 13
+        }
+      ],
+      "en": "and of the sons of Elizaphan, Shimri and Jeuel; and of the sons of Asaph, Zechariah and Mattaniah;",
+      "ko": "엘리사반의 자손 중 시므리와 여우엘과 아삽의 자손 중 스가랴와 맛다냐와",
+      "source_text_hash": "87270bce332a11c583dc6b9f3a095a2beed47981f1452c1c8fc794ecd9525769",
+      "translation_text_hash": "9b9e1f87c8532f8c6e1037e771de3bb833e1da6599d157e990de7fc2a82ea0e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사반의 자손 중 시므리와 여우엘과 아삽의 자손 중 스가랴와 맛다냐와"
+      ],
+      "raw_text_hashes": [
+        "9b9e1f87c8532f8c6e1037e771de3bb833e1da6599d157e990de7fc2a82ea0e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:14",
+      "sequence": 11806,
+      "chapter_label": "2CH 29",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 14
+        }
+      ],
+      "en": "and of the sons of Heman, Jehuel and Shimei; and of the sons of Jeduthun, Shemaiah and Uzziel.",
+      "ko": "헤만의 자손 중 여후엘과 시므이와 여두둔의 자손 중 스마야와 웃시엘이라",
+      "source_text_hash": "19bb136ee691fb0dff53c9390c70e990760c196880b7b29dbc5bc56e62f9cdf0",
+      "translation_text_hash": "b15f80cc1d68872ba8eaa29758f038b68e06135d2392ed6188fc372049563f42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤만의 자손 중 여후엘과 시므이와 여두둔의 자손 중 스마야와 웃시엘이라"
+      ],
+      "raw_text_hashes": [
+        "b15f80cc1d68872ba8eaa29758f038b68e06135d2392ed6188fc372049563f42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:15",
+      "sequence": 11807,
+      "chapter_label": "2CH 29",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 15
+        }
+      ],
+      "en": "They gathered their brothers, sanctified themselves, and went in, according to the commandment of the king by the LORD’s words, to cleanse the LORD’s house.",
+      "ko": "저희가 그 형제를 모아 성결케 하고 들어가서 왕이 여호와의 말씀대로 명한것을 좇아 여호와의 전을 깨끗케 할쌔",
+      "source_text_hash": "b394f424d5171fa2c5e631d80a7a9b56ae6271a6d3db213e92a35beef9c24a52",
+      "translation_text_hash": "567d72caf7f0ddd3e8b70b43930cf4b72f1f9e6a2d7be412c427c9f15d04453f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 형제를 모아 성결케 하고 들어가서 왕이 여호와의 말씀대로 명한것을 좇아 여호와의 전을 깨끗케 할쌔"
+      ],
+      "raw_text_hashes": [
+        "567d72caf7f0ddd3e8b70b43930cf4b72f1f9e6a2d7be412c427c9f15d04453f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:16",
+      "sequence": 11808,
+      "chapter_label": "2CH 29",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 16
+        }
+      ],
+      "en": "The priests went into the inner part of the LORD’s house to cleanse it, and brought out all the uncleanness that they found in the LORD’s temple into the court of the LORD’s house. The Levites took it from there to carry it out to the brook Kidron.",
+      "ko": "제사장들도 여호와의 전 안에 들어가서 깨끗케 하여 여호와의 전에 있는 모든 더러운 것을 끌어 내어 여호와의 전 뜰에 이르매 레위 사람들이 취하여 바깥 기드론 시내로 가져갔더라",
+      "source_text_hash": "a56d0da9ae80d49b862382f686313387ef44f0462e3bc17009fd20150de09864",
+      "translation_text_hash": "903043a481c665c84ae4a8c6a6b5471626114be57c126edc44f5a53be4252806",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들도 여호와의 전 안에 들어가서 깨끗케 하여 여호와의 전에 있는 모든 더러운 것을 끌어 내어 여호와의 전 뜰에 이르매 레위 사람들이 취하여 바깥 기드론 시내로 가져갔더라"
+      ],
+      "raw_text_hashes": [
+        "903043a481c665c84ae4a8c6a6b5471626114be57c126edc44f5a53be4252806"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:17",
+      "sequence": 11809,
+      "chapter_label": "2CH 29",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 17
+        }
+      ],
+      "en": "Now they began on the first day of the first month to sanctify, and on the eighth day of the month they came to the LORD’s porch. They sanctified the LORD’s house in eight days, and on the sixteenth day of the first month they finished.",
+      "ko": "정월 초하루에 성결케 하기를 시작하여 그달 초팔일에 여호와의 낭실에 이르고 또 팔일 동안 여호와의 전을 성결케 하여 정월 십 륙일에 이르러 마치고",
+      "source_text_hash": "d0515eec206c0a55b671a360c9a8521710e5f1b99cf8c93e35108bd819dc3be8",
+      "translation_text_hash": "bab998ee0552a223c80667812f9bcc858de8db2a96f23114f745efe285e51525",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월 초하루에 성결케 하기를 시작하여 그달 초팔일에 여호와의 낭실에 이르고 또 팔일 동안 여호와의 전을 성결케 하여 정월 십 륙일에 이르러 마치고"
+      ],
+      "raw_text_hashes": [
+        "bab998ee0552a223c80667812f9bcc858de8db2a96f23114f745efe285e51525"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:18",
+      "sequence": 11810,
+      "chapter_label": "2CH 29",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 18
+        }
+      ],
+      "en": "Then they went in to Hezekiah the king within the palace and said, “We have cleansed all the LORD’s house, including the altar of burnt offering with all its vessels, and the table of show bread with all its vessels.",
+      "ko": "안으로 들어가서 히스기야왕을 보고 가로되 우리가 여호와의 온 전과 번제단과 그 모든 기구와 떡을 진설하는 상과 그 모든 기구를 깨끗케 하였고",
+      "source_text_hash": "5c76575fce420d2e9a6688b1fcf85a12f3b59cfd180c326162a54d94987829ea",
+      "translation_text_hash": "7a42a43ea333b769585601ae638221dd4764f0ffc97b7367f7120f992287999f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안으로 들어가서 히스기야왕을 보고 가로되 우리가 여호와의 온 전과 번제단과 그 모든 기구와 떡을 진설하는 상과 그 모든 기구를 깨끗케 하였고"
+      ],
+      "raw_text_hashes": [
+        "7a42a43ea333b769585601ae638221dd4764f0ffc97b7367f7120f992287999f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:19",
+      "sequence": 11811,
+      "chapter_label": "2CH 29",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 19
+        }
+      ],
+      "en": "Moreover, we have prepared and sanctified all the vessels which King Ahaz threw away in his reign when he was unfaithful. Behold, they are before the LORD’s altar.”",
+      "ko": "또 아하스왕이 위에 있어 범죄할 때에 버린 모든 기구도 우리가 정돈하고 성결케 하여 여호와의 단 앞에 두었나이다 하니라",
+      "source_text_hash": "cd92ee5d677c8a8821f8744b71f5811ee3cdadf039f392e1074798dd1f2117c0",
+      "translation_text_hash": "dd9d38c0c1d848f3fe1c94517b35d8818ec3e1ae8f6711d3e742cf5b460b0539",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아하스왕이 위에 있어 범죄할 때에 버린 모든 기구도 우리가 정돈하고 성결케 하여 여호와의 단 앞에 두었나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "dd9d38c0c1d848f3fe1c94517b35d8818ec3e1ae8f6711d3e742cf5b460b0539"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:20",
+      "sequence": 11812,
+      "chapter_label": "2CH 29",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 20
+        }
+      ],
+      "en": "Then Hezekiah the king arose early, gathered the princes of the city, and went up to the LORD’s house.",
+      "ko": "히스기야왕이 일찌기 일어나 성읍의 귀인들을 모아 여호와의 전에 올라가서",
+      "source_text_hash": "ac5c4fe0a4be77a47809b25a3362c0e6a4e1e8a2b9a17a859c770c2437da6a45",
+      "translation_text_hash": "865e432323276f569169b8f810e98ece362af3d7f87340e71a64fa6fdddcc6ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야왕이 일찌기 일어나 성읍의 귀인들을 모아 여호와의 전에 올라가서"
+      ],
+      "raw_text_hashes": [
+        "865e432323276f569169b8f810e98ece362af3d7f87340e71a64fa6fdddcc6ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:21",
+      "sequence": 11813,
+      "chapter_label": "2CH 29",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 21
+        }
+      ],
+      "en": "They brought seven bulls, seven rams, seven lambs, and seven male goats, for a sin offering for the kingdom, for the sanctuary, and for Judah. He commanded the priests the sons of Aaron to offer them on the LORD’s altar.",
+      "ko": "수송아지 일곱과 수양 일곱과 어린 양 일곱과 수염소 일곱을 끌어다가 나라와 성소와 유다를 위하여 속죄 제물을 삼고 아론의 자손 제사장들을 명하여 여호와의 단에 드리게 하니",
+      "source_text_hash": "8e37d2ff2ad2dd48f9d2714134e1ab09014e80ff149f2a4c37ee6f724cee5937",
+      "translation_text_hash": "948d585a59dcd9cb75798cb6cd0915f477d6620c1a0675968fccce38b346c709",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수송아지 일곱과 수양 일곱과 어린 양 일곱과 수염소 일곱을 끌어다가 나라와 성소와 유다를 위하여 속죄 제물을 삼고 아론의 자손 제사장들을 명하여 여호와의 단에 드리게 하니"
+      ],
+      "raw_text_hashes": [
+        "948d585a59dcd9cb75798cb6cd0915f477d6620c1a0675968fccce38b346c709"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:22",
+      "sequence": 11814,
+      "chapter_label": "2CH 29",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 22
+        }
+      ],
+      "en": "So they killed the bulls, and the priests received the blood and sprinkled it on the altar. They killed the rams and sprinkled the blood on the altar. They also killed the lambs and sprinkled the blood on the altar.",
+      "ko": "이에 수소를 잡으매 제사장이 그 피를 받아 단에 뿌리고 또 수양을 잡으매 그 피를 단에 뿌리고 또 어린 양을 잡으매 그 피를 단에 뿌리고",
+      "source_text_hash": "f93cc53e4ba20b6293eb812040691b22a005726af1fcebf52167e63502bd91ea",
+      "translation_text_hash": "f7a1261b05a12fb49d4694577ce30e3cb190e1066994891d862fcc97d4154caa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 수소를 잡으매 제사장이 그 피를 받아 단에 뿌리고 또 수양을 잡으매 그 피를 단에 뿌리고 또 어린 양을 잡으매 그 피를 단에 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "f7a1261b05a12fb49d4694577ce30e3cb190e1066994891d862fcc97d4154caa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:23",
+      "sequence": 11815,
+      "chapter_label": "2CH 29",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 23
+        }
+      ],
+      "en": "They brought near the male goats for the sin offering before the king and the assembly; and they laid their hands on them.",
+      "ko": "이에 속죄 제물로 드릴 수염소를 왕과 회중의 앞으로 끌어 오매 저희가 그 위에 안수하고",
+      "source_text_hash": "368e18c87ebfdbe3c291511d71a9e180d2e538f75786b43dd6c46af298b74e8c",
+      "translation_text_hash": "0c50d8e69c33e1b62a66fe53bd35eb6766a1f91a4578714b4b3cb469790279bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 속죄 제물로 드릴 수염소를 왕과 회중의 앞으로 끌어 오매 저희가 그 위에 안수하고"
+      ],
+      "raw_text_hashes": [
+        "0c50d8e69c33e1b62a66fe53bd35eb6766a1f91a4578714b4b3cb469790279bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:24",
+      "sequence": 11816,
+      "chapter_label": "2CH 29",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 24
+        }
+      ],
+      "en": "Then the priests killed them, and they made a sin offering with their blood on the altar, to make atonement for all Israel; for the king commanded that the burnt offering and the sin offering should be made for all Israel.",
+      "ko": "제사장이 잡아 그 피로 속죄제를 삼아 단에 드려 온 이스라엘을 위하여 속죄하니 이는 왕이 명하여 온 이스라엘을 위하여 번제와 속죄제를 드리게 하였음이더라",
+      "source_text_hash": "cb1c5bb5ea76298be25ca8d2e9d388d1e9f888c5c4a472dc0230600a0e1395c3",
+      "translation_text_hash": "e078e13a851b734f832ffe4892dc4825fc9c45398460c376fbc8b1487210c5ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 잡아 그 피로 속죄제를 삼아 단에 드려 온 이스라엘을 위하여 속죄하니 이는 왕이 명하여 온 이스라엘을 위하여 번제와 속죄제를 드리게 하였음이더라"
+      ],
+      "raw_text_hashes": [
+        "e078e13a851b734f832ffe4892dc4825fc9c45398460c376fbc8b1487210c5ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:25",
+      "sequence": 11817,
+      "chapter_label": "2CH 29",
+      "verse_label": "25",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 25
+        }
+      ],
+      "en": "He set the Levites in the LORD’s house with cymbals, with stringed instruments, and with harps, according to the commandment of David, of Gad the king’s seer, and Nathan the prophet; for the commandment was from the LORD by his prophets.",
+      "ko": "왕이 레위 사람을 여호와의 전에 두어서 다윗과 왕의 선견자 갓과 선지자 나단의 명한대로 제금과 비파와 수금을 잡게 하니 이는 여호와께서 그 선지자들로 이렇게 명하셨음이라",
+      "source_text_hash": "d83e601fad24310e0463aef1c7d699db9af366fc72f74b5dc78e77d82ad77add",
+      "translation_text_hash": "94c099c6f56a2f6ce4d3c1e62c6d241a04487a92245429c50877baddbc66cc17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 레위 사람을 여호와의 전에 두어서 다윗과 왕의 선견자 갓과 선지자 나단의 명한대로 제금과 비파와 수금을 잡게 하니 이는 여호와께서 그 선지자들로 이렇게 명하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "94c099c6f56a2f6ce4d3c1e62c6d241a04487a92245429c50877baddbc66cc17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:26",
+      "sequence": 11818,
+      "chapter_label": "2CH 29",
+      "verse_label": "26",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 26
+        }
+      ],
+      "en": "The Levites stood with David’s instruments, and the priests with the trumpets.",
+      "ko": "레위 사람은 다윗의 악기를 잡고 제사장은 나팔을 잡고 서매",
+      "source_text_hash": "d93dd627e05839280ef3d9da2cba280678320474057cbf8e4ba6d9dc321b4432",
+      "translation_text_hash": "813731f03b0aeed8c1289d4c74c1ecf3295859524559fdbfbf0d26617d18f52f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람은 다윗의 악기를 잡고 제사장은 나팔을 잡고 서매"
+      ],
+      "raw_text_hashes": [
+        "813731f03b0aeed8c1289d4c74c1ecf3295859524559fdbfbf0d26617d18f52f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:27",
+      "sequence": 11819,
+      "chapter_label": "2CH 29",
+      "verse_label": "27",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 27
+        }
+      ],
+      "en": "Hezekiah commanded them to offer the burnt offering on the altar. When the burnt offering began, the LORD’s song also began, along with the trumpets and instruments of David king of Israel.",
+      "ko": "히스기야가 명하여 번제를 단에 드릴쌔 번제 드리기를 시작하는 동시에 여호와의 시로 노래하고 나팔을 불며 이스라엘 왕 다윗의 악기를 울리고",
+      "source_text_hash": "733a06d0ac287c16a653fbffdeb00daa7b4d14af182513ea2646861c33de961e",
+      "translation_text_hash": "eb92decfab1ecfdfec4a91f32cb986ae634526ea72e4c2a14dde1740c4f26513",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 명하여 번제를 단에 드릴쌔 번제 드리기를 시작하는 동시에 여호와의 시로 노래하고 나팔을 불며 이스라엘 왕 다윗의 악기를 울리고"
+      ],
+      "raw_text_hashes": [
+        "eb92decfab1ecfdfec4a91f32cb986ae634526ea72e4c2a14dde1740c4f26513"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:28",
+      "sequence": 11820,
+      "chapter_label": "2CH 29",
+      "verse_label": "28",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 28
+        }
+      ],
+      "en": "All the assembly worshiped, the singers sang, and the trumpeters sounded. All this continued until the burnt offering was finished.",
+      "ko": "온 회중이 경배하며 노래하는 자들은 노래하고 나팔 부는 자들은 나팔을 불어 번제를 마치기까지 이르니라",
+      "source_text_hash": "3de7c60b1a4db812e4c7fe0e545e04d2f6b02d1ff96a165e5008129993ac9fea",
+      "translation_text_hash": "3094ac9ffaf1d09cb7b90844e1db3974951c74514c26c76b1d39385402359962",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 회중이 경배하며 노래하는 자들은 노래하고 나팔 부는 자들은 나팔을 불어 번제를 마치기까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "3094ac9ffaf1d09cb7b90844e1db3974951c74514c26c76b1d39385402359962"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:29",
+      "sequence": 11821,
+      "chapter_label": "2CH 29",
+      "verse_label": "29",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 29
+        }
+      ],
+      "en": "When they had finished offering, the king and all who were present with him bowed themselves and worshiped.",
+      "ko": "제사 드리기를 마치매 왕과 그 함께 있는 자가 다 엎드려 경배하니라",
+      "source_text_hash": "3df2cda26f9ceaa58d1ffb0da73bf38edb8bf1f70da0b7a291d40e59d7342bb5",
+      "translation_text_hash": "5a47e1f47ba8cfd26ad2616733d9ed0afc0e37f0ddb6db8d4c1fe3691f9164d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사 드리기를 마치매 왕과 그 함께 있는 자가 다 엎드려 경배하니라"
+      ],
+      "raw_text_hashes": [
+        "5a47e1f47ba8cfd26ad2616733d9ed0afc0e37f0ddb6db8d4c1fe3691f9164d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:30",
+      "sequence": 11822,
+      "chapter_label": "2CH 29",
+      "verse_label": "30",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 30
+        }
+      ],
+      "en": "Moreover Hezekiah the king and the princes commanded the Levites to sing praises to the LORD with the words of David, and of Asaph the seer. They sang praises with gladness, and they bowed their heads and worshiped.",
+      "ko": "히스기야왕이 귀인들로 더불어 레위 사람을 명하여 다윗과 선견자 아삽의 시로 여호와를 찬송하게 하매 저희가 즐거움으로 찬송하고 몸을 굽혀 경배하니라",
+      "source_text_hash": "44fa8551617b9e7845a45319a44b12b423fb91d47a9ad0bf3e3d75417efe6bb3",
+      "translation_text_hash": "ef024c8b14fb57d42bb4e6558f5b864d360dd287de266dc60d154c9d02a2b6ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야왕이 귀인들로 더불어 레위 사람을 명하여 다윗과 선견자 아삽의 시로 여호와를 찬송하게 하매 저희가 즐거움으로 찬송하고 몸을 굽혀 경배하니라"
+      ],
+      "raw_text_hashes": [
+        "ef024c8b14fb57d42bb4e6558f5b864d360dd287de266dc60d154c9d02a2b6ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:31",
+      "sequence": 11823,
+      "chapter_label": "2CH 29",
+      "verse_label": "31",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 31
+        }
+      ],
+      "en": "Then Hezekiah answered, “Now you have consecrated yourselves to the LORD. Come near and bring sacrifices and thank offerings into the LORD’s house.” The assembly brought in sacrifices and thank offerings, and as many as were of a willing heart brought burnt offerings.",
+      "ko": "이에 히스기야가 일러 가로되 너희가 이제 몸을 깨끗케 하여 여호와께 드렸으니 마땅히 나아와 제물과 감사제물을 여호와의 전으로 가져오라 회중이 드디어 제물과 감사제물을 가져오되 무릇 마음에 원하는 자는 또한 번제물을 가져오니",
+      "source_text_hash": "7c0f3c617dc555a3001fb0b6ba9dc210cb01396ee9ab4b2a24217add93e083df",
+      "translation_text_hash": "d70996d86d0ea28f57c47454e5187d48e00940d98b3d31533c7c89f44787bb4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 히스기야가 일러 가로되 너희가 이제 몸을 깨끗케 하여 여호와께 드렸으니 마땅히 나아와 제물과 감사제물을 여호와의 전으로 가져오라 회중이 드디어 제물과 감사제물을 가져오되 무릇 마음에 원하는 자는 또한 번제물을 가져오니"
+      ],
+      "raw_text_hashes": [
+        "d70996d86d0ea28f57c47454e5187d48e00940d98b3d31533c7c89f44787bb4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:32",
+      "sequence": 11824,
+      "chapter_label": "2CH 29",
+      "verse_label": "32",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 32
+        }
+      ],
+      "en": "The number of the burnt offerings which the assembly brought was seventy bulls, one hundred rams, and two hundred lambs. All these were for a burnt offering to the LORD.",
+      "ko": "회중의 가져온 번제물의 수효는 수소가 칠십이요 수양이 일백이요 어린양이 이백이니 이는 다 여호와께 번제물로 드리는 것이며",
+      "source_text_hash": "3c640913f4804d03bd84ee23377b97c21abc6368a5d01734b99bc8d296cabb26",
+      "translation_text_hash": "97760cbd32a30499ec2903b86bc737cf34e3ad008afdcf47c63d55e9c805d164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회중의 가져온 번제물의 수효는 수소가 칠십이요 수양이 일백이요 어린양이 이백이니 이는 다 여호와께 번제물로 드리는 것이며"
+      ],
+      "raw_text_hashes": [
+        "97760cbd32a30499ec2903b86bc737cf34e3ad008afdcf47c63d55e9c805d164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:33",
+      "sequence": 11825,
+      "chapter_label": "2CH 29",
+      "verse_label": "33",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 33
+        }
+      ],
+      "en": "The consecrated things were six hundred head of cattle and three thousand sheep.",
+      "ko": "또 구별하여 드린 소가 육백이요 양이 삼천이라",
+      "source_text_hash": "dfd344f9e9b86e675adf964ce8708a6483334d189057cf9d72970dc05967fdfb",
+      "translation_text_hash": "d2fcba0945a18029320293ca7c5a1024e5a2d5c9110e1d56b7c0374ab55c2a74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 구별하여 드린 소가 육백이요 양이 삼천이라"
+      ],
+      "raw_text_hashes": [
+        "d2fcba0945a18029320293ca7c5a1024e5a2d5c9110e1d56b7c0374ab55c2a74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:34",
+      "sequence": 11826,
+      "chapter_label": "2CH 29",
+      "verse_label": "34",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 34
+        }
+      ],
+      "en": "But the priests were too few, so that they could not skin all the burnt offerings. Therefore their brothers the Levites helped them until the work was ended, and until the priests had sanctified themselves, for the Levites were more upright in heart to sanctify themselves than the priests.",
+      "ko": "그런데 제사장이 부족하여 그 모든 번제 짐승의 가죽을 능히 벗기지 못하는고로 그 형제 레위 사람이 그 일을 마치기까지 돕고 다른 제사장의 성결케 하기까지 기다렸으니 이는 레위 사람의 성결케 함이 제사장들보다 성심이 있었음이라",
+      "source_text_hash": "270b59fbc050e07a9b5342d0a1b1c79c36ed31277134f490d4aa5a97b5cf8939",
+      "translation_text_hash": "add1a0339f7ab4268008b7fbf504a13b976f66988afc3bd5a64b7cb230129fcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 제사장이 부족하여 그 모든 번제 짐승의 가죽을 능히 벗기지 못하는고로 그 형제 레위 사람이 그 일을 마치기까지 돕고 다른 제사장의 성결케 하기까지 기다렸으니 이는 레위 사람의 성결케 함이 제사장들보다 성심이 있었음이라"
+      ],
+      "raw_text_hashes": [
+        "add1a0339f7ab4268008b7fbf504a13b976f66988afc3bd5a64b7cb230129fcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:35",
+      "sequence": 11827,
+      "chapter_label": "2CH 29",
+      "verse_label": "35",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 35
+        }
+      ],
+      "en": "Also the burnt offerings were in abundance, with the fat of the peace offerings and with the drink offerings for every burnt offering. So the service of the LORD’s house was set in order.",
+      "ko": "번제와 화목제의 기름과 각 번제에 속한 전제가 많더라 이와 같이 여호와의 전에서 섬기는 일이 순서대로 갖추어지니라",
+      "source_text_hash": "2cc494faf09dfdf756c97c0a2c150157a0b8b406298354ad204bddd909e57d34",
+      "translation_text_hash": "7a87ff6fc2e684ca875276989a1ad6e18a3ec455f9ac0820f2512820b2d7a29f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번제와 화목제의 기름과 각 번제에 속한 전제가 많더라 이와 같이 여호와의 전에서 섬기는 일이 순서대로 갖추어지니라"
+      ],
+      "raw_text_hashes": [
+        "7a87ff6fc2e684ca875276989a1ad6e18a3ec455f9ac0820f2512820b2d7a29f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:29:36",
+      "sequence": 11828,
+      "chapter_label": "2CH 29",
+      "verse_label": "36",
+      "locator": {
+        "book": "2CH",
+        "chapter": 29,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 29,
+          "verse": 36
+        }
+      ],
+      "en": "Hezekiah and all the people rejoiced because of that which God had prepared for the people; for the thing was done suddenly.",
+      "ko": "이 일이 갑자기 되었을찌라도 하나님이 백성을 위하여 예비하셨음을 인하여 히스기야가 백성으로 더불어 기뻐하였더라",
+      "source_text_hash": "899901acf26f64e866d98931955c43e405ee33069076c714aece28e28cfbfea1",
+      "translation_text_hash": "f0792424e2a8cfa439b0ca252d4b0f357d7d1f815ec67c86f4ec552a6fce3453",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 갑자기 되었을찌라도 하나님이 백성을 위하여 예비하셨음을 인하여 히스기야가 백성으로 더불어 기뻐하였더라"
+      ],
+      "raw_text_hashes": [
+        "f0792424e2a8cfa439b0ca252d4b0f357d7d1f815ec67c86f4ec552a6fce3453"
+      ]
+    }
+  ]
+}

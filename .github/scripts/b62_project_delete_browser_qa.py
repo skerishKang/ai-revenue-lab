@@ -295,7 +295,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int, mobile: b
     await open_product_confirm(page, delete_button, title_contains="프로젝트를 삭제할까요?", message_contains="복구할 수 없습니다")
     await accept_product_confirm(page)
     await page.wait_for_function(
-        "() => document.getElementById('projectFormError')?.hidden === false && document.getElementById('projectFormError')?.textContent.includes('프로젝트 파일을 먼저 삭제해 주세요')",
+        "() => document.getElementById('projectFormError')?.hidden === false && document.getElementById('projectFormError')?.textContent.includes('프로젝트를 삭제하지 못했습니다.') && document.querySelector('#projectFormError .error-code')?.textContent.includes('project_has_files')",
         timeout=5_000,
     )
     if state.delete_requests.count(BLOCKED_ID) != 1 or BLOCKED_ID not in state.projects:

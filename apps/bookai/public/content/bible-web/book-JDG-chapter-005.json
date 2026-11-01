@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:005",
+  "unit_ordinal": 216,
+  "unit_label": "JDG 5",
+  "book_code": "JDG",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:5:1",
+      "sequence": 6625,
+      "chapter_label": "JDG 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Then Deborah and Barak the son of Abinoam sang on that day, saying,",
+      "ko": "이 날에 드보라와 아비노암의 아들 바락이 노래하여 가로되",
+      "source_text_hash": "de7036e230070de295eb156d6712594e234090faf1320e66b27c53f5e3885818",
+      "translation_text_hash": "850a783136e744385abd2c1e2f9ff644f64df2eb35af86f0d0341c98aa0be29f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 드보라와 아비노암의 아들 바락이 노래하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "850a783136e744385abd2c1e2f9ff644f64df2eb35af86f0d0341c98aa0be29f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:2",
+      "sequence": 6626,
+      "chapter_label": "JDG 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "“Because the leaders took the lead in Israel, because the people offered themselves willingly, be blessed, LORD!",
+      "ko": "이스라엘의 두령이 그를 영솔하였고 백성이 즐거이 헌신하였으니 여호와를 찬송하라",
+      "source_text_hash": "6a90bc8ece10c980602fa5392225688385fb6a3ddb8d1f9fa35d94f58c493d54",
+      "translation_text_hash": "f63c0abffa37d36e79c29fc10ec40fe4c716f9fb1107e8982af669bc700d8076",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 두령이 그를 영솔하였고 백성이 즐거이 헌신하였으니 여호와를 찬송하라"
+      ],
+      "raw_text_hashes": [
+        "f63c0abffa37d36e79c29fc10ec40fe4c716f9fb1107e8982af669bc700d8076"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:3",
+      "sequence": 6627,
+      "chapter_label": "JDG 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "“Hear, you kings! Give ear, you princes! I, even I, will sing to the LORD. I will sing praise to the LORD, the God of Israel.",
+      "ko": "너희 왕들아 들으라 방백들아 귀를 기울이라 나 곧 내가 여호와를 노래할 것이요 이스라엘의 하나님 여호와를 찬송하리로다",
+      "source_text_hash": "e2541424d54ca560a10e682ac1cb69c0712cea0c91868865f4830de0a7b2628e",
+      "translation_text_hash": "abd4110e19b9bfe8743bb01f9223538e4382a65c46bf65c660d94ff3bb08b1b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 왕들아 들으라 방백들아 귀를 기울이라 나 곧 내가 여호와를 노래할 것이요 이스라엘의 하나님 여호와를 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "abd4110e19b9bfe8743bb01f9223538e4382a65c46bf65c660d94ff3bb08b1b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:4",
+      "sequence": 6628,
+      "chapter_label": "JDG 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "“LORD, when you went out of Seir, when you marched out of the field of Edom, the earth trembled, the sky also dropped. Yes, the clouds dropped water.",
+      "ko": "여호와여 주께서 세일에서부터 나오시고 에돔 들에서부터 진행하실 때에 땅이 진동하고 하늘도 새어서 구름이 물을 내렸나이다",
+      "source_text_hash": "fa2b95e4e1283be5569dfd113d235aeb653f57ddd5148a7d6b76235f85c51238",
+      "translation_text_hash": "61dd8013d1564d0340e80f492f77292572dc36a60b5f6006586bd31d950f559e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 세일에서부터 나오시고 에돔 들에서부터 진행하실 때에 땅이 진동하고 하늘도 새어서 구름이 물을 내렸나이다"
+      ],
+      "raw_text_hashes": [
+        "61dd8013d1564d0340e80f492f77292572dc36a60b5f6006586bd31d950f559e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:5",
+      "sequence": 6629,
+      "chapter_label": "JDG 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "The mountains quaked at the LORD’s presence, even Sinai at the presence of the LORD, the God of Israel.",
+      "ko": "산들이 여호와 앞에서 진동하니 저 시내산도 이스라엘 하나님 여호와 앞에서 진동하였도다",
+      "source_text_hash": "dcc52caf328920ec39f3f392fa79fa8440d2b5d41ee8fec00a1b287f950e843f",
+      "translation_text_hash": "fd5e8835a1bc744f7e83f879dd2b3edf383f6700ffb398edb27f809f42f7fdbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산들이 여호와 앞에서 진동하니 저 시내산도 이스라엘 하나님 여호와 앞에서 진동하였도다"
+      ],
+      "raw_text_hashes": [
+        "fd5e8835a1bc744f7e83f879dd2b3edf383f6700ffb398edb27f809f42f7fdbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:6",
+      "sequence": 6630,
+      "chapter_label": "JDG 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "“In the days of Shamgar the son of Anath, in the days of Jael, the highways were unoccupied. The travelers walked through byways.",
+      "ko": "아낫의 아들 삼갈의 날에 또는 야엘의 날에는 대로가 비었고 행인들은 소로로 다녔도다",
+      "source_text_hash": "a3672fddfb230195f5995d2ba75af64ef99fc564879f93a8c528fee218b79e7a",
+      "translation_text_hash": "ff911ec4e02bfd4f2853b1ab118ddc85550c1f8d81c48aef6dcabf7d99fabfc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아낫의 아들 삼갈의 날에 또는 야엘의 날에는 대로가 비었고 행인들은 소로로 다녔도다"
+      ],
+      "raw_text_hashes": [
+        "ff911ec4e02bfd4f2853b1ab118ddc85550c1f8d81c48aef6dcabf7d99fabfc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:7",
+      "sequence": 6631,
+      "chapter_label": "JDG 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "The rulers ceased in Israel. They ceased until I, Deborah, arose; Until I arose a mother in Israel.",
+      "ko": "이스라엘에 관원이 그치고 그쳤더니 나 드보라가 일어났고 내가 일어나서 이스라엘의 어미가 되었도다",
+      "source_text_hash": "490a46578cd7ec1d87e3aa3998d347401670c27da6b0b0a0ccb6fabcd3586dec",
+      "translation_text_hash": "b994f36e71b3172a6b18653cf8be4ff9c8747eca1dc4a7a16cc04e1273337685",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘에 관원이 그치고 그쳤더니 나 드보라가 일어났고 내가 일어나서 이스라엘의 어미가 되었도다"
+      ],
+      "raw_text_hashes": [
+        "b994f36e71b3172a6b18653cf8be4ff9c8747eca1dc4a7a16cc04e1273337685"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:8",
+      "sequence": 6632,
+      "chapter_label": "JDG 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "They chose new gods. Then war was in the gates. Was there a shield or spear seen among forty thousand in Israel?",
+      "ko": "무리가 새 신들을 택하였으므로 그 때에 전쟁이 성문에 미쳤으나 이스라엘 사만명 중에 방패와 창이 보였던고",
+      "source_text_hash": "ef04899e125693e0b314b0b3d5e7d3ecbd539ed4b02639191d610bcf6f1bf9db",
+      "translation_text_hash": "78540c3a65edcf7dc605321c1696d751bbba6a2ab1f097f794ad3fccda2ae409",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 새 신들을 택하였으므로 그 때에 전쟁이 성문에 미쳤으나 이스라엘 사만명 중에 방패와 창이 보였던고"
+      ],
+      "raw_text_hashes": [
+        "78540c3a65edcf7dc605321c1696d751bbba6a2ab1f097f794ad3fccda2ae409"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:9",
+      "sequence": 6633,
+      "chapter_label": "JDG 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "My heart is toward the governors of Israel, who offered themselves willingly among the people. Bless the LORD!",
+      "ko": "내 마음이 이스라엘의 방백을 사모함은 그들이 백성 중에서 즐거이 헌신하였음이라 여호와를 찬송하라",
+      "source_text_hash": "a04a3e6bc11ad957964e164b36f1397e5564ec68822f6351b2cb2a340c8631b0",
+      "translation_text_hash": "9ed8655ad915f04d2516a87332f87964f8c82459fd65db2ba46a9dd9315131ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음이 이스라엘의 방백을 사모함은 그들이 백성 중에서 즐거이 헌신하였음이라 여호와를 찬송하라"
+      ],
+      "raw_text_hashes": [
+        "9ed8655ad915f04d2516a87332f87964f8c82459fd65db2ba46a9dd9315131ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:10",
+      "sequence": 6634,
+      "chapter_label": "JDG 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "“Speak, you who ride on white donkeys, you who sit on rich carpets, and you who walk by the way.",
+      "ko": "흰 나귀를 탄 자들, 귀한 화문석에 앉은 자들, 길에 행하는 자들아 선파할찌어다",
+      "source_text_hash": "6590977c4639223d26eeb8a88bcc1332a50ae8c9932e418350756f9275aa72cb",
+      "translation_text_hash": "ad2e0c1ba2ec6e4eae91b6ac55a7ca14c5824851f15170da422c93b74b9c2e5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "흰 나귀를 탄 자들, 귀한 화문석에 앉은 자들, 길에 행하는 자들아 선파할찌어다"
+      ],
+      "raw_text_hashes": [
+        "ad2e0c1ba2ec6e4eae91b6ac55a7ca14c5824851f15170da422c93b74b9c2e5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:11",
+      "sequence": 6635,
+      "chapter_label": "JDG 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Far from the noise of archers, in the places of drawing water, there they will rehearse the LORD’s righteous acts, the righteous acts of his rule in Israel. “Then the LORD’s people went down to the gates.",
+      "ko": "활쏘는 자의 지꺼림에서, 멀리 떨어진 물 긷는 곳에서도 여호와의 의로우신 일을 칭술하라 그의 이스라엘을 다스리시는 의로우신 일을 칭술하라 그 때에 여호와의 백성이 성문에 내려갔도다",
+      "source_text_hash": "67642ab9c979cff0d1b58a638b11072410335c2d26d093a840d175383236ea88",
+      "translation_text_hash": "dc0cfed1f53b37fbd3fe65fb27cac61da832dc9d4d4eb2b802872691f6cf1cfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "활쏘는 자의 지꺼림에서, 멀리 떨어진 물 긷는 곳에서도 여호와의 의로우신 일을 칭술하라 그의 이스라엘을 다스리시는 의로우신 일을 칭술하라 그 때에 여호와의 백성이 성문에 내려갔도다"
+      ],
+      "raw_text_hashes": [
+        "dc0cfed1f53b37fbd3fe65fb27cac61da832dc9d4d4eb2b802872691f6cf1cfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:12",
+      "sequence": 6636,
+      "chapter_label": "JDG 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "‘Awake, awake, Deborah! Awake, awake, utter a song! Arise, Barak, and lead away your captives, you son of Abinoam.’",
+      "ko": "깰찌어다 깰찌어다 드보라여 깰찌어다 깰찌어다 너는 노래할찌어다 일어날찌어다 바락이여 아비노암의 아들이여 네 사로잡은 자를 끌고 갈찌어다",
+      "source_text_hash": "9057060433c236c3a027f08af00af1074667a57d907e544a7239945dd22f0a81",
+      "translation_text_hash": "a28fc28c9a30cd655db7b8ee0748d93b313a0204cdd631fe23d9c655bd8adc49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깰찌어다 깰찌어다 드보라여 깰찌어다 깰찌어다 너는 노래할찌어다 일어날찌어다 바락이여 아비노암의 아들이여 네 사로잡은 자를 끌고 갈찌어다"
+      ],
+      "raw_text_hashes": [
+        "a28fc28c9a30cd655db7b8ee0748d93b313a0204cdd631fe23d9c655bd8adc49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:13",
+      "sequence": 6637,
+      "chapter_label": "JDG 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "“Then a remnant of the nobles and the people came down. The LORD came down for me against the mighty.",
+      "ko": "그 때에 남은 귀인과 백성이 내려왔고 여호와께서 나를 위하여 용사를 치시려고 강림하셨도다",
+      "source_text_hash": "4bd7550f9cb981eb842af6b2260b8c43518ed449884d4211e859f509aa06862c",
+      "translation_text_hash": "3f20a9c8e7bbd9d17d08d430bb279c69e51349fbe4d107445e009315dcec6158",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 남은 귀인과 백성이 내려왔고 여호와께서 나를 위하여 용사를 치시려고 강림하셨도다"
+      ],
+      "raw_text_hashes": [
+        "3f20a9c8e7bbd9d17d08d430bb279c69e51349fbe4d107445e009315dcec6158"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:14",
+      "sequence": 6638,
+      "chapter_label": "JDG 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Those whose root is in Amalek came out of Ephraim, after you, Benjamin, among your peoples. Governors come down out of Machir. Those who handle the marshal’s staff came out of Zebulun.",
+      "ko": "에브라임에게서 나온 자는 아말렉에 뿌리 박힌 자요 그 다음에 베냐민은 너희 백성 중에 섞였으며 마길에게서는 다스리는 자들이 내려왔고 스불론에게서는 대장군의 지팡이를 잡은 자가 내려왔도다",
+      "source_text_hash": "ba208d285369eec4d2e8767c4d1e8006b7b329b2986f30cbf22659f66db86596",
+      "translation_text_hash": "dd5bf512a9b0f1c355f2a5fdbf821b1102e0c32d5896f250dea6907574a60802",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임에게서 나온 자는 아말렉에 뿌리 박힌 자요 그 다음에 베냐민은 너희 백성 중에 섞였으며 마길에게서는 다스리는 자들이 내려왔고 스불론에게서는 대장군의 지팡이를 잡은 자가 내려왔도다"
+      ],
+      "raw_text_hashes": [
+        "dd5bf512a9b0f1c355f2a5fdbf821b1102e0c32d5896f250dea6907574a60802"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:15",
+      "sequence": 6639,
+      "chapter_label": "JDG 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "The princes of Issachar were with Deborah. As was Issachar, so was Barak. They rushed into the valley at his feet. By the watercourses of Reuben, there were great resolves of heart.",
+      "ko": "잇사갈의 방백들이 드보라와 함께하니 잇사갈의 심사를 바락도 가졌도다 그 발을 좇아 골짜기로 달려 내려가니 르우벤 시냇가에 큰 결심이 있었도다",
+      "source_text_hash": "957f6c8f48ca8d4d4f303a5a3165361cd412872ddd5d2d0daf3b411ae6709a3d",
+      "translation_text_hash": "36c7f88adb635b6bb8230c9c4317e9b8e91338bca84d4d7f11d9c289e5dafa7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈의 방백들이 드보라와 함께하니 잇사갈의 심사를 바락도 가졌도다 그 발을 좇아 골짜기로 달려 내려가니 르우벤 시냇가에 큰 결심이 있었도다"
+      ],
+      "raw_text_hashes": [
+        "36c7f88adb635b6bb8230c9c4317e9b8e91338bca84d4d7f11d9c289e5dafa7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:16",
+      "sequence": 6640,
+      "chapter_label": "JDG 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Why did you sit among the sheepfolds? To hear the whistling for the flocks? At the watercourses of Reuben, there were great searchings of heart.",
+      "ko": "네가 양의 우리 가운데 앉아서 목자의 저 부는 소리를 들음은 어찜이뇨 르우벤 시냇가에서 마음에 크게 살핌이 있도다",
+      "source_text_hash": "4a37816ee72364cbdb71423a69fa1912ee5543c56c41908be9a2e1e5b3eb5810",
+      "translation_text_hash": "fa1507e03b5371eb2d1597cd87d0379e0e64165f8272f663b9e784099653ee9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 양의 우리 가운데 앉아서 목자의 저 부는 소리를 들음은 어찜이뇨 르우벤 시냇가에서 마음에 크게 살핌이 있도다"
+      ],
+      "raw_text_hashes": [
+        "fa1507e03b5371eb2d1597cd87d0379e0e64165f8272f663b9e784099653ee9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:17",
+      "sequence": 6641,
+      "chapter_label": "JDG 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Gilead lived beyond the Jordan. Why did Dan remain in ships? Asher sat still at the haven of the sea, and lived by his creeks.",
+      "ko": "길르앗은 요단 저편에 거하거늘 단은 배에 머무름은 어찜이뇨 아셀은 해빈에 앉고 자기 시냇가에 거하도다",
+      "source_text_hash": "16fcc21a3f11c3add29626a8ff7aba0c6563ff70c77e48158ea15d7b7af7057d",
+      "translation_text_hash": "a06d9ed6718b6f1d9d07a3ffa52c3bc0f6b67d62a3f383ed66c2d0244c6a2f73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗은 요단 저편에 거하거늘 단은 배에 머무름은 어찜이뇨 아셀은 해빈에 앉고 자기 시냇가에 거하도다"
+      ],
+      "raw_text_hashes": [
+        "a06d9ed6718b6f1d9d07a3ffa52c3bc0f6b67d62a3f383ed66c2d0244c6a2f73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:18",
+      "sequence": 6642,
+      "chapter_label": "JDG 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "Zebulun was a people that jeopardized their lives to the death; Naphtali also, on the high places of the field.",
+      "ko": "스불론은 죽음을 무릅쓰고 생명을 아끼지 아니한 백성이요 납달리도 들의 높은 곳에서 그러하도다",
+      "source_text_hash": "b6edf83a92f46539a954628639c846c7dd97397d574ebd5599e28912d5b5e2ca",
+      "translation_text_hash": "48fc7f581502849ce822deaafaba21a374149f208b97835f98f45386fb2dffe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론은 죽음을 무릅쓰고 생명을 아끼지 아니한 백성이요 납달리도 들의 높은 곳에서 그러하도다"
+      ],
+      "raw_text_hashes": [
+        "48fc7f581502849ce822deaafaba21a374149f208b97835f98f45386fb2dffe5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:19",
+      "sequence": 6643,
+      "chapter_label": "JDG 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "“The kings came and fought, then the kings of Canaan fought at Taanach by the waters of Megiddo. They took no plunder of silver.",
+      "ko": "열왕이 와서 싸울 때에 가나안 열왕이 므깃도 물 가 다아낙에서 싸웠으나 돈을 탈취하지 못하였도다",
+      "source_text_hash": "1189be6d69cd653e80a55b589f0e37b8705c33308585e9038d57cd6ccf9bc61a",
+      "translation_text_hash": "a7ad9ecef18b328ba7387700ebed85076ea748076c44947d8e0fa5fe7bdfa999",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열왕이 와서 싸울 때에 가나안 열왕이 므깃도 물 가 다아낙에서 싸웠으나 돈을 탈취하지 못하였도다"
+      ],
+      "raw_text_hashes": [
+        "a7ad9ecef18b328ba7387700ebed85076ea748076c44947d8e0fa5fe7bdfa999"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:20",
+      "sequence": 6644,
+      "chapter_label": "JDG 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "From the sky the stars fought. From their courses, they fought against Sisera.",
+      "ko": "별들이 하늘에서부터 싸우되 그 다니는 길에서 시스라와 싸웠도다",
+      "source_text_hash": "eb040793ad9abf190ae4e86ef4d37932829d2396ed2bf40cf8ab33c96c787160",
+      "translation_text_hash": "327a50a0961dd28e5d0bc682a3f4f2eebb3dda60c1bb840fe92d0c27fb77657c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "별들이 하늘에서부터 싸우되 그 다니는 길에서 시스라와 싸웠도다"
+      ],
+      "raw_text_hashes": [
+        "327a50a0961dd28e5d0bc682a3f4f2eebb3dda60c1bb840fe92d0c27fb77657c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:21",
+      "sequence": 6645,
+      "chapter_label": "JDG 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "The river Kishon swept them away, that ancient river, the river Kishon. My soul, march on with strength.",
+      "ko": "기손강은 그 무리를 표류시켰으니 이 기손강은 옛강이라 내 영혼아 네가 힘 있는 자를 밟았도다",
+      "source_text_hash": "3a42e67cded8ad47e2a96ea79a23fe2b728b70a0a9cafa3ddfb7c353ea826496",
+      "translation_text_hash": "8f1987262f80d33919174e47019008c5ceb2315e27ed2167fa25e3aa34b8e239",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기손강은 그 무리를 표류시켰으니 이 기손강은 옛강이라 내 영혼아 네가 힘 있는 자를 밟았도다"
+      ],
+      "raw_text_hashes": [
+        "8f1987262f80d33919174e47019008c5ceb2315e27ed2167fa25e3aa34b8e239"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:22",
+      "sequence": 6646,
+      "chapter_label": "JDG 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "Then the horse hoofs stamped because of the prancing, the prancing of their strong ones.",
+      "ko": "그 때에 군마가 빨리 달리니 말굽소리는 땅을 울리도다",
+      "source_text_hash": "8026446d7d2e7bed9e85ee4ef58d8f8383816fceb5a9fbd1f62f895628a01739",
+      "translation_text_hash": "0920029f9fa1341f55429e36e3b2ccd7763552c6b9e3d1ee22e7c0428dca961e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 군마가 빨리 달리니 말굽소리는 땅을 울리도다"
+      ],
+      "raw_text_hashes": [
+        "0920029f9fa1341f55429e36e3b2ccd7763552c6b9e3d1ee22e7c0428dca961e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:23",
+      "sequence": 6647,
+      "chapter_label": "JDG 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "‘Curse Meroz,’ said the LORD’s angel. ‘Curse bitterly its inhabitants, because they didn’t come to help the LORD, to help the LORD against the mighty.’",
+      "ko": "여호와의 사자의 말씀에 메로스를 저주하라 너희가 거듭 거듭 그 거민을 저주할 것은 그들이 와서 여호와를 돕지 아니하며 여호와를 도와 용사를 치지 아니함이니라 하시도다",
+      "source_text_hash": "3ea49f1fd34142a98e3decdeed889fd3edbf751d5c6c270e831f385024c59897",
+      "translation_text_hash": "b2dd63fc485566457594fcc9e9d39c484c999b1debdda276e9263ac184b86c77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자의 말씀에 메로스를 저주하라 너희가 거듭 거듭 그 거민을 저주할 것은 그들이 와서 여호와를 돕지 아니하며 여호와를 도와 용사를 치지 아니함이니라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "b2dd63fc485566457594fcc9e9d39c484c999b1debdda276e9263ac184b86c77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:24",
+      "sequence": 6648,
+      "chapter_label": "JDG 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "“Jael shall be blessed above women, the wife of Heber the Kenite; blessed shall she be above women in the tent.",
+      "ko": "겐 사람 헤벨의 아내 야엘은 다른 여인보다 복을 받을 것이니 장막에 거한 여인보다 더욱 복을 받을 것이로다",
+      "source_text_hash": "05000be263a448246aed9fd40b026bc788cc94b07fa4e2468440ea61045eebd5",
+      "translation_text_hash": "86752a585a34fec1d6d62a7bd8582ee5f12d6613bba2feb9a742a5e2e7243f89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "겐 사람 헤벨의 아내 야엘은 다른 여인보다 복을 받을 것이니 장막에 거한 여인보다 더욱 복을 받을 것이로다"
+      ],
+      "raw_text_hashes": [
+        "86752a585a34fec1d6d62a7bd8582ee5f12d6613bba2feb9a742a5e2e7243f89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:25",
+      "sequence": 6649,
+      "chapter_label": "JDG 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "He asked for water. She gave him milk. She brought him butter in a lordly dish.",
+      "ko": "시스라가 물을 구하매 우유를 주되 곧 엉긴 젖을 귀한 그릇에 담아주었고",
+      "source_text_hash": "5692b58480f34e695f9c5cdf80c56a5488e733838ca1eb1aa23e6c4bcb7ed5e0",
+      "translation_text_hash": "0b3b9a3e00bc96abccf23208607d26cf4aafc350be0c9bc0b4ab21aa9acaa80b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시스라가 물을 구하매 우유를 주되 곧 엉긴 젖을 귀한 그릇에 담아주었고"
+      ],
+      "raw_text_hashes": [
+        "0b3b9a3e00bc96abccf23208607d26cf4aafc350be0c9bc0b4ab21aa9acaa80b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:26",
+      "sequence": 6650,
+      "chapter_label": "JDG 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "She put her hand to the tent peg, and her right hand to the workmen’s hammer. With the hammer she struck Sisera. She struck through his head. Yes, she pierced and struck through his temples.",
+      "ko": "손으로 장막 말뚝을 잡으며 오른손에 장인의 방망이를 들고 그 방망이로 시스라를 쳐서 머리를 뚫되 곧 살쩍을 꿰뚫었도다",
+      "source_text_hash": "55b856dabace0e1c5e161c99804e722fc7d7b1306e2bff0d32e3781701a0e4cd",
+      "translation_text_hash": "beb2d9f5b94a9d542d6a60953073a5cbf1cfb36219a5a249c62a58d928df7d7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손으로 장막 말뚝을 잡으며 오른손에 장인의 방망이를 들고 그 방망이로 시스라를 쳐서 머리를 뚫되 곧 살쩍을 꿰뚫었도다"
+      ],
+      "raw_text_hashes": [
+        "beb2d9f5b94a9d542d6a60953073a5cbf1cfb36219a5a249c62a58d928df7d7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:27",
+      "sequence": 6651,
+      "chapter_label": "JDG 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "At her feet he bowed, he fell, he lay. At her feet he bowed, he fell. Where he bowed, there he fell down dead.",
+      "ko": "그가 그의 발 앞에 꾸부러지며 엎드러지고 쓰러졌고 그의 발 앞에 꾸부러져 엎드러져서 그 꾸부러진 곳에 엎드러져 죽었도다",
+      "source_text_hash": "bf81b6648a79e6e1eba13689e5b5a3061eee9cf17ffb98a13134509adf4a0ff4",
+      "translation_text_hash": "17d88be055553a26798f4f27da265898f46e81c40411a88f57ecaccf25425390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그의 발 앞에 꾸부러지며 엎드러지고 쓰러졌고 그의 발 앞에 꾸부러져 엎드러져서 그 꾸부러진 곳에 엎드러져 죽었도다"
+      ],
+      "raw_text_hashes": [
+        "17d88be055553a26798f4f27da265898f46e81c40411a88f57ecaccf25425390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:28",
+      "sequence": 6652,
+      "chapter_label": "JDG 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "“Through the window she looked out, and cried: Sisera’s mother looked through the lattice. ‘Why is his chariot so long in coming? Why do the wheels of his chariots wait?’",
+      "ko": "시스라의 어미가 창문으로 바라보며 살창에서 부르짖기를 그의 병거가 어찌하여 더디 오는고 그의 병거 바퀴가 어찌하여 더디 구는고 하매",
+      "source_text_hash": "691f67be2bd3ba2f1089fcbaa17776f403ba0ddc32557de067341055be9234c2",
+      "translation_text_hash": "3690f71498efb9bda32b5cd8cc52c00a9edebbbea4cb0afc40f7f89cbec76fdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시스라의 어미가 창문으로 바라보며 살창에서 부르짖기를 그의 병거가 어찌하여 더디 오는고 그의 병거 바퀴가 어찌하여 더디 구는고 하매"
+      ],
+      "raw_text_hashes": [
+        "3690f71498efb9bda32b5cd8cc52c00a9edebbbea4cb0afc40f7f89cbec76fdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:29",
+      "sequence": 6653,
+      "chapter_label": "JDG 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "Her wise ladies answered her, Yes, she returned answer to herself,",
+      "ko": "그 지혜로운 시녀들이 대답하였겠고 그도 스스로 대답하기를",
+      "source_text_hash": "6eb598a175c3dd56937cf473c841ffed0c4456c5cbc211f4fcbca5846bb683cf",
+      "translation_text_hash": "b32ee8789abebfa8a236930e151494e7c6b49ba7610f1aab85888ee1c46f90df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지혜로운 시녀들이 대답하였겠고 그도 스스로 대답하기를"
+      ],
+      "raw_text_hashes": [
+        "b32ee8789abebfa8a236930e151494e7c6b49ba7610f1aab85888ee1c46f90df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:30",
+      "sequence": 6654,
+      "chapter_label": "JDG 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "‘Have they not found, have they not divided the plunder? A lady, two ladies to every man; to Sisera a plunder of dyed garments, a plunder of dyed garments embroidered, of dyed garments embroidered on both sides, on the necks of the plunder?’",
+      "ko": "그들이 어찌 노략물을 얻지 못하였으랴 그것을 나누지 못하였으랴 사람마다 한 두 처녀를 얻었으리로다 시스라는 채색옷을 노략하였으리니 그것은 수놓은 채색옷이리로다 곧 양편에 수놓은 채색옷이리니 노략한 자의 목에 꾸미리로다 하였으리라",
+      "source_text_hash": "84f6073eadf5e221128870e059e5c1f7849153a9f3ca91bfc355366050eda191",
+      "translation_text_hash": "3b1b22ab05a290fcf74cbe5e8b0f3a317018b23f79c38746faf535b9f3f0f660",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 어찌 노략물을 얻지 못하였으랴 그것을 나누지 못하였으랴 사람마다 한 두 처녀를 얻었으리로다 시스라는 채색옷을 노략하였으리니 그것은 수놓은 채색옷이리로다 곧 양편에 수놓은 채색옷이리니 노략한 자의 목에 꾸미리로다 하였으리라"
+      ],
+      "raw_text_hashes": [
+        "3b1b22ab05a290fcf74cbe5e8b0f3a317018b23f79c38746faf535b9f3f0f660"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:5:31",
+      "sequence": 6655,
+      "chapter_label": "JDG 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "JDG",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "“So let all your enemies perish, LORD, but let those who love him be as the sun when it rises in its strength.” Then the land had rest forty years.",
+      "ko": "여호와여 주의 대적은 다 이와 같이 망하게 하시고 주를 사랑하는 자는 해가 힘있게 돋음 같게 하시옵소서 하니라 그 땅이 사십년 동안 태평하였더라",
+      "source_text_hash": "b4a534a0cec53eab534b7de2a2a7fcecc3650e30ccc1ed414a887988a4ce9aba",
+      "translation_text_hash": "4765dbf1a97743729d8c97dae94ef9fefa476f52df997fd0e50ab686cf3d4d70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 대적은 다 이와 같이 망하게 하시고 주를 사랑하는 자는 해가 힘있게 돋음 같게 하시옵소서 하니라 그 땅이 사십년 동안 태평하였더라"
+      ],
+      "raw_text_hashes": [
+        "4765dbf1a97743729d8c97dae94ef9fefa476f52df997fd0e50ab686cf3d4d70"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2PE:chapter:001",
+  "unit_ordinal": 1157,
+  "unit_label": "2PE 1",
+  "book_code": "2PE",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2PE:1:1",
+      "sequence": 30477,
+      "chapter_label": "2PE 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Simon Peter, a servant and apostle of Jesus Christ, to those who have obtained a like precious faith with us in the righteousness of our God and Savior, Jesus Christ:",
+      "ko": "예수 그리스도의 종과 사도인 시몬 베드로는 우리 하나님과 구주 예수 그리스도의 의를 힘입어 동일하게 보배로운 믿음을 우리와 같이 받은 자들에게 편지하노니",
+      "source_text_hash": "d6903a5f2d7d1cea05c6f8cec8e4407eef75a95b7ffec2e1c7c72e157036cb2a",
+      "translation_text_hash": "017d5dec640c914e00b57028bc03e51adc1c93887a523b25fb986a8760a5de2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수 그리스도의 종과 사도인 시몬 베드로는 우리 하나님과 구주 예수 그리스도의 의를 힘입어 동일하게 보배로운 믿음을 우리와 같이 받은 자들에게 편지하노니"
+      ],
+      "raw_text_hashes": [
+        "017d5dec640c914e00b57028bc03e51adc1c93887a523b25fb986a8760a5de2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:2",
+      "sequence": 30478,
+      "chapter_label": "2PE 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Grace to you and peace be multiplied in the knowledge of God and of Jesus our Lord,",
+      "ko": "하나님과 우리 주 예수를 앎으로 은혜와 평강이 너희에게 더욱 많을찌어다",
+      "source_text_hash": "b226a1b7e1bf8df20ace4537d7ddc5d08fc26d0d8ba5965c6ed1e9300250d731",
+      "translation_text_hash": "1d8be90d837ffe0ef8d35790e0446e18578d0ea8cf5693670d649279a553a7f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님과 우리 주 예수를 앎으로 은혜와 평강이 너희에게 더욱 많을찌어다"
+      ],
+      "raw_text_hashes": [
+        "1d8be90d837ffe0ef8d35790e0446e18578d0ea8cf5693670d649279a553a7f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:3",
+      "sequence": 30479,
+      "chapter_label": "2PE 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "seeing that his divine power has granted to us all things that pertain to life and godliness, through the knowledge of him who called us by his own glory and virtue,",
+      "ko": "그의 신기한 능력으로 생명과 경건에 속한 모든 것을 우리에게 주셨으니 이는 자기의 영광과 덕으로써 우리를 부르신 자를 앎으로 말미암음이라",
+      "source_text_hash": "8cf84e4a6a421200e4cb00cf3d7004d1e49c45f5567d11090cf233f283dc385f",
+      "translation_text_hash": "101e86ad36eaf8428933a760be728a434f2e71b3b16f35432a6da8a77e35d80d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 신기한 능력으로 생명과 경건에 속한 모든 것을 우리에게 주셨으니 이는 자기의 영광과 덕으로써 우리를 부르신 자를 앎으로 말미암음이라"
+      ],
+      "raw_text_hashes": [
+        "101e86ad36eaf8428933a760be728a434f2e71b3b16f35432a6da8a77e35d80d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:4",
+      "sequence": 30480,
+      "chapter_label": "2PE 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "by which he has granted to us his precious and exceedingly great promises; that through these you may become partakers of the divine nature, having escaped from the corruption that is in the world by lust.",
+      "ko": "이로써 그 보배롭고 지극히 큰 약속을 우리에게 주사 이 약속으로 말미암아 너희로 정욕을 인하여 세상에서 썩어질 것을 피하여 신의 성품에 참예하는 자가 되게 하려 하셨으니",
+      "source_text_hash": "a79a2769a163f63ca0469b94eccff3998bc60903ee94211adcb5ab5cedec8237",
+      "translation_text_hash": "d6c72a586e4a8cc0187288ffb365f0dcbd2be296b1b604e8864ea992c7591853",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로써 그 보배롭고 지극히 큰 약속을 우리에게 주사 이 약속으로 말미암아 너희로 정욕을 인하여 세상에서 썩어질 것을 피하여 신의 성품에 참예하는 자가 되게 하려 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "d6c72a586e4a8cc0187288ffb365f0dcbd2be296b1b604e8864ea992c7591853"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:5",
+      "sequence": 30481,
+      "chapter_label": "2PE 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Yes, and for this very cause adding on your part all diligence, in your faith supply moral excellence; and in moral excellence, knowledge;",
+      "ko": "이러므로 너희가 더욱 힘써 너희 믿음에 덕을, 덕에 지식을,",
+      "source_text_hash": "e83f78506966303dae8b2c00e7225a930013db5f4894f096599abe32f0b058e0",
+      "translation_text_hash": "3ecb8388f3f129ba2175b5bf6011fa7b736ee5bd8011e664a2724072d2600784",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희가 더욱 힘써 너희 믿음에 덕을, 덕에 지식을,"
+      ],
+      "raw_text_hashes": [
+        "3ecb8388f3f129ba2175b5bf6011fa7b736ee5bd8011e664a2724072d2600784"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:6",
+      "sequence": 30482,
+      "chapter_label": "2PE 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "and in knowledge, self-control; and in self-control, perseverance; and in perseverance, godliness;",
+      "ko": "지식에 절제를, 절제에 인내를, 인내에 경건을,",
+      "source_text_hash": "610aeab8cb3dbc7c4be4ed04d7744657ecf748bd6a40d52b52b033451f361ab3",
+      "translation_text_hash": "8c8347de6b205682f6257a198b8afd043db90753ee9e242a54aa6d577acef63a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지식에 절제를, 절제에 인내를, 인내에 경건을,"
+      ],
+      "raw_text_hashes": [
+        "8c8347de6b205682f6257a198b8afd043db90753ee9e242a54aa6d577acef63a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:7",
+      "sequence": 30483,
+      "chapter_label": "2PE 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "and in godliness, brotherly affection; and in brotherly affection, love.",
+      "ko": "경건에 형제 우애를, 형제 우애에 사랑을 공급하라",
+      "source_text_hash": "0b5afe6d7110c5ce86843e43c2cd9bc06a8fbdd18805e637f5df53f8986319e4",
+      "translation_text_hash": "8e0818b547da5b17d1f2e273cd443fd0740f1e1e7439589f4b95f3747186c7df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "경건에 형제 우애를, 형제 우애에 사랑을 공급하라"
+      ],
+      "raw_text_hashes": [
+        "8e0818b547da5b17d1f2e273cd443fd0740f1e1e7439589f4b95f3747186c7df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:8",
+      "sequence": 30484,
+      "chapter_label": "2PE 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "For if these things are yours and abound, they make you to not be idle or unfruitful in the knowledge of our Lord Jesus Christ.",
+      "ko": "이런 것이 너희에게 있어 흡족한즉 너희로 우리 주 예수 그리스도를 알기에 게으르지 않고 열매 없는 자가 되지 않게 하려니와",
+      "source_text_hash": "631a79c747446ed27cc56602863007f0aff0ee7ac61ecc79eaeb7b13e6f59e91",
+      "translation_text_hash": "b2ad27163a238f652bc3c613c2036d00322dc51753d89ede4a1e0c79e2abc686",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것이 너희에게 있어 흡족한즉 너희로 우리 주 예수 그리스도를 알기에 게으르지 않고 열매 없는 자가 되지 않게 하려니와"
+      ],
+      "raw_text_hashes": [
+        "b2ad27163a238f652bc3c613c2036d00322dc51753d89ede4a1e0c79e2abc686"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:9",
+      "sequence": 30485,
+      "chapter_label": "2PE 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "For he who lacks these things is blind, seeing only what is near, having forgotten the cleansing from his old sins.",
+      "ko": "이런 것이 없는 자는 소경이라 원시치 못하고 그의 옛 죄를 깨끗케 하심을 잊었느니라",
+      "source_text_hash": "39b4daef3463fef11b9dbac0396f34486a4bd7037bdebc5b83163c188232b562",
+      "translation_text_hash": "ed1511704175f991bd6e7ca4d77855134567f24e27f8c3d171d3f3a5388289cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것이 없는 자는 소경이라 원시치 못하고 그의 옛 죄를 깨끗케 하심을 잊었느니라"
+      ],
+      "raw_text_hashes": [
+        "ed1511704175f991bd6e7ca4d77855134567f24e27f8c3d171d3f3a5388289cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:10",
+      "sequence": 30486,
+      "chapter_label": "2PE 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore, brothers, be more diligent to make your calling and election sure. For if you do these things, you will never stumble.",
+      "ko": "그러므로 형제들아 더욱 힘써 너희 부르심과 택하심을 굳게 하라 너희가 이것을 행한즉 언제든지 실족지 아니하리라",
+      "source_text_hash": "bbf62962b04148163fc5f02b3c3054ccd76277a70454fb01b266dbcff8324c66",
+      "translation_text_hash": "e36ef4da96ff6d7b4ef98d0c4c51ee5b717a856ee4754c19bb68e1a2bb2aa912",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 형제들아 더욱 힘써 너희 부르심과 택하심을 굳게 하라 너희가 이것을 행한즉 언제든지 실족지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "e36ef4da96ff6d7b4ef98d0c4c51ee5b717a856ee4754c19bb68e1a2bb2aa912"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:11",
+      "sequence": 30487,
+      "chapter_label": "2PE 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "For thus you will be richly supplied with the entrance into the eternal Kingdom of our Lord and Savior, Jesus Christ.",
+      "ko": "이같이 하면 우리 주 곧 구주 예수 그리스도의 영원한 나라에 들어감을 넉넉히 너희에게 주시리라",
+      "source_text_hash": "b6d266eb0ad8be89b5c707696761ececc5f7b5c53140d5775b0c0c2fb32c71ab",
+      "translation_text_hash": "3f00089c05d5329c917dcd2f69c1864ce53c202aee2ac59b4eb8496f48c09e6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 하면 우리 주 곧 구주 예수 그리스도의 영원한 나라에 들어감을 넉넉히 너희에게 주시리라"
+      ],
+      "raw_text_hashes": [
+        "3f00089c05d5329c917dcd2f69c1864ce53c202aee2ac59b4eb8496f48c09e6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:12",
+      "sequence": 30488,
+      "chapter_label": "2PE 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore I will not be negligent to remind you of these things, though you know them and are established in the present truth.",
+      "ko": "이러므로 너희가 이것을 알고 이미 있는 진리에 섰으나 내가 항상 너희로 생각하게 하려 하노라",
+      "source_text_hash": "7656916bbe199b818fe93438a8fdcf8841a3b3234002fa9e679e1fd5fafc8bfc",
+      "translation_text_hash": "7670e14048d39f2edc41635877d5024b4386c0e14cdf7e314fbb6e3210dbedac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희가 이것을 알고 이미 있는 진리에 섰으나 내가 항상 너희로 생각하게 하려 하노라"
+      ],
+      "raw_text_hashes": [
+        "7670e14048d39f2edc41635877d5024b4386c0e14cdf7e314fbb6e3210dbedac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:13",
+      "sequence": 30489,
+      "chapter_label": "2PE 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "I think it right, as long as I am in this tent, to stir you up by reminding you,",
+      "ko": "내가 이 장막에 있을 동안에 너희를 일깨워 생각하게 함이 옳은 줄로 여기노니",
+      "source_text_hash": "35febb9e78cdba8745c382799e1b3349028b2a3865a84d39ea7dcff5f752baa0",
+      "translation_text_hash": "97d491c332a96a240ff897f7e2e81ad7033ffa4ea932a724ab44f6f34fa5ba96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 장막에 있을 동안에 너희를 일깨워 생각하게 함이 옳은 줄로 여기노니"
+      ],
+      "raw_text_hashes": [
+        "97d491c332a96a240ff897f7e2e81ad7033ffa4ea932a724ab44f6f34fa5ba96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:14",
+      "sequence": 30490,
+      "chapter_label": "2PE 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "knowing that the putting off of my tent comes swiftly, even as our Lord Jesus Christ made clear to me.",
+      "ko": "이는 우리 주 예수 그리스도께서 내게 지시하신 것 같이 나도 이 장막을 벗어날 것이 임박한 줄을 앎이라",
+      "source_text_hash": "cc2ee21a9e098c6f3b0cfbd49faebbd64668dd610f22420eb9e4f26fa9b7b994",
+      "translation_text_hash": "0b950b3572a22b2c90510ea63bd4c402ad5842ec2fe67f6e227961638fe13176",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리 주 예수 그리스도께서 내게 지시하신 것 같이 나도 이 장막을 벗어날 것이 임박한 줄을 앎이라"
+      ],
+      "raw_text_hashes": [
+        "0b950b3572a22b2c90510ea63bd4c402ad5842ec2fe67f6e227961638fe13176"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:15",
+      "sequence": 30491,
+      "chapter_label": "2PE 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "Yes, I will make every effort that you may always be able to remember these things even after my departure.",
+      "ko": "내가 힘써 너희로 하여금 나의 떠난 후에라도 필요할 때는 이런 것을 생각나게 하려 하노라",
+      "source_text_hash": "e25e98fff0531ac4667fdec031279ca9afe153a4fcf757f22f0da34a6f1327ba",
+      "translation_text_hash": "c78843b14a6ab8d2b31527e4e4ffaa5da0422898e5c4bea518d95121d2c7b8c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 힘써 너희로 하여금 나의 떠난 후에라도 필요할 때는 이런 것을 생각나게 하려 하노라"
+      ],
+      "raw_text_hashes": [
+        "c78843b14a6ab8d2b31527e4e4ffaa5da0422898e5c4bea518d95121d2c7b8c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:16",
+      "sequence": 30492,
+      "chapter_label": "2PE 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "For we didn’t follow cunningly devised fables when we made known to you the power and coming of our Lord Jesus Christ, but we were eyewitnesses of his majesty.",
+      "ko": "우리 주 예수 그리스도의 능력과 강림하심을 너희에게 알게 한 것이 공교히 만든 이야기를 좇은 것이 아니요 우리는 그의 크신 위엄을 친히 본 자라",
+      "source_text_hash": "1c3a4dd7a6cf31bea03c5970134d1530e6156d1b64664bd10814fd682bb4b7c4",
+      "translation_text_hash": "907ae8321b087774d24665da8ede711084de64d1403c9eb821dcd72543a055a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도의 능력과 강림하심을 너희에게 알게 한 것이 공교히 만든 이야기를 좇은 것이 아니요 우리는 그의 크신 위엄을 친히 본 자라"
+      ],
+      "raw_text_hashes": [
+        "907ae8321b087774d24665da8ede711084de64d1403c9eb821dcd72543a055a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:17",
+      "sequence": 30493,
+      "chapter_label": "2PE 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "For he received from God the Father honor and glory when the voice came to him from the Majestic Glory, “This is my beloved Son, in whom I am well pleased.”",
+      "ko": "지극히 큰 영광 중에서 이러한 소리가 그에게 나기를 이는 내 사랑하는 아들이요 내 기뻐하는 자라 하실 때에 저가 하나님 아버지께 존귀와 영광을 받으셨느니라",
+      "source_text_hash": "be6a8ec2275a417f3f235929a317f88a0e3e25b38db364852c1d452635a11023",
+      "translation_text_hash": "9bb5d5878489a696ca45ce854c8641ec97170d526fec05214ed32082d06f3eb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지극히 큰 영광 중에서 이러한 소리가 그에게 나기를 이는 내 사랑하는 아들이요 내 기뻐하는 자라 하실 때에 저가 하나님 아버지께 존귀와 영광을 받으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "9bb5d5878489a696ca45ce854c8641ec97170d526fec05214ed32082d06f3eb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:18",
+      "sequence": 30494,
+      "chapter_label": "2PE 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "We heard this voice come out of heaven when we were with him on the holy mountain.",
+      "ko": "이 소리는 우리가 저와 함께 거룩한 산에 있을 때에 하늘로서 나옴을 들은 것이라",
+      "source_text_hash": "33fdce65b4a4bc3dad64eefc2905402de6b4a499dab625615d87565b96d85fb7",
+      "translation_text_hash": "b169aa5e6b0faa132d88602e5354d246ac5cd581dd45275e25f01ee06bfc86a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 소리는 우리가 저와 함께 거룩한 산에 있을 때에 하늘로서 나옴을 들은 것이라"
+      ],
+      "raw_text_hashes": [
+        "b169aa5e6b0faa132d88602e5354d246ac5cd581dd45275e25f01ee06bfc86a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:19",
+      "sequence": 30495,
+      "chapter_label": "2PE 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "We have the more sure word of prophecy; and you do well that you heed it as to a lamp shining in a dark place, until the day dawns and the morning star arises in your hearts,",
+      "ko": "또 우리에게 더 확실한 예언이 있어 어두운데 비취는 등불과 같으니 날이 새어 샛별이 너희 마음에 떠오르기까지 너희가 이것을 주의하는 것이 가하니라",
+      "source_text_hash": "a95706a6a92cb64b41edb3564750f9c7cfa19466cc6842dce0cff538bb745070",
+      "translation_text_hash": "4b189d4d020b89b1bfeb409ec6edfcb588f2f8f3604a22c60456517448728470",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 우리에게 더 확실한 예언이 있어 어두운데 비취는 등불과 같으니 날이 새어 샛별이 너희 마음에 떠오르기까지 너희가 이것을 주의하는 것이 가하니라"
+      ],
+      "raw_text_hashes": [
+        "4b189d4d020b89b1bfeb409ec6edfcb588f2f8f3604a22c60456517448728470"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:20",
+      "sequence": 30496,
+      "chapter_label": "2PE 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "knowing this first, that no prophecy of Scripture is of private interpretation.",
+      "ko": "먼저 알 것은 경의 모든 예언은 사사로이 풀 것이 아니니",
+      "source_text_hash": "ce42fccfda4374078d989af9ebc05cd416a4875e1119d6e06fd9f180fb5ac755",
+      "translation_text_hash": "9a1a00e73b4ae0f679a8fb7b97b547ba7a43176a09086ddf85b61e6df914a584",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼저 알 것은 경의 모든 예언은 사사로이 풀 것이 아니니"
+      ],
+      "raw_text_hashes": [
+        "9a1a00e73b4ae0f679a8fb7b97b547ba7a43176a09086ddf85b61e6df914a584"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2PE:1:21",
+      "sequence": 30497,
+      "chapter_label": "2PE 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "2PE",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2PE",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "For no prophecy ever came by the will of man, but holy men of God spoke, being moved by the Holy Spirit.",
+      "ko": "예언은 언제든지 사람의 뜻으로 낸 것이 아니요 오직 성령의 감동하심을 입은 사람들이 하나님께 받아 말한 것임이니라",
+      "source_text_hash": "1a48b2dc394c2f11a00d53add28349e2001a4e3f68a0c4216dc71f8d8636ec15",
+      "translation_text_hash": "5bf6f682723236d83a2a44d3bbe66250bbdee7bd4ec3c92dac8c7f0e7ce28e90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예언은 언제든지 사람의 뜻으로 낸 것이 아니요 오직 성령의 감동하심을 입은 사람들이 하나님께 받아 말한 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "5bf6f682723236d83a2a44d3bbe66250bbdee7bd4ec3c92dac8c7f0e7ce28e90"
+      ]
+    }
+  ]
+}

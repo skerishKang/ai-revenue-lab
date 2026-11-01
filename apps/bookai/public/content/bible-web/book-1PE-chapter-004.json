@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1PE:chapter:004",
+  "unit_ordinal": 1155,
+  "unit_label": "1PE 4",
+  "book_code": "1PE",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1PE:4:1",
+      "sequence": 30444,
+      "chapter_label": "1PE 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Therefore, since Christ suffered for us in the flesh, arm yourselves also with the same mind; for he who has suffered in the flesh has ceased from sin,",
+      "ko": "그리스도께서 이미 육체의 고난을 받으셨으니 너희도 같은 마음으로 갑옷을 삼으라 이는 육체의 고난을 받은 자가 죄를 그쳤음이니",
+      "source_text_hash": "20312a62fae17b9b60008542911f29ce0370bd334a680081cfbba016396592c1",
+      "translation_text_hash": "fed6467b4d8193711beb8a0fa07e60a0e1fa0ac4685631e1c46a921aabfeb25b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 이미 육체의 고난을 받으셨으니 너희도 같은 마음으로 갑옷을 삼으라 이는 육체의 고난을 받은 자가 죄를 그쳤음이니"
+      ],
+      "raw_text_hashes": [
+        "fed6467b4d8193711beb8a0fa07e60a0e1fa0ac4685631e1c46a921aabfeb25b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:2",
+      "sequence": 30445,
+      "chapter_label": "1PE 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "that you no longer should live the rest of your time in the flesh for the lusts of men, but for the will of God.",
+      "ko": "그 후로는 다시 사람의 정욕을 좇지 않고 오직 하나님의 뜻을 좇아 육체의 남은 때를 살게 하려 함이라",
+      "source_text_hash": "99c3c8266e6c5ee1ce6b4ee66bfe0d911b6a1e2bb2d8a4030151aafa276edde7",
+      "translation_text_hash": "c43cc3dd2b03f692f5aecb4f667a9a81a584a0089bce0cf49117de13b50ae162",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후로는 다시 사람의 정욕을 좇지 않고 오직 하나님의 뜻을 좇아 육체의 남은 때를 살게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "c43cc3dd2b03f692f5aecb4f667a9a81a584a0089bce0cf49117de13b50ae162"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:3",
+      "sequence": 30446,
+      "chapter_label": "1PE 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "For we have spent enough of our past time doing the desire of the Gentiles, and having walked in lewdness, lusts, drunken binges, orgies, carousings, and abominable idolatries.",
+      "ko": "너희가 음란과 정욕과 술취함과 방탕과 연락과 무법한 우상 숭배를 하여 이방인의 뜻을 좇아 행한 것이 지나간 때가 족하도다",
+      "source_text_hash": "a26689d79e5ac5b0ab2b9fee82e261c16bbeda5d153b254d5b5264591272c315",
+      "translation_text_hash": "9b5e85c05411551b462b3c8a0870819259ebd460faa37db4e7ad98db530c2549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 음란과 정욕과 술취함과 방탕과 연락과 무법한 우상 숭배를 하여 이방인의 뜻을 좇아 행한 것이 지나간 때가 족하도다"
+      ],
+      "raw_text_hashes": [
+        "9b5e85c05411551b462b3c8a0870819259ebd460faa37db4e7ad98db530c2549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:4",
+      "sequence": 30447,
+      "chapter_label": "1PE 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "They think it is strange that you don’t run with them into the same excess of riot, speaking evil of you.",
+      "ko": "이러므로 너희가 저희와 함께 그런 극한 방탕에 달음질하지 아니하는 것을 저희가 이상히 여겨 비방하나",
+      "source_text_hash": "3c819516d7dc8793e43d641a0f1c60f20f252ed0e058778329dc6acebed3157a",
+      "translation_text_hash": "77fc0dee965892281a48f773fb0dfcc6df8386b9ddbd275caa4d3032a1fe599f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희가 저희와 함께 그런 극한 방탕에 달음질하지 아니하는 것을 저희가 이상히 여겨 비방하나"
+      ],
+      "raw_text_hashes": [
+        "77fc0dee965892281a48f773fb0dfcc6df8386b9ddbd275caa4d3032a1fe599f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:5",
+      "sequence": 30448,
+      "chapter_label": "1PE 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "They will give account to him who is ready to judge the living and the dead.",
+      "ko": "저희가 산 자와 죽은 자 심판하기를 예비하신 자에게 직고하리라",
+      "source_text_hash": "bd5a4011d6aa7eaa8d7beb1fce8bd95b642197d1377dfc5a4ed971e1d43d7f8b",
+      "translation_text_hash": "7827d834198ec7ef78ab0e6535443a6ce432855f9335137b129e3cdaef306a90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 산 자와 죽은 자 심판하기를 예비하신 자에게 직고하리라"
+      ],
+      "raw_text_hashes": [
+        "7827d834198ec7ef78ab0e6535443a6ce432855f9335137b129e3cdaef306a90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:6",
+      "sequence": 30449,
+      "chapter_label": "1PE 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "For to this end the Good News was preached even to the dead, that they might be judged indeed as men in the flesh, but live as to God in the spirit.",
+      "ko": "이를 위하여 죽은 자들에게도 복음이 전파되었으니 이는 육체로는 사람처럼 심판을 받으나 영으로는 하나님처럼 살게 하려 함이니라",
+      "source_text_hash": "09938379cce28a8d160a694d2b25a2a78487732cd32ef123b4eb62a86910c2f7",
+      "translation_text_hash": "d63cb251e6c13d1968fb9cc9f5fad4c3b3c0447d6119ba10d81fb9119f37fb79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 위하여 죽은 자들에게도 복음이 전파되었으니 이는 육체로는 사람처럼 심판을 받으나 영으로는 하나님처럼 살게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "d63cb251e6c13d1968fb9cc9f5fad4c3b3c0447d6119ba10d81fb9119f37fb79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:7",
+      "sequence": 30450,
+      "chapter_label": "1PE 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "But the end of all things is near. Therefore be of sound mind, self-controlled, and sober in prayer.",
+      "ko": "만물의 마지막이 가까왔으니 그러므로 너희는 정신을 차리고 근신하여 기도하라",
+      "source_text_hash": "d88a220fe16837bf50a50dfc164dda278cd5ef32a89c7b2385f91e784f188a75",
+      "translation_text_hash": "9598819cd059673f8513306935e398d99dcbb714d69116308e5374c553a4fc70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만물의 마지막이 가까왔으니 그러므로 너희는 정신을 차리고 근신하여 기도하라"
+      ],
+      "raw_text_hashes": [
+        "9598819cd059673f8513306935e398d99dcbb714d69116308e5374c553a4fc70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:8",
+      "sequence": 30451,
+      "chapter_label": "1PE 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "And above all things be earnest in your love among yourselves, for love covers a multitude of sins.",
+      "ko": "무엇보다도 열심으로 서로 사랑할찌니 사랑은 허다한 죄를 덮느니라",
+      "source_text_hash": "3db9c9ce1fd8e8eed448eac340f8832db59a1dc7955ba7c4adabdc448e6b177e",
+      "translation_text_hash": "8832979f5211936980a82f3926798964da68fba1deb543dbc55644c527deec37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무엇보다도 열심으로 서로 사랑할찌니 사랑은 허다한 죄를 덮느니라"
+      ],
+      "raw_text_hashes": [
+        "8832979f5211936980a82f3926798964da68fba1deb543dbc55644c527deec37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:9",
+      "sequence": 30452,
+      "chapter_label": "1PE 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Be hospitable to one another without grumbling.",
+      "ko": "서로 대접하기를 원망 없이하고",
+      "source_text_hash": "6d11032309a9b2f0b5c93288b8dff50b5af01fb9ebd6c2bc8f631ac3fa637dbf",
+      "translation_text_hash": "210063d4930474f3ab5ab8232187455e3ce2db847c94afec3f14560083389d5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 대접하기를 원망 없이하고"
+      ],
+      "raw_text_hashes": [
+        "210063d4930474f3ab5ab8232187455e3ce2db847c94afec3f14560083389d5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:10",
+      "sequence": 30453,
+      "chapter_label": "1PE 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "As each has received a gift, employ it in serving one another, as good managers of the grace of God in its various forms.",
+      "ko": "각각 은사를 받은대로 하나님의 각양 은혜를 맡은 선한 청지기 같이 서로 봉사하라",
+      "source_text_hash": "655139ccb535400cd4b55fcd561261b53f34bd58d00ef2dab961b96178fb13dd",
+      "translation_text_hash": "a797d864e4614b6cd7458e1010fe99d0238c6083d35d1dab4435fbb3e8605244",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각각 은사를 받은대로 하나님의 각양 은혜를 맡은 선한 청지기 같이 서로 봉사하라"
+      ],
+      "raw_text_hashes": [
+        "a797d864e4614b6cd7458e1010fe99d0238c6083d35d1dab4435fbb3e8605244"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:11",
+      "sequence": 30454,
+      "chapter_label": "1PE 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "If anyone speaks, let it be as it were the very words of God. If anyone serves, let it be as of the strength which God supplies, that in all things God may be glorified through Jesus Christ, to whom belong the glory and the dominion forever and ever. Amen.",
+      "ko": "만일 누가 말하려면 하나님의 말씀을 하는것 같이 하고 누가 봉사하려면 하나님의 공급하시는 힘으로 하는것 같이 하라 이는 범사에 예수 그리스도로 말미암아 하나님이 영광을 받으시게 하려 함이니 그에게 영광과 권능이 세세에 무궁토록 있느니라 아멘",
+      "source_text_hash": "4ab69d0ca7a77ff5fa3fd1c4eb11c210c7a7053f53fe30714c484579fbbe0183",
+      "translation_text_hash": "2ff099155e6901d434f97efdee54256f9c7f7907df0722bc250a477ceabb8763",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누가 말하려면 하나님의 말씀을 하는것 같이 하고 누가 봉사하려면 하나님의 공급하시는 힘으로 하는것 같이 하라 이는 범사에 예수 그리스도로 말미암아 하나님이 영광을 받으시게 하려 함이니 그에게 영광과 권능이 세세에 무궁토록 있느니라 아멘"
+      ],
+      "raw_text_hashes": [
+        "2ff099155e6901d434f97efdee54256f9c7f7907df0722bc250a477ceabb8763"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:12",
+      "sequence": 30455,
+      "chapter_label": "1PE 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Beloved, don’t be astonished at the fiery trial which has come upon you to test you, as though a strange thing happened to you.",
+      "ko": "사랑하는 자들아 너희를 시련하려고 오는 불시험을 이상한 일 당하는것 같이 이상히 여기지 말고",
+      "source_text_hash": "5a0000950a68bd4431d019b9c00fbf3903ce569783d7f8706bcb1bbab2da974e",
+      "translation_text_hash": "73c4e7769497aa455e262d4f6e760788a5730e71c157d39f7fc58691454f7e23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 너희를 시련하려고 오는 불시험을 이상한 일 당하는것 같이 이상히 여기지 말고"
+      ],
+      "raw_text_hashes": [
+        "73c4e7769497aa455e262d4f6e760788a5730e71c157d39f7fc58691454f7e23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:13",
+      "sequence": 30456,
+      "chapter_label": "1PE 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "But because you are partakers of Christ’s sufferings, rejoice, that at the revelation of his glory you also may rejoice with exceeding joy.",
+      "ko": "오직 너희가 그리스도의 고난에 참예하는 것으로 즐거워하라 이는 그의 영광을 나타내실 때에 너희로 즐거워하고 기뻐하게 하려 함이라",
+      "source_text_hash": "e7430997d380c3eaad832f51a896231018fbefb80a2b2d21316768efe0129e23",
+      "translation_text_hash": "c0c1d80ab98abb8e5ed3a607a9f0f1261a835ae87bcbe2e938d568c239d715ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희가 그리스도의 고난에 참예하는 것으로 즐거워하라 이는 그의 영광을 나타내실 때에 너희로 즐거워하고 기뻐하게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "c0c1d80ab98abb8e5ed3a607a9f0f1261a835ae87bcbe2e938d568c239d715ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:14",
+      "sequence": 30457,
+      "chapter_label": "1PE 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "If you are insulted for the name of Christ, you are blessed, because the Spirit of glory and of God rests on you. On their part he is blasphemed, but on your part he is glorified.",
+      "ko": "너희가 그리스도의 이름으로 욕을 받으면 복 있는 자로다 영광의 영 곧 하나님의 영이 너희 위에 계심이라",
+      "source_text_hash": "e749ce8ffab12389281799c0550d48a35978f87ac5f3e25db4d0fd5ea40cbf9e",
+      "translation_text_hash": "c0a1768567da39f27c873ba78a0de592fb1074942080ff05d117f660de9076f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그리스도의 이름으로 욕을 받으면 복 있는 자로다 영광의 영 곧 하나님의 영이 너희 위에 계심이라"
+      ],
+      "raw_text_hashes": [
+        "c0a1768567da39f27c873ba78a0de592fb1074942080ff05d117f660de9076f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:15",
+      "sequence": 30458,
+      "chapter_label": "1PE 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "But let none of you suffer as a murderer, or a thief, or an evil doer, or a meddler in other men’s matters.",
+      "ko": "너희 중에 누구든지 살인이나 도적질이나 악행이나 남의 일을 간섭하는 자로 고난을 받지 말려니와",
+      "source_text_hash": "adbbdfc895f73bc52c6b08d5b6921097d174ac35b4cabe5d525d9231f315bdd2",
+      "translation_text_hash": "c3a98f18c975c053981dff399c2c73d975ba6ddb98bed4e34046a03b91093683",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누구든지 살인이나 도적질이나 악행이나 남의 일을 간섭하는 자로 고난을 받지 말려니와"
+      ],
+      "raw_text_hashes": [
+        "c3a98f18c975c053981dff399c2c73d975ba6ddb98bed4e34046a03b91093683"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:16",
+      "sequence": 30459,
+      "chapter_label": "1PE 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "But if one of you suffers for being a Christian, let him not be ashamed; but let him glorify God in this matter.",
+      "ko": "만일 그리스도인으로 고난을 받은즉 부끄러워 말고 도리어 그 이름으로 하나님께 영광을 돌리라",
+      "source_text_hash": "7b4ccaf80c6b5fa6d735fb63030394e7ffd12bc71d3290fa21c71de4d8f46c4a",
+      "translation_text_hash": "99384f94a4f98c23b82119b52a2f289831998838bafaef9cd49cb83ef099f96d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그리스도인으로 고난을 받은즉 부끄러워 말고 도리어 그 이름으로 하나님께 영광을 돌리라"
+      ],
+      "raw_text_hashes": [
+        "99384f94a4f98c23b82119b52a2f289831998838bafaef9cd49cb83ef099f96d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:17",
+      "sequence": 30460,
+      "chapter_label": "1PE 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "For the time has come for judgment to begin with the household of God. If it begins first with us, what will happen to those who don’t obey the Good News of God?",
+      "ko": "하나님 집에서 심판을 시작할 때가 되었나니 만일 우리에게 먼저 하면 하나님의 복음을 순종치 아니하는 자들의 그 마지막이 어떠하며",
+      "source_text_hash": "659ccafe08d0792148212d5462830494701d8482fea745a9bb5656b5c755b9a6",
+      "translation_text_hash": "5412116cac644ed142d061088c99b336618f325018bcbfe2e866349fbbae5164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 집에서 심판을 시작할 때가 되었나니 만일 우리에게 먼저 하면 하나님의 복음을 순종치 아니하는 자들의 그 마지막이 어떠하며"
+      ],
+      "raw_text_hashes": [
+        "5412116cac644ed142d061088c99b336618f325018bcbfe2e866349fbbae5164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:18",
+      "sequence": 30461,
+      "chapter_label": "1PE 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "“If it is hard for the righteous to be saved, what will happen to the ungodly and the sinner?”",
+      "ko": "또 의인이 겨우 구원을 얻으면 경건치 아니한 자와 죄인이 어디 서리요",
+      "source_text_hash": "11ac835c1d888c4db04f47834bc412047c79536f4bcc30377c0728bfe72af510",
+      "translation_text_hash": "c0090689457f3bc64238df502c593d25f6f600e1b683b4ad207b9f1aa98c70b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 의인이 겨우 구원을 얻으면 경건치 아니한 자와 죄인이 어디 서리요"
+      ],
+      "raw_text_hashes": [
+        "c0090689457f3bc64238df502c593d25f6f600e1b683b4ad207b9f1aa98c70b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:4:19",
+      "sequence": 30462,
+      "chapter_label": "1PE 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "1PE",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "Therefore let them also who suffer according to the will of God in doing good entrust their souls to him, as to a faithful Creator.",
+      "ko": "그러므로 하나님의 뜻대로 고난을 받는 자들은 또한 선을 행하는 가운데 그 영혼을 미쁘신 조물주께 부탁할찌어다",
+      "source_text_hash": "6aba3e1688c47c665339ffd8475cd7b34035ae232fa425061dd68bd78f93ddef",
+      "translation_text_hash": "cd201b4910c4fae0bfc871e5ba5128f02cadc1f0227354853a08781ef6502fe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하나님의 뜻대로 고난을 받는 자들은 또한 선을 행하는 가운데 그 영혼을 미쁘신 조물주께 부탁할찌어다"
+      ],
+      "raw_text_hashes": [
+        "cd201b4910c4fae0bfc871e5ba5128f02cadc1f0227354853a08781ef6502fe4"
+      ]
+    }
+  ]
+}

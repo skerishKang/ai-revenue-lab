@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:002",
+  "unit_ordinal": 269,
+  "unit_label": "2SA 2",
+  "book_code": "2SA",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:2:1",
+      "sequence": 8051,
+      "chapter_label": "2SA 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "After this, David inquired of the LORD, saying, “Shall I go up into any of the cities of Judah?” The LORD said to him, “Go up.” David said, “Where shall I go up?” He said, “To Hebron.”",
+      "ko": "그 후에 다윗이 여호와께 물어 가로되 내가 유다 한 성으로 올라가리이까 여호와께서 가라사대 올라가라 다윗이 가로되 어디로 가리이까 가라사대 헤브론으로 갈찌니라",
+      "source_text_hash": "272b560a1b6c21c47708aca3e731bf87822ac8baffbe6f000d3085d7534b7386",
+      "translation_text_hash": "d3380f73fff85b30633c9a5c5001e0afba5d155a167cf0a6341be06406f73626",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 다윗이 여호와께 물어 가로되 내가 유다 한 성으로 올라가리이까 여호와께서 가라사대 올라가라 다윗이 가로되 어디로 가리이까 가라사대 헤브론으로 갈찌니라"
+      ],
+      "raw_text_hashes": [
+        "d3380f73fff85b30633c9a5c5001e0afba5d155a167cf0a6341be06406f73626"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:2",
+      "sequence": 8052,
+      "chapter_label": "2SA 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "So David went up there with his two wives, Ahinoam the Jezreelitess, and Abigail the wife of Nabal the Carmelite.",
+      "ko": "다윗이 그 두 아내 이스르엘 여인 아히노암과 갈멜 사람 나발의 아내 되었던 아비가일을 데리고 그리로 올라갈 때에",
+      "source_text_hash": "8c8cfe989a667104530f38675f1d2a85cf0eedb5c065270f5bfb045a4f8e5216",
+      "translation_text_hash": "356171ff50c0a0f7ee20782faf0826906e94c6457b2c03150343948afb704bce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 두 아내 이스르엘 여인 아히노암과 갈멜 사람 나발의 아내 되었던 아비가일을 데리고 그리로 올라갈 때에"
+      ],
+      "raw_text_hashes": [
+        "356171ff50c0a0f7ee20782faf0826906e94c6457b2c03150343948afb704bce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:3",
+      "sequence": 8053,
+      "chapter_label": "2SA 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "David brought up his men who were with him, every man with his household. They lived in the cities of Hebron.",
+      "ko": "또 자기와 함께한 종자들과 그들의 권속들을 다 데리고 올라가서 헤브론 각 성에 거하게 하니라",
+      "source_text_hash": "b730e5198e982dcba008310b5162ffc0fe54d51b9dc617f0f7fdd255f04f4ad7",
+      "translation_text_hash": "486da0780acc726c5710fd28c39f9e6f528f1d33f0c5d21582c647edc27cc188",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 자기와 함께한 종자들과 그들의 권속들을 다 데리고 올라가서 헤브론 각 성에 거하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "486da0780acc726c5710fd28c39f9e6f528f1d33f0c5d21582c647edc27cc188"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:4",
+      "sequence": 8054,
+      "chapter_label": "2SA 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "The men of Judah came, and there they anointed David king over the house of Judah. They told David, “The men of Jabesh Gilead were those who buried Saul.”",
+      "ko": "유다 사람들이 와서 거기서 다윗에게 기름을 부어 유다 족속의 왕을 삼았더라 혹이 다윗에게 고하여 가로되 사울을 장사한 사람은 길르앗 야베스 사람들이니이다 하매",
+      "source_text_hash": "65a8df51beb0bf2cbc9edca554c5ff8e26ed1372d41d3605612d7a72432684b3",
+      "translation_text_hash": "b19e56ed56844f6563cea5df70f847f5596711da759c0da0109360ef1b117e8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 사람들이 와서 거기서 다윗에게 기름을 부어 유다 족속의 왕을 삼았더라 혹이 다윗에게 고하여 가로되 사울을 장사한 사람은 길르앗 야베스 사람들이니이다 하매"
+      ],
+      "raw_text_hashes": [
+        "b19e56ed56844f6563cea5df70f847f5596711da759c0da0109360ef1b117e8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:5",
+      "sequence": 8055,
+      "chapter_label": "2SA 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "David sent messengers to the men of Jabesh Gilead, and said to them, “Blessed are you by the LORD, that you have shown this kindness to your lord, even to Saul, and have buried him.",
+      "ko": "다윗이 길르앗 야베스 사람들에게 사자들을 보내어 가로되 너희가 너희 주 사울에게 이처럼 은혜를 베풀어 장사하였으니 여호와께 복을 받을찌어다",
+      "source_text_hash": "6d2ec4591b36894e4e34918eab9e63e08ceef76bafd5b751bf3c75da3e8c919c",
+      "translation_text_hash": "939a9ee5c6e89706054b3ec8bc1c13bcf534735e79cda021d3e46415768af8e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 길르앗 야베스 사람들에게 사자들을 보내어 가로되 너희가 너희 주 사울에게 이처럼 은혜를 베풀어 장사하였으니 여호와께 복을 받을찌어다"
+      ],
+      "raw_text_hashes": [
+        "939a9ee5c6e89706054b3ec8bc1c13bcf534735e79cda021d3e46415768af8e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:6",
+      "sequence": 8056,
+      "chapter_label": "2SA 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "Now may the LORD show loving kindness and truth to you. I also will reward you for this kindness, because you have done this thing.",
+      "ko": "너희가 이 일을 하였으니 이제 여호와께서 은혜와 진리로 너희에게 베푸시기를 원하고 나도 이 선한 일을 너희에게 갚으리니",
+      "source_text_hash": "dfe0d62abf014b948bfbe065c44a1c2f5a5687e337e80f5cf692f04b338706c2",
+      "translation_text_hash": "5796bfef8c634c83485aa34749d7d199924535ea107e9e59a406ad83ae11e11d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이 일을 하였으니 이제 여호와께서 은혜와 진리로 너희에게 베푸시기를 원하고 나도 이 선한 일을 너희에게 갚으리니"
+      ],
+      "raw_text_hashes": [
+        "5796bfef8c634c83485aa34749d7d199924535ea107e9e59a406ad83ae11e11d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:7",
+      "sequence": 8057,
+      "chapter_label": "2SA 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "Now therefore let your hands be strong, and be valiant; for Saul your lord is dead, and also the house of Judah have anointed me king over them.”",
+      "ko": "이제 너희는 손을 강하게 하고 담대히 할찌어다 너희 주 사울이 죽었고 또 유다 족속이 내게 기름을 부어 저희의 왕을 삼았음이니라",
+      "source_text_hash": "454cd28c02fa5352bd52e7901b731de7309e792c56bff7ffcc919b50ecd93630",
+      "translation_text_hash": "490ace7f6cbd245203c780588695cd94bcc2f08d6a6e1c94f71ada65204b1f4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희는 손을 강하게 하고 담대히 할찌어다 너희 주 사울이 죽었고 또 유다 족속이 내게 기름을 부어 저희의 왕을 삼았음이니라"
+      ],
+      "raw_text_hashes": [
+        "490ace7f6cbd245203c780588695cd94bcc2f08d6a6e1c94f71ada65204b1f4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:8",
+      "sequence": 8058,
+      "chapter_label": "2SA 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Now Abner the son of Ner, captain of Saul’s army, had taken Ishbosheth the son of Saul and brought him over to Mahanaim.",
+      "ko": "사울의 군장 넬의 아들 아브넬이 이미 사울의 아들 이스보셋을 데리고 마하나임으로 건너가서",
+      "source_text_hash": "2d24a450204225a5d98caeb1128f958b39ee2a78012fa230c4d52d977931882e",
+      "translation_text_hash": "c7e1f826867e0d293d82063daa1cd09fcb1959563e425d75c3294ff71bb62c58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 군장 넬의 아들 아브넬이 이미 사울의 아들 이스보셋을 데리고 마하나임으로 건너가서"
+      ],
+      "raw_text_hashes": [
+        "c7e1f826867e0d293d82063daa1cd09fcb1959563e425d75c3294ff71bb62c58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:9",
+      "sequence": 8059,
+      "chapter_label": "2SA 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "He made him king over Gilead, over the Ashurites, over Jezreel, over Ephraim, over Benjamin, and over all Israel.",
+      "ko": "길르앗과 아술과 이스르엘과 에브라임과 베냐민과 온 이스라엘의 왕을 삼았더라",
+      "source_text_hash": "1e11a555b65cb36da83567d8d4be0750e6ac76947f4a31ff1703500295aa282f",
+      "translation_text_hash": "3d4ea3ae6df3c26efd3cf813c213b120d7280ba461e14ce7de001566d02cfe7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗과 아술과 이스르엘과 에브라임과 베냐민과 온 이스라엘의 왕을 삼았더라"
+      ],
+      "raw_text_hashes": [
+        "3d4ea3ae6df3c26efd3cf813c213b120d7280ba461e14ce7de001566d02cfe7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:10",
+      "sequence": 8060,
+      "chapter_label": "2SA 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Ishbosheth, Saul’s son, was forty years old when he began to reign over Israel, and he reigned two years. But the house of Judah followed David.",
+      "ko": "사울의 아들 이스보셋이 비로소 이스라엘 왕이 될 때에 나이 사십세며 두해 동안 위에 있으니라 유다 족속은 다윗을 따르니",
+      "source_text_hash": "3bde555149e34054b7ddb33d20e014e34bbf1f4c3184d03666628d43606339ab",
+      "translation_text_hash": "0f2d849981fb76e993eab1735323315f877aa10a3c0026005b29a93e4151f646",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 아들 이스보셋이 비로소 이스라엘 왕이 될 때에 나이 사십세며 두해 동안 위에 있으니라 유다 족속은 다윗을 따르니"
+      ],
+      "raw_text_hashes": [
+        "0f2d849981fb76e993eab1735323315f877aa10a3c0026005b29a93e4151f646"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:11",
+      "sequence": 8061,
+      "chapter_label": "2SA 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "The time that David was king in Hebron over the house of Judah was seven years and six months.",
+      "ko": "다윗이 헤브론에서 유다 족속의 왕이 된 날 수는 일곱해 여섯달이더라",
+      "source_text_hash": "b117b91c7d1f46440765dff8f3bed1dbde8e152634f360162bee8a8f6f22e84b",
+      "translation_text_hash": "c9aa9bae70db2c2961fa189c2b8528e0dac166399fe2a6a4bce7d9a71a1d80d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 헤브론에서 유다 족속의 왕이 된 날 수는 일곱해 여섯달이더라"
+      ],
+      "raw_text_hashes": [
+        "c9aa9bae70db2c2961fa189c2b8528e0dac166399fe2a6a4bce7d9a71a1d80d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:12",
+      "sequence": 8062,
+      "chapter_label": "2SA 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "Abner the son of Ner, and the servants of Ishbosheth the son of Saul, went out from Mahanaim to Gibeon.",
+      "ko": "넬의 아들 아브넬과 사울의 아들 이스보셋의 신복들은 마하나임에서 나와서 기브온에 이르고",
+      "source_text_hash": "b237c1af681967b8accc2e50300cb209176fbebebf77f027311a00f628e822c1",
+      "translation_text_hash": "f96d8274086ed843e370681d8163f46db6c94f8ea314f7b93b052e4c09321a51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "넬의 아들 아브넬과 사울의 아들 이스보셋의 신복들은 마하나임에서 나와서 기브온에 이르고"
+      ],
+      "raw_text_hashes": [
+        "f96d8274086ed843e370681d8163f46db6c94f8ea314f7b93b052e4c09321a51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:13",
+      "sequence": 8063,
+      "chapter_label": "2SA 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Joab the son of Zeruiah and David’s servants went out, and met them by the pool of Gibeon; and they sat down, the one on the one side of the pool and the other on the other side of the pool.",
+      "ko": "스루야의 아들 요압과 다윗의 신복들도 나와서 기브온 못가에서 저희를 만나 앉으니 이는 못 이편이요 저는 못 저편이라",
+      "source_text_hash": "12b6873ebed96b11b5975afc163eacc974afdd07f6c599c7eecd5746d5210945",
+      "translation_text_hash": "e7d8c3f6a8c93ef40542458dce39e5ca6894bfbe7c9ddc20c5fe1af22673d81c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스루야의 아들 요압과 다윗의 신복들도 나와서 기브온 못가에서 저희를 만나 앉으니 이는 못 이편이요 저는 못 저편이라"
+      ],
+      "raw_text_hashes": [
+        "e7d8c3f6a8c93ef40542458dce39e5ca6894bfbe7c9ddc20c5fe1af22673d81c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:14",
+      "sequence": 8064,
+      "chapter_label": "2SA 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Abner said to Joab, “Please let the young men arise and compete before us!” Joab said, “Let them arise!”",
+      "ko": "아브넬이 요압에게 이르되 청컨대 소년들로 일어나서 우리 앞에서 장난하게 하자 요압이 가로되 일어나게 하자 하매",
+      "source_text_hash": "10d07fa871edf953e6f57b0540d2d0dca5349af6b9d4f40476397938ee172d81",
+      "translation_text_hash": "dd1599b89993c7ecb220f90c99b592bf4f19eb36fcad52b4036b0f70adf48ec6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 요압에게 이르되 청컨대 소년들로 일어나서 우리 앞에서 장난하게 하자 요압이 가로되 일어나게 하자 하매"
+      ],
+      "raw_text_hashes": [
+        "dd1599b89993c7ecb220f90c99b592bf4f19eb36fcad52b4036b0f70adf48ec6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:15",
+      "sequence": 8065,
+      "chapter_label": "2SA 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Then they arose and went over by number: twelve for Benjamin and for Ishbosheth the son of Saul, and twelve of David’s servants.",
+      "ko": "저희가 일어나 그 수효대로 나아가니 베냐민과 사울의 아들 이스보셋의 편에 열 둘이요 다윗의 신복 중에 열 둘이라",
+      "source_text_hash": "e889eea143de4549ac4e842053e0a83559e1866ce7aec8869440a4fcba8bba37",
+      "translation_text_hash": "082984d01edebce6216c60dd81fcfe171e3ff5be0b50970eb095ae8999b2ba7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 일어나 그 수효대로 나아가니 베냐민과 사울의 아들 이스보셋의 편에 열 둘이요 다윗의 신복 중에 열 둘이라"
+      ],
+      "raw_text_hashes": [
+        "082984d01edebce6216c60dd81fcfe171e3ff5be0b50970eb095ae8999b2ba7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:16",
+      "sequence": 8066,
+      "chapter_label": "2SA 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "They each caught his opponent by the head and thrust his sword in his fellow’s side; so they fell down together. Therefore that place in Gibeon was called Helkath Hazzurim.",
+      "ko": "각기 적수의 머리를 잡고 칼로 적수의 옆구리를 찌르매 일제히 쓰러진지라 그러므로 그곳을 헬갓핫수림이라 일컬었으며 기브온에 있더라",
+      "source_text_hash": "dbfd5ae08ac092f18fba1b15461dfb9be5d9a11965a49f1f8f3ba9ead4b196d3",
+      "translation_text_hash": "fe01c074a014310fb92fdec6534805afaeda554833c9ed29a3a168add0c52ad4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각기 적수의 머리를 잡고 칼로 적수의 옆구리를 찌르매 일제히 쓰러진지라 그러므로 그곳을 헬갓핫수림이라 일컬었으며 기브온에 있더라"
+      ],
+      "raw_text_hashes": [
+        "fe01c074a014310fb92fdec6534805afaeda554833c9ed29a3a168add0c52ad4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:17",
+      "sequence": 8067,
+      "chapter_label": "2SA 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "The battle was very severe that day; and Abner was beaten, and the men of Israel, before David’s servants.",
+      "ko": "그날에 싸움이 심히 맹렬하더니 아브넬과 이스라엘 사람들이 다윗의 신복들 앞에서 패하니라",
+      "source_text_hash": "3f9b83fed388d9beebdbb58d7953cd1175e1299cdb42546a4b498923dc7d22e6",
+      "translation_text_hash": "1b7e09bfa77a006f394220fb0e08b2875ab1de43f334acdb064af1cb0ccd0322",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그날에 싸움이 심히 맹렬하더니 아브넬과 이스라엘 사람들이 다윗의 신복들 앞에서 패하니라"
+      ],
+      "raw_text_hashes": [
+        "1b7e09bfa77a006f394220fb0e08b2875ab1de43f334acdb064af1cb0ccd0322"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:18",
+      "sequence": 8068,
+      "chapter_label": "2SA 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "The three sons of Zeruiah were there: Joab, Abishai, and Asahel. Asahel was as light of foot as a wild gazelle.",
+      "ko": "그곳에 스루야의 세 아들 요압과 아비새와 아사헬이 있었는데 아사헬의 발은 들노루 같이 빠르더라",
+      "source_text_hash": "e769047e124621c4d546ddf1fe6db1d83b118627983551a2af42319f9b0dec53",
+      "translation_text_hash": "a5b06e1113c4491cbfa878c72c2f6c8233d42cd141a8c76177789a8b1dfbf2ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그곳에 스루야의 세 아들 요압과 아비새와 아사헬이 있었는데 아사헬의 발은 들노루 같이 빠르더라"
+      ],
+      "raw_text_hashes": [
+        "a5b06e1113c4491cbfa878c72c2f6c8233d42cd141a8c76177789a8b1dfbf2ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:19",
+      "sequence": 8069,
+      "chapter_label": "2SA 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Asahel pursued Abner. He didn’t turn to the right hand or to the left from following Abner.",
+      "ko": "아사헬이 아브넬을 쫓아 달려가되 좌우로 치우치지 않고 아브넬의 뒤를 쫓으니",
+      "source_text_hash": "d4a85d11896f1574700e67d444b327ca2c10610ee08cd5997b86c2c50f38bda7",
+      "translation_text_hash": "eac81400612e20219b6634ea3aa59b77cad60cfa105ad1626c40776acf14a244",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사헬이 아브넬을 쫓아 달려가되 좌우로 치우치지 않고 아브넬의 뒤를 쫓으니"
+      ],
+      "raw_text_hashes": [
+        "eac81400612e20219b6634ea3aa59b77cad60cfa105ad1626c40776acf14a244"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:20",
+      "sequence": 8070,
+      "chapter_label": "2SA 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Then Abner looked behind him and said, “Is that you, Asahel?” He answered, “It is.”",
+      "ko": "아브넬이 뒤를 돌아 보며 가로되 아사헬아 너냐 대답하되 내로라",
+      "source_text_hash": "0eaeecc19e3b3d6c41526ff7869184e781a1eccb2296d462073c8b66eff6772a",
+      "translation_text_hash": "e4c1926d8f65ed58e6c0dc2c3b0041b1753ba46a5ac456e686c4f5a034d43870",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 뒤를 돌아 보며 가로되 아사헬아 너냐 대답하되 내로라"
+      ],
+      "raw_text_hashes": [
+        "e4c1926d8f65ed58e6c0dc2c3b0041b1753ba46a5ac456e686c4f5a034d43870"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:21",
+      "sequence": 8071,
+      "chapter_label": "2SA 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "Abner said to him, “Turn away to your right hand or to your left, and grab one of the young men, and take his armor.” But Asahel would not turn away from following him.",
+      "ko": "아브넬이 저에게 이르되 너는 좌편으로나 우편으로나 치우쳐서 소년 하나를 잡아 그 군복을 빼앗으라 하되 아사헬이 치우치기를 원치 않고 그 뒤를 쫓으매",
+      "source_text_hash": "41a7b60b9451343b9f415a6503a516b42272990952f170d4286f11771878401e",
+      "translation_text_hash": "a4806b41902ad09f283b510f099b0f458cd642e3749a2fe011d5ac6764173e2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 저에게 이르되 너는 좌편으로나 우편으로나 치우쳐서 소년 하나를 잡아 그 군복을 빼앗으라 하되 아사헬이 치우치기를 원치 않고 그 뒤를 쫓으매"
+      ],
+      "raw_text_hashes": [
+        "a4806b41902ad09f283b510f099b0f458cd642e3749a2fe011d5ac6764173e2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:22",
+      "sequence": 8072,
+      "chapter_label": "2SA 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "Abner said again to Asahel, “Turn away from following me. Why should I strike you to the ground? How then could I look Joab your brother in the face?”",
+      "ko": "아브넬이 다시 아사헬에게 이르되 너는 나 쫓기를 그치라 내가 너를 쳐서 땅에 엎드러지게 할 까닭이 무엇이냐 그렇게 하면 내가 어떻게 네 형 요압을 대면하겠느냐 하되",
+      "source_text_hash": "12ad16f9d9e2536dfd987c846b1e43ee119be43891a4f6ddcb19f1a1379cc957",
+      "translation_text_hash": "6a4e7320c65df6d0f70c1e64cfc7f0f4617261b9aaba48c100a2aa40f543ccc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 다시 아사헬에게 이르되 너는 나 쫓기를 그치라 내가 너를 쳐서 땅에 엎드러지게 할 까닭이 무엇이냐 그렇게 하면 내가 어떻게 네 형 요압을 대면하겠느냐 하되"
+      ],
+      "raw_text_hashes": [
+        "6a4e7320c65df6d0f70c1e64cfc7f0f4617261b9aaba48c100a2aa40f543ccc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:23",
+      "sequence": 8073,
+      "chapter_label": "2SA 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "However, he refused to turn away. Therefore Abner with the back end of the spear struck him in the body, so that the spear came out behind him; and he fell down there and died in the same place. As many as came to the place where Asahel fell down and died stood still.",
+      "ko": "저가 치우치기를 싫어하매 아브넬이 창 뒤끝으로 그 배를 찌르니 창이 그 등을 꿰뚫고 나간지라 곧 그곳에 엎드러져 죽으매 아사헬의 엎드러져 죽은 곳에 이르는 자마다 머물러 섰더라",
+      "source_text_hash": "857fb07ca88f291d189deced00c3f79bae7a7ccd8039068650813f34cbe76f2f",
+      "translation_text_hash": "ab427af877fdee374c325102ebdf9820d2a7c5adc14d30ec1915ad42ad230edb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 치우치기를 싫어하매 아브넬이 창 뒤끝으로 그 배를 찌르니 창이 그 등을 꿰뚫고 나간지라 곧 그곳에 엎드러져 죽으매 아사헬의 엎드러져 죽은 곳에 이르는 자마다 머물러 섰더라"
+      ],
+      "raw_text_hashes": [
+        "ab427af877fdee374c325102ebdf9820d2a7c5adc14d30ec1915ad42ad230edb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:24",
+      "sequence": 8074,
+      "chapter_label": "2SA 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "But Joab and Abishai pursued Abner. The sun went down when they had come to the hill of Ammah, that lies before Giah by the way of the wilderness of Gibeon.",
+      "ko": "요압과 아비새가 아브넬의 뒤를 쫓아 기브온 거친 땅의 길 가 기아 맞은편 암마산에 이를 때에 해가 졌고",
+      "source_text_hash": "13174bff7d9ac6d6d5c826163fcabfbbdde271d3a26e41e67d059f4d7a81d606",
+      "translation_text_hash": "ba649d7f3a11acaf3617f2af83c8af70741aaa28620ecf831e0cadc7ef798d41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압과 아비새가 아브넬의 뒤를 쫓아 기브온 거친 땅의 길 가 기아 맞은편 암마산에 이를 때에 해가 졌고"
+      ],
+      "raw_text_hashes": [
+        "ba649d7f3a11acaf3617f2af83c8af70741aaa28620ecf831e0cadc7ef798d41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:25",
+      "sequence": 8075,
+      "chapter_label": "2SA 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "The children of Benjamin gathered themselves together after Abner and became one band, and stood on the top of a hill.",
+      "ko": "베냐민 족속은 함께 모여 아브넬을 따라 한 떼를 이루고 작은 산꼭대기에 섰더라",
+      "source_text_hash": "c1c99459d154a3b48793127820f14cd71a8ce9c459e9dfda581cac11993572e9",
+      "translation_text_hash": "ed61cd2cddfd7590efd685dd1460967886ee4b70fb841a43c65ce90e55a3a3d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 족속은 함께 모여 아브넬을 따라 한 떼를 이루고 작은 산꼭대기에 섰더라"
+      ],
+      "raw_text_hashes": [
+        "ed61cd2cddfd7590efd685dd1460967886ee4b70fb841a43c65ce90e55a3a3d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:26",
+      "sequence": 8076,
+      "chapter_label": "2SA 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "Then Abner called to Joab, and said, “Shall the sword devour forever? Don’t you know that it will be bitterness in the latter end? How long will it be then, before you ask the people to return from following their brothers?”",
+      "ko": "아브넬이 요압에게 외쳐 가로되 칼이 영영히 사람을 상하겠느냐 마침내 참혹한 일이 생길 줄을 알지 못하느냐 네가 언제나 무리에게 그 형제 쫓기를 그치라 명하겠느냐",
+      "source_text_hash": "4e2b639e049cdd685bb08fe6276b7de4a2748f92537f45ac01ecb8bb9486564c",
+      "translation_text_hash": "58325bfb18b9827f2e58428a49f219c2f0d36da83acb7af1d3860853c6a99760",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬이 요압에게 외쳐 가로되 칼이 영영히 사람을 상하겠느냐 마침내 참혹한 일이 생길 줄을 알지 못하느냐 네가 언제나 무리에게 그 형제 쫓기를 그치라 명하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "58325bfb18b9827f2e58428a49f219c2f0d36da83acb7af1d3860853c6a99760"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:27",
+      "sequence": 8077,
+      "chapter_label": "2SA 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "Joab said, “As God lives, if you had not spoken, surely then in the morning the people would have gone away, and not each followed his brother.”",
+      "ko": "요압이 가로되 하나님이 사시거니와 네가 흔단의 말을 내지 아니하였더면 무리가 아침에 다 돌아갔을 것이요 그 형제를 쫓지 아니하였으리라 하고",
+      "source_text_hash": "c15ce7b9a4dbfeb48c7b42159b80c16b4935358336749ca8c9ccf01b28aa2807",
+      "translation_text_hash": "3d34ef8caa1d4902b08d89231d8c3b4a3671c34fd0ee53571fe719cb0eceb9d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 가로되 하나님이 사시거니와 네가 흔단의 말을 내지 아니하였더면 무리가 아침에 다 돌아갔을 것이요 그 형제를 쫓지 아니하였으리라 하고"
+      ],
+      "raw_text_hashes": [
+        "3d34ef8caa1d4902b08d89231d8c3b4a3671c34fd0ee53571fe719cb0eceb9d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:28",
+      "sequence": 8078,
+      "chapter_label": "2SA 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "So Joab blew the trumpet; and all the people stood still and pursued Israel no more, and they fought no more.",
+      "ko": "나팔을 불매 온 무리가 머물러 서고 다시는 이스라엘을 쫓아가지 아니하고 다시는 싸우지도 아니하니라",
+      "source_text_hash": "cfdb93cf3e7ac48a45feb6f89b2c1319739bbac3351e39ec22592e89d801ac39",
+      "translation_text_hash": "b383dfd0d7e95133e4c3c0e0d1ebabd63c20082293f9c5694c490b85adf4772e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나팔을 불매 온 무리가 머물러 서고 다시는 이스라엘을 쫓아가지 아니하고 다시는 싸우지도 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "b383dfd0d7e95133e4c3c0e0d1ebabd63c20082293f9c5694c490b85adf4772e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:29",
+      "sequence": 8079,
+      "chapter_label": "2SA 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "Abner and his men went all that night through the Arabah; and they passed over the Jordan, and went through all Bithron, and came to Mahanaim.",
+      "ko": "아브넬과 그 종자들이 밤새도록 행하여 아라바를 지나 요단을 건너 비드론 온 땅을 지나 마하나임에 이르니라",
+      "source_text_hash": "a4e0c23b983e8eb752c50a50706e3a109f9514a37ef7ef0e7ffac7a521d86897",
+      "translation_text_hash": "b96dee337cde5e44358896f05026b3206ee78ddef97f7779f6a78e155da02302",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브넬과 그 종자들이 밤새도록 행하여 아라바를 지나 요단을 건너 비드론 온 땅을 지나 마하나임에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "b96dee337cde5e44358896f05026b3206ee78ddef97f7779f6a78e155da02302"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:30",
+      "sequence": 8080,
+      "chapter_label": "2SA 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "Joab returned from following Abner; and when he had gathered all the people together, nineteen men of David’s and Asahel were missing.",
+      "ko": "요압이 아브넬 쫓기를 그치고 돌아와서 무리를 다 모으니 다윗의 신복 중에 십 구인과 아사헬이 궐이 났으나",
+      "source_text_hash": "038f6447d4c1126e8df842cbfa77809fab6ed123b06fadefa50e597c05f65dca",
+      "translation_text_hash": "726452939bf77f4a390a42fe64b4467eda41bb9d11badeecb2ebbe617fb4c2cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 아브넬 쫓기를 그치고 돌아와서 무리를 다 모으니 다윗의 신복 중에 십 구인과 아사헬이 궐이 났으나"
+      ],
+      "raw_text_hashes": [
+        "726452939bf77f4a390a42fe64b4467eda41bb9d11badeecb2ebbe617fb4c2cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:31",
+      "sequence": 8081,
+      "chapter_label": "2SA 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "But David’s servants had struck Benjamin and Abner’s men so that three hundred sixty men died.",
+      "ko": "다윗의 신복들이 베냐민과 아브넬에게 속한 자들을 쳐서 삼백 륙십명을 죽였더라",
+      "source_text_hash": "b17839134335124364024d7b46a20959b1b46974ecc3c765df60a2dbc8475427",
+      "translation_text_hash": "9eda7ea2cbd900c5a98eafd9f5e40d83b48d2c87441df0f4eba417acba9c79aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 신복들이 베냐민과 아브넬에게 속한 자들을 쳐서 삼백 륙십명을 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "9eda7ea2cbd900c5a98eafd9f5e40d83b48d2c87441df0f4eba417acba9c79aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:2:32",
+      "sequence": 8082,
+      "chapter_label": "2SA 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "2SA",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "They took up Asahel and buried him in the tomb of his father, which was in Bethlehem. Joab and his men went all night, and the day broke on them at Hebron.",
+      "ko": "무리가 아사헬을 베들레헴에 있는 그 아비 묘에 장사하고 요압과 그 종자들이 밤새도록 행하여 헤브론에 이를 때에 날이 밝았더라",
+      "source_text_hash": "83ae5cc015f9f13e2df0019fb0678e2a663a1ba22f1a2eaf9ed3df26f364659e",
+      "translation_text_hash": "a39f6b7b79676b0c67e35014723de59e4d8f118bf7bc2aa0a79878ca6ce4a1ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 아사헬을 베들레헴에 있는 그 아비 묘에 장사하고 요압과 그 종자들이 밤새도록 행하여 헤브론에 이를 때에 날이 밝았더라"
+      ],
+      "raw_text_hashes": [
+        "a39f6b7b79676b0c67e35014723de59e4d8f118bf7bc2aa0a79878ca6ce4a1ac"
+      ]
+    }
+  ]
+}

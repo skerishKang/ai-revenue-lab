@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:004",
+  "unit_ordinal": 854,
+  "unit_label": "DAN 4",
+  "book_code": "DAN",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:4:1",
+      "sequence": 21839,
+      "chapter_label": "DAN 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Nebuchadnezzar the king, i1 to all the peoples, nations, and languages, who dwell in all the earth: i1 Peace be multiplied to you. i1",
+      "ko": "느부갓네살왕은 천하에 거하는 백성들과 나라들과 각 방언하는 자에게 조서하노라 원하노니 너희에게 많은 평강이 있을찌어다",
+      "source_text_hash": "6e3a1b7cae7b942a5eab95a77e1f9f0c8c7eaa248bf1e584366b5428fb811040",
+      "translation_text_hash": "6ca4b0e01f5c61dff950b546cdd4d6ac089d395158f20ece2c7d239b5b75d0b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살왕은 천하에 거하는 백성들과 나라들과 각 방언하는 자에게 조서하노라 원하노니 너희에게 많은 평강이 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "6ca4b0e01f5c61dff950b546cdd4d6ac089d395158f20ece2c7d239b5b75d0b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:2",
+      "sequence": 21840,
+      "chapter_label": "DAN 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "It has seemed good to me to show the signs and wonders that the Most High God has worked toward me.",
+      "ko": "지극히 높으신 하나님이 내게 행하신 이적과 기사를 내가 알게 하기를 즐겨하노라",
+      "source_text_hash": "95dcef109e462351478f995630acb93747e694d6f4c662dff27c1561371a29b4",
+      "translation_text_hash": "613a56998c9059a04841b8ca8bed6cdb4d68f4eb52dc6a1477bd4b79129ef1b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지극히 높으신 하나님이 내게 행하신 이적과 기사를 내가 알게 하기를 즐겨하노라"
+      ],
+      "raw_text_hashes": [
+        "613a56998c9059a04841b8ca8bed6cdb4d68f4eb52dc6a1477bd4b79129ef1b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:3",
+      "sequence": 21841,
+      "chapter_label": "DAN 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "How great are his signs! How mighty are his wonders! His kingdom is an everlasting kingdom. His dominion is from generation to generation. i1",
+      "ko": "크도다 그 이적이여, 능하도다 그 기사여, 그 나라는 영원한 나라요 그 권병은 대대에 이르리로다",
+      "source_text_hash": "cd0e493934d8853541971d4ee95320d4ec63b296e8d30692a23b0ce64d43cb0d",
+      "translation_text_hash": "9a49547c83e6c048462e45b087238ff9c11a4e49457adac8893a717f787c2392",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "크도다 그 이적이여, 능하도다 그 기사여, 그 나라는 영원한 나라요 그 권병은 대대에 이르리로다"
+      ],
+      "raw_text_hashes": [
+        "9a49547c83e6c048462e45b087238ff9c11a4e49457adac8893a717f787c2392"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:4",
+      "sequence": 21842,
+      "chapter_label": "DAN 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "I, Nebuchadnezzar, was at rest in my house, and flourishing in my palace.",
+      "ko": "나 느부갓네살이 내 집에 편히 있으며 내 궁에서 평강할 때에",
+      "source_text_hash": "90b15af331e187ec5911265074c8b3c547a6b667af78597f9b48f1041bb018fd",
+      "translation_text_hash": "30d3e2595ac35c315ac27465487c2907e7dc7a950f8ff0cacfd3f599373efa20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 느부갓네살이 내 집에 편히 있으며 내 궁에서 평강할 때에"
+      ],
+      "raw_text_hashes": [
+        "30d3e2595ac35c315ac27465487c2907e7dc7a950f8ff0cacfd3f599373efa20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:5",
+      "sequence": 21843,
+      "chapter_label": "DAN 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "I saw a dream which made me afraid; and the thoughts on my bed and the visions of my head troubled me.",
+      "ko": "한 꿈을 꾸고 그로 인하여 두려워하였으되 곧 내 침상에서 생각하는 것과 뇌 속으로 받은 이상을 인하여 번민하였었노라",
+      "source_text_hash": "54649bea9fec6057686a071cabe3923e5de645a324f1504153bbbd81c6efde2b",
+      "translation_text_hash": "be245f66535ac7973b1f39d52f969cd340fcea9e9a41b4a9249b89cbcc53c329",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 꿈을 꾸고 그로 인하여 두려워하였으되 곧 내 침상에서 생각하는 것과 뇌 속으로 받은 이상을 인하여 번민하였었노라"
+      ],
+      "raw_text_hashes": [
+        "be245f66535ac7973b1f39d52f969cd340fcea9e9a41b4a9249b89cbcc53c329"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:6",
+      "sequence": 21844,
+      "chapter_label": "DAN 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore I made a decree to bring in all the wise men of Babylon before me, that they might make known to me the interpretation of the dream.",
+      "ko": "이러므로 내가 명을 내려 바벨론 모든 박사를 내 앞으로 불러다가 그 꿈의 해석을 내게 알게 하라 하매",
+      "source_text_hash": "07dbde0d1ac540229129190436c6f0230b6b5f2624a9c8c02568510283a98759",
+      "translation_text_hash": "cc4c63b6c6c3f90d4d6f02180324ddf08252f49502d1e205310fad53cc133946",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 명을 내려 바벨론 모든 박사를 내 앞으로 불러다가 그 꿈의 해석을 내게 알게 하라 하매"
+      ],
+      "raw_text_hashes": [
+        "cc4c63b6c6c3f90d4d6f02180324ddf08252f49502d1e205310fad53cc133946"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:7",
+      "sequence": 21845,
+      "chapter_label": "DAN 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Then the magicians, the enchanters, the Chaldeans, and the soothsayers came in; and I told them the dream, but they didn’t make known to me its interpretation.",
+      "ko": "박수와 술객과 갈대아 술사와 점장이가 들어왔기로 내가 그 꿈을 그들에게 고하였으나 그들이 그 해석을 내게 알게 하지 못하였느니라",
+      "source_text_hash": "06107d7deb51c6741ce3ee6a2de84cb1d9840b94ea3958dc88647c0245531bde",
+      "translation_text_hash": "048521b1d1ee70534b41b4697c19c6f340f4e8316c75c241c472a96ffd00283a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "박수와 술객과 갈대아 술사와 점장이가 들어왔기로 내가 그 꿈을 그들에게 고하였으나 그들이 그 해석을 내게 알게 하지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "048521b1d1ee70534b41b4697c19c6f340f4e8316c75c241c472a96ffd00283a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:8",
+      "sequence": 21846,
+      "chapter_label": "DAN 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "But at last, Daniel came in before me, whose name was Belteshazzar according to the name of my god, and in whom is the spirit of the holy gods. I told the dream before him, saying, i1",
+      "ko": "그 후에 다니엘이 내 앞에 들어왔으니 그는 내 신의 이름을 좇아 벨드사살이라 이름한 자요 그의 안에는 거룩한 신들의 영이 있는 자라 내가 그에게 꿈을 고하여 가로되",
+      "source_text_hash": "7b2546270ede68e8a075eb08dba9f07b10f7ba12cffed9e352189bb36e0f0bba",
+      "translation_text_hash": "e2ac45765da34c6b343040299057f0ed9d4d8f7f95509ae61f55c6314f3346fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 다니엘이 내 앞에 들어왔으니 그는 내 신의 이름을 좇아 벨드사살이라 이름한 자요 그의 안에는 거룩한 신들의 영이 있는 자라 내가 그에게 꿈을 고하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "e2ac45765da34c6b343040299057f0ed9d4d8f7f95509ae61f55c6314f3346fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:9",
+      "sequence": 21847,
+      "chapter_label": "DAN 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "“Belteshazzar, master of the magicians, because I know that the spirit of the holy gods is in you and no secret troubles you, tell me the visions of my dream that I have seen, and its interpretation.",
+      "ko": "박수장 벨드사살아 네 안에는 거룩한 신들의 영이 있은즉 아무 은밀한 것이라도 네게는 어려울 것이 없는줄을 내가 아노니 내 꿈에 본 이상의 해석을 내게 고하라",
+      "source_text_hash": "7dbf0f96f817323eca1656be5824bccd18fa8507bca15059b01bdbb66d35000c",
+      "translation_text_hash": "215eea7a853b087fb4651cc735c695bede3217a612f124e1e93026af469ac047",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "박수장 벨드사살아 네 안에는 거룩한 신들의 영이 있은즉 아무 은밀한 것이라도 네게는 어려울 것이 없는줄을 내가 아노니 내 꿈에 본 이상의 해석을 내게 고하라"
+      ],
+      "raw_text_hashes": [
+        "215eea7a853b087fb4651cc735c695bede3217a612f124e1e93026af469ac047"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:10",
+      "sequence": 21848,
+      "chapter_label": "DAN 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "These were the visions of my head on my bed: I saw, and behold, a tree in the middle of the earth; and its height was great.",
+      "ko": "내가 침상에서 나의 뇌 속으로 받은 이상이 이러하니라 내가 본즉 땅의 중앙에 한 나무가 있는데 고가 높더니",
+      "source_text_hash": "d14b334a2ceef8667dc2d6db1e3bf39b44f4ee23f58d440508c4552383c1a807",
+      "translation_text_hash": "ed0eee7869c0bbd787778098583b0b741b50ba51b089372b9e06a76d71d9de60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 침상에서 나의 뇌 속으로 받은 이상이 이러하니라 내가 본즉 땅의 중앙에 한 나무가 있는데 고가 높더니"
+      ],
+      "raw_text_hashes": [
+        "ed0eee7869c0bbd787778098583b0b741b50ba51b089372b9e06a76d71d9de60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:11",
+      "sequence": 21849,
+      "chapter_label": "DAN 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "The tree grew and was strong. Its height reached to the sky and its sight to the end of all the earth.",
+      "ko": "그 나무가 자라서 견고하여지고 그 고는 하늘에 닿았으니 땅 끝에서도 보이겠고",
+      "source_text_hash": "5395cb53a020c28a1db28dba915628f7a332f3bbe2a1cae47ca208dba09c2cd2",
+      "translation_text_hash": "1b618de88296a8a25fa0633b9ef96f544d048b0fb3d3190dea2e96ecc781658d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나무가 자라서 견고하여지고 그 고는 하늘에 닿았으니 땅 끝에서도 보이겠고"
+      ],
+      "raw_text_hashes": [
+        "1b618de88296a8a25fa0633b9ef96f544d048b0fb3d3190dea2e96ecc781658d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:12",
+      "sequence": 21850,
+      "chapter_label": "DAN 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Its leaves were beautiful, and it had much fruit, and in it was food for all. The animals of the field had shade under it, and the birds of the sky lived in its branches, and all flesh was fed from it. i1",
+      "ko": "그 잎사귀는 아름답고 그 열매는 많아서 만민의 식물이 될만하고 들짐승이 그 그늘에 있으며 공중에 나는 새는 그 가지에 깃들이고 무릇 혈기 있는 자가 거기서 식물을 얻더라",
+      "source_text_hash": "3612c3d9f8bc9d743082ff2b1627a404314eb3a1abcb0885d997789da0dbcce2",
+      "translation_text_hash": "91f8db02b0d6aa9f3bd5e3c0b54d0a5529b25cef3174ade808cab6edcdf2d3cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 잎사귀는 아름답고 그 열매는 많아서 만민의 식물이 될만하고 들짐승이 그 그늘에 있으며 공중에 나는 새는 그 가지에 깃들이고 무릇 혈기 있는 자가 거기서 식물을 얻더라"
+      ],
+      "raw_text_hashes": [
+        "91f8db02b0d6aa9f3bd5e3c0b54d0a5529b25cef3174ade808cab6edcdf2d3cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:13",
+      "sequence": 21851,
+      "chapter_label": "DAN 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "“I saw in the visions of my head on my bed, and behold, a holy watcher came down from the sky.",
+      "ko": "내가 침상에서 뇌 속으로 받은 이상 가운데 또 본즉 한 순찰자, 한 거룩한 자가 하늘에서 내려왔는데",
+      "source_text_hash": "9060a3816ad694695dd549e59003b3676615f5d10d4079c5b404e242929fed2c",
+      "translation_text_hash": "9b76703b52acee3e6f53aec2477fd8b23ec13d6df147eeae52e0c1e0e4dcf41c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 침상에서 뇌 속으로 받은 이상 가운데 또 본즉 한 순찰자, 한 거룩한 자가 하늘에서 내려왔는데"
+      ],
+      "raw_text_hashes": [
+        "9b76703b52acee3e6f53aec2477fd8b23ec13d6df147eeae52e0c1e0e4dcf41c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:14",
+      "sequence": 21852,
+      "chapter_label": "DAN 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "He cried aloud and said this: ‘Cut down the tree, and cut off its branches! Shake off its leaves and scatter its fruit! Let the animals get away from under it and the birds from its branches.",
+      "ko": "그가 소리 질러 외쳐서 이처럼 이르기를 그 나무를 베고 그 가지를 찍고 그 잎사귀를 떨고 그 열매를 헤치고 짐승들로 그 아래서 떠나게 하고 새들을 그 가지에서 쫓아내라",
+      "source_text_hash": "3ab0f0e635035360037c4909f733fcb9fe9fc39f4b979a4f1405fcac78c5bd8a",
+      "translation_text_hash": "9f079ac68859f08e6ef1d86fff56c1d2a42b2ab7dd605269a23dc50d5688ddb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 소리 질러 외쳐서 이처럼 이르기를 그 나무를 베고 그 가지를 찍고 그 잎사귀를 떨고 그 열매를 헤치고 짐승들로 그 아래서 떠나게 하고 새들을 그 가지에서 쫓아내라"
+      ],
+      "raw_text_hashes": [
+        "9f079ac68859f08e6ef1d86fff56c1d2a42b2ab7dd605269a23dc50d5688ddb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:15",
+      "sequence": 21853,
+      "chapter_label": "DAN 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Nevertheless leave the stump of its roots in the earth, even with a band of iron and bronze, in the tender grass of the field; and let it be wet with the dew of the sky. Let his portion be with the animals in the grass of the earth.",
+      "ko": "그러나 그 뿌리의 그루터기를 땅에 남겨두고 철과 놋줄로 동이고 그것으로 들 청초 가운데 있게 하라 그것이 하늘 이슬에 젖고 땅의 풀 가운데서 짐승으로 더불어 그 분량을 같이 하리라",
+      "source_text_hash": "273280d724be81666a556042fdbe42c348dd77e31a42261064ecfc7b522eb116",
+      "translation_text_hash": "15895facb268de03e5fc063441ae5b1790f158adfe55c4ca9f0a6fa4f9abd8bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 뿌리의 그루터기를 땅에 남겨두고 철과 놋줄로 동이고 그것으로 들 청초 가운데 있게 하라 그것이 하늘 이슬에 젖고 땅의 풀 가운데서 짐승으로 더불어 그 분량을 같이 하리라"
+      ],
+      "raw_text_hashes": [
+        "15895facb268de03e5fc063441ae5b1790f158adfe55c4ca9f0a6fa4f9abd8bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:16",
+      "sequence": 21854,
+      "chapter_label": "DAN 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "Let his heart be changed from man’s, and let an animal’s heart be given to him. Then let seven times pass over him. i1",
+      "ko": "또 그 마음은 변하여 인생의 마음 같지 아니하고 짐승의 마음을 받아 일곱 때를 지나리라",
+      "source_text_hash": "8308b4fb2707324412f34598a0f64f551bf007ed49f206079fcb4e242f9fc5c8",
+      "translation_text_hash": "e5bea72cf2468ef7a79b9bcce42a25850daaf9d6cb5d0c3d0f3c94e86fd85f46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 마음은 변하여 인생의 마음 같지 아니하고 짐승의 마음을 받아 일곱 때를 지나리라"
+      ],
+      "raw_text_hashes": [
+        "e5bea72cf2468ef7a79b9bcce42a25850daaf9d6cb5d0c3d0f3c94e86fd85f46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:17",
+      "sequence": 21855,
+      "chapter_label": "DAN 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "“‘The sentence is by the decree of the watchers and the demand by the word of the holy ones, to the intent that the living may know that the Most High rules in the kingdom of men, and gives it to whomever he will, and sets up over it the lowest of men.’ i1",
+      "ko": "이는 순찰자들의 명령대로요 거룩한 자들의 말대로니 곧 인생으로 지극히 높으신 자가 인간 나라를 다스리시며 자기의 뜻대로 그것을 누구에게든지 주시며 또 지극히 천한 자로 그 위에 세우시는줄을 알게 하려 함이니라 하였느니라",
+      "source_text_hash": "d40fad6b3f4edc6619c74798f00bc45e85209dca7a57a42e0c8e704108b3e121",
+      "translation_text_hash": "1a84fb0bd89dc5b0c73af119d774ee63837d8f2977b85795f8dbb29079c12876",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 순찰자들의 명령대로요 거룩한 자들의 말대로니 곧 인생으로 지극히 높으신 자가 인간 나라를 다스리시며 자기의 뜻대로 그것을 누구에게든지 주시며 또 지극히 천한 자로 그 위에 세우시는줄을 알게 하려 함이니라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "1a84fb0bd89dc5b0c73af119d774ee63837d8f2977b85795f8dbb29079c12876"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:18",
+      "sequence": 21856,
+      "chapter_label": "DAN 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "“This dream I, King Nebuchadnezzar, have seen; and you, Belteshazzar, declare the interpretation, because all the wise men of my kingdom are not able to make known to me the interpretation; but you are able, for the spirit of the holy gods is in you.” i1",
+      "ko": "나 느부갓네살왕이 이 꿈을 꾸었나니 너 벨드사살아 그 해석을 밝히 말하라 내 나라 모든 박사가 능히 그 해석을 내게 알게 하지 못하였으나 오직 너는 능히 하리니 이는 거룩한 신들의 영이 네 안에 있음이니라",
+      "source_text_hash": "123e0e007d7cdc9f899689f719be2ffb10e5e2882c720de6e00ff9875b4b2d20",
+      "translation_text_hash": "d28907005fa7e4dc1e008752bf338badbf19290cf5746f6cb79cf7be1cf5024b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 느부갓네살왕이 이 꿈을 꾸었나니 너 벨드사살아 그 해석을 밝히 말하라 내 나라 모든 박사가 능히 그 해석을 내게 알게 하지 못하였으나 오직 너는 능히 하리니 이는 거룩한 신들의 영이 네 안에 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "d28907005fa7e4dc1e008752bf338badbf19290cf5746f6cb79cf7be1cf5024b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:19",
+      "sequence": 21857,
+      "chapter_label": "DAN 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "Then Daniel, whose name was Belteshazzar, was stricken mute for a while, and his thoughts troubled him. The king answered, “Belteshazzar, don’t let the dream or the interpretation trouble you.” i1 Belteshazzar answered, “My lord, may the dream be for those who hate you, and its interpretation to your adversaries.",
+      "ko": "벨드사살이라 이름한 다니엘이 얼마 동안 놀라 벙벙하며 마음이 번민하여 하는지라 왕이 그에게 말하여 이르기를 벨드사살아 너는 이 꿈과 그 해석을 인하여 번민할 것이 아니니라 벨드사살이 대답하여 가로되 내 주여 그 꿈은 왕을 미워하는 자에게 응하기를 원하며 그 해석은 왕의 대적에게 응하기를 원하나이다",
+      "source_text_hash": "3bc81f656cdcba26dcfbbb13bc9fbf908131af2cc4292c0cd214b3604c8d9836",
+      "translation_text_hash": "c06d96b06005dadc0cc848a77332ab4975540b7e60bdb352357d367e940fb53f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨드사살이라 이름한 다니엘이 얼마 동안 놀라 벙벙하며 마음이 번민하여 하는지라 왕이 그에게 말하여 이르기를 벨드사살아 너는 이 꿈과 그 해석을 인하여 번민할 것이 아니니라 벨드사살이 대답하여 가로되 내 주여 그 꿈은 왕을 미워하는 자에게 응하기를 원하며 그 해석은 왕의 대적에게 응하기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "c06d96b06005dadc0cc848a77332ab4975540b7e60bdb352357d367e940fb53f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:20",
+      "sequence": 21858,
+      "chapter_label": "DAN 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "The tree that you saw, which grew and was strong, whose height reached to the sky and its sight to all the earth;",
+      "ko": "왕의 보신 그 나무가 자라서 견고하여지고 그 고는 하늘에 닿았으니 땅 끝에서도 보이겠고",
+      "source_text_hash": "9247ead7d39a3b3e432cad40c667de8853498238785470c4bbf95ebb67bd1d44",
+      "translation_text_hash": "ee788f4e3c4f84682db83cf05dea0055ff957fa5727e9ab5f83f3c6cf185c259",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 보신 그 나무가 자라서 견고하여지고 그 고는 하늘에 닿았으니 땅 끝에서도 보이겠고"
+      ],
+      "raw_text_hashes": [
+        "ee788f4e3c4f84682db83cf05dea0055ff957fa5727e9ab5f83f3c6cf185c259"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:21",
+      "sequence": 21859,
+      "chapter_label": "DAN 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "whose leaves were beautiful and its fruit plentiful, and in it was food for all; under which the animals of the field lived, and on whose branches the birds of the sky had their habitation—",
+      "ko": "그 잎사귀는 아름답고 그 열매는 많아서 만민의 식물이 될만하고 들짐승은 그 아래 거하며 공중에 나는 새는 그 가지에 깃들이더라 하시오니",
+      "source_text_hash": "255f7e86bf1ff7ff3d0d0b189f99dfd95aee7688eed920bab61bf3adef72f0b4",
+      "translation_text_hash": "ef1cad0ababba3c5ed7bf8820bc2bae2777f64127da7e3cf0e9a7bbb122b9efb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 잎사귀는 아름답고 그 열매는 많아서 만민의 식물이 될만하고 들짐승은 그 아래 거하며 공중에 나는 새는 그 가지에 깃들이더라 하시오니"
+      ],
+      "raw_text_hashes": [
+        "ef1cad0ababba3c5ed7bf8820bc2bae2777f64127da7e3cf0e9a7bbb122b9efb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:22",
+      "sequence": 21860,
+      "chapter_label": "DAN 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "it is you, O king, that have grown and become strong; for your greatness has grown, and reaches to the sky, and your dominion to the end of the earth. i1",
+      "ko": "왕이여 이 나무는 곧 왕이시라 이는 왕이 자라서 견고하여지고 창대하사 하늘에 닿으시며 권세는 땅 끝까지 미치심이니이다",
+      "source_text_hash": "4632c2d1e2b9e1f4e7a15647a3b867566ca482c7c43300a3b680724f0fa96867",
+      "translation_text_hash": "37e2e67f21d26d32f08932a8fca8ebe109489a19f8c558e74a7103e542db132b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이여 이 나무는 곧 왕이시라 이는 왕이 자라서 견고하여지고 창대하사 하늘에 닿으시며 권세는 땅 끝까지 미치심이니이다"
+      ],
+      "raw_text_hashes": [
+        "37e2e67f21d26d32f08932a8fca8ebe109489a19f8c558e74a7103e542db132b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:23",
+      "sequence": 21861,
+      "chapter_label": "DAN 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "“Whereas the king saw a holy watcher coming down from the sky and saying, ‘Cut down the tree, and destroy it; nevertheless leave the stump of its roots in the earth, even with a band of iron and bronze, in the tender grass of the field, and let it be wet with the dew of the sky. Let his portion be with the animals of the field, until seven times pass over him.’ i1",
+      "ko": "왕이 보신즉 한 순찰자, 한 거룩한 자가 하늘에서 내려와서 이르기를 그 나무를 베고 멸하라 그러나 그 뿌리의 그루터기는 땅에 남겨두고 철과 놋줄로 동이고 그것을 들 청초 가운데 있게 하라 그것이 하늘 이슬에 젖고 또 들짐승으로 더불어 그 분량을 같이 하며 일곱 때를 지내리라 하더라 하시오니",
+      "source_text_hash": "7eefa851727e6f63eb78a2050d237bccdbfe75a15389c2fe539e7b7f13b8fcab",
+      "translation_text_hash": "a58f3a0336a95d8e02971a0d705e50585de22752ae80d715e9f0bb4fd42202c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 보신즉 한 순찰자, 한 거룩한 자가 하늘에서 내려와서 이르기를 그 나무를 베고 멸하라 그러나 그 뿌리의 그루터기는 땅에 남겨두고 철과 놋줄로 동이고 그것을 들 청초 가운데 있게 하라 그것이 하늘 이슬에 젖고 또 들짐승으로 더불어 그 분량을 같이 하며 일곱 때를 지내리라 하더라 하시오니"
+      ],
+      "raw_text_hashes": [
+        "a58f3a0336a95d8e02971a0d705e50585de22752ae80d715e9f0bb4fd42202c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:24",
+      "sequence": 21862,
+      "chapter_label": "DAN 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "“This is the interpretation, O king, and it is the decree of the Most High, which has come on my lord the king:",
+      "ko": "왕이여 그 해석은 이러하니이다 곧 지극히 높으신 자의 명정하신 것이 내 주 왕에게 미칠 것이라",
+      "source_text_hash": "db3b42b22e08baddddc3000754196b28db3135e4274d7c3c015621aa0a396695",
+      "translation_text_hash": "bf3e2a5fc0af606087ee216a63d077cce1a7ecc1243e50693e0f3864ba21fa60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이여 그 해석은 이러하니이다 곧 지극히 높으신 자의 명정하신 것이 내 주 왕에게 미칠 것이라"
+      ],
+      "raw_text_hashes": [
+        "bf3e2a5fc0af606087ee216a63d077cce1a7ecc1243e50693e0f3864ba21fa60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:25",
+      "sequence": 21863,
+      "chapter_label": "DAN 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "You will be driven from men and your dwelling shall be with the animals of the field. You will be made to eat grass as oxen, and will be wet with the dew of the sky, and seven times shall pass over you, until you know that the Most High rules in the kingdom of men, and gives it to whomever he will.",
+      "ko": "왕이 사람에게서 쫓겨나서 들짐승과 함께 거하며 소처럼 풀을 먹으며 하늘 이슬에 젖을 것이요 이와 같이 일곱 때를 지낼 것이라 그 때에 지극히 높으신 자가 인간나라를 다스리시며 자기의 뜻대로 그것을 누구에게든지 주시는줄을 아시리이다",
+      "source_text_hash": "e58a8588c14f024d580afb877b77484497eeecef5f7c0305598ed62e59e90a37",
+      "translation_text_hash": "de0d67f68150759dbcbff90bb06a3b6e586e62286ce334324a4e348d3f452f6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 사람에게서 쫓겨나서 들짐승과 함께 거하며 소처럼 풀을 먹으며 하늘 이슬에 젖을 것이요 이와 같이 일곱 때를 지낼 것이라 그 때에 지극히 높으신 자가 인간나라를 다스리시며 자기의 뜻대로 그것을 누구에게든지 주시는줄을 아시리이다"
+      ],
+      "raw_text_hashes": [
+        "de0d67f68150759dbcbff90bb06a3b6e586e62286ce334324a4e348d3f452f6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:26",
+      "sequence": 21864,
+      "chapter_label": "DAN 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "Whereas it was commanded to leave the stump of the roots of the tree, your kingdom shall be sure to you after you know that Heaven rules.",
+      "ko": "또 그들이 그 나무 뿌리의 그루터기를 남겨 두라 하였은즉 하나님이 다스리시는줄을 왕이 깨달은 후에야 왕의 나라가 견고하리이다",
+      "source_text_hash": "f805aae3fbf3b25cacceb868d1d627655f0b4a9a30c64e9af2e755c87c119cd2",
+      "translation_text_hash": "bbdb561e74f63445af65b629dad86d318daace03609189615dbc010e03b5882b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들이 그 나무 뿌리의 그루터기를 남겨 두라 하였은즉 하나님이 다스리시는줄을 왕이 깨달은 후에야 왕의 나라가 견고하리이다"
+      ],
+      "raw_text_hashes": [
+        "bbdb561e74f63445af65b629dad86d318daace03609189615dbc010e03b5882b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:27",
+      "sequence": 21865,
+      "chapter_label": "DAN 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "Therefore, O king, let my counsel be acceptable to you, and break off your sins by righteousness, and your iniquities by showing mercy to the poor. Perhaps there may be a lengthening of your tranquility.” i1",
+      "ko": "그런즉 왕이여 나의 간하는 것을 받으시고 공의를 행함으로 죄를 속하고 가난한 자를 긍휼히 여김으로 죄악을 속하소서 그리하시면 왕의 평안함이 혹시 장구하리이다 하였느니라",
+      "source_text_hash": "f3269f07dcac9f31014428ca3a70c8f1cc32398a63340ad406a454888ed00f51",
+      "translation_text_hash": "4bbddab0798ac5981e694fdd793f483ee3eca69969ef899f5f75586812c3859a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 왕이여 나의 간하는 것을 받으시고 공의를 행함으로 죄를 속하고 가난한 자를 긍휼히 여김으로 죄악을 속하소서 그리하시면 왕의 평안함이 혹시 장구하리이다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "4bbddab0798ac5981e694fdd793f483ee3eca69969ef899f5f75586812c3859a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:28",
+      "sequence": 21866,
+      "chapter_label": "DAN 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "All this came on the King Nebuchadnezzar.",
+      "ko": "이 모든 일이 다 나 느부갓네살왕에게 임하였느니라",
+      "source_text_hash": "c06dbf10ff26bace8f71e35a50c0a75448c5ca84571d650aa126d907a1b9da13",
+      "translation_text_hash": "41b13f51123e0bc86ef53ea407492d315bbc5d0d88ef83bf0488bbfa2af726f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일이 다 나 느부갓네살왕에게 임하였느니라"
+      ],
+      "raw_text_hashes": [
+        "41b13f51123e0bc86ef53ea407492d315bbc5d0d88ef83bf0488bbfa2af726f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:29",
+      "sequence": 21867,
+      "chapter_label": "DAN 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "At the end of twelve months he was walking in the royal palace of Babylon.",
+      "ko": "열 두달이 지난 후에 내가 바벨론 궁 지붕에서 거닐쌔",
+      "source_text_hash": "7899ea60d25a4201f4bc9a9953905da555a7940de2db916b5dd638cdc3c38660",
+      "translation_text_hash": "f56d7778c313ffdf9bcdda24ff8125b85084bb0f67c4ab24cf8d0f906e59f0bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 두달이 지난 후에 내가 바벨론 궁 지붕에서 거닐쌔"
+      ],
+      "raw_text_hashes": [
+        "f56d7778c313ffdf9bcdda24ff8125b85084bb0f67c4ab24cf8d0f906e59f0bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:30",
+      "sequence": 21868,
+      "chapter_label": "DAN 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "The king spoke and said, “Is not this great Babylon, which I have built for the royal dwelling place by the might of my power and for the glory of my majesty?” i1",
+      "ko": "나 왕이 말하여 가로되 이 큰 바벨론은 내가 능력과 권세로 건설하여 나의 도성을 삼고 이것으로 내 위엄의 영광을 나타낸 것이 아니냐 하였더니",
+      "source_text_hash": "ac3df84bdb3c58d459d9d00ef265f8ceace969dfd3931081a1d82a33ba37a9ba",
+      "translation_text_hash": "07ca52edc923d1fa69340f675a66186f733b5813a42ae1a64314bd1abeb9706f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 왕이 말하여 가로되 이 큰 바벨론은 내가 능력과 권세로 건설하여 나의 도성을 삼고 이것으로 내 위엄의 영광을 나타낸 것이 아니냐 하였더니"
+      ],
+      "raw_text_hashes": [
+        "07ca52edc923d1fa69340f675a66186f733b5813a42ae1a64314bd1abeb9706f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:31",
+      "sequence": 21869,
+      "chapter_label": "DAN 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "While the word was in the king’s mouth, a voice came from the sky, saying, “O King Nebuchadnezzar, to you it is spoken: ‘The kingdom has departed from you.",
+      "ko": "이 말이 오히려 나 왕의 입에 있을 때에 하늘에서 소리가 내려 가로되 느부갓네살왕아 네게 말하노니 나라의 위가 네게서 떠났느니라",
+      "source_text_hash": "ca7855b9b27e9509b6bfd3d16d90a86330adf429d28413034970dfe2835cb953",
+      "translation_text_hash": "a794536595d6170d0f080ac94861fedcad4202b0410eecd674d336dbef8c23ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말이 오히려 나 왕의 입에 있을 때에 하늘에서 소리가 내려 가로되 느부갓네살왕아 네게 말하노니 나라의 위가 네게서 떠났느니라"
+      ],
+      "raw_text_hashes": [
+        "a794536595d6170d0f080ac94861fedcad4202b0410eecd674d336dbef8c23ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:32",
+      "sequence": 21870,
+      "chapter_label": "DAN 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "You shall be driven from men, and your dwelling shall be with the animals of the field. You shall be made to eat grass like oxen. Seven times shall pass over you, until you know that the Most High rules in the kingdom of men, and gives it to whomever he will.’” i1",
+      "ko": "네가 사람에게서 쫓겨나서 들짐승과 함께 거하며 소처럼 풀을 먹을 것이요 이와 같이 일곱 때를 지내서 지극히 높으신 자가 인간나라를 다스리시며 자기의 뜻대로 그것을 누구에게든지 주시는 줄을 알기까지 이르리라 하더니",
+      "source_text_hash": "11d3d45dc0d8fa346fe1bc051732a0159816569e4323deff445635881332e966",
+      "translation_text_hash": "77d084c20d30567ac7958150bf154bd353c2e46fc4e899aa3af4651459449407",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 사람에게서 쫓겨나서 들짐승과 함께 거하며 소처럼 풀을 먹을 것이요 이와 같이 일곱 때를 지내서 지극히 높으신 자가 인간나라를 다스리시며 자기의 뜻대로 그것을 누구에게든지 주시는 줄을 알기까지 이르리라 하더니"
+      ],
+      "raw_text_hashes": [
+        "77d084c20d30567ac7958150bf154bd353c2e46fc4e899aa3af4651459449407"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:33",
+      "sequence": 21871,
+      "chapter_label": "DAN 4",
+      "verse_label": "33",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 33
+        }
+      ],
+      "en": "This was fulfilled the same hour on Nebuchadnezzar. He was driven from men and ate grass like oxen; and his body was wet with the dew of the sky until his hair had grown like eagles’ feathers, and his nails like birds’ claws. i1",
+      "ko": "그 동시에 이 일이 나 느부갓네살에게 응하므로 내가 사람에게 쫓겨나서 소처럼 풀을 먹으며 몸이 하늘 이슬에 젖고 머리털이 독수리 털과 같았고 손톱은 새 발톱과 같았었느니라",
+      "source_text_hash": "a98dc9d20fbd8cc0314a37fc46c2d4d397fb21429bdc6b1d1f96552d10d02936",
+      "translation_text_hash": "3c688aaf44d0d06dd17c2b5904ebc341b39ec55c96d5f91215043ef559413065",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 동시에 이 일이 나 느부갓네살에게 응하므로 내가 사람에게 쫓겨나서 소처럼 풀을 먹으며 몸이 하늘 이슬에 젖고 머리털이 독수리 털과 같았고 손톱은 새 발톱과 같았었느니라"
+      ],
+      "raw_text_hashes": [
+        "3c688aaf44d0d06dd17c2b5904ebc341b39ec55c96d5f91215043ef559413065"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:34",
+      "sequence": 21872,
+      "chapter_label": "DAN 4",
+      "verse_label": "34",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 34
+        }
+      ],
+      "en": "At the end of the days I, Nebuchadnezzar, lifted up my eyes to heaven, and my understanding returned to me; and I blessed the Most High, and I praised and honored him who lives forever, for his dominion is an everlasting dominion, and his kingdom from generation to generation.",
+      "ko": "그 기한이 차매 나 느부갓네살이 하늘을 우러러 보았더니 내 총명이 다시 내게로 돌아온지라 이에 내가 지극히 높으신 자에게 감사하며 영생하시는 자를 찬양하고 존경하였노니 그 권세는 영원한 권세요 그 나라는 대대에 이르리로다",
+      "source_text_hash": "4d36fbdf3f704dfbbd24a08fe0e910681f4d3795beb756e385b5b3506665efa6",
+      "translation_text_hash": "3355740107fd59c293b63da733078c277fcc926331f2b30113302d2281a72645",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기한이 차매 나 느부갓네살이 하늘을 우러러 보았더니 내 총명이 다시 내게로 돌아온지라 이에 내가 지극히 높으신 자에게 감사하며 영생하시는 자를 찬양하고 존경하였노니 그 권세는 영원한 권세요 그 나라는 대대에 이르리로다"
+      ],
+      "raw_text_hashes": [
+        "3355740107fd59c293b63da733078c277fcc926331f2b30113302d2281a72645"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:35",
+      "sequence": 21873,
+      "chapter_label": "DAN 4",
+      "verse_label": "35",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 35
+        }
+      ],
+      "en": "All the inhabitants of the earth are reputed as nothing; and he does according to his will in the army of heaven, and among the inhabitants of the earth; and no one can stop his hand, or ask him, “What are you doing?” i1",
+      "ko": "땅의 모든 거민을 없는 것 같이 여기시며 하늘의 군사에게든지 땅의 거민에게든지 그는 자기 뜻대로 행하시나니 누가 그의 손을 금하든지 혹시 이르기를 네가 무엇을 하느냐 할 자가 없도다",
+      "source_text_hash": "a520f1cb7b0d4f357f289c7ec6d3d4cac7920683083f93e5839ee0dd36b83a34",
+      "translation_text_hash": "cd36971e58d600ca2238f679ebba91f5bfe60b28153e9d1c5d0017f2161cbbe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 모든 거민을 없는 것 같이 여기시며 하늘의 군사에게든지 땅의 거민에게든지 그는 자기 뜻대로 행하시나니 누가 그의 손을 금하든지 혹시 이르기를 네가 무엇을 하느냐 할 자가 없도다"
+      ],
+      "raw_text_hashes": [
+        "cd36971e58d600ca2238f679ebba91f5bfe60b28153e9d1c5d0017f2161cbbe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:36",
+      "sequence": 21874,
+      "chapter_label": "DAN 4",
+      "verse_label": "36",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 36
+        }
+      ],
+      "en": "At the same time my understanding returned to me; and for the glory of my kingdom, my majesty and brightness returned to me. My counselors and my lords sought me; and I was established in my kingdom, and excellent greatness was added to me.",
+      "ko": "그 동시에 내 총명이 내게로 돌아왔고 또 내 나라 영광에 대하여도 내 위엄과 광명이 내게로 돌아왔고 또 나의 모사들과 관원들이 내게 조회하니 내가 내 나라에서 다시 세움을 입고 또 지극한 위세가 내게 더하였느니라",
+      "source_text_hash": "7eddc16fe7161d77c6b7d72a574f5cb645573e5a8c23168c9c845a1c66b981a7",
+      "translation_text_hash": "c2cd74cc57dd2bca876d6121e025446c56e638a7558e723e520d5e95b381a3c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 동시에 내 총명이 내게로 돌아왔고 또 내 나라 영광에 대하여도 내 위엄과 광명이 내게로 돌아왔고 또 나의 모사들과 관원들이 내게 조회하니 내가 내 나라에서 다시 세움을 입고 또 지극한 위세가 내게 더하였느니라"
+      ],
+      "raw_text_hashes": [
+        "c2cd74cc57dd2bca876d6121e025446c56e638a7558e723e520d5e95b381a3c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:4:37",
+      "sequence": 21875,
+      "chapter_label": "DAN 4",
+      "verse_label": "37",
+      "locator": {
+        "book": "DAN",
+        "chapter": 4,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 37
+        }
+      ],
+      "en": "Now I, Nebuchadnezzar, praise and extol and honor the King of heaven; for all his works are truth, and his ways justice; and those who walk in pride he is able to abase.",
+      "ko": "그러므로 지금 나 느부갓네살이 하늘의 왕을 찬양하며 칭송하며 존경하노니 그의 일이 다 진실하고 그의 행하심이 의로우시므로 무릇 교만하게 행하는 자를 그가 능히 낮추심이니라",
+      "source_text_hash": "44d227b17443c8f5a06dca1ba644b0a9ac446e14dd530690234fbdeb95222394",
+      "translation_text_hash": "d971c1240073451cb3111591dce82c9dd29143c0b59ab09b8a774b38aa67ebca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 지금 나 느부갓네살이 하늘의 왕을 찬양하며 칭송하며 존경하노니 그의 일이 다 진실하고 그의 행하심이 의로우시므로 무릇 교만하게 행하는 자를 그가 능히 낮추심이니라"
+      ],
+      "raw_text_hashes": [
+        "d971c1240073451cb3111591dce82c9dd29143c0b59ab09b8a774b38aa67ebca"
+      ]
+    }
+  ]
+}
