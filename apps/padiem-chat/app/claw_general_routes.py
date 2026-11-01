@@ -941,6 +941,60 @@ _DESKTOP_VERBS = (
 )
 
 
+#: #6460 S1: "show me my PC screen" is a read of the same verified PC. These
+#: words select the capture lane; nothing here can ever choose another op.
+_SCREEN_VIEW_NOUNS = ("화면", "스크린", "screen")
+_SCREEN_CAPTURE_WORDS = ("캡처", "스크린샷", "screenshot", "capture")
+_SCREEN_VIEW_VERBS = (
+    "캡처", "스크린샷", "찍", "보여", "봐", "capture", "screenshot", "observe",
+)
+#: Any of these means the turn asks to operate the PC, which this lane never
+#: does. The explicit backtick grammar keeps its own input path.
+_SCREEN_INPUT_WORDS = (
+    "클릭", "눌러", "입력", "타이핑", "키보드", "마우스", "키 입력",
+    "click", "type", "press", "keys",
+)
+
+
+def _requested_read_only_screen_view(user_text: str) -> bool:
+    """Read-only screen capture intent for the verified owner PC (#6460 S1).
+
+    No backtick: "내 PC 화면 보여줘" and "지금 화면 캡처해 줘" are ordinary
+    requests. The matcher is deliberately narrow — a PC marker plus a screen
+    word and a view verb, or a bare screen-capture phrase — and it refuses any
+    turn that also names an input action, names a file/txt, asks about drives
+    or belongs to the browser lane. Anything ambiguous falls through to the
+    model exactly as before.
+    """
+    if not isinstance(user_text, str) or not user_text:
+        return False
+    if "`" in user_text:
+        return False
+    lowered = user_text.lower()
+    compact = "".join(lowered.split())
+    if any(word in lowered for word in _SCREEN_INPUT_WORDS):
+        return False
+    if not any(noun in lowered for noun in _SCREEN_VIEW_NOUNS):
+        return False
+    # A turn that names the browser belongs to the browser lane or the model.
+    if "브라우저" in lowered or re.search(r"\bbrowser\b", lowered):
+        return False
+    # The other PC lanes own their own requests; this one never borrows them.
+    if _requested_natural_pc_files(user_text) or _requested_local_txt_path(user_text)[0]:
+        return False
+    if _requested_natural_pc_query(user_text)[0]:
+        return False
+    from .pc_browser_intent import requested_pc_browser
+    if requested_pc_browser(user_text):
+        return False
+    has_pc = (any(marker in compact for marker in _NATURAL_PC_QUERY_MARKERS)
+              or re.search(r"\bpc\b", lowered))
+    if has_pc:
+        return any(verb in lowered for verb in _SCREEN_VIEW_VERBS)
+    # Without a PC marker only an explicit capture word is unambiguous.
+    return any(word in lowered for word in _SCREEN_CAPTURE_WORDS)
+
+
 def _requested_local_desktop(user_text: str) -> tuple[bool, str | None]:
     """Explicit, delimited desktop op for the verified owner PC.
 
@@ -980,8 +1034,42 @@ def _requested_local_desktop(user_text: str) -> tuple[bool, str | None]:
     return True, canonical
 
 
+#: #6460 S1 — what a failed read-only screen request tells the owner, by the
+#: refusal the existing desktop dispatch already answers with.
+_SCREEN_VIEW_FAILURE_COPY = {
+    401: "로그인이 필요합니다.",
+    403: "연결된 PC에서 화면을 가져올 권한이 없습니다. 컴퓨터 연결과 권한을 확인해 주세요.",
+    404: "PC 화면을 가져올 대상을 확인하지 못했습니다. 컴퓨터 연결 상태를 확인해 주세요.",
+    409: "PC 화면 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    413: "화면 캡처 요청이 허용 크기를 넘었습니다.",
+    422: "PC 화면 요청 형식이 올바르지 않습니다.",
+    503: "PC 화면 보기를 지금 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+}
+
+
+def _screen_view_failure_copy(dispatched: JSONResponse) -> str:
+    """One owner-facing sentence for a refused screen view, plus its code."""
+    code = ""
+    try:
+        payload = json.loads(bytes(dispatched.body).decode("utf-8"))
+        candidate = payload.get("error", {}).get("code")
+        if isinstance(candidate, str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}", candidate):
+            code = candidate
+    except Exception:
+        code = ""
+    if code == "oracle_mesh_run_unavailable":
+        sentence = "PC 화면을 가져올 대상을 확인하지 못했습니다. 컴퓨터 연결 상태를 확인해 주세요."
+    else:
+        sentence = _SCREEN_VIEW_FAILURE_COPY.get(
+            dispatched.status_code,
+            "PC 화면을 가져오지 못했습니다. 컴퓨터가 연결되어 있는지 확인해 주세요.",
+        )
+    return sentence + (" (" + code + ")" if code else "")
+
+
 async def _dispatch_user_desktop_request(
     request: Request, *, user_text: str, desktop_op: str, data: dict[str, Any],
+    pending_copy: str | None = None, screen_view: bool = False,
 ) -> JSONResponse | Response:
     """Claw composer -> one desktop dispatch on the pinned PC.
 
@@ -1034,8 +1122,15 @@ async def _dispatch_user_desktop_request(
                 await mark_failed(uid, run.run_id, "failed")
             except Exception:
                 pass
+        if screen_view:
+            # A read-only view never leaves a raw error body in the composer:
+            # the owner gets one Korean sentence explaining what to check.
+            return _claw_general_sse(
+                _screen_view_failure_copy(dispatched), conversation_id=cid,
+            )
         return dispatched
     return _claw_general_sse(
+        pending_copy or
         "COM1 데스크톱을 조작하는 중입니다. 실제 화면·결과는 작업 완료 후 이 대화에 표시됩니다.",
         conversation_id=cid, pending_run_id=run.run_id,
     )
@@ -1395,6 +1490,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             )
         if (
             _requested_local_desktop(user_text)[0]
+            or _requested_read_only_screen_view(user_text)
             or _requested_local_command(user_text)[0]
             or _requested_natural_pc_files(user_text)
             or _requested_natural_pc_query(user_text)[0]
@@ -1428,6 +1524,18 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                           "수행할 데스크톱 동작을 백틱으로 하나만 지정해 주세요.")
         return await _dispatch_user_desktop_request(
             request, user_text=user_text, desktop_op=desktop_op, data=data,
+        )
+
+    # #6460 S1: a natural-language screen view is the same verified capture as
+    # the backtick op, taken once and shown in the conversation. It never asks
+    # the model and never reaches an input op.
+    if _requested_read_only_screen_view(user_text):
+        if attachment_conflict is not None:
+            return attachment_conflict
+        return await _dispatch_user_desktop_request(
+            request, user_text=user_text, desktop_op="desktop:capture", data=data,
+            pending_copy="PC 화면을 한 장 가져오는 중입니다. 완료되면 이 대화에 표시됩니다.",
+            screen_view=True,
         )
 
     # One owner-requested initial observation runs through P01/Engine ToolRuntime
