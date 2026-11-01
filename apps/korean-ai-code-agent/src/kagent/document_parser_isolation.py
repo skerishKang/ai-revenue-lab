@@ -130,13 +130,54 @@ __all__ = [
     "extract_binary_document_isolated",
 ]
 
-#: CENTRAL decision for this slice. Bounded on both sides: the default is the
-#: largest value a policy may request, so no caller can widen the ceiling.
-# #4379: the parser isolation carries no PADIEM wall-clock ceiling. The
-# default is no wait ceiling at all, and a policy may request any
-# positive timeout. The terminate/kill/drain grace ceilings below stay:
-# they bound the termination ladder, not the work budget.
-DOCUMENT_PARSER_TIMEOUT_SECONDS: float | None = None
+#: CENTRAL decision for this slice.
+# #4379 removed the wait ceiling; #2824 (2026-11-02) puts a finite one back. A
+# hung child with no ceiling holds the whole PC work turn open, and nothing
+# above this module can interrupt it: this was the only unbounded parse in the
+# system. The default is a fixed number, an operator may narrow or widen it
+# inside [floor, ceiling] with one env value, and the terminate/kill/drain grace
+# ceilings below still bound the termination ladder itself.
+DOCUMENT_PARSER_TIMEOUT_ENV = "PADIEM_DOCUMENT_PARSER_TIMEOUT_SECONDS"
+#: Measured 2026-11-02 on COMP1: a 200-page text PDF (231 KiB, 183,598 extracted
+#: characters) parsed end-to-end through the real child in 1.72 s, including the
+#: interpreter start. A 1 GiB document is not measurable on this host, so the
+#: default keeps a wide margin over that rate instead of a tight one: 120 s.
+DOCUMENT_PARSER_TIMEOUT_DEFAULT_SECONDS = 120.0
+#: Below this a legitimate large document would be cut off before the parser can
+#: answer, so the env value is clamped rather than trusted.
+DOCUMENT_PARSER_TIMEOUT_FLOOR_SECONDS = 10.0
+DOCUMENT_PARSER_TIMEOUT_CEILING_SECONDS = 600.0
+
+
+def _configured_timeout_seconds(source: Any = None) -> float:
+    """The bounded wait ceiling from the operator's environment.
+
+    An unset, blank, unparsable or out-of-range value falls back to the finite
+    default: the one thing this may never resolve to is no ceiling at all.
+    """
+
+    values = os.environ if source is None else source
+    try:
+        raw = values.get(DOCUMENT_PARSER_TIMEOUT_ENV)
+    except AttributeError:  # pragma: no cover - a mapping is required
+        return DOCUMENT_PARSER_TIMEOUT_DEFAULT_SECONDS
+    if raw is None or str(raw).strip() == "":
+        return DOCUMENT_PARSER_TIMEOUT_DEFAULT_SECONDS
+    try:
+        value = float(str(raw).strip())
+    except (TypeError, ValueError):
+        return DOCUMENT_PARSER_TIMEOUT_DEFAULT_SECONDS
+    if not math.isfinite(value):
+        return DOCUMENT_PARSER_TIMEOUT_DEFAULT_SECONDS
+    if value < DOCUMENT_PARSER_TIMEOUT_FLOOR_SECONDS or value > DOCUMENT_PARSER_TIMEOUT_CEILING_SECONDS:
+        return DOCUMENT_PARSER_TIMEOUT_DEFAULT_SECONDS
+    return value
+
+
+DOCUMENT_PARSER_TIMEOUT_SECONDS: float = _configured_timeout_seconds()
+#: Unchanged from #4379: a policy may still request any positive finite timeout.
+#: The ceiling above bounds the *environment value*, not the policy type, so no
+#: existing caller loses a value it was already allowed to pass.
 DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS: float | None = None
 
 #: Canonical grace/join ceilings. ``PARSER_TIMEOUT_LIFECYCLE_BOUNDED=YES`` only
@@ -228,8 +269,10 @@ class ParserIsolationPolicy:
         # Positive-only validation is not enough: it would leave every knob
         # unbounded in practice. Each value is checked against its canonical
         # ceiling as well as its floor.
-        # #4379: the work timeout carries no PADIEM ceiling. None means no
-        # wait ceiling at all, and any positive finite timeout is accepted.
+        # #2824: the default is finite (an operator tunes it through
+        # DOCUMENT_PARSER_TIMEOUT_ENV), and None is still accepted by a caller
+        # that deliberately wants no wait ceiling, so no existing call site
+        # changes meaning here.
         if self.timeout_seconds is not None and (
             isinstance(self.timeout_seconds, bool)
             or not isinstance(self.timeout_seconds, (int, float))

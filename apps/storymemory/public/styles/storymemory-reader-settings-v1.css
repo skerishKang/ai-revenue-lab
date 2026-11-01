@@ -115,3 +115,22 @@ body.ai-open .smal-overflow-menu{right:272px}
 .ai-panel .ai-head-compact{height:auto!important;min-height:42px!important;flex-wrap:wrap!important}
 .ai-panel .ai-head-compact .ai-head-actions{flex-wrap:wrap!important;min-width:0!important}
 .ai-panel .ai-head-compact small{white-space:normal!important;overflow:hidden!important}
+
+/* ===== B61 pass · phone floor for the reading settings controls =====
+   Measured at 390x844: the segmented buttons that change 글꼴 · 글자 크기 · 줄 간격 were
+   24px tall with 11px labels, the theme swatches 24px, and the close button 19x15 —
+   the smallest controls in the app sat in the one panel the owner uses on a phone.
+   Touch targets now reach 44px and their labels 14px below 768px only; the desktop
+   panel keeps its 292px compact layout and its 11px labels. */
+@media(max-width:768px){
+  .srsg-panel .srsg-head b{font-size:14px}
+  .srsg-panel .srsg-x{min-width:44px;min-height:44px;font-size:18px;margin:-6px -6px -6px 0}
+  .srsg-panel .srsg-label{font-size:12px}
+  .srsg-panel .srsg-seg button{min-height:44px;min-width:44px;font-size:14px;padding:10px 12px}
+  .srsg-panel .srsg-sw button{width:52px;height:44px}
+  .srsg-panel .srsg-reset{min-height:44px;font-size:14px}
+  /* The overflow menu is the way into that panel: give its rows the same floor. */
+  #reader.active .smal-overflow-menu .smal-ov-item,
+  #reader.active .smal-overflow-menu .srsg-btn{min-height:44px;font-size:14px}
+  #reader.active .smal-overflow-menu .smal-ov-ic{font-size:16px}
+}
