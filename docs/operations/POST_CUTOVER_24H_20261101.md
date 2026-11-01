@@ -2,21 +2,29 @@
 
 ```text
 DOC_ROLE=POST_CUTOVER_24H
-STATUS=관측 도구 준비·자가검증 완료 / 24h 집계 데이터 미수집(COM2 도달 불가) — 종결 창은 닫지 않음
+STATUS=종결 완료 — #5479 PASS · #6127 PASS · closeable=YES (CTO가 컴2에서 직접 실행)
 RELATED=deploy/host-com2/observe/, PR #6455, PR #6444, issues #5479·#6127,
         docs/operations/CHAT_COM2_RUNBOOK.md §8, docs/operations/CHAT_COM2_RUNBOOK.md §8-2
 작성: 아스트라3(COM1) / 2026-11-01 21:46 KST
+종결: CTO(컴2 직접 실행) / 2026-11-01 21:50 KST — 결과는 #5479·#6127 이슈 댓글
 ```
 
-## 0. 한 줄 판정
+## 0. 한 줄 판정 (종결)
 
-- **#5479(Python Worker 동시성 503·NoGilError): 판정 보류(UNKNOWN).** 관측 창
-  (10-31 21:07 ~ 11-01 21:07 KST)의 journald 집계를 이 세션에서 수집하지 못했다.
-  관측 스크립트의 규칙대로 "집계 불가는 0건이 아니며", 이 문서는 창을 닫지 않는다.
-- **#6127(`/api/auth/status`·`/api/projects` 간헐 500): 판정 보류(UNKNOWN).** 동일 사유.
+- **#5479(Python Worker 동시성 503·NoGilError): PASS — 종결.** 관측 창 24시간에서
+  `NoGilError` 0건(`PyProxy` 0건), 재시작 0회.
+- **#6127(`/api/auth/status`·`/api/projects` 간헐 500): PASS — 종결.** Chat 5xx 집계가
+  가능했고(2,503 요청), `/api/auth/status`·`/api/projects` 5xx는 **0건**.
+- **판정: `closeable=YES`** — 스크립트 종결 3조건(24h 창 커버·NoGilError 0·#6127 라우트
+  5xx 0)이 모두 참. `window_covers_full_24h=true`(24.000h).
 - 보고 시점(11-01 21:46 KST) 운영 확인: `https://chat.padiem.net/health` →
-  **HTTP 200** `{"status":"ok", "runtime":"b14", "b14_configured":true}` —
-  관측 창 종료 뒤에도 COM2 서빙이 살아 있다는 현재값 1건(창 전체를 대신하지 않는다).
+  **HTTP 200** `{"status":"ok", "runtime":"b14", "b14_configured":true}`.
+
+## 0-1. 집계 원본 (CTO, 컴2에서 실행)
+
+- 실행: `deploy/host-com2/observe/post_cutover_report.py --since
+  2026-10-31T21:07:00+09:00 --until 2026-11-01T21:07:00+09:00`(읽기 전용, journald).
+- 결과 댓글: #5479(2026-11-01T12:50:48Z)·#6127(12:50:50Z) — 이 문서 §4의 표는 그 값이다.
 
 ## 1. 관측 도구 (확정)
 
@@ -79,22 +87,28 @@ journald를 읽지 못했다는 뜻이며 0으로 해석하지 않는다.
 P01·B14는 접근 로그가 꺼져 있어(unit `--no-access-log`, `access_log=False`) 5xx
 집계가 불가하다 — 이는 Chat의 #6127 판정을 막지 않는다(README 규칙).
 
-## 4. 집계 표 (미완 — COM2 레인 실행 결과로 채운다)
+## 4. 집계 결과 (CTO 실행 — #5479·#6127 이슈 댓글 값)
 
-```text
-| 유닛              | 요청 수 | 5xx(수/비율) | 500 상위 경로 | 503 상위 경로 | 403(#6559 이후, 별도) | 배포 중 5xx |
-| padiem-chat-com2  |         |              |               |               |                       |             |
-| padiem-p01        |  n/a(접근로그 꺼짐)      | —             | —             |                       |             |
-| padiem-b14        |  n/a(접근로그 꺼짐)      | —             | —             |                       |             |
-| 메시 큐(8797)      |         |              |               |               |                       |             |
-Traceback 수 / ERROR 줄 수 / NoGilError / PyProxy: (JSON 값)
-재시작: NRestarts (창 내 구간: )
-```
+창 2026-10-31 21:07 ~ 11-01 21:07 KST, **24.000h, full_24h=YES**:
 
-판정(배포 구간 제외 기준): `#5479 재발 = (JSON)` · `#6127 재발 = (JSON)` ·
-`closeable = (JSON)` — 값이 채워지기 전까지 이 문서는 창을 닫지 않는다.
+| 유닛 | 상태 | 재시작 | NoGilError | PyProxy | 5xx |
+| --- | --- | --- | --- | --- | --- |
+| padiem-chat-com2 | active | 0 | **0** | 0 | 55 / 2,503 요청 |
+| padiem-p01 | active | 0 | 0 | 0 | 집계 불가(요청 기록 없음) |
+| padiem-b14 | active | 0 | 0 | 0 | 집계 불가(요청 기록 없음) |
 
-## 5. 데이터 수집 상태 (이 세션의 사실)
+- **#5479 재발: 없음**(NoGilError 0건) → PASS.
+- **#6127 재발: 없음**(`/api/auth/status`·`/api/projects` 5xx 0건) → PASS.
+- **closeable=YES** — §1의 종결 3조건 모두 충족.
+- 종결 기준 밖 참고(그대로 인용): Chat 5xx 55건은 다른 라우트 — `/api/claw/*` 12,
+  `/api/bookai/*` 11(공통 로그인 꺼짐 상태의 503 sync_unavailable, 11-01 20:35 전환으로
+  해소 대상), `/api/pc/*` 11, `/api/chat/*` 9, `/api/orchestration` 6, `/auth/shared/*` 4
+  (18:30 로그인 실패, #6561로 수정), `/api/connectors/*` 2. 11-01 배포·재시작 구간
+  (17:25~20:04) 포함. **간헐 403은 별도 원인으로 확정·수정(#6563)** — #6127 판정과 무관.
+- P01·B14의 "집계 불가(요청 기록 없음)"는 0이 아니라 접근 로그가 꺼져 있다는 뜻이다
+  (README 규칙). Chat의 #6127 판정에는 영향을 주지 않는다.
+
+## 5. 데이터 수집 경위 (이 세션의 사실)
 
 - COM1(192.168.0.159)에서 COM2(K_lipvoice, 문서 기준 192.168.0.101)로 도달 불가:
   ping 100% 손실, `ssh -o BatchMode=yes` 포트 22 타임아웃(키·사용자 4종 시도,
@@ -102,15 +116,15 @@ Traceback 수 / ERROR 줄 수 / NoGilError / PyProxy: (JSON 값)
 - COM1에는 COM2용 SSH 키·설정이 없다(`~/.ssh`에 cgi_handoff 키뿐, known_hosts에
   192.168.0.101 없음, ssh-agent 미구동). 구버전 `scripts/ops/com2_remote_diagnose.py`
   의 설정 파일(`%USERPROFILE%\Padiem\com2-mesh-config.json`)도 COM1에 없다.
-- GitHub에도 리포트가 없다: PR #6455 댓글 없음, 11-01 이슈 코멘트는 Pages 배포 봇뿐.
-- 결론: 이 문서는 24h 집계를 **수행하지 않았다**. 판정은 §0대로 보류이며, 값이 없는
-  채로 "0건"이라 쓰지 않는다(스크립트 규칙).
+- GitHub에도 사전 리포트가 없었다(PR #6455 댓글 없음).
+- 결론: 이 세션은 집계를 수행하지 못했고, **CTO가 컴2에서 직접 실행해 종결했다**
+  (§0-1). 창이 닫힌 뒤에도 COM1→COM2의 읽기 전용 관측 경로는 여전히 없으므로,
+  다음 관찰 과제가 있으면 컴2 레인 실행 또는 경로 신설이 먼저다.
 
-## 6. 종결 완료 절차 (COM2 운영 레인)
+## 6. 종결 절차 (완료)
 
-1. §1의 명령 1줄을 COM2에서 실행한다(창은 이미 고정: 10-31 21:07 ~ 11-01 21:07 KST).
-2. 출력 JSON의 `closure`를 §4 표에 채운다. `--cutover` 기본값이 전환 시각이라 별도 인자 불필요.
-3. **배포 구간(§2, ±10분)의 오류는 판정에서 제외**하고, 비배포 구간에서
-   NoGilError·`/api/auth/status`·`/api/projects` 5xx 재발 여부로 #5479·#6127을 판정한다.
-4. 판정 줄(`closure: #5479=… #6127=… full_24h=YES closeable=…`)과 §4 표를 이 문서에
-   남기고 #5479·#6127에 보고한다. `5xx 집계 불가`면 닫지 않는다.
+1. COM2에서 §1의 명령을 실행(CTO, 읽기 전용) → `full_24h=YES`.
+2. `closure` 값을 §4 표에 반영.
+3. 배포 구간(§2, 17:25~20:04)의 5xx는 종결 기준 밖 참고로 분리 표기 —
+   #6127 판정 라우트(`/api/auth/status`·`/api/projects`)는 그 구간 포함 전체에서 0건.
+4. 결과를 #5479·#6127 이슈 댓글로 보고(완료: 2026-11-01T12:50Z)하고 이 문서로 근거화.
