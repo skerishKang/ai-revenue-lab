@@ -126,10 +126,17 @@ def test_untrusted_or_invalid_message_roles_are_rejected(bad):
 def test_forbidden_owner_scope_and_fake_auto_model_are_rejected():
     settings, client, resolver, model = setup()
     sign_in(settings, client)
-    for value in (payload(owner=USER_A), payload(model_id="b14/auto")):
-        res = client.post("/api/b66/ai/chat", json=value)
-        assert res.status_code == 400
-    assert resolver.calls == model.calls == []
+    # A foreign owner scope is a request-contract refusal (400).
+    res = client.post("/api/b66/ai/chat", json=payload(owner=USER_A))
+    assert res.status_code == 400
+    # B7: the retired id is not a registered model — the model authority
+    # refuses it fail-closed (503) and nothing reaches a provider call.
+    res = client.post("/api/b66/ai/chat", json=payload(model_id="b14/auto"))
+    assert res.status_code == 503
+    # The resolver is consulted to resolve the requested id, and the boundary
+    # refuses it before any provider dispatch.
+    assert len(resolver.calls) == 1
+    assert model.calls == []
 
 
 def test_global_model_disabled_denies_chat_without_provider_call():
