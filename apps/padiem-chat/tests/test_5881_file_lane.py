@@ -248,3 +248,88 @@ async def test_health_requires_configured_lane_and_all_four_formats(monkeypatch)
     app = create_app(config(), history_store=History(), file_lane_client=lane)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as chat:
         assert (await chat.get("/health")).json()["binary_document_attachment_ready"] is False
+
+
+
+@pytest.mark.asyncio
+async def test_hwpx_upload_real_lane_extraction_reaches_chat_context(file_app, monkeypatch):
+    from padiem_ai_core.hwpx_package_serializer import (
+        HwpxPackageContent, HwpxPackageSection, serialize_hwpx_package,
+    )
+    from app.documents import build_document_context
+
+    payload = serialize_hwpx_package(HwpxPackageContent(
+        sections=(HwpxPackageSection(paragraphs=("HWPX synthetic context 261101",)),)
+    ))
+    settings = config()
+    lane = FileLaneClient("https://files.example.test", SECRET, transport=httpx.ASGITransport(app=file_app))
+    app = create_app(settings, history_store=History(), file_lane_client=lane)
+    from app.b14_client import B14Client
+    observed = []
+    async def fake_model(self, messages, **kwargs):
+        observed.append(kwargs.get("additional_system_context"))
+        return {"answer": "synthetic answer from document"}
+    monkeypatch.setattr(B14Client, "complete", fake_model)
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test",
+                                 cookies=cookies(settings), headers={"Origin":"https://chat.example.test"}) as chat:
+        caps = (await chat.get("/api/files/capabilities")).json()
+        assert "hwpx" in caps["formats"]
+        ticket = (await chat.post("/api/files/ticket", json={"size_bytes": len(payload)})).json()
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=file_app),
+                                     base_url="https://files.example.test") as files:
+            upload = await files.post("/files?filename=sample.hwpx", headers=ticket["headers"], content=payload)
+        assert upload.status_code == 201, upload.text
+        ref = {"type":"file", "file_id":upload.json()["file_id"]}
+        document = await lane.resolve(USER, ref)
+        assert document.media_type == "application/hwp+zip"
+        assert "HWPX synthetic context 261101" in document.text
+        assert "HWPX synthetic context 261101" in build_document_context(document)
+        response = await chat.post("/api/chat", json={"messages":[{"role":"user","content":"Summarize"}],
+                                                       "attachments":[ref]})
+        assert response.status_code == 200, response.text
+        assert response.json()["attachments"][0]["file_id"] == ref["file_id"]
+        assert response.json()["answer"] == "synthetic answer from document"
+        assert observed and "HWPX synthetic context 261101" in observed[0]
+        # The normal Chat composer deliberately sends attachments to /api/chat.
+        source = (Path(__file__).resolve().parents[1] / "static" / "app.js").read_text(encoding="utf-8")
+        assert "if (attachments && !clawGeneralRequest)" in source
+        assert "requestCompletedAnswer(article, payload" in source
+        with pytest.raises(AttachmentValidationError):
+            await lane.resolve(OTHER, ref)
+
+
+def test_hwpx_picker_and_lane_are_consistent():
+    static = Path(__file__).resolve().parents[1] / "static"
+    script = "global.window=globalThis;\n" + (static / "attachment-capabilities.js").read_text(encoding="utf-8") + (
+        static / "file-lane.js").read_text(encoding="utf-8") + r"""
+const assert = require('node:assert/strict');
+PadiemAttachmentCapabilities.setFileLaneSupport(true);
+assert(PadiemAttachmentCapabilities.accept.includes('.hwpx'));
+assert(PadiemFileLane.shouldUse({name:'sample.hwpx', size:100}));
+assert.equal(PadiemFileLane.pending({name:'sample.hwpx', size:100}).mediaType, 'application/hwp+zip');
+"""
+    result = subprocess.run(["node","-e",script], text=True, capture_output=True, encoding="utf-8")
+    assert result.returncode == 0, result.stderr
+
+
+
+@pytest.mark.asyncio
+async def test_hwpx_without_readable_text_explains_the_limitation(file_app):
+    from io import BytesIO
+    from zipfile import ZipFile
+
+    contents = BytesIO()
+    with ZipFile(contents, "w") as archive:
+        archive.writestr("mimetype", "application/hwp+zip")
+        archive.writestr("Contents/section0.xml", '<sec><p><run><pic /></run></p></sec>')
+    data = contents.getvalue()
+    lane = FileLaneClient("https://files.example.test", SECRET, transport=httpx.ASGITransport(app=file_app))
+    headers = lane.upload_ticket(USER, len(data))["headers"]
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=file_app),
+                                 base_url="https://files.example.test") as files:
+        response = await files.post("/files?filename=image.hwpx", headers=headers, content=data)
+    assert response.status_code == 201
+    ref = {"type":"file", "file_id":response.json()["file_id"]}
+    with pytest.raises(AttachmentValidationError) as error:
+        await lane.resolve(USER, ref)
+    assert str(error.value) == "HWPX 파일에서 읽을 글자를 찾지 못했습니다. 이미지나 표는 일부 읽지 못할 수 있습니다."

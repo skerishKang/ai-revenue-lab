@@ -13,7 +13,7 @@ import uuid
 from padiem_ai_core.document_normalization import DocumentNormalizationError
 
 FILE_PATTERN = re.compile(r"file_[a-f0-9]{32}\Z")
-KINDS = {".txt": "txt", ".md": "md", ".csv": "csv", ".pdf": "pdf", ".docx": "docx", ".pptx": "pptx", ".xlsx": "xlsx"}
+KINDS = {".txt": "txt", ".md": "md", ".csv": "csv", ".pdf": "pdf", ".docx": "docx", ".pptx": "pptx", ".xlsx": "xlsx", ".hwpx": "hwpx"}
 
 # Core parser refusals of an uploaded document, by constant reason code from
 # padiem_ai_core.document_normalization. Chat keeps per-code guidance for
@@ -28,6 +28,7 @@ PARSER_REASON_CODES = frozenset({
     # DOCX / PPTX / XLSX extraction.
     "docx_missing_part", "docx_empty", "pptx_missing_slides", "pptx_empty",
     "xlsx_invalid", "xlsx_no_sheets", "xlsx_empty",
+    "hwpx_missing_part", "hwpx_empty", "hwpx_mimetype_mismatch",
     # PDF reader and page text.
     "pdf_magic_mismatch", "pdf_encrypted", "pdf_invalid", "pdf_no_pages",
     "pdf_empty_text", "pdf_page_text_invalid", "pdf_page_geometry_unavailable",

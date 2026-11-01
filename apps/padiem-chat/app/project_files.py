@@ -11,6 +11,7 @@ from .documents import validate_document_fields
 
 PDF_MEDIA_TYPE = "application/pdf"
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+HWPX_MEDIA_TYPE = "application/hwp+zip"
 #: #5728 — SNS photo composition stores its images through the same
 #: project-file channel. The set matches the chat attachment allow-list
 #: (attachments.py); no new size or count limits are introduced, images reuse
@@ -22,7 +23,7 @@ IMAGE_PROJECT_FILE_MEDIA = frozenset({"image/png", "image/jpeg", "image/webp"})
 #: of guessing from a name prefix. `""` is every row written before the column
 #: existed: the screens group those under 기타 and never hide them.
 UTIL_DOC_KINDS = frozenset({"speech", "sns", "meeting", "book"})
-BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE} | IMAGE_PROJECT_FILE_MEDIA)
+BINARY_PROJECT_FILE_MEDIA = frozenset({PDF_MEDIA_TYPE, DOCX_MEDIA_TYPE, HWPX_MEDIA_TYPE} | IMAGE_PROJECT_FILE_MEDIA)
 
 #: The stored ceiling of `project_files.content_text`, declared by migration 077
 #: as `CHECK(length(CAST(content_text AS BLOB)) <= 2097152)`. 2 MiB is D1's
@@ -55,6 +56,8 @@ def image_media_type_matches(media_type: str, head: bytes) -> bool:
 
 def _extracted_media_type(original_media_type: str) -> str:
     # Canonicalize extracted media types: DOCX → extracted/docx, PDF → extracted/pdf
+    if original_media_type == HWPX_MEDIA_TYPE:
+        return "extracted/hwpx"
     ext = original_media_type.split("/")[-1]
     if ext.startswith("vnd.openxmlformats-officedocument.wordprocessingml.document"):
         return "extracted/docx"

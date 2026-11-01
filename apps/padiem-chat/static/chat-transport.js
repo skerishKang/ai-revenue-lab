@@ -41,6 +41,12 @@
         // Attachment validation currently shares invalid_request. Match only
         // known fixed messages and return local text, never arbitrary server text.
         switch (data?.error?.message) {
+          case "HWPX 파일에서 읽을 내용을 찾지 못했습니다.":
+            return "HWPX 파일에서 읽을 내용을 찾지 못했습니다.";
+          case "HWPX 파일에서 읽을 글자를 찾지 못했습니다. 이미지나 표는 일부 읽지 못할 수 있습니다.":
+            return "HWPX 파일에서 읽을 글자를 찾지 못했습니다. 이미지나 표는 일부 읽지 못할 수 있습니다.";
+          case "HWPX 파일 형식을 확인해 주세요.":
+            return "HWPX 파일 형식을 확인해 주세요.";
           case "암호화된 DOCX는 현재 첨부할 수 없습니다.":
             return "암호화된 DOCX는 현재 첨부할 수 없습니다.";
           case "암호화된 PDF는 현재 첨부할 수 없습니다.":

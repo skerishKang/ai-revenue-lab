@@ -270,7 +270,13 @@ async def project_files_collection(request: Request) -> JSONResponse:
         except RequestBodyTooLarge:
             return JSONResponse({"error": {"code": "invalid_document"}}, status_code=413)
         except (ValueError, DocumentNormalizationError, DocumentValidationError, ProjectFileLimitError) as exc:
-            return JSONResponse({"error": {"code": "invalid_document", "message": str(exc)}}, status_code=422)
+            if media_type == "application/hwp+zip":
+                from .binary_documents import guidance_for_reason_code
+                message = guidance_for_reason_code(getattr(exc, "code", ""), media_type)
+                message = message or "HWPX 파일을 읽지 못했습니다. 파일을 확인해 주세요."
+            else:
+                message = str(exc)
+            return JSONResponse({"error": {"code": "invalid_document", "message": message}}, status_code=422)
         except Exception:
             return _unavailable()
     try:
@@ -337,7 +343,7 @@ async def project_file_original(request: Request) -> Response:
     try:
         record = await store.get_file(uid, pid, fid)
         if record is None or (
-            record.media_type not in {"extracted/pdf", "extracted/docx"}
+            record.media_type not in {"extracted/pdf", "extracted/docx", "extracted/hwpx"}
             and record.media_type not in IMAGE_PROJECT_FILE_MEDIA
         ):
             return _not_found()
@@ -352,7 +358,7 @@ async def project_file_original(request: Request) -> Response:
             # #5728 — stored originals return with their exact stored type.
             media = record.media_type
         else:
-            media = "application/pdf" if record.media_type == "extracted/pdf" else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            media = {"extracted/pdf": "application/pdf", "extracted/docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "extracted/hwpx": "application/hwp+zip"}[record.media_type]
         body = getattr(obj, "body", None)
 
         async def original_chunks():
@@ -471,7 +477,7 @@ async def project_file_detail(request: Request):
         record = await store.get_file(uid, pid, fid)
         if record is None:
             return _not_found()
-        if record.media_type in {"extracted/pdf", "extracted/docx"} or record.media_type in IMAGE_PROJECT_FILE_MEDIA:
+        if record.media_type in {"extracted/pdf", "extracted/docx", "extracted/hwpx"} or record.media_type in IMAGE_PROJECT_FILE_MEDIA:
             workspace_store = getattr(request.app.state, "workspace_document_store", None)
             bucket = getattr(workspace_store, "r2_bucket", None)
             if bucket is not None:
