@@ -1,7 +1,6 @@
 const fs=require('fs'), path=require('path'), assert=require('node:assert/strict');
 (async()=>{
-  const src=fs.readFileSync(path.join(__dirname,'public/_worker.js'),'utf8');
-  const worker=(await import('data:text/javascript;base64,'+Buffer.from(src).toString('base64'))).default;
+  const worker=(await import(require('node:url').pathToFileURL(path.join(__dirname,'public/_worker.js')).href)).default;
   const packet={version:'1',mode:'storymemory_bounded_companion',source_scope:'ceiling_filtered',
     diagnostics:{boundary_available:true,spoiler_policy:'hard_no_future'},
     co_reader_decision:{decision:'ALLOW',reason:'WITHIN_CEILING'},
@@ -10,7 +9,7 @@ const fs=require('fs'), path=require('path'), assert=require('node:assert/strict
     source_passages:[{canonical_locator:'bible:web:ACT:9:3',text:'A light shone around Saul.'}]};
   const req=()=>new Request('https://test.invalid/api/storymemory-ai',{method:'POST',
     headers:{'content-type':'application/json'},body:JSON.stringify({question:'What happened?',packet})});
-  const env={PADIEM_INGRESS_CLIENT_SECRET:'x'.repeat(40)};
+  const env={BOOKAI_COM2_AI_SECRET:'x'.repeat(40)};
   for(const [input,expected,status] of [
     ['<thought>private\nreason</thought>Answer.','Answer.',200],
     ['Normal answer.\nUnchanged.','Normal answer.\nUnchanged.',200],

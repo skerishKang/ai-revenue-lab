@@ -385,6 +385,12 @@ def build_app():
         app, env=os.environ, settings=settings, db_binding=db,
     )
 
+    # App HMAC ingress belongs only to the COM2 host; it uses the same P01
+    # loopback client and never inherits a browser session.
+    if host_flag:
+        from .apps_ai import install_apps_ai_routes
+        install_apps_ai_routes(app, env=os.environ)
+
     # The write window (#5573, #5115 step ③): reads keep working, mutations
     # answer 503 while the sentinel file exists or the environment switch is on.
     # Wrapped outermost so the answer never depends on origin or cookie state,

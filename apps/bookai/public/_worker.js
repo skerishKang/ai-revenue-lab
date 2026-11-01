@@ -1,8 +1,8 @@
+import {COM2_AI_URL, executeAppAI, com2CredentialConfigured, ingressCredential, upstreamErrorCode} from './app-ai-transport.mjs';
+const APP_AI_CALLER = 'bookai';
 let bookaiAuth;
 const AI_PATH = "/api/storymemory-ai";
 const AI_HEALTH_PATH = "/api/storymemory-ai/health";
-// V2: fixed ingress URL. Caller/body must never choose the target URL.
-const INGRESS_EXECUTE_URL = "https://padiem-ai-engine-ingress.charliekant.workers.dev/internal/v1/execute";
 const MAX_BODY_BYTES = 32 * 1024;
 const MAX_QUESTION_CHARS = 2000;
 // Shared free-tier primary in product_tier_routes.py.
@@ -17,15 +17,6 @@ function storyMemoryModel(env) {
 }
 const MAX_REFERENCE_CHARS = 12000;
 const MAX_ENGINE_CONTEXT = 8;
-
-// V2: B61 holds only the ingress client credential. The canonical Engine
-// caller id/secret are minted by the ingress from its own env and B61 never
-// sees or forwards them.
-function ingressCredential(env) {
-  const credential = String(env?.PADIEM_INGRESS_CLIENT_SECRET ?? "");
-  if (credential.length < 32 || credential.length > 512) return null;
-  return credential;
-}
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -212,9 +203,11 @@ export default {
       return json({
         ok: true,
         service: "storymemory-ai-adapter",
-        transport: "authenticated_ingress",
-        ingress_url: INGRESS_EXECUTE_URL,
-        ingress_credential_configured: Boolean(ingressCredential(env)),
+        transport: "com2_p01",
+        com2_url: COM2_AI_URL,
+        com2_credential_configured: com2CredentialConfigured(env, APP_AI_CALLER),
+        ingress_fallback: APP_AI_CALLER === "storymemory",
+        ingress_credential_configured: APP_AI_CALLER === "storymemory" && Boolean(ingressCredential(env)),
         context_permission: "required",
         auth: "deferred",
         direct_provider: false
@@ -223,8 +216,6 @@ export default {
     if (url.pathname === AI_PATH) {
       if (request.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
       if (!sameOrigin(request)) return json({ ok: false, error: "cross_origin_forbidden" }, 403);
-      const credential = ingressCredential(env);
-      if (!credential) return json({ ok: false, error: "ingress_credential_unavailable" }, 503);
       const contentType = (request.headers.get("content-type") || "").split(";", 1)[0].trim().toLowerCase();
       if (contentType !== "application/json") return json({ ok: false, error: "unsupported_media_type" }, 415);
       const length = Number(request.headers.get("content-length") || 0);
@@ -248,25 +239,14 @@ export default {
       }
       const model = storyMemoryModel(env);
       if (!model) return json({ ok: false, error: "storymemory_model_invalid" }, 503);
-      // V2: server-side HTTPS fetch to the fixed ingress URL. The caller/body
-      // cannot redirect this; only the ingress credential is sent. B61 forwards
-      // NO Engine caller/credential and NO browser Origin header.
-      const engineRequest = new Request(INGRESS_EXECUTE_URL, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "X-Padiem-Ingress-Credential": credential
-        },
-        body: JSON.stringify(buildEnginePayload(question, bounded, model))
+      const upstream = await executeAppAI({
+        env, app: APP_AI_CALLER,
+        payload: buildEnginePayload(question, bounded, model),
+        allowIngressFallback: APP_AI_CALLER === "storymemory"
       });
-      let response;
-      try { response = await fetch(engineRequest); }
-      catch { return json({ ok: false, error: "ingress_request_failed" }, 502); }
-      let payload;
-      try { payload = await response.json(); }
-      catch { return json({ ok: false, error: "ingress_invalid_response" }, 502); }
-      if (!response.ok || payload?.ok !== true || typeof payload?.answer !== "string") {
-        return json({ ok: false, error: payload?.error?.code || "ingress_execution_failed", retryable: Boolean(payload?.error?.retryable) }, response.status >= 400 && response.status <= 599 ? response.status : 502);
+      const payload = upstream.payload;
+      if (upstream.status < 200 || upstream.status >= 300 || payload?.ok !== true || typeof payload?.answer !== "string") {
+        return json({ ok: false, error: upstreamErrorCode(payload, upstream.transport === "authenticated_ingress" ? "ingress_execution_failed" : "com2_ai_execution_failed"), retryable: Boolean(payload?.error?.retryable) }, upstream.status >= 400 && upstream.status <= 599 ? upstream.status : 502);
       }
       const cp = payload?.context_permission;
       if (!cp || cp.boundary_disposition !== "permitted" || Number(cp.context_filtered_count || 0) !== 0 || Number(cp.context_allowed_count || 0) < 1) {
@@ -277,8 +257,8 @@ export default {
       return json({
         ok: true,
         answer,
-        runtime: "padiem-ai-engine",
-        transport: "authenticated_ingress",
+        runtime: upstream.transport === "com2_p01" ? "padiem-p01" : "padiem-ai-engine",
+        transport: upstream.transport,
         reference_trust: "UNTRUSTED_REFERENCE",
         context_permission: {
           boundary_disposition: cp.boundary_disposition,

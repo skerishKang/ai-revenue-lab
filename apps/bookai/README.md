@@ -30,9 +30,11 @@ npx -y wrangler@4.156.0 pages deploy apps/bookai/public --project-name bookai --
 
 - `BOOKAI_AUTH_CLIENT_PRIVATE_JWK`
 - `BOOKAI_COM2_SYNC_SECRET`
-- `PADIEM_INGRESS_CLIENT_SECRET` (AI 입구)
+- `BOOKAI_COM2_AI_SECRET` (컴2 앱 AI 호출)
 
-`STORYMEMORY_MODEL`은 명시 AI 모델 덮어쓰기 설정입니다.
+`STORYMEMORY_MODEL`은 명시 AI 모델 덮어쓰기 설정입니다. 기본값은 `google/gemini-3.1-flash-lite`이고 `max_retries:0`을 유지합니다. 서버의 앱별 허용 모델 설정도 함께 충족해야 합니다.
+
+AI 요청은 `public/_worker.js` → `https://chat.padiem.net/api/apps/ai` → 컴2 P01로 갑니다. 북AI의 호출자 `sub_app_bookai`는 고정되어 있으며 `BOOKAI_COM2_AI_SECRET`을 Pages와 컴2 Chat에 CTO가 같은 값으로 설정합니다. 기록 API와 같은 HMAC 규격을 재사용합니다. 북AI에는 클라우드플레어 엔진 대체 경로가 없으며 요청 제한 시간은 60초입니다. `<thought>` 제거와 읽기 범위의 근거 검증은 계속 적용합니다.
 
 ## 검증
 
@@ -53,3 +55,5 @@ node apps/bookai/tests/bookai-sync-runtime.test.cjs
 ```
 
 `DB_MIGRATIONS/`, 기존 패치 노트와 자산 매니페스트는 원본 보관 자료입니다.
+
+AI 전송 시험: `node apps/bookai/tests/apps-ai-transport.test.mjs` (두 앱의 서명·답변·1.0 대체 경로·정책 거부), 양 앱의 `test_thought_filter.cjs`.

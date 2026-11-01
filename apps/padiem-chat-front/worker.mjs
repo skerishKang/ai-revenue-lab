@@ -133,14 +133,19 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const target = new URL(url.pathname + url.search, origin);
     const isWrite = !READ_METHODS.has(request.method);
     const canonicalWrites = String(env.COM2_CANONICAL || "off").trim().toLowerCase() === "writes";
-    const timeoutMs = numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
+    // Completed app AI replies wait for model response headers, unlike SSE.
+    // Keep the ordinary proxy deadline and CPU-light forwarding unchanged.
+    const appsAI = request.method === "POST" && url.pathname === "/api/apps/ai";
+    const timeoutMs = appsAI
+      ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
+      : numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
 
     if (isWrite) {
       const response = await forward(request, target, env, timeoutMs);
       if (response === SIGNING_FAILED) return maintenanceResponse("write_refused");
       if (response) return response;
       markFailure(origin.toString());
-      if (canonicalWrites) return maintenanceResponse("write_com2_canonical_refused");
+      if (canonicalWrites || appsAI) return maintenanceResponse("write_com2_canonical_refused");
       return fallback(request, env, true);
     }
 
