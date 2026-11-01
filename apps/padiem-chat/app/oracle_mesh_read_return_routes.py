@@ -190,7 +190,9 @@ _PRESENCE_ENTRY_KEYS = frozenset({"device_id", "connected"})
 # into that name is what lets the server finish the claim it was given a code
 # for. The name is read, never stored.
 _PRESENCE_ENTRY_OPTIONAL_KEYS = frozenset({"agent_name"})
-_MAX_PRESENCE_ENTRIES = 8
+# The requested device-id list has no arbitrary count cap (#5882 2차): the
+# caller is the trusted executor naming its own devices, and the 8KiB
+# request-body ceiling below is the real bound on how many can arrive.
 _MAX_PRESENCE_BODY_BYTES = 8192
 #: #4139 read lane envelope, shared with the command lane and the executor.
 #: No PADIEM text ceiling on a verified result (Owner decision 2026-10-28).
@@ -2113,7 +2115,7 @@ async def oracle_mesh_read_lane_status(request: Request) -> JSONResponse:
         wanted = body.get("device_ids")
         if wanted is None:
             wanted = []
-        if not isinstance(wanted, list) or len(wanted) > _MAX_PRESENCE_ENTRIES:
+        if not isinstance(wanted, list):
             return _error(400, "oracle_mesh_invalid_body")
         for wanted_id in wanted:
             bounded = _ref(wanted_id, 128)
