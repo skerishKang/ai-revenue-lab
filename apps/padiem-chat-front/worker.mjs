@@ -8,10 +8,10 @@
  * is what keeps Set-Cookie (multiple) and 101 upgrades intact.
  *
  * Fallback (stage 4, request-scoped with a SHORT health cache):
- *   read (GET/HEAD/OPTIONS)  com2 unreachable/5xx/timeout → FALLBACK_MODE:
+ *   read (GET/HEAD/OPTIONS)  com2 health failure/unreachable/timeout → FALLBACK_MODE:
  *                              service → env.CHAT_WORKER.fetch(request)
  *                              static  → 503 maintenance page
- *   write                    com2 unreachable/5xx/timeout →
+ *   write                    com2 health failure/unreachable/timeout →
  *                              COM2_CANONICAL != "writes": same fallback rules
  *                              COM2_CANONICAL  == "writes": 503 maintenance,
  *                              NEVER the Python Worker (data must not split).
@@ -25,6 +25,7 @@ import { signedRequestHeaders } from "./edge-proof.mjs";
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
 const DEFAULT_TIMEOUT_MS = 8000;
+const SIGNING_FAILED = Symbol("signing_failed");
 
 export const MAINTENANCE_HTML = `<!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
@@ -74,10 +75,16 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
   }
 
   async function forward(request, target, env, timeoutMs) {
+    let headers;
+    try {
+      headers = await sign(request, env.PADIEM_COM2_EDGE_SECRET);
+    } catch {
+      // A local signing/configuration error is not evidence that COM2 is down.
+      return SIGNING_FAILED;
+    }
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      const headers = await sign(request, env.PADIEM_COM2_EDGE_SECRET);
       headers.delete("host");
       headers.set("x-forwarded-host", new URL(request.url).host);
       headers.set("x-forwarded-proto", "https");
@@ -130,7 +137,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
 
     if (isWrite) {
       const response = await forward(request, target, env, timeoutMs);
-      if (response && response.status < 500) return response;
+      if (response === SIGNING_FAILED) return maintenanceResponse("write_refused");
+      if (response) return response;
       markFailure(origin.toString());
       if (canonicalWrites) return maintenanceResponse("write_com2_canonical_refused");
       return fallback(request, env, true);
@@ -139,7 +147,11 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const healthTtlMs = numeric(env.HEALTH_TTL_MS, DEFAULT_HEALTH_TTL_MS);
     if (healthy(origin.toString(), healthTtlMs)) {
       const response = await forward(request, target, env, timeoutMs);
-      if (response && response.status < 500) return response;
+      if (response === SIGNING_FAILED) return maintenanceResponse("read_fallback_static");
+      // A component API's status does not describe the whole host's health.
+      // Only a failed health probe or a transport failure trips the cache.
+      const healthProbe = url.pathname === "/health" && (request.method === "GET" || request.method === "HEAD");
+      if (response && (!healthProbe || (response.status >= 200 && response.status < 300))) return response;
       markFailure(origin.toString());
     }
     return fallback(request, env, false);
