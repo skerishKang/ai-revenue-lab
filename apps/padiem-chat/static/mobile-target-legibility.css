@@ -17,11 +17,6 @@
  */
 
 @media (max-width: 920px) {
-  /* ---- first screen: no decorative art over the composer ---- */
-  html[data-theme="padiem-glass"] .main-panel::before {
-    content: none !important;
-  }
-
   /* ---- press floor: 44px on both axes ---- */
   .side-item,
   .new-chat,
@@ -317,15 +312,9 @@
   }
 }
 
-/* Fifth pass: the shell portrait is a second fixed art layer above the one
-   above, and the tier pill is a fixed-width box that a 14px label no longer
+/* Fifth pass: the tier pill is a fixed-width box that a 14px label no longer
    fits inside. */
 @media (max-width: 920px) {
-  html[data-theme="padiem-glass"] .glass-shell-portrait,
-  html[data-theme="padiem-glass"] .glass-shell-field {
-    display: none !important;
-  }
-
   /* The pill keeps its own cap; at 14px the tier name needs the room. */
   #composerForm .composer-tools .model-pill {
     width: auto !important;
@@ -334,5 +323,36 @@
     flex: 0 0 auto !important;
     padding-left: 8px;
     padding-right: 8px;
+  }
+}
+
+/* Sixth pass: the composer row. With the 44px floor the tool buttons need more
+   width than the voice and send controls leave them, so the row wrapped its own
+   children onto the neighbouring buttons and the deep-research control ended up
+   underneath the waveform. Both rows now wrap instead of colliding. */
+@media (max-width: 920px) {
+  .composer-actions {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .composer-tools {
+    flex-wrap: wrap;
+    flex: 1 0 auto;
+    min-width: 0;
+    row-gap: 6px;
+  }
+}
+
+/* Phone-only: the decorative portrait is dropped below the phone width, where
+   it competes with the first screen. It stays on a tablet — the Chat gutter
+   visual suite certifies the shared art layers are visible at 768 and above,
+   and absent at 390 by this decision, not by an accident of CSS scoping. */
+@media (max-width: 620px) {
+  html[data-theme="padiem-glass"] .main-panel::before,
+  html[data-theme="padiem-glass"] .glass-shell-portrait,
+  html[data-theme="padiem-glass"] .glass-shell-field {
+    content: none;
+    display: none !important;
   }
 }

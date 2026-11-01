@@ -10,6 +10,7 @@ desktop must not feel any of it.
 from __future__ import annotations
 
 import http.server
+import json
 import re
 import threading
 from pathlib import Path
@@ -34,6 +35,7 @@ THEME_JS = (STATIC / "theme.js").read_text(encoding="utf-8")
 LOCALE = (STATIC / "locale.js").read_text(encoding="utf-8")
 PHONE_WIDTHS = ((390, 844), (360, 780))
 PHONE_BREAKPOINT = 920
+PHONE_ONLY_BREAKPOINT = 620
 TARGET_FLOOR = 44.0
 TEXT_FLOOR = 14.0
 
@@ -96,6 +98,23 @@ class StaticHandler(http.server.SimpleHTTPRequestHandler):
 
     def log_message(self, *args):  # silence the request line
         pass
+
+    def do_GET(self):  # noqa: N802 - the composer tools are capability-gated
+        # The web-search and deep-research controls stay hidden until /health
+        # says they are ready, so the collision check has to answer that the
+        # way the mock runtime does. Everything else is the static screen.
+        if self.path.split("?")[0] == "/health":
+            body = json.dumps({
+                "runtime": "mock", "live_enabled": False,
+                "web_tools_ready": True, "deep_research_ready": True,
+            }).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        super().do_GET()
 
 
 @pytest.fixture(scope="module")
@@ -253,6 +272,80 @@ def test_a_long_sidebar_title_stays_one_cell_and_ellipsises(static_url):
     assert built["height"] >= TARGET_FLOOR
 
 
+COLLISIONS = """(scope) => {
+  const sel = 'a[href], button, input:not([type=hidden]), select, textarea, summary, [role="button"]';
+  const label = (el) => el.id ? '#' + el.id : el.tagName.toLowerCase() + '.' + String(el.className).split(' ')[0];
+  // Below the phone breakpoint the sidebar is an off-canvas drawer: while it is
+  // closed its controls are expected to sit outside the viewport.
+  const drawerOpen = (document.querySelector('.app-shell') || { classList: { contains: () => false } })
+    .classList.contains('sidebar-open');
+  if (window.innerWidth <= 920 && scope === 'drawer' !== drawerOpen) return { blocked: [] };
+  const blocked = [];
+  Array.from(document.querySelectorAll(sel)).forEach((el) => {
+    const inSidebar = Boolean(el.closest('.sidebar'));
+    if (scope === 'drawer' ? !inSidebar : inSidebar) return;
+    const r = el.getBoundingClientRect();
+    const s = getComputedStyle(el);
+    if (r.width <= 0 || r.height <= 0) return;
+    if (s.display === 'none' || s.visibility === 'hidden' || el.closest('[hidden]')) return;
+    if (s.pointerEvents === 'none') return;
+    // A press lands where the pointer goes: the middle of the control.
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) { blocked.push(label(el) + ' off-screen'); return; }
+    const hit = document.elementFromPoint(x, y);
+    if (!hit) { blocked.push(label(el) + ' no hit target'); return; }
+    if (el.contains(hit) || hit.contains(el)) return;
+    blocked.push(label(el) + ' covered by ' + label(hit));
+  });
+  return { blocked };
+}"""
+
+
+@pytest.mark.parametrize("width,height", PHONE_WIDTHS)
+def test_no_phone_control_sits_on_top_of_another(static_url, width, height):
+    """The composer row is where this broke: the 44px floor made the tool
+    buttons wider than the space the voice and send controls leave them, and
+    the deep-research button ended up under the waveform — visible, but no
+    press could reach it. A control that shares its centre with its own chip or
+    label is fine; one whose centre belongs to a stranger is not."""
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        page = browser.new_page(viewport={"width": width, "height": height})
+        try:
+            page.goto(static_url, wait_until="domcontentloaded")
+            page.wait_for_function(
+                "() => document.getElementById('deepResearchButton')"
+                " && !document.getElementById('deepResearchButton').disabled"
+                " && !document.getElementById('deepResearchButton').hidden",
+                timeout=8_000)
+            page.wait_for_timeout(500)
+            closed = page.evaluate(COLLISIONS, "surface")
+            page.evaluate("() => document.getElementById('mobileMenu').click()")
+            page.wait_for_timeout(400)
+            value = page.evaluate(COLLISIONS, "drawer")
+        finally:
+            browser.close()
+    assert not closed["blocked"], "a control cannot receive its own press: %s" % closed["blocked"][:6]
+    assert value["blocked"] == [], "a control cannot receive its own press with the drawer open: %s" % value["blocked"][:6]
+
+
+def test_a_tablet_still_paints_the_shared_glass_art(static_url):
+    """Only the phone width drops the portrait; 768 is a tablet and the Chat
+    gutter suite certifies the shared art layers there."""
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        page = browser.new_page(viewport={"width": 768, "height": 1024})
+        try:
+            page.goto(static_url, wait_until="domcontentloaded")
+            page.wait_for_function("() => document.getElementById('messageInput') !== null", timeout=8_000)
+            page.wait_for_timeout(500)
+            value = page.evaluate(MEASURE, {"floor": TARGET_FLOOR, "textFloor": TEXT_FLOOR})
+        finally:
+            browser.close()
+    assert value["portraitContent"] != "none", "the tablet lost the portrait the phone rule is scoped to"
+    assert value["shellPortrait"] != "none", "the tablet lost the shell portrait"
+
+
 def test_the_desktop_keeps_its_own_metrics(static_url):
     with sync_playwright() as pw:
         browser = pw.chromium.launch()
@@ -281,9 +374,10 @@ def test_the_phone_sheet_is_last_and_stays_inside_its_media_query() -> None:
     assert link in INDEX
     assert INDEX.rindex(link) > INDEX.rindex('href="./mobile-header-collapse.css"'), \
         "the phone sheet must load after the sheets it corrects"
-    media = "@media (max-width: %dpx)" % PHONE_BREAKPOINT
-    assert SHEET.count(media) >= 3, "the sheet is expected to keep one media block per pass"
-    assert SHEET.count("@media") == SHEET.count(media), "every media block in the sheet is the phone breakpoint"
+    blocks = re.findall(r"@media \(max-width: (\d+)px\)", SHEET)
+    assert len(blocks) >= 7, "the sheet is expected to keep one media block per pass"
+    assert set(blocks) <= {str(PHONE_BREAKPOINT), str(PHONE_ONLY_BREAKPOINT)},         "the sheet may only open phone media blocks, not desktop ones: %s" % sorted(set(blocks))
+    assert PHONE_ONLY_BREAKPOINT in [int(b) for b in blocks],         "the decorative art is dropped at the phone width, not at the tablet width"
     # Every rule lives inside a phone media block: after comments go, no
     # selector may start at column zero.
     bare = re.sub(r"/\*.*?\*/", "", SHEET, flags=re.S)
