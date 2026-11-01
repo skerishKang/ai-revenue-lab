@@ -279,6 +279,7 @@ test("front vars match the verified non-secret production contract", () => {
     COM2_CANONICAL: "writes",
     HEALTH_TTL_MS: "10000",
     UPSTREAM_TIMEOUT_MS: "8000",
+    API_READ_TIMEOUT_MS: "30000",
   };
   const config = readFileSync(join(HERE, "..", "wrangler.toml"), "utf8");
   const sections = config.split(/^\[vars\]\s*$/m);
