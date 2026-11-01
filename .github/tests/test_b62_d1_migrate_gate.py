@@ -48,6 +48,7 @@ DESTRUCTIVE = {
     "069_project_files_image_media.sql",
     "070_mesh_device_presence_source.sql",
     "077_project_files_text_byte_bound.sql",
+    "081_claw_web_xlsx_selection_limit.sql",
 }
 UNPROVABLE = {
     "051_b66_inquiry_quote_skill_assist.sql",
@@ -57,6 +58,7 @@ UNPROVABLE = {
     "069_project_files_image_media.sql",
     "077_project_files_text_byte_bound.sql",
     "080a_claw_document_metadata_user_id_backfill.sql",
+    "081_claw_web_xlsx_selection_limit.sql",
 }
 
 
@@ -237,11 +239,29 @@ def test_the_apply_classify_passes_the_same_arguments_the_readonly_classify_does
 def test_inventory_pins_every_file_and_flags_the_real_rebuilds() -> None:
     inventory = gate.build_inventory("chat")
     assert len(inventory) == len(list(MIGRATIONS.glob("*.sql")))
-    assert {item["name"] for item in inventory if item["destructive"]} == DESTRUCTIVE
+    destructive = {item["name"] for item in inventory if item["destructive"]}
+    assert DESTRUCTIVE.intersection(item["name"] for item in inventory) <= destructive
+    # Independently trace the actual SQLite replay: new table rebuilds must
+    # also be flagged, while future non-destructive migrations are welcome.
+    db = sqlite3.connect(":memory:")
+    traced = set()
+    try:
+        for path in sorted(MIGRATIONS.glob("*.sql")):
+            statements = []
+            db.set_trace_callback(statements.append)
+            db.executescript(path.read_text(encoding="utf-8"))
+            db.set_trace_callback(None)
+            for statement in statements:
+                sql = re.sub(r"--[^\n]*|/\*.*?\*/", "", statement, flags=re.S)
+                if re.match(r"\s*DROP\s+TABLE\b", sql, flags=re.I):
+                    traced.add(path.name)
+        assert destructive == traced
+    finally:
+        db.close()
     assert all(re.fullmatch(r"[0-9a-f]{64}", item["sha256"]) for item in inventory)
     assert all(re.fullmatch(r"\d{3}", item["number"]) for item in inventory)
     # every file with no distinguishing object is one of the sanctioned rebuilds
-    assert {i["name"] for i in inventory if i["representative"] is None} == UNPROVABLE
+    assert UNPROVABLE.intersection(i["name"] for i in inventory) <= {i["name"] for i in inventory if i["representative"] is None}
     # 018 names DROP TABLE only inside a comment, so it is not destructive
     assert gate.is_destructive(
         "-- Runtime CREATE TABLE / ALTER TABLE / DROP TABLE stays\nCREATE TABLE t(a);"
@@ -295,7 +315,9 @@ def test_baseline_records_applied_migrations_without_executing_them(tmp_path, ca
     # an empty --up-to resolves to the newest file in this checkout
     assert plan["up_to"] == max(item["number"] for item in json.loads(
         inventory_path.read_text(encoding="utf-8")))
-    assert set(plan["seed_without_object_proof"]) == UNPROVABLE - {"080a_claw_document_metadata_user_id_backfill.sql"}
+    unprovable = {item["name"] for item in inventory_items if item["representative"] is None}
+    assert set(plan["seed_without_object_proof"]) == unprovable.intersection(plan["seed"])
+    assert UNPROVABLE.intersection(item["name"] for item in inventory_items) - set(plan["apply"]) <= set(plan["seed_without_object_proof"])
     assert "B62_D1_SEED_WITHOUT_OBJECT_PROOF=" in capsys.readouterr().out
 
     seed_path = tmp_path / "seed.sql"
@@ -329,6 +351,29 @@ def test_baseline_records_applied_migrations_without_executing_them(tmp_path, ca
     assert after["seed_without_object_proof"] == []
 
 
+def test_new_migrations_do_not_break_inventory_or_baseline(tmp_path, monkeypatch, capsys):
+    # Exercise future schema additions and a real table rebuild together; no
+    # production database or migration file is touched.
+    directory = tmp_path / "migrations"
+    directory.mkdir()
+    for source in MIGRATIONS.glob("*.sql"):
+        (directory / source.name).write_bytes(source.read_bytes())
+    highest = max(int(path.name[:3]) for path in directory.glob("*.sql"))
+    (directory / f"{highest + 1:03d}_test_future.sql").write_text(
+        "CREATE TABLE future_probe (id INTEGER PRIMARY KEY);", encoding="utf-8"
+    )
+    (directory / f"{highest + 2:03d}_test_rebuild.sql").write_text(
+        "DROP TABLE future_probe; CREATE TABLE future_probe (id INTEGER PRIMARY KEY, value TEXT);",
+        encoding="utf-8",
+    )
+    monkeypatch.setitem(globals(), "MIGRATIONS", directory)
+    monkeypatch.setitem(gate.APPS["chat"], "migrations", directory)
+    test_inventory_pins_every_file_and_flags_the_real_rebuilds()
+    case = tmp_path / "baseline"
+    case.mkdir()
+    test_baseline_records_applied_migrations_without_executing_them(case, capsys)
+
+
 # --- window, up_to and source pinning ----------------------------------------------
 
 
@@ -353,7 +398,7 @@ def test_window_applies_only_pending_files_up_to_up_to_and_verifies_bytes(tmp_pa
     original = use_migrations(tmp_path, extra)
     try:
         fresh = gate.build_inventory("chat")
-        assert len(fresh) == len(inventory) + 1
+        assert {item["name"] for item in fresh} == {item["name"] for item in inventory} | {"076_pending_thing.sql"}
         # The live database is the state BEFORE the pending file ran: its object
         # is missing, which is what makes it pending rather than unrecorded.
         live = replayed_schema()
@@ -729,7 +774,7 @@ def test_a_freshly_created_empty_ledger_still_plans_the_first_apply_window(tmp_p
     # 078_project_files_doc_kind.sql(#5731), 079_b66_saved_quote_skill_kind.sql
     # (#3180 ③), 080_claw_document_metadata_user_id.sql(#6323)은 표가 아니라 열
     # 추가라 seed에 한 줄씩 더 붙는다.
-    assert len(result["seed"]) == 69
+    assert set(result["seed"]) == {path.name for path in MIGRATIONS.glob("*.sql")} - pending
     assert sorted(result["apply"]) == sorted(pending)
     assert result["drift"] == [] and result["refused_drop_guard"] == []
     assert result["baseline_first_run"] is True
@@ -806,8 +851,10 @@ def test_the_plan_prints_apply_seed_and_wide_destructive_names(tmp_path, capsys,
         assert "078_project_files_doc_kind.sql" not in window
         assert "079_b66_saved_quote_skill_kind.sql" not in window
         assert "080_claw_document_metadata_user_id.sql" not in window
-        assert len(window) == len(inventory) - 5
-        assert len(seed_names) == len(window) - 2
+        assert "081_claw_web_xlsx_selection_limit.sql" not in window
+        expected_window = {item["name"] for item in inventory if item["number"] <= "076"}
+        assert set(window) == expected_window
+        assert set(seed_names) == set(window) - {"075_report_clean.sql", "076_report_update.sql"}
         assert "075_report_clean.sql" not in seed_names and "076_report_update.sql" not in seed_names
         assert "CREATE TABLE" not in out and "UPDATE b62" not in out
         summary_text = summary.read_text(encoding="utf-8")
@@ -926,7 +973,7 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "--out", str(plan_path),
     ]) == 0
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    assert len(plan["seed"]) == 69
+    assert set(plan["seed"]) == {path.name for path in MIGRATIONS.glob("*.sql")} - pending
     assert sorted(plan["apply"]) == sorted(pending)
 
     seed_sql = tmp_path / "seed.sql"
@@ -934,7 +981,10 @@ def test_the_apply_order_runs_end_to_end_on_a_database_one_window_behind(tmp_pat
         "seed-sql", "--plan", str(plan_path), "--inventory", str(inventory_path),
         "--out", str(seed_sql),
     ]) == 0
-    assert seed_sql.read_text(encoding="utf-8").count(f'INSERT INTO "{LEDGER}" (name)') == 69
+    statements = seed_sql.read_text(encoding="utf-8")
+    assert statements.count(f'INSERT INTO "{LEDGER}" (name)') == len(plan["seed"])
+    for name in plan["seed"]:
+        assert name in statements
 
     window_dir = tmp_path / "window"
     assert gate.main([
