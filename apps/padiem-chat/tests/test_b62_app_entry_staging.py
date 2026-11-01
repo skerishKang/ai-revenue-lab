@@ -67,6 +67,9 @@ STAGED_PATHS = {
     f"{ENTRY_PREFIX}/static/pc-file-exchange.css",
     f"{ENTRY_PREFIX}/static/pc-file-exchange.js",
     f"{ENTRY_PREFIX}/static/photo-resize.js",
+    # 2026-11-01: #6589 builds the 한글(HWPX)·워드(DOCX) downloads in the browser,
+    # so the export module is a real app asset the entry loads on demand.
+    f"{ENTRY_PREFIX}/static/document-export.js",
     f"{ENTRY_PREFIX}/index.html",
 }
 
