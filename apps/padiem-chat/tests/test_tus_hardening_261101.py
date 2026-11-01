@@ -10,13 +10,32 @@
 - D1 app/tus_project_upload.py:236 — Upload-Length 5,000자리 → isdecimal() 통과
   후 int()가 파이썬 4300자리 한계 ValueError를 던져 미처리 500. 올바른 계약 400/413.
 - D2 app/tus_project_upload.py:368 — Upload-Offset 5,000자리 → 같은 mechanism의
-  미처리 500(덧붙임은 없다). 올바른 계약 409 + 무덧붙임.
+  미처리 500(덧붙임은 없다). 올바른 계약 409 + 무덧붙임. D1과 같은 뿌리: 헤더 숫자의
+  isdecimal() 게이트가 파이썬 int() 자릿수 한계를 모른다.
 - D3 설계 공백 — 사용자당 미완성 업로드 개수·디스크 상한 부재(24h 청소가 유일).
+- D4 관측(기존 시험 11 허용 범위로 문서화) — 같은 오프셋 PATCH 경합에서
+  _store_meta의 upload.json.tmp 충돌이 미처리 500로 관측된다(app/tus_project_upload.py:146).
+  덧붙임 바이트는 오염되지 않았다(시험 11의 순수성 단언이 지켜진다). 계약은 409/423.
+
+2차 시험(2026-11-02, 컴1) — 8장 보충: 생성 계약 빈틈(Upload-Length 누락·Defer 위장),
+메타데이터 제어 문자·무효 base64·중복 키, 무세션·타인 프로젝트 생성, 인코딩된
+upload_id 순회, 청소된 업로드 픽업, 원시 바이트 비 ASCII 헤더, 앞단 헤더 계약.
+전부 통과 — 새 결함 없음. 비 ASCII 십진수 헤더는 HTTP 헤더가 latin-1로 디코딩되는
+특성상 isdecimal()을 통과할 수 없어(관측 400/409) int() 정규화 경로는 도달 불가.
+
+#6584 tus_core(main, 병합분) 적용성 확인(2026-11-02, 컴1 실측 — 보고만):
+- tus_core.py:254 Upload-Length 5,000자리 → 500(D1 동일), tus_core.py:357
+  Upload-Offset 5,000자리 → 500(D2 동일), 사용자당 상한 부재(D3 동일, 30/30 허용).
+- 프로젝트 파일·채팅 첨부·웹 xlsx 세 경로가 모두 tus_core를 재사용하므로 결함이
+  세 경로 전부에 적용된다. 재현 시험은 #6579 기반 브랜치에 tus_core가 없어
+  main 워크트리 임시 시험으로 관측하고 커밋하지 않았다.
 """
 
 from __future__ import annotations
 
 import asyncio
+import base64
+import json
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -575,3 +594,272 @@ def test_front_worker_source_streams_body_and_gives_tus_its_own_deadline():
 
 def re_search_tus(source: str) -> bool:
     return 'files\\/tus(?:\\/|$)' in source
+
+
+# ── 8) 보충(2차, 2026-11-02): 빠진 공격 표면 ────────────────────────────────
+
+
+def _raw_client(app, cookie: str | None = None) -> TestClient:
+    """관측용 raw 클라이언트: 서버 예외를 HTTP 상태로 관측한다."""
+    raw = TestClient(app, base_url=ORIGIN, raise_server_exceptions=False)
+    if cookie:
+        raw.cookies.set(SESSION_COOKIE, cookie, domain="chat.example.test", path="/")
+    raw.headers.update({"Origin": ORIGIN})
+    return raw
+
+
+def _upload_entries() -> set[str]:
+    root = _upload_root()
+    return set(os.listdir(root)) if os.path.isdir(root) else set()
+
+
+def test_creation_requires_upload_length_and_ignores_defer_length(monkeypatch, tmp_path):
+    """빈 Upload-Length·Defer-Length 위장은 생성되지 않는다(계약 400)."""
+    app, _history, _store = make_app(monkeypatch, tmp_path)
+    owner = await_user(app)
+    project = new_project(app, owner.id)
+    client = sync_session(app, owner.id)
+
+    missing = client.post(
+        f"/api/projects/{project.id}/files/tus",
+        headers={"Upload-Metadata": tus_metadata("a.png", "image/png"),
+                 "Tus-Resumable": "1.0.0"},
+    )
+    assert missing.status_code == 400, (missing.status_code, missing.text[:120])
+
+    defer_only = client.post(
+        f"/api/projects/{project.id}/files/tus",
+        headers={"Upload-Defer-Length": "1",
+                 "Upload-Metadata": tus_metadata("a.png", "image/png"),
+                 "Tus-Resumable": "1.0.0"},
+    )
+    assert defer_only.status_code == 400, defer_only.status_code
+
+    # Defer 헤더는 알 수 없는 확장으로 무시되고 Upload-Length만 본다(관측 계약).
+    defer_plus_valid = client.post(
+        f"/api/projects/{project.id}/files/tus",
+        headers={"Upload-Length": "10", "Upload-Defer-Length": "1",
+                 "Upload-Metadata": tus_metadata("a.png", "image/png"),
+                 "Tus-Resumable": "1.0.0"},
+    )
+    assert defer_plus_valid.status_code == 201, defer_plus_valid.status_code
+    assert defer_plus_valid.json()["length_bytes"] == 10
+
+
+def test_metadata_control_characters_are_filtered_or_rejected(monkeypatch, tmp_path):
+    """파일명 제어 문자: C0 제어(< 0x20)와 DEL은 걷어지고, 걷어진 뒤 빈 이름은 거부된다.
+
+    저장된 이름(메타 JSON)에 줄바꿈·DEL·NUL이 남지 않는 것이 본 시험의 본체다.
+    """
+    app, _history, _store = make_app(monkeypatch, tmp_path)
+    owner = await_user(app)
+    project = new_project(app, owner.id)
+    client = sync_session(app, owner.id)
+
+    cases = {
+        "crlf": "보고서\r\n이름.png",       # 줄바꿈 제거 → "보고서이름.png"
+        "tab": "a\tb.png",                  # 탭 제거 → "ab.png"
+        "del": "a\x7fb.png",                # DEL 제거
+        "nul": "evil\0.png",                # NUL 제거
+        "rtl-override": "\u202e evil.exe \u202e png",  # (>= 0x20 — 남긴다, 경로 무해)
+        "zero-width": "a\u200bb.png",       # (>= 0x20 — 남긴다)
+    }
+    for label, name in cases.items():
+        answer = client.post(
+            f"/api/projects/{project.id}/files/tus",
+            headers={"Upload-Length": "10",
+                     "Upload-Metadata": tus_metadata(name, "image/png"),
+                     "Tus-Resumable": "1.0.0"},
+        )
+        assert answer.status_code == 201, (label, answer.status_code, answer.text[:120])
+        upload_id = answer.json()["upload_id"]
+        stored = json.loads(
+            open(os.path.join(_upload_root(), upload_id, _META_NAME),
+                 encoding="utf-8").read())["filename"]
+        for banned in ("\r", "\n", "\x00", "\x7f"):
+            assert banned not in stored, (label, repr(stored))
+        assert "/" not in stored and "\\" not in stored, (label, repr(stored))
+
+    # 전부 제어 문자인 이름: 걷어진 뒤 빈 이름 → 422(생성 자체가 없다).
+    blank = client.post(
+        f"/api/projects/{project.id}/files/tus",
+        headers={"Upload-Length": "10",
+                 "Upload-Metadata": tus_metadata("\r\n\t\x00", "image/png"),
+                 "Tus-Resumable": "1.0.0"},
+    )
+    assert blank.status_code == 422, (blank.status_code, blank.text[:120])
+
+
+def test_metadata_invalid_base64_and_duplicate_keys(monkeypatch, tmp_path):
+    app, _history, _store = make_app(monkeypatch, tmp_path)
+    owner = await_user(app)
+    project = new_project(app, owner.id)
+    client = sync_session(app, owner.id)
+    url = f"/api/projects/{project.id}/files/tus"
+
+    broken = client.post(url, headers={
+        "Upload-Length": "10",
+        "Upload-Metadata": "filename !!!not-base64!!,filetype aW1hZ2UvcG5n",
+        "Tus-Resumable": "1.0.0"})
+    assert broken.status_code == 422, (broken.status_code, broken.text[:120])
+
+    empty_meta = client.post(url, headers={
+        "Upload-Length": "10", "Upload-Metadata": "", "Tus-Resumable": "1.0.0"})
+    assert empty_meta.status_code == 422, empty_meta.status_code
+
+    first = base64.b64encode("first.png".encode()).decode()
+    last = base64.b64encode("last.png".encode()).decode()
+    dup = client.post(url, headers={
+        "Upload-Length": "10",
+        "Upload-Metadata": f"filename {first},filename {last},"
+                           f"filetype {base64.b64encode(b'image/png').decode()}",
+        "Tus-Resumable": "1.0.0"})
+    assert dup.status_code == 201, dup.status_code  # 마지막 키로 결정(관측 계약)
+    upload_id = dup.json()["upload_id"]
+    stored = json.loads(open(os.path.join(_upload_root(), upload_id, _META_NAME),
+                             encoding="utf-8").read())["filename"]
+    assert stored == "last.png", stored
+
+
+def test_create_patch_head_without_session_are_refused(monkeypatch, tmp_path):
+    """쿠키 없는 요청은 출처를 위조해도 세션 없이는 통과하지 못한다(401/403)."""
+    app, _history, _store = make_app(monkeypatch, tmp_path)
+    owner = await_user(app)
+    project = new_project(app, owner.id)
+    owner_client = sync_session(app, owner.id)
+    upload_id = _create(owner_client, project.id, length=10)
+
+    bare = TestClient(app, base_url=ORIGIN, raise_server_exceptions=False)
+    bare.headers.update({"Origin": ORIGIN})  # 쿠키 없음 — 출처만 같음
+    base = f"/api/projects/{project.id}/files/tus/{upload_id}"
+
+    assert bare.post(f"/api/projects/{project.id}/files/tus", headers={
+        "Upload-Length": "10", "Upload-Metadata": tus_metadata("a.png", "image/png"),
+        "Tus-Resumable": "1.0.0"}).status_code in (401, 403)
+    assert bare.patch(base, content=b"X", headers={
+        "Upload-Offset": "0", "Content-Type": "application/offset+octet-stream",
+        "Tus-Resumable": "1.0.0"}).status_code in (401, 403)
+    assert bare.head(base, headers={"Tus-Resumable": "1.0.0"}).status_code in (401, 403)
+    assert bare.get(base).status_code in (401, 403)
+    assert _data_size(upload_id) == 0
+
+
+def test_create_on_another_users_project_is_not_their_upload(monkeypatch, tmp_path):
+    """소유자가 아닌 사용자의 생성(POST)도 404로 흩어진다 — 업로드 디렉터리조차 생기지 않는다."""
+    app, _history, _store = make_app(monkeypatch, tmp_path)
+    a = await_user(app, "alice")
+    b = await_user(app, "bob")
+    project_a = new_project(app, a.id, "A")
+    client_b = sync_session(app, b.id)
+
+    before = _upload_entries()
+    answer = client_b.post(
+        f"/api/projects/{project_a.id}/files/tus",
+        headers={"Upload-Length": "10",
+                 "Upload-Metadata": tus_metadata("steal.png", "image/png"),
+                 "Tus-Resumable": "1.0.0"},
+    )
+    assert answer.status_code in (403, 404), (answer.status_code, answer.text[:120])
+    assert _upload_entries() == before  # 생성물 0
+
+
+def test_encoded_upload_id_traversal_shapes_behave_as_missing(monkeypatch, tmp_path):
+    """upload_id 세그먼트의 퍼센트 인코딩 순회 모양은 전부 404(루트 탈출 0)."""
+    app, _history, _store = make_app(monkeypatch, tmp_path)
+    owner = await_user(app)
+    project = new_project(app, owner.id)
+    client = sync_session(app, owner.id)
+    url = f"/api/projects/{project.id}/files/tus"
+
+    before = _upload_entries()
+    for guess in ("%2e%2e", "%2e%2e%2f", "..%2F", "..%5C", "%2e", "%2f", "...."):
+        for method in ("get", "head"):
+            answer = getattr(client, method)(f"{url}/{guess}",
+                                             headers={"Tus-Resumable": "1.0.0"})
+            assert answer.status_code == 404, (method, guess, answer.status_code)
+    assert _upload_entries() == before
+
+
+def test_swept_upload_pickup_is_missing(monkeypatch, tmp_path):
+    """청소된 업로드의 픽업(GET)도 404 — 만료 자원은 상태 조회와 똑같이 사라진다."""
+    app, _history, _store = make_app(monkeypatch, tmp_path, cleanup_seconds=60)
+    owner = await_user(app)
+    project = new_project(app, owner.id)
+    client = sync_session(app, owner.id)
+    upload_id = _create(client, project.id, length=10)
+    assert _patch(client, project.id, upload_id, 0, b"01234").status_code == 204
+
+    marker = os.path.join(_upload_root(), upload_id, _META_NAME)
+    old = time.time() - 3600
+    os.utime(marker, (old, old))
+    assert sweep_expired_uploads() >= 1
+    assert client.get(f"/api/projects/{project.id}/files/tus/{upload_id}"
+                      ).status_code == 404
+
+
+def test_unicode_decimal_headers_normalize_to_one_value(monkeypatch, tmp_path):
+    """비 ASCII 십진수 헤더는 실제 HTTP 전달로는 도달조차 하지 못한다.
+
+    isdecimal()/int()는 유니코드 십진수('١٢' → 12)를 같은 정수로 정규화하지만,
+    HTTP 헤더는 아스키(Starlette는 latin-1 디코딩)로만 도달하므로 원시 UTF-8 바이트를
+    싣으면 isdecimal()이 False가 되어 거부된다. 원시 바이트(공격자가 wire에서 직접
+    쓰는 모양)로 세 경로를 관측해 무덧붙임·무생성을 고정한다.
+    """
+    app, _history, _store = make_app(monkeypatch, tmp_path)
+    owner = await_user(app)
+    project = new_project(app, owner.id)
+    client = sync_session(app, owner.id)
+    upload_id = _create(client, project.id, length=10)
+    url = f"/api/projects/{project.id}/files/tus/{upload_id}"
+
+    arabic_twelve = "١٢".encode("utf-8")       # 아라비아-인도 12
+    arabic_zero = "٠".encode("utf-8")          # 아라비아-인도 0
+    arabic_123 = "١٢٣".encode("utf-8")
+
+    offset_wrong = client.patch(url, content=b"X" * 8, headers={
+        "Upload-Offset": arabic_twelve,
+        "Content-Type": "application/offset+octet-stream",
+        "Tus-Resumable": "1.0.0"})
+    assert offset_wrong.status_code == 409, offset_wrong.status_code
+    assert _data_size(upload_id) == 0
+
+    offset_zero = client.patch(url, content=b"01234", headers={
+        "Upload-Offset": arabic_zero,
+        "Content-Type": "application/offset+octet-stream",
+        "Tus-Resumable": "1.0.0"})
+    # 관측: latin-1 디코딩 결과가 십진수가 아니므로 409(무덧붙임) — 정규화 경로 자체가 닫힌다.
+    assert offset_zero.status_code in (400, 409), offset_zero.status_code
+    assert _data_size(upload_id) == 0
+    assert _head_offset(client, project.id, upload_id) == (200, 0)
+
+    length_arabic = client.post(
+        f"/api/projects/{project.id}/files/tus",
+        headers={"Upload-Length": arabic_123,
+                 "Upload-Metadata": tus_metadata("a.png", "image/png"),
+                 "Tus-Resumable": "1.0.0"})
+    assert length_arabic.status_code == 400, length_arabic.status_code  # 무생성
+    assert _upload_entries() == {upload_id}  # 기존 업로드 외 생성물 없음
+
+
+def test_front_worker_never_forges_origin_or_edge_proof():
+    """앞단 헤더 계약(소스 근결 관측): 출처와 에지 증명은 클라이언트가 만질 수 없다.
+
+    - worker.mjs는 클라이언트 Origin을 그대로 전달한다(출처 위조를 도와주지 않음).
+    - x-forwarded-* 는 서빙 값으로 덮어써진다(host 삭제 포함).
+    - edge-proof.mjs는 클라이언트가 보낸 증명 헤더를 지운 뒤 자신이 다시 세팅한다
+      (증명 위조 불가) — 서명문에 method·pathname이 들어가 재생이 경계를 벗어나지 못한다.
+    """
+    front = Path(__file__).resolve().parents[2].joinpath("padiem-chat-front")
+    worker = front.joinpath("worker.mjs").read_text(encoding="utf-8")
+    edge = front.joinpath("edge-proof.mjs").read_text(encoding="utf-8")
+
+    assert 'headers.set("origin"' not in worker  # 출처 합성 금지 — 가드가 실제 출처를 본다
+    assert 'headers.delete("host")' in worker
+    assert 'headers.set("x-forwarded-host", new URL(request.url).host)' in worker
+    assert 'headers.set("x-forwarded-proto", "https")' in worker
+    assert 'headers.set("x-forwarded-for", prior ? `${prior}, ${ip}` : ip)' in worker
+
+    assert 'const headers = new Headers(request.headers);' in edge
+    assert 'for (const name of PROOF_HEADERS) headers.delete(name);' in edge
+    assert '["v1", request.method, url.pathname, at, id, tls].join("\\n")' in edge
+    assert 'request.cf?.tlsVersion' in edge  # TLS 사실이 증명에 묶인다
