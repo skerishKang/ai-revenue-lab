@@ -4,6 +4,14 @@
 #
 #   bash deploy_from_main.sh <main-sha>             plan only (the default)
 #   bash deploy_from_main.sh <main-sha> --apply     move, reinstall, restart, health
+#   bash deploy_from_main.sh <main-sha> --stage-only  mirror + permission checks only
+#
+# The services read their code as their own user, and over the 9p (D:) mount a
+# file can stay unreadable there no matter what chmod says — the Windows ACL
+# decides. So nothing is installed from the checkout: the target tree is first
+# mirrored onto Linux storage, made world-readable, and only then does a single
+# service get touched. Each mirror, release and rollback snapshot must report
+# zero files the service user cannot read, or the run stops before that point.
 #
 # The production checkout is an operator setting, never a shared folder. The
 # script refuses a SHA that is not origin/main, a checkout that is the staging
@@ -18,6 +26,8 @@
 #   PADIEM_COM2_STAGING_CHECKOUT staging checkout to stay apart (default below)
 #   PADIEM_COM2_STATE_DIR        private execution state (default below)
 #   PADIEM_COM2_PREVIOUS_DIR     root-owned, service-readable rollback worktrees
+#   PADIEM_COM2_SOURCE_DIR       Linux-side staging mirror the services install from
+#   PADIEM_COM2_READ_CHECK_USER  user the readability checks run as (default padiem-chat)
 #   PADIEM_COM2_CHAT_HEALTH_ATTEMPTS / PADIEM_COM2_CHAT_HEALTH_INTERVAL
 #   PADIEM_COM2_CHAT_HEALTH_TIMEOUT
 #   PADIEM_COM2_CHAT_DB          Chat SQLite file holding the migration ledger
@@ -36,6 +46,12 @@ ops_checkout=${PADIEM_COM2_OPS_CHECKOUT:-}
 staging_checkout=${PADIEM_COM2_STAGING_CHECKOUT:-/mnt/d/work/ai-revenue-lab-staging-chat}
 state_dir=${PADIEM_COM2_STATE_DIR:-/var/lib/padiem-com2-deploy}
 previous_dir=${PADIEM_COM2_PREVIOUS_DIR:-/opt/padiem/com2-deploy/previous}
+# Beside the rollback worktrees by default: the same Linux-side storage, so a
+# test run never writes into /opt and a host needs no second knob.
+source_stage_dir=${PADIEM_COM2_SOURCE_DIR:-"${previous_dir%/*}/src"}
+read_check_user=${PADIEM_COM2_READ_CHECK_USER:-padiem-chat}
+staged=''
+stage_only=0
 chat_health_attempts=${PADIEM_COM2_CHAT_HEALTH_ATTEMPTS:-31}
 chat_health_interval=${PADIEM_COM2_CHAT_HEALTH_INTERVAL:-2}
 chat_health_timeout=${PADIEM_COM2_CHAT_HEALTH_TIMEOUT:-60}
@@ -65,7 +81,7 @@ say() { printf 'COM2_DEPLOY_%s\n' "$*"; }
 
 usage() {
   cat >&2 <<'USAGE'
-usage: deploy_from_main.sh <main-sha> [--apply] [--dry-run]
+usage: deploy_from_main.sh <main-sha> [--apply] [--dry-run] [--stage-only]
        [--ops-checkout PATH] [--state-dir PATH] [--chat-db PATH] [--ai-check=required|warn] [--smoke]
 USAGE
 }
@@ -76,6 +92,7 @@ parse_args() {
       --apply) apply=1; shift ;;
       --dry-run) apply=0; shift ;;
       --smoke) extended_smoke=1; shift ;;
+      --stage-only) stage_only=1; shift ;;
       --ai-check=warn) ai_check=warn; shift ;;
       --ai-check=required) ai_check=required; shift ;;
       --ops-checkout) ops_checkout=${2:?path required}; shift 2 ;;
@@ -230,15 +247,126 @@ p01_matches_target() {
   return "$result"
 }
 
+# Paths the installers, health probes and the post-deploy check read. A mirror
+# of these is enough for every service and contains no operator state.
+SOURCE_PATHS=(
+  deploy/host-com2
+  apps/padiem-chat
+  apps/padiem-council-apps
+  apps/padiem-ai-engine
+  apps/korean-ai-platform
+  apps/korean-ai-code-agent/src/kagent
+  packages/padiem-ai-core/padiem_ai_core
+  packages/padiem-control-plane
+  packages/padiem-auth-verify/verify.py
+  .github/scripts
+)
+
+# $1 path, $2 user. access() as that user is the only question that matters on a
+# 9p mount, where Windows ACLs can refuse a read that the mode bits promise.
+# Where the caller cannot even reach the directory as that user (a private parent
+# in a test run) the probe would report the ancestor, so fall back to mode bits.
+read_check_method() {
+  local path=$1 user=$2
+  [[ ${EUID} -eq 0 ]] || { printf 'mode'; return; }
+  getent passwd -- "$user" >/dev/null 2>&1 || { printf 'mode'; return; }
+  if runuser -u "$user" -- test -x "$path" 2>/dev/null; then printf 'access'; else printf 'mode'; fi
+}
+
+unreadable_files() {
+  local path=$1 user=$2
+  if [[ $(read_check_method "$path" "$user") == access ]]; then
+    runuser -u "$user" -- find "$path" -type f ! -readable -print 2>/dev/null | wc -l
+    return
+  fi
+  find "$path" -type f ! -perm -0444 -print 2>/dev/null | wc -l
+}
+
+unreachable_dirs() {
+  local path=$1 user=$2
+  if [[ $(read_check_method "$path" "$user") == access ]]; then
+    runuser -u "$user" -- find "$path" -type d ! -readable -print 2>/dev/null | wc -l
+    return
+  fi
+  find "$path" -type d ! -perm -0555 -print 2>/dev/null | wc -l
+}
+
+assert_service_readable() {
+  # $1 label, $2 path, $3 user. Zero unreadable files and zero untraversable
+  # directories, or the caller must not touch the service that reads this tree.
+  local label=$1 path=$2 user=$3 files dirs
+  if [[ ! -d $path ]]; then
+    say "READABLE_${label}=MISSING PATH=$path"
+    return 1
+  fi
+  files=$(unreadable_files "$path" "$user") || files=1
+  dirs=$(unreachable_dirs "$path" "$user") || dirs=1
+  say "READABLE_${label}_USER=$user METHOD=$(read_check_method "$path" "$user") FILES=$files DIRS=$dirs"
+  (( files == 0 && dirs == 0 ))
+}
+
+stage_source() {
+  # Mirror the target tree onto Linux storage. git archive reads objects, not
+  # the working tree, so a 0600 checkout cannot poison the result.
+  local target="$source_stage_dir/$resolved" temp marker
+  marker=.padiem-stage-complete
+  if [[ -f "$target/$marker" && $(cat -- "$target/$marker") == "$resolved" ]]; then
+    staged=$target
+    say "SOURCE_STAGED=CACHED PATH=$target"
+    return 0
+  fi
+  [[ ! -L $source_stage_dir ]] || fail STAGE_DIR_INVALID
+  install -d -m 0755 -- "$source_stage_dir" || fail STAGE_DIR_UNWRITABLE
+  temp=$(mktemp -d "$source_stage_dir/.stage-XXXXXX") || fail STAGE_DIR_UNWRITABLE
+  # Only paths the target tree actually carries; an operator checkout of a
+  # smaller repository still stages everything it owns.
+  local present=()
+  while IFS= read -r name; do
+    [[ -n $name ]] && present+=("$name")
+  done < <("$git_bin" -C "$ops_checkout" ls-tree --name-only "$resolved" -- "${SOURCE_PATHS[@]}" 2>/dev/null)
+  (( ${#present[@]} > 0 )) || fail STAGE_SOURCE_EMPTY
+  if ! "$git_bin" -C "$ops_checkout" archive --format=tar "$resolved" "${present[@]}" \
+      | tar -x -C "$temp"; then
+    rm -rf -- "$temp"
+    fail STAGE_ARCHIVE_FAILED
+  fi
+  # The mirror is code only: readable by every service, writable by nobody else.
+  chmod -R a+rX,u+w,go-w "$temp" || { rm -rf -- "$temp"; fail STAGE_CHMOD_FAILED; }
+  if [[ ${EUID} -eq 0 ]]; then chown -R root:root "$temp" || true; fi
+  printf '%s\n' "$resolved" > "$temp/$marker" || { rm -rf -- "$temp"; fail STAGE_MARK_FAILED; }
+  chmod a+rX,u+w,go-w "$temp/$marker" || { rm -rf -- "$temp"; fail STAGE_MARK_FAILED; }
+  if [[ -e $target ]]; then
+    mv -T "$target" "$target.stale.$$" || { rm -rf -- "$temp"; fail STAGE_SWAP_FAILED; }
+  fi
+  if ! mv -T "$temp" "$target"; then
+    [[ -e $target.stale.$$ ]] && mv -T "$target.stale.$$" "$target"
+    rm -rf -- "$temp"
+    fail STAGE_SWAP_FAILED
+  fi
+  rm -rf -- "$target.stale.$$" 2>/dev/null || true
+  staged=$target
+  say "SOURCE_STAGED=PATH=$target"
+}
+
+# Every install and every post-deploy probe reads the mirror, never the checkout.
+verify_staged_source() {
+  stage_source
+  assert_service_readable STAGED "$staged" "$read_check_user" \
+    || fail SOURCE_PERMISSIONS_STAGED
+  assert_service_readable STAGED_P01 "$staged/apps/padiem-ai-engine" padiem-p01 \
+    || fail SOURCE_PERMISSIONS_STAGED_P01
+}
+
 deploy_chat() {
   local before_active=0
   if unit_active "$CHAT_UNIT"; then before_active=1; fi
   with_service_stopped "$CHAT_UNIT" || return 1
-  bash "$ops_checkout/deploy/host-com2/chat/install.sh" \
-    --apply --source-root "$ops_checkout" || return 1
+  bash "$staged/deploy/host-com2/chat/install.sh" \
+    --apply --source-root "$staged" || return 1
+  assert_service_readable CHAT_LIVE "$staged/apps/padiem-chat/app" "$read_check_user" || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$CHAT_UNIT" || return 1
-    wait_chat_health "$ops_checkout"
+    wait_chat_health "$staged"
   else
     say 'CHAT_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
@@ -248,11 +376,14 @@ deploy_p01() {
   local before_active=0
   if unit_active "$P01_UNIT"; then before_active=1; fi
   with_service_stopped "$P01_UNIT" || return 1
-  bash "$ops_checkout/deploy/host-com2/p01/install.sh" \
-    --apply --source-root "$ops_checkout" || return 1
+  bash "$staged/deploy/host-com2/p01/install.sh" \
+    --apply --source-root "$staged" || return 1
+  local live
+  live=$(readlink -f -- "$p01_root/app") || return 1
+  assert_service_readable P01_LIVE "$live" padiem-p01 || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$P01_UNIT" || return 1
-    "$python_bin" "$ops_checkout/deploy/host-com2/p01/health.py" --url "$p01_health_url"
+    "$python_bin" "$staged/deploy/host-com2/p01/health.py" --url "$p01_health_url"
   else
     say 'P01_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
@@ -262,10 +393,10 @@ deploy_b14() {
   local before_active=0
   if unit_active "$B14_UNIT"; then before_active=1; fi
   with_service_stopped "$B14_UNIT" || return 1
-  bash "$ops_checkout/deploy/host-com2/b14/install.sh" --reload || return 1
+  bash "$staged/deploy/host-com2/b14/install.sh" --reload || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$B14_UNIT" || return 1
-    "$python_bin" "$ops_checkout/deploy/host-com2/b14/health.py" --url "$b14_health_url"
+    "$python_bin" "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
   else
     say 'B14_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
@@ -290,6 +421,10 @@ rollback_p01() {
   snapshot=$(ls -1dt "$p01_root"/rollback/p01.* 2>/dev/null | head -1 || true)
   [[ -n $snapshot ]] || { say 'P01_ROLLBACK=NO_SNAPSHOT'; return 1; }
   with_service_stopped "$P01_UNIT" || return 1
+  # A snapshot taken before this existed may still be 0600; a rollback that
+  # cannot be read is no rollback at all, so fix it and then prove it.
+  chmod -R a+rX,u+w,go-w "$snapshot" || return 1
+  assert_service_readable P01_ROLLBACK "$snapshot" padiem-p01 || return 1
   local next="$p01_root/.app-rollback-$$" displaced=""
   ln -s "$snapshot" "$next" || return 1
   if [[ -d $p01_root/app && ! -L $p01_root/app ]]; then
@@ -304,7 +439,7 @@ rollback_p01() {
     return 1
   fi
   "$systemctl_bin" start "$P01_UNIT" || return 1
-  "$python_bin" "$ops_checkout/deploy/host-com2/p01/health.py" --url "$p01_health_url"
+  "$python_bin" "$staged/deploy/host-com2/p01/health.py" --url "$p01_health_url"
 }
 
 # B14 code is an operator-staged checkout. When it is a link this script can
@@ -334,9 +469,20 @@ run_deploy() {
   [[ $resolved == "$origin" ]] || fail SHA_NOT_ORIGIN_MAIN
   old=$("$git_bin" -C "$ops_checkout" rev-parse HEAD) || fail GIT_FAILED
 
-  say "MODE=$(if ((apply)); then echo APPLY; else echo DRY_RUN; fi)"
+  say "MODE=$(if ((stage_only)); then echo STAGE_ONLY; elif ((apply)); then echo APPLY; else echo DRY_RUN; fi)"
   say "SHA=$resolved"
   say "PREVIOUS=$old"
+  # Reported, never fatal: the checkout itself is no longer an install source.
+  if assert_service_readable CHECKOUT "$ops_checkout/apps/padiem-chat/app" "$read_check_user"; then
+    say 'CHECKOUT_SOURCE=READABLE'
+  else
+    say 'CHECKOUT_SOURCE=NOT_SERVICE_READABLE_USES_MIRROR'
+  fi
+  if (( stage_only )); then
+    verify_staged_source
+    say "SUMMARY=stage:PASS"
+    return 0
+  fi
 
   if p01_matches_target; then
     say 'P01_RUNNING_CODE=MATCH'
@@ -423,6 +569,8 @@ run_deploy() {
   fi
   find "$previous_dir/$old" -type d -exec chmod a+rx,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
   find "$previous_dir/$old" -type f -exec chmod a+r,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
+  assert_service_readable PREVIOUS "$previous_dir/$old" "$read_check_user" \
+    || fail SOURCE_PERMISSIONS_PREVIOUS
   say "PREVIOUS_CHECKOUT=$previous_dir/$old"
 
   (umask 022; "$git_bin" -C "$ops_checkout" checkout --detach --quiet "$resolved") \
@@ -456,6 +604,10 @@ for path in dirs:
 PY
   say "CHECKOUT=$ops_checkout"
 
+  # Nothing above touched a service; from here the host is being changed, so the
+  # mirror and its permissions must already be proven.
+  verify_staged_source
+
   local failed=0 ai_status=SKIP ai_code=none ai_output
   declare -A was_active=([chat]=0 [p01]=0 [b14]=0)
   for line in chat p01 b14; do
@@ -479,7 +631,7 @@ PY
   if (( ! failed )); then
     ai_status=FAIL
     ai_code=ai_check_unavailable
-    if ai_output=$("$python_bin" "$ops_checkout/.github/scripts/post_deploy_ai_answer_check.py" --base-url "$ai_base_url" 2>/dev/null); then
+    if ai_output=$("$python_bin" "$staged/.github/scripts/post_deploy_ai_answer_check.py" --base-url "$ai_base_url" 2>/dev/null); then
       if [[ $ai_output == 'ai:PASS' ]]; then ai_status=PASS; ai_code=none; fi
     elif [[ $ai_output =~ ^ai:FAIL\ error_code=([a-z][a-z0-9_]{0,80})$ ]]; then
       ai_code=${BASH_REMATCH[1]}
@@ -504,7 +656,7 @@ PY
     say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} ai:$ai_status"
   fi
   if (( extended_smoke )); then
-    "$python_bin" "$ops_checkout/deploy/host-com2/post_deploy_smoke.py" \
+    "$python_bin" "$staged/deploy/host-com2/post_deploy_smoke.py" \
       --base-url "$ai_base_url" --chat-db "$chat_db" \
       --ai-status "$ai_status" --ai-code "${ai_code:-none}" || true
   fi
