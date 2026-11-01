@@ -223,7 +223,13 @@ async def _revoke_all_canonical_sessions(
         }:
             # The account has no canonical subject link, so it owns no
             # canonical session. There is nothing to end.
-            return None
+            pass
+        else:
+            return "session_revocation_failed"
+    try:
+        from .auth_validation_cache import invalidate_auth_cache
+        await invalidate_auth_cache(request, user_id=user_id)
+    except Exception:
         return "session_revocation_failed"
     return None
 
@@ -980,6 +986,12 @@ async def _revoke_canonical_session(request: Request) -> str | None:
             return "session_revocation_failed"
         # The canonical session is already gone, so the stored cookie can no
         # longer authenticate anything. The outcome is already true.
+    try:
+        from .auth_validation_cache import invalidate_auth_cache
+        await invalidate_auth_cache(request, user_id=claims.user_id,
+                                    session_id=canonical_session_id)
+    except Exception:
+        return "session_revocation_failed"
     return None
 
 

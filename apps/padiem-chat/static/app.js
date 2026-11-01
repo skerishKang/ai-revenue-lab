@@ -214,8 +214,13 @@
   let conversationEpoch = 0;
   let selectedAttachment = null;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
+  // UI read generations contain no account identifier. Every verified auth
+  // refresh invalidates late sidebar responses from the previous session.
+  let authViewEpoch = 0;
+  let historyReadSequence = 0;
   // Only the owner-scoped Claw run history can identify a Claw thread.
   const clawConversationIds = new Set();
+  let clawConversationLabelsRead = null;
   let projects = [];
   let projectsReady = false;
   let activeProject = null;
@@ -914,6 +919,7 @@
 
   function clearHistoryUI() {
     clawConversationIds.clear();
+    clawConversationLabelsRead = null;
     historyList.replaceChildren();
     historySection.hidden = true;
     historyEmpty.hidden = true;
@@ -1018,6 +1024,7 @@
       clearProjectsUI();
       return false;
     }
+    const epoch = authViewEpoch;
     if (projectsNavButton) {
       projectsNavButton.disabled = true;
       projectsNavButton.setAttribute("aria-disabled", "true");
@@ -1026,6 +1033,7 @@
     try {
       const response = await fetch("/api/projects", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
+      if (epoch !== authViewEpoch || !authState.authenticated) return false;
       if (!response.ok || !data || !Array.isArray(data.projects)) throw new Error("projects unavailable");
       projects = data.projects.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
       projectsReady = true;
@@ -1037,6 +1045,7 @@
       renderProjects();
       return true;
     } catch (_) {
+      if (epoch !== authViewEpoch || !authState.authenticated) return false;
       clearProjectsUI();
       return false;
     }
@@ -1485,6 +1494,7 @@
   }
 
   function applyAuthState(data) {
+    authViewEpoch += 1;
     authState = data && typeof data === "object" ? data : { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
     const ready = authState.ready === true;
     const authenticated = ready && authState.authenticated === true;
@@ -1508,7 +1518,7 @@
     noteClawApprovalSession(authenticated);
     // #3790 signed-in change notification contains no identity or credentials.
     if (typeof window.dispatchEvent === "function" && typeof CustomEvent === "function") {
-      window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated } }));
+      window.dispatchEvent(new CustomEvent("padiem:auth-state", { detail: { authenticated, generation: authViewEpoch } }));
     }
     // #5434: the password change is offered only for an account that owns a
     // password credential. The server owns that fact.
@@ -2414,13 +2424,19 @@
       clearHistoryUI();
       return;
     }
+    const epoch = authViewEpoch;
+    const sequence = ++historyReadSequence;
+    clawConversationLabelsRead = null;
+    const current = () => epoch === authViewEpoch && sequence === historyReadSequence && authState.authenticated;
     renderHistorySkeleton();
     let data = null;
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
         data = await fetchRecentConversations();
+        if (!current()) return;
         break;
       } catch (_) {
+        if (!current()) return;
         if (attempt === 1) data = null;
       }
     }
@@ -2431,14 +2447,16 @@
     try {
       // Labels are presentation only; run history is owner-filtered by the server.
       // Never infer a Claw execution authority from a title or browser storage.
-      const verifiedClawIds = new Set();
-      if (data.conversations.length) {
+      const historyButtons = new Map();
+      const enrichClawLabels = async () => {
+        const verifiedClawIds = new Set();
         try {
           const threadRunHistoryLimit = 30;
           const runsResponse = await fetch(`/api/claw/runs?limit=${threadRunHistoryLimit}`, {
             headers: { "Accept": "application/json" }, cache: "no-store",
           });
           const runsData = await runsResponse.json().catch(() => null);
+          if (!current()) return;
           if (runsResponse.ok && runsData?.ok === true && Array.isArray(runsData.runs)) {
             runsData.runs.forEach((run) => {
               if (run?.channel === "web" && run?.action === "general"
@@ -2449,9 +2467,14 @@
             });
           }
         } catch (_) { /* No Claw authority can be inferred from a failed read. */ }
-      }
+        if (!current()) return;
+        clawConversationIds.clear();
+        verifiedClawIds.forEach((id) => clawConversationIds.add(id));
+        historyButtons.forEach(({ button, title }, id) => {
+          button.textContent = clawConversationIds.has(id) ? `Claw · ${title}` : title;
+        });
+      };
       clawConversationIds.clear();
-      verifiedClawIds.forEach((id) => clawConversationIds.add(id));
       historyList.replaceChildren();
       historySection.hidden = false;
       historyEmpty.hidden = data.conversations.length !== 0;
@@ -2464,6 +2487,7 @@
         button.className = "recent-item history-item";
         button.textContent = clawConversationIds.has(conversation.id)
           ? `Claw · ${conversation.title}` : conversation.title;
+        historyButtons.set(conversation.id, { button, title: conversation.title });
         button.addEventListener("click", () => openSavedConversation(conversation.id));
         const actions = document.createElement("details");
         actions.className = "history-actions";
@@ -2501,6 +2525,11 @@
         row.append(button, actions);
         historyList.appendChild(row);
       });
+      // Optional thread labels never hold the conversation list behind an
+      // independent identity/Engine read. The list is already usable here.
+      if (data.conversations.length) {
+        clawConversationLabelsRead = { epoch, promise: enrichClawLabels() };
+      }
     } catch (_) {
       // #6119: a read that landed but could not render is still a failure —
       // the retry row says so instead of painting an empty list.
@@ -2595,12 +2624,13 @@
       if (!data) throw new Error("auth status unavailable");
       applyAuthState(data);
       scheduleSharedRefresh();
+      const sidebarReads = [];
       if (authState.authenticated) {
-        await loadProjects();
-        await loadRecentConversations();
+        sidebarReads.push(loadProjects(), loadRecentConversations());
       }
       syncApprovedMemoryVisibility();
       syncClawRunHistoryVisibility();
+      await Promise.allSettled(sidebarReads);
     } catch (_) {
       // #5479: a status request that never produced an answer is "unreachable",
       // not "signed out". The Chat Worker can fail every route, /api/auth/status
@@ -2616,6 +2646,7 @@
   });
   async function openSavedConversation(id) {
     if (!authState.authenticated || inFlight) return;
+    const epoch = authViewEpoch;
     try {
       const response = await fetch(`/api/conversations/${encodeURIComponent(id)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
@@ -2623,6 +2654,11 @@
       const savedProjectId = typeof data.conversation.project_id === "string" ? data.conversation.project_id : null;
       const restoredProject = savedProjectId ? await ensureProject(savedProjectId) : null;
       if (savedProjectId && !restoredProject) throw new Error(uiT("conversation-project-load-failed"));
+      // Paint the list early, but preserve the existing canonical Claw lane
+      // classification when the user opens a row before its labels arrive.
+      const labels = clawConversationLabelsRead;
+      if (labels && labels.epoch === epoch) await labels.promise;
+      if (epoch !== authViewEpoch || !authState.authenticated) return false;
       clearAttachment();
       // #2505: the saved thread is the ONE conversation, so it is loaded into
       // the shared store. A thread that has Claw turns still opens on the Claw

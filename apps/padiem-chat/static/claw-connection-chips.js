@@ -5,6 +5,10 @@ const shell=document.querySelector(".app-shell"), owner=document.querySelector("
 if(!shell||!owner)return;
 const ids=["pc","drive","github"], values=new Map(ids.map(x=>[x,"unknown"]));
 let generation=0;
+let refreshInFlight=null, refreshSequence=0;
+const confirmed=new Set();
+// Only display GETs use this deadline. Tool work and connector mutations do not.
+const STATUS_READ_TIMEOUT_MS=3000;
 const pendingDisconnect=new Set();
 const english=()=>document.documentElement.lang==="en";
 const message=(ko,en)=>english()?en:ko;
@@ -35,7 +39,10 @@ const cardTruth=(id,value)=>{
 function set(id,value){
  if(!["on","off","unknown"].includes(value))value="unknown";
  values.set(id,value);
+ if(value==="unknown")confirmed.delete(id);else confirmed.add(id);
  const element=chip(id);if(!element)return;
+ delete element.dataset.connectionStale;
+ if(id==="github"&&value==="unknown")delete element.dataset.connectionLinked;
  if(id==="pc"){
   // The OFF light requires a separately verified user pause. Mere absence
   // of a heartbeat or an unenrolled device is never a red OFF selection.
@@ -56,15 +63,35 @@ const guestHint=()=>{
 };
 const feedback=(ko,en)=>{const el=document.getElementById("clawConnectionFeedback");if(!el)return;el.textContent=message(ko,en);el.hidden=false;};
 async function read(url){
- const r=await fetch(url,{method:"GET",credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}});
- if(!r.ok)throw Error("no authority");
- const s=await r.text();if(s.length>32768)throw Error("oversized");return JSON.parse(s);
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),STATUS_READ_TIMEOUT_MS);
+ try{
+  const r=await fetch(url,{method:"GET",credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});
+  if(!r.ok){const error=Error("no authority");error.sessionDenied=r.status===401||r.status===403;throw error;}
+  const s=await r.text();if(controller.signal.aborted)throw Error("read expired");
+  if(s.length>32768)throw Error("oversized");return JSON.parse(s);
+ }finally{clearTimeout(timer);}
 }
-async function refresh(){
- const current=++generation;if(!home()||!signedIn()){reset();guestHint();return;}
- const result=await Promise.allSettled([read("/api/claw/local-access/devices"),read("/api/connectors/status"),read("/api/connectors/github/status")]);
- if(current!==generation||!home()||!signedIn())return;
- reset();
+function checking(id){
+ if(!confirmed.has(id)){set(id,"unknown");return;}
+ // Previous text is presentation only. A stale ON/OFF never chooses a
+ // disconnect/pause action while the current canonical read is pending.
+ values.set(id,"unknown");
+ const element=chip(id);if(element){element.dataset.connectionState="unknown";element.dataset.connectionStale="true";}
+ if(id==="pc"&&element)element.dataset.pcPaused="false";
+ if(id==="github"&&element)delete element.dataset.connectionLinked;
+ const copy=window.__padiemLocale?.text?.("connection-previous-checking");
+ if(cardStatus[id])cardStatus[id].textContent=copy&&copy!=="connection-previous-checking"?copy:message("이전 상태 · 다시 확인 중","Previous status · checking again");
+}
+async function refresh({force=false}={}){
+ if(!home()||!signedIn()){reset();guestHint();return;}
+ if(refreshInFlight&&!force)return refreshInFlight;
+ const current=generation, sequence=++refreshSequence;
+ ids.forEach(checking);
+ const paint=(index,value)=>{
+ if(current!==generation||sequence!==refreshSequence||!home()||!signedIn())return;
+ const result=[{status:"pending"},{status:"pending"},{status:"pending"}];
+ result[index]={status:"fulfilled",value};
  if(result[0].status==="fulfilled"){
   const d=result[0].value;
   if(d?.ok===true&&d.available===true&&d.ownerScoped===true&&Array.isArray(d.devices)&&d.devices.length<=25){
@@ -117,6 +144,21 @@ async function refresh(){
    const gh=chip("github");if(gh)gh.dataset.connectionLinked=github.linked===true?"true":"false";
   }
  }
+ };
+ // Fast cards paint as soon as their own read finishes. One slow connector
+ // cannot hold the PC or Drive card, and focus events share the current read.
+ const reads=["/api/claw/local-access/devices","/api/connectors/status","/api/connectors/github/status"];
+ const pending=Promise.allSettled(reads.map((url,index)=>read(url).then(value=>paint(index,value)).catch(error=>{
+  if(current!==generation||sequence!==refreshSequence)return;
+  const id=ids[index];
+  if(error.sessionDenied)set(id,"unknown");
+  else if(confirmed.has(id)){
+   const copy=window.__padiemLocale?.text?.("connection-previous-stale");
+   if(cardStatus[id])cardStatus[id].textContent=copy&&copy!=="connection-previous-stale"?copy:message("이전 상태 · 새로고침 필요","Previous status · refresh needed");
+  }
+ })));
+ refreshInFlight=pending;
+ try{await pending;}finally{if(refreshInFlight===pending)refreshInFlight=null;}
 }
 async function disconnectDrive(){
  if(pendingDisconnect.has("drive"))return;
@@ -130,10 +172,10 @@ async function disconnectDrive(){
   });
   const payload=await response.json();
   if(!response.ok||payload?.ok!==true||payload.state!=="off")throw Error("disconnect not certified");
-  await refresh(); // Only canonical GET may change the visible ON/OFF state.
+  await refresh({force:true}); // Only canonical GET may change the visible ON/OFF state.
   feedback("구글 드라이브 연결을 해제했습니다.","Google Drive was disconnected.");
  }catch(_error){
-  await refresh();
+  await refresh({force:true});
   feedback("구글 드라이브 연결 해제에 실패했습니다. 연결 상태를 다시 확인해 주세요.",
     "Drive disconnect failed. Please check the connection status.");
  }finally{
@@ -152,11 +194,11 @@ async function setGithubUsage(enabled){
   });
   const payload=await response.json();
   if(!response.ok||payload?.ok!==true||payload.state!==(enabled?"on":"off"))throw Error("github state not verified");
-  await refresh();
+  await refresh({force:true});
   feedback(enabled?"GitHub 사용을 다시 시작했습니다.":"GitHub 사용을 일시 중지했습니다.",
            enabled?"GitHub resumed.":"GitHub paused.");
  }catch(_error){
-  await refresh();
+  await refresh({force:true});
   feedback("GitHub 연결 해제에 실패했습니다. 연결 상태를 다시 확인해 주세요.","GitHub state change failed. Please check connection status.");
  }finally{
   pendingDisconnect.delete("github");if(button)button.disabled=false;
@@ -182,13 +224,13 @@ async function setPcUsage(paused){
   const receipt=JSON.parse(raw);
   if(receipt?.ok!==true||receipt.usagePaused!==paused)
     throw Error("pc_usage_unverified");
-  await refresh(); // Only the canonical Broker readback can illuminate OFF.
+  await refresh({force:true}); // Only the canonical Broker readback can illuminate OFF.
   if(chip("pc")?.dataset.pcPaused!==(paused?"true":"false"))
     throw Error("pc_usage_readback_mismatch");
   if(!paused&&values.get("pc")!=="on")
     document.getElementById("clawComputerWorkspace")?.click();
  }catch(_error){
-  await refresh();
+  await refresh({force:true});
   feedback("\uCEF4\uD4E8\uD130 \uC5F0\uACB0 \uC124\uC815\uC744 \uD655\uC778\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uAE30\uC874 \uC0C1\uD0DC\uB97C \uC720\uC9C0\uD569\uB2C8\uB2E4.",
     "PC setting could not be verified. Previous state retained.");
  }finally{
@@ -270,10 +312,16 @@ ids.forEach(id=>chip(id)?.addEventListener("click",event=>{
  if(state==="unknown")feedback("연결 상태를 확인할 수 없습니다. 연결 관리에서 확인해 주세요.",
     "Connection status is unavailable. Please check Connectors.");
 }));
-const observer=new MutationObserver(()=>{++generation;reset();if(home()&&signedIn())void refresh();else guestHint();});
+const invalidate=event=>{
+ ++generation;++refreshSequence;refreshInFlight=null;reset();
+ if(event?.detail?.authenticated===false){guestHint();return;}
+ if(home()&&signedIn())void refresh();else guestHint();
+};
+const observer=new MutationObserver(invalidate);
 observer.observe(shell,{attributes:true,attributeFilter:["data-state"]});
 observer.observe(owner,{attributes:true,attributeFilter:["data-account-state"]});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&home())void refresh();});
 window.addEventListener("focus",()=>{if(home())void refresh();});
+for(const name of ["padiem:auth-state","padiem:auth-changed","padiem:account-changed"])window.addEventListener(name,invalidate);
 if(home())void refresh();
 })();
