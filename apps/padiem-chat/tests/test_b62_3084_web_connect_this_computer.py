@@ -44,8 +44,13 @@ def _locale_source() -> str:
 
 
 def _run_node(script: str) -> str:
+    # The harness inlines the whole module source, so the script easily grows
+    # past Windows' ~32k CreateProcess command-line limit (WinError 206) when
+    # passed as argv. Piping it on stdin keeps the identical execution on
+    # every platform without any length limit.
     completed = subprocess.run(
-        ["node", "-e", script],
+        ["node"],
+        input=script,
         check=True,
         capture_output=True,
         text=True,
