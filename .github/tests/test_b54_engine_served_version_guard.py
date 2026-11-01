@@ -983,10 +983,10 @@ exit 0
 # real `curl` in place and turn a test into a live provider request.
 _DRIVER = """#!/usr/bin/env bash
 set -uo pipefail
-chmod +x "${STUB_DIR}/curl" "${STUB_DIR}/npx" "${STUB_DIR}/sleep"
+chmod +x "${STUB_DIR}/curl" "${STUB_DIR}/npx" "${STUB_DIR}/sleep" "${STUB_DIR}/python3"
 STUB_NATIVE="$(cd "${STUB_DIR}" && pwd)"
 export PATH="${STUB_NATIVE}:${PATH}"
-for stubbed in curl npx sleep; do
+for stubbed in curl npx sleep python3; do
   resolved="$(command -v "${stubbed}" || true)"
   if [ "${resolved}" != "${STUB_NATIVE}/${stubbed}" ]; then
     printf 'HARNESS_ABORT=%s=%s\\n' "${stubbed}" "${resolved}"
@@ -1093,7 +1093,12 @@ def _run_rollback_step(
     runner_temp = root / "runner-temp"
     stub.mkdir(parents=True, exist_ok=True)
     runner_temp.mkdir(parents=True, exist_ok=True)
-    for name, body in (("curl", _STUB_CURL), ("npx", _STUB_NPX), ("sleep", _STUB_SLEEP)):
+    # The workflow step invokes `python3` for the canonical version-id guard.
+    # On a Windows host `python3` resolves to the Microsoft Store alias stub
+    # (exit 49), so the harness pins it to this suite's interpreter.
+    python_stub = "#!/usr/bin/env bash\nexec \"%s\" \"$@\"\n" % _native(sys.executable)
+    for name, body in (("curl", _STUB_CURL), ("npx", _STUB_NPX), ("sleep", _STUB_SLEEP),
+                       ("python3", python_stub)):
         (stub / name).write_text(body, encoding="utf-8", newline="\n")
     step_script = root / "step.sh"
     step_script.write_text(_rollback_step_body(), encoding="utf-8", newline="\n")
@@ -1106,6 +1111,7 @@ def _run_rollback_step(
         "RUNNER_TEMP": _native(runner_temp),
         "STEP_SCRIPT": _native(step_script),
         "GITHUB_WORKSPACE": _native(ROOT),
+        "GITHUB_STEP_SUMMARY": _native(runner_temp / "step-summary.txt"),
         "ROLLBACK_TARGET": target,
         "CLOUDFLARE_API_TOKEN": "stub-token-must-not-be-echoed",
         "CLOUDFLARE_ACCOUNT_ID": "stub-account-must-not-be-echoed",

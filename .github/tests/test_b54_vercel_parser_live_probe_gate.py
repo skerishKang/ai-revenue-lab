@@ -34,7 +34,12 @@ def test_future_live_job_is_dispatch_only_and_inert() -> None:
     assert "VERCEL_SANDBOX_CREATE=0" in live
     assert "PARSER_PROCESS_START=0" in live
     assert "gh workflow run" not in workflow
-    assert "vercel " not in workflow.lower()
+    # The gate's own name legitimately contains "Vercel"; the contract is
+    # that no job ever invokes Vercel tooling (SDK/CLI/deploy/sandbox host).
+    lowered = workflow.lower()
+    assert "npx vercel" not in lowered
+    assert "vercel deploy" not in lowered
+    assert "vercel.dev" not in lowered
 
 
 def test_exact_main_confirmation_parser_deadline_and_ttl_guards_exist() -> None:

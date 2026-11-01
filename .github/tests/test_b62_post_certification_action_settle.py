@@ -34,15 +34,20 @@ WORKFLOW = ROOT / ".github/workflows/b62-browser-qa-unified.yml"
 # Sibling CI contract tests install their own partial `playwright.async_api` stub
 # and whichever is collected first owns sys.modules, so the names this suite
 # imports are added to whatever module object is already registered.
-_api = sys.modules.get("playwright.async_api")
-if _api is None:
-    _api = types.ModuleType("playwright.async_api")
-    _playwright = sys.modules.setdefault("playwright", types.ModuleType("playwright"))
-    _playwright.async_api = _api
-    sys.modules["playwright.async_api"] = _api
-for _name in ("Browser", "BrowserContext", "Locator", "Page", "Route", "async_playwright"):
-    if not hasattr(_api, _name):
-        setattr(_api, _name, object)
+try:
+    import playwright.async_api  # noqa: F401
+except ImportError:
+    _api = sys.modules.get("playwright.async_api")
+    if _api is None:
+        _api = types.ModuleType("playwright.async_api")
+        _playwright = sys.modules.setdefault(
+            "playwright", types.ModuleType("playwright"))
+        _playwright.async_api = _api
+        sys.modules["playwright.async_api"] = _api
+    for _name in ("Browser", "BrowserContext", "Locator", "Page", "Route",
+                  "async_playwright"):
+        if not hasattr(_api, _name):
+            setattr(_api, _name, object)
 
 # Importing the suite would otherwise create its evidence directory under the
 # read-only checkout of the plan job.
