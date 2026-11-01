@@ -165,6 +165,13 @@
     return body.files;
   }
 
+  function safeUiError(message, code) {
+    const error = new Error(message);
+    error.uiMessageSafe = true;
+    if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)) error.code = code;
+    return error;
+  }
+
   async function jsonRequest(url, options) {
     const res = await fetch(url, {
       credentials: "same-origin", cache: "no-store", ...options,
@@ -172,7 +179,7 @@
     const data = await res.json().catch(() => null);
     if (!res.ok || !data || data.ok !== true) {
       const reason = data?.error?.code;
-      const error = new Error(reason === "unauthorized" ? "로그인한 후 다시 시도해 주세요."
+      const error = safeUiError(reason === "unauthorized" ? "로그인한 후 다시 시도해 주세요."
         : reason === "web_xlsx_store_unavailable" ? "웹 파일 보관 기능이 아직 연결되지 않았습니다."
         : reason === "web_xlsx_too_large" ? "XLSX 파일은 1 MiB 이하여야 합니다."
         : reason === "invalid_web_xlsx_file" ? "안전하게 확인할 수 있는 XLSX 파일만 보관할 수 있습니다."
@@ -180,7 +187,7 @@
       // The closed server error code stays available so a caller can tell a
       // retryable rejection from an ambiguous transport failure. It is never
       // used to resend anything automatically.
-      error.code = reason;
+      if (typeof reason === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(reason)) error.code = reason;
       throw error;
     }
     return data;
@@ -355,14 +362,14 @@
         const declaredSize = Number(result.headers?.get("content-length"));
         if (!result.ok || mime !== "application/pdf"
             || (Number.isFinite(declaredSize) && declaredSize > PDF_MAX_BYTES)) {
-          throw new Error("PDF response rejected");
+          throw safeUiError("PDF 응답을 확인하지 못했습니다.");
         }
         const bytes = new Uint8Array(await result.arrayBuffer());
         const tail = String.fromCharCode(...bytes.slice(-1024));
         if (bytes.length < 128 || bytes.length > PDF_MAX_BYTES
             || bytes[0] !== 37 || bytes[1] !== 80 || bytes[2] !== 68
             || bytes[3] !== 70 || bytes[4] !== 45 || !tail.includes("%%EOF")) {
-          throw new Error("PDF bytes rejected");
+          throw safeUiError("PDF 파일을 확인하지 못했습니다.");
         }
         if (token !== pdfPreviewToken || ref !== selectedSelectionRef
             || revisedPdfLink.hidden || pdfPreviewButton.hidden) return;
@@ -505,7 +512,7 @@
             || result.followup.source_integrity_ref !== link.integrity_ref
             || result.followup.read_grant_issued !== false
             || result.followup.source_material_loaded !== false) {
-          throw new Error("verified owner file reference unavailable");
+          throw safeUiError("파일 소유자 정보를 확인하지 못했습니다.");
         }
         window.dispatchEvent(new CustomEvent("padiem:claw-web-work-conversation-open", {
           detail: {
@@ -587,7 +594,7 @@
             && Number.isSafeInteger(data.vat_amount)
             && Number.isSafeInteger(data.total_amount)
             && data.vat_amount + data.supply_amount === data.total_amount)) {
-          throw new Error("수정 미리보기 응답을 검증할 수 없습니다.");
+          throw safeUiError("수정 미리보기 응답을 검증할 수 없습니다.");
         }
         if (data.write_request_available === true
             && !commitAttemptedRefs.has(ref)) {
@@ -645,7 +652,7 @@
             && result.revised_xlsx_created === false
             && result.pdf_exported === false
             && result.original_overwritten === false)) {
-          throw new Error("별도 쓰기 승인 요청을 확인하지 못했습니다.");
+          throw safeUiError("별도 쓰기 승인 요청을 확인하지 못했습니다.");
         }
         pendingWrite = plan;
         writeApprove.hidden = false;
@@ -686,7 +693,7 @@
               && result.selection_ref === plan.ref
               && result.state === "denied"
               && result.revised_xlsx_created === false
-              && result.pdf_exported === false)) throw new Error("거절 결과 불명확");
+              && result.pdf_exported === false)) throw safeUiError("거절 결과 불명확");
           editPreviewResult.textContent = "수정을 거절했습니다. 파일이 변경되지 않았습니다.";
           return;
         }
@@ -698,7 +705,7 @@
             && result.edit_sha256 === plan.editSHA
             && HASH.test(result.revision_sha256)
             && ID.test(result.revision_document_id))) {
-          throw new Error("수정본 저장 결과 불명확");
+          throw safeUiError("수정본 저장 결과 불명확");
         }
         editedLink.href = SELECTIONS + "/" + encodeURIComponent(plan.ref)
           + "/quote-edit/download";
@@ -728,6 +735,15 @@
     writeApprove.addEventListener("click", () => void decideQuoteEdit("approve"));
     writeDeny.addEventListener("click", () => void decideQuoteEdit("deny"));
     const report = (value) => { message.textContent = value; };
+    const reportError = (error) => {
+      report(error?.uiMessageSafe ? error.message : "파일 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      if (typeof error?.code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(error.code)) {
+        const note = root.createElement("small");
+        note.className = "error-code";
+        note.textContent = "참고 코드: " + error.code;
+        message.appendChild(note);
+      }
+    };
     const setBusy = (value) => {
       busy = value;
       upload.disabled = value;
@@ -785,7 +801,7 @@
       );
       if (selectedSelectionRef !== selectionRef || selectedSource !== source) return;
       if (!validateP01Status(status, source, selectionRef)) {
-        throw new Error("소유자별 P01 승인 상태를 확인할 수 없습니다.");
+        throw safeUiError("소유자별 P01 승인 상태를 확인할 수 없습니다.");
       }
       ownerRequestReady = status.status === "not_requested"
         && status.owner_request_enabled === true && !requestAttempted;
@@ -870,7 +886,7 @@
           { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
             body: "{}" },
         );
-        if (!validateP01Start(body, ref)) throw new Error("P01 시작 결과를 검증할 수 없습니다.");
+        if (!validateP01Start(body, ref)) throw safeUiError("P01 시작 결과를 검증할 수 없습니다.");
         report("P01 승인 요청이 시작됐습니다. 파일 내용은 아직 처리하지 않았습니다.");
       } catch (_error) {
         approvalStatus.textContent = "시작 요청 결과가 불확실합니다. 재전송하지 말고 상태를 확인하세요.";
@@ -908,7 +924,7 @@
           },
         );
         if (!validateP01Decision(body, decision, ref)) {
-          throw new Error("결정 결과를 확인할 수 없습니다.");
+          throw safeUiError("결정 결과를 확인할 수 없습니다.");
         }
         if (body.workcopy_created) {
           showWorkcopy(ref, body.workcopy_document_id);
@@ -994,19 +1010,19 @@
           body: JSON.stringify({ document_id: item.document_id }),
         });
         if (!validateSelection(body, item)) {
-          throw new Error("파일 선택 기록을 검증할 수 없습니다.");
+          throw safeUiError("파일 선택 기록을 검증할 수 없습니다.");
         }
         await showSelection(item, body.selection.selection_ref);
         // showSelection is itself fail-closed, so the claim of success is
         // conditioned on the state it is supposed to have bound.
         if (selectedDocumentId !== item.document_id
             || selectedSelectionRef !== body.selection.selection_ref) {
-          throw new Error("파일 선택 기록이 현재 선택으로 반영되지 않았습니다.");
+          throw safeUiError("파일 선택 기록이 현재 선택으로 반영되지 않았습니다.");
         }
         report("'" + item.filename + "' 원본 선택이 서버에 저장됐습니다. 별도의 P01 승인 대기 상태가 있어야 승인·거절할 수 있습니다.");
         return true;
       } catch (error) {
-        report(error.message);
+        reportError(error);
         return false;
       } finally {
         if (!force) setBusy(false);
@@ -1039,12 +1055,12 @@
           }),
         });
         if (!validateAdopt(body)) {
-          throw new Error("이전 완료 파일을 새 원본으로 확인할 수 없습니다.");
+          throw safeUiError("이전 완료 파일을 새 원본으로 확인할 수 없습니다.");
         }
         await reload(true);
         const item = lastFiles.find(
           (file) => file.document_id === body.file.document_id);
-        if (!item) throw new Error("불러온 원본이 보관 목록에서 확인되지 않았습니다.");
+        if (!item) throw safeUiError("불러온 원본이 보관 목록에서 확인되지 않았습니다.");
         // The new source may now exist, but the follow-up is NOT complete
         // until a NEW selection is bound. A refused selection must never be
         // announced as a successful continuation, and neither the adopt nor
@@ -1053,7 +1069,7 @@
         if (selected !== true
             || selectedDocumentId !== body.file.document_id
             || !SELECTION_ID.test(String(selectedSelectionRef))) {
-          throw new Error("'" + item.filename + "' 파일은 새 원본으로 등록됐을 수 있지만 "
+          throw safeUiError("'" + item.filename + "' 파일은 새 원본으로 등록됐을 수 있지만 "
             + "새 선택 기록과 P01 읽기 승인이 시작되지 않았습니다. "
             + "자동으로 다시 시도하지 않습니다. 보관 목록에서 직접 선택해 주세요.");
         }
@@ -1061,7 +1077,7 @@
           + "이전 승인은 재사용되지 않았으며, 처리를 시작하려면 새 P01 읽기 승인이 필요합니다.");
         return true;
       } catch (error) {
-        report(error.message);
+        reportError(error);
         return false;
       } finally {
         setBusy(false);
@@ -1074,7 +1090,7 @@
       setBusy(true);
       try {
         const files = validateListing(await jsonRequest(ENDPOINT));
-        if (!files) throw new Error("웹 파일 목록 형식을 확인할 수 없습니다.");
+        if (!files) throw safeUiError("웹 파일 목록 형식을 확인할 수 없습니다.");
         // The original-file list remains useful even if the separate owner
         // selection history is unavailable. Never invent a missing P01 pause.
         let selections = [];
@@ -1083,7 +1099,7 @@
           const verified = validateSelectionsListing(
             await jsonRequest(SELECTIONS), files,
           );
-          if (!verified) throw new Error("소유자별 선택 기록 계약 불일치");
+          if (!verified) throw safeUiError("소유자별 선택 기록 계약 불일치");
           selections = verified;
         } catch (_error) {
           historyAvailable = false;
@@ -1099,7 +1115,7 @@
         list.replaceChildren();
         lastFiles = [];
         loaded = false;
-        report(error.message);
+        reportError(error);
       } finally {
         if (!force) setBusy(false);
       }
@@ -1130,7 +1146,7 @@
         });
         if (body.processing_started !== false || body.p01_approved !== false
             || body.drive_uploaded !== false || !validFile(body.file)) {
-          throw new Error("웹 원본 저장 결과를 확인할 수 없습니다.");
+          throw safeUiError("웹 원본 저장 결과를 확인할 수 없습니다.");
         }
         input.value = "";
         selectedDocumentId = null;
@@ -1141,7 +1157,7 @@
         hideRequest();
         report("원본 XLSX 보관 완료. 수정·PDF 변환은 시작되지 않았으며 별도 승인이 필요합니다.");
       } catch (error) {
-        report(error.message);
+        reportError(error);
       } finally {
         setBusy(false);
       }
