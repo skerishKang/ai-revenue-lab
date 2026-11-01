@@ -7,7 +7,13 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
-from .history import HistoryStore, validate_project_fields, validate_project_id
+from .history import (
+    MAX_PROJECTS,
+    HistoryStore,
+    ProjectCursorError,
+    validate_project_fields,
+    validate_project_id,
+)
 from .history import PRODUCT_SCOPE_CHAT
 
 MAX_PROJECT_BODY_BYTES = 8192
@@ -57,11 +63,54 @@ async def projects_collection(request: Request) -> JSONResponse:
     store: HistoryStore = request.app.state.history_store
 
     if request.method == "GET":
+        # #5882: the project list is paged, not truncated. A caller that sends no
+        # cursor gets exactly what it got before (the first page), so every
+        # existing client keeps working; the extra ``next_cursor`` key is the
+        # only change on the wire and old callers ignore it.
+        raw_limit = request.query_params.get("limit")
+        limit = MAX_PROJECTS
+        if raw_limit is not None:
+            try:
+                limit = int(raw_limit)
+            except (TypeError, ValueError):
+                return JSONResponse(
+                    {"error": {"code": "invalid_limit", "message": "limit 은 정수여야 합니다."}},
+                    status_code=400,
+                )
+            if limit < 1:
+                return JSONResponse(
+                    {"error": {"code": "invalid_limit", "message": "limit 은 1 이상이어야 합니다."}},
+                    status_code=400,
+                )
+        raw_cursor = request.query_params.get("cursor")
+        cursor = raw_cursor.strip() if isinstance(raw_cursor, str) else None
+        if not cursor:
+            cursor = None
+        page_fn = getattr(store, "list_projects_page", None)
         try:
-            projects = await store.list_projects(uid)
+            if callable(page_fn):
+                projects, next_cursor = await page_fn(uid, limit=limit, cursor=cursor)
+            else:
+                # A store that predates paging still answers the first page.
+                projects, next_cursor = await store.list_projects(uid), None
+        except ProjectCursorError:
+            # A cursor this store never issued is answered without echoing it
+            # or saying whose data it pointed at.
+            return JSONResponse(
+                {
+                    "error": {
+                        "code": "invalid_cursor",
+                        "message": "목록을 이어 볼 위치가 올바르지 않습니다. 처음부터 다시 열어 주세요.",
+                    }
+                },
+                status_code=400,
+            )
         except Exception:
             return _unavailable()
-        return JSONResponse({"projects": [item.public_dict() for item in projects]})
+        return JSONResponse({
+            "projects": [item.public_dict() for item in projects],
+            "next_cursor": next_cursor,
+        })
 
     try:
         raw = await _json_body(request)

@@ -223,6 +223,10 @@
   let clawConversationLabelsRead = null;
   let projects = [];
   let projectsReady = false;
+  // #5882: 서버가 준 다음 페이지 위치. 있으면 목록 끝에 "더 보기"가 붙고,
+  // 없으면(마지막 페이지) 버튼도 없다 — 예전처럼 50개에서 조용히 멈추지 않는다.
+  let projectsNextCursor = null;
+  let projectsLoadingMore = false;
   let activeProject = null;
   let activeProjectFileCount = 0;
   let editingProjectId = null;
@@ -1051,7 +1055,55 @@
       row.append(button, manage);
       projectsList.appendChild(row);
     });
+    if (projectsNextCursor && projectsReady) {
+      const moreRow = document.createElement("div");
+      moreRow.className = "project-row project-more-row";
+      const more = document.createElement("button");
+      more.type = "button";
+      more.className = "recent-item project-more";
+      more.id = "projectsMore";
+      more.textContent = uiT("projects-more");
+      more.setAttribute("aria-label", uiT("projects-more-aria"));
+      more.disabled = projectsLoadingMore;
+      more.addEventListener("click", () => { void loadMoreProjects(); });
+      moreRow.appendChild(more);
+      projectsList.appendChild(moreRow);
+    }
     if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
+  }
+  async function loadMoreProjects() {
+    if (!projectsNextCursor || projectsLoadingMore || !authState.authenticated) return false;
+    const epoch = authViewEpoch;
+    const cursor = projectsNextCursor;
+    projectsLoadingMore = true;
+    renderProjects();
+    try {
+      const response = await fetch(
+        `/api/projects?cursor=${encodeURIComponent(cursor)}`,
+        { headers: { "Accept": "application/json" }, cache: "no-store" },
+      );
+      const data = await response.json().catch(() => null);
+      if (epoch !== authViewEpoch || !authState.authenticated || !response.ok || !data || !Array.isArray(data.projects)) {
+        // A cursor this server no longer accepts is answered 400. Refuse to loop:
+        // drop it and show what is already on screen with a plain Korean notice.
+        if (response.status === 400) {
+          projectsNextCursor = null;
+          setNote(uiT("projects-more-stale"));
+        }
+        return false;
+      }
+      const seen = new Set(projects.map((item) => item.id));
+      const fresh = data.projects.filter((item) => item && typeof item.id === "string"
+        && typeof item.name === "string" && !seen.has(item.id));
+      projects = projects.concat(fresh);
+      projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      projectsLoadingMore = false;
+      if (epoch === authViewEpoch) renderProjects();
+    }
   }
   async function loadProjects() {
     if (!authState.authenticated || !authState.history_ready) {
@@ -1070,6 +1122,7 @@
       if (epoch !== authViewEpoch || !authState.authenticated) return false;
       if (!response.ok || !data || !Array.isArray(data.projects)) throw new Error("projects unavailable");
       projects = data.projects.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
+      projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
       projectsReady = true;
       if (projectsNavButton) {
         projectsNavButton.disabled = false;
