@@ -23,6 +23,28 @@ from app.service import ServiceContractError
 
 SCOPES = ("query_drives", "files_list", "files", "files_write")
 
+#: A native-tool refusal from the provider or the B14 wire. It happens before
+#: any tool ran, so the existing prompt/plan lane can answer the same turn.
+_TOOL_WIRE_REFUSAL_CODES = frozenset({
+    "tools_not_supported",
+    "stream_not_supported",
+    "native_tools_unsupported",
+    "tool_not_allowed",
+})
+
+
+def _native_tool_fallback(exc: BaseException) -> bool:
+    """Whether a failure means "no native tools here", not a real answer.
+
+    The caller falls back only when nothing was emitted and nothing executed;
+    the flags that prove that live beside the stream, never in this predicate.
+    """
+    code = getattr(exc, "code", None)
+    if isinstance(code, str) and code in _TOOL_WIRE_REFUSAL_CODES:
+        return True
+    status = getattr(exc, "upstream_status_code", None)
+    return type(status) is int and status in (400, 404, 422)
+
 
 def parse_pc_tools(payload: Mapping[str, Any]) -> dict[str, Any] | None:
     if "pc_tools" not in payload:
@@ -148,20 +170,35 @@ class PcToolsTurnRuntime:
         iterator = runtime.stream(core_request(native))
         calls = []
         terminal = None
+        saw_output = False
         try:
-            async for event in iterator:
-                if event.tool_call is not None:
-                    calls.append(event.tool_call)
-                if event.delta_content:
-                    sink = _PC_TURN_STREAM_SINK.get()
-                    if sink is not None:
-                        sink({"text_delta": {"delta": event.delta_content}})
-                if event.done:
-                    terminal = event
-        finally:
-            close = getattr(iterator, "aclose", None)
-            if callable(close):
-                await close()
+            try:
+                async for event in iterator:
+                    if event.tool_call is not None:
+                        calls.append(event.tool_call)
+                        saw_output = True
+                    if event.delta_content:
+                        saw_output = True
+                        sink = _PC_TURN_STREAM_SINK.get()
+                        if sink is not None:
+                            sink({"text_delta": {"delta": event.delta_content}})
+                    if event.done:
+                        terminal = event
+            finally:
+                close = getattr(iterator, "aclose", None)
+                if callable(close):
+                    await close()
+        except Exception as exc:
+            # #6460-5: a model whose route refuses the native tool wire (or
+            # answers that lane with an error before any token) is answered by
+            # the existing prompt/plan lane instead of failing the turn. A
+            # failure after output or after a call is a real failure: repeating
+            # the turn could execute a second time or duplicate the answer.
+            if not saw_output and not calls and _native_tool_fallback(exc):
+                print("pc_tool_turn mode=fallback stage=native_tools_unavailable",
+                      flush=True)
+                return await self.fallback.run(request)
+            raise
         if terminal is None:
             raise OrchestrationError("pc_tool_stream_incomplete", "The first model stream did not complete.")
         if not calls:

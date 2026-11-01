@@ -26,6 +26,14 @@ Gemma 4 31B is registered as text-only because its image capability was not
 measurable, and its 49.0s latency exceeds the B14 20.0s default dispatch
 budget. Registration states exactly that rather than a capability nobody proved.
 
+#6460-5 (2026-11-01 owner decision): Gemma 4 31B also declares the ``tools``
+capability. Google documents native function calling for Gemma models on the
+Gemini API (https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api), and the
+declaration below is the only place that capability is stated. The PC tool set
+is included in what a tool-capable model may call: every PC call, from any
+model, is executed by the same server-side step harness (admitted scope, signed
+dispatch, verified result), so the model choice never widens what may run.
+
 Registration is explicit/manual-pin only: each model lives in the exact-ID
 ``CATALOG_BY_ID`` table and is NOT appended to ``CATALOG_MODELS``, so
 ``b14/auto`` and the legacy public summary surface are untouched. Missing
@@ -93,7 +101,8 @@ _GOOGLE_MODELS: tuple[tuple[str, str, str, int, float, float, frozenset[str], in
         0.09,
         0.34,
         # text-only: the image measurement was blocked by provider capacity.
-        frozenset({"chat"}),
+        # tools: official Gemma-on-Gemini-API function calling (#6460-5).
+        frozenset({"chat", "tools"}),
         73,
     ),
 )
@@ -116,6 +125,31 @@ def require_stream_tool_support(model_id: str, provider_id: str | None = None) -
     if provider_id is not None and provider_id != GOOGLE_PROVIDER_ID:
         raise StreamNotSupported()
     require_tool_capability(model_id)
+
+
+def function_declarations(tools) -> list[dict]:
+    """The one place a declared tool list becomes Gemini functionDeclarations.
+
+    ``tools`` is the provider-shaped list every caller already holds
+    (``ToolDefinition.to_provider_schema()`` produces exactly this), so a
+    product adds a tool once and both the OpenAI-compatible lane and this native
+    lane declare the same thing. The declaration carries the reviewed schema
+    verbatim; nothing here adds, removes or narrows a parameter.
+    """
+    declared = _tool_channel().validate_tools(tools)
+    return [
+        {
+            "name": tool["function"]["name"],
+            "description": tool["function"].get("description", ""),
+            "parametersJsonSchema": tool["function"]["parameters"],
+        }
+        for tool in declared
+    ]
+
+
+def _tool_channel():
+    from . import tool_channel
+    return tool_channel
 
 
 def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, model_parameters):
@@ -252,14 +286,7 @@ def _google_tool_body(*, messages, tools, tool_choice, temperature, max_tokens, 
         contents.append({"role": "user", "parts": [{"text": message["content"]}]})
     close_call_turn()
 
-    functions = []
-    for tool in declared:
-        function = tool["function"]
-        functions.append({
-            "name": function["name"],
-            "description": function.get("description", ""),
-            "parametersJsonSchema": function["parameters"],
-        })
+    functions = function_declarations(tools)
     body = {"contents": contents, "tools": [{"functionDeclarations": functions}]}
     if system_parts:
         body["systemInstruction"] = {"parts": system_parts}

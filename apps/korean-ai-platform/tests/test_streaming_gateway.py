@@ -232,12 +232,30 @@ def test_tools_non_google_still_refused_before_dispatch(monkeypatch):
 def test_tools_undeclared_google_capability_refused_before_dispatch(monkeypatch):
     _google_live(monkeypatch)
     calls = []
+    # Gemma 26B declares no tools; the owner-decided 31B does (#6460-5).
     response = _client(httpx.MockTransport(lambda req: calls.append(req))).post(
-        STREAM_URL, json=_payload(model="google/gemma-4-31b-it", tools=[PC_TOOL]),
+        STREAM_URL, json=_payload(model="google/gemma-4-26b-a4b-it", tools=[PC_TOOL]),
     )
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "tools_not_supported"
     assert calls == []
+
+
+def test_gemma_31b_tools_reach_the_google_native_wire(monkeypatch):
+    _google_live(monkeypatch)
+    calls = []
+    stream = _ChunkStream([
+        _native_frame([{"functionCall": {"name": "pc_files", "args": {"plan": "files_list"}}}]),
+    ])
+    def handler(request):
+        calls.append(request)
+        return httpx.Response(200, stream=stream)
+    response = _client(httpx.MockTransport(handler)).post(
+        STREAM_URL, json=_payload(model="google/gemma-4-31b-it", tools=[PC_TOOL]),
+    )
+    assert response.status_code == 200
+    assert response.text.startswith("event: tool_call\n")
+    assert len(calls) == 1 and stream.closed
 
 
 def test_google_tool_call_commits_stream_and_failure_never_falls_back(monkeypatch):

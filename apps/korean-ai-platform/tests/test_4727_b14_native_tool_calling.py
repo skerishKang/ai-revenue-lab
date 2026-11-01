@@ -692,8 +692,15 @@ def test_the_streaming_lane_stays_closed_for_a_route_that_cannot_carry_one(
 def test_a_google_route_without_the_capability_is_refused_by_the_capability() -> None:
     from app.pilot.errors import ToolsNotSupported as _ToolsNotSupported
 
+    # Gemma 26B still declares no tools; only the owner-decided 31B does.
     with pytest.raises(_ToolsNotSupported):
-        require_stream_tool_wire("google/gemma-4-31b-it", "google")
+        require_stream_tool_wire("google/gemma-4-26b-a4b-it", "google")
+
+
+def test_gemma_31b_declares_tools_after_the_owner_decision() -> None:
+    # #6460-5: the capability follows the official Gemma-on-Gemini-API
+    # function-calling documentation, so the same native wire now opens.
+    require_stream_tool_wire("google/gemma-4-31b-it", "google")
 
 
 def test_the_tool_capable_google_route_still_streams_through_its_own_wire() -> None:

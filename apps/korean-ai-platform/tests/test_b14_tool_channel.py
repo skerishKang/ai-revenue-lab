@@ -22,7 +22,8 @@ CHAT_PATH = "/api/pilot/v1/chat/completions"
 #: A registry model that declares the tool capability.
 TOOL_CAPABLE_MODEL = "tokenharbor/deepseek-v4.1-flash:free"
 #: A registry model that does not.
-PLAIN_MODEL = "google/gemma-4-31b-it"
+# Gemma 31B declares tools since #6460-5; 26B is the still-plain route.
+PLAIN_MODEL = "google/gemma-4-26b-a4b-it"
 
 TOOL = {
     "type": "function",
