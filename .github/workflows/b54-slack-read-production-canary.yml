@@ -69,7 +69,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'MAX_SLACK_RESPONSE_BYTES = 1_000_000' apps/padiem-ai-engine/app/slack_port_httpx.py
+          grep -Fq 'MAX_SLACK_RESPONSE_BYTES = 10 * 1024 * 1024' apps/padiem-ai-engine/app/slack_port_httpx.py
           grep -Fq 'SLACK_CONVERSATIONS_LIST_PATH = "/api/conversations.list"' apps/padiem-ai-engine/app/slack_port_httpx.py
           grep -Fq 'ALLOWED_SLACK_METHOD_PATHS' apps/padiem-ai-engine/app/slack_port_httpx.py
           grep -Fq 'CHANNEL_GATED_SLACK_PATHS' apps/padiem-ai-engine/app/slack_port_httpx.py

@@ -53,16 +53,22 @@ class OriginalStorageUnavailable(RuntimeError):
     """The original-bytes bucket is not bound; the row cannot keep its original."""
 
 
-async def save_binary_project_file(request: Request, *, uid: str, pid: str, name: str, media_type: str, data):
+async def save_binary_project_file(
+    request: Request, *, uid: str, pid: str, name: str, media_type: str, data,
+    doc_kind: str = "",
+):
     """Store one binary project file through the unchanged save flow.
 
     *data* is a seekable binary file (the direct route's spool or the tus
     completion file); the helper seeks as needed. Shared by both entry points so
     the tus hand-off keeps the same parsing authority, row creation and
     original-bytes object storage (docs/research/LARGE_UPLOAD_1GB_DESIGN_20261101.md
-    A안 1단계). Raises the validation errors the collection route already maps
-    (DocumentValidationError · DocumentNormalizationError · ValueError ·
-    ProjectFileLimitError) and OriginalStorageUnavailable for storage outages.
+    A안 1단계). *doc_kind* names the uploader's result kind (the council app's
+    speech/sns/meeting/book) so a library list can group them; empty keeps the
+    pre-existing call contract. Raises the validation errors the collection
+    route already maps (DocumentValidationError · DocumentNormalizationError ·
+    ValueError · ProjectFileLimitError) and OriginalStorageUnavailable for
+    storage outages.
     """
     store: ProjectFileStore = request.app.state.project_file_store
     image_body = None
@@ -77,7 +83,10 @@ async def save_binary_project_file(request: Request, *, uid: str, pid: str, name
         image_body = data.read()
         if not image_media_type_matches(media_type, image_body[:12]):
             raise DocumentValidationError("이미지 형식이 일치하지 않습니다.")
-        created = await store.create_file(uid, pid, name, media_type, "")
+        created = await store.create_file(
+            uid, pid, name, media_type, "",
+            **({"doc_kind": doc_kind} if doc_kind else {}),
+        )
     else:
         # Local Core PDF parsing can use the seekable file directly.
         # The Worker isolated-parser wire contract still requires bytes.
@@ -99,6 +108,7 @@ async def save_binary_project_file(request: Request, *, uid: str, pid: str, name
         record_name = normalize_document_name(name) if hwp_mislabeled else parsed.name
         created = await store.create_file(
             uid, pid, record_name, _extracted_media_type(parsed.media_type), parsed.text,
+            **({"doc_kind": doc_kind} if doc_kind else {}),
         )
     workspace_store = getattr(request.app.state, "workspace_document_store", None)
     bucket = getattr(workspace_store, "r2_bucket", None)
@@ -306,13 +316,20 @@ async def project_files_collection(request: Request) -> JSONResponse:
     if is_binary_upload:
         encoded_name = request.headers.get("x-padiem-filename")
         media_type = request.headers.get("x-padiem-media-type")
+        # 2026-11-02: the council app's document uploads name their result kind
+        # (speech/sns/meeting/book) so a library list can group them. Empty stays
+        # legal — every pre-existing uploader sends no such header.
+        doc_kind = (request.headers.get("x-padiem-doc-kind") or "").strip()
         if not encoded_name or len(encoded_name) > 512 or media_type not in BINARY_PROJECT_FILE_MEDIA:
+            return JSONResponse({"error": {"code": "invalid_document"}}, status_code=422)
+        if doc_kind and doc_kind not in UTIL_DOC_KINDS:
             return JSONResponse({"error": {"code": "invalid_document"}}, status_code=422)
         try:
             name = unquote(encoded_name, encoding="utf-8", errors="strict")
             async with open_bounded_spooled_request(request, max_bytes=MAX_BINARY_DOCUMENT_BYTES) as spool:
                 created = await save_binary_project_file(
                     request, uid=uid, pid=pid, name=name, media_type=media_type, data=spool,
+                    doc_kind=doc_kind,
                 )
                 return JSONResponse({"file": created.public_dict()}, status_code=201)
         except RequestBodyTooLarge:

@@ -15,14 +15,28 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 CHAT_ROOT = ROOT / "apps" / "padiem-chat"
-if str(CHAT_ROOT) not in sys.path:
-    sys.path.insert(0, str(CHAT_ROOT))
 
-from app.b66_saved_quote_skill_store import (  # noqa: E402
-    ApprovedSavedQuoteSkillArtifact,
-    SavedQuoteSkillStoreError,
-    canonicalize_approved_artifact,
+# The store module is loaded by file path, not through the `app` package: both
+# apps/korean-ai-platform and apps/padiem-chat ship a top-level `app` package,
+# so a package import here would bind whichever `app` another suite test cached
+# first and poison the namespace for the lane that runs next. The store module
+# itself imports nothing but the standard library, so the isolated load is exact.
+import importlib.util  # noqa: E402
+
+_store_spec = importlib.util.spec_from_file_location(
+    "b62_b66_e2e_provision_store",
+    CHAT_ROOT / "app" / "b66_saved_quote_skill_store.py",
 )
+assert _store_spec is not None and _store_spec.loader is not None
+_store_module = importlib.util.module_from_spec(_store_spec)
+# The store defines dataclasses whose repr/pickle machinery resolves
+# sys.modules[cls.__module__]; an unregistered module would crash there.
+sys.modules[_store_spec.name] = _store_module
+_store_spec.loader.exec_module(_store_module)
+
+ApprovedSavedQuoteSkillArtifact = _store_module.ApprovedSavedQuoteSkillArtifact
+SavedQuoteSkillStoreError = _store_module.SavedQuoteSkillStoreError
+canonicalize_approved_artifact = _store_module.canonicalize_approved_artifact
 
 TARGET_USER_ENV = "B62_B66_E2E_TARGET_USER_ID"
 EXPECTED_SKILL_ID = "b66-e2e-canonical-v1"

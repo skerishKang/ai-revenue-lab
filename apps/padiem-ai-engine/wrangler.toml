@@ -125,8 +125,9 @@ database_id = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 # verified separate from code deployment, with empty new table.
 # No existing service/secret/D1 bindings are changed. Roll back to the
 # previous served Worker version to disable if acceptance checks fail.
-[vars]
-PADIEM_ENGINE_AGENT_DURABLE_ENABLED = "true"
+# Production carries no [vars] by contract (agent_preview pilot gate): the
+# schema-gated Agent D1 lease flag is provisioned on the actual runtime
+# (com2/P01), not in this Cloudflare declaration.
 
 [observability]
 enabled = true

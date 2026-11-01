@@ -248,8 +248,15 @@ class B14RealParseFailureTests(unittest.TestCase):
         testcase = self
 
         def fake_urlopen(request, timeout=20):
+            # A real non-200 response carries its body on the HTTPError's fp;
+            # fp=None is not a shape urllib ever produces, and get_json()'s
+            # exc.read() path then breaks on Python 3.11 (KeyError 'file'),
+            # which misclassified this as check_error on the local runner.
+            import io
+
             raise preflight.HTTPError(
-                "https://example.invalid", 503, "Service Unavailable", {}, None
+                "https://example.invalid", 503, "Service Unavailable", {},
+                io.BytesIO(b"Service Unavailable"),
             )
 
         testcase.addCleanup(setattr, preflight, "urlopen", preflight.urlopen)

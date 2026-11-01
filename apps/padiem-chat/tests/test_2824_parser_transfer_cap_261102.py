@@ -13,7 +13,10 @@ from __future__ import annotations
 import pytest
 
 from app.binary_documents import _translate_binary_error, guidance_for_reason_code
-from padiem_ai_core import isolated_parser_contract as contract
+# 루트 import(`from padiem_ai_core import isolated_parser_contract`)는 패키지 루트
+# 소비자 인벤토리 계약(test_package_root_consumer_inventory)이 거부하는 모양이다 —
+# 서브모듈 import가 같은 모듈 객체를 주므로 monkeypatch 의미도 동일하다.
+import padiem_ai_core.isolated_parser_contract as contract
 from padiem_ai_core.document_semantics import DocumentNormalizationError
 from padiem_ai_core.isolated_parser_contract import (
     ISOLATED_PARSER_MAX_RESPONSE_BYTES,

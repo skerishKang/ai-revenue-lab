@@ -156,9 +156,17 @@ def test_production_block_is_unchanged() -> None:
     assert wrangler["main"] == "worker_identity.py"
     # Production carries no vars section at all, so no preview marker can leak in.
     assert "vars" not in wrangler
+    # observability arrived with #5700 (Workers Logs for chat and engine).
+    # keep_vars is the #4383 preserve guard for the six operator-controlled
+    # live flags. secrets_store_secrets carries identity references only
+    # (#4139 desktop proof, #5224 B14 caller proof, Grafana OTLP token);
+    # values live in Cloudflare Secrets Store, never in this file.
     assert set(wrangler) - {"env", "name", "main", "compatibility_date", "compatibility_flags", "workers_dev"} == {
         "services",
         "d1_databases",
+        "observability",
+        "keep_vars",
+        "secrets_store_secrets",
     }
 
 

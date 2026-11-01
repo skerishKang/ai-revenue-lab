@@ -17,8 +17,13 @@ PC lane already uses.
                                             folder this account granted, one folder
                                             of the sweep per call
     POST /api/pc/fetch   {link_id?, path}    one file's content
-    POST /api/pc/save    {link_id?, path, content|file_id}   #5573's write, with the
-                                             backup it takes before anything changes
+    POST /api/pc/save    {link_id?, path, content|file_id|project_file_id,
+                          project_id?}  #5573's write, with the backup it takes
+                                             before anything changes; a
+                                             project_file_id reads one of this
+                                             owner's own project files (the
+                                             council app's browser-built
+                                             documents) — 2026-11-02
     POST /api/pc/cancel  {run_id}            stop this account's own operation, whether
                                              the PC has started it or not
     GET  /api/pc/result  ?dispatch_id=       the durable state of one of the four
@@ -977,15 +982,17 @@ async def pc_file_exchange_save(request: Request) -> JSONResponse:
 
     body = await _read_body(
         request, frozenset({"path"}),
-        optional=frozenset({"link_id", "content", "file_id"}),
+        optional=frozenset({"link_id", "content", "file_id", "project_id", "project_file_id"}),
     )
     if body is None:
         return _error(400, "pc_exchange_invalid_body")
     content = body.get("content")
     file_id = body.get("file_id")
-    if (content is None) == (file_id is None):
-        # Exactly one source: a menu either holds the text it wrote or the file it
-        # brought over, and never both under two names.
+    project_file_id = body.get("project_file_id")
+    if len([s for s in (content, file_id, project_file_id) if s is not None]) != 1:
+        # Exactly one source: a menu either holds the text it wrote, a file the
+        # lane made, or one of this owner's own project files — never two at
+        # once under two names.
         return _error(422, "pc_exchange_content_required")
     owner = await _owner(request)
     if isinstance(owner, JSONResponse):
@@ -1019,6 +1026,15 @@ async def pc_file_exchange_save(request: Request) -> JSONResponse:
         # made. The bytes are read with this owner's own read ticket; the Worker
         # never parses them, it only hands them to the PC write below.
         payload, refusal = await _lane_file_bytes(request, uid, file_id)
+        if refusal is not None:
+            return refusal
+    elif project_file_id is not None:
+        # 2026-11-02: one of this owner's own project files. The council app
+        # builds documents in the browser (한글/HWPX·워드/DOCX), stores them as
+        # project files first, and moves those exact bytes to the PC here. The
+        # row is read owner+project scoped exactly like the /original route.
+        payload, refusal = await _project_file_bytes(
+            request, uid, body.get("project_id"), project_file_id)
         if refusal is not None:
             return refusal
     else:
@@ -1307,6 +1323,67 @@ async def _lane_file_bytes(
         return None, _error(503, "file_lane_unavailable")
     if not data:
         return None, _error(502, "file_lane_read_failed")
+    return data, None
+
+
+async def _project_file_bytes(
+    request: Request, uid: str, project_id: object, file_id: object,
+) -> tuple[bytes | None, JSONResponse | None]:
+    """One of this owner's own project files, read like the /original route.
+
+    The council app builds documents in the browser (한글/HWPX·워드/DOCX) and
+    stores them as project files first (the binary upload path already admits
+    those media types); the PC write then moves those exact bytes. The row must
+    belong to this owner AND this project, and the bytes come from the same
+    originals object /original serves — never a guessed R2 key.
+    """
+
+    # Imported here, not at module load: the cold-init rule every lane consumer
+    # in this file follows (worker.py compiles the route table at import).
+    from .project_file_routes import _project_original_object_key, _r2_call
+    from .project_files import IMAGE_PROJECT_FILE_MEDIA, validate_file_id
+
+    store = getattr(request.app.state, "project_file_store", None)
+    if store is None or not hasattr(store, "get_file"):
+        return None, _error(503, "pc_project_file_unavailable")
+    if not isinstance(project_id, str) or not project_id:
+        return None, _error(404, "pc_project_file_not_found")
+    try:
+        fid = validate_file_id(file_id)
+    except ValueError:
+        return None, _error(404, "pc_project_file_not_found")
+    if fid is None:
+        return None, _error(404, "pc_project_file_not_found")
+    try:
+        record = await store.get_file(uid, project_id, fid)
+    except Exception:
+        return None, _error(503, "pc_project_file_unavailable")
+    if record is None or (
+        record.media_type not in {"extracted/pdf", "extracted/docx", "extracted/hwpx"}
+        and record.media_type not in IMAGE_PROJECT_FILE_MEDIA
+    ):
+        return None, _error(404, "pc_project_file_not_found")
+    workspace_store = getattr(request.app.state, "workspace_document_store", None)
+    bucket = getattr(workspace_store, "r2_bucket", None)
+    if bucket is None:
+        return None, _error(503, "pc_project_file_unavailable")
+    obj = await _r2_call(bucket, "get", _project_original_object_key(uid, project_id, fid))
+    if obj is None:
+        return None, _error(404, "pc_project_file_not_found")
+    body = getattr(obj, "body", None)
+    try:
+        if body is not None and hasattr(body, "__aiter__"):
+            data = b"".join([chunk async for chunk in body])
+        elif hasattr(body, "read"):
+            data = body.read()
+        elif hasattr(obj, "read"):
+            data = obj.read()
+        else:
+            data = bytes(obj)
+    except Exception:
+        return None, _error(502, "pc_project_file_read_failed")
+    if not data:
+        return None, _error(502, "pc_project_file_read_failed")
     return data, None
 
 

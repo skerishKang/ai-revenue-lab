@@ -110,7 +110,9 @@ exit 0
 """
 
 FAKE_SS = """#!/usr/bin/env bash
-# Stand-in for `ss -ltn`: one local-address line per listening loopback port.
+# Stand-in for `ss -ltn`: one line per listening loopback port in the REAL
+# shape (state, queues, local address, peer address) — 11-02 the old fake
+# printed the local address alone, which hid an end-of-line-anchor bug.
 # A port shows up only while its unit is running (the shared state_ files the
 # fake systemctl maintains), and additionally:
 # ss_hide_<port>    the port does not listen while the marker exists (a release
@@ -133,7 +135,7 @@ for entry in 8798:padiem-chat-com2.service 8811:padiem-p01.service 8789:padiem-b
     echo $((n + 1)) > "$counter"
     (( n >= threshold )) || continue
   fi
-  shown+="127.0.0.1:$port"$'\\n'
+  shown+="LISTEN 0      2048       127.0.0.1:$port      0.0.0.0:*"$'\\n'
 done
 printf '%s' "$shown"
 """

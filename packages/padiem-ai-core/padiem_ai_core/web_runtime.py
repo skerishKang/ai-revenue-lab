@@ -161,6 +161,43 @@ def _daum_text(value: Any, limit: int) -> str:
     return _bounded_text(html.unescape(without_tags), limit)
 
 
+_INET_ATON_PART = re.compile(r"(?:0[xX][0-9a-fA-F]+|0[0-7]+|[0-9]+)$")
+
+
+def _inet_aton_address(host: str) -> "ipaddress.IPv4Address | None":
+    """The address a browser reads from an inet_aton spelling of this host.
+
+    Chromium accepts hex (``0x``), octal (leading ``0``) and decimal parts —
+    ``0x7f.0.0.1`` lands on 127.0.0.1 exactly like the dotted quad. A host whose
+    parts are all such numbers (one to four parts; the last one carries the
+    remaining bits) is judged as the address it names. Anything else is a real
+    domain and stays a domain.
+    """
+    parts = host.split(".")
+    if not 1 <= len(parts) <= 4:
+        return None
+    if any(_INET_ATON_PART.fullmatch(part) is None for part in parts):
+        return None
+    values = []
+    for part in parts:
+        if part[:2].lower() == "0x":
+            values.append(int(part[2:], 16))
+        elif len(part) > 1 and part[0] == "0":
+            try:
+                values.append(int(part, 8))
+            except ValueError:
+                values.append(int(part, 10))  # "09" — an invalid octal is decimal to a browser
+        else:
+            values.append(int(part, 10))
+    widths = {4: (8, 8, 8, 8), 3: (8, 8, 16), 2: (8, 24), 1: (32,)}[len(values)]
+    address = 0
+    for value, width in zip(values, widths):
+        if value >> width:
+            return None
+        address = (address << width) | value
+    return ipaddress.IPv4Address(address)
+
+
 def normalize_public_url(value: str) -> str:
     """Normalize a literal public URL and reject obvious local/private targets.
 
@@ -210,6 +247,13 @@ def normalize_public_url(value: str) -> str:
     except ValueError:
         if re.fullmatch(r"[0-9.]+", ascii_host):
             raise ValueError("ambiguous numeric host notation is not allowed")
+        # #6591 D1: browsers also read inet_aton spellings — hex and octal parts
+        # such as ``0x7f000001`` or ``0x7f.0.0.1`` land on 127.0.0.1 exactly like
+        # the dotted quad. A host whose parts are all such numbers is judged as
+        # the address it names and walks the same global-address rule.
+        numeric = _inet_aton_address(ascii_host)
+        if numeric is not None and not numeric.is_global:
+            raise ValueError("non-global IP addresses are not allowed")
     else:
         mapped = getattr(address, "ipv4_mapped", None)
         candidate = mapped or address
