@@ -11,7 +11,7 @@ of the package rules.
 from __future__ import annotations
 
 from pathlib import Path
-from zipfile import ZipFile, ZipInfo
+from zipfile import BadZipFile, ZipFile, ZipInfo
 
 from .document_normalization import (
     MAX_OOXML_TOTAL_INFLATION_RATIO,
@@ -119,6 +119,10 @@ def validate_ooxml_archive_path(path: object) -> None:
                         "OOXML archive inflates far beyond its stored bytes.")
     except DocumentNormalizationError:
         raise
+    except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
+        # The byte gate's own refusal for unreadable or malformed archives; a
+        # directory path fails here because its stored size is not a file size.
+        raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
 
 
 __all__ = ["validate_ooxml_archive_path"]
