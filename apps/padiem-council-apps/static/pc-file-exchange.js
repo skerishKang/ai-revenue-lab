@@ -741,7 +741,12 @@
             return;
           }
           close();
-          onSave(saved);
+          // 2026-11-02: the caller's success line names the folder the owner
+          // picked ("." is the granted root — no folder name to add there).
+          const folder = state.path && state.path !== "."
+            ? String(state.path).split("/").pop()
+            : "";
+          onSave(saved, folder);
         });
         return;
       }
