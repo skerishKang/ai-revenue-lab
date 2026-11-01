@@ -99,12 +99,25 @@ async def save_binary_project_file(request: Request, *, uid: str, pid: str, name
             )
         else:
             data.seek(0)
-            # R2 Python binding receives bytes; avoid a second parse-time
-            # copy for PDFs while preserving the existing storage contract.
-            await _r2_call(
-                bucket, "put", _project_original_object_key(uid, pid, created.id),
-                data.read(), httpMetadata={"contentType": media_type},
-            )
+            # #6579 step 2: a 1 GiB original must not become one `bytes` object.
+            # A bound store that offers a streaming write gets the file itself
+            # (moved when it shares the filesystem, bounded blocks otherwise).
+            # The Cloudflare binding is bytes-only today, so it keeps the exact
+            # contract this route already had — the original is never dropped or
+            # half-written either way.
+            key = _project_original_object_key(uid, pid, created.id)
+            write_stream = getattr(bucket, "put_stream", None)
+            if callable(write_stream):
+                written = write_stream(key, data, {"contentType": media_type})
+                if inspect.isawaitable(written):
+                    await written
+            else:
+                # R2 Python binding receives bytes; avoid a second parse-time
+                # copy for PDFs while preserving the existing storage contract.
+                await _r2_call(
+                    bucket, "put", key, data.read(),
+                    httpMetadata={"contentType": media_type},
+                )
     except Exception:
         await store.delete_file(uid, pid, created.id)
         raise OriginalStorageUnavailable() from None
