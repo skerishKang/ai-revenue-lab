@@ -31,6 +31,16 @@ RELOAD=false
 fail() { printf 'B14_COM2_INSTALL_ABORT=%s\n' "$*" >&2; exit 2; }
 note() { printf 'B14_COM2_INSTALL=%s\n' "$*"; }
 
+unit_is_ours() {
+  # The live unit is the operator's file the moment it was edited in place — a
+  # static identity, an added dependency. It is still PADIEM B14's unit when the
+  # description and the interpreter entry point are ours. Aborting on that used to
+  # leave the service stopped, so an ours-unit is adopted: kept as it is, never
+  # rewritten. Every other configuration file keeps the foreign-target protection.
+  grep -q '^Description=PADIEM B14' "$1" 2>/dev/null \
+    && grep -qE '^ExecStart=[^ ]*venv/bin/python [^ ]*app/asgi\.py' "$1" 2>/dev/null
+}
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY_RUN=true ;;
@@ -81,6 +91,11 @@ write_staged() {
   fi
   if cmp -s "$source" "$target"; then
     note "already_current:$label"
+    return 0
+  fi
+  if [ "$label" = unit ] && unit_is_ours "$target"; then
+    if $DRY_RUN; then note 'would_adopt_local_unit'; return 0; fi
+    note 'adopted_local_unit'
     return 0
   fi
   if $DRY_RUN; then note "would_refuse_foreign:$label"; return 0; fi

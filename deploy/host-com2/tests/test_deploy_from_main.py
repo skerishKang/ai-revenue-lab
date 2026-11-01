@@ -37,13 +37,24 @@ exit "$(cat "$FAKE_ROOT/install_${{svc}}.rc" 2>/dev/null || echo 0)"
 FAKE_HEALTH = """#!/usr/bin/env python3
 import os
 import sys
-once = os.path.join(os.environ.get("FAKE_ROOT", ""), "fail_once_{svc}")
+root = os.environ.get("FAKE_ROOT", "")
+counter = os.path.join(root, "calls_{svc}")
+try:
+    seen = int(open(counter).read().strip())
+except (OSError, ValueError):
+    seen = 0
+open(counter, "w").write(str(seen + 1))
+once = os.path.join(root, "fail_once_{svc}")
 if os.path.exists(once):
     count = int(open(once).read().strip())
     if count <= 1:
         os.remove(once)
     else:
         open(once, "w").write(str(count - 1))
+    print("HEALTH=FAIL STATUS=0")
+    sys.exit(1)
+until = os.path.join(root, "fail_{svc}")
+if os.path.exists(until) and seen < int(open(until).read().strip()):
     print("HEALTH=FAIL STATUS=0")
     sys.exit(1)
 print("HEALTH=PASS STATUS=200")
@@ -67,11 +78,32 @@ state_dir=$STATE_DIR
 chat_db=$CHAT_DB
 p01_root=$P01_ROOT
 b14_app=$B14_APP
+queue_root=$QUEUE_ROOT
 systemctl_bin=$SYSTEMCTL_BIN
 python_bin=$PYTHON_BIN
 git_bin=git
 ai_check=${FAKE_AI_MODE:-warn}
 run_deploy "$1"
+"""
+
+# The queue's own probe is a shell script, with the same failure knobs.
+QUEUE_HEALTH = """#!/usr/bin/env bash
+root=${FAKE_ROOT:-}
+counter="$root/calls_queue"
+seen=0
+[[ -f $counter ]] && seen=$(cat "$counter")
+echo $((seen + 1)) > "$counter"
+if [[ -f $root/fail_once_queue ]]; then
+  count=$(cat "$root/fail_once_queue")
+  if (( count <= 1 )); then rm -f "$root/fail_once_queue"; else echo $((count - 1)) > "$root/fail_once_queue"; fi
+  echo 'HEALTH=FAIL STATUS=0'
+  exit 1
+fi
+if [[ -f $root/fail_queue ]] && (( seen < $(cat "$root/fail_queue") )); then
+  echo 'HEALTH=FAIL STATUS=0'
+  exit 1
+fi
+echo 'HEALTH=PASS STATUS=200'
 """
 
 BASE_FILES = {
@@ -89,6 +121,8 @@ BASE_FILES = {
     "packages/padiem-control-plane/padiem_control_plane/__init__.py": "# control\n",
     "apps/korean-ai-code-agent/src/kagent/__init__.py": "# kagent\n",
     "apps/korean-ai-platform/asgi.py": "# b14\n",
+    "apps/padiem-mesh-queue/service.py": "# queue\n",
+    "apps/padiem-mesh-queue/deploy/health_check.sh": QUEUE_HEALTH,
     "packages/shared/placeholder.txt": "shared\n",
 }
 
@@ -98,6 +132,7 @@ CHANGES = {
     "council": ("apps/padiem-council-apps/static/index.html", "council update\n"),
     "p01": ("apps/padiem-ai-engine/asgi.py", "# engine 2\n"),
     "b14": ("apps/korean-ai-platform/asgi.py", "# b14 2\n"),
+    "queue": ("apps/padiem-mesh-queue/service.py", "# queue 2\n"),
     "migration": (
         "apps/padiem-chat/migrations/002_new_owner.sql",
         "ALTER TABLE a ADD COLUMN b TEXT;\n",
@@ -149,6 +184,8 @@ class DeployHarness(unittest.TestCase):
         (self.p01 / "app").symlink_to(release, target_is_directory=True)
         self.b14 = self.tmp / "b14-app"
         self.b14.mkdir()
+        self.queue = self.tmp / "mesh-queue"
+        self.queue.mkdir()
         self.db = self.tmp / "chat.sqlite3"
         self._ledger(
             ["001_auth_history.sql"]
@@ -168,6 +205,9 @@ class DeployHarness(unittest.TestCase):
             "PADIEM_COM2_P01_APP": self.p01.as_posix(),
             "PADIEM_COM2_CHAT_HEALTH_ATTEMPTS": "1",
             "PADIEM_COM2_CHAT_HEALTH_INTERVAL": "0",
+            # Bounded so a retry test finishes in seconds, not in the 30s default.
+            "PADIEM_COM2_HEALTH_TIMEOUT": "4",
+            "PADIEM_COM2_HEALTH_INTERVAL": "1",
         }
 
     # --- harness -----------------------------------------------------------
@@ -243,6 +283,7 @@ sys.exit(0 if code == "none" else 1)
             "B14_APP": self.b14.as_posix(),
             "SYSTEMCTL_BIN": self.systemctl.as_posix(),
             "PYTHON_BIN": Path(sys.executable).as_posix(),
+            "QUEUE_ROOT": self.queue.as_posix(),
         }
         return subprocess.run(
             [BASH_BIN, "-c", APPLY_WRAPPER, "bash",
@@ -257,6 +298,20 @@ sys.exit(0 if code == "none" else 1)
 
     def _fail_health_once(self, service: str) -> None:
         (self.fakes / f"fail_once_{service}").write_text("1\n", encoding="utf-8")
+
+    def _fail_service(self, service: str, times: int) -> None:
+        # Fail the first `times` probes: long enough to outlast the retry window.
+        (self.fakes / f"fail_{service}").write_text(f"{times}\n", encoding="utf-8")
+
+    def _install_fails(self, service: str) -> None:
+        # A failing installer is a verdict at once: no probe has to time out.
+        (self.fakes / f"install_{service}.rc").write_text("1\n", encoding="utf-8")
+
+    def _stage(self, sha: str | None = None) -> Path:
+        return self.previous.parent / "src" / (sha or self.second)
+
+    def _started(self, unit: str) -> int:
+        return sum(1 for line in self._calls() if line == f"systemctl start {unit}")
 
     def _stage_dir(self) -> Path:
         stage = self.tmp / "src"
@@ -336,7 +391,8 @@ class ChatScenarioTest(DeployHarness):
         self.assertIn("COM2_DEPLOY_SERVICES=chat", result.stdout)
         self.assertIn("COM2_DEPLOY_PENDING_MIGRATIONS=none", result.stdout)
         self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY p01:SKIP b14:SKIP", result.stdout
+            "COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY p01:SKIP b14:SKIP queue:SKIP",
+            result.stdout,
         )
         self.assertEqual(self._head(), self.first)
         self.assertEqual(self._calls(), [])
@@ -344,7 +400,9 @@ class ChatScenarioTest(DeployHarness):
     def test_apply_moves_the_checkout_and_installs_only_the_changed_service(self) -> None:
         result = self._run_apply()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("COM2_DEPLOY_SUMMARY=chat:PASS p01:SKIP b14:SKIP", result.stdout)
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:PASS p01:SKIP b14:SKIP queue:SKIP", result.stdout
+        )
         self.assertEqual(self._head(), self.second)
         calls = self._calls()
         installs = [line for line in calls if line.startswith("install chat")]
@@ -431,7 +489,9 @@ class ChatScenarioTest(DeployHarness):
         self._fail_health_once("chat")
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
-        self.assertIn("COM2_DEPLOY_SUMMARY=chat:ROLLBACK p01:SKIP b14:SKIP", result.stdout)
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:ROLLBACK p01:SKIP b14:SKIP queue:SKIP", result.stdout
+        )
         installs = [line for line in self._calls() if line.startswith("install chat")]
         self.assertEqual(len(installs), 2, installs)
         self.assertIn((self.previous / self.first).as_posix(), installs[1])
@@ -542,10 +602,30 @@ class P01ScenarioTest(DeployHarness):
     scenario = "p01"
 
     def test_p01_rolls_back_to_the_previous_release_snapshot(self) -> None:
-        self._fail_health_once("p01")
+        self._install_fails("p01")
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
-        self.assertIn("COM2_DEPLOY_SUMMARY=chat:SKIP p01:ROLLBACK b14:SKIP", result.stdout)
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:ROLLBACK b14:SKIP queue:SKIP", result.stdout
+        )
+        # The rollback is verified with the same patience as a fresh start.
+        self.assertIn("COM2_DEPLOY_HEALTH_P01_ROLLBACK_ATTEMPTS=1", result.stdout)
+
+    def test_a_slow_p01_start_is_not_reported_as_a_broken_release(self) -> None:
+        self._fail_health_once("p01")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_HEALTH_P01_ATTEMPTS=2", result.stdout)
+        self.assertIn("p01:PASS", result.stdout)
+        self.assertNotIn("P01_ROLLBACK", result.stdout)
+
+    def test_a_p01_that_never_becomes_healthy_is_retried_then_rolled_back(self) -> None:
+        self._fail_service("p01", 20)
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        attempts = int(result.stdout.split("COM2_DEPLOY_HEALTH_P01_ATTEMPTS=")[1].split()[0])
+        self.assertGreaterEqual(attempts, 3, result.stdout)
+        self.assertIn("p01:ROLLBACK_FAILED", result.stdout)
         installs = [line for line in self._calls() if line.startswith("install p01")]
         self.assertEqual(len(installs), 1, installs)
         snapshots = sorted((self.p01 / "rollback").glob("p01.fake*"))
@@ -559,7 +639,7 @@ class P01ScenarioTest(DeployHarness):
         (self.p01 / "app").mkdir()
         (self.p01 / "app" / "marker").write_text("current", encoding="utf-8")
         (self.p01 / "app" / "cycle").symlink_to(".", target_is_directory=True)
-        self._fail_health_once("p01")
+        self._install_fails("p01")
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn("p01:ROLLBACK", result.stdout)
@@ -592,17 +672,119 @@ class P01ScenarioTest(DeployHarness):
 class B14ScenarioTest(DeployHarness):
     scenario = "b14"
 
-    def test_b14_reports_a_manual_rollback_for_a_copied_checkout(self) -> None:
+    def test_b14_runs_from_the_mirror_and_keeps_the_operator_copy(self) -> None:
+        (self.b14 / "operator-marker").write_text("hand staged\n", encoding="utf-8")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:PASS queue:SKIP", result.stdout
+        )
+        self.assertTrue(self.b14.is_symlink(), self.b14.readlink())
+        self.assertEqual(
+            self.b14.resolve(), (self._stage() / "apps/korean-ai-platform").resolve()
+        )
+        self.assertIn("install b14 --reload", self._calls())
+        displaced = list(self.b14.parent.glob("b14-app.displaced-*"))
+        self.assertEqual(len(displaced), 1, displaced)
+        self.assertEqual(
+            (displaced[0] / "operator-marker").read_text(encoding="utf-8"), "hand staged\n"
+        )
+
+    def test_a_slow_b14_start_is_not_reported_as_a_broken_release(self) -> None:
         self._fail_health_once("b14")
         result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_HEALTH_B14_ATTEMPTS=2", result.stdout)
+        self.assertIn("b14:PASS", result.stdout)
+
+    def test_a_failed_b14_install_falls_back_to_the_previous_tree(self) -> None:
+        self._install_fails("b14")
+        result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
-        self.assertIn(
-            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:ROLLBACK_FAILED", result.stdout
+        self.assertIn("b14:ROLLBACK", result.stdout)
+        self.assertEqual(
+            self.b14.resolve(),
+            (self.previous / self.first / "apps/korean-ai-platform").resolve(),
         )
+        # The installer failed before the unit was ever started, so the rollback
+        # start is the only one — and the unit must be up after it.
+        self.assertEqual(self._started("padiem-b14.service"), 1, self._calls())
+
+    def test_manual_rollback_still_leaves_the_unit_started(self) -> None:
+        # A link to nowhere is the one thing this script cannot put back. It must say
+        # MANUAL and still bring the service up: a stopped unit is not a rollback.
+        (self.previous / self.first).mkdir(parents=True)
+        self.b14.rmdir()
+        self.b14.symlink_to(self.tmp / "gone")
+        self._install_fails("b14")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn("COM2_DEPLOY_B14_ROLLBACK=MANUAL", result.stderr)
+        self.assertIn("b14:ROLLBACK", result.stdout)
+        self.assertEqual(self._started("padiem-b14.service"), 1, self._calls())
+
+
+class MeshQueueScenarioTest(DeployHarness):
+    scenario = "queue"
+
+    def test_queue_code_is_staged_from_the_mirror_and_restarts(self) -> None:
+        (self.queue / "queue.env").write_text("MESH_QUEUE_DB_PATH=/keep\n", encoding="utf-8")
+        (self.queue / "queue.sqlite3").write_text("data", encoding="utf-8")
+        (self.queue / "src").mkdir()
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_SERVICES=queue", result.stdout)
+        self.assertIn(
+            "COM2_DEPLOY_SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:PASS", result.stdout
+        )
+        self.assertEqual(
+            (self.queue / "service.py").read_text(encoding="utf-8"), "# queue 2\n"
+        )
+        self.assertEqual(
+            (self.queue / "app").resolve(), (self._stage() / "apps/padiem-chat/app").resolve()
+        )
+        self.assertEqual(
+            (self.queue / "padiem_ai_core").resolve(),
+            (self._stage() / "packages/padiem-ai-core/padiem_ai_core").resolve(),
+        )
+        # The operator's state is never part of a deploy.
+        self.assertEqual(
+            (self.queue / "queue.env").read_text(encoding="utf-8"), "MESH_QUEUE_DB_PATH=/keep\n"
+        )
+        self.assertTrue((self.queue / "queue.sqlite3").is_file())
+        self.assertTrue((self.queue / "src").is_dir())
+        self.assertEqual(self._started("padiem-mesh-queue.service"), 1, self._calls())
+
+    def test_a_slow_queue_start_is_not_reported_as_a_broken_release(self) -> None:
+        self._fail_health_once("queue")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_HEALTH_QUEUE_ATTEMPTS=2", result.stdout)
+        self.assertIn("queue:PASS", result.stdout)
+
+    def test_a_broken_queue_rolls_its_code_back_and_stays_started(self) -> None:
+        self._fail_service("queue", 20)
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("queue:ROLLBACK_FAILED", result.stdout)
+        self.assertEqual(
+            (self.queue / "service.py").read_text(encoding="utf-8"), "# queue\n"
+        )
+        self.assertEqual(self._started("padiem-mesh-queue.service"), 2, self._calls())
 
 
 class ScriptBoundaryTest(unittest.TestCase):
+    def test_start_probes_are_given_thirty_seconds_by_default(self) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("health_timeout=${PADIEM_COM2_HEALTH_TIMEOUT:-30}", text)
+        for label in ("P01", "B14", "QUEUE", "P01_ROLLBACK", "B14_ROLLBACK", "QUEUE_ROLLBACK"):
+            self.assertIn(f"wait_for_health {label} ", text)
+        # No single-shot probe is left behind a start or a rollback.
+        self.assertNotIn(
+            chr(10) + '    "$python_bin" "$staged/deploy/host-com2/p01/health.py"', text
+        )
+        self.assertNotIn('"$python_bin" "$ops_checkout/deploy/host-com2/b14/health.py"', text)
+
     def test_the_script_only_mutates_behind_apply(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
         for forbidden in ("systemctl enable", "wrangler", "openssl", "curl "):
