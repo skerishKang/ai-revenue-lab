@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import logging
 import secrets
 from urllib.parse import urlencode
 
@@ -24,6 +25,48 @@ MARKER_COOKIE = '__Host-padiem-shared-marker'
 REFRESH_PATH = '/auth/shared'
 ACCESS_SECONDS = 15 * 60
 REFRESH_SECONDS = 30 * 24 * 60 * 60
+
+logger = logging.getLogger(__name__)
+
+# Only these literal codes may reach logs. Exceptions (including RPC errors)
+# can contain credentials, response bodies or profile values; never stringify
+# them or attach a traceback. Follow explicit causes to retain the authority's
+# reason through SharedAuthUnavailable without exposing its message.
+_FINISH_FAILURE_CODES = frozenset({
+    'invalid_flow', 'invalid_cookie', 'invalid_state', 'invalid_exchange',
+    'unknown_account', 'invalid_session_response', 'invalid_es256_signature',
+    'invalid_key', 'invalid_token_endpoint', 'exchange_failed',
+    'exchange_response_too_large', 'exchange_invalid_response',
+    'invalid_shared_credential', 'invalid_verified_claims', 'missing_product_link',
+    'reverse_lookup_failed', 'reverse_lookup_invalid', 'shared_auth_failed',
+    'invalid_encoding', 'invalid_token', 'invalid_header', 'unknown_key',
+    'invalid_signature', 'invalid_claims', 'jwks_unavailable', 'jwks_too_large',
+    'invalid_jwks', 'control_plane_identity_unavailable', 'control_plane_rpc_invalid',
+    'canonical_product_identity_link_not_found',
+    'canonical_product_identity_link_not_active', 'identity_authority_storage_error',
+    'identity_authority_product_mismatch', 'profile_store_unavailable',
+    'service_rpc_unauthorized', 'service_rpc_forbidden', 'service_rpc_not_found',
+    'service_rpc_replay_rejected', 'service_rpc_rate_limited', 'service_rpc_http_failed',
+    'invalid_profile_response', 'profile_account_mismatch', 'invalid_profile',
+    'legacy_account_conflict',
+})
+
+
+def _finish_failure_code(error, stage):
+    from .history import HistoryConflict
+    code = stage + '_failed'
+    seen = set()
+    while isinstance(error, Exception) and id(error) not in seen:
+        seen.add(id(error))
+        if isinstance(error, HistoryConflict):
+            code = 'shared_profile_identity_conflict'
+        candidate = getattr(error, 'code', None)
+        if not isinstance(candidate, str) and len(error.args) == 1:
+            candidate = error.args[0]
+        if isinstance(candidate, str) and candidate in _FINISH_FAILURE_CODES:
+            code = candidate
+        error = error.__cause__
+    return code
 
 
 def issue_shared_cookies(response, access, refresh):
@@ -83,6 +126,7 @@ class SharedLoginFlow(ComparisonFlow):
 
     async def finish_login(self, request):
         headers = {'cache-control': 'no-store', 'referrer-policy': 'no-referrer'}
+        stage = 'validate_flow'
         try:
             states, codes = request.query_params.getlist('state'), request.query_params.getlist('code')
             parts = request.cookies.get(STATE_COOKIE, '').split('.')
@@ -97,26 +141,36 @@ class SharedLoginFlow(ComparisonFlow):
                     or not hmac.compare_digest(state['state'], states[0])
                     or not isinstance(state.get('verifier'), str)):
                 raise ValueError('invalid_state')
+            stage = 'client_assertion'
+            assertion = await self._assertion(int(self.clock()))
+            stage = 'exchange'
             tokens = await _await(self.exchange(TOKEN_URL, {
                 'client_id': self.client_id,
                 'client_assertion_type': 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
-                'client_assertion': await self._assertion(int(self.clock())),
+                'client_assertion': assertion,
                 'grant_type': 'authorization_code', 'code': codes[0],
                 'redirect_uri': self.callback, 'code_verifier': state['verifier'],
             }))
+            if not isinstance(tokens, dict):
+                raise ValueError('invalid_exchange')
             access, refresh = tokens.get('access_token'), tokens.get('refresh_token')
             if not isinstance(access, str) or not access or not isinstance(refresh, str) or not refresh:
                 raise ValueError('invalid_exchange')
+            stage = 'resolve_account'
             user = await _await(self.resolve_account(request, access))
             if not isinstance(user, str) or not user:
                 raise ValueError('unknown_account')
             if self.provision_profile is not None:
+                stage = 'provision_profile'
                 await _await(self.provision_profile(request, user, access, tokens))
+            stage = 'issue_session'
             response = await _await(self.issue_session(request, user, access, refresh))
             if not isinstance(response, RedirectResponse):
                 raise ValueError('invalid_session_response')
             response.headers.update(headers)
-        except Exception:
+        except Exception as exc:
+            logger.warning('shared_login_finish_failed stage=%s code=%s',
+                           stage, _finish_failure_code(exc, stage))
             response = JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
         response.delete_cookie(STATE_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
         return response
