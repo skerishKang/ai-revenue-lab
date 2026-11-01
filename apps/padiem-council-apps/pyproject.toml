@@ -16,6 +16,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=8,<10",
+  # The phone legibility guard measures real layout at 390x844 and 360x780.
+  "playwright==1.55.0",
 ]
 
 [project.scripts]
