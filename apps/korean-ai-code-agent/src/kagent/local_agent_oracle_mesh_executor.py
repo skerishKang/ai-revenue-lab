@@ -24,7 +24,6 @@ import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from .reparse_guard import walk_hits_reparse_point as reparse_walk_hit
 from typing import Any, Callable, Optional
 
 from .contracts import ContractError
@@ -306,6 +305,11 @@ def _step_timeout_seconds(env: dict[str, str]) -> int:
             "ORACLE_MESH_READ_TIMEOUT_SECONDS must be a positive integer"
         )
     return value
+
+
+def _ps_literal_for_root(value: str) -> str:
+    """One single-quoted PowerShell literal for a path."""
+    return "'" + value.replace("'", "''") + "'"
 
 
 class OracleMeshExecutor:
@@ -755,19 +759,26 @@ class OracleMeshExecutor:
         ``read_failed`` too ? the verified result lane is a UTF-8 text lane,
         so that body cannot cross it. A failed read is never collapsed into an
         empty success.
+
+        #5994 D3 후속: before the download, the same MeshCentral command channel
+        runs a ReparsePoint walk on the PC — granted root → file. If any folder
+        or the file itself is a junction/symlink, the read is refused with the
+        ``link_refused`` marker so not one byte of an outside file crosses the
+        relay. A guard malfunction also refuses (fail closed).
         """
-        # #5994 D3 후속: a junction or a symbolic link below the granted root
-        # must never carry a read outside it. The guard walks root→file before
-        # the official client runs, so not one byte of an outside file is read.
-        if dispatch.granted_root and reparse_walk_hit(
-            dispatch.granted_root, dispatch.file_path,
-        ):
-            self._trace_read(dispatch, "link_refused", time.monotonic(),
-                             error="reparse point below the granted root")
-            return OracleMeshExecutionOutcome(
-                termination="exited", exit_code=1,
-                body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
+        if dispatch.granted_root and self._command_port is not None:
+            hit = self._pc_reparse_check(
+                granted_root=dispatch.granted_root,
+                file_path=dispatch.file_path,
+                node_ref=dispatch.node_ref,
             )
+            if hit:
+                self._trace_read(dispatch, "link_refused", time.monotonic(),
+                                 error="reparse point below the granted root")
+                return OracleMeshExecutionOutcome(
+                    termination="exited", exit_code=1,
+                    body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
+                )
         read_bound = dispatch.max_bytes
         if read_bound is None:
             read_bound = MAX_READ_BYTES
@@ -867,6 +878,59 @@ class OracleMeshExecutor:
         except Exception:
             # Instrumentation is best-effort; the command outcome is authoritative.
             pass
+
+    def _pc_reparse_check(
+        self, *, granted_root: str, file_path: str, node_ref: str,
+    ) -> bool:
+        """Run a ReparsePoint walk ON THE PC through the MeshCentral command channel.
+
+        The walk checks every folder from the granted root down to the file -
+        and the file itself - for the ReparsePoint attribute. A hit (or a check
+        that cannot be completed) means the read is refused before the download
+        starts, so not one byte of an outside file crosses the relay.
+
+        Returns True when the PC reports a reparse-point crossing (or the check
+        itself failed — fail closed).
+        """
+        if self._command_port is None:
+            return True  # 명령 채널이 없으면 검사 자체가 불가능 — fail closed
+        script = (
+            "$ErrorActionPreference = 'Stop';"
+            "$root = " + _ps_literal_for_root(granted_root) + ";"
+            "$target = " + _ps_literal_for_root(file_path) + ";"
+            "$walk = $root;"
+            "$hit = $false;"
+            "try {"
+            " $rest = $target.Substring($root.Length).Replace('/', '\\\\');"
+            " foreach ($seg in ($rest -split '\\\\')) {"
+            "  if (-not $seg) { continue };"
+            "  $walk = Join-Path $walk $seg;"
+            "  if (-not (Test-Path -LiteralPath $walk)) { break };"
+            "  $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;"
+            "  if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))"
+            "  { $hit = $true; break } };"
+            "} catch { $hit = $true };"
+            "$account = [ordered]@{hit=[bool]$hit};"
+            "$json = ConvertTo-Json -InputObject $account -Compress;"
+            "$encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json));"
+            "Write-Output ('PADIEM_PC_REPARSE=' + $encoded);"
+        )
+        try:
+            outcome = self._command_port.run_command(
+                node_ref=node_ref, command=script, timeout_seconds=30,
+            )
+            body = outcome.body if isinstance(outcome.body, bytes) else (
+                (outcome.body or "").encode("utf-8")
+            )
+            text = body.decode("utf-8", errors="replace")
+            for line in text.splitlines():
+                if line.startswith("PADIEM_PC_REPARSE="):
+                    parsed = json.loads(
+                        base64.b64decode(line[len("PADIEM_PC_REPARSE="):]))
+                    return bool(parsed.get("hit"))
+            return True  # account line 없음 — 검사 실패 → fail closed
+        except Exception:
+            return True  # 검사 실패 → fail closed
 
     def _trace_read(
         self, dispatch: OracleMeshDispatch, phase: str, started: float,
