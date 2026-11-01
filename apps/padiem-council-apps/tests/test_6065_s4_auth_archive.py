@@ -88,9 +88,10 @@ def test_the_gate_and_the_session_contract_are_still_the_ones_the_app_shipped():
     assert 'href="/auth/google/start?return_to=%2Fapps%2Fcouncil%2F"' in HTML
     assert 'autocomplete="current-password"' in HTML, "the credential form must stay a credential form"
     assert "showAuthPanel" in JS and "hideAuthPanel" in JS
-    for endpoint in ('"/api/auth/status"', '"/api/auth/password/login"', '"/api/chat"', '"/api/projects"'):
+    for endpoint in ('"/api/auth/status"', '"/api/auth/password/login"',
+                     '"/api/chat/stream"', '"/api/pc/pairings"', '"/api/projects"'):
         assert endpoint in JS, endpoint
-    assert not re.search(r'fetch\("/api/(?!chat|projects|auth/)', JS), "no new endpoint may appear"
+    assert not re.search(r'fetch\("/api/(?!chat|projects|pc/|auth/)', JS), "no new endpoint may appear"
 
 
 def test_the_auth_surface_still_borrows_nothing_from_outside_the_bundle():

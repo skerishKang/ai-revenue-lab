@@ -621,20 +621,18 @@
       <section class="util-view" id="utilView" aria-labelledby="utilTitle" hidden>
         <header class="util-header">
           <div>
-            <p class="standalone-view-kicker" id="utilKicker">Padiem Speech</p>
-            <!-- #5727: the title names the selected tool (JS keeps it in sync
-                 with the active tab); the shared kicker/tagline hierarchy stays.
-                 #5799: the kicker and tagline follow the active tool the same
-                 way, starting from the speech template. -->
-            <h2 id="utilTitle" class="standalone-view-title">축사·인사말</h2>
-            <p class="standalone-view-tagline" id="utilTagline">행사에 맞는 축사·인사말 초안을 준비합니다</p>
+            <p class="standalone-view-kicker" id="utilKicker">Padiem Util</p>
+            <!-- 2026-11-01: 의원3종은 /apps/council/ 로 옮겼다. 이 페이지에 남은
+                 도구는 PDF → Markdown 하나이므로 그 이름으로 시작한다. -->
+            <h2 id="utilTitle" class="standalone-view-title">PDF → Markdown</h2>
+            <p class="standalone-view-tagline" id="utilTagline">기존 작업 이력·결과 다운로드</p>
           </div>
         </header>
         <nav class="util-tabs" hidden aria-label="유틸 기능 선택">
-          <button class="util-tab active" data-util="speech" data-kicker="Padiem Speech" data-tagline="행사에 맞는 축사·인사말 초안을 준비합니다">축사·인사말</button>
-          <button class="util-tab" data-util="sns">SNS 홍보</button>
-          <button class="util-tab" data-util="meeting">회의정리·책 제작</button>
-          <button class="util-tab" data-util="pdfmd">PDF → Markdown</button>
+          <button class="util-tab" type="button" data-util="speech" data-kicker="Padiem Speech" data-tagline="의원3종 앱에서 엽니다">축사·인사말</button>
+          <button class="util-tab" type="button" data-util="sns" data-kicker="Padiem SNS" data-tagline="의원3종 앱에서 엽니다">SNS 홍보</button>
+          <button class="util-tab" type="button" data-util="meeting" data-kicker="Padiem Meeting" data-tagline="의원3종 앱에서 엽니다">회의정리·활동집</button>
+          <button class="util-tab active" type="button" data-util="pdfmd" data-kicker="Padiem Util" data-tagline="기존 작업 이력·결과 다운로드">PDF → Markdown</button>
         </nav>
         <!-- #5908: the quick-run toolbox. One glanceable card row over the
              EXISTING panels and flows: the four util cards drive the same
@@ -681,68 +679,7 @@
             <button type="button" class="util-tool-open" data-util-tool="claw-excel">Claw에서 진행</button>
           </div>
         </section>
-        <div class="util-panel" id="utilSpeechPanel">
-          <form class="util-form" id="utilSpeechForm">
-            <!-- 참고 글 leads the form — the SNS tool's #6098 lane language: the
-                 PC reference lives in its own titled fieldset, before 기본 정보.
-                 The #5799 grouping continues below: basics, content, tone. -->
-            <fieldset class="util-fieldset" id="utilSpeechRef">
-              <legend>참고 글</legend>
-              <!-- #5895: the shared "from my PC" picker mounts here. The button,
-                   the preview of what was brought over, and the one-line "connect
-                   your PC" notice all live in this container. -->
-              <div class="util-pc-ref-mount" id="utilSpeechPcRef"></div>
-            </fieldset>
-            <!-- #5799: the speech form follows the meeting-modes grouping
-                 pattern — same legend/border family: basics, content,
-                 tone/reference. Field names and behavior unchanged. -->
-            <fieldset class="util-fieldset">
-              <legend>기본 정보</legend>
-              <label>행사명 <input name="event" type="text" required /></label>
-              <label>행사 날짜 <input name="date" type="date" /></label>
-              <label>장소 <input name="place" type="text" /></label>
-              <label>행사 성격 <input name="nature" type="text" placeholder="예: 창립기념식" /></label>
-              <label>참석 대상 <input name="audience" type="text" /></label>
-              <label>작성자/직책 <input name="author" type="text" /></label>
-            </fieldset>
-            <fieldset class="util-fieldset">
-              <legend>내용</legend>
-              <label>주요 메시지 <textarea name="message" rows="3"></textarea></label>
-              <label>강조 내용 <textarea name="emphasis" rows="2"></textarea></label>
-            </fieldset>
-            <fieldset class="util-fieldset">
-              <legend>분량·말투·참고</legend>
-              <label>분량 <select name="length"><option value="short">짧게</option><option value="medium" selected>보통</option><option value="long">길게</option></select></label>
-              <label>말투 <select name="tone"><option value="formal" selected>공식</option><option value="warm">따뜻한</option><option value="concise">간결</option></select></label>
-              <label>기존 축사 샘플 (말투 반영) <textarea name="style" rows="4" placeholder="기존 축사/인사말 원문 붙여넣기"></textarea></label>
-            </fieldset>
-            <!-- #5727: the form area owns the two authoring actions — generate
-                 and save. The result area below carries only copy/download. -->
-            <div class="util-form-actions">
-              <button type="submit" class="util-generate">초안 생성</button>
-              <button type="button" class="util-save" id="utilSpeechSave">저장</button>
-            </div>
-          </form>
-          <div class="util-result" id="utilSpeechResult" hidden>
-            <h3>생성 결과</h3>
-            <textarea id="utilSpeechOutput" rows="12"></textarea>
-            <!-- #5727: result-area actions are copy/download only. Regenerating
-                 is re-pressing the form's 초안 생성; saving lives in the form. -->
-            <div class="util-actions">
-              <button type="button" id="utilSpeechCopy">복사</button>
-              <button type="button" id="utilSpeechDownload">TXT 다운로드</button>
-              <!-- #5895: the shared "to my PC" dialog, opened with this draft. -->
-              <button type="button" class="util-save" id="utilSpeechPcSave">내 PC에 저장</button>
-            </div>
-          </div>
-        </div>
-        <div class="util-panel" id="utilSnsPanel" hidden>
-          <p class="util-soon-msg">SNS 홍보 화면을 열 수 없습니다.</p>
-        </div>
-        <div class="util-panel" id="utilMeetingPanel" hidden>
-          <p class="util-soon-msg">회의정리·책 제작 화면을 열 수 없습니다.</p>
-        </div>
-        <div class="util-panel" id="utilPdfmdPanel" hidden></div>
+        <div class="util-panel" id="utilPdfmdPanel"></div>
       </section>
       <section class="calendar-view" id="calendarView" aria-labelledby="calendarViewTitle" hidden>
         <header class="calendar-view-header">
@@ -1458,10 +1395,6 @@
   <script src="./claw-composer-connection-status.js"></script>
   <script src="./util-menu.js" defer></script>
 <script src="./util-pdfmd.js" defer></script>
-  <!-- #5786 의원 공개 블로그 래퍼의 진입 어댑터. util-menu.js 이후 defer 순서로
-       실행되어 #padiem-util[/tool] 프래그먼트를 위 유틸 버튼 클릭과 같은 형태로
-       해석합니다. 화면·생성·저장 기능은 util-menu.js 가 그대로 소유합니다. -->
-  <script src="./councillor/util-entry-adapter.js" defer></script>
   <!-- #4139 pre-connection guidance, state legend and recovery UX. Zero-network,
        presentation-only: never reads the directory endpoint or a raw payload. -->
   <script src="./claw-device-guidance.js"></script>

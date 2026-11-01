@@ -54,13 +54,11 @@ def test_input_border_token_is_defined_per_theme_and_applied_to_inputs():
     assert "--line: rgba(255, 255, 255, .38);" in glass
 
     util = (STATIC / "util-menu.css").read_text(encoding="utf-8")
-    assert "border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12)));" in util
-    # The speech-specific controls must use the same strong token with the
-    # shared line fallback after #5799, for inputs, textareas and selects.
-    speech = util[util.index("#utilSpeechPanel .util-form input,"):util.index("/* #5728:")]
-    for selector in ("#utilSpeechPanel .util-form input,", "#utilSpeechPanel .util-form textarea,", "#utilSpeechPanel .util-form select {"):
-        assert selector in speech
-    assert "border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12)));" in speech
+    # The quick-run card border keeps the strong token with the shared fallback.
+    card = util[util.index(".util-tool-card {") : util.index(".util-tool-card {") + 400]
+    assert "var(--input-border-strong, var(--line, rgba(26, 34, 48, .12)))" in card
+    # 2026-11-01: the speech/SNS forms left for /apps/council/ with their own
+    # design tokens; this sheet no longer carries those selectors.
     quote = (STATIC / "b66-quote-runtime.css").read_text(encoding="utf-8")
     assert quote.count("var(--input-border-strong, var(--border,") >= 2
     dialog = (STATIC / "pc-file-exchange.css").read_text(encoding="utf-8")

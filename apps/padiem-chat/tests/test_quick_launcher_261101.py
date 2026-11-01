@@ -78,12 +78,20 @@ def test_shortcuts_and_recent_project_file(browser, site, width, theme):
     assert page.locator("#projectDialog .quick-selected-file").inner_text().startswith("recent.txt")
     page.wait_for_function("document.activeElement?.classList.contains('quick-selected-file')")
     page.locator("#projectDialogClose").click()
-    for key, panel in [("speech", "utilSpeechPanel"), ("sns", "utilSnsPanel"),
-                       ("meeting", "utilMeetingPanel"), ("pdfmd", "utilPdfmdPanel")]:
+    # 2026-11-01: the three 의원3종 shortcuts leave for the independent app with
+    # the tool in the fragment; PDF → Markdown still opens inside Chat.
+    for key in ("speech", "sns", "meeting"):
         if width == 390:
             page.locator("#mobileMenu").click()
         page.locator(f'[data-quick-util="{key}"]').click()
-        assert page.locator(f"#{panel}").is_visible()
+        page.wait_for_url(f"**/apps/council/#{key}")
+        assert page.evaluate("location.pathname") == "/apps/council/"
+        page.goto(site)
+        page.wait_for_timeout(300)
+    if width == 390:
+        page.locator("#mobileMenu").click()
+    page.locator('[data-quick-util="pdfmd"]').click()
+    assert page.locator("#utilPdfmdPanel").is_visible()
     if width == 390:
         page.locator("#mobileMenu").click()
     page.locator('[data-quick-util="claw-quote"]').click()

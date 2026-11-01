@@ -559,7 +559,7 @@ def test_open_source_notice_is_reachable_from_chat(local_client):
     assert "https://github.com/pymupdf/PyMuPDF" in notice.text
 
 
-def test_com2_council_and_councillor_entries_and_assets(staging_host_env):
+def test_com2_council_entry_and_the_retired_councillor_alias(staging_host_env):
     # Exercise actual CPython composition, not a standalone static test app.
     app = build_app()
     origin = "https://chat-com2-staging.padiem.net"
@@ -571,11 +571,14 @@ def test_com2_council_and_councillor_entries_and_assets(staging_host_env):
                     "/apps/council/static/council-app.js",
                     "/apps/council/static/assets/parliament-hero.jpg"):
             assert client.get(url).status_code == 200, url
-        councillor = client.get("/councillor/")
-        assert councillor.status_code == 200
-        assert "./councillor.css" in councillor.text
-        assert client.get("/councillor/councillor.css").status_code == 200
-        assert client.get("/councillor/councillor.js").status_code == 200
+        # 2026-11-01: the old profile screen is gone; the alias redirects to
+        # the one council product, and the deleted assets are no longer served.
+        councillor = client.get("/councillor/", follow_redirects=False)
+        assert councillor.status_code == 302
+        assert councillor.headers["location"] == "/apps/council/"
+        assert client.get("/councillor/").url.path == "/apps/council/"
+        assert client.get("/councillor/councillor.css").status_code == 404
+        assert client.get("/councillor/councillor.js").status_code == 404
         assert client.get("/api/auth/status").status_code == 200
         assert client.get("/apps/council/static/missing.js").status_code == 404
 

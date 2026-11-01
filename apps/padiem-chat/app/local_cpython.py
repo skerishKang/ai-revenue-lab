@@ -293,15 +293,11 @@ def build_app():
     async def council_entry(request):
         return FileResponse(council_static / "index.html")
 
-    async def councillor_entry(request):
-        return FileResponse(STATIC_DIR / "councillor" / "councillor.html")
-
     static_index = next(i for i, route in enumerate(app.router.routes)
                         if isinstance(route, Mount) and route.name == "static")
     app.router.routes[static_index:static_index] = [
         Route("/apps/council/", council_entry, methods=["GET"]),
         Mount("/apps/council/static", app=StaticFiles(directory=str(council_static)), name="council-assets"),
-        Route("/councillor/", councillor_entry, methods=["GET"]),
     ]
 
     # The explicit COM2 queue below replaces them when that backend is selected.

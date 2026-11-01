@@ -52,6 +52,25 @@ class N {
   setAttribute(k, v) { this.attrs[k] = String(v); if (k === "class") this._cls = String(v); }
   getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; }
   appendChild(child) { this.children.push(child); child.parentNode = this; return child; }
+  get previousElementSibling() {
+    if (!this.parentNode) return null;
+    const index = this.parentNode.children.indexOf(this);
+    return index > 0 ? this.parentNode.children[index - 1] : null;
+  }
+  get nextElementSibling() {
+    if (!this.parentNode) return null;
+    const index = this.parentNode.children.indexOf(this);
+    return index >= 0 && index < this.parentNode.children.length - 1
+      ? this.parentNode.children[index + 1] : null;
+  }
+  insertBefore(node, reference) {
+    if (node.parentNode) node.parentNode.removeChild(node);
+    const index = this.children.indexOf(reference);
+    if (index < 0) this.children.push(node);
+    else this.children.splice(index, 0, node);
+    node.parentNode = this;
+    return node;
+  }
   removeChild(child) {
     const index = this.children.indexOf(child);
     if (index >= 0) this.children.splice(index, 1);
@@ -149,9 +168,52 @@ let fetchRejects = null;
 const saveBodies = [];
 // a queue answers successive status reads differently, which is how the re-ask is proven
 let authStatusQueue = null;
+// #5895: the PC bridge. Defaults say "no computer is linked"; a scenario swaps
+// these to walk the import/save/photo path through the shared dialog contract.
+let pcLinks = [];
+let pcReferenceText = "예전 축사 원고입니다. 문체를 참고하세요.";
+let pcReferenceCode = "";
+let pcUploads = [];
+const pcSaves = [];
+const pcReferenceReads = [];
+const pcDispatches = [];
+const PC_PHOTO_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13]);
 
 function json(body, status) {
   return { ok: (status || 200) < 400, status: status || 200, json: async () => body };
+}
+
+const ANSWER_PARTS = ["생성된 초안 본문입니다.\n\n", "두 번째 문단입니다."];
+let streamDelayMs = 0;
+
+// A real SSE body: event/data frames read through a stream reader, so the
+// delivered behaviour is the one the server actually sends.
+function sseResponse(parts) {
+  const frames = (parts || ANSWER_PARTS).map((part) =>
+    "event: delta\ndata: " + JSON.stringify({ delta: part }) + "\n\n");
+  frames.push("event: done\ndata: " + JSON.stringify({ done: true }) + "\n\n");
+  const chunks = frames.map((frame) => Buffer.from(frame, "utf8"));
+  let index = 0;
+  return {
+    ok: true,
+    status: 200,
+    headers: { get: (name) => (String(name).toLowerCase() === "content-type" ? "text/event-stream; charset=utf-8" : null) },
+    body: {
+      getReader() {
+        return {
+          read() {
+            const next = () => (index >= chunks.length
+              ? { done: true }
+              : { done: false, value: chunks[index++] });
+            if (streamDelayMs <= 0) return Promise.resolve(next());
+            return new Promise((resolve) => setTimeout(() => resolve(next()), streamDelayMs));
+          },
+          async cancel() {},
+          releaseLock() {},
+        };
+      },
+    },
+  };
 }
 
 const stored = (name, textValue, mediaType, bytes, country, docKind) => {
@@ -178,10 +240,27 @@ async function fetch(url, init) {
     try { body = JSON.parse(init.body); } catch (_) { body = init.body; }
   }
   requests.push(options);
-  if (method === "POST" && String(url) === "/api/chat") {
+  if (method === "POST" && String(url) === "/api/chat/stream") {
     chatPayloads.push(body);
     if (chatResponseOverride) return chatResponseOverride;
-    return json({ answer: "생성된 초안 본문입니다.\n\n두 번째 문단입니다." });
+    return sseResponse();
+  }
+  if (String(url) === "/api/pc/pairings") {
+    return json({ links: pcLinks });
+  }
+  if (method === "POST" && String(url) === "/api/pc/reference") {
+    pcReferenceReads.push(body);
+    if (pcReferenceCode) return json({ error: { code: pcReferenceCode } }, 422);
+    return json({ ok: true, name: "예전 축사.hwp", text: pcReferenceText });
+  }
+  if (String(url).indexOf("/api/pc/file") === 0) {
+    const dispatch = new URLSearchParams(String(url).split("?")[1] || "").get("dispatch_id");
+    pcDispatches.push(dispatch);
+    return {
+      ok: true,
+      status: 200,
+      blob: async () => ({ arrayBuffer: async () => PC_PHOTO_BYTES.buffer.slice(0) }),
+    };
   }
   if (String(url) === "/api/auth/status") {
     statusReads += 1;
@@ -291,6 +370,15 @@ class FakeFormData {
 }
 
 function FakeBlob() {}
+class FakeFile extends FakeBlob {
+  constructor(parts, name, options) {
+    super();
+    this.name = String(name || "file");
+    this.type = (options && options.type) || "";
+    const first = Array.isArray(parts) ? parts[0] : parts;
+    this.__bytes = first instanceof Uint8Array ? first : new Uint8Array(0);
+  }
+}
 
 class FakeFileReader {
   readAsDataURL(source) {
@@ -436,6 +524,8 @@ function spawnSession(windowState = {}) {
     console,
     setTimeout: () => 0,
     Blob: FakeBlob,
+    File: FakeFile,
+    TextDecoder,
     FileReader: FakeFileReader,
     URL: { createObjectURL: () => "blob:fixture", revokeObjectURL() {} },
     FormData: FakeFormData,
@@ -764,8 +854,10 @@ const SCENARIOS = {
       .map((n) => String(n.textContent).trim().replace(/ \(.*/, ""));
     const archiveList = () => {
       const arc = find(s, "councilMeetingArchive");
-      return arc ? arc.querySelectorAll(".council-archive-item button")
-        .map((n) => String(n.textContent).trim().replace(/ \(.*/, "")) : [];
+      return arc ? arc.querySelectorAll(".council-archive-item").map((li) => {
+        const button = li.querySelector("button");
+        return button ? String(button.textContent).trim().replace(/ \(.*/, "") : "";
+      }) : [];
     };
     const saveSpeech = async (eventName) => {
       const form = find(s, "councilSpeechForm");
@@ -1139,7 +1231,7 @@ const SCENARIOS = {
       speechNotice: text(find(session, "councilSpeechNotice")),
       speechSaveDisabled: find(session, "councilSpeechSave").disabled,
       downloads,
-      chatCredentials: requests.filter((r) => r.url === "/api/chat").map((r) => r.credentials),
+      chatCredentials: requests.filter((r) => r.url === "/api/chat/stream").map((r) => r.credentials),
       endpoints: endpointSet(),
       alerts,
       pageErrors,
@@ -1306,6 +1398,18 @@ const SCENARIOS = {
         generateDisabled: find(session, "councilSpeechGenerate").disabled,
       });
     }
+    // A failed generation carries its own 다시 시도; pressing it runs the same
+    // generation again instead of making the owner find the form button.
+    const retry = find(session, "councilSpeechNotice").querySelector(".council-notice-retry");
+    const retryPresent = Boolean(retry);
+    const callsBeforeRetry = chatPayloads.length;
+    chatResponseOverride = null;
+    if (retry) { await retry.dispatch("click"); await sleep(40); }
+    const retried = {
+      calls: chatPayloads.length - callsBeforeRetry,
+      notice: text(find(session, "councilSpeechNotice")),
+      output: find(session, "councilSpeechOutput").value,
+    };
     chatResponseOverride = null;
     // the same line reports a successful generation as success and re-enables saving
     await form.dispatch("submit");
@@ -1316,7 +1420,7 @@ const SCENARIOS = {
       output: find(session, "councilSpeechOutput").value,
       saveDisabled: find(session, "councilSpeechSave").disabled,
     };
-    return { outputs, success, pageErrors };
+    return { outputs, retryPresent, retried, success, pageErrors };
   },
   async calendar_words() {
     // The #5655 residual case: a meeting text whose user content contains
@@ -1586,6 +1690,204 @@ const SCENARIOS = {
     const rememberedAuthor = find(B, "councilSpeechForm").querySelector("[name=author]").value;
     return { directlyVisible, foldedFields: foldFields, foldTag: fold ? fold.tagName : "",
              placeholders, lengthOptions, rememberedAuthor, downloads, pageErrors };
+  },
+  async pc() {
+    // #5895: the independent app keeps the same PC bridge — a calm no-PC
+    // sentence with the way to connect, a reference import that reaches the
+    // prompt, a save that always offers a NEW name, and the shared photo
+    // import reading /api/pc/file.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const opened = [];
+    const exchange = {
+      open(options) {
+        opened.push(options);
+        if (options.mode === "save") {
+          pcSaves.push({ fileName: options.fileName, content: options.content });
+          if (options.onSave) options.onSave({});
+          return;
+        }
+        if (options.mode === "import") {
+          options.onSelect({ fileId: "pc-photo-1", name: "현장사진.png" });
+          return;
+        }
+        options.onSelect({ fileId: "pc-doc-1", name: "예전 축사.hwp" });
+      },
+    };
+    const state = { PadiemPcFileExchange: exchange };
+
+    // signed in, no computer linked
+    pcLinks = [];
+    const A = spawnSession(state);
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    await A.root.querySelectorAll(".council-card-select")[0].dispatch("click");
+    await sleep(40);
+    const pickA = find(A, "councilSpeechForm").querySelector(".council-pc-ref-pick");
+    const noteA = find(A, "councilSpeechForm").querySelector(".council-pc-ref-note");
+    const linkA = noteA.querySelector(".council-pc-ref-connect");
+    const noPc = {
+      pickHidden: pickA.hidden,
+      noteHidden: noteA.hidden,
+      note: text(noteA),
+      linkLabel: linkA ? text(linkA) : "",
+      linkHref: linkA ? (linkA.href || linkA.getAttribute("href")) : "",
+      referenceReads: pcReferenceReads.length,
+    };
+    // saving to a PC that is not linked is guidance, not an error
+    const formA = find(A, "councilSpeechForm");
+    formA.querySelector("[name=event]").value = "PC 없음 저장";
+    await formA.dispatch("submit");
+    await sleep(30);
+    await find(A, "councilSpeechPcSave").dispatch("click");
+    await sleep(30);
+    const noPcSaveNotice = find(A, "councilSpeechNotice");
+    noPc.saveNotice = text(noPcSaveNotice);
+    noPc.saveNoticeLink = noPcSaveNotice.querySelector
+      ? (noPcSaveNotice.querySelector(".council-notice-link") || {}).href || ""
+      : "";
+    noPc.saveNoticeTone = noPcSaveNotice.dataset.tone || "";
+
+    // linked: import a reference, generate, then save to the PC
+    pcLinks = [{ state: "active" }];
+    const B = spawnSession(state);
+    await B.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    await B.root.querySelectorAll(".council-card-select")[0].dispatch("click");
+    await sleep(40);
+    const formB = find(B, "councilSpeechForm");
+    formB.querySelector("[name=event]").value = "PC 가져오기 검증";
+    formB.querySelector("[name=date]").value = "2026-11-01";
+    await formB.querySelector(".council-pc-ref-pick").dispatch("click");
+    await sleep(60);
+    const previewB = formB.querySelector(".council-pc-ref-preview");
+    const importedB = { preview: previewB ? text(previewB) : "", reads: pcReferenceReads.slice() };
+    await formB.dispatch("submit");
+    await sleep(40);
+    const promptB = chatPayloads[chatPayloads.length - 1];
+    const outputB = find(B, "councilSpeechOutput").value;
+    await find(B, "councilSpeechPcSave").dispatch("click");
+    await sleep(30);
+    const saveNoticeB = text(find(B, "councilSpeechNotice"));
+    const savedB = pcSaves.length ? pcSaves[pcSaves.length - 1] : null;
+    const storedNameB = storedFiles.map((f) => f.name);
+
+    // SNS photo import through /api/pc/file
+    await B.ctx.window.PadiemCouncilApps.select("sns", false);
+    await sleep(40);
+    await find(B, "councilSnsPhotoAdd").dispatch("click");
+    await sleep(80);
+    const photoCount = text(find(B, "councilSnsPhotoCount"));
+    const photoNames = find(B, "councilSnsPhotoList").querySelectorAll(".council-photo-name").map((n) => text(n));
+    const photoUpload = storedFiles.filter((f) => f.media_type === "image/png").map((f) => f.name);
+
+    await find(B, "councilSnsForm").querySelector(".council-pc-ref-pick").dispatch("click");
+    await sleep(40);
+    const snsFormB = find(B, "councilSnsForm");
+    snsFormB.querySelector("[name=event]").value = "SNS PC 참고";
+    snsFormB.querySelector("[name=content]").value = "본문";
+    const snsCalls = chatPayloads.length;
+    await snsFormB.dispatch("submit");
+    await sleep(40);
+    const snsPromptB = chatPayloads[snsCalls];
+    pcLinks = [];
+    return {
+      noPc, importedB,
+      speechPrompt: promptB && promptB.messages && promptB.messages[0] ? promptB.messages[0].content : "",
+      outputB, saveNoticeB, savedB,
+      savedIsNewName: savedB ? !storedNameB.includes(savedB.fileName) : false,
+      pcDispatch: pcDispatches.slice(),
+      photoCount, photoNames, photoUpload,
+      snsPrompt: snsPromptB && snsPromptB.messages && snsPromptB.messages[0] ? snsPromptB.messages[0].content : "",
+      openedModes: opened.map((o) => o.mode || "import"),
+      endpoints: endpointSet(), alerts, pageErrors,
+    };
+  },
+  async streaming() {
+    // The answer is painted as it arrives: an intermediate value is observed
+    // before the final one, from the /api/chat/stream route.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    streamDelayMs = 12;
+    const s = spawnSession();
+    await s.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const form = find(s, "councilSpeechForm");
+    form.querySelector("[name=event]").value = "스트리밍 검증";
+    await form.dispatch("submit");
+    const lengths = [];
+    for (let i = 0; i < 40; i += 1) {
+      await sleep(5);
+      const length = String(find(s, "councilSpeechOutput").value || "").length;
+      if (!lengths.length || lengths[lengths.length - 1] !== length) lengths.push(length);
+      if (find(s, "councilSpeechSave").disabled === false) break;
+    }
+    const request = requests.find((r) => r.url === "/api/chat/stream");
+    streamDelayMs = 0;
+    return {
+      lengths,
+      final: find(s, "councilSpeechOutput").value,
+      expected: ANSWER_PARTS.join(""),
+      endpoint: request ? request.url : "",
+      accept: request ? request.headers.Accept : "",
+      notice: text(find(s, "councilSpeechNotice")),
+      pageErrors,
+    };
+  },
+  async parity() {
+    // 저장 글 다시 열기 · 회의 기록 순서 · 기간 빠른 선택 · SNS 저장 목록.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    storedFiles.length = 0;
+    requests.length = 0;
+    const NL = String.fromCharCode(10);
+    stored("1월 회의.txt", "회의 일시: 2026-01-05T10:00" + NL + "첫 기록", "text/plain", null, null, "meeting");
+    stored("3월 회의.txt", "회의 일시: 2026-03-12T10:00" + NL + "둘째 기록", "text/plain", null, null, "meeting");
+    stored("지난 축사.txt", "지난 축사 본문", "text/plain", null, null, "speech");
+    stored("블로그 게시글.txt", "저장된 SNS 초안", "text/plain", null, null, "sns");
+    const s = spawnSession();
+    await s.ctx.window.PadiemCouncilApps.init();
+    await sleep(40);
+    const archive = find(s, "councilMeetingArchive");
+
+    // the visible order is the book order
+    const rows = () => archive.querySelectorAll(".council-archive-item");
+    const names = () => rows().map((li) => {
+      const buttons = li.querySelectorAll("button");
+      return buttons.length ? text(buttons[0]) : "";
+    });
+    const before = names();
+    const secondUp = rows()[1].querySelectorAll(".council-record-move")[0];
+    await secondUp.dispatch("click");
+    const afterMove = names();
+    archive.querySelectorAll(".council-book-check").forEach((cb) => { cb.checked = true; });
+    const calls = chatPayloads.length;
+    await find(s, "councilBookGenerate").dispatch("click");
+    await sleep(40);
+    const bookPrompt = chatPayloads[calls] ? chatPayloads[calls].messages[0].content : "";
+
+    // quick ranges fill the two dates and run the selection
+    const year = new Date().getFullYear();
+    const thisYear = archive.querySelectorAll(".council-book-quick").find((b) => text(b) === "올해");
+    await thisYear.dispatch("click");
+    await sleep(80);
+    const periodStatus = text(find(s, "councilBookPeriodStatus"));
+    const selectedAfterQuick = archive.querySelectorAll(".council-book-check").filter((cb) => cb.checked).length;
+
+    // a stored speech opens with the naming note
+    const speechOpen = find(s, "councilSpeechSaved").querySelectorAll(".council-saved-open")[0];
+    await speechOpen.dispatch("click");
+    await sleep(30);
+    const speechNotice = text(find(s, "councilSpeechNotice"));
+    const speechBody = find(s, "councilSpeechOutput").value;
+
+    // a stored SNS draft is listed and reopens
+    const snsList = find(s, "councilSnsSaved");
+    const snsLabels = snsList.querySelectorAll(".council-saved-open").map((b) => text(b));
+    await snsList.querySelectorAll(".council-saved-open")[0].dispatch("click");
+    await sleep(30);
+    const snsBody = find(s, "councilSnsOutput").value;
+    const snsNotice = text(find(s, "councilSnsNotice"));
+    return { before, afterMove, bookPrompt, year, periodStatus, selectedAfterQuick,
+             speechNotice, speechBody, snsLabels, snsBody, snsNotice,
+             alerts, pageErrors };
   },
   async prompt() {
     const builder = String(process.argv[4] || "");
