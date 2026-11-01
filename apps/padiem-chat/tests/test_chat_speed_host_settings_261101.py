@@ -5,11 +5,12 @@ from starlette.testclient import TestClient
 from app import local_cpython
 
 
-@pytest.mark.parametrize("readers,ttl,expected_readers,expected_ttl", [
-    (None, None, 2, 30), ("0", "0", 0, None), ("3", "60", 3, 60),
+@pytest.mark.parametrize("readers,ttl,link,expected_readers,expected_ttl,expected_link", [
+    (None, None, None, 2, 30, 600), ("0", "0", "0", 0, None, None),
+    ("3", "60", "120", 3, 60, 120),
 ])
-def test_factory_speed_controls(tmp_path, monkeypatch, readers, ttl,
-                                expected_readers, expected_ttl):
+def test_factory_speed_controls(tmp_path, monkeypatch, readers, ttl, link,
+                                expected_readers, expected_ttl, expected_link):
     for name, value in {
         "PADIEM_LOCAL_DEV": "1", "PADIEM_CHAT_RUNTIME_MODE": "mock",
         "PADIEM_CHAT_AUTH_MODE": "off", "PADIEM_CHAT_WEB_PROVIDER": "off",
@@ -20,7 +21,8 @@ def test_factory_speed_controls(tmp_path, monkeypatch, readers, ttl,
         monkeypatch.setenv(name, value)
     monkeypatch.delenv("PC_QUEUE_BACKEND", raising=False)
     for name, value in (("PADIEM_CHAT_SQLITE_READERS", readers),
-                        ("PADIEM_CHAT_AUTH_CACHE_SECONDS", ttl)):
+                        ("PADIEM_CHAT_AUTH_CACHE_SECONDS", ttl),
+                        ("PADIEM_CHAT_SHARED_LINK_CACHE_SECONDS", link)):
         if value is None:
             monkeypatch.delenv(name, raising=False)
         else:
@@ -39,7 +41,8 @@ def test_factory_speed_controls(tmp_path, monkeypatch, readers, ttl,
     if expected_ttl is None:
         assert cache is None
     else:
-        assert cache.db is db and cache.ttl_seconds == expected_ttl
+        assert (cache.db is db and cache.ttl_seconds == expected_ttl
+                and cache.link_ttl_seconds == expected_link)
     assert db.close_readers in app.router.on_shutdown
     with TestClient(app) as client:
         assert client.get("/health").status_code == 200

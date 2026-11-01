@@ -90,8 +90,10 @@ def main(argv=None) -> int:
         print("CHAT_WORKERS=REFUSED code=" + code, file=sys.stderr, flush=True)
         return 2
     import uvicorn
+    from .access_log import uvicorn_log_config
     uvicorn.run("app.local_cpython:build_app", factory=True, host=args.host,
-                port=args.port, workers=workers, server_header=False)
+                port=args.port, workers=workers, server_header=False,
+                log_config=uvicorn_log_config(uvicorn.config.LOGGING_CONFIG))
     return 0
 
 

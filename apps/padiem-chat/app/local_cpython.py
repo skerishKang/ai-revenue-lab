@@ -291,8 +291,10 @@ def build_app():
     # Optional short-lived validation results; roles/entitlements stay live.
     from .auth_validation_cache import SqliteAuthValidationCache
     cache_seconds = _nonnegative_env('PADIEM_CHAT_AUTH_CACHE_SECONDS', 30)
+    link_seconds = _nonnegative_env('PADIEM_CHAT_SHARED_LINK_CACHE_SECONDS', 600)
     app.state.auth_validation_cache = (
-        SqliteAuthValidationCache(db, ttl_seconds=cache_seconds) if cache_seconds else None
+        SqliteAuthValidationCache(db, ttl_seconds=cache_seconds,
+                                  link_ttl_seconds=link_seconds) if cache_seconds else None
     )
 
     # Match the Worker's staged entry layout while keeping the council app as
