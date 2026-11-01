@@ -23,7 +23,7 @@ recording fetch:
 - DOUBLE_CLICK_SINGLE_FLIGHT=PASS
 - MISSING_RETRY_AFTER_NO_COUNTDOWN_CLAIM=PASS
 - MALFORMED_ZERO_NEGATIVE_RETRY_AFTER_FAILS_CLOSED=PASS
-- HUGE_RETRY_AFTER_IS_BOUNDED=PASS
+- HUGE_RETRY_AFTER_FOLLOWED_AS_SENT=PASS
 - AMBIGUOUS_FAILURE_SAFE_RETRY_CLAIM=NO
 - NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE=PASS
 - PRE_DISPATCH_503_IS_NOT_AMBIGUOUS=PASS
@@ -42,6 +42,7 @@ policy change, auto-retry, or Engine/P01 retry semantics are introduced.
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -110,12 +111,36 @@ def test_consumes_the_existing_retry_after_header_without_new_authority() -> Non
 def test_retry_after_parsing_is_closed_and_bounded() -> None:
     app = _app_source()
     assert "function parseClawRetryAfter(value)" in app
-    assert "const CLAW_RETRY_AFTER_MAX_SECONDS = 900;" in app
     assert 'if (!/^[0-9]+$/.test(raw)) return null;' in app
     assert "if (!Number.isFinite(seconds) || seconds < 1) return null;" in app
-    assert "return Math.min(seconds, CLAW_RETRY_AFTER_MAX_SECONDS);" in app
+    # #5882 A-15: the client's second 900s ceiling was removed. usage_gate only
+    # ever emits 60s (or no header), so re-clamping here could never bind and only
+    # risked disagreeing with the server; the bound is now asserted on the server
+    # side instead (next test) and the parsed value is followed as sent.
+    assert "CLAW_RETRY_AFTER_MAX_SECONDS" not in app
+    assert "Math.min(seconds" not in app
+    assert re.search(r"function parseClawRetryAfter[\s\S]{0,400}?return seconds;", app)
     # No HTML/copy injection: the parsed integer is only ever used as a number.
     assert "innerHTML" not in app
+
+
+def test_the_retry_after_bound_lives_on_the_server() -> None:
+    # The client now trusts the header verbatim, so the ceiling it used to carry
+    # is proven where it actually lives: every production literal written into
+    # UsageDecision.retry_after_seconds must stay inside the documented UI
+    # ceiling, and the emission stays guarded so `None` never reaches the wire.
+    values = [
+        int(match)
+        for path in sorted((ROOT / "app").glob("*.py"))
+        for match in re.findall(
+            r"retry_after_seconds\s*=\s*(\d+)", path.read_text(encoding="utf-8")
+        )
+    ]
+    assert values, "no production retry_after_seconds literal found"
+    assert max(values) <= 900, max(values)
+    routes = CLAW_ROUTES.read_text(encoding="utf-8")
+    assert 'if decision.retry_after_seconds is not None:' in routes
+    assert 'headers["Retry-After"] = str(decision.retry_after_seconds)' in routes
 
 
 def test_no_automatic_or_timer_driven_execution() -> None:
@@ -666,17 +691,20 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   }
   checks.MALFORMED_ZERO_NEGATIVE_RETRY_AFTER_FAILS_CLOSED = byId.clawRetryBox.hidden === true;
 
-  // 7) An unreasonably large value is clamped to the documented ceiling.
+  // 7) A large value is followed exactly as sent: the server owns the bound
+  //    (usage_gate emits 60 or nothing at all), so the client no longer cuts the
+  //    countdown to a 900s ceiling the server never sets. The Korean copy still
+  //    shows the remaining time verbatim.
   executeCall = () => jsonResponse(429, { ok: false, error: { code: "rate_limited" } }, { "Retry-After": "99999" });
   expectedPosts += 1;
   byId.clawExecuteButton.click();
   await tick(60);
-  checks.HUGE_RETRY_AFTER_IS_BOUNDED =
+  checks.HUGE_RETRY_AFTER_FOLLOWED_AS_SENT =
     byId.clawRetryBox.hidden === false &&
-    byId.clawRetryCopy.textContent.indexOf("900") >= 0 &&
-    byId.clawRetryCopy.textContent.indexOf("99999") < 0 &&
+    byId.clawRetryCopy.textContent.indexOf("99999초") >= 0 &&
+    byId.clawRetryCopy.textContent.indexOf("900") < 0 &&
     byId.clawRetryButton.disabled === true;
-  if (!checks.HUGE_RETRY_AFTER_IS_BOUNDED) fail("HUGE_RETRY_AFTER_IS_BOUNDED: " + byId.clawRetryCopy.textContent);
+  if (!checks.HUGE_RETRY_AFTER_FOLLOWED_AS_SENT) fail("HUGE_RETRY_AFTER_FOLLOWED_AS_SENT: " + byId.clawRetryCopy.textContent);
 
   // 8) Editing the form during the cooldown must not replay a hidden payload:
   //    the retry rebuilds the request from the visible form.
@@ -684,12 +712,12 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   byId.clawChannel.value = "sms";
   byId.clawAction.value = "order";
   byId.clawSender.value = "B상사";
-  byId.clawRetryButton.click(); // still inside the clamped cooldown: no POST
+  byId.clawRetryButton.click(); // still inside the cooldown: no POST
   const beforeEditRetry = execPosts().length;
   await tick(120);
   if (execPosts().length !== beforeEditRetry) fail("EDIT_DURING_COOLDOWN_POSTED");
   checks.NAV_EDIT_DURING_COOLDOWN_NO_POST = true;
-  // The clamped cooldown is long, so prove the target contract on a fresh cycle.
+  // The cooldown is long, so prove the target contract on a fresh cycle.
   byId.tasksNavButton.click();
   await tick(60);
   byId.clawNavButton.click();
@@ -1098,7 +1126,7 @@ def test_behavioral_execute_recovery_journey(behavioral_harness_payload: dict) -
         "DOUBLE_CLICK_SINGLE_FLIGHT",
         "MISSING_RETRY_AFTER_NO_COUNTDOWN_CLAIM",
         "MALFORMED_ZERO_NEGATIVE_RETRY_AFTER_FAILS_CLOSED",
-        "HUGE_RETRY_AFTER_IS_BOUNDED",
+        "HUGE_RETRY_AFTER_FOLLOWED_AS_SENT",
         "NAV_EDIT_DURING_COOLDOWN_NO_POST",
         "EXECUTE_POST_COUNT_MATCHES_USER_ACTIONS",
         "RETRY_TARGET_IS_VISIBLE_FORM",
@@ -1160,6 +1188,7 @@ if __name__ == "__main__":
     test_recovery_surface_is_declared_inside_the_claw_form()
     test_consumes_the_existing_retry_after_header_without_new_authority()
     test_retry_after_parsing_is_closed_and_bounded()
+    test_the_retry_after_bound_lives_on_the_server()
     test_no_automatic_or_timer_driven_execution()
     test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance()
     test_retry_target_is_the_visible_form_not_a_hidden_snapshot()
