@@ -888,6 +888,11 @@ ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({
     # replaces only that account's credential row.
     "/api/auth/password/reset/request",
     "/api/auth/password/reset/confirm",
+    # #3782 컴퓨터 사용 3단계: the owner's stop for a running screen-driven PC
+    # task. A POST that cancels the caller's own active desktop-task run; the
+    # executor refuses every action decided after the cancel marker and the
+    # run keeps the stopped time. No other lane borrows this route.
+    "/api/pc/cancel",
 })
 
 
