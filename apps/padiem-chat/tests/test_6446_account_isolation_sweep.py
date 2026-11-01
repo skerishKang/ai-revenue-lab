@@ -89,6 +89,18 @@ class ThreadSafeSqliteD1(account_harness.SqliteD1):
     def prepare(self, sql):
         return ThreadSafeStatement(self, sql)
 
+    async def batch(self, statements):
+        # D1 배치 응답 형태: 문장별 {"results": [...], "meta": {...}} —
+        # 북AI 병합이 결과를 dict 첨자로 읽는다(5222 하네스는 SimpleNamespace).
+        out = []
+        for statement in statements:
+            cursor = self.conn.execute(statement.sql, statement.params)
+            out.append({
+                "results": [dict(row) for row in cursor.fetchall()],
+                "meta": {"changes": cursor.rowcount},
+            })
+        return out
+
 
 def apply_all_migrations(db) -> None:
     for path in sorted((ROOT / "migrations").glob("*.sql")):
