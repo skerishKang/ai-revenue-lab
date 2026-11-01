@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import binascii
 import hashlib
 import inspect
 import json
@@ -23,10 +25,53 @@ MAX_CONVERSATION_SEARCH_RESULTS = 20
 MAX_CONVERSATION_SEARCH_SCAN_ROWS = 2000
 MAX_CONVERSATION_SEARCH_SNIPPET_CHARS = 120
 MAX_PROJECT_NAME_CHARS = 80
-# Page size for the project listing. This is a read shape, not a ceiling:
-# nothing refuses creating a project because the owner already has this many
-# (#5895-D). Kept until the list grows a pagination UI.
+# 한 페이지 크기. 전체를 가리는 상한이 아니다 — 더 있으면 응답의 next_cursor 로
+# 이어 받는다 (#5882 · #5895-D). 생성은 이 수와 무관하게 계속 허용되고, 51번째부터는
+# 목록을 넘겨 보면 그대로 나온다.
 MAX_PROJECTS = 50
+#: 한 커서 문자열의 길이 상한. 이 상점이 발급한 커서는 훨씬 짧다.
+PROJECT_CURSOR_MAX_CHARS = 512
+
+
+class ProjectCursorError(ValueError):
+    """이 상점이 발급하지 않은 프로젝트 목록 위치.
+
+    호출자는 이 예외를 400으로만 옮긴다 — 커서 내용(다른 계정 id 등)은 답에 넣지
+    않는다. 계정 조건은 커서와 무관하게 쿼리에 늘 붙으므로, 남의 커서를 들고 와도
+    자기 프로젝트만 보인다.
+    """
+
+
+def encode_project_cursor(updated_at: str, project_id: str) -> str:
+    """(최근 수정 시각, id) 를 다음 페이지용 불투명 문자열로 만든다."""
+
+    raw = json.dumps(
+        {"u": updated_at, "i": project_id}, separators=(",", ":"), sort_keys=True
+    ).encode("utf-8")
+    return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+
+
+def decode_project_cursor(cursor: Any) -> tuple[str, str]:
+    """커서를 (최근 수정 시각, id) 로 되돌린다. 아니면 ``ProjectCursorError``."""
+
+    if not isinstance(cursor, str) or not cursor or len(cursor) > PROJECT_CURSOR_MAX_CHARS:
+        raise ProjectCursorError("invalid project cursor")
+    padding = "=" * (-len(cursor) % 4)
+    try:
+        raw = base64.urlsafe_b64decode((cursor + padding).encode("ascii"))
+    except (UnicodeEncodeError, binascii.Error, ValueError):
+        raise ProjectCursorError("invalid project cursor") from None
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise ProjectCursorError("invalid project cursor") from None
+    if not isinstance(payload, dict) or set(payload) != {"u", "i"}:
+        raise ProjectCursorError("invalid project cursor")
+    updated_at, project_id = payload.get("u"), payload.get("i")
+    if (not isinstance(updated_at, str) or not updated_at or len(updated_at) > 64
+            or not isinstance(project_id, str) or not project_id or len(project_id) > 128):
+        raise ProjectCursorError("invalid project cursor")
+    return updated_at, project_id
 MAX_CLAW_RUNS = 30
 MAX_RUN_RESULT_SUMMARY_CHARS = 200
 #: #5015 the lane actions whose run may hold more than one PC tool call. The
@@ -282,6 +327,9 @@ class HistoryStore(Protocol):
     async def delete_conversation(self, user_id: str, conversation_id: str, *, product_scope: str) -> bool: ...
     async def append_exchange(self, user_id: str, conversation_id: str | None, user_text: str, assistant_text: str, project_id: str | None = None, *, product_scope: str, assistant_message_id: str | None = None) -> str: ...
     async def list_projects(self, user_id: str) -> list[ProjectProfile]: ...
+    async def list_projects_page(
+        self, user_id: str, *, limit: int = MAX_PROJECTS, cursor: str | None = None,
+    ) -> tuple[list[ProjectProfile], str | None]: ...
     async def get_project(self, user_id: str, project_id: str) -> ProjectProfile | None: ...
     async def create_project(self, user_id: str, name: str, instructions: str) -> ProjectProfile: ...
     async def update_project(self, user_id: str, project_id: str, name: str, instructions: str) -> ProjectProfile | None: ...
@@ -1405,11 +1453,39 @@ class D1HistoryStore:
         return True
 
     async def list_projects(self, user_id: str) -> list[ProjectProfile]:
+        """첫 페이지. 예전 호출자(커서를 모르는 쪽)는 이대로 50개를 받는다."""
+
+        page, _ = await self.list_projects_page(user_id)
+        return page
+
+    async def list_projects_page(
+        self, user_id: str, *, limit: int = MAX_PROJECTS, cursor: str | None = None,
+    ) -> tuple[list[ProjectProfile], str | None]:
+        """최근 수정 순 한 페이지와 다음 위치(없으면 None).
+
+        정렬은 지금 목록과 같은 최근 수정 시각 내림차순이고, 같은 시각은 id 내림차순으로
+        동점을 끊는다 — 그래야 페이지 경계에서 같은 행이 두 번 오거나 빠지지 않는다.
+        계정 조건은 첫 페이지든 이어 받기든 똑같이 쿼리에 들어간다.
+        """
+
+        size = MAX_PROJECTS if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1 else min(limit, MAX_PROJECTS)
+        where = "user_id=?"
+        params: list[Any] = [user_id]
+        if cursor is not None:
+            updated_at, project_id = decode_project_cursor(cursor)
+            where += " AND (updated_at < ? OR (updated_at = ? AND id < ?))"
+            params.extend([updated_at, updated_at, project_id])
         rows = await self._all(
-            "SELECT id, name, instructions, created_at, updated_at FROM projects WHERE user_id=? ORDER BY updated_at DESC LIMIT ?",
-            user_id, MAX_PROJECTS,
+            "SELECT id, name, instructions, created_at, updated_at FROM projects "
+            f"WHERE {where} ORDER BY updated_at DESC, id DESC LIMIT ?",
+            *params, size + 1,
         )
-        return [_project_from_row(row) for row in rows]
+        page = rows[:size]
+        next_cursor = None
+        if len(rows) > size and page:
+            last = page[-1]
+            next_cursor = encode_project_cursor(str(last["updated_at"]), str(last["id"]))
+        return [_project_from_row(row) for row in page], next_cursor
 
     async def get_project(self, user_id: str, project_id: str) -> ProjectProfile | None:
         row = await self._first(
