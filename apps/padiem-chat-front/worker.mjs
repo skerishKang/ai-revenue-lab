@@ -26,6 +26,11 @@ const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
 const DEFAULT_TIMEOUT_MS = 8000;
 const DEFAULT_API_READ_TIMEOUT_MS = 30000;
+// The common-login callback is a redirect, but COM2 only answers it after an OAuth
+// exchange, a JWKS verification and an identity RPC. Under the plain read deadline
+// the browser saw upstream_timeout while the host was still finishing the login, so
+// this one path gets its own allowance; every other /auth/* keeps the short one.
+const DEFAULT_AUTH_CALLBACK_TIMEOUT_MS = 30000;
 const TIMED_OUT = Symbol("timed_out");
 const CONNECTION_REFUSED = Symbol("connection_refused");
 const TRANSPORT_FAILED = Symbol("transport_failed");
@@ -154,6 +159,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     // App AI needs time for a completed model response; records stay on COM2.
     const appsAI = request.method === "POST" && url.pathname === "/api/apps/ai";
     const bookAIRecords = url.pathname === "/api/bookai/records";
+    const authCallback = READ_METHODS.has(request.method) && url.pathname === "/auth/shared/callback";
     const upstreamTimeout = numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
     const healthProbe = url.pathname === "/health" && (request.method === "GET" || request.method === "HEAD");
     const streaming = /text\/event-stream/i.test(request.headers.get("accept") || "") ||
@@ -161,7 +167,9 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const apiRead = !isWrite && url.pathname.startsWith("/api/") && !streaming;
     const timeoutMs = appsAI
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
-      : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS) : upstreamTimeout;
+      : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
+      : authCallback ? numeric(env.AUTH_CALLBACK_TIMEOUT_MS, DEFAULT_AUTH_CALLBACK_TIMEOUT_MS)
+        : upstreamTimeout;
 
     if (isWrite) {
       const response = await forward(request, target, env, timeoutMs);
