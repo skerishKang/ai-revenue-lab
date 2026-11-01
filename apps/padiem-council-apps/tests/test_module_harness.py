@@ -106,13 +106,28 @@ def test_saving_stores_each_draft_through_the_project_file_channel() -> None:
     # exactly one "SNS 사진 구성.json" survives.
     assert observed["savedCount"] == 6
     assert observed["savedNames"] == [
-        "제78주년 광복절 기념식.txt",
+        "축사_제78주년 광복절 기념식_2026-08-15.txt",
         "현장1.png",
         "현장2.jpg",
-        "인스타그램 게시글.txt",
         "SNS 사진 구성.json",
+        "인스타그램 게시글.txt",
         "10월 주민 민원 회의.txt",
     ]
+    # #A3: each writing carries the kind its screen saved it as, so each list
+    # asks for its own family instead of every .txt in the project.
+    assert dict(observed["savedKinds"]) == {
+        "축사_제78주년 광복절 기념식_2026-08-15.txt": "speech",
+        "현장1.png": "",
+        "현장2.jpg": "",
+        "SNS 사진 구성.json": "",
+        "인스타그램 게시글.txt": "sns",
+        "10월 주민 민원 회의.txt": "meeting",
+    }
+
+
+def test_the_speech_file_and_download_follow_the_event_and_date() -> None:
+    observed = run("generate")
+    assert observed["downloads"] == ["축사_제78주년 광복절 기념식_2026-08-15.txt"]
 
 
 def test_the_photo_roster_v2_carries_order_positions_draft_and_platform() -> None:
@@ -134,7 +149,7 @@ def test_the_saved_speech_list_offers_itself_as_the_style_reference() -> None:
     observed = run("generate")
     labels = observed["speech"]["savedListLabels"]
     assert len(labels) == 1
-    assert labels[0].startswith("제78주년 광복절 기념식.txt (")
+    assert labels[0].startswith("축사_제78주년 광복절 기념식_2026-08-15.txt (")
     assert observed["speech"]["refSelectedMatchesSaved"] is True
     # The picked manuscript IS the stored draft body, not a summary of it.
     assert observed["speech"]["refSelected"] == observed["speech"]["output"]
@@ -161,15 +176,16 @@ def test_the_tools_touch_only_the_existing_endpoints() -> None:
         "GET /api/auth/status",
         "POST /api/chat",
         "GET /api/projects",
-        "POST /api/projects",
         "GET /api/projects/p1/files",
         "POST /api/projects/p1/files",
     }
-    # The photo contract adds the detail/original reads and the deletes the
-    # roster rewrite needs — all on the SAME project-file authority (#5936 §3).
+    # The photo contract adds the detail/original reads, the deletes a removed
+    # photo issues, and the PUT that rewrites the roster in place — all on the
+    # SAME project-file authority (#5936 §3).
     prefixes = (
         "GET /api/projects/p1/files/",
         "DELETE /api/projects/p1/files/",
+        "PUT /api/projects/p1/files/",
     )
     endpoints = set(observed["endpoints"])
     assert "POST /api/chat" in endpoints
@@ -186,7 +202,7 @@ def test_reentry_restores_the_composition_and_delete_stays_in_sync() -> None:
     restored = observed["restored"]
     # the saved speech is offered again on re-entry, with its 참고로 선택 action
     assert len(restored["speechLabelsB"]) == 1
-    assert restored["speechLabelsB"][0].startswith("재진입 복원 검증 행사.txt (")
+    assert restored["speechLabelsB"][0].startswith("축사_재진입 복원 검증 행사_")
     assert restored["speechRefCountB"] == 1
     # photos come back in the roster order with the blog insertion positions
     assert restored["photoCountB"] == "3장"
@@ -226,12 +242,29 @@ def test_reentry_restores_the_composition_and_delete_stays_in_sync() -> None:
     assert observed["alerts"] == []
 
 
-def test_server_errors_surface_their_message_and_fail_loudly() -> None:
+def test_generation_failures_say_it_on_the_notice_line_not_in_the_draft() -> None:
+    """#A2: util-menu's Korean mapping, a separate 안내줄, and a blocked save.
+
+    The result area stays a draft area: a failure never paints a sentence into
+    the body, never shows raw JSON, and cannot be saved as if it were content.
+    """
     observed = run("errors")
-    assert {row["name"]: row["output"] for row in observed["outputs"]} == {
-        "server_message": "생성 실패: 관리자 인증을 확인해 주세요.",
-        "no_message": "생성 실패: HTTP 502",
-        "non_string": "생성 실패: HTTP 403",
-        "not_json": "생성 실패: HTTP 503",
+    assert {row["name"]: row["notice"] for row in observed["outputs"]} == {
+        "server_message": "생성 실패: 이 계정에서는 할 수 없는 요청입니다. 로그인 상태를 확인해 주세요.",
+        "no_message": "생성 실패: 서버 연결이 잠시 끊겼습니다. 잠시 후 다시 시도해 주세요.",
+        "non_string": "생성 실패: 이 계정에서는 할 수 없는 요청입니다. 로그인 상태를 확인해 주세요.",
+        "not_json": "생성 실패: 서버가 잠시 과부하 상태입니다. 잠시 후 다시 시도해 주세요.",
+        "empty_answer": "생성 실패: 답을 받지 못했습니다. 다시 시도해 주세요.",
+        "no_answer": "생성 실패: 답을 받지 못했습니다. 다시 시도해 주세요.",
     }
+    for row in observed["outputs"]:
+        assert row["output"] == "", row
+        assert row["resultHidden"] is True, row
+        assert row["saveDisabled"] is True, row
+        assert row["noticeHidden"] is False and row["noticeTone"] == "error", row
+        assert row["generateDisabled"] is False, row
+    success = observed["success"]
+    assert success["notice"] == "" and success["noticeHidden"] is True
+    assert success["output"].startswith("생성된 초안 본문입니다.")
+    assert success["saveDisabled"] is False
     assert not observed["pageErrors"], observed["pageErrors"]

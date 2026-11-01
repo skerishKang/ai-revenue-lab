@@ -52,6 +52,12 @@ class N {
   setAttribute(k, v) { this.attrs[k] = String(v); if (k === "class") this._cls = String(v); }
   getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; }
   appendChild(child) { this.children.push(child); child.parentNode = this; return child; }
+  removeChild(child) {
+    const index = this.children.indexOf(child);
+    if (index >= 0) this.children.splice(index, 1);
+    child.parentNode = null;
+    return child;
+  }
   append(...children) { children.forEach((child) => this.appendChild(child)); }
   replaceChildren(...children) { this.children = []; this.append(...children); }
   addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
@@ -123,6 +129,14 @@ const loginAttempts = [];
 const storedFiles = [];
 let fileIdSeq = 0;
 let chatResponseOverride = null;
+let saveFailureOverride = null;
+// The pinned storage project (#A1). The default listing already carries the
+// one project this app stores under; a scenario swaps it to prove the lookup.
+let projectRows = [{ id: "p1", name: "의원3종" }];
+let projectCreates = 0;
+let createdProjectId = "p2";
+let projectsReadFails = false;
+const projectsListing = () => projectRows.slice();
 // #5942: the same-origin session contract the entry page uses. A scenario flips
 // these to walk signed-out → in-page login → expiry without any second authority.
 let authState = { authenticated: true, user: { name: "테스트 사용자" } };
@@ -140,11 +154,12 @@ function json(body, status) {
   return { ok: (status || 200) < 400, status: status || 200, json: async () => body };
 }
 
-const stored = (name, textValue, mediaType, bytes, country) => {
+const stored = (name, textValue, mediaType, bytes, country, docKind) => {
   const file = { id: "f" + (++fileIdSeq), name, media_type: mediaType || "text/plain",
                  content_chars: String(textValue || "").length };
   // #6046 contract: kr is sent as NO country field, so an absent field reads back as kr.
   if (country) file.country = country;
+  if (docKind) file.doc_kind = docKind;
   storedFiles.push(Object.assign({ text: textValue, bytes: bytes || null }, file));
   return file;
 };
@@ -180,8 +195,12 @@ async function fetch(url, init) {
     return json({ ok: true, user: { name: "테스트 사용자" } });
   }
   if (String(url) === "/api/projects") {
-    if (method === "GET") return json({ projects: [{ id: "p1", name: "내 프로젝트" }] });
-    return json({ project: { id: "p1", name: (body && body.name) || "" } });
+    if (method === "GET") {
+      if (projectsReadFails) return json({ error: { code: "unavailable" } }, 503);
+      return json({ projects: projectsListing() });
+    }
+    projectCreates += 1;
+    return json({ project: { id: createdProjectId, name: (body && body.name) || "" } });
   }
   const filesMatch = /^\/api\/projects\/([^/]+)\/files\/?([^/]*)$/.exec(String(url));
   const originalMatch = /^\/api\/projects\/([^/]+)\/files\/([^/]+)\/original$/.exec(String(url));
@@ -211,10 +230,37 @@ async function fetch(url, init) {
         const file = stored(rawName, "", mediaType, bytes);
         return json({ file });
       }
-      saveBodies.push({ keys: Object.keys(body || {}).sort(), country: body && body.country });
+      if (saveFailureOverride) {
+        const forced = saveFailureOverride;
+        saveFailureOverride = null;
+        return forced;
+      }
+      saveBodies.push({ keys: Object.keys(body || {}).sort(), country: body && body.country,
+                        doc_kind: body && body.doc_kind });
+      // #5731: a name already used by the same kind answers 409 with the existing file.
+      const sameName = storedFiles.find((f) => f.name === (body && body.name)
+        && (f.doc_kind || "") === ((body && body.doc_kind) || ""));
+      if (sameName) {
+        return json({ error: { code: "name_taken",
+                               existing: { id: sameName.id, name: sameName.name } } }, 409);
+      }
       const file = stored((body && body.name) || "무제.txt", (body && body.text) || "",
-                             (body && body.media_type) || "text/plain", null, body && body.country);
+                             (body && body.media_type) || "text/plain", null, body && body.country,
+                             body && body.doc_kind);
       return json({ file });
+    }
+    if (method === "PUT" && filesMatch[2]) {
+      // #5731 overwrite: the displaced body stays as a version on the server.
+      const found = storedFiles.find((f) => f.id === filesMatch[2]);
+      if (!found) return json({ error: { code: "not_found" } }, 404);
+      const previous = { id: "v" + (++fileIdSeq), name: found.name, text: found.text };
+      found.text = (body && body.text) || "";
+      found.content_chars = String(found.text).length;
+      if (body && body.doc_kind) found.doc_kind = body.doc_kind;
+      saveBodies.push({ keys: Object.keys(body || {}).sort(), country: body && body.country,
+                        doc_kind: body && body.doc_kind });
+      return json({ file: { id: found.id, name: found.name, media_type: found.media_type,
+                            content_chars: found.content_chars, doc_kind: found.doc_kind }, previous });
     }
     if (method === "DELETE" && filesMatch[2]) {
       const idx = storedFiles.findIndex((f) => f.id === filesMatch[2]);
@@ -232,6 +278,7 @@ async function fetch(url, init) {
 
 const pageErrors = [];
 const alerts = [];
+const downloads = [];
 
 // ── one council-app.js execution against a fresh fake DOM ──────────────────
 class FakeFormData {
@@ -354,6 +401,10 @@ function spawnSession(windowState = {}) {
     root.append(section);
   });
 
+  // The shipped module binds document-level listeners (the Escape rule, the
+  // popover's outside click). The fake document must actually deliver them, or
+  // a scenario would prove nothing about those handlers.
+  const documentListeners = {};
   const ctx = {
     document: {
       readyState: "complete",
@@ -362,9 +413,22 @@ function spawnSession(windowState = {}) {
       getElementById: (id) => byId[id] || root._descendants().find((n) => n.id === id) || null,
       querySelector: (sel) => root.querySelector(sel),
       querySelectorAll: (sel) => root.querySelectorAll(sel),
-      createElement: (tag) => new N(tag),
-      addEventListener() {},
+      createElement: (tag) => {
+        const node = new N(tag);
+        // The download control builds an <a download>; record the file name the
+        // user would actually receive, then let the click resolve.
+        if (String(tag).toLowerCase() === "a") {
+          node.click = async function () { downloads.push(String(this.download || "")); };
+        }
+        return node;
+      },
+      addEventListener(type, fn) { (documentListeners[type] = documentListeners[type] || []).push(fn); },
+      async dispatch(type, event) {
+        const evt = Object.assign({ preventDefault() {} }, event || {});
+        for (const fn of (documentListeners[type] || []).slice()) await fn(evt);
+      },
     },
+    atob: (value) => Buffer.from(String(value), "base64").toString("binary"),
     window: windowState,
     navigator: { clipboard: { writeText: async () => {} } },
     fetch,
@@ -588,6 +652,9 @@ const SCENARIOS = {
       panelHidden: find(s0, "councilAuthPanel").hidden,
       status: text(find(s0, "councilAuthStatus")),
       draftKept: (formOf(s0.root, "councilSnsOutput") || {}).value || "",
+      notice: text(find(s0, "councilSnsNotice")),
+      noticeTone: find(s0, "councilSnsNotice").dataset.tone || "",
+      saveDisabled: find(s0, "councilSnsSave").disabled,
       requests: snapshot(),
     });
 
@@ -951,6 +1018,8 @@ const SCENARIOS = {
     await sleep(20);
     const speechOutput = find(session, "councilSpeechOutput").value;
     const speechPrompt = chatPayloads[speechCalls];
+    // The download control names the same draft the save stores.
+    await find(session, "councilSpeechDownload").dispatch("click");
     await find(session, "councilSpeechSave").dispatch("click");
     await sleep(20);
 
@@ -1042,9 +1111,20 @@ const SCENARIOS = {
     const bookOutput = find(session, "councilBookOutput").value;
     const bookPrompt = chatPayloads[bookCalls];
 
+    const actionOrder = (resultId) => {
+      const result = find(session, resultId);
+      const actions = result.querySelector(".council-actions");
+      return actions ? actions.children.map((b) => b.id || text(b)) : [];
+    };
     return {
       initSignedIn: initResult.signedIn,
       badge: text(find(session, "councilAuthBadge")),
+      actionOrder: {
+        speech: actionOrder("councilSpeechResult"),
+        sns: actionOrder("councilSnsResult"),
+        meeting: actionOrder("councilMeetingResult"),
+        book: actionOrder("councilBookResult"),
+      },
       speech: { prompt: speechPrompt, output: speechOutput,
         savedListLabels, refSelected: styleAfterRef,
         refSelectedMatchesSaved: styleAfterRef.includes("생성된 초안 본문입니다."),
@@ -1055,6 +1135,10 @@ const SCENARIOS = {
       book: { prompt: bookPrompt, output: bookOutput },
       savedCount: storedFiles.length,
       savedNames: storedFiles.map((f) => f.name),
+      savedKinds: storedFiles.map((f) => [f.name, f.doc_kind || ""]),
+      speechNotice: text(find(session, "councilSpeechNotice")),
+      speechSaveDisabled: find(session, "councilSpeechSave").disabled,
+      downloads,
       chatCredentials: requests.filter((r) => r.url === "/api/chat").map((r) => r.credentials),
       endpoints: endpointSet(),
       alerts,
@@ -1204,15 +1288,35 @@ const SCENARIOS = {
       ["no_message", json({ error: { code: "unavailable" } }, 502)],
       ["non_string", json({ error: { message: { unsafe: true } } }, 403)],
       ["not_json", { ok: false, status: 503, json: async () => { throw new Error("not JSON"); } }],
+      ["empty_answer", json({ answer: "   " })],
+      ["no_answer", json({ message: "서버 문장" })],
     ];
     for (const [name, response] of errorResponses) {
       chatResponseOverride = response;
       await form.dispatch("submit");
       await sleep(20);
-      outputs.push({ name, output: find(session, "councilSpeechOutput").value });
+      outputs.push({
+        name,
+        notice: text(find(session, "councilSpeechNotice")),
+        noticeHidden: find(session, "councilSpeechNotice").hidden,
+        noticeTone: find(session, "councilSpeechNotice").dataset.tone || "",
+        output: find(session, "councilSpeechOutput").value,
+        resultHidden: find(session, "councilSpeechResult").hidden,
+        saveDisabled: find(session, "councilSpeechSave").disabled,
+        generateDisabled: find(session, "councilSpeechGenerate").disabled,
+      });
     }
     chatResponseOverride = null;
-    return { outputs, pageErrors };
+    // the same line reports a successful generation as success and re-enables saving
+    await form.dispatch("submit");
+    await sleep(20);
+    const success = {
+      notice: text(find(session, "councilSpeechNotice")),
+      noticeHidden: find(session, "councilSpeechNotice").hidden,
+      output: find(session, "councilSpeechOutput").value,
+      saveDisabled: find(session, "councilSpeechSave").disabled,
+    };
+    return { outputs, success, pageErrors };
   },
   async calendar_words() {
     // The #5655 residual case: a meeting text whose user content contains
@@ -1246,6 +1350,242 @@ const SCENARIOS = {
       });
     }
     return { cases, pageErrors };
+  },
+  async storage() {
+    // #A1: one pinned project ("의원3종") is looked up by name, created once
+    // when absent, and shared by all three tools through one promise. A read
+    // that failed is not "there are none", so it never creates.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const getReads = () => requests.filter((r) => r.method === "GET" && r.url === "/api/projects").length;
+    const postCreates = () => requests.filter((r) => r.method === "POST" && r.url === "/api/projects").length;
+    const runOne = async (setup) => {
+      requests.length = 0;
+      storedFiles.length = 0;
+      saveBodies.length = 0;
+      projectRows = [{ id: "p1", name: "의원3종" }];
+      projectCreates = 0;
+      createdProjectId = "p2";
+      projectsReadFails = false;
+      setup();
+      const s = spawnSession();
+      const api = s.ctx.window.PadiemCouncilApps;
+      await api.init();
+      await sleep(40);
+      const form = find(s, "councilSpeechForm");
+      form.querySelector("[name=event]").value = "저장 프로젝트 확인";
+      form.querySelector("[name=date]").value = "2026-11-01";
+      await form.dispatch("submit");
+      await sleep(20);
+      await find(s, "councilSpeechSave").dispatch("click");
+      await sleep(60);
+      return {
+        getReads: getReads(), postCreates: postCreates(),
+        savedTo: requests.filter((r) => r.method === "POST" && /^\/api\/projects\/[^/]+\/files$/.test(r.url))
+          .map((r) => r.url),
+        storedNames: storedFiles.map((f) => f.name),
+        notice: text(find(s, "councilSpeechNotice")),
+      };
+    };
+    const otherFirst = await runOne(() => {
+      projectRows = [{ id: "p0", name: "다른 작업" }, { id: "p1", name: "의원3종" }];
+    });
+    const absent = await runOne(() => { projectRows = []; });
+    const readFails = await runOne(() => { projectsReadFails = true; });
+    // a failed read is retried by the next ensure(), and only then may create
+    const retry = await (async () => {
+      projectsReadFails = false;
+      requests.length = 0;
+      storedFiles.length = 0;
+      projectRows = [];
+      const s = spawnSession();
+      const api = s.ctx.window.PadiemCouncilApps;
+      await api.init();
+      await sleep(40);
+      const form = find(s, "councilSpeechForm");
+      form.querySelector("[name=event]").value = "재시도 저장";
+      form.querySelector("[name=date]").value = "2026-11-01";
+      await form.dispatch("submit");
+      await sleep(20);
+      await find(s, "councilSpeechSave").dispatch("click");
+      await sleep(60);
+      return { postCreates: postCreates(), storedNames: storedFiles.map((f) => f.name) };
+    })();
+    const createBodies = requests.filter((r) => r.method === "POST" && r.url === "/api/projects").length;
+    projectRows = [{ id: "p1", name: "의원3종" }];
+    projectCreates = 0;
+    projectsReadFails = false;
+    return { otherFirst, absent, readFails, retry, createBodies,
+             projectCreates, pageErrors, requests: requests.map((r) => r.method + " " + r.url) };
+  },
+  async conflict() {
+    // #5731: a name already used by the same kind asks the owner — new name
+    // (default) or overwrite; a save failure shows the server's sentence.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    storedFiles.length = 0;
+    requests.length = 0;
+    saveBodies.length = 0;
+    const s = spawnSession();
+    await s.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const form = find(s, "councilSpeechForm");
+    form.querySelector("[name=event]").value = "중복 이름 행사";
+    form.querySelector("[name=date]").value = "2026-11-01";
+    await form.dispatch("submit");
+    await sleep(20);
+    const save = find(s, "councilSpeechSave");
+    await save.dispatch("click");
+    await sleep(40);
+    const firstName = storedFiles.map((f) => f.name);
+
+    // second save: the server answers 409 with the existing file. The click
+    // handler waits for the owner's choice, so the dispatch is not awaited.
+    void save.dispatch("click");
+    await sleep(60);
+    const choice = s.root.querySelectorAll(".council-save-as-new")[0];
+    const choiceLabel = choice ? text(choice) : "";
+    const saveChoiceText = s.root.querySelectorAll(".council-save-choice-text").map((n) => text(n));
+    if (choice) { await choice.dispatch("click"); await sleep(60); }
+    const afterNew = storedFiles.map((f) => f.name);
+
+    // a third save collides again, this time overwrite keeps the id
+    const beforeIds = storedFiles.map((f) => f.id);
+    find(s, "councilSpeechOutput").value = "덮어쓴 본문";
+    void save.dispatch("click");
+    await sleep(60);
+    const overwriteAgain = s.root.querySelectorAll(".council-save-overwrite")[0];
+    if (overwriteAgain) { await overwriteAgain.dispatch("click"); await sleep(60); }
+    const afterOverwrite = storedFiles.map((f) => ({ id: f.id, name: f.name, text: f.text }));
+
+    // a save the server refuses says so on the notice line
+    find(s, "councilSpeechOutput").value = "저장 실패 문구 검증";
+    saveFailureOverride = json({ error: { code: "unavailable", message: "저장소가 잠시 응답하지 않습니다." } }, 503);
+    await save.dispatch("click");
+    await sleep(40);
+    const failureNotice = text(find(s, "councilSpeechNotice"));
+    const failureTone = find(s, "councilSpeechNotice").dataset.tone || "";
+    const failureDisabled = save.disabled;
+
+    return { firstName, choiceLabel, saveChoiceText, afterNew, beforeIds,
+             afterOverwrite, failureNotice, failureTone, failureDisabled,
+             endpoints: endpointSet(), alerts, pageErrors };
+  },
+  async roster() {
+    // #A4: the roster is updated in place (PUT), a photo the roster does not
+    // name never comes back, and a big photo is shrunk before upload.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    storedFiles.length = 0;
+    requests.length = 0;
+    downloads.length = 0;
+    const resizeCalls = [];
+    const shrink = {
+      MAX_EDGE: 1920,
+      resizeDataUrl: async (source, edge, type) => {
+        resizeCalls.push({ edge: edge, type: type });
+        return { dataUrl: "data:image/png;base64,QUJD", resized: true, width: 10, height: 10 };
+      },
+    };
+    const windowState = {
+      Image: function () {},
+      PadiemPhotoResize: shrink,
+    };
+    const A = spawnSession(windowState);
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const formA = find(A, "councilSnsForm");
+    formA.querySelector("[name=event]").value = "로스터 갱신 검증";
+    formA.querySelector("[name=content]").value = "본문";
+    const inputA = find(A, "councilSnsPhotoInput");
+    inputA.files = [
+      { name: "하나.png", type: "image/png", __bytes: "one" },
+      { name: "둘.png", type: "image/png", __bytes: "two" },
+    ];
+    await inputA.dispatch("change");
+    await sleep(80);
+    const rosterPosts = requests.filter((r) => r.method === "POST"
+      && r.headers["Content-Type"] === "application/json").length;
+
+    // reorder → the existing roster is rewritten in place
+    const down = find(A, "councilSnsPhotoList").querySelectorAll(".council-photo-move")[1];
+    await down.dispatch("click");
+    await sleep(60);
+    const rosterWrites = requests.filter((r) => r.url.indexOf("/files/") >= 0 && r.method === "PUT").length;
+    const rosterDeletes = requests.filter((r) => r.method === "DELETE").length;
+    const rosterFiles = storedFiles.filter((f) => f.name === "SNS 사진 구성.json");
+
+    // a stale image the roster never names must not resurface on re-entry
+    const stray = stored("stray.png", "", "image/png", "stray");
+    const B = spawnSession(windowState);
+    await B.ctx.window.PadiemCouncilApps.init();
+    await sleep(80);
+    const namesB = find(B, "councilSnsPhotoList").querySelectorAll(".council-photo-name").map((n) => text(n));
+    const countB = text(find(B, "councilSnsPhotoCount"));
+    return {
+      resizeCalls: resizeCalls.length,
+      uploadTypes: storedFiles.filter((f) => f.media_type.indexOf("image/") === 0)
+        .map((f) => [f.name, f.media_type]),
+      rosterPosts, rosterWrites, rosterDeletes,
+      rosterCount: rosterFiles.length,
+      rosterNames: rosterFiles.length ? JSON.parse(rosterFiles[0].text).photos.map((p) => p.name) : [],
+      strayRestored: namesB.indexOf("stray.png") >= 0 || namesB.indexOf(stray.name) >= 0,
+      namesB, countB,
+      alerts, pageErrors,
+    };
+  },
+  async runtime() {
+    // #A5: Escape inside a field does not close the workspace; the book save's
+    // list scan uses an Array (querySelectorAll returns a NodeList).
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    const s = spawnSession();
+    const api = s.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(30);
+    await s.root.querySelectorAll(".council-card-select")[0].dispatch("click");
+    await sleep(30);
+    const opened = api.state().selected;
+    const textarea = find(s, "councilSpeechForm").querySelector("textarea");
+    await s.ctx.document.dispatch("keydown", { key: "Escape", target: textarea });
+    const afterTypingEscape = api.state().selected;
+    await s.ctx.document.dispatch("keydown", { key: "Escape", target: null });
+    const afterPlainEscape = api.state().selected;
+    return { opened, afterTypingEscape, afterPlainEscape, pageErrors };
+  },
+  async speech_form() {
+    // #B8: the first four fields only, the rest folded; placeholders per field;
+    // the last 직책과 이름 comes back.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    downloads.length = 0;
+    const bag = {};
+    const state = { localStorage: { getItem: (k) => (k in bag ? bag[k] : null),
+                                   setItem: (k, v) => { bag[k] = String(v); } } };
+    const A = spawnSession(state);
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const formA = find(A, "councilSpeechForm");
+    const directlyVisible = ["event", "audience", "author", "length"];
+    const folded = ["date", "place", "nature", "message", "emphasis", "tone", "style"];
+    const fold = formA.querySelector(".council-more");
+    const foldFields = fold ? folded.map((name) => Boolean(fold.querySelector("[name=" + name + "]"))) : [];
+    const placeholders = {};
+    ["event", "audience", "author", "place", "nature", "message", "emphasis"].forEach((name) => {
+      const field = formA.querySelector("[name=" + name + "]");
+      placeholders[name] = field ? field.placeholder : "";
+    });
+    const lengthOptions = formA.querySelector("[name=length]").children.map((o) => text(o));
+    formA.querySelector("[name=author]").value = "지역구 국회의원 김의민";
+    await formA.querySelector("[name=author]").dispatch("change");
+    formA.querySelector("[name=event]").value = "86주년 기념식";
+    formA.querySelector("[name=date]").value = "2026-12-24";
+    await formA.dispatch("submit");
+    await sleep(20);
+    await find(A, "councilSpeechDownload").dispatch("click");
+    await sleep(10);
+
+    const B = spawnSession(state);
+    await B.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const rememberedAuthor = find(B, "councilSpeechForm").querySelector("[name=author]").value;
+    return { directlyVisible, foldedFields: foldFields, foldTag: fold ? fold.tagName : "",
+             placeholders, lengthOptions, rememberedAuthor, downloads, pageErrors };
   },
   async prompt() {
     const builder = String(process.argv[4] || "");

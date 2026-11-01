@@ -14,13 +14,24 @@ JS = (APP_ROOT / "static" / "council-app.js").read_text(encoding="utf-8")
 HTML = (APP_ROOT / "static" / "index.html").read_text(encoding="utf-8")
 
 
-def test_the_selector_offers_the_four_contract_countries():
+def test_the_selector_offers_korean_only():
+    """B10: the visible content-language selector offers Korean only.
+
+    The value authority stays #councilCountry (stored documents and the saved
+    payload read it); English and French are no longer offered in this app's
+    language setting.
+    """
     assert 'id="councilCountry"' in HTML
-    for value in ("kr", "us", "uk", "fr"):
-        assert re.search(rf'<option value="{value}">', HTML), value
+    assert re.search(r'<option value="kr">', HTML)
+    for hidden in ("us", "uk", "fr"):
+        assert not re.search(rf'<option value="{hidden}">', HTML), hidden
+    assert len(re.findall(r'role="radio"[^>]*data-country=', HTML)) == 1
 
 
 def test_korea_is_a_no_op_and_the_other_three_add_an_instruction():
+    # The instruction map stays on the shared contract (a stored or restored
+    # English document must never lose its sentence), even though the page no
+    # longer offers those choices.
     assert 'kr: "",' in JS, "Korea must append nothing"
     for code in ("us", "uk", "fr"):
         assert re.search(rf"\n    {code}: \"", JS), code
@@ -41,7 +52,7 @@ def test_the_instruction_forbids_inventing_people_and_events():
 
 def test_saving_a_document_carries_the_country_only_outside_korea():
     # kr 은 지금과 같은 본문(국가 필드 없음)을 보낸다 — 기존 사용자 요청 불변.
-    assert "currentCountry() === \"kr\" ? {} : { country: currentCountry() }" in JS
+    assert 'if (currentCountry() !== "kr") body.country = currentCountry();' in JS
 
 
 def test_saved_lists_show_only_the_selected_country():

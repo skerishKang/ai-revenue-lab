@@ -83,7 +83,9 @@ def test_the_cinematic_assets_are_the_designs_own_files_and_no_others():
     assert sorted(set(faces)) == ["MaruBuri", "Playfair Display", "Pretendard"], sorted(set(faces))
     assert len(faces) == 7, len(faces)
     names = sorted(p.name for p in (APP_ROOT / "static").iterdir())
-    assert names == ["assets", "council-app.css", "council-app.js", "index.html"], names
+    # B10/A4: the app also ships its own browser photo resizer.
+    assert names == ["assets", "council-app.css", "council-app.js",
+                     "index.html", "photo-resize.js"], names
     staged = sorted(p.name for p in (APP_ROOT / "static" / "assets").rglob("*") if p.is_file())
     assert sum(1 for n in staged if n.endswith(".jpg")) == 7, staged
     assert sum(1 for n in staged if n.endswith(".woff2")) == 7, staged
@@ -105,5 +107,6 @@ def test_the_two_axes_are_user_facing_and_the_design_key_stays_out():
     ramps = re.findall(r'html\[data-country="(kr|us|uk|fr)"\]\s*\{[^}]*--tone-1:', CSS, re.S)
     assert sorted(ramps) == ["fr", "kr", "uk", "us"], f"one ramp block per country: {sorted(ramps)}"
     assert len(re.findall(r'role="radio"[^>]*data-style=', HTML)) == 5, "five style pills"
-    assert len(re.findall(r'role="radio"[^>]*data-country=', HTML)) == 4, "four country pills"
+    # B10: the page offers Korean only; the four ramps remain in the sheet.
+    assert len(re.findall(r'role="radio"[^>]*data-country=', HTML)) == 1, "one language pill"
     assert 'padiem-council-style' in JS and 'padiem-council-country' in JS, "each axis keeps its own key"
