@@ -258,6 +258,69 @@ sys.exit(0 if code == "none" else 1)
     def _fail_health_once(self, service: str) -> None:
         (self.fakes / f"fail_once_{service}").write_text("1\n", encoding="utf-8")
 
+    def _stage_dir(self) -> Path:
+        stage = self.tmp / "src"
+        self.env["PADIEM_COM2_SOURCE_DIR"] = stage.as_posix()
+        return stage
+
+    def _cached_stage(self, sha: str, stage: Path) -> Path:
+        """A mirror that looks finished, so the run trusts it and only checks it."""
+        target = stage / sha
+        (target / "deploy/host-com2").mkdir(parents=True, exist_ok=True)
+        (target / ".padiem-stage-complete").write_text(sha + "\n", encoding="utf-8")
+        return target
+
+
+class SourceStagingTest(DeployHarness):
+    """The 9p permission fix: mirror first, verify, and never install from D:."""
+
+    scenario = "chat"
+
+    def test_stage_only_mirrors_and_touches_no_service(self) -> None:
+        stage = self._stage_dir()
+        result = self._run_main(
+            self.second, "--stage-only",
+            "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        out = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, out)
+        self.assertIn("COM2_DEPLOY_MODE=STAGE_ONLY", out)
+        self.assertIn("COM2_DEPLOY_SUMMARY=stage:PASS", out)
+        self.assertTrue((stage / self.second / "apps/padiem-chat/app/chat_marker.py").exists(), out)
+        self.assertIn("COM2_DEPLOY_READABLE_STAGED_USER", out)
+        self.assertIn("FILES=0 DIRS=0", out)
+        self.assertEqual(self._calls(), [], out)
+
+    def test_unreadable_mirror_stops_before_any_service_is_touched(self) -> None:
+        stage = self._stage_dir()
+        target = self._cached_stage(self.second, stage)
+        broken = target / "deploy/host-com2/broken.py"
+        broken.write_text("x = 1\n", encoding="utf-8")
+        broken.chmod(0o600)
+        result = self._run_main(
+            self.second, "--stage-only",
+            "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        out = result.stdout + result.stderr
+        self.assertNotEqual(result.returncode, 0, out)
+        self.assertIn("COM2_DEPLOY_REASON=SOURCE_PERMISSIONS_STAGED", out)
+        self.assertIn("FILES=1", out)
+        self.assertEqual(self._calls(), [], out)
+
+    def test_installs_read_the_mirror_and_not_the_checkout(self) -> None:
+        # No cached mirror: the run must build it from the commit and install
+        # from that path, so a 0600 checkout can never strand a service.
+        stage = self._stage_dir()
+        result = self._run_apply()
+        out = result.stdout + result.stderr
+        self.assertEqual(result.returncode, 0, out)
+        installs = [line for line in self._calls() if line.startswith("install ")]
+        self.assertTrue(installs, out)
+        self.assertIn(stage.as_posix(), " ".join(installs))
+        self.assertNotIn(self.ops.as_posix(), " ".join(installs))
+
 
 class ChatScenarioTest(DeployHarness):
     scenario = "chat"
@@ -286,7 +349,11 @@ class ChatScenarioTest(DeployHarness):
         calls = self._calls()
         installs = [line for line in calls if line.startswith("install chat")]
         self.assertEqual(len(installs), 1, calls)
-        self.assertIn(f"--source-root {self.ops.as_posix()}", installs[0])
+        # The installer reads the Linux-side mirror of this commit, never the
+        # checkout: on 9p a 0644 file can still be unreadable for the service.
+        stage = self.previous.parent / "src" / self.second
+        self.assertEqual(installs[0], f"install chat --apply --source-root {stage.as_posix()}")
+        self.assertTrue((stage / "apps/padiem-chat/app/chat_marker.py").is_file())
         self.assertFalse([line for line in calls if line.startswith("install p01")])
         self.assertFalse([line for line in calls if line.startswith("install b14")])
         self.assertIn("systemctl stop padiem-chat-com2.service", calls)
@@ -336,11 +403,24 @@ class ChatScenarioTest(DeployHarness):
     def test_ai_401_required_rolls_back(self) -> None:
         self.env["FAKE_AI_CODE"] = "qa_login_refused"
         self.env["FAKE_AI_MODE"] = "required"
+        self.env["B66_CGI_ALPHA_USERNAME"] = "qa-fixture"
+        self.env["B66_CGI_ALPHA_PASSWORD"] = "qa-fixture"
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn("chat:ROLLBACK", result.stdout)
         self.assertIn("ai:FAIL error_code=qa_login_refused", result.stdout)
         self.assertEqual(len([x for x in self._calls() if x.startswith("install chat")]), 2)
+
+    def test_missing_required_credentials_stop_before_service_changes(self) -> None:
+        self.env["FAKE_AI_MODE"] = "required"
+        self.env["B66_CGI_ALPHA_USERNAME"] = ""
+        self.env["B66_CGI_ALPHA_PASSWORD"] = ""
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertIn("AI_CHECK_REQUIRED_CREDENTIALS_MISSING", result.stderr)
+        self.assertIn("RERUN_WITH_CREDENTIALS_OR_EXPLICIT_WARN", result.stderr)
+        self.assertEqual(self._head(), self.first)
+        self.assertEqual(self._calls(), [])
 
     def test_ai_pass_has_no_error_code(self) -> None:
         result = self._run_apply()

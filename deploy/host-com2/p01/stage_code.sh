@@ -33,6 +33,7 @@ find "$release" -type f -exec chmod a+r,go-w {} +
 [[ -f "$release/asgi.py" ]] || fail ASGI_ENTRY_MISSING
 # Snapshot a previous real directory OR symlink target, so rollback is not tied
 # to a checkout that may itself be updated after this installation.
+backup=''
 if [[ -e "$root/app" || -L "$root/app" ]]; then
   [[ -d "$root/app" ]] || fail PREVIOUS_APP_INVALID
   backup=$(mktemp -d "$root/rollback/p01.XXXXXXXX")
@@ -69,6 +70,11 @@ def ignore_cycles(directory, names):
 
 shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True, ignore=ignore_cycles)
 PY
+  # The snapshot is the only way back; it was copied from a tree that can carry
+  # 0600 files, so give the rollback the same guarantee the release has.
+  find "$backup" -type d -exec chmod a+rx,go-w {} +
+  find "$backup" -type f -exec chmod a+r,go-w {} +
+  if [[ $EUID -eq 0 ]]; then chown -R root:root "$backup"; fi
 fi
 next="$root/.app-next-$$"
 ln -s "$release" "$next"
