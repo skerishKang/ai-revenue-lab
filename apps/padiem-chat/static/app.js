@@ -974,6 +974,7 @@
     projectsList.replaceChildren();
     projectsSection.hidden = true;
     projectsEmpty.hidden = true;
+    setProjectsListNote("");
     if (projectsNavButton) {
       projectsNavButton.disabled = true;
       projectsNavButton.setAttribute("aria-disabled", "true");
@@ -1071,6 +1072,16 @@
     }
     if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
   }
+  // #6645: a stale cursor used to report through the composer note, which the
+  // glass desktop frame hides (display: none). The notice belongs next to the
+  // list it is about, so it is always painted.
+  function setProjectsListNote(text) {
+    const note = document.getElementById("projectsListNote");
+    if (!note) return;
+    const copy = typeof text === "string" ? text : "";
+    note.textContent = copy;
+    note.hidden = !copy;
+  }
   async function loadMoreProjects() {
     if (!projectsNextCursor || projectsLoadingMore || !authState.authenticated) return false;
     const epoch = authViewEpoch;
@@ -1088,7 +1099,7 @@
         // drop it and show what is already on screen with a plain Korean notice.
         if (response.status === 400) {
           projectsNextCursor = null;
-          setNote(uiT("projects-more-stale"));
+          setProjectsListNote(uiT("projects-more-stale"));
         }
         return false;
       }
@@ -1097,6 +1108,7 @@
         && typeof item.name === "string" && !seen.has(item.id));
       projects = projects.concat(fresh);
       projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
+      setProjectsListNote("");
       return true;
     } catch (_) {
       return false;
