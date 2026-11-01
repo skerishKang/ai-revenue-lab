@@ -110,6 +110,9 @@ _DRIVE_ROOT_SHAPE = re.compile(r"([A-Za-z]:)(?:/(?P<rest>.*))?\Z")
 # Stream-local presentation only: never authorizes tools or refreshes Core idle.
 _PC_PROGRESS_SINK: ContextVar[Any] = ContextVar("pc_progress_sink", default=None)
 _PC_CALL_PROGRESS: ContextVar[Any] = ContextVar("pc_call_progress", default=None)
+# Request-local marker: once a mutation dispatch has been attempted, losing its
+# reply means "not verified", never an inferred success or an automatic retry.
+_PC_ACTION_ATTEMPT: ContextVar[Any] = ContextVar("pc_action_attempt", default=None)
 
 
 def _pc_progress_emitter(owner, dispatch_id, kind):
@@ -262,22 +265,44 @@ def _pc_refusal(stage):
 
 
 def _pc_observing_handler(handler, *, tool_id, unexpected_stage="pc_files_internal_error"):
+    def unverified_mutation():
+        attempt = _PC_ACTION_ATTEMPT.get()
+        if not isinstance(attempt, dict):
+            return None
+        from app.pc_action_verification import mutation_observation, unavailable_action
+
+        verification = unavailable_action(**attempt)
+        emit = _PC_CALL_PROGRESS.get()
+        if emit is not None:
+            emit("result")
+        return mutation_observation(verification=verification)
+
     async def observed(arguments):
         token = _PC_CALL_PROGRESS.set(None)
+        action_token = _PC_ACTION_ATTEMPT.set(None)
         try:
             print("pc_tool_invoke tool=%s args_present=%s" % (
                 tool_id, arguments is not None), flush=True)
             return await handler(arguments)
         except ToolHandlerError as exc:
+            unverified = unverified_mutation()
+            if unverified is not None:
+                print("pc_files_chat_call mode=verification stage=check_unavailable", flush=True)
+                return unverified
             print("pc_files_chat_call mode=refusal stage=%s" % exc.code, flush=True)
             return _pc_refusal(exc.code)
         except Exception as exc:
+            unverified = unverified_mutation()
+            if unverified is not None:
+                print("pc_files_chat_call mode=verification stage=check_unavailable", flush=True)
+                return unverified
             # A handler bug is a refused observation, not an abandoned PC turn.
             # Cancellation still propagates; never log arguments or exception text.
             print("pc_files_chat_call mode=refusal stage=%s reason=%s" % (
                 unexpected_stage, type(exc).__name__), flush=True)
             return _pc_refusal(unexpected_stage)
         finally:
+            _PC_ACTION_ATTEMPT.reset(action_token)
             _PC_CALL_PROGRESS.reset(token)
     return observed
 
@@ -576,6 +601,9 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
             identity = (identity + "\n" + hashlib.sha256(
                 extra["content"].encode("utf-8")).hexdigest())
         tool_call_ref = _pc_file_call_ref(owner[1], tool_id, identity)
+        if op in ("write", "move", "delete"):
+            _PC_ACTION_ATTEMPT.set({"operation": op, "path": path,
+                                    "destination": extra.get("destination")})
         dispatched = await _signed_files_call(
             service=service, request_factory=request_factory, secret=secret,
             owner=owner, mode="dispatch",
@@ -659,23 +687,21 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                 # Owner-approved presentation: received means PC processing
                 # in flight, not independently verified OS process creation.
                 emit_progress("executing")
-            if row.get("state") == "failed" and op in ("write", "move", "delete"):
-                # The refusal reason lives in the account line the command
-                # printed, so a backup that failed is answered as such instead of
-                # as an anonymous execution failure.
-                try:
-                    _pc_write_account((await _final_result())["output"])
-                except ToolHandlerError:
-                    raise
-                except Exception:
-                    raise ToolHandlerError(
-                        "pc_files_execution_failed",
-                        "PC executor reported failure",
-                    ) from None
-                raise ToolHandlerError(
-                    "pc_files_execution_failed",
-                    "PC executor reported failure",
+            if row.get("state") in ("done", "failed") and op in ("write", "move", "delete"):
+                from app.pc_action_verification import mutation_observation, verify_pc_action
+
+                final = await _final_result()
+                account = _pc_write_result(final["output"])
+                verification = verify_pc_action(
+                    operation=op, path=path, extra=extra, account=account,
+                    state=row["state"], termination=final.get("termination"),
+                    exit_code=final.get("exit_code"),
                 )
+                # The postcondition result is tool data even when it failed.
+                # The common driver sees it before producing the final answer.
+                emit_progress("result")
+                return mutation_observation(verification=verification, account=account,
+                                            final=final, dispatch_id=dispatch_id)
             if row.get("state") == "failed":
                 if op == "read":
                     # A failed read keeps its verified marker body in the same
@@ -748,17 +774,6 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                             "pc_files_output_missing",
                             "Verified PC outcome is incomplete",
                         )
-                if op in ("write", "move", "delete"):
-                    account = _pc_write_account(output)
-                    # The account is what the record and the rollback depend on:
-                    # where the change landed and where the original now lives.
-                    output = json.dumps({
-                        "ok": True,
-                        "op": op,
-                        "target": account.get("target"),
-                        "backup": account.get("backup"),
-                        "bytes": account.get("bytes"),
-                    }, ensure_ascii=False, separators=(",", ":"))
                 common = {
                     "dispatch_id": dispatch_id,
                     "output": output,
@@ -945,10 +960,12 @@ class ActionGuardedPCQueryStepDriver(StructuredPCQueryStepDriver):
         self._action_harness = PcActionHarness(records)
 
     def _decision(self, decision, observations):
+        from app.pc_action_result_answer import append_pc_action_facts
+
         selected = super()._decision(decision, observations)
         invocation = selected.invocation
         if invocation is None:
-            return selected
+            return AgentStepDecision.complete(append_pc_action_facts(selected.answer, observations))
         harness = getattr(self, "_action_harness", None)
         if harness is None:
             # Missing provenance never treats flattened model context as a
@@ -958,7 +975,7 @@ class ActionGuardedPCQueryStepDriver(StructuredPCQueryStepDriver):
         question = harness.question(
             invocation.tool_id, invocation.arguments, observations=observations,
         )
-        return AgentStepDecision.complete(question) if question else selected
+        return AgentStepDecision.complete(append_pc_action_facts(question, observations)) if question else selected
 
 
 def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_type=None,
