@@ -376,6 +376,8 @@ def build_app():
 
     queue_client = build_queue_client(_queue_env())
     if queue_client is not None:
+        # #6617: the queue client is pooled for the life of the host.
+        app.router.on_shutdown.append(queue_client.aclose)
         # The same three replacements worker.py performs when its env selects
         # the queue. Production still defaults to D1; only a deployment that
         # explicitly sets PC_QUEUE_BACKEND=com2 takes this path.

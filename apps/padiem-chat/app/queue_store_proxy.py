@@ -14,6 +14,8 @@ Three shapes are exposed:
 """
 from __future__ import annotations
 
+import asyncio
+import contextlib
 from datetime import date, datetime
 import json
 import base64
@@ -189,6 +191,37 @@ class QueueStoreClient:
         # without an httpx transport implementation.
         self._client_factory = client_factory
         self._timeout = timeout_seconds
+        # #6617: the queue lane used to build one client per call, so every
+        # queue call also paid a TCP+TLS handshake (the same shape #6614 fixed
+        # for the identity lane). One client per event loop is kept instead: a
+        # cron tick runs its own loop, so the client is keyed by loop rather
+        # than cached globally. An injected factory keeps its per-call shape.
+        self._clients: dict[int, tuple[asyncio.AbstractEventLoop, Any]] = {}
+
+    def _loop_client(self) -> Any:
+        """The pooled queue client for the running event loop."""
+        loop = asyncio.get_running_loop()
+        loop_key = id(loop)
+        # id(loop) is reused once a finished loop is collected: drop clients of
+        # closed loops and check the owner, so a later loop never gets a client
+        # bound to a dead loop (and entries do not pile up per cron tick).
+        for key in [k for k, (owner, _) in self._clients.items() if owner.is_closed()]:
+            del self._clients[key]
+        entry = self._clients.get(loop_key)
+        client = entry[1] if entry is not None and entry[0] is loop else None
+        if client is None:
+            client = httpx.AsyncClient(
+                timeout=httpx.Timeout(self._timeout, connect=3.0),
+                follow_redirects=False,
+            )
+            self._clients[loop_key] = (loop, client)
+        return client
+
+    async def aclose(self) -> None:
+        """Close every pooled queue client (host shutdown)."""
+        clients, self._clients = self._clients, {}
+        for _owner, client in clients.values():
+            await client.aclose()
 
     @timed_async('queue')
     async def call(self, method: str, **arguments: Any) -> Any:
@@ -230,8 +263,17 @@ class QueueStoreClient:
                 safe_method, stage, status, outcome, reason,
                 int((time.perf_counter() - started) * 1000), exception, transport_phase, trace_run or "none", trace_dispatch or "none")
 
+        @contextlib.asynccontextmanager
+        async def client_scope():
+            """Only the client source changes; the call below is untouched."""
+            if self._client_factory is not None:
+                async with factory(**client_options) as injected_client:
+                    yield injected_client
+                return
+            yield self._loop_client()
+
         try:
-            async with factory(**client_options) as client:
+            async with client_scope() as client:
                 # Workers compat exposes stream(), not post(); its Response
                 # exposes aiter_bytes(), not json()/aread()/content. Real httpx
                 # supports this same streaming interface and closes on exit.
