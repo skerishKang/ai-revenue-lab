@@ -20,6 +20,7 @@ import os
 from pathlib import Path
 import tempfile
 from typing import Any
+from urllib.parse import quote
 
 __all__ = ["LocalDiskR2", "LocalR2Object", "put_stream"]
 
@@ -72,7 +73,6 @@ class LocalDiskR2:
             or not key
             or key.startswith("/")
             or "\\" in key
-            or ":" in key
         ):
             raise ValueError("R2 key must be a plain relative object path")
         segments = key.split("/")
@@ -80,7 +80,13 @@ class LocalDiskR2:
             raise ValueError("R2 key must not traverse outside the bucket root")
         if any(any(ord(ch) < 32 for ch in segment) for segment in segments):
             raise ValueError("R2 key must not contain control characters")
-        path = self._root.joinpath(*segments).resolve()
+        # Object keys legitimately carry workspace ids like "owner:usr_...".
+        # Windows cannot name a file with ':' and reads a bare "C:" segment as a
+        # drive, so each segment is percent-encoded for the filesystem while the
+        # logical key stays exactly what the caller passed. Plain ids (letters,
+        # digits, '_', '-', '.') encode to themselves, so objects already on
+        # disk keep their path; a key that used to be refused was never written.
+        path = self._root.joinpath(*(quote(segment, safe="") for segment in segments)).resolve()
         if not path.is_relative_to(self._root):
             raise ValueError("R2 key escaped the bucket root")
         return path

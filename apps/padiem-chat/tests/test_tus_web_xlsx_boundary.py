@@ -182,3 +182,30 @@ def test_streaming_a_200mb_file_keeps_the_process_memory_flat(tmp_path):
     assert bucket.get("a/b/big").size == 200 * 1024 * 1024
     # Bounded blocks: a whole-file buffer would show ~200 MiB here.
     assert peak < 32 * 1024 * 1024, peak
+
+
+def test_disk_store_keeps_colon_workspace_ids_inside_the_bucket(tmp_path):
+    """#6579 — `owner:usr_...` 워크스페이스 ID가 든 키도 저장된다.
+
+    Windows는 ':'가 든 파일 이름을 만들 수 없다. 어댑터가 키 조각을 퍼센트
+    인코딩해 두 OS 모두에서 같은 객체를 만들지 않으면, 웹 XLSX·채팅 첨부 저장이
+    실제 라우트에서 503으로 닫힌다(측정 중 실제로 재현됨). 경로 탈출 검사는
+    그대로다.
+    """
+    import io
+    import pytest
+    from app.local_r2 import LocalDiskR2
+
+    store = LocalDiskR2(tmp_path / "bucket")
+    key = "workspaces/owner:usr_a/claw/web-office/doc_1/x.xlsx"
+    store.put(key, b"body")
+    assert store.get(key).body == b"body"
+    assert store.get(key).size == 4
+    store.put_stream(key + ".2", io.BytesIO(b"streamed"))
+    assert store.get(key + ".2").body == b"streamed"
+    # 저장된 이름은 OS 공통 안전 문자지만 논리 키는 그대로다.
+    assert all(":" not in entry.name for entry in (tmp_path / "bucket").rglob("*"))
+
+    for bad in ("../escape", "/abs", "a/../../b", "a\b"):
+        with pytest.raises(ValueError):
+            store.put(bad, b"x")
