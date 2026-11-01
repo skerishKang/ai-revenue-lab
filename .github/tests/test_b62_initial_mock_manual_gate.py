@@ -87,11 +87,19 @@ class InitialMockRequiresManualConsent(unittest.TestCase):
         if os.name == "nt":
             # Windows System32/bash.exe is WSL, not Git Bash; it may hang
             # or reinterpret the process environment. Pin the installed
-            # Git Bash next to the exact git executable instead.
+            # Git Bash next to the exact git executable instead. The git.exe
+            # that PATH exposes can live in cmd/, mingw64/bin or usr/bin, so
+            # walk up to the Git root and accept either bash location.
             git = shutil.which("git")
             self.assertIsNotNone(git, "git.exe is required for the Windows runner")
-            bash_path = Path(git).resolve().parent.parent / "bin" / "bash.exe"
-            self.assertTrue(bash_path.is_file(), f"Git Bash unavailable: {bash_path}")
+            git_root = Path(git).resolve()
+            while git_root.name and not (git_root / "cmd" / "git.exe").is_file():
+                if git_root.parent == git_root:
+                    break
+                git_root = git_root.parent
+            candidates = [git_root / "bin" / "bash.exe", git_root / "usr" / "bin" / "bash.exe"]
+            bash_path = next((c for c in candidates if c.is_file()), None)
+            self.assertIsNotNone(bash_path, f"Git Bash unavailable: {candidates}")
             bash = str(bash_path)
         else:
             bash = shutil.which("bash")

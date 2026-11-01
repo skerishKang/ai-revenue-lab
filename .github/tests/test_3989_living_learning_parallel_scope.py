@@ -79,11 +79,20 @@ class ParallelSuiteContract(unittest.TestCase):
             for ll_code, core_code in ((0, 0), (2, 0), (0, 3), (4, 5)):
                 with self.subTest(ll=ll_code, core=core_code):
                     env = dict(os.environ,
-                               PATH=str(bin_dir) + os.pathsep + os.environ.get("PATH", ""),
                                FAKE_LL_EXIT=str(ll_code), FAKE_CORE_EXIT=str(core_code))
+                    # The fake pytest must win command lookup inside MSYS bash:
+                    # resolve the bin dir natively in bash, grant the exec bit
+                    # with bash's own chmod, then prepend it to PATH. A Python
+                    # chmod and a drive-letter PATH entry do neither on Windows.
                     result = subprocess.run(
-                        ["bash", str(p / ".github/scripts/living_learning_core_parallel_3989.sh")],
-                        env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                        ["bash", "-c",
+                         'FAKE_BIN="$(cd "$FAKE_BIN_DIR" && pwd)" || exit 9\n'
+                         'chmod +x "$FAKE_BIN/pytest" 2>/dev/null || true\n'
+                         'export PATH="$FAKE_BIN:$PATH"\n'
+                         'bash "$WRAPPER"'],
+                        env={**env, "FAKE_BIN_DIR": str(p / "bin"),
+                             "WRAPPER": str(p / ".github/scripts/living_learning_core_parallel_3989.sh")},
+                        text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                         timeout=15, check=False,
                     )
                     self.assertIn("FAKE_LIVING_LEARNING_EXECUTED", result.stdout)

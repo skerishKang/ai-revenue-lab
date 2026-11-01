@@ -4,7 +4,9 @@ import copy
 import importlib.util
 import json
 import os
+import shutil
 import subprocess
+import sys
 import textwrap
 from contextlib import redirect_stdout
 from io import StringIO
@@ -594,6 +596,26 @@ def test_postpatch_source_reason_is_finite_without_exposing_secret():
     assert "SECRET_VALUES_EMITTED=0" in result
 
 
+def _git_bash() -> str:
+    """Git Bash, not the System32 WSL bash: `bash` on PATH can be either, and
+    the stub PATH magic below only holds under MSYS bash."""
+    if os.name != "nt":
+        bash = shutil.which("bash")
+        assert bash, "bash is required on the Linux runner"
+        return bash
+    git = shutil.which("git")
+    assert git, "git.exe is required for the Windows runner"
+    git_root = Path(git).resolve()
+    while git_root.name and not (git_root / "cmd" / "git.exe").is_file():
+        if git_root.parent == git_root:
+            break
+        git_root = git_root.parent
+    for candidate in (git_root / "usr" / "bin" / "bash.exe", git_root / "bin" / "bash.exe"):
+        if candidate.is_file():
+            return str(candidate)
+    raise AssertionError(f"Git Bash unavailable under {git_root}")
+
+
 def _rollback_patch_step_script() -> str:
     # Run the exact workflow step in an isolated shell with a fake curl
     # executable. This is intentionally NOT a production Cloudflare request.
@@ -610,9 +632,11 @@ def _exercise_mocked_rollback_response(response_kind: str):
         (root / "bin").mkdir()
         snapshot = root / "safe-snapshot.json"
         snapshot.write_text(json.dumps({"success": True, "result": {"bindings": []}}))
-        mock = root / "bin" / "curl"
-        mock.write_text(textwrap.dedent("""\
-            #!/usr/bin/env python3
+        # The fake curl is a bash stub that execs this suite's real Python: a
+        # `#!/usr/bin/env python3` shebang would resolve to the Microsoft Store
+        # alias stub on a Windows host (exit 49, nothing written).
+        pybody = root / "bin" / "curl_stub.py"
+        pybody.write_text(textwrap.dedent("""\
             import json
             import os
             import pathlib
@@ -636,12 +660,18 @@ def _exercise_mocked_rollback_response(response_kind: str):
             else:
                 output.write_text(json.dumps({"success": True, "result": {"bindings": []}}))
             sys.stdout.write("200")
-            """))
+            """), encoding="utf-8")
+        mock = root / "bin" / "curl"
+        interpreter = str(sys.executable).replace("\\", "/")
+        mock.write_text(
+            "#!/usr/bin/env bash\nexec \"%s\" \"%s\" \"$@\"\n"
+            % (interpreter, str(pybody).replace("\\", "/")),
+            encoding="utf-8")
         mock.chmod(0o755)
         trace = root / "curl-trace.log"
         env = dict(os.environ)
         env.update({
-            "PATH": str(root / "bin") + os.pathsep + env["PATH"],
+            "STUB_DIR": str(root / "bin"),
             "RUNNER_TEMP": str(root),
             "CLOUDFLARE_ACCOUNT_ID": "mock-account",
             "CLOUDFLARE_API_TOKEN": "fake-inert-test-token",
@@ -652,7 +682,13 @@ def _exercise_mocked_rollback_response(response_kind: str):
             "FAKE_PRIVATE": PRIVATE,
         })
         result = subprocess.run(
-            ["bash", "-c", _rollback_patch_step_script()],
+            [shutil.which("bash") and _git_bash() or _git_bash(), "-c",
+             # The stub dir must reach the shell in a form MSYS bash can use for
+             # command lookup: resolve it inside bash, grant the exec bit with
+             # MSYS's own chmod, then prepend it to PATH before the step runs.
+             'STUB_BIN="$(cd "$STUB_DIR" && pwd)" || exit 9\n'
+             'chmod +x "$STUB_BIN/curl" 2>/dev/null || true\n'
+             'export PATH="$STUB_BIN:$PATH"\n' + _rollback_patch_step_script()],
             env=env, capture_output=True, text=True, check=False)
         return result, trace.read_text().splitlines()
 

@@ -381,13 +381,21 @@ class ParallelB62JobsContract(unittest.TestCase):
             )
             fake_uv.chmod(0o755)
             env = os.environ.copy()
-            env["PATH"] = str(tmp) + os.pathsep + env.get("PATH", "")
             env["B62_TEST_MARKER"] = str(marker)
             env["B62_CI_IMPACT_SCOPE"] = scope
             env["B62_FAIL_TARGET"] = fail_target
             env["TMPDIR"] = str(tmp)
+            env["FAKE_UV_DIR"] = str(tmp)
+            # The fake uv must win command lookup inside MSYS bash: resolve the
+            # dir natively in bash, grant the exec bit with bash's own chmod,
+            # then prepend it to PATH. A Python chmod and a drive-letter PATH
+            # entry do neither on Windows.
             result = subprocess.run(
-                ["bash", str(script)],
+                ["bash", "-c",
+                 'FAKE_BIN="$(cd "$FAKE_UV_DIR" && pwd)" || exit 9\n'
+                 'chmod +x "$FAKE_BIN/uv" 2>/dev/null || true\n'
+                 'export PATH="$FAKE_BIN:$PATH"\n'
+                 'bash "$OVERLAP_SCRIPT"'],
                 capture_output=True, text=True,
                 env=env, timeout=15, check=False,
             )
