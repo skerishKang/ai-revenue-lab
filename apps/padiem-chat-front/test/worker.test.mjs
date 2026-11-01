@@ -269,3 +269,32 @@ test("static assets stay on Cloudflare and dynamic requests use real signing", a
   assert.match(fetchImpl.calls[0].headers.get("x-padiem-edge-proof"), /^v1=[0-9a-f]{64}$/);
   assert.notEqual(fetchImpl.calls[0].headers.get("x-padiem-edge-proof"), "forged");
 });
+
+test("front vars match the verified non-secret production contract", () => {
+  // Snapshot of production version b45fb8f5-7cad-4c0c-9a3b-ef5ae55e18cf,
+  // verified 2026-11-01. Secrets are deliberately excluded.
+  const expected = {
+    FRONT_ORIGIN: "https://chat-com2.padiem.net",
+    FALLBACK_MODE: "static",
+    COM2_CANONICAL: "writes",
+    HEALTH_TTL_MS: "10000",
+    UPSTREAM_TIMEOUT_MS: "8000",
+  };
+  const config = readFileSync(join(HERE, "..", "wrangler.toml"), "utf8");
+  const sections = config.split(/^\[vars\]\s*$/m);
+  assert.equal(sections.length, 2, "wrangler.toml must declare exactly one [vars]");
+  const varsText = sections[1].split(/^\[/m)[0];
+  const configured = {};
+  for (const line of varsText.split(/\r?\n/)) {
+    if (!line.trim() || line.trimStart().startsWith("#")) continue;
+    const match = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*("(?:[^"\\]|\\.)*")\s*(?:#.*)?$/);
+    assert.ok(match, "invalid or unsupported [vars] line: " + line);
+    assert.equal(Object.hasOwn(configured, match[1]), false, "duplicate variable " + match[1]);
+    configured[match[1]] = JSON.parse(match[2]);
+  }
+  assert.deepEqual(configured, expected);
+  // Supply the current non-secret live vars as JSON for an actual live comparison.
+  if (process.env.PADIEM_FRONT_LIVE_VARS_JSON) {
+    assert.deepEqual(configured, JSON.parse(process.env.PADIEM_FRONT_LIVE_VARS_JSON));
+  }
+});
