@@ -6876,14 +6876,14 @@
         if (!memory || typeof memory.memory_id !== "string") return;
         clawApprovedList?.appendChild(renderApprovedMemoryCard(memory));
       });
-      // #5882: 서버가 다음 위치를 주면 목록 끝에 "더 보기" — 커서는 버튼에 보관한다.
+      // #5882: when the server returns a next cursor, append "load more" and keep the cursor on the button.
       if (clawApprovedList && typeof data.next_cursor === "string" && data.next_cursor) {
         const more = document.createElement("button");
         more.type = "button";
         more.className = "recent-item memory-more";
         more.id = "clawApprovedMore";
         more.dataset.cursor = data.next_cursor;
-        more.textContent = "더 보기";
+        more.textContent = uiT("projects-more");
         more.addEventListener("click", () => { void loadMoreApprovedMemories(more.dataset.cursor); });
         clawApprovedList.appendChild(more);
       }
@@ -6915,9 +6915,9 @@
       );
       const data = await response.json().catch(() => null);
       if (response.status === 400) {
-        // 만료·위조 커서: 더 시도하지 않고 버튼을 지운 뒤 안내한다.
+        // Expired or forged cursor: stop, remove the button and show a notice.
         if (more) more.remove();
-        setApprovedMemoryStatus("목록을 이어 볼 수 없어요. 목록을 다시 열어 주세요.", "error");
+        setApprovedMemoryStatus(uiT("projects-more-stale"), "error");
         return;
       }
       if (!response.ok || !data || !Array.isArray(data.memories)) return;
