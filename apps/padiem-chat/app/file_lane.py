@@ -272,6 +272,9 @@ def failure(code, message, status):
 
 
 async def file_capabilities(request):
+    from .attachments import max_attachments_per_message
+
     ready = bool(await owner(request)) and request.app.state.file_lane_client.ready
-    return JSONResponse({"ready": ready, "auto_bytes": 10_000_000, "formats": list(KINDS)},
+    return JSONResponse({"ready": ready, "auto_bytes": 10_000_000, "formats": list(KINDS),
+                        "max_per_message": max_attachments_per_message()},
                         headers={"Cache-Control": "no-store"})

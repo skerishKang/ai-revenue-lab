@@ -40,6 +40,9 @@
   // formats whose configured file lane has not yet been confirmed.
   let binaryEnabled = false;
   let fileLaneEnabled = false;
+  // #261102: the server stays the authority for the per-message attachment
+  // count; this cached copy only lets the picker pre-cap the selection.
+  let maxPerMessage = null;
 
   function activeDocuments() {
     return binaryEnabled || fileLaneEnabled ? allDocuments : textDocuments;
@@ -98,6 +101,8 @@
     },
     get fileLaneSupported() { return fileLaneEnabled; },
     setFileLaneSupport(value) { fileLaneEnabled = value === true; },
+    get maxPerMessage() { return maxPerMessage; },
+    setMaxPerMessage(value) { maxPerMessage = Number.isSafeInteger(Number(value)) && Number(value) >= 1 ? Number(value) : null; },
     setBinarySupport(value) {
       binaryEnabled = value !== false;
     },
