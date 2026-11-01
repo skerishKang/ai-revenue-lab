@@ -41,12 +41,10 @@ def run(request: object, *, session: PcBrowserSession | None = None) -> dict[str
     active = session or PcBrowserSession()
     try:
         if tool_id == "claw.pc.browser_read_output":
-            data = validate_arguments(BROWSER_OPEN_TOOL_ID, {})
-            del data
+            if not isinstance(arguments, dict) or set(arguments) != {"handle", "offset", "length"}:
+                return _refused("browser_action_unsupported")
             return {"ok": "true", "result": read_stored(
-                str(arguments.get("handle", "")),
-                int(arguments.get("offset", 0)),
-                int(arguments.get("length", 0)),
+                arguments["handle"], arguments["offset"], arguments["length"],
             )}
         data = validate_arguments(str(tool_id), arguments)
         # #3782: every browser step is its own console process, so a read, a
@@ -71,6 +69,7 @@ def run(request: object, *, session: PcBrowserSession | None = None) -> dict[str
                 role=data.get("role"),
                 name=data.get("name"),
                 value=data.get("value"),
+                confirmation=request.get("confirmation"),
             )
         else:
             return _refused("browser_action_unsupported")

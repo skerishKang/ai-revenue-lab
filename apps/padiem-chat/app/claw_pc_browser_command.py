@@ -90,7 +90,7 @@ def browser_arguments(op: Any, arguments: Any) -> dict[str, str]:
     unknown key is refused rather than dropped, so a cookie or a script cannot
     be smuggled beside a real argument.
     """
-    if op not in _OP_KEYS:
+    if not isinstance(op, str) or op not in _OP_KEYS:
         raise PcBrowserCommandError("browser_action_unsupported", "Unknown browser op")
     if arguments is None:
         data: dict[str, Any] = {}
@@ -102,7 +102,7 @@ def browser_arguments(op: Any, arguments: Any) -> dict[str, str]:
         # `browser_act` names a subset: a click needs no value, a type does.
         if not (op == "browser_act" and set(data) <= _OP_KEYS[op]):
             raise PcBrowserCommandError("browser_action_unsupported", "Browser arguments are invalid")
-    for key, value in data.items():
+    for key, value in list(data.items()):
         if value is None:
             data.pop(key)
             continue
@@ -126,14 +126,15 @@ def browser_arguments(op: Any, arguments: Any) -> dict[str, str]:
     return {key: value for key, value in data.items() if isinstance(value, str)}
 
 
-def browser_envelope(op: str, *, page_url: str | None, arguments: dict[str, str] | None = None) -> dict[str, Any]:
+def browser_envelope(op: str, *, page_url: str | None, arguments: dict[str, str] | None = None,
+                     confirmation: dict[str, str] | None = None) -> dict[str, Any]:
     """The one JSON document the PC child reads.
 
     ``page_url`` is server-derived, never model text: the Engine remembers the
     page its own ``browser_open`` returned, so a read, a capture or an act lands
     on that page even though every step is its own console process.
     """
-    if op not in PC_BROWSER_OPS:
+    if not isinstance(op, str) or op not in PC_BROWSER_OPS:
         raise PcBrowserCommandError("browser_action_unsupported", "Unknown browser op")
     data = browser_arguments(op, arguments)
     envelope: dict[str, Any] = {"tool_id": "claw.pc." + op, "arguments": data}
@@ -146,20 +147,36 @@ def browser_envelope(op: str, *, page_url: str | None, arguments: dict[str, str]
                 "browser_not_running", "No page is open on this PC yet",
             )
         envelope["url"] = _public_url(page_url)
+    if confirmation is not None:
+        confirmation_keys = {"action", "target", "url"}
+        if data.get("action") == "type":
+            confirmation_keys.add("value")
+        if (op != "browser_act" or not isinstance(confirmation, dict)
+                or set(confirmation) != confirmation_keys
+                or any(not isinstance(value, str) or not value or len(value) > PC_BROWSER_MAX_ARGUMENT_CHARS
+                       for value in confirmation.values())
+                or confirmation["action"] != data.get("action")
+                or data.get("action") == "type" and confirmation["value"] != data.get("value")
+                or _public_url(confirmation["url"]) != envelope["url"]):
+            raise PcBrowserCommandError("browser_confirmation_invalid", "Browser confirmation is invalid")
+        envelope["confirmation"] = dict(confirmation)
     return envelope
 
 
 def pc_browser_command(op: str, *, page_url: str | None = None,
-                       arguments: dict[str, str] | None = None) -> str:
+                       arguments: dict[str, str] | None = None,
+                       confirmation: dict[str, str] | None = None) -> str:
     """Build the one-line browser step for the paired PC.
 
     The shape mirrors the review-parser step already proven on these machines:
     find the interpreter, feed it one JSON document on stdin, keep the child's
     own answer. The request rides as base64 so no quoting rule can alter it.
     """
-    envelope = browser_envelope(op, page_url=page_url, arguments=arguments)
+    envelope = browser_envelope(op, page_url=page_url, arguments=arguments, confirmation=confirmation)
     encoded = base64.b64encode(
-        json.dumps(envelope, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8"),
+        # PowerShell 5 can pipe stdin as ASCII. JSON escapes keep Korean targets
+        # exact even on those hosts; the child restores Unicode when decoding.
+        json.dumps(envelope, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8"),
     ).decode("ascii")
     unavailable = json.dumps({"ok": "false", "code": "browser_unavailable"})
     not_running = json.dumps({"ok": "false", "code": "browser_not_running"})
@@ -193,7 +210,8 @@ def browser_scope_claim(claim: Any) -> bool:
     if claim["source"] not in ("declared", "decision"):
         return False
     ops = claim["ops"]
-    if not isinstance(ops, list) or not ops or len(set(ops)) != len(ops):
+    if (not isinstance(ops, list) or not ops or not all(isinstance(op, str) for op in ops)
+            or len(set(ops)) != len(ops)):
         return False
     return all(isinstance(op, str) and op in PC_BROWSER_CLAIMED_OPS for op in ops)
 

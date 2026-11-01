@@ -560,7 +560,7 @@ def pc_query_agent_definition(agent_id: str) -> BoundedAgentDefinition:
                           PC_MOVE_FILE_CANONICAL_TOOL_ID, PC_DELETE_FILE_CANONICAL_TOOL_ID,
                           PC_SEARCH_FILES_CANONICAL_TOOL_ID,
                           PC_SEARCH_CONTENT_CANONICAL_TOOL_ID,
-                          PC_READ_CHUNK_CANONICAL_TOOL_ID) + tuple(REMOTE_CANONICAL_IDS.values()),
+                          PC_READ_CHUNK_CANONICAL_TOOL_ID) + tuple(REMOTE_CANONICAL_IDS.values()) + tuple(BROWSER_CANONICAL_IDS.values()),
         execution_budget=AgentExecutionBudget())
 
 
@@ -579,20 +579,23 @@ def pc_query_agent_policy() -> TrustedAgentRuntimePolicy:
             ToolRuntimeBinding(canonical_tool_id=PC_SEARCH_CONTENT_CANONICAL_TOOL_ID, runtime_tool_id=PC_SEARCH_CONTENT_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_READ_CHUNK_CANONICAL_TOOL_ID, runtime_tool_id=PC_READ_CHUNK_TOOL_ID),
         ) + tuple(ToolRuntimeBinding(canonical_tool_id=REMOTE_CANONICAL_IDS[spec.id], runtime_tool_id=spec.id)
-                  for spec in remote_tool_specs()))
+                  for spec in remote_tool_specs())
+        + tuple(ToolRuntimeBinding(canonical_tool_id=BROWSER_CANONICAL_IDS[spec.id], runtime_tool_id=spec.id)
+                for spec in browser_tool_specs()))
 
 
 def pc_query_authorization(app_id: str, compiled: CompiledAgentProfile) -> ToolAuthorizationContext:
     return ToolAuthorizationContext(app_id=app_id, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(PC_QUERY_SCOPE, PC_LIST_FILES_SCOPE, PC_READ_FILE_SCOPE,
             PC_WRITE_FILE_SCOPE, PC_MOVE_FILE_SCOPE, PC_DELETE_FILE_SCOPE,
-            PC_SEARCH_FILES_SCOPE, PC_SEARCH_CONTENT_SCOPE, PC_READ_CHUNK_SCOPE) + tuple(sorted(REMOTE_TOOL_IDS)),
+            PC_SEARCH_FILES_SCOPE, PC_SEARCH_CONTENT_SCOPE, PC_READ_CHUNK_SCOPE)
+            + tuple(sorted(REMOTE_TOOL_IDS | PC_BROWSER_TOOL_IDS)),
         externally_authorized_tools=frozenset({
             PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
             PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
             PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID,
             PC_READ_CHUNK_TOOL_ID,
-        }) | REMOTE_TOOL_IDS)
+        }) | REMOTE_TOOL_IDS | PC_BROWSER_TOOL_IDS)
 
 
 def pc_query_registry_entries() -> tuple[RegisteredTool, ...]:
@@ -616,7 +619,9 @@ def pc_query_registry_entries() -> tuple[RegisteredTool, ...]:
         RegisteredTool.from_spec(canonical_tool_id=PC_READ_CHUNK_CANONICAL_TOOL_ID,
                                  runtime_spec=pc_read_chunk_tool_spec()),
     ) + tuple(RegisteredTool.from_spec(canonical_tool_id=REMOTE_CANONICAL_IDS[spec.id], runtime_spec=spec)
-              for spec in remote_tool_specs())
+              for spec in remote_tool_specs()) + tuple(
+        RegisteredTool.from_spec(canonical_tool_id=BROWSER_CANONICAL_IDS[spec.id], runtime_spec=spec)
+        for spec in browser_tool_specs())
 
 
 @dataclass(frozen=True, slots=True)
@@ -670,6 +675,12 @@ def register_pc_query_drives_tool(
 from .pc_remote_tools import (
     REMOTE_TOOL_IDS, REMOTE_CANONICAL_IDS, remote_tool_specs,
     validate_remote_arguments, remote_tool_allowed, remote_requested_scope,
+)
+
+
+from .pc_browser_tools import (
+    BROWSER_CANONICAL_IDS, PcBrowserError, tool_specs as browser_tool_specs,
+    validate_arguments as validate_browser_arguments,
 )
 
 
@@ -857,12 +868,20 @@ class StructuredPCQueryStepDriver:
             if (
                 (self._allowed_tool_ids is not None
                  and tool_id not in self._allowed_tool_ids)
-                or (self._allowed_tool_ids is None and tool_id == PC_READ_FILE_TOOL_ID)
+                or (self._allowed_tool_ids is None
+                    and (tool_id == PC_READ_FILE_TOOL_ID or tool_id in PC_BROWSER_TOOL_IDS))
             ):
                 raise PCQueryStepError(
                     "model tool selection is outside this execution scope",
                     detail="tool_scope_denied",
                 )
+            if tool_id in PC_BROWSER_TOOL_IDS:
+                try:
+                    normalized = validate_browser_arguments(tool_id, arguments)
+                except (PcBrowserError, TypeError, ValueError):
+                    raise PCQueryStepError("PC browser arguments are invalid",
+                                           detail="tool_selection_invalid") from None
+                return AgentStepDecision.use_tool(ToolInvocation(tool_id=tool_id, arguments=normalized))
             if tool_id == PC_DRIVES_TOOL_ID and arguments == {} and not observations:
                 # The server-verified target travels as a trusted plan argument;
                 # the model still cannot name a device.

@@ -32,6 +32,7 @@ fit into one model turn.
 from __future__ import annotations
 
 from collections.abc import Mapping
+import base64
 import hashlib
 import json
 import os
@@ -43,6 +44,8 @@ import subprocess
 import threading
 import time
 from typing import Any
+from urllib.parse import urljoin
+import uuid
 
 from padiem_ai_core.contracts import ApprovalPolicy, ToolSideEffect, ToolSpec
 from padiem_ai_core.web_runtime import normalize_public_url
@@ -66,7 +69,6 @@ MCP_PACKAGE = "@playwright/mcp@0.0.83"
 MCP_PROTOCOL_VERSION = "2024-11-05"
 MAX_INLINE_TEXT = 8192
 MAX_LINKS = 50
-MAX_SNAPSHOT_CHARS = 400_000
 MCP_CALL_TIMEOUT_SECONDS = 120
 _PROFILE_DIR_NAME = "browser-work-profile"
 
@@ -80,6 +82,11 @@ CONFIRM_NAME_PATTERNS = (
     "delete", "remove", "삭제",
 )
 _CONFIRM_RE = re.compile("|".join(re.escape(word) for word in CONFIRM_NAME_PATTERNS), re.IGNORECASE)
+_SECRET_TARGET_RE = re.compile(
+    r"password|passphrase|비밀번호|암호|cookie|쿠키|localstorage|"
+    r"\b(?:access[ _-]*|session[ _-]*|bearer[ _-]*|auth[ _-]*)?token\b|토큰|"
+    r"\bapi[ _-]*key\b|API\s*키", re.IGNORECASE,
+)
 _SNAPSHOT_LINE = re.compile(
     r"^\s*-\s*(?P<role>[\w-]+)"
     r"(?:\s+\"(?P<name>[^\"]*)\")?"
@@ -250,8 +257,12 @@ def _text_of(result: Mapping[str, Any]) -> str:
     return "\n".join(parts)
 
 
-def parse_snapshot(snapshot: str) -> list[dict[str, str]]:
-    """Bounded accessibility nodes: role, name, ref, url. No raw DOM, no values."""
+def parse_snapshot(snapshot: str, *, preserve_body_text: bool = False) -> list[dict[str, str]]:
+    """Accessibility nodes, bounded action labels, optionally full body text.
+
+    Full read-only paragraph text is retained for the output handle. Interactive
+    labels remain bounded and form values/raw DOM are never projected.
+    """
     nodes: list[dict[str, str]] = []
     pending_url = ""
     for line in snapshot.splitlines():
@@ -266,9 +277,10 @@ def parse_snapshot(snapshot: str) -> list[dict[str, str]]:
         if not match:
             continue
         name = (match.group("name") or match.group("text") or "").strip()
+        role = match.group("role")
         nodes.append({
-            "role": match.group("role"),
-            "name": name[:1024],
+            "role": role,
+            "name": name if preserve_body_text and role not in _SKIP_ROLES else name[:1024],
             "ref": match.group("ref"),
             "url": "",
         })
@@ -311,7 +323,8 @@ def store_text(text: str) -> dict[str, str]:
     target = directory / handle
     if not target.exists():
         target.write_bytes(encoded)
-    return {"handle": handle, "bytes": str(len(encoded)), "truncated": "true", "preview": text[:MAX_INLINE_TEXT]}
+    return {"handle": handle, "bytes": str(len(encoded)), "truncated": "true",
+            "preview": encoded[:MAX_INLINE_TEXT].decode("utf-8", "ignore")}
 
 
 def read_stored(handle: str, offset: int, length: int) -> dict[str, str]:
@@ -332,9 +345,34 @@ def needs_confirmation(*names: str) -> bool:
     return any(_CONFIRM_RE.search(name or "") for name in names)
 
 
-def confirmation_question(target: str) -> str:
+def is_secret_target(target: str) -> bool:
+    return bool(_SECRET_TARGET_RE.search(target or ""))
+
+
+def confirmation_question(target: str, *, action: str | None = None,
+                          url: str | None = None, value: str | None = None) -> str:
+    if action == "type" and is_secret_target(target):
+        return "비밀번호·쿠키 같은 비밀 정보는 브라우저 작업에서 입력할 수 없습니다. 다른 항목을 선택할까요?"
+    if action in {"click", "type"} and isinstance(url, str):
+        verb = "클릭" if action == "click" else "입력"
+        detail = f" 입력할 내용: {value}" if action == "type" and isinstance(value, str) else ""
+        return (f"{url} 페이지에서 '{target}' 항목에 {verb} 동작을 실행할까요?{detail} "
+                "로그인·결제·게시·발송으로 이어질 수 있습니다.")
     return (f"'{target}'은(는) 로그인·결제·게시·발송처럼 되돌리기 어려운 동작으로 보입니다. "
             "지금 실행할까요? 원하시면 취소하고 다른 방법으로 진행하겠습니다.")
+
+
+def _confirmation_matches(confirmation: Any, *, action: str,
+                          target: str, url: str | None, value: str | None = None) -> bool:
+    # This object is not a tool argument. Only the signed Engine -> Chat -> PC
+    # envelope may supply it after an ordinary conversational confirmation.
+    expected = {"action", "target", "url"} | ({"value"} if action == "type" else set())
+    return (isinstance(confirmation, Mapping)
+            and set(confirmation) == expected
+            and confirmation["action"] == action
+            and confirmation["target"] == target
+            and confirmation["url"] == url
+            and (action != "type" or confirmation["value"] == value))
 
 
 def resolve_target(nodes: list[dict[str, str]], *, text: str | None,
@@ -388,22 +426,30 @@ class PcBrowserSession:
         self._url = normalized
         snapshot = self._snapshot()
         nodes = parse_snapshot(snapshot)
-        return {"state": "opened", "url": normalized,
+        return {"state": "opened", "url": self._url,
                 "title": page_title(snapshot) or _title(nodes), "elements": str(len(nodes))}
 
     def _snapshot(self) -> str:
         if self._url is None:
             raise PcBrowserError("browser_not_running", "No page is open yet")
         result = self.client.call_tool("browser_snapshot", {})
+        if result.get("isError"):
+            raise PcBrowserError("browser_internal_error", "The page could not be observed")
         text = _text_of(result)
         current = _PAGE_URL.search(text)
-        if current:
-            self._url = current.group("url")[:2048]
-        return text[:MAX_SNAPSHOT_CHARS]
+        if current is None:
+            raise PcBrowserError("browser_internal_error", "The page could not be observed")
+        try:
+            self._url = normalize_public_url(current.group("url"))
+        except ValueError as exc:
+            raise PcBrowserError("browser_url_rejected", "That address is not a public web page") from exc
+        # Keep the full page until store_text() creates a handle. Truncating
+        # the raw snapshot here would make the stored source incomplete too.
+        return text
 
     def read(self) -> dict[str, Any]:
         snapshot = self._snapshot()
-        nodes = parse_snapshot(snapshot)
+        nodes = parse_snapshot(snapshot, preserve_body_text=True)
         body = store_text(_body_text(nodes))
         payload: dict[str, Any] = {"state": "read", "url": self._url,
                                    "title": page_title(snapshot) or _title(nodes),
@@ -415,24 +461,45 @@ class PcBrowserSession:
         snapshot = self._snapshot()
         directory = output_dir()
         directory.mkdir(parents=True, exist_ok=True)
-        filename = os.path.join(str(directory), "page-" + str(int(time.time() * 1000)) + ".png")
+        filename = os.path.join(str(directory), "page-" + uuid.uuid4().hex + ".png")
         result = self.client.call_tool("browser_take_screenshot", {"filename": filename, "type": "png"})
-        if result.get("isError") or not os.path.isfile(filename):
+        captured = Path(filename)
+        if (result.get("isError") or not captured.is_file()
+                or captured.resolve().parent != directory.resolve()):
             raise PcBrowserError("browser_internal_error", "The screenshot could not be saved")
+        image = captured.read_bytes()
+        if not image.startswith(b"\x89PNG\r\n\x1a\n"):
+            raise PcBrowserError("browser_internal_error", "The screenshot could not be verified")
         return {"state": "captured", "url": self._url,
                 "title": page_title(snapshot) or _title(parse_snapshot(snapshot)),
-                "path": filename, "bytes": str(os.path.getsize(filename)), "screenshots": "1"}
+                "path": filename, "bytes": str(len(image)), "screenshots": "1",
+                "capture": {"mime_type": "image/png", "data": base64.b64encode(image).decode("ascii"),
+                            "sha256": hashlib.sha256(image).hexdigest(), "bytes": len(image)}}
 
     def act(self, *, action: str, text: str | None = None, role: str | None = None,
-            name: str | None = None, value: str | None = None) -> dict[str, Any]:
+            name: str | None = None, value: str | None = None,
+            confirmation: Mapping[str, str] | None = None) -> dict[str, Any]:
         if action not in {"click", "type"}:
             raise PcBrowserError("browser_action_unsupported", "Only click and type are supported")
         snapshot = self._snapshot()
         nodes = parse_snapshot(snapshot)
         target = resolve_target(nodes, text=text, role=role, name=name)
-        if needs_confirmation(target["name"], value or ""):
-            return {"state": "needs_confirmation", "question": confirmation_question(target["name"]),
-                    "target": target["name"], "action": action}
+        if action == "type" and is_secret_target(target["name"]):
+            raise PcBrowserError("browser_action_unsupported", "Credential fields are not available to this tool")
+        if target.get("url"):
+            try:
+                normalize_public_url(urljoin(self._url or "", target["url"]))
+            except ValueError as exc:
+                raise PcBrowserError("browser_url_rejected", "That address is not a public web page") from exc
+        # A neutral label such as "Continue" does not make a checkout or
+        # login action safe. The fresh PC observation may only make this
+        # decision stricter; it never grants confirmation authority.
+        if (needs_confirmation(target["name"], value or "", self._url or "", page_title(snapshot))
+                and not _confirmation_matches(confirmation, action=action, target=target["name"], url=self._url, value=value)):
+            return {"state": "needs_confirmation", "question": confirmation_question(
+                        target["name"], action=action, url=self._url, value=value),
+                    "target": target["name"], "action": action, "url": self._url,
+                    "title": page_title(snapshot) or _title(nodes)}
         arguments: dict[str, Any] = {"target": target["ref"], "element": target["name"] or target["role"]}
         if action == "type":
             if not isinstance(value, str) or not value:
@@ -442,8 +509,11 @@ class PcBrowserSession:
         if result.get("isError"):
             raise PcBrowserError("browser_internal_error", "The page did not accept that action")
         after = self._snapshot()
+        after_nodes = parse_snapshot(after)
+        title = page_title(after) or _title(after_nodes)
         return {"state": "acted", "action": action, "target": target["name"] or target["role"],
-                "url": self._url, "title": page_title(after) or _title(parse_snapshot(after))}
+                "url": self._url, "title": title, "verified": True,
+                "observation": {"url": self._url, "title": title, "elements": len(after_nodes)}}
 
 
 def _title(nodes: list[dict[str, str]]) -> str:
@@ -458,7 +528,7 @@ def _title(nodes: list[dict[str, str]]) -> str:
 
 def validate_arguments(tool_id: str, arguments: Any) -> dict[str, Any]:
     """Strict, closed argument shapes. No field can carry a cookie or a script."""
-    if tool_id not in BROWSER_TOOL_IDS or not isinstance(arguments, Mapping):
+    if not isinstance(tool_id, str) or tool_id not in BROWSER_TOOL_IDS or not isinstance(arguments, Mapping):
         raise PcBrowserError("browser_action_unsupported", "Unknown PC browser tool")
     data = dict(arguments)
     allowed = {
@@ -470,10 +540,24 @@ def validate_arguments(tool_id: str, arguments: Any) -> dict[str, Any]:
     if set(data) - allowed:
         raise PcBrowserError("browser_action_unsupported", "PC browser arguments are invalid")
     for key, value in data.items():
-        if value is not None and not isinstance(value, str):
+        if not isinstance(value, str) or not value or (key != "value" and not value.strip()):
             raise PcBrowserError("browser_action_unsupported", "PC browser arguments are invalid")
-    if tool_id == BROWSER_ACT_TOOL_ID and data.get("action") not in {"click", "type"}:
-        raise PcBrowserError("browser_action_unsupported", "Only click and type are supported")
+        if len(value) > (4000 if key == "value" else 2048):
+            raise PcBrowserError("browser_action_unsupported", "PC browser arguments are invalid")
+    if tool_id == BROWSER_OPEN_TOOL_ID:
+        if set(data) != {"url"}:
+            raise PcBrowserError("browser_url_rejected", "A public page address is required")
+        try:
+            normalize_public_url(data["url"])
+        except ValueError as exc:
+            raise PcBrowserError("browser_url_rejected", "A public page address is required") from exc
+    if tool_id == BROWSER_ACT_TOOL_ID:
+        if data.get("action") not in {"click", "type"}:
+            raise PcBrowserError("browser_action_unsupported", "Only click and type are supported")
+        if not (data.get("text") or data.get("name")):
+            raise PcBrowserError("browser_action_unsupported", "A visible target is required")
+        if data["action"] == "type" and not data.get("value"):
+            raise PcBrowserError("browser_action_unsupported", "Typing needs the text to enter")
     return data
 
 
