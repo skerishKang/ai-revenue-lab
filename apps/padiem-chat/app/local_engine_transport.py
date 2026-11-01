@@ -19,6 +19,7 @@ Engine protocol, not a host stand-in for the existing one.
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Mapping
 from urllib.parse import urlparse
 from time import perf_counter
@@ -133,6 +134,11 @@ class LocalEngineHttpTransport:
     ) -> None:
         self._origin = local_engine_origin(origin)
         self._client = client
+        # #6615: completed (non-stream) Engine calls reuse one client per event
+        # loop. A cron tick builds its own loop, so the client is keyed by loop
+        # rather than cached globally — the reason this module used to open one
+        # per request no longer applies to the completed lane.
+        self._clients: dict[int, httpx.AsyncClient] = {}
         self._timeout = timeout
         self._max_response_bytes = max_response_bytes
         self._stream_timeout = stream_timeout
@@ -160,10 +166,24 @@ class LocalEngineHttpTransport:
         target = self._origin + path
         if self._client is not None:
             return await self._send(self._client, normalized_method, target, forwarded, body)
-        async with httpx.AsyncClient(
-            follow_redirects=False, timeout=self._timeout
-        ) as client:
-            return await self._send(client, normalized_method, target, forwarded, body)
+        return await self._send(
+            self._loop_client(), normalized_method, target, forwarded, body
+        )
+
+    def _loop_client(self) -> httpx.AsyncClient:
+        """The completed-lane client for the running loop, created on first use."""
+        loop_key = id(asyncio.get_running_loop())
+        client = self._clients.get(loop_key)
+        if client is None:
+            client = httpx.AsyncClient(follow_redirects=False, timeout=self._timeout)
+            self._clients[loop_key] = client
+        return client
+
+    async def aclose(self) -> None:
+        """Close every pooled completed-lane client (host shutdown)."""
+        clients, self._clients = self._clients, {}
+        for client in clients.values():
+            await client.aclose()
 
     async def stream_request(
         self,
