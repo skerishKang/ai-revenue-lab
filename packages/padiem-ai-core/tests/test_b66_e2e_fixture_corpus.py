@@ -100,7 +100,19 @@ def _load_generator():
     # dataclasses, so it must be registered before execution: dataclasses
     # resolves string annotations through ``sys.modules``.
     sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
+    try:
+        spec.loader.exec_module(module)
+    except ModuleNotFoundError as exc:
+        # The generator imports the package it writes fixtures for, so an
+        # environment that satisfies GENERATOR_READY by installing the five
+        # generator libraries piecemeal but not the package itself dies here
+        # with a bare module name. Name the real contract instead.
+        raise AssertionError(
+            "the generator imports the padiem_ai_core package: install the"
+            " package with its dev extras"
+            " (`pip install -e packages/padiem-ai-core[dev]`) rather than"
+            f" adding generator libraries piecemeal; missing module: {exc.name}"
+        ) from exc
     return module
 
 
@@ -399,12 +411,32 @@ def test_generator_source_declares_no_network_or_model_dependency() -> None:
     assert "HYSMyeongJo-Medium" in source
 
 
+def _generate_with_env_contract(module, target: Path) -> dict:
+    """Run the generator, naming the environment contract if its lazy imports die.
+
+    The generator imports ``padiem_ai_core`` submodules lazily (pdf_render,
+    web_runtime, …), so an environment that satisfies GENERATOR_READY by
+    installing the five generator libraries piecemeal but not the package
+    itself fails mid-generation with a bare module name. Name the real
+    contract instead of leaking the raw ImportError.
+    """
+    try:
+        return module.generate(target)
+    except ModuleNotFoundError as exc:
+        raise AssertionError(
+            "the generator imports the padiem_ai_core package: install the"
+            " package with its dev extras"
+            " (`pip install -e packages/padiem-ai-core[dev]`) rather than"
+            f" adding generator libraries piecemeal; missing module: {exc.name}"
+        ) from exc
+
+
 @pytest.mark.skipif(not GENERATOR_READY, reason=GENERATOR_SKIP_REASON)
 def test_generation_is_deterministic(fixtures: list[dict]) -> None:
     module = _load_generator()
     with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
-        first_manifest = module.generate(Path(first))
-        second_manifest = module.generate(Path(second))
+        first_manifest = _generate_with_env_contract(module, Path(first))
+        second_manifest = _generate_with_env_contract(module, Path(second))
 
         # The generator itself must be stable between two runs in one process.
         for record in fixtures:
