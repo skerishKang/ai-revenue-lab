@@ -135,6 +135,29 @@ sudo systemctl stop padiem-chat-com2.service   # 병행 호스트만 멈춘다
   `chat.padiem.net`을 거치는 업로드는 100MB를 넘길 수 없다.
 - 1GB 업로드를 내려면 앞단을 우회하는 구조가 필요하다. 아직 착수 전이다.
 
+## 9. 복원 (백업 파일 → 실제 DB)
+
+11-01부터 `padiem-chat-com2-backup.timer`가 매일 04:20에
+`/mnt/d/padiem/chat-com2/backups/chat-<stamp>.sqlite3`를 남긴다. 백업이 "검증됐다"는 것과
+**그 파일로 되돌아간다**는 것은 다른 문제라, 복원은 아래 순서로만 한다.
+(같은 절차를 시험으로 고정: `apps/padiem-chat/tests/test_chat_com2_backup_restore.py`)
+
+```bash
+sudo systemctl stop padiem-chat-com2.service
+sudo -u padiem-chat sh -c 'cd /mnt/d/padiem/chat-com2 && mv chat.sqlite3 chat.sqlite3.pre-restore-$(date -u +%Y%m%dT%H%M%SZ) && rm -f chat.sqlite3-wal chat.sqlite3-shm'
+sudo -u padiem-chat cp /mnt/d/padiem/chat-com2/backups/chat-<stamp>.sqlite3 /mnt/d/padiem/chat-com2/chat.sqlite3
+sudo -u padiem-chat /opt/padiem/chat-com2/venv/bin/python -c "import sqlite3;c=sqlite3.connect('/mnt/d/padiem/chat-com2/chat.sqlite3');print(c.execute('PRAGMA integrity_check').fetchone()[0],[(t,c.execute('SELECT COUNT(*) FROM '+t).fetchone()[0]) for t in ('users','conversations','messages','projects')])"
+sudo systemctl start padiem-chat-com2.service
+```
+
+- 반드시 **서비스를 먼저 멈춘다.** 멈추지 않으면 되돌리는 중에 앱이 같은 파일에 쓰고,
+  `-wal`이 남아 있으면 새 파일에 옛 변경이 다시 재생된다(그래서 `-wal`/`-shm`을 함께 지운다).
+- 검사 기준: `integrity_check`=`ok` 이고 네 표 건수가 백업 로그의
+  `CHAT_COM2_BACKUP=PASS … users=… conversations=… messages=… projects=…`와 같아야 한다.
+- 마이그레이션 장부(`padiem_local_migration_ledger`)도 백업에 함께 들어 있으므로 복원 후
+  이미 적용된 마이그레이션이 다시 돌지 않는다(장부 건수도 같은지 함께 본다).
+- 정상 기동·로그인·대화 1건을 확인한 뒤에 `.pre-restore-<stamp>` 파일을 지운다.
+
 ### 8-6. 배포 스크립트의 두 규칙
 
 - 대상 유닛 확인: `deploy_from_main.sh --apply`는 코드를 옮기기 전에 diff가 고른
