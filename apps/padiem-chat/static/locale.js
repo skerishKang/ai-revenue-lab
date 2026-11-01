@@ -848,7 +848,6 @@
   function applyStaticBindings(lang) {
     const textBindings = [
       ["#newChatButton span:last-child", "new-chat"], ["#sidebarSearchButton span:last-child", "search"], ["#projectsNavButton span:nth-child(2)", "projects"], ["#outputsNavButton span:nth-child(2)", "saved"],
-      ["#recentTitle", "recent"], [".recent-item:nth-of-type(1)", "easy"], [".recent-item:nth-of-type(2)", "trip"], [".recent-item:nth-of-type(3)", "dinner"],
       [".empty-copy", "copy"], ["#pcConnectStarter strong", "pc-connect-title"], [".starter:nth-child(2) strong", "life-title"], [".starter:nth-child(2) small", "life-copy"],
       [".starter:nth-child(3) strong", "document-title"], ["#attachmentButton span:last-child", "file"], ["#webSearchButton span:last-child", "web"], ["#deepResearchButton span:last-child", "research"], [".sidebar-footer span:last-child", "footer"],
       ["#projectsTitle", "projects"], ["#projectsEmpty", "projects-empty"], ["#historyTitle", "history-title"], ["#historyEmpty", "history-empty"], ["#outputsTitle", "saved"], ["#outputsEmpty", "outputs-empty"],
@@ -918,9 +917,12 @@
     ].forEach(([selector, attribute, key]) => setAttribute(selector, attribute, key, lang));
     const messageLabel = document.querySelector("label[for='messageInput']");
     if (messageLabel) messageLabel.textContent = text("message-input-label", lang);
-    setPrompt(".recent-item:nth-of-type(1)", "explain", lang);
-    setPrompt(".recent-item:nth-of-type(2)", "trip", lang);
-    setPrompt(".recent-item:nth-of-type(3)", "dinner", lang);
+    // The #1735 sidebar no longer carries a demo question list, so no binding
+    // here may address the shared recent-row class: project, conversation,
+    // search-hit and saved answer rows all carry it, and an unscoped
+    // nth-of-type binding would overwrite a stored row's title (or its click
+    // prompt) with starter copy whenever the row happened to render before this
+    // function ran.
     // #5634: the first first-screen card is the computer connection entry, not a
     // prompt, so it carries no data-prompt and gets no prompt copy.
     setPrompt(".starter:nth-child(2)", "starterLife", lang);
@@ -1047,6 +1049,7 @@
 
   function apply(lang, persist = false) {
     const locale = normalizeLocale(lang) || "ko";
+    const previous = document.documentElement.lang;
     document.documentElement.lang = locale;
     if (persist) persistLocale(locale);
     applyStaticBindings(locale);
@@ -1059,7 +1062,15 @@
       button.setAttribute("aria-pressed", String(active));
       if (active) button.setAttribute("aria-current", "true"); else button.removeAttribute("aria-current");
     });
-    window.dispatchEvent(new CustomEvent("padiem:localechange", { detail: { lang: locale } }));
+    // The event reports a change, not a paint. The first paint of a page whose
+    // markup already carries this locale changes nothing, and dispatching it
+    // anyway re-enters the app boot: app.js answers localechange with
+    // applyAuthState(), which opens a new session generation and drops the
+    // conversation read that is still in flight — the sidebar then keeps its
+    // loading skeleton until something else reloads it.
+    if (previous !== locale) {
+      window.dispatchEvent(new CustomEvent("padiem:localechange", { detail: { lang: locale } }));
+    }
     return locale;
   }
 
