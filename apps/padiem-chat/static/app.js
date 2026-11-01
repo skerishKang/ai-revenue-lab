@@ -855,6 +855,11 @@
     });
   }
   async function readDocumentFile(file) {
+    if (extensionOf(file.name) === ".hwp") {
+      const error = new Error(uiT("hwp-save-hwpx"));
+      error.uiMessageSafe = true;
+      throw error;
+    }
     const mediaType = documentMediaType(file);
     if (!mediaType) throw new Error(attachmentCopy().unsupportedFormat);
     if (file.size < 1) throw new Error(uiT("empty-document"));

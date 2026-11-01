@@ -96,3 +96,13 @@ def test_explicit_locale_preference_uses_url_without_browser_storage():
     assert 'apply(getUrlLocale() || "ko", false);' in locale
     assert "localStorage" not in locale
     assert "sessionStorage" not in locale
+
+
+
+def test_hwp_upload_guidance_has_korean_and_english_locale_entries():
+    locale = read("locale.js")
+    ko = locale[locale.index("ko: {"):locale.index("en: {")]
+    en = locale[locale.index("en: {"):]
+    assert '"hwp-save-hwpx": "한글에서 HWPX로 저장해 올리면 읽을 수 있어요."' in ko
+    assert '"hwp-save-hwpx": "Save the file as HWPX in Hangul, then upload it so it can be read."' in en
+    assert 'new Error(uiT("hwp-save-hwpx"))' in read("app.js")

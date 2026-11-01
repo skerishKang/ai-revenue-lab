@@ -13,3 +13,6 @@ available in [COPYING.AGPL-3.0](COPYING.AGPL-3.0) and from
 
 This notice identifies the third-party component; it does not change the
 license of the rest of this repository.
+
+The user-visible notice is served by PADIEM Chat at /third-party-licenses.html.
+The separate PDF-to-Markdown conversion path uses Core’s pypdf reader.

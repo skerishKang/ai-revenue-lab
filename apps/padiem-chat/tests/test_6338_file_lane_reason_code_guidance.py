@@ -38,7 +38,7 @@ LANE_SRC = ROOT.parent / "padiem-file-lane" / "src"
 DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 LANE_SECRET = "chat-file-lane-roundtrip-test-secret-00000000"
 GENERAL_WORDING = "첨부 문서의 텍스트를 읽지 못했습니다."
-ENCRYPTED_DOCX_WORDING = "암호화된 DOCX는 현재 첨부할 수 없습니다."
+ENCRYPTED_DOCX_WORDING = "암호화된 문서라 열 수 없습니다. 암호를 풀고 다시 올려 주세요."
 
 
 def _encrypted_docx() -> bytes:
@@ -304,3 +304,46 @@ def test_lane_refusal_survives_browser_transport(chat_client, encrypted):
     }
     assert "EncryptedPackage" not in result.stdout
     assert "ooxml_encrypted" not in result.stdout
+
+
+
+@pytest.mark.parametrize("extension", ["pdf", "docx", "pptx", "xlsx"])
+def test_encrypted_file_lane_refusal_reaches_browser_with_unlock_guidance(chat_client, extension, monkeypatch):
+    import subprocess
+    from pypdf import PdfWriter
+    if extension == "pdf":
+        writer = PdfWriter()
+        writer.add_blank_page(width=200, height=200)
+        writer.encrypt("synthetic-password")
+        buffer = BytesIO()
+        writer.write(buffer)
+        payload = buffer.getvalue()
+    else:
+        payload = _encrypted_docx()
+    file_id = _upload_to_lane(chat_client.padiem_user, f"locked.{extension}", payload)
+    response = _chat_with_attachment(chat_client, file_id)
+    assert response.status_code == 422
+    assert response.json()["error"]["message"] == ENCRYPTED_DOCX_WORDING
+    # The normal orchestration route validates the same lane reference first.
+    from app import orchestration_routes
+    orchestration_routes.install_orchestration_routes(chat_client.app, None)
+    monkeypatch.setattr(orchestration_routes, "_bridge", lambda request: object())
+    orch = chat_client.post("/api/orchestration", json={
+        "messages": [{"role": "user", "content": "Summarize."}],
+        "attachments": [{"type": "file", "file_id": file_id}],
+    })
+    assert orch.status_code == 422
+    assert orch.json()["error"]["message"] == ENCRYPTED_DOCX_WORDING
+    script = r"""
+      const fs = require("fs");
+      global.window = {};
+      const payload = JSON.parse(fs.readFileSync(0, "utf8"));
+      global.fetch = async () => ({ok: false, status: 422, json: async () => payload});
+      require(process.argv[1]);
+      window.PadiemChatTransport.requestCompleted({messages: []})
+        .then(() => { process.exitCode = 1; })
+        .catch(error => { process.stdout.write(error.message); });
+    """
+    result = subprocess.run(["node", "-e", script, str(ROOT / "static" / "chat-transport.js")],
+                            input=response.text, text=True, encoding="utf-8", capture_output=True, check=True)
+    assert result.stdout == ENCRYPTED_DOCX_WORDING
