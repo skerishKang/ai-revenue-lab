@@ -66,6 +66,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
             workflow.index("Python Worker bundle dry-run"),
         )
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_each_real_probe_reports_phase_boundaries_without_changing_assertions(self):
         # Linux CI phase markers distinguish Workerd/Pyodide start from the
         # actual HTTP and Python assertion work, with no probe or gate skipped.
@@ -91,6 +92,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
                                         check=False)
                 self.assertEqual(syntax.returncode, 0, syntax.stderr)
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_real_probe_wrangle_process_group_cleanup_contract(self):
         # npm's pinned npx process is a parent; Workerd remains a descendant.
         # A probe-local new session ensures group signals cannot kill the
@@ -157,6 +159,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
             if proc.stderr:
                 proc.stderr.close()
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_cold_cache_npx_preflight_fails_closed_before_any_real_probe(self):
         runner = RUNNER.read_text(encoding="utf-8")
         self.assertIn("npx --yes wrangler@4.130.0 --version", runner)
@@ -185,6 +188,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
             self.assertNotIn("B62_WORKER_PROBE_0=", result.stdout + result.stderr)
             self.assertNotIn("B62_WORKER_PROBES=PASS", result.stdout + result.stderr)
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_runner_waits_for_every_child_and_fails_if_one_fails(self):
         with tempfile.TemporaryDirectory(prefix="b62-worker-parallel-") as directory:
             temp = Path(directory)
@@ -273,6 +277,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
                 envfile.read_text(encoding="utf-8") if envfile.exists() else ""
             )
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_two_independent_preflights_overlap_and_gate_all_probes(self):
         proc, marks, env = self._offline_overlap()
         self.assertEqual(proc.returncode, 0, proc.stderr)
@@ -283,6 +288,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
         self.assertIn("B62_WORKER_OVERLAP=PASS", proc.stdout)
         self.assertEqual(env, "B62_WORKER_NPX_PREWARMED=1\n")
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_failed_vendor_does_not_export_skip_marker(self):
         proc, marks, env = self._offline_overlap(vendor_exit=17)
         self.assertNotEqual(proc.returncode, 0)
@@ -291,6 +297,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
         self.assertIn("B62_WORKER_OVERLAP=FAIL", proc.stderr)
         self.assertIn("B62_WORKER_VENDOR_SYNC=FAIL", proc.stderr)
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_wrong_wrangler_version_fails_before_any_probe(self):
         proc, marks, env = self._offline_overlap(version="4.149.0")
         self.assertNotEqual(proc.returncode, 0)

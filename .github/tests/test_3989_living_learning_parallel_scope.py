@@ -51,6 +51,7 @@ class ParallelSuiteContract(unittest.TestCase):
         for forbidden in ("--ignore", "--deselect", "--last-failed", "--lf", "-k ", "|| true", "continue-on-error:"):
             self.assertNotIn(forbidden, source)
 
+    @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
     def test_actual_child_exit_codes_are_not_masked(self):
         # No real pytest runs in this contract probe: exercise the exact wrapper
         # against two controlled child processes, including independent failures.
