@@ -43,13 +43,19 @@ def test_the_component_is_loaded_once_and_calls_only_the_new_routes():
     script = (STATIC / "pc-file-exchange.js").read_text(encoding="utf-8")
 
     # #5895 menu connection: the part is no longer loaded with every page. The
-    # authoring screens load it the first time an owner asks for it, which is also
-    # what keeps a page that never touches a PC from paying for it.
+    # 2026-11-01 unification moved the authoring screens (and their PC bridge)
+    # to /apps/council/, which loads its own copy on first use; B66's runtime
+    # keeps Chat's copy for the quote sheet.
     assert 'pc-file-exchange.js' not in html and 'pc-file-exchange.css' not in html
-    menu = (STATIC / "util-menu.js").read_text(encoding="utf-8")
-    assert 'script.src = "./pc-file-exchange.js"' in menu
-    assert 'css.href = "./pc-file-exchange.css"' in menu
-    assert menu.count("loadPcExchange()") >= 2
+    quote_runtime = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    assert 'PC_EXCHANGE_SCRIPT = "./pc-file-exchange.js"' in quote_runtime
+    assert 'PC_EXCHANGE_CSS = "./pc-file-exchange.css"' in quote_runtime
+    council = ROOT.parent / "padiem-council-apps" / "static" / "council-app.js"
+    council_source = council.read_text(encoding="utf-8")
+    assert 'script.src = "./static/pc-file-exchange.js"' in council_source
+    assert 'css.href = "./static/pc-file-exchange.css"' in council_source
+    assert (council.parent / "pc-file-exchange.js").is_file()
+    assert (council.parent / "pc-file-exchange.css").is_file()
     # The part speaks only to the eight new owner routes: nothing older, nothing the
     # composer owns, and no second pairing or dispatch surface.
     assert sorted({found for found in script.split('"') if found.startswith("/api/")}) == [

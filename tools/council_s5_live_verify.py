@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""#6065 S5 — prove the councillor UI that is LIVE equals the design that is MERGED.
+"""#6065 S5 — prove the council app UI that is LIVE equals the design that is MERGED.
 
 Merging S0..S4 did not put them on chat.padiem.net; only a deploy does. This tool is
 the readback the release acceptance needs, and it is deliberately strict about the two

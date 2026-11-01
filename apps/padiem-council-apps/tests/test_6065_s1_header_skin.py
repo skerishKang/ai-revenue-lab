@@ -85,7 +85,8 @@ def test_the_cinematic_assets_are_the_designs_own_files_and_no_others():
     names = sorted(p.name for p in (APP_ROOT / "static").iterdir())
     # B10/A4: the app also ships its own browser photo resizer.
     assert names == ["assets", "council-app.css", "council-app.js",
-                     "index.html", "photo-resize.js"], names
+                     "index.html", "pc-file-exchange.css", "pc-file-exchange.js",
+                     "photo-resize.js"], names
     staged = sorted(p.name for p in (APP_ROOT / "static" / "assets").rglob("*") if p.is_file())
     assert sum(1 for n in staged if n.endswith(".jpg")) == 7, staged
     assert sum(1 for n in staged if n.endswith(".woff2")) == 7, staged

@@ -154,10 +154,14 @@ def test_the_workspace_exit_is_korean_and_the_close_control_is_legible() -> None
 
 def test_copy_save_and_download_are_the_row_directly_under_the_result() -> None:
     order = run("generate")["actionOrder"]
-    assert order["speech"] == ["councilSpeechCopy", "councilSpeechSave", "councilSpeechDownload"]
-    assert order["sns"] == ["councilSnsCopy", "councilSnsSave", "councilSnsDownload"]
-    assert order["meeting"] == ["councilMeetingCopy", "councilMeetingSave", "councilMeetingDownload"]
-    assert order["book"] == ["councilBookCopy", "councilBookSave", "councilBookDownload"]
+    assert order["speech"] == ["councilSpeechCopy", "councilSpeechSave",
+                               "councilSpeechDownload", "councilSpeechPcSave"]
+    assert order["sns"] == ["councilSnsCopy", "councilSnsSave",
+                            "councilSnsDownload", "councilSnsPcSave"]
+    assert order["meeting"] == ["councilMeetingCopy", "councilMeetingSave",
+                                "councilMeetingDownload", "councilMeetingPcSave"]
+    assert order["book"] == ["councilBookCopy", "councilBookSave",
+                             "councilBookDownload", "councilBookPcSave"]
     # The primary action is the copy control.
     assert "council-primary" in JS
     assert ".council-actions .council-primary" in CSS
@@ -209,6 +213,14 @@ def test_the_date_and_selection_rows_are_44px() -> None:
     assert "min-height: 44px" in rule(".council-book-period input")
     assert "min-height: 44px" in rule(".council-book-period button")
     assert "min-height: 44px" in rule(".council-save")
+
+
+def test_the_notice_row_does_not_push_the_streaming_paper_below_the_form() -> None:
+    selector = ".council-card-body:has(.council-tool-notice:not([hidden])) > .council-tool-notice"
+    at = CSS.index(selector)
+    block = CSS[at : CSS.index("}", at)]
+    assert "grid-column: 1 / -1" in block, block
+    assert "grid-row: 1" in block, block
 
 
 def test_the_narrow_form_and_the_wide_sns_column_do_not_collide() -> None:

@@ -18,7 +18,7 @@
  *     writes; details read back via data.file.content)
  *   - session:     cookie credentials on every call ("include"), signed-in
  *     state read from GET /api/auth/status (fail-closed gate like
- *     councillor.js: the tools stay locked until authenticated === true).
+ *     the retired councillor screen: tools stay locked until authenticated === true).
  *     A signed-out visit logs in INSIDE this page through the existing
  *     POST /api/auth/password/login credential contract (#5942); the visitor is
  *     never sent to the Chat home page, and the Google route is a plain link
@@ -96,7 +96,95 @@
     return "생성 실패: " + message;
   }
 
-  async function apiChat(prompt, util) {
+  function emptyResult() {
+    const error = new Error("empty result");
+    error.emptyResult = true;
+    return error;
+  }
+
+  function streamError(data) {
+    const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+    const error = new Error(GEN_ERROR_FALLBACK);
+    error.code = code;
+    if (code === "empty_upstream_answer") error.emptyResult = true;
+    return error;
+  }
+
+  function parseSseBlock(block) {
+    let event = "message";
+    const dataLines = [];
+    String(block).replace(/\r\n/g, "\n").split("\n").forEach((line) => {
+      if (!line || line.startsWith(":")) return;
+      const separator = line.indexOf(":");
+      const field = separator >= 0 ? line.slice(0, separator) : line;
+      let value = separator >= 0 ? line.slice(separator + 1) : "";
+      if (value.startsWith(" ")) value = value.slice(1);
+      if (field === "event") event = value;
+      if (field === "data") dataLines.push(value);
+    });
+    if (!dataLines.length) return null;
+    return { event: event, data: dataLines.join("\n") };
+  }
+
+  // #6556 streaming: the answer is painted as it arrives. The same reader
+  // refuses a frame that says error, an unfinished stream and an empty answer,
+  // so a partial stream is never presented as a complete draft.
+  async function readStreamAnswer(res, onDelta) {
+    const type = String(res.headers?.get?.("content-type") || "").toLowerCase();
+    const streamType = /text\/event-stream|application\/(?:x-)?ndjson/.test(type);
+    const ndjson = /application\/(?:x-)?ndjson/.test(type);
+    if (!streamType || !res.body || typeof res.body.getReader !== "function") {
+      // A server/proxy that answered the stream route with one JSON body is
+      // still a complete answer; an empty one is still a failed generation.
+      const data = await res.json().catch(() => null);
+      if (!data || typeof data.answer !== "string" || !data.answer.trim()) throw emptyResult();
+      return data.answer;
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+    let answer = "";
+    let done = false;
+    function consume(text) {
+      const frame = ndjson
+        ? (text.trim() ? { event: "message", data: text.trim() } : null)
+        : parseSseBlock(text);
+      if (!frame) return;
+      let data = null;
+      try { data = JSON.parse(frame.data); } catch (_) { data = null; }
+      if (frame.event === "error" || (data && data.error)) throw streamError(data);
+      if (data && typeof data.delta === "string") {
+        answer += data.delta;
+        if (onDelta) onDelta(answer);
+      }
+      if (frame.event === "done" || (data && data.done === true)) done = true;
+    }
+    try {
+      while (!done) {
+        const item = await reader.read();
+        if (item.done) break;
+        buffer += decoder.decode(item.value, { stream: true });
+        const boundary = ndjson ? /\r?\n/ : /\r?\n\r?\n/;
+        let match = boundary.exec(buffer);
+        while (match) {
+          const text = buffer.slice(0, match.index);
+          buffer = buffer.slice(match.index + match[0].length);
+          consume(text);
+          if (done) break;
+          match = boundary.exec(buffer);
+        }
+      }
+      buffer += decoder.decode();
+      if (!done && buffer.trim()) consume(buffer);
+    } finally {
+      try { await reader.cancel(); } catch (_) { /* no-op */ }
+    }
+    if (!done && !answer.trim()) throw emptyResult();
+    if (!answer.trim()) throw emptyResult();
+    return answer;
+  }
+
+  async function apiChat(prompt, util, onDelta) {
     // Same rule as util-menu.js apiChat / app.js selectedProductTier().
     // The util scope (PR #5916 contract) is the request's routing label:
     // it keeps a declared utility out of the shared native-calendar branch
@@ -113,18 +201,13 @@
     // one Korean sentence, not as a page that never answers.
     const controller = typeof AbortController === "function" ? new AbortController() : null;
     const timer = controller ? setTimeout(() => controller.abort(), GEN_TIMEOUT_MS) : null;
-    function emptyResult() {
-      const error = new Error("empty result");
-      error.emptyResult = true;
-      return error;
-    }
     try {
       let res;
       try {
-        res = await fetch("/api/chat", {
+        res = await fetch("/api/chat/stream", {
           method: "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
           body: JSON.stringify(payload),
           ...(controller ? { signal: controller.signal } : {}),
         });
@@ -140,11 +223,7 @@
         if (error.code === "empty_upstream_answer") error.emptyResult = true;
         throw error;
       }
-      const data = await res.json().catch(() => null);
-      // An empty or non-string answer is a failed generation, never a field
-      // that shows the raw JSON body.
-      if (!data || typeof data.answer !== "string" || !data.answer.trim()) throw emptyResult();
-      return data.answer;
+      return await readStreamAnswer(res, onDelta);
     } finally {
       if (timer !== null) clearTimeout(timer);
     }
@@ -496,9 +575,14 @@
     const dlBtn = el("button", null, "텍스트 다운로드");
     dlBtn.type = "button";
     dlBtn.id = options.downloadId;
-    actions.append(copyBtn, saveBtn, dlBtn);
+    // #5895: the same draft can go to the owner's own PC, through the shared
+    // file-exchange dialog. It always offers a NEW dated name.
+    const pcSaveBtn = el("button", null, PC_REF_COPY.save);
+    pcSaveBtn.type = "button";
+    pcSaveBtn.id = options.pcSaveId;
+    actions.append(copyBtn, saveBtn, dlBtn, pcSaveBtn);
     result.appendChild(actions);
-    return { result, output, copyBtn, saveBtn, dlBtn };
+    return { result, output, copyBtn, saveBtn, dlBtn, pcSaveBtn, actions };
   }
 
   function wireCopy(button, output) {
@@ -538,7 +622,7 @@
     photoResizeLoading = new Promise((resolve, reject) => {
       const head = document.head || document.body;
       const script = document.createElement("script");
-      script.src = "./photo-resize.js";
+      script.src = "./static/photo-resize.js";
       script.addEventListener("load", () => {
         if (window.PadiemPhotoResize) resolve(window.PadiemPhotoResize);
         else reject(new Error("photo-resize-unavailable"));
@@ -567,9 +651,313 @@
     }
   }
 
+  // ── 내 PC 연결: 예전 글 가져오기 · 내 PC에 저장 (#5895) ───────────────────
+  // The independent app keeps the same PC file exchange the Chat util uses:
+  // the same pairing read, the same reference read, the same shared dialog and
+  // the same save contract. No second connector, no second pairing screen.
+  const COMPUTER_CONNECT_HREF = "/#padiem-connectors";
+  const PC_REF_COPY = Object.freeze({
+    pick: "내 PC에서 예전 글 가져오기",
+    again: "내 PC에서 더 가져오기",
+    remove: "빼기",
+    preview: "가져온 글",
+    unavailable: "PC 파일 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    unreadable: "이 파일은 참고 글로 읽지 못했어요. 글자가 들어 있는 문서를 골라 주세요.",
+    hwpEncrypted: "암호가 걸린 한글 파일은 읽을 수 없어요.",
+    hwpDistributable: "배포용으로 저장된 한글 파일은 읽을 수 없어요.",
+    laneDown: "파일 읽기 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    noPc: "컴퓨터를 연결하면 예전 글을 가져올 수 있습니다.",
+    connect: "컴퓨터 연결하기",
+    save: "내 PC에 저장",
+    saveNoPc: "컴퓨터를 연결하면 내 PC에 저장할 수 있습니다.",
+    saveUnavailable: "PC에 저장할 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    saved: "내 PC에 저장했습니다.",
+  });
+
+  // The shared dialog reads its Korean copy from the host locale. This app
+  // ships no Chat locale bundle, so it provides the dialog's own sentences —
+  // and never overwrites a host locale that already exists.
+  const PC_EXCHANGE_COPY_KO = Object.freeze({
+    "pc-exchange-import-title": "내 PC에서 가져오기",
+    "pc-exchange-import-note": "PC 안의 파일을 직접 보지 않고, 필요한 파일만 골라요.",
+    "pc-exchange-save-title": "내 PC에 저장",
+    "pc-exchange-save-note": "폴더를 고르고 파일 이름을 적어 주세요.",
+    "pc-exchange-save-name": "파일 이름",
+    "pc-exchange-save-button": "저장",
+    "pc-exchange-save-failed": "PC에서 파일을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "pc-exchange-move-button": "이동",
+    "pc-exchange-delete-button": "삭제",
+    "pc-exchange-move-failed": "PC에서 파일을 옮기지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "pc-exchange-delete-failed": "PC에서 파일을 지우지 못했어요. 잠시 후 다시 시도해 주세요.",
+    "pc-exchange-stop": "그만",
+    "pc-exchange-stopped": "그만뒀어요 — 이미 찾은 목록은 그대로 남아 있어요.",
+    "pc-exchange-searching": "{folders}개 폴더를 봤습니다 — 지금까지 {files}개를 찾았습니다.",
+    "pc-exchange-working": "PC에서 작업 중 — 경과 {elapsed}",
+    "pc-exchange-searched": "허용한 폴더를 다 봤습니다.",
+    "pc-exchange-searched-empty": "허용한 폴더를 다 봤는데 그 이름의 파일은 없었어요.",
+    "pc-exchange-partial": "일부만 받았어요 · 다시 시도해 주세요",
+    "pc-exchange-choose-pc": "어느 PC를 열까요?",
+    "pc-exchange-choose-folder": "어느 폴더를 열까요?",
+    "pc-exchange-my-pc": "내 PC",
+    "pc-exchange-up": "이전 폴더",
+    "pc-exchange-search-placeholder": "이름으로 찾기",
+    "pc-exchange-search": "찾기",
+    "pc-exchange-contents": "이 폴더의 내용",
+    "pc-exchange-more": "더 보기",
+    "pc-exchange-more-remaining": "더 보기 (남은 {count}개)",
+    "pc-exchange-filter-scope": "받은 {received}개 / 전체 {total}개 중에서 찾는 중",
+    "pc-exchange-search-all": "폴더 전체에서 찾기",
+    "pc-exchange-folder-search-empty": "폴더 전체에서 찾았지만 없어요",
+    "pc-exchange-close": "닫기",
+    "pc-exchange-open-file": "이 파일 열기",
+    "pc-exchange-no-pc": "아직 연결된 PC가 없어요. PC를 연결한 뒤 다시 시도해 주세요.",
+    "pc-exchange-no-answer": "PC에서 답이 왔는지 확인하지 못했어요. 잠시 후 다시 시도해 주세요.",
+  });
+
+  function ensurePcLocale() {
+    if (window.__padiemLocale && typeof window.__padiemLocale.text === "function") return;
+    window.__padiemLocale = {
+      text(key, variables) {
+        const text = PC_EXCHANGE_COPY_KO[key];
+        if (typeof text !== "string") return key;
+        if (!variables) return text;
+        return text.replace(/\{(\w+)\}/g, (match, name) =>
+          (Object.prototype.hasOwnProperty.call(variables, name) ? String(variables[name]) : match));
+      },
+    };
+  }
+
+  let pcExchangeLoading = null;
+  function loadPcExchange() {
+    ensurePcLocale();
+    if (window.PadiemPcFileExchange) return Promise.resolve(window.PadiemPcFileExchange);
+    if (pcExchangeLoading) return pcExchangeLoading;
+    pcExchangeLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      if (head && !document.querySelector('link[href="./static/pc-file-exchange.css"]')) {
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = "./static/pc-file-exchange.css";
+        head.appendChild(css);
+      }
+      const script = document.createElement("script");
+      script.src = "./static/pc-file-exchange.js";
+      script.addEventListener("load", () => {
+        if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
+        else reject(new Error("pc-exchange-unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("pc-exchange-unavailable")), { once: true });
+      head.appendChild(script);
+    });
+    return pcExchangeLoading;
+  }
+
+  async function pcLinked() {
+    try {
+      const res = await fetch("/api/pc/pairings", { credentials: "include", cache: "no-store" });
+      if (!res.ok) return null;
+      const body = await res.json().catch(() => null);
+      const links = body && Array.isArray(body.links) ? body.links : [];
+      return links.some((link) => link && link.state === "active");
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function openComputerConnect() {
+    try { window.location.assign(COMPUTER_CONNECT_HREF); } catch (_) {}
+  }
+
+  async function pcReferenceEntry(picked) {
+    if (!picked) return null;
+    if (typeof picked.content === "string" && picked.content.trim()) {
+      return { name: picked.name || "가져온 글", text: picked.content };
+    }
+    if (!picked.fileId) return null;
+    try {
+      const res = await fetch("/api/pc/reference", {
+        method: "POST",
+        credentials: "include",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file_id: picked.fileId }),
+      });
+      if (!res.ok) {
+        const refused = await res.json().catch(() => null);
+        const code = refused && refused.error && typeof refused.error.code === "string"
+          ? refused.error.code : "";
+        if (code === "hwp_encrypted") return { error: PC_REF_COPY.hwpEncrypted };
+        if (code === "hwp_distributable") return { error: PC_REF_COPY.hwpDistributable };
+        if (code === "file_lane_unavailable") return { error: PC_REF_COPY.laneDown };
+        return null;
+      }
+      const body = await res.json().catch(() => null);
+      if (!body || body.ok !== true || typeof body.text !== "string" || !body.text.trim()) return null;
+      return {
+        name: typeof body.name === "string" && body.name ? body.name : (picked.name || "가져온 글"),
+        text: body.text,
+      };
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // One section per tool: the pick button, the files the owner chose with their
+  // preview, and — when no PC is linked — one calm sentence with the way to
+  // connect, never an error.
+  function createPcReferenceSection() {
+    const box = el("div", "council-pc-ref");
+    const pick = el("button", "council-pc-ref-pick", PC_REF_COPY.pick);
+    pick.type = "button";
+    const note = el("p", "council-pc-ref-note");
+    note.hidden = true;
+    const status = el("p", "council-pc-ref-status");
+    status.hidden = true;
+    const list = el("ul", "council-pc-ref-list");
+    list.hidden = true;
+    box.append(pick, note, list, status);
+    const files = [];
+
+    function say(text) {
+      status.textContent = text || "";
+      status.hidden = !text;
+    }
+    function showNoPc() {
+      pick.hidden = true;
+      note.textContent = PC_REF_COPY.noPc;
+      const connect = el("a", "council-pc-ref-connect", PC_REF_COPY.connect);
+      connect.href = COMPUTER_CONNECT_HREF;
+      note.appendChild(connect);
+      note.hidden = false;
+    }
+    function render() {
+      list.replaceChildren();
+      files.forEach((file, index) => {
+        const item = el("li", "council-pc-ref-item");
+        const head = el("div", "council-pc-ref-head");
+        head.append(el("strong", "council-pc-ref-name", file.name));
+        head.append(el("span", "council-pc-ref-chars", file.text.length.toLocaleString("ko-KR") + "자"));
+        const drop = el("button", "council-pc-ref-remove", PC_REF_COPY.remove);
+        drop.type = "button";
+        drop.addEventListener("click", () => {
+          files.splice(index, 1);
+          render();
+        });
+        head.append(drop);
+        item.append(head, el("pre", "council-pc-ref-preview", file.text));
+        list.append(item);
+      });
+      list.hidden = files.length === 0;
+      pick.textContent = files.length ? PC_REF_COPY.again : PC_REF_COPY.pick;
+    }
+
+    async function addPicked(picked) {
+      say("");
+      const entry = await pcReferenceEntry(picked);
+      if (entry && typeof entry.error === "string") { say(entry.error); return; }
+      if (!entry) { say(PC_REF_COPY.unreadable); return; }
+      files.push(entry);
+      render();
+    }
+
+    pick.addEventListener("click", async () => {
+      say("");
+      let component;
+      try { component = await loadPcExchange(); } catch (_) { component = null; }
+      if (!component || typeof component.open !== "function") {
+        say(PC_REF_COPY.unavailable);
+        return;
+      }
+      component.open({ onSelect: (picked) => { void addPicked(picked); } });
+    });
+
+    let checked = false;
+    function check() {
+      if (checked) return;
+      checked = true;
+      void pcLinked().then((linked) => {
+        if (linked === false) showNoPc();
+      });
+    }
+
+    return {
+      box,
+      check,
+      read() {
+        const lineBreak = String.fromCharCode(10);
+        return files
+          .map((file, index) => "[참고 글 " + (index + 1) + ": " + file.name + "]" + lineBreak + file.text)
+          .join(lineBreak + lineBreak);
+      },
+    };
+  }
+
+  function pcSaveFileName(base) {
+    const title = fileNamePart(base) || "글";
+    return title + "_" + todayStamp() + ".txt";
+  }
+
+  // Returns "empty" | "no-pc" | "unavailable" | "opened". A save always offers
+  // a NEW dated name; the original document is never the destination.
+  async function saveTextToPc(text, baseName, onSaved) {
+    const content = String(text || "").trim();
+    if (!content) return "empty";
+    const linked = await pcLinked();
+    if (linked !== true) return "no-pc";
+    let component;
+    try { component = await loadPcExchange(); } catch (_) { component = null; }
+    if (!component || typeof component.open !== "function") return "unavailable";
+    component.open({
+      mode: "save",
+      content,
+      fileName: pcSaveFileName(baseName),
+      onSave: () => { if (onSaved) onSaved(); },
+    });
+    return "opened";
+  }
+
+  function wirePcSave(button, output, notice, baseName) {
+    if (!button) return;
+    button.addEventListener("click", async () => {
+      const outcome = await saveTextToPc(output.value, baseName(), () => setNotice(notice, PC_REF_COPY.saved, "info"));
+      if (outcome === "no-pc") {
+        setNoticeWithLink(notice, PC_REF_COPY.saveNoPc, PC_REF_COPY.connect, COMPUTER_CONNECT_HREF);
+      } else if (outcome === "unavailable") {
+        setNotice(notice, PC_REF_COPY.saveUnavailable, "error");
+      }
+    });
+  }
+
+  function setNoticeWithLink(line, text, label, href) {
+    if (!line) return;
+    line.textContent = text;
+    const link = el("a", "council-notice-link", label);
+    link.href = href;
+    line.appendChild(link);
+    line.hidden = false;
+    line.dataset.tone = "info";
+  }
+
+  // A failed generation carries its own 다시 시도 — the owner does not have to
+  // find the form button again (#5895).
+  function setNoticeWithRetry(line, text, run) {
+    if (!line) return;
+    line.textContent = text;
+    const retry = el("button", "council-notice-retry", "다시 시도");
+    retry.type = "button";
+    retry.addEventListener("click", () => {
+      setNotice(line, "");
+      retry.disabled = true;
+      run();
+    });
+    line.appendChild(retry);
+    line.hidden = false;
+    line.dataset.tone = "error";
+  }
+
   // ── speech module (prompt template ported verbatim from util-menu.js) ────
 
-  function buildSpeechPrompt(form) {
+  function buildSpeechPrompt(form, references) {
     const d = new FormData(form);
     const event = (d.get("event") || "").trim();
     const date = (d.get("date") || "").trim();
@@ -596,6 +984,8 @@
     prompt += `분량: ${lengthMap[length] || "보통"}\n`;
     prompt += `말투: ${toneMap[tone] || "공식적"}\n`;
     if (style) prompt += `\n아래는 사용자의 기존 축사/인사말 샘플입니다. 이 문체와 어휘, 표현 특성을 반영하여 작성해 주세요:\n---\n${style}\n---\n`;
+    // #5895: texts brought from the owner's PC are references, never copies.
+    if (references) prompt += `\n아래는 사용자의 PC에서 가져온 예전 글입니다. 문체와 어휘, 글의 구성을 참고하되 그대로 옮기지 마세요:\n---\n${references}\n---\n`;
     prompt += "\n축사 초안을 작성해 주세요. 행사 성격에 맞는 공식 축사 형식으로 작성하고, 인사말과 마무리 인사를 포함해 주세요.";
     return prompt;
   }
@@ -623,9 +1013,17 @@
       return l;
     }
 
+    let pcSection = null;
+
     function buildForm(host) {
       const form = el("form", "council-form");
       form.id = "councilSpeechForm";
+
+      const refFieldset = el("fieldset", "council-fieldset");
+      refFieldset.appendChild(el("legend", null, "참고 글"));
+      pcSection = createPcReferenceSection();
+      refFieldset.appendChild(pcSection.box);
+      form.appendChild(refFieldset);
 
       const primary = el("fieldset", "council-fieldset");
       primary.appendChild(el("legend", null, "행사 정보"));
@@ -708,8 +1106,9 @@
         id: "councilSpeechResult", outputId: "councilSpeechOutput", rows: 12,
         title: "생성 결과", copyId: "councilSpeechCopy",
         saveId: "councilSpeechSave", downloadId: "councilSpeechDownload",
+        pcSaveId: "councilSpeechPcSave",
       });
-      const { result, output, copyBtn, saveBtn, dlBtn } = panel;
+      const { result, output, copyBtn, saveBtn, dlBtn, pcSaveBtn } = panel;
       host.appendChild(result);
 
       // #5731 contract: the stored speech history is listed on tool re-entry
@@ -752,7 +1151,7 @@
               output.value = content;
               result.hidden = false;
               failed = false;
-              setNotice(notice, "");
+              setNotice(notice, f.name + "를 열었습니다. 같은 이름으로 저장하면 새 이름/덮어쓰기를 묻습니다.", "info");
               refreshSave();
             } else {
               setNotice(notice, "저장된 축사의 본문을 읽을 수 없습니다.", "error");
@@ -781,33 +1180,47 @@
         savedList.appendChild(ul);
       }
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      async function runGeneration() {
         if (busy) return;
         busy = true;
         submitBtn.disabled = true;
+        failed = false;
         refreshSave();
         setNotice(notice, "생성 중…", "busy");
         try {
-          const answer = await apiChat(buildSpeechPrompt(form), "speech");
+          const answer = await apiChat(
+            buildSpeechPrompt(form, pcSection ? pcSection.read() : ""), "speech",
+            (partial) => {
+              output.value = partial;
+              result.hidden = false;
+            },
+          );
           output.value = answer;
           result.hidden = false;
           failed = false;
           setNotice(notice, "");
         } catch (err) {
           failed = true;
-          setNotice(notice, generationFailureText(err), "error");
+          setNoticeWithRetry(notice, generationFailureText(err), runGeneration);
           if (!String(output.value || "").trim()) result.hidden = true;
         } finally {
           busy = false;
           submitBtn.disabled = false;
           refreshSave();
         }
+      }
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        void runGeneration();
       });
       wireCopy(copyBtn, output);
       dlBtn.addEventListener("click", () => {
         const text = String(output.value || "").trim();
         if (text) downloadText(text, speechFileName(form));
+      });
+      wirePcSave(pcSaveBtn, output, notice, () => {
+        const event = form.querySelector("[name=event]");
+        return "축사_" + (fileNamePart(event ? event.value : "") || "행사");
       });
       saveBtn.addEventListener("click", async () => {
         const text = output.value.trim();
@@ -839,7 +1252,12 @@
       onCountryChange(refreshSpeechList);
     }
 
-    return { build(host) { buildForm(host); }, buildPrompt: buildSpeechPrompt };
+    return {
+      build(host) { buildForm(host); },
+      buildPrompt: buildSpeechPrompt,
+      // The PC check runs when the tool is actually opened, never at page load.
+      onOpen() { if (pcSection) pcSection.check(); },
+    };
   })();
 
   // ── sns module (prompt template ported verbatim from util-menu.js) ───────
@@ -850,7 +1268,7 @@
   // time. No LOCAL 1 code is copied — the storage contract is the shipped
   // PADIEM one, re-stated against this app's own DOM.
 
-  function buildSnsPrompt(form, platform, photos) {
+  function buildSnsPrompt(form, platform, photos, references) {
     const d = new FormData(form);
     const event = (d.get("event") || "").trim();
     const whenwhere = (d.get("whenwhere") || "").trim();
@@ -878,14 +1296,23 @@
     if (memo) prompt += `메모: ${memo}\n`;
     if (audience) prompt += `대상 독자: ${audience}\n`;
     prompt += `문체: ${toneMap[tone]}\n`;
+    // #5895: texts brought from the owner's PC are references, never copies.
+    if (references) prompt += `\n아래는 사용자의 PC에서 가져온 예전 글입니다. 문체와 어휘, 글의 구성을 참고하되 그대로 옮기지 마세요:\n---\n${references}\n---\n`;
     prompt += "\n제목, 본문, 해시태그를 구분하여 작성해 주세요.";
     return prompt;
   }
 
   const snsModule = (() => {
+    let pcSection = null;
+
     function buildForm(host) {
       const form = el("form", "council-form");
       form.id = "councilSnsForm";
+      const refFieldset = el("fieldset", "council-fieldset");
+      refFieldset.appendChild(el("legend", null, "참고 글"));
+      pcSection = createPcReferenceSection();
+      refFieldset.appendChild(pcSection.box);
+      form.appendChild(refFieldset);
       const fields = [
         ["event", "행사명", "text", true, "예: 주민 정원 사업 설명회"],
         ["whenwhere", "날짜·장소", "text", false, "예: 10월 30일 오후 2시, 구청 소회의실"],
@@ -1116,9 +1543,54 @@
          await writePhotoRoster(councilProject.get());
        });
 
-      photoAdd.addEventListener("click", () => photoInput.click());
-      photoInput.addEventListener("change", async () => {
-        const files = Array.from(photoInput.files || []);
+      // #5728/#5895: with a linked PC, 사진 추가 reuses the shared 가져오기
+      // dialog and the picked PC file is read through /api/pc/file into this
+      // very upload pipeline. Without a linked PC the local picker stays — it
+      // works on a phone too.
+      const PC_PHOTO_FORMATS = "사진은 PNG·JPG·WEBP만 추가할 수 있어요: ";
+      function photoBytesType(bytes) {
+        const head = bytes && bytes.length >= 12 ? bytes : null;
+        if (!head) return null;
+        if (head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47) return "image/png";
+        if (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff) return "image/jpeg";
+        const riff = String.fromCharCode(head[0], head[1], head[2], head[3]);
+        const form = String.fromCharCode(head[8], head[9], head[10], head[11]);
+        if (riff === "RIFF" && form === "WEBP") return "image/webp";
+        return null;
+      }
+      async function importPickedPhoto(picked) {
+        if (!picked || !picked.fileId) return;
+        const name = picked.name || "사진";
+        let bytes;
+        try {
+          const res = await fetch(
+            "/api/pc/file?dispatch_id=" + encodeURIComponent(picked.fileId),
+            { credentials: "include", cache: "no-store" },
+          );
+          if (!res.ok) throw new Error("http_" + res.status);
+          bytes = new Uint8Array(await (await res.blob()).arrayBuffer());
+        } catch (error) {
+          const matched = /^http_(\d+)$/.exec(String((error && error.message) || ""));
+          const status = matched ? Number(matched[1]) : 0;
+          const why = status === 0 ? GEN_OFFLINE_COPY : (GEN_ERROR_COPY[status] || "잠시 후 다시 시도해 주세요.");
+          setNotice(notice, "PC에서 사진을 가져오지 못했습니다: " + name + " — " + why, "error");
+          return;
+        }
+        const type = photoBytesType(bytes);
+        if (!type) { setNotice(notice, PC_PHOTO_FORMATS + name, "error"); return; }
+        if (typeof File !== "function") return;
+        await addPhotoFiles([new File([bytes], name, { type: type })]);
+      }
+      photoAdd.addEventListener("click", async () => {
+        const linked = await pcLinked();
+        if (linked !== true) { photoInput.click(); return; }
+        let component;
+        try { component = await loadPcExchange(); } catch (_) { component = null; }
+        if (!component || typeof component.open !== "function") { photoInput.click(); return; }
+        component.open({ mode: "import", onSelect: (picked) => { void importPickedPhoto(picked); } });
+      });
+      async function addPhotoFiles(pickedFiles) {
+        const files = Array.from(pickedFiles || []);
         const failed = [];
         for (const file of files) {
           if (!file || String(file.type || "").indexOf("image/") !== 0) continue;
@@ -1140,7 +1612,8 @@
         // An added photo is part of the durable composition as soon as its
         // upload landed — the roster records it right away.
         if (!failed.length) await writePhotoRoster(councilProject.get());
-      });
+      }
+      photoInput.addEventListener("change", () => { void addPhotoFiles(photoInput.files); });
 
       function blogParagraphs(text) {
         return String(text || "").split(new RegExp("\\n\\s*\\n")).filter((p) => p.trim());
@@ -1201,10 +1674,50 @@
         id: "councilSnsResult", outputId: "councilSnsOutput", rows: 12,
         titleNode: title, afterOutput: previewBox, copyId: "councilSnsCopy",
         saveId: "councilSnsSave", downloadId: "councilSnsDownload",
+        pcSaveId: "councilSnsPcSave",
       });
-      const { result, output, copyBtn: copyB, saveBtn, dlBtn: dlB } = panel;
+      const { result, output, copyBtn: copyB, saveBtn, dlBtn: dlB, pcSaveBtn } = panel;
 
-      host.replaceChildren(form, notice, result);
+      // 저장한 SNS 글도 다시 열 수 있다 — 축사 목록과 같은 프로젝트 파일 규칙.
+      const savedList = el("div", "council-saved-list");
+      savedList.id = "councilSnsSaved";
+      host.replaceChildren(form, notice, result, savedList);
+
+      async function refreshSnsList() {
+        const pid = await councilProject.ensure();
+        if (!pid) return;
+        const files = await listProjectFiles(pid);
+        const drafts = files
+          .filter((f) => hasDocKind(f, "sns") || (!(f && f.doc_kind) && isSnsPostFile(f)))
+          .filter(sameCountry);
+        savedList.replaceChildren();
+        savedList.appendChild(el("h3", null, "저장된 SNS 글"));
+        if (!drafts.length) {
+          savedList.appendChild(el("p", "council-empty", "저장된 SNS 글이 없습니다."));
+          return;
+        }
+        const ul = document.createElement("ul");
+        drafts.forEach((f) => {
+          const li = el("li", "council-saved-item");
+          const btn = el("button", "council-saved-open", f.name + " (" + (f.content_chars || 0) + "자)");
+          btn.type = "button";
+          btn.addEventListener("click", async () => {
+            const content = await fetchProjectFile(pid, f.id);
+            if (typeof content !== "string") {
+              setNotice(notice, "저장된 SNS 글의 본문을 읽을 수 없습니다.", "error");
+              return;
+            }
+            output.value = content;
+            result.hidden = false;
+            failed = false;
+            refreshSave();
+            setNotice(notice, f.name + "를 열었습니다. 같은 이름으로 저장하면 새 이름/덮어쓰기를 묻습니다.", "info");
+          });
+          li.appendChild(btn);
+          ul.appendChild(li);
+        });
+        savedList.appendChild(ul);
+      }
 
       // #5728: re-entry restores the persisted composition ONCE, at build
       // time — before any interaction with the photo list. The stored image
@@ -1282,15 +1795,23 @@
         saveBtn.disabled = busy || failed || !String(output.value || "").trim();
       }
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      async function runGeneration() {
         if (busy) return;
         busy = true;
         submitBtn.disabled = true;
+        failed = false;
         refreshSave();
         setNotice(notice, "생성 중…", "busy");
         try {
-          const answer = await apiChat(buildSnsPrompt(form, platform, photos), "sns");
+          const answer = await apiChat(
+            buildSnsPrompt(form, platform, photos, pcSection ? pcSection.read() : ""), "sns",
+            (partial) => {
+              output.value = partial;
+              result.hidden = false;
+              previewBox.hidden = false;
+              renderPreview();
+            },
+          );
           output.value = answer;
           result.hidden = false;
           previewBox.hidden = false;
@@ -1299,7 +1820,7 @@
           renderPreview();
         } catch (err) {
           failed = true;
-          setNotice(notice, generationFailureText(err), "error");
+          setNoticeWithRetry(notice, generationFailureText(err), runGeneration);
           if (!String(output.value || "").trim()) {
             result.hidden = true;
             previewBox.hidden = true;
@@ -1309,11 +1830,19 @@
           submitBtn.disabled = false;
           refreshSave();
         }
+      }
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        void runGeneration();
       });
       wireCopy(copyB, output);
       dlB.addEventListener("click", () => {
         const text = String(output.value || "").trim();
         if (text) downloadText(text, "SNS_" + (title.textContent || "게시글") + "_" + todayStamp() + ".txt");
+      });
+      wirePcSave(pcSaveBtn, output, notice, () => {
+        const event = form.querySelector("[name=event]");
+        return "SNS_" + (fileNamePart(event ? event.value : "") || title.textContent || "게시글");
       });
       saveBtn.addEventListener("click", async () => {
         const text = output.value.trim();
@@ -1338,14 +1867,21 @@
           // text and its platform, not only the photos.
           lastSavedDraft = { text: text, platform: platform };
           await writePhotoRoster(pid, lastSavedDraft);
+          await refreshSnsList();
         } else if (outcome.failure) {
           setNotice(notice, saveFailureText(outcome.failure), "error");
         }
       });
       refreshSave();
+      refreshSnsList();
+      onCountryChange(refreshSnsList);
     }
 
-    return { build(host) { buildForm(host); }, buildPrompt: buildSnsPrompt };
+    return {
+      build(host) { buildForm(host); },
+      buildPrompt: buildSnsPrompt,
+      onOpen() { if (pcSection) pcSection.check(); },
+    };
   })();
 
   // ── meeting module (prompts ported verbatim from util-menu.js) ───────────
@@ -1418,8 +1954,9 @@
         id: "councilMeetingResult", outputId: "councilMeetingOutput", rows: 12,
         title: "회의 요약", copyId: "councilMeetingCopy",
         saveId: "councilMeetingSave", downloadId: "councilMeetingDownload",
+        pcSaveId: "councilMeetingPcSave",
       });
-      const { result, output, copyBtn: copyB, saveBtn: formSaveB, dlBtn: dlB } = panel;
+      const { result, output, copyBtn: copyB, saveBtn: formSaveB, dlBtn: dlB, pcSaveBtn } = panel;
 
       const archive = el("div", "council-archive");
       archive.id = "councilMeetingArchive";
@@ -1432,34 +1969,45 @@
         formSaveB.disabled = busy || failed || !String(output.value || "").trim();
       }
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      async function runGeneration() {
         if (busy) return;
         busy = true;
         submitBtn.disabled = true;
+        failed = false;
         refreshSave();
         setNotice(notice, "생성 중…", "busy");
         try {
-          const answer = await apiChat(buildMeetingPrompt(form), "meeting");
+          const answer = await apiChat(buildMeetingPrompt(form), "meeting", (partial) => {
+            output.value = partial;
+            result.hidden = false;
+          });
           output.value = answer;
           result.hidden = false;
           failed = false;
           setNotice(notice, "");
         } catch (err) {
           failed = true;
-          setNotice(notice, generationFailureText(err), "error");
+          setNoticeWithRetry(notice, generationFailureText(err), runGeneration);
           if (!String(output.value || "").trim()) result.hidden = true;
         } finally {
           busy = false;
           submitBtn.disabled = false;
           refreshSave();
         }
+      }
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        void runGeneration();
       });
       wireCopy(copyB, output);
       dlB.addEventListener("click", () => {
         const text = String(output.value || "").trim();
         const titlePart = fileNamePart(form.querySelector("[name=title]")?.value) || "회의";
         if (text) downloadText(text, "회의_" + titlePart + "_" + todayStamp() + ".txt");
+      });
+      wirePcSave(pcSaveBtn, output, notice, () => {
+        const title = form.querySelector("[name=title]");
+        return "회의_" + (fileNamePart(title ? title.value : "") || "회의");
       });
       formSaveB.addEventListener("click", async () => {
         const text = output.value.trim();
@@ -1521,7 +2069,10 @@
         const bookDl = el("button", null, "텍스트 다운로드");
         bookDl.type = "button";
         bookDl.id = "councilBookDownload";
-        bookActions.append(bookCopy, bookSave, bookDl);
+        const bookPcSave = el("button", null, PC_REF_COPY.save);
+        bookPcSave.type = "button";
+        bookPcSave.id = "councilBookPcSave";
+        bookActions.append(bookCopy, bookSave, bookDl, bookPcSave);
         bookResult.appendChild(bookActions);
 
         const bookBtn = el("button", "council-generate", "선택 기록으로 활동집 초안 생성");
@@ -1550,7 +2101,27 @@
           const periodStatus = el("p", null, "기간을 선택하면 회의 일시가 있는 기록을 찾습니다. 날짜가 없는 기록은 직접 확인해 선택해 주세요.");
           periodStatus.id = "councilBookPeriodStatus";
           periodStatus.setAttribute("role", "status");
-          range.append(startLabel, endLabel, selectPeriod, periodStatus);
+          range.append(startLabel, endLabel, selectPeriod);
+          // 기간 빠른 선택 — 시작/종료를 채우고 같은 선택 동작을 누른다.
+          const iso = (d) => {
+            const pad = (n) => String(n).padStart(2, "0");
+            return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+          };
+          [["이번 달", (d) => [new Date(d.getFullYear(), d.getMonth(), 1), new Date(d.getFullYear(), d.getMonth() + 1, 0)]],
+           ["지난달", (d) => [new Date(d.getFullYear(), d.getMonth() - 1, 1), new Date(d.getFullYear(), d.getMonth(), 0)]],
+           ["이번 분기", (d) => { const m = Math.floor(d.getMonth() / 3) * 3; return [new Date(d.getFullYear(), m, 1), new Date(d.getFullYear(), m + 3, 0)]; }],
+           ["올해", (d) => [new Date(d.getFullYear(), 0, 1), new Date(d.getFullYear(), 11, 31)]]].forEach(([label, pick]) => {
+            const quick = el("button", "council-book-quick", label);
+            quick.type = "button";
+            quick.addEventListener("click", () => {
+              const [from, to] = pick(new Date());
+              start.value = iso(from);
+              end.value = iso(to);
+              void selectPeriod.click();
+            });
+            range.appendChild(quick);
+          });
+          range.appendChild(periodStatus);
           arc.appendChild(range);
           arc.appendChild(bookBtn);
           const ul = document.createElement("ul");
@@ -1584,13 +2155,28 @@
                 }
                 result.hidden = false;
                 failed = false;
-                setNotice(notice, "");
+                setNotice(notice, f.name + "를 열었습니다. 같은 이름으로 저장하면 새 이름/덮어쓰기를 묻습니다.", "info");
                 refreshSave();
               } else {
                 setNotice(notice, "저장된 회의 기록의 본문을 읽을 수 없습니다.", "error");
               }
             });
             li.appendChild(btn);
+            const moveUp = el("button", "council-record-move", "↑");
+            moveUp.type = "button";
+            moveUp.setAttribute("aria-label", f.name + " 위로");
+            const moveDown = el("button", "council-record-move", "↓");
+            moveDown.type = "button";
+            moveDown.setAttribute("aria-label", f.name + " 아래로");
+            moveUp.addEventListener("click", () => {
+              const previous = li.previousElementSibling;
+              if (previous) ul.insertBefore(li, previous);
+            });
+            moveDown.addEventListener("click", () => {
+              const next = li.nextElementSibling;
+              if (next) ul.insertBefore(next, li);
+            });
+            li.append(moveUp, moveDown);
             ul.appendChild(li);
           });
           arc.appendChild(ul);
@@ -1638,6 +2224,7 @@
           if (bookBusy) return;
           bookBusy = true;
           bookBtn.disabled = true;
+          let stage = "read";
           setNotice(bookNotice, "선택한 회의 기록을 불러오는 중…", "busy");
           try {
             const contents = [];
@@ -1653,7 +2240,11 @@
               contents.push("[기록: " + data.file.name + "]\n" + data.file.content);
             }
             setNotice(bookNotice, "활동집 초안을 만드는 중…", "busy");
-            const answer = await apiChat(buildBookPrompt(contents), "meeting");
+            stage = "generate";
+            const answer = await apiChat(buildBookPrompt(contents), "meeting", (partial) => {
+              bookOutput.value = partial;
+              bookResult.hidden = false;
+            });
             bookOutput.value = answer;
             bookResult.hidden = false;
             bookFailed = false;
@@ -1662,7 +2253,11 @@
             // A record that could not be read is a concrete sentence; a
             // generation failure uses the shared Korean copy.
             bookFailed = true;
-            setNotice(bookNotice, e && e.status ? generationFailureText(e) : String(e && e.message ? e.message : e), "error");
+            const sentence = stage === "generate"
+              ? generationFailureText(e)
+              : String(e && e.message ? e.message : e);
+            if (stage === "generate") setNoticeWithRetry(bookNotice, sentence, () => bookBtn.click());
+            else setNotice(bookNotice, sentence, "error");
             if (!String(bookOutput.value || "").trim()) bookResult.hidden = true;
           } finally {
             bookBusy = false;
@@ -1671,6 +2266,10 @@
           }
         });
         wireCopy(bookCopy, bookOutput);
+        wirePcSave(bookPcSave, bookOutput, bookNotice, () => {
+          const firstLine = String(bookOutput.value || "").split("\n", 1)[0].trim();
+          return "활동집_" + (fileNamePart(firstLine.replace(/^[0-9]+\.\s*/, "")) || "초안");
+        });
         bookDl.addEventListener("click", () => {
           const text = String(bookOutput.value || "").trim();
           if (text) downloadText(text, bookFileName(text));
@@ -1839,7 +2438,7 @@
         outcome = null;
       }
     }
-    // fail-closed gate, unchanged from councillor.js: nothing is attached unless
+    // fail-closed gate, unchanged from the retired councillor screen: nothing is attached unless
     // the server itself says this cookie is authenticated, and an unanswered read
     // is not permission.
     return outcome || { signedIn: false, methods: null, unavailable: true };
@@ -1938,6 +2537,9 @@
       rememberTool(tool);
       writeToolToUrl(tool);
       if (moveFocus) focusToolPanel(tool);
+      // The PC check runs when this tool is actually opened, never on load.
+      const opened = MODULES[tool];
+      if (opened && typeof opened.onOpen === "function") opened.onOpen();
     }
     paintWorkspace(tool || null);
     return session.selected;
@@ -2031,12 +2633,13 @@
     return true;
   }
 
+  const MODULES = Object.freeze({ speech: speechModule, sns: snsModule, meeting: meetingModule });
+
   function buildToolPanels() {
     if (session.built) return;
-    const tools = { speech: speechModule, sns: snsModule, meeting: meetingModule };
     TOOLS.forEach((key) => {
       const hostNode = bodies[key];
-      if (hostNode && tools[key]) tools[key].build(hostNode);
+      if (hostNode && MODULES[key]) MODULES[key].build(hostNode);
     });
     session.built = true;
   }
@@ -2167,6 +2770,13 @@
     document.addEventListener("click", () => { if (theme.open) setThemePanel(false); });
     document.addEventListener("keydown", (event) => {
       if (!event || event.key !== "Escape") return;
+      // A shared PC dialog that is open owns Escape: close the dialog, never the
+      // editor behind it.
+      const exchange = window.PadiemPcFileExchange;
+      if (exchange && typeof exchange.isOpen === "function" && exchange.isOpen()) {
+        if (typeof exchange.close === "function") exchange.close();
+        return;
+      }
       // Escape inside a field belongs to the field (it leaves the field or
       // closes the browser's own picker). It must never dismiss the editor and
       // throw away what the writer is typing.

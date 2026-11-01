@@ -447,6 +447,102 @@ body.council-body {
   cursor: pointer;
 }
 .council-save-choice .council-save-as-new { border-color: var(--council-accent); font-weight: 700; }
+
+/* ── 내 PC 연결 (#5895): 참고 글 · 안내줄 링크 · 다시 시도 ─────────────── */
+.council-pc-ref { display: grid; gap: 8px; min-width: 0; }
+.council-pc-ref-pick {
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--council-accent);
+  border-radius: 999px;
+  background: var(--council-surface);
+  color: var(--council-text);
+  cursor: pointer;
+}
+.council-pc-ref-pick:hover { background: var(--council-accent-soft); }
+.council-pc-ref-note {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--council-muted);
+  word-break: keep-all;
+}
+.council-pc-ref-connect,
+.council-notice-link {
+  margin-left: 6px;
+  font-weight: 700;
+  color: var(--council-text);
+  text-decoration: underline;
+  text-decoration-color: var(--council-accent);
+  text-underline-offset: 3px;
+}
+.council-pc-ref-status {
+  margin: 0;
+  font-size: 14px;
+  color: var(--council-text);
+  word-break: keep-all;
+}
+.council-pc-ref-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.council-pc-ref-item {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--council-border);
+  border-radius: 12px;
+  background: var(--council-bg);
+}
+.council-pc-ref-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+.council-pc-ref-name { font-size: 15px; overflow-wrap: anywhere; }
+.council-pc-ref-chars { font-size: 14px; color: var(--council-muted); }
+.council-pc-ref-remove {
+  font: inherit;
+  font-size: 14px;
+  min-height: 44px;
+  padding: 4px 12px;
+  margin-left: auto;
+  border: 1px solid var(--council-border);
+  border-radius: 999px;
+  background: var(--council-surface);
+  color: var(--council-text);
+  cursor: pointer;
+}
+.council-pc-ref-preview {
+  margin: 0;
+  max-height: 120px;
+  overflow: auto;
+  white-space: pre-wrap;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--council-text);
+  overflow-wrap: anywhere;
+}
+.council-notice-retry {
+  margin-left: 8px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  min-height: 44px;
+  padding: 4px 14px;
+  border: 1px solid var(--council-danger);
+  border-radius: 999px;
+  background: var(--council-surface);
+  color: var(--council-text);
+  cursor: pointer;
+}
+/* The shared PC dialog's tokens, mapped onto this page's material. */
+.council-body {
+  --surface: var(--panel);
+  --field: var(--bg);
+  --text-muted: var(--muted);
+  --tint: var(--accent-soft);
+  --input-border-strong: var(--line);
+  --danger: var(--council-danger);
+}
 .council-archive {
   /* 시안에 목록이 없어 새 규칙으로 짓되, 시안의 표면 어휘를 쓴다: 항목을 테두리 박스로
      나열하지 않고 패널 하나 안에 헤어라인으로 구분한다(`.pa-strip li + li` 어휘). */
@@ -485,6 +581,20 @@ body.council-body {
 }
 .council-archive-item button:hover { color: var(--council-text); text-decoration: underline; }
 .council-empty { color: var(--council-muted); font-size: 14px; }
+/* 회의 기록 순서 바꾸기: 보이는 순서가 곧 활동집 순서다. */
+.council-record-move {
+  font: inherit;
+  font-size: 15px;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--council-border);
+  border-radius: 10px;
+  background: var(--council-surface);
+  color: var(--council-text);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.council-record-move:hover { border-color: var(--council-accent); background: var(--council-accent-soft); }
 /* 날짜·선택 줄: 입력과 단추 모두 44px 이고 한 줄에서 감싼다. */
 .council-book-period {
   display: flex;
@@ -696,6 +806,16 @@ body.council-body {
   .council-card-body:has(.council-saved-list) .council-form,
   .council-card-body:has(.council-archive) .council-form,
   .council-card-body:has(.council-result:not([hidden])) .council-form { grid-column: 1; }
+  /* The 안내줄 is not a column: it spans the row above the form and the paper.
+     Without this it took the paper's cell and pushed the streaming draft below
+     the first screen. */
+  .council-card-body:has(.council-tool-notice:not([hidden])) > .council-tool-notice {
+    grid-column: 1 / -1;
+    /* The notice owns the first row. Without an explicit row it is placed after
+       the form (the first DOM child), which pushes the streaming draft below
+       the first screen. */
+    grid-row: 1;
+  }
   .council-card-body:has(.council-saved-list) :is(.council-result, .council-saved-list),
   .council-card-body:has(.council-archive) :is(.council-result, .council-archive),
   .council-card-body:has(.council-result:not([hidden])) .council-result { grid-column: 2; }

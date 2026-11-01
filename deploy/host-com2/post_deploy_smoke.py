@@ -42,7 +42,9 @@ def applied_migrations(path):
 def checks(base, db_path, *, ai_status, ai_code="none", opener=None):
     opener = opener or build_opener()
     result = [("AI 답변", ai_status, ai_code if ai_status == "FAIL" else "-")]
-    for name, route in (("의원 화면", "/apps/council/"), ("의원 활동 화면", "/councillor/")):
+    # 2026-11-01: /councillor/ is a redirect to the council app; the opener
+    # follows it, so a 200 here means the alias still lands on the product.
+    for name, route in (("의원 화면", "/apps/council/"), ("의원 화면 별칭(→ /apps/council/)", "/councillor/")):
         status = page_status(opener, base.rstrip("/") + route)
         result.append((name, "PASS" if status == 200 else "FAIL",
                        "-" if status == 200 else "http_" + str(status)))

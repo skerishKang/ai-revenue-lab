@@ -317,6 +317,10 @@
   // renders from the current session's own server-side state.
   const AUTOMATION_ROUTE_HASH = "#padiem-automation";
   const CLAW_ROUTE_HASH = "#padiem-claw";
+  // #5895/2026-11-01: the council app's connect-computer button lands on the
+  // existing Connectors surface. The fragment is a destination only — no
+  // pairing, device or session value rides it.
+  const CONNECTORS_ROUTE_HASH = "#padiem-connectors";
   let automationDestinationReady = false;
   // One page contract for every shell screen. This table is the only place a
   // screen names itself, says which dedicated panel it owns, lists the
@@ -351,14 +355,19 @@
       const currentHash = String(window.location.hash || "");
       const isAutomationRoute = currentHash === AUTOMATION_ROUTE_HASH;
       const isClawRoute = currentHash === CLAW_ROUTE_HASH;
+      const isConnectorsRoute = currentHash === CONNECTORS_ROUTE_HASH;
       const basePath = window.location.pathname + window.location.search;
       if (state === "automation" && !isAutomationRoute) {
         window.history.replaceState(window.history.state, "", basePath + AUTOMATION_ROUTE_HASH);
       } else if (state === "claw" && !isClawRoute) {
         window.history.replaceState(window.history.state, "", basePath + CLAW_ROUTE_HASH);
+      } else if (state === "connectors" && !isConnectorsRoute) {
+        window.history.replaceState(window.history.state, "", basePath + CONNECTORS_ROUTE_HASH);
       } else if (state !== "automation" && isAutomationRoute) {
         window.history.replaceState(window.history.state, "", basePath);
       } else if (state !== "claw" && isClawRoute) {
+        window.history.replaceState(window.history.state, "", basePath);
+      } else if (state !== "connectors" && isConnectorsRoute) {
         window.history.replaceState(window.history.state, "", basePath);
       }
     }
@@ -7249,6 +7258,7 @@
   // neither route, so the shell keeps its default Chat home.
   if (window.location.hash === AUTOMATION_ROUTE_HASH) openClawAutomation();
   else if (window.location.hash === CLAW_ROUTE_HASH) openClawWorkspace();
+  else if (window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();
   automationDestinationReady = true;
 })();
 
