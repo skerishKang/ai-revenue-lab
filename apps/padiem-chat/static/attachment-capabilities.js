@@ -82,8 +82,10 @@
     return Object.freeze({
       imageFormats: imageLabels,
       documentFormats: documentLabels,
-      idleNote: `사진(${imageLabels}) 또는 문서(${documentLabels}) 한 개를 첨부할 수 있습니다.`,
-      fileButtonTitle: `사진(${imageLabels}) 또는 문서(${documentDetail}) 한 개를 첨부합니다.`,
+      // #261102: the composer no longer promises "one at a time" — the count
+      // is the server's per-message cap, surfaced only when a pick exceeds it.
+      idleNote: `사진(${imageLabels}) 또는 문서(${documentLabels})를 첨부할 수 있습니다.`,
+      fileButtonTitle: `사진(${imageLabels}) 또는 문서(${documentDetail})를 첨부합니다.`,
       unsupportedFormat: `지원 첨부 형식: ${imageLabels}·${documentLabels}.`,
     });
   }
