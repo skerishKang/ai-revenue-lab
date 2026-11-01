@@ -275,6 +275,11 @@ def build_app():
     app.state.claw_pc_device_selection_store = D1PcDeviceSelectionStore(db)
     app.state.pc_pairing_install_url = (os.getenv("PC_AGENT_INSTALL_URL") or "").strip()
 
+    # The upload UI and write routes open only on the COM2 host when the
+    # reviewed PDF conversion dependency is actually installed.
+    import importlib.util
+    app.state.pdfmd_com2_ready = host_flag and importlib.util.find_spec("pypdf") is not None
+
     queue_client = build_queue_client(_queue_env())
     if queue_client is not None:
         # The same three replacements worker.py performs when its env selects
