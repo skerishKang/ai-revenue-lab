@@ -5,4 +5,6 @@ RequiresMountsFor=/mnt/d/padiem/chat-com2
 [Service]
 Type=oneshot
 User=padiem-chat
-ExecStart=/opt/padiem/chat-com2/venv/bin/python /opt/padiem/chat-com2/backup.py --db /mnt/d/padiem/chat-com2/chat.sqlite3 --dest /mnt/d/padiem/chat-com2/backups --keep 7
+Environment=PADIEM_CHAT_LOCAL_DATA_DIR=/mnt/d/padiem/chat-com2
+EnvironmentFile=/opt/padiem/chat-com2/.env
+ExecStart=/opt/padiem/chat-com2/venv/bin/python /opt/padiem/chat-com2/backup.py --db ${PADIEM_CHAT_LOCAL_DATA_DIR}/chat.sqlite3 --dest ${PADIEM_CHAT_LOCAL_DATA_DIR}/backups --keep 7

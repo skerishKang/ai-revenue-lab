@@ -217,6 +217,21 @@ class SharedLoginFlow(ComparisonFlow):
                 }))
             except Exception:
                 return JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
+        auth = getattr(self, 'auth', None)
+        try:
+            invalidate = getattr(auth, 'invalidate_session', None)
+            if callable(invalidate):
+                await _await(invalidate(request, request.cookies.get(ACCESS_COOKIE)))
+            else:
+                # Older injected auth ports have only user_id(). There is
+                # no cache to invalidate on their default composition;
+                # if one is configured, safely discard it in full.
+                from .auth_validation_cache import cache_for_request
+                cache = cache_for_request(request)
+                if cache is not None:
+                    await cache.invalidate_all()
+        except Exception:
+            return JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
         return clear_shared_cookies(JSONResponse({'ok': True}, headers=headers))
 
     def login_routes(self):

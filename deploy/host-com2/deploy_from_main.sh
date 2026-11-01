@@ -32,7 +32,12 @@
 #   PADIEM_COM2_CHAT_HEALTH_TIMEOUT
 #   PADIEM_COM2_CHAT_DB          Chat SQLite file holding the migration ledger
 #   PADIEM_COM2_P01_APP          P01 install root (#6442 releases/rollback)
-#   PADIEM_COM2_B14_APP          B14 app checkout
+#   PADIEM_COM2_B14_APP          B14 app tree (a link into the mirror)
+#   PADIEM_COM2_MESH_QUEUE_APP   the PC queue install root (its code also from the mirror)
+#   PADIEM_COM2_MESH_QUEUE_USER  the account that owns that root
+#   PADIEM_COM2_HEALTH_TIMEOUT / PADIEM_COM2_HEALTH_INTERVAL
+#                                how long a start or a rollback may take to become
+#                                healthy (30s, 2s)
 #   PADIEM_COM2_SYSTEMCTL        systemctl wrapper
 #   PADIEM_COM2_PYTHON           python3
 #   PADIEM_COM2_GIT              git
@@ -55,9 +60,16 @@ stage_only=0
 chat_health_attempts=${PADIEM_COM2_CHAT_HEALTH_ATTEMPTS:-31}
 chat_health_interval=${PADIEM_COM2_CHAT_HEALTH_INTERVAL:-2}
 chat_health_timeout=${PADIEM_COM2_CHAT_HEALTH_TIMEOUT:-60}
+# A service that has not finished binding its loopback port is not an unhealthy
+# service. One probe used to be enough to call a rollback, so every service except
+# Chat (which already had its own patience) retries until this deadline.
+health_timeout=${PADIEM_COM2_HEALTH_TIMEOUT:-30}
+health_interval=${PADIEM_COM2_HEALTH_INTERVAL:-2}
 chat_db=${PADIEM_COM2_CHAT_DB:-/mnt/d/padiem/chat-com2/chat.sqlite3}
 p01_root=${PADIEM_COM2_P01_APP:-/opt/padiem/p01}
 b14_app=${PADIEM_COM2_B14_APP:-/opt/padiem/b14/app}
+queue_root=${PADIEM_COM2_MESH_QUEUE_APP:-/opt/padiem/mesh-queue}
+queue_account=${PADIEM_COM2_MESH_QUEUE_USER:-padiem-mesh}
 systemctl_bin=${PADIEM_COM2_SYSTEMCTL:-systemctl}
 python_bin=${PADIEM_COM2_PYTHON:-python3}
 git_bin=${PADIEM_COM2_GIT:-git}
@@ -75,6 +87,7 @@ old=''
 CHAT_UNIT=padiem-chat-com2.service
 P01_UNIT=padiem-p01.service
 B14_UNIT=padiem-b14.service
+QUEUE_UNIT=padiem-mesh-queue.service
 
 fail() { printf 'COM2_DEPLOY=STOP\nCOM2_DEPLOY_REASON=%s\n' "$1" >&2; exit "${2:-2}"; }
 say() { printf 'COM2_DEPLOY_%s\n' "$*"; }
@@ -148,6 +161,7 @@ service_for_path() {
     apps/padiem-chat/*|apps/padiem-council-apps/static/*|packages/*|deploy/host-com2/chat/*) echo chat ;;
     apps/padiem-ai-engine/*|deploy/host-com2/p01/*) echo p01 ;;
     apps/korean-ai-platform/*|deploy/host-com2/b14/*) echo b14 ;;
+    apps/padiem-mesh-queue/*) echo queue ;;
   esac
 }
 
@@ -215,6 +229,29 @@ wait_chat_health() {
 }
 
 # stage_code.sh copies these exact paths into the release selected by app.
+# $1 label, $2... the probe command. The first attempt runs immediately, later ones
+# after a pause, and the deadline bounds the whole wait; the attempt count is
+# reported so a slow start reads as a slow start instead of a broken release.
+wait_for_health() {
+  local label=$1 attempt=0 deadline remaining pause
+  shift
+  [[ $health_timeout =~ ^[1-9][0-9]*$ && $health_interval =~ ^[0-9]+$ ]] \
+    || { say "HEALTH_${label}=INVALID_CONFIGURATION"; return 1; }
+  deadline=$((SECONDS + health_timeout))
+  while :; do
+    attempt=$((attempt + 1))
+    if "$@"; then
+      say "HEALTH_${label}_ATTEMPTS=$attempt"
+      return 0
+    fi
+    remaining=$((deadline - SECONDS))
+    (( remaining > 0 )) || { say "HEALTH_${label}_ATTEMPTS=$attempt"; return 1; }
+    pause=$health_interval
+    (( pause > remaining )) && pause=$remaining
+    sleep "$pause"
+  done
+}
+
 # Compare that actual link target with the requested Git tree. Missing, broken,
 # or unprovable state is not evidence that a deployment can be skipped.
 p01_matches_target() {
@@ -255,6 +292,7 @@ SOURCE_PATHS=(
   apps/padiem-council-apps
   apps/padiem-ai-engine
   apps/korean-ai-platform
+  apps/padiem-mesh-queue
   apps/korean-ai-code-agent/src/kagent
   packages/padiem-ai-core/padiem_ai_core
   packages/padiem-control-plane
@@ -383,20 +421,53 @@ deploy_p01() {
   assert_service_readable P01_LIVE "$live" padiem-p01 || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$P01_UNIT" || return 1
-    "$python_bin" "$staged/deploy/host-com2/p01/health.py" --url "$p01_health_url"
+    wait_for_health P01 "$python_bin" "$staged/deploy/host-com2/p01/health.py" --url "$p01_health_url"
   else
     say 'P01_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
+}
+
+# B14's app tree used to be an operator copy this script could neither update nor
+# put back, so platform code on main could not reach 8789 and a failed install left
+# the unit stopped. The link is now the deployment: the previous mirror, the previous
+# rollback worktree or the displaced copy is the rollback, and the unit comes up
+# either way.
+link_b14_app() {
+  # $1 the tree B14 must run. A copy the operator placed by hand is displaced, not
+  # deleted: it is the only rollback left when no previous mirror exists.
+  local target=$1 displaced
+  [[ -d $target ]] || { say "B14_SOURCE_MISSING PATH=$target"; return 1; }
+  if [[ ! -L $b14_app && -d $b14_app ]]; then
+    displaced="${b14_app}.displaced-$(date +%Y%m%dT%H%M%S)"
+    mv -- "$b14_app" "$displaced" || { say 'B14_DISPLACE_FAILED'; return 1; }
+    say "B14_OPERATOR_COPY=$displaced"
+  fi
+  ln -sfn -- "$target" "$b14_app" || return 1
+  say "B14_LINK=$target"
+}
+
+b14_rollback_source() {
+  # The newest thing that is provably the previous code, or nothing.
+  local candidate displaced
+  displaced=$(ls -1dt "$b14_app".displaced-* 2>/dev/null | head -1 || true)
+  for candidate in "$source_stage_dir/$old/apps/korean-ai-platform" \
+                   "$previous_dir/$old/apps/korean-ai-platform" \
+                   "$displaced"; do
+    [[ -n $candidate && -d $candidate ]] && { printf '%s' "$candidate"; return 0; }
+  done
+  return 1
 }
 
 deploy_b14() {
   local before_active=0
   if unit_active "$B14_UNIT"; then before_active=1; fi
   with_service_stopped "$B14_UNIT" || return 1
+  link_b14_app "$staged/apps/korean-ai-platform" || return 1
   bash "$staged/deploy/host-com2/b14/install.sh" --reload || return 1
+  assert_service_readable B14_LIVE "$staged/apps/korean-ai-platform" padiem-b14 || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$B14_UNIT" || return 1
-    "$python_bin" "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
+    wait_for_health B14 "$python_bin" "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
   else
     say 'B14_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
@@ -439,28 +510,93 @@ rollback_p01() {
     return 1
   fi
   "$systemctl_bin" start "$P01_UNIT" || return 1
-  "$python_bin" "$staged/deploy/host-com2/p01/health.py" --url "$p01_health_url"
+  wait_for_health P01_ROLLBACK "$python_bin" "$staged/deploy/host-com2/p01/health.py" --url "$p01_health_url"
 }
 
-# B14 code is an operator-staged checkout. When it is a link this script can
-# restore it; when it is a copy the operator owns the rollback, and the script
-# says so instead of guessing.
 rollback_b14() {
-  local previous="$previous_dir/$old/apps/korean-ai-platform"
-  if [[ -L $b14_app ]]; then
+  local previous="$previous_dir/$old/apps/korean-ai-platform" source
+  if source=$(b14_rollback_source); then
     with_service_stopped "$B14_UNIT" || return 1
-    ln -sfnT "$previous" "$b14_app" || return 1
+    link_b14_app "$source" || return 1
     "$systemctl_bin" start "$B14_UNIT" || return 1
-    "$python_bin" "$ops_checkout/deploy/host-com2/b14/health.py" --url "$b14_health_url"
+    wait_for_health B14_ROLLBACK "$python_bin" \
+      "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
     return
   fi
+  # Nothing this script owns can put the code back, so say so instead of guessing.
+  # A stopped unit is not a rollback either: bring it up on whatever the link holds.
   printf 'COM2_DEPLOY_B14_ROLLBACK=MANUAL PREVIOUS=%s\n' "$previous" >&2
+  "$systemctl_bin" start "$B14_UNIT" || return 1
+  wait_for_health B14_ROLLBACK "$python_bin" \
+    "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
+}
+
+# The queue keeps its database, environment, venv and secrets on the host; only its
+# code comes from the mirror, with the excludes its own installer uses.
+stage_queue_code() {
+  local source=$1
+  [[ -d $source ]] || { say "QUEUE_SOURCE_MISSING PATH=$source"; return 1; }
+  [[ -d $queue_root ]] || { say "QUEUE_ROOT_MISSING PATH=$queue_root"; return 1; }
+  command -v -- rsync >/dev/null 2>&1 || { say 'QUEUE_RSYNC_MISSING'; return 1; }
+  rsync -a --delete \
+    --exclude /src --exclude /pc-outputs --exclude venv --exclude '__pycache__' \
+    --exclude '*.sqlite3*' --exclude 'queue.env' --exclude 'service-secret.txt' \
+    --exclude 'ownership-map.json' --exclude 'watch-read-secret.txt' \
+    "$source/" "$queue_root/" || return 1
+  # The rules the queue shares with Chat have one implementation: the modules are
+  # linked into the mirror, never copied, exactly as the queue's installer does.
+  ln -sfn "$staged/apps/padiem-chat/app" "$queue_root/app" || return 1
+  ln -sfn "$staged/packages/padiem-ai-core/padiem_ai_core" "$queue_root/padiem_ai_core" || return 1
+  ln -sfn "$staged/packages/padiem-control-plane/padiem_control_plane" \
+    "$queue_root/padiem_control_plane" || return 1
+  if [[ ${EUID} -eq 0 ]]; then
+    chown -R -- "$queue_account" "$queue_root" 2>/dev/null || true
+  fi
+  say "QUEUE_STAGED=$source"
+}
+
+queue_rollback_source() {
+  local candidate
+  for candidate in "$source_stage_dir/$old/apps/padiem-mesh-queue" \
+                   "$previous_dir/$old/apps/padiem-mesh-queue"; do
+    [[ -d $candidate ]] && { printf '%s' "$candidate"; return 0; }
+  done
   return 1
+}
+
+deploy_queue() {
+  local before_active=0
+  if unit_active "$QUEUE_UNIT"; then before_active=1; fi
+  with_service_stopped "$QUEUE_UNIT" || return 1
+  assert_service_readable QUEUE_SOURCE "$staged/apps/padiem-mesh-queue" "$queue_account" \
+    || return 1
+  stage_queue_code "$staged/apps/padiem-mesh-queue" || return 1
+  if (( before_active )); then
+    "$systemctl_bin" start "$QUEUE_UNIT" || return 1
+    wait_for_health QUEUE bash "$queue_root/deploy/health_check.sh"
+  else
+    say 'QUEUE_START=SKIPPED_NOT_ACTIVE_BEFORE'
+  fi
+}
+
+rollback_queue() {
+  local source
+  if source=$(queue_rollback_source); then
+    with_service_stopped "$QUEUE_UNIT" || return 1
+    stage_queue_code "$source" || return 1
+    "$systemctl_bin" start "$QUEUE_UNIT" || return 1
+    wait_for_health QUEUE_ROLLBACK bash "$queue_root/deploy/health_check.sh"
+    return
+  fi
+  printf 'COM2_DEPLOY_QUEUE_ROLLBACK=MANUAL PREVIOUS=%s\n' "$previous_dir/$old" >&2
+  "$systemctl_bin" start "$QUEUE_UNIT" || return 1
+  wait_for_health QUEUE_ROLLBACK bash "$queue_root/deploy/health_check.sh"
 }
 
 run_deploy() {
   local sha=$1 origin changed='' services='' pending='' line status=0
-  declare -A wanted=([chat]=0 [p01]=0 [b14]=0) result=([chat]=SKIP [p01]=SKIP [b14]=SKIP)
+  declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0)
+  declare -A result=([chat]=SKIP [p01]=SKIP [b14]=SKIP [queue]=SKIP)
 
   "$git_bin" -C "$ops_checkout" fetch --quiet origin main || fail GIT_FETCH_FAILED
   origin=$("$git_bin" -C "$ops_checkout" rev-parse origin/main) || fail GIT_FETCH_FAILED
@@ -492,7 +628,7 @@ run_deploy() {
   fi
   if [[ $old == "$resolved" ]] && (( ! wanted[p01] )); then
     say 'NOOP=YES'
-    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP'
+    say 'SUMMARY=chat:SKIP p01:SKIP b14:SKIP queue:SKIP'
     return 0
   fi
 
@@ -505,9 +641,10 @@ run_deploy() {
       chat) wanted[chat]=1 ;;
       p01) wanted[p01]=1 ;;
       b14) wanted[b14]=1 ;;
+      queue) wanted[queue]=1 ;;
     esac
   done <<<"$changed"
-  for line in chat p01 b14; do
+  for line in chat p01 b14 queue; do
     if (( wanted[$line] )); then services+="${services:+,}$line"; fi
   done
   say "SERVICES=${services:-none}"
@@ -545,10 +682,10 @@ run_deploy() {
   fi
 
   if ! (( apply )); then
-    for line in chat p01 b14; do
+    for line in chat p01 b14 queue; do
       if (( wanted[$line] )); then result[$line]=WOULD_DEPLOY; fi
     done
-    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]}"
+    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]}"
     return 0
   fi
 
@@ -609,13 +746,14 @@ PY
   verify_staged_source
 
   local failed=0 ai_status=SKIP ai_code=none ai_output
-  declare -A was_active=([chat]=0 [p01]=0 [b14]=0)
-  for line in chat p01 b14; do
+  declare -A was_active=([chat]=0 [p01]=0 [b14]=0 [queue]=0)
+  for line in chat p01 b14 queue; do
     if (( ! wanted[$line] )); then continue; fi
     case "$line" in
       chat) if unit_active "$CHAT_UNIT"; then was_active[chat]=1; fi ;;
       p01) if unit_active "$P01_UNIT"; then was_active[p01]=1; fi ;;
       b14) if unit_active "$B14_UNIT"; then was_active[b14]=1; fi ;;
+      queue) if unit_active "$QUEUE_UNIT"; then was_active[queue]=1; fi ;;
     esac
     if "deploy_$line"; then
       result[$line]=PASS
@@ -638,7 +776,7 @@ PY
     fi
     if [[ $ai_status == FAIL && $ai_check == required ]]; then
       failed=1
-      for line in b14 p01 chat; do
+      for line in queue b14 p01 chat; do
         [[ ${result[$line]} == PASS ]] || continue
         if (( ! was_active[$line] )); then
           result[$line]=ROLLBACK_REQUIRED
@@ -651,9 +789,9 @@ PY
     fi
   fi
   if [[ $ai_status == FAIL ]]; then
-    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} ai:FAIL error_code=$ai_code"
+    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} ai:FAIL error_code=$ai_code"
   else
-    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} ai:$ai_status"
+    say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]} ai:$ai_status"
   fi
   if (( extended_smoke )); then
     "$python_bin" "$staged/deploy/host-com2/post_deploy_smoke.py" \

@@ -26,6 +26,7 @@ from urllib.parse import urlsplit
 
 from .history import VerifiedDispatch, _tagged
 from . import httpx_compat as httpx
+from .request_timing import timed_async
 from .pc_correlation import RUN_HASH_HEADER, DISPATCH_ID_HEADER, run_hash, dispatch_id
 
 logger = logging.getLogger(__name__)
@@ -189,6 +190,7 @@ class QueueStoreClient:
         self._client_factory = client_factory
         self._timeout = timeout_seconds
 
+    @timed_async('queue')
     async def call(self, method: str, **arguments: Any) -> Any:
         if not isinstance(method, str) or not method.isidentifier():
             raise QueueUnavailable("the queue method name is invalid")

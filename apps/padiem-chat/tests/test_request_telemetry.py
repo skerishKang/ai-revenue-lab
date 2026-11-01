@@ -133,7 +133,7 @@ def test_event_key_set_is_exactly_the_documented_projection(client: TestClient, 
     client.get("/health")
 
     assert len(events) == 1
-    assert set(events[0]) == EXPECTED_EVENT_KEYS
+    assert set(events[0]) == EXPECTED_EVENT_KEYS | {'timings_ms'}
     assert events[0]["event"] == "http_request"
     assert events[0]["service"] == "padiem-chat"
     assert events[0]["method"] == "GET"

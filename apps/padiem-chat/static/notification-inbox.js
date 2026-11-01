@@ -30,6 +30,8 @@
   const CONVERSATION_REF = /^chat_[a-f0-9]{32}$/;
   const RUN_REF = /^sched_run_[a-f0-9]{64}$/;
   const MAX_BADGE = 99;
+  // Display reads only: this never cancels PC work or a status mutation.
+  const DISPLAY_READ_TIMEOUT_MS = 3000;
   const AUTH_EVENTS = ["padiem:auth-state", "padiem:auth-changed", "padiem:account-changed"];
 
   const state = {
@@ -37,6 +39,9 @@
     open: false,
     inflight: false,
     statusInflight: false,
+    epoch: 0,
+    readSequence: 0,
+    pending: null,
     alerts: { phase: "idle", items: [] },
     tasks: { phase: "idle", items: [] },
   };
@@ -202,7 +207,7 @@
     renderSection(refs.alerts, "alerts", "notification-inbox-alerts-section", "claw-inbox-empty-alerts", createAlertItem);
     renderSection(refs.tasks, "tasks", "notification-inbox-tasks-section", "notification-inbox-tasks-empty", createTaskItem);
 
-    refs.retry.hidden = state.alerts.phase !== "error" && state.tasks.phase !== "error";
+    refs.retry.hidden = !["error", "stale"].includes(state.alerts.phase) && !["error", "stale"].includes(state.tasks.phase);
   }
 
   function renderSection(sectionRefs, name, headingKey, emptyKey, itemFactory) {
@@ -216,6 +221,10 @@
     } else if (section.phase === "error") {
       sectionRefs.status.textContent = text("claw-inbox-error");
       sectionRefs.list.replaceChildren();
+    } else if (section.phase === "refreshing" || section.phase === "stale") {
+      sectionRefs.status.textContent = text(section.phase === "refreshing"
+        ? "notification-inbox-refreshing" : "notification-inbox-stale");
+      sectionRefs.list.replaceChildren(...section.items.map((item) => itemFactory(item)));
     } else if (section.items.length === 0) {
       sectionRefs.status.textContent = text(emptyKey);
       sectionRefs.list.replaceChildren();
@@ -326,39 +335,61 @@
     return card;
   }
 
-  async function loadList(name) {
+  async function loadList(name, epoch, sequence) {
     const path = name === "alerts" ? ALERTS_PATH : TASKS_PATH;
+    const current = () => epoch === state.epoch && sequence === state.readSequence && state.authenticated;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), DISPLAY_READ_TIMEOUT_MS);
     try {
       const response = await fetch(`${path}?limit=${LIMIT}`, {
         headers: { Accept: "application/json" },
         cache: "no-store",
+        signal: controller.signal,
       });
+      if (!current()) return;
+      if (response.status === 401 || response.status === 403) {
+        state[name].items = [];
+        throw new Error("session denied");
+      }
       const data = await response.json().catch(() => null);
+      if (!current()) return;
+      if (controller.signal.aborted) throw new Error("display read expired");
       if (!response.ok || !data || data.ok !== true || !Array.isArray(data.items)) {
         throw new Error("inbox unavailable");
       }
       state[name].items = data.items.filter((item) => item && typeof item === "object");
       state[name].phase = "ready";
     } catch (_) {
-      state[name].phase = "error";
+      if (!current()) return;
+      // Last confirmed rows stay visible only within this auth generation.
+      // They never establish identity or authorize an action on the server.
+      state[name].phase = state[name].items.length ? "stale" : "error";
+    } finally {
+      clearTimeout(timer);
+      if (current()) render();
     }
   }
 
   function refresh({ force = false } = {}) {
     if (!state.authenticated) return Promise.resolve();
-    if (state.inflight && !force) return Promise.resolve();
+    if (state.inflight && !force) return state.pending || Promise.resolve();
+    const epoch = state.epoch, sequence = ++state.readSequence;
     state.inflight = true;
-    if (force || state.alerts.phase === "idle") state.alerts.phase = "loading";
-    if (force || state.tasks.phase === "idle") state.tasks.phase = "loading";
+    state.alerts.phase = state.alerts.items.length ? "refreshing" : "loading";
+    state.tasks.phase = state.tasks.items.length ? "refreshing" : "loading";
     render();
-    return Promise.allSettled([loadList("alerts"), loadList("tasks")]).then(() => {
+    state.pending = Promise.allSettled([loadList("alerts", epoch, sequence), loadList("tasks", epoch, sequence)]).then(() => {
+      if (epoch !== state.epoch || sequence !== state.readSequence) return;
       state.inflight = false;
+      state.pending = null;
       render();
     });
+    return state.pending;
   }
 
   async function setAlertStatus(item, status) {
     if (!item || typeof item.alert_id !== "string" || state.statusInflight) return;
+    const epoch = state.epoch;
     state.statusInflight = true;
     try {
       const response = await fetch(`${ALERTS_PATH}/${encodeURIComponent(item.alert_id)}`, {
@@ -368,13 +399,15 @@
         cache: "no-store",
       });
       const data = await response.json().catch(() => null);
+      if (epoch !== state.epoch || !state.authenticated) return;
       if (!response.ok || !data || data.ok !== true) throw new Error("inbox status update failed");
       await refresh({ force: true });
     } catch (_) {
+      if (epoch !== state.epoch || !state.authenticated) return;
       state.alerts.phase = "error";
       render();
     } finally {
-      state.statusInflight = false;
+      if (epoch === state.epoch) state.statusInflight = false;
     }
   }
 
@@ -477,8 +510,18 @@
     const next = typeof (detail && detail.authenticated) === "boolean"
       ? detail.authenticated
       : isAuthenticated();
-    if (next === state.authenticated) return;
+    // Account events invalidate even signed-in -> signed-in transitions.
+    // Never use a display name as an owner key or retain old in-flight rows.
+    state.epoch += 1;
+    state.readSequence += 1;
+    state.inflight = false;
+    state.pending = null;
+    state.statusInflight = false;
     state.authenticated = next;
+    state.alerts.phase = "idle";
+    state.alerts.items = [];
+    state.tasks.phase = "idle";
+    state.tasks.items = [];
     if (!next) {
       state.alerts.phase = "idle";
       state.alerts.items = [];

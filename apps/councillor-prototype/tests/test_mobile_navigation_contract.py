@@ -11,28 +11,41 @@ scrolling to the footer first.
 
 Everything here is static on purpose: no browser, no network, no provider. When
 a rule lives in CSS the test reads the CSS; when a rule lives in rendered JS it
-checks the data source (``static/miraen.json``) and the constant in ``app.js``
-that mirrors it.
+checks the single data source (``static/miraen.json``) and proves the scripts
+copy nothing out of it. Deployment rules are checked against a real
+``scripts/build-dist`` run into a temporary folder, not against a declaration.
 """
 from __future__ import annotations
 
 import json
 import re
 import struct
+import subprocess
+import sys
 from pathlib import Path
 
+import pytest
+
 APP_ROOT = Path(__file__).resolve().parents[1]
-BASE_URL = "https://councillor-prototype-v2.pages.dev"
+# The deployment origin lives in one place; the source tree carries a token.
+BASE_URL = json.loads((APP_ROOT / "site.config.json").read_text(encoding="utf-8"))["baseUrl"].rstrip("/")
+PLACEHOLDER = "__BASE_URL__"
+BUILD_SCRIPT = APP_ROOT / "scripts" / "build-dist"
 
 PAGES = ["index.html", "about.html", "activity.html", "policy.html", "media.html"]
 SITE_PAGES = PAGES + ["404.html"]
 # The one menu order the whole site shares: header, footer and phone tab bar.
 MENU = ["index.html", "about.html", "activity.html", "policy.html", "media.html"]
+REQUIRED_HTML = tuple(SITE_PAGES)
+ROOT_ASSETS = ("robots.txt", "sitemap.xml", "favicon.ico", "favicon-32.png", "favicon.svg", "apple-touch-icon.png")
+TEXT_SUFFIXES = {".html", ".xml", ".txt", ".json", ".js", ".css", ".svg"}
+ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 STYLES = (APP_ROOT / "static" / "styles.css").read_text(encoding="utf-8")
 # Selector matching below is textual, so comments would glue onto the next selector.
 CSS_RULES = re.sub(r"/\*.*?\*/", "", STYLES, flags=re.S)
 APP_JS = (APP_ROOT / "static" / "app.js").read_text(encoding="utf-8")
+HOME_JS = (APP_ROOT / "static" / "home.js").read_text(encoding="utf-8")
 DATA = json.loads((APP_ROOT / "static" / "miraen.json").read_text(encoding="utf-8"))
 
 
@@ -123,22 +136,30 @@ def image_size(path: Path) -> tuple[int, int]:
     raise AssertionError(f"unrecognised image header in {path}")
 
 
-def js_entries(array_name: str) -> list[str]:
-    """One-line object literals of a const array in app.js."""
-    m = re.search(rf"const {array_name} = \[(.*?)\n\];", APP_JS, flags=re.S)
-    assert m, f"const {array_name} not found in app.js"
-    return [line.strip().rstrip(",") for line in m.group(1).splitlines()
-            if line.strip().startswith("{")]
+def read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
 
 
-def js_str(entry: str, field: str) -> str | None:
-    m = re.search(rf'{field}: "((?:[^"\\]|\\.)*)"', entry)
-    return m.group(1) if m else None
+def news_items() -> list[dict]:
+    """The news list is the featured subset of the one activity list."""
+    return [item for item in DATA["activity"]["items"] if item.get("featured") is True]
 
 
-def js_list(entry: str, field: str) -> list[str]:
-    m = re.search(rf"{field}: \[(.*?)\]", entry)
-    return re.findall(r'"((?:[^"\\]|\\.)*)"', m.group(1)) if m else []
+def array_literals(js: str, name: str) -> list[str]:
+    """Bodies of every array literal assigned to ``name`` (const/let/var)."""
+    return [m.group(1) for m in re.finditer(rf"(?:const|let|var)\s+{name}\s*=\s*\[(.*?)\];", js, re.S)]
+
+
+@pytest.fixture(scope="module")
+def built_dist(tmp_path_factory) -> Path:
+    """Build the upload folder exactly as the README tells the deployer to."""
+    out = tmp_path_factory.mktemp("build") / "dist"
+    result = subprocess.run(
+        [sys.executable, str(BUILD_SCRIPT), "--out", str(out)],
+        cwd=str(APP_ROOT), capture_output=True, text=True, timeout=300,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    return out
 
 
 # ── 1. navigation ──────────────────────────────────────────────────────────
@@ -241,7 +262,7 @@ def test_every_page_declares_lang_description_canonical_og_and_icons():
             assert meta_content(html, "robots") is None or "noindex" not in meta_content(html, "robots")
             canonical = re.search(r'<link rel="canonical" href="([^"]+)"', html)
             assert canonical, f"{name}: no canonical"
-            expected = BASE_URL + "/" if name == "index.html" else f"{BASE_URL}/{name}"
+            expected = PLACEHOLDER + "/" if name == "index.html" else f"{PLACEHOLDER}/{name}"
             assert canonical.group(1) == expected, f"{name}: canonical {canonical.group(1)} != {expected}"
 
 
@@ -251,7 +272,7 @@ def test_the_social_card_shows_a_face_and_a_name_at_1200x630():
     assert image_size(card) == (1200, 630), f"og card is {image_size(card)}"
     for name in PAGES:
         html = page(name)
-        assert meta_content(html, "og:image", "property") == f"{BASE_URL}/static/images/og-card.jpg"
+        assert meta_content(html, "og:image", "property") == f"{PLACEHOLDER}/static/images/og-card.jpg"
         assert meta_content(html, "og:image:alt", "property"), f"{name}: og:image needs alt text"
     assert card.stat().st_size < 150_000, "the social card should not be a 5MB upload"
 
@@ -259,12 +280,22 @@ def test_the_social_card_shows_a_face_and_a_name_at_1200x630():
 def test_robots_and_sitemap_agree_with_the_pages():
     robots = (APP_ROOT / "robots.txt").read_text(encoding="utf-8")
     assert "User-agent: *" in robots and "Allow: /" in robots
-    assert f"Sitemap: {BASE_URL}/sitemap.xml" in robots
+    assert f"Sitemap: {PLACEHOLDER}/sitemap.xml" in robots
     sitemap = (APP_ROOT / "sitemap.xml").read_text(encoding="utf-8")
     locs = re.findall(r"<loc>([^<]+)</loc>", sitemap)
-    assert locs == [BASE_URL + "/"] + [f"{BASE_URL}/{name}" for name in PAGES if name != "index.html"], locs
+    assert locs == [PLACEHOLDER + "/"] + [f"{PLACEHOLDER}/{name}" for name in PAGES if name != "index.html"], locs
     assert "404.html" not in sitemap, "a 404 page must not be indexed"
     assert sitemap.count("<lastmod>2026-11-01</lastmod>") == len(locs)
+
+
+def test_the_deployment_origin_lives_only_in_site_config():
+    """A dedicated domain later must be a one-line change, not a 20-file sweep."""
+    for name in SITE_PAGES + ["robots.txt", "sitemap.xml"]:
+        text = read_text(APP_ROOT / name)
+        assert BASE_URL not in text, f"{name} hard-codes the deployment origin"
+        assert PLACEHOLDER in text, f"{name} carries no base-URL token"
+    for name in ("app.js", "home.js", "miraen.json"):
+        assert BASE_URL not in read_text(APP_ROOT / "static" / name), f"{name} hard-codes the deployment origin"
 
 
 def test_the_404_page_is_noindex_and_leads_home():
@@ -309,24 +340,52 @@ def test_every_tappable_control_is_at_least_44px():
 
 
 # ── 6. one content source ──────────────────────────────────────────────────
-def test_activity_and_media_data_mirror_miraen_json():
-    activities = js_entries("ACTIVITIES")
-    assert len(activities) == len(DATA["activity"]["items"]), "활동 개수가 miraen.json과 다릅니다"
-    for entry, item in zip(activities, DATA["activity"]["items"], strict=True):
-        assert js_str(entry, "date") == item["date"]
-        assert js_str(entry, "tag") == item["tag"]
-        assert js_str(entry, "title") == item["title"]
-        assert js_str(entry, "url") == item["url"]
-        assert js_str(entry, "body") == item.get("body")
+def test_the_screens_render_miraen_json_without_copying_its_content():
+    """Content lives once. A pasted array in a script is the defect this blocks."""
+    assert 'const DATA_URL = "./static/miraen.json";' in APP_JS
+    assert "fetch(DATA_URL" in APP_JS
+    assert "window.COUNCILLOR_DATA_READY = loadSiteData();" in APP_JS
+    assert "window.COUNCILLOR_DATA_READY" in HOME_JS, "home.js must wait on the shared load"
+    assert "fetch(" not in HOME_JS, "home.js must not load the data a second time"
+    for name, js in (("app.js", APP_JS), ("home.js", HOME_JS)):
+        for array in ("ACTIVITIES", "MEDIA", "NEWS"):
+            for body in array_literals(js, array):
+                assert not body.strip(), f"{name} copies content into {array}"
+        assert re.search(r"NEWS\s*=\s*\w+\.filter\(.*?featured\s*===\s*true", js), \
+            f"{name} must derive news from the featured activity items"
+    assert re.search(r"renderNewsColumn\(NEWS\)", HOME_JS)
+    assert re.search(r"renderStats\(activities,\s*mediaTiles,\s*NEWS\)", HOME_JS)
 
-    tiles = js_entries("MEDIA")
-    assert len(tiles) == len(DATA["media"]["tiles"]), "미디어 개수가 miraen.json과 다릅니다"
-    for entry, tile in zip(tiles, DATA["media"]["tiles"], strict=True):
-        assert js_str(entry, "kind") == tile["kind"]
-        assert js_str(entry, "title") == tile["title"]
-        assert js_str(entry, "url") == tile["url"]
-        assert js_str(entry, "thumb") == tile.get("thumb")
-        assert js_list(entry, "notes") == tile.get("notes", [])
+
+def test_activity_records_are_verified_sorted_and_uniquely_keyed():
+    items = DATA["activity"]["items"]
+    assert items, "miraen.json lists no activity"
+    dates = [item["date"] for item in items]
+    assert all(ISO_DATE.match(date) for date in dates), dates
+    assert dates == sorted(dates, reverse=True), "records must be newest first"
+    keys = [(item["date"], item["title"]) for item in items]
+    assert len(keys) == len(set(keys)), "two records share a date and title"
+    for item in items:
+        assert item["tag"].strip(), item
+        assert item["title"].strip(), item
+        assert item["url"].startswith(("http://", "https://")), item["url"]
+        if item.get("thumb"):
+            assert item["thumb"].startswith("./static/images/"), item["thumb"]
+            assert (APP_ROOT / item["thumb"][2:]).is_file(), item["thumb"]
+
+
+def test_every_activity_tag_is_a_filter_option():
+    filters = re.findall(r'<option value="([^"]+)"', page("activity.html"))
+    tags = {item["tag"] for item in DATA["activity"]["items"]}
+    assert tags <= set(filters), f"tags without a filter: {sorted(tags - set(filters))}"
+
+
+def test_every_content_link_is_an_absolute_web_url():
+    urls = [item["url"] for item in DATA["activity"]["items"]]
+    urls += [tile["url"] for tile in DATA["media"]["tiles"]]
+    urls += [channel["url"] for channel in DATA["sns"]["channels"]]
+    for url in urls:
+        assert re.fullmatch(r"https?://[^\s\"'<>]+", url), f"not an absolute web link: {url!r}"
 
 
 def test_the_about_page_renders_the_same_bio_and_profile():
@@ -342,11 +401,24 @@ def test_the_about_page_renders_the_same_bio_and_profile():
     assert "박사과정" in html, "the PhD course must be in the education line"
 
 
-def test_news_holds_no_guidance_notice_and_is_not_counted_as_news():
-    assert re.search(r"const NEWS = \[\s*\];", APP_JS), "NEWS must be empty of notices"
-    home_js = (APP_ROOT / "static" / "home.js").read_text(encoding="utf-8")
-    assert "NEWS.length" in home_js, "the home page still counts news items"
-    assert len(DATA["activity"]["items"]) == len(js_entries("ACTIVITIES"))
+def test_news_is_the_featured_subset_with_a_date_title_summary_and_source():
+    """News is not a second list: it is the featured records, so it cannot drift."""
+    assert DATA["notes"] == [], "a notice list must stay empty; news is the featured activity list"
+    news = news_items()
+    assert news, "no featured record — the home news column would be empty"
+    for item in news:
+        assert ISO_DATE.match(item["date"]), item
+        assert item["title"].strip(), item
+        assert item.get("body", "").strip(), f"{item['title']} has no summary"
+        assert item.get("source", "").strip(), f"{item['title']} has no source"
+        assert item["url"].startswith(("http://", "https://")), item["url"]
+
+
+def test_news_reaches_past_the_new_council_opening():
+    news = news_items()
+    assert news[0]["date"] >= "2026-07-01", "the newest news predates the 2026-07-01 opening"
+    dates = [item["date"] for item in news]
+    assert dates == sorted(dates, reverse=True), "the news column must start with the newest record"
 
 
 # ── 7. policy links and the media gallery ──────────────────────────────────
@@ -409,11 +481,37 @@ def test_the_serif_face_ships_only_the_glyphs_in_use():
     assert "subset" in css.lower(), "record that the shipped file is a subset"
 
 
-def test_deployment_leaves_docs_tests_and_readmes_out():
-    ignore = (APP_ROOT / ".assetsignore").read_text(encoding="utf-8").splitlines()
-    entries = [line.strip() for line in ignore if line.strip() and not line.startswith("#")]
-    for required in ("docs/", "tests/", "README.md", "static/images/README.md"):
-        assert required in entries, f".assetsignore is missing {required}"
+def test_the_dist_build_contains_only_site_assets(built_dist):
+    """`.assetsignore` never worked on Pages; the build folder is the contract now."""
+    files = {path.relative_to(built_dist).as_posix() for path in built_dist.rglob("*") if path.is_file()}
+    assert set(REQUIRED_HTML) <= files, set(REQUIRED_HTML) - files
+    assert set(ROOT_ASSETS) <= files, set(ROOT_ASSETS) - files
+    assert "static/miraen.json" in files, "the data source must ship"
+    for name in files:
+        assert not name.startswith(("docs/", "tests/", "scripts/")), f"{name} is not a site asset"
+        assert name not in {"README.md", "site.config.json", ".gitignore", ".assetsignore"}, name
+        assert not name.endswith((".md", ".py")), f"{name} is documentation or tooling"
+        assert "__pycache__" not in name, name
+    top = {name.split("/")[0] for name in files}
+    assert top == set(REQUIRED_HTML) | set(ROOT_ASSETS) | {"static"}, f"unexpected top-level entry: {top}"
+
+
+def test_the_dist_build_resolves_the_configured_base_url(built_dist):
+    for path in built_dist.rglob("*"):
+        if path.is_file() and path.suffix.lower() in TEXT_SUFFIXES:
+            assert PLACEHOLDER not in read_text(path), f"token left in {path.name}"
+    for name in SITE_PAGES:
+        html = read_text(built_dist / name)
+        canonical = re.search(r'<link rel="canonical" href="([^"]+)"', html)
+        if name != "404.html":
+            expected = BASE_URL + "/" if name == "index.html" else f"{BASE_URL}/{name}"
+            assert canonical and canonical.group(1) == expected, f"{name}: canonical not built"
+        assert meta_content(html, "og:image", "property") == f"{BASE_URL}/static/images/og-card.jpg", name
+    robots = read_text(built_dist / "robots.txt")
+    assert f"Sitemap: {BASE_URL}/sitemap.xml" in robots
+    locs = re.findall(r"<loc>([^<]+)</loc>", read_text(built_dist / "sitemap.xml"))
+    assert locs == [BASE_URL + "/"] + [f"{BASE_URL}/{name}" for name in PAGES if name != "index.html"], locs
+    assert (built_dist / "static" / "miraen.json").is_file()
 
 
 def test_every_local_asset_reference_resolves():
@@ -424,7 +522,8 @@ def test_every_local_asset_reference_resolves():
         for srcset in re.findall(r'srcset="([^"]+)"', html):
             refs.update(candidate.strip().split(" ")[0] for candidate in srcset.split(","))
     refs.update(re.findall(r'url\("(\./images/[^"]+)"\)', STYLES))
-    refs.update(re.findall(r'"(\./static/images/[^"]+)"', APP_JS))
+    refs.update(item["thumb"] for item in DATA["activity"]["items"] if item.get("thumb"))
+    refs.update(tile["thumb"] for tile in DATA["media"]["tiles"] if tile.get("thumb"))
     for ref in sorted(refs):
         target = (APP_ROOT / "static" / ref[2:]) if ref.startswith("./images/") else (APP_ROOT / ref[2:])
         assert target.exists(), f"{ref} is referenced but not shipped"

@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+"""Build the Cloudflare Pages upload folder for the councillor prototype.
+
+Only site assets are copied: root HTML, static/, robots.txt, sitemap.xml and the
+favicon files. docs/, tests/, scripts/, README files and source-only config stay
+out. __BASE_URL__ placeholders are replaced with site.config.json's baseUrl here,
+so the deployed site never carries the token.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import shutil
+import sys
+from pathlib import Path
+
+APP_ROOT = Path(__file__).resolve().parents[1]
+CONFIG = APP_ROOT / "site.config.json"
+PLACEHOLDER = "__BASE_URL__"
+REQUIRED_HTML = ("index.html", "about.html", "activity.html", "policy.html", "media.html", "404.html")
+ROOT_ASSETS = ("robots.txt", "sitemap.xml", "favicon.ico", "favicon-32.png", "favicon.svg", "apple-touch-icon.png")
+TEXT_SUFFIXES = {".html", ".xml", ".txt", ".json", ".js", ".css", ".svg"}
+
+
+def read_base_url() -> str:
+    config = json.loads(CONFIG.read_text(encoding="utf-8"))
+    base_url = str(config.get("baseUrl", "")).rstrip("/")
+    if not re.fullmatch(r"https?://[^\s/]+", base_url):
+        raise SystemExit(f"site.config.json baseUrl is not an absolute http(s) URL: {base_url!r}")
+    return base_url
+
+
+def build(out_dir: Path, base_url: str) -> None:
+    if out_dir == APP_ROOT or out_dir in APP_ROOT.parents:
+        raise SystemExit(f"refusing to write the build over the source tree: {out_dir}")
+
+    if out_dir.exists():
+        shutil.rmtree(out_dir)
+    out_dir.mkdir(parents=True)
+
+    html_files = sorted(APP_ROOT.glob("*.html"))
+    missing = [name for name in REQUIRED_HTML if not (APP_ROOT / name).is_file()]
+    if missing:
+        raise SystemExit(f"missing required pages: {', '.join(missing)}")
+    for src in html_files:
+        shutil.copy2(src, out_dir / src.name)
+    for name in ROOT_ASSETS:
+        src = APP_ROOT / name
+        if not src.is_file():
+            raise SystemExit(f"missing required asset: {name}")
+        shutil.copy2(src, out_dir / name)
+
+    shutil.copytree(
+        APP_ROOT / "static",
+        out_dir / "static",
+        ignore=shutil.ignore_patterns("README.md", "*.md", "__pycache__", "*.pyc"),
+    )
+
+    replaced = []
+    left = []
+    for path in out_dir.rglob("*"):
+        if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
+            continue
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            text = handle.read()
+        if PLACEHOLDER not in text:
+            continue
+        with path.open("w", encoding="utf-8", newline="") as handle:
+            handle.write(text.replace(PLACEHOLDER, base_url))
+        replaced.append(path.relative_to(out_dir).as_posix())
+
+    for path in out_dir.rglob("*"):
+        if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
+            continue
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            if PLACEHOLDER in handle.read():
+                left.append(path.relative_to(out_dir).as_posix())
+    if left:
+        raise SystemExit(f"base URL placeholder left in: {', '.join(left)}")
+
+    files = [p for p in out_dir.rglob("*") if p.is_file()]
+    size = sum(p.stat().st_size for p in files)
+    print(f"dist: {out_dir}")
+    print(f"base URL: {base_url} (replaced in {len(replaced)} files)")
+    print(f"{len(files)} files, {size} bytes ({size / 1024:.1f} KiB)")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--out", default="dist", help="output folder (default: apps/councillor-prototype/dist)")
+    args = parser.parse_args()
+    out_arg = Path(args.out)
+    out_dir = out_arg if out_arg.is_absolute() else (APP_ROOT / out_arg)
+    build(out_dir.resolve(), read_base_url())
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

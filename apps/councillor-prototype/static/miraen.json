@@ -38,9 +38,9 @@
     ],
     "kind": "소개 영상 · 2025년 촬영",
     "title": "2025년 의정 포부",
-    "note": "2025년에 촬영된 소개 영상입니다. 영상에서 언급되는 직위는 촬영 당시의 것이며, 현재 직위는 아래 프로필의 의회 공식 기록을 봐주시기 바랍니다."
+    "note": "2025년에 촬영한 의정 포부 영상입니다."
   },
-  "bio": "임미란 의원은 조선대학교에서 디자인을, 홍익대학교와 조선대학교 대학원에서 건축도시와 디자인경영을 공부하고 디자인경영학 박사 학위를 받았습니다. 기업과 여성경제 단체, 대학에서 쌓은 현장 경험을 바탕으로 제8대 광주광역시의회의원에 당선된 뒤 제9대를 거쳐, 2026년 6월 3일 제9회 전국동시지방선거에서 남구 제1선거구 의원으로 다시 당선되었습니다.\n\n2026년 7월 1일 개원한 전남광주통합특별시의회 제1대 의원으로 보건복지위원회와 예산결산특별위원회에서 활동하고 있습니다. 이 페이지의 기록은 의회와 중앙선거관리위원회가 공개한 자료에서 확인한 내용입니다.",
+  "bio": "임미란 의원은 조선대학교에서 디자인을, 홍익대학교와 조선대학교 대학원에서 건축도시와 디자인경영을 공부하고 디자인경영학 박사 학위를 받았습니다. 기업과 여성경제 단체, 대학에서 쌓은 현장 경험을 바탕으로 제8대 광주광역시의회의원에 당선된 뒤 제9대를 거쳐, 2026년 6월 3일 제9회 전국동시지방선거에서 남구 제1선거구 의원으로 다시 당선되었습니다.\n\n2026년 7월 1일 개원한 전남광주통합특별시의회 제1대 의원으로 보건복지위원회와 예산결산특별위원회에서 활동하고 있습니다.",
   "profile": [
     {
       "label": "현직",
@@ -56,7 +56,7 @@
     },
     {
       "label": "당선",
-      "value": "2026년 6월 3일 제9회 전국동시지방선거 · 남구 제1선거구(3인 선거구) · 12,844표(17.99%)"
+      "value": "2026년 6월 3일 제9회 전국동시지방선거 · 남구 제1선거구(3인 선거구)"
     },
     {
       "label": "소속 정당",
@@ -83,35 +83,60 @@
     "source": "출처: 전남광주통합특별시의회·광주광역시의회 공식 페이지, 중앙선거관리위원회 공개 자료",
     "items": [
       {
+        "date": "2026-10-07",
+        "tag": "토론회",
+        "title": "웰니스정책 토론회 · 성공적인 웰니스 정책, 행정 설계와 제도적 기반이 우선돼야",
+        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/board/7/6/read/1672",
+        "body": "전남광주통합특별시의회·광주여자대학교 앵커사업단·광주광역시한의사회가 공동으로 ‘함께 사는 공동체, 세계가 방문하는 K-웰니스 특별시’ 토론회를 열었습니다. AI 헬스케어 데이터 표준화와 치유관광 자원 연계, 조례 제정과 단계별 계획 수립을 제안했습니다.",
+        "source": "전남광주통합특별시의회 보도자료 (2026-10-08 게시)",
+        "featured": true
+      },
+      {
+        "date": "2026-09-11",
+        "tag": "5분발언",
+        "title": "제3회 제1차 정례회 제2차 본회의 5분자유발언 · 웰니스 관광 경쟁력 강화",
+        "url": "https://www.youtube.com/shorts/-7q4YCV1TCw",
+        "body": "지역 웰니스 관광 경쟁력 강화를 위해 전담 컨트롤타워 구축과 체계적인 정책 추진이 필요하다고 강조했습니다. 전남광주통합특별시의회 공식 유튜브가 공개한 발언 영상입니다.",
+        "source": "전남광주통합특별시의회 유튜브 (2026-09-14 게시)",
+        "featured": true
+      },
+      {
         "date": "2026-07-01",
         "tag": "의회",
         "title": "전남광주통합특별시의회 제1대 개원 · 보건복지위원회·예산결산특별위원회 위원",
-        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList"
+        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList",
+        "source": "전남광주통합특별시의회 의원 소개"
       },
       {
         "date": "2026-06-25",
         "tag": "기념식",
         "title": "6·25전쟁 제76주년 기념식 행사",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014"
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "thumb": "./static/images/activity-01.jpg",
+        "source": "광주광역시의회 공개 사진자료실"
       },
       {
         "date": "2026-06-22",
         "tag": "본회의",
         "title": "제344회 임시회 제3차 본회의",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014"
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "thumb": "./static/images/activity-02.jpg",
+        "source": "광주광역시의회 공개 사진자료실"
       },
       {
         "date": "2026-06-15",
         "tag": "위원회",
         "title": "제1차 산업건설위원회",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014"
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "source": "광주광역시의회 공개 사진자료실"
       },
       {
         "date": "2026-06-03",
         "tag": "당선",
         "title": "제9회 전국동시지방선거 남구 제1선거구 당선",
         "url": "http://data.nec.go.kr/resource/Cnddt_100157517520260603",
-        "body": "중앙선거관리위원회 후보자 공개 자료에 당선인으로 기록되어 있습니다."
+        "body": "중앙선거관리위원회 후보자 공개 자료에 당선인으로 기록되어 있습니다.",
+        "source": "중앙선거관리위원회 후보자 공개 자료"
       }
     ]
   },
@@ -258,6 +283,15 @@
         ]
       },
       {
+        "kind": "5분발언",
+        "title": "제3회 제1차 정례회 5분자유발언 · 웰니스 관광",
+        "url": "https://www.youtube.com/shorts/-7q4YCV1TCw",
+        "notes": [
+          "전남광주통합특별시의회 유튜브",
+          "2026-09-11"
+        ]
+      },
+      {
         "kind": "채널",
         "title": "광주광역시의회 유튜브",
         "url": "https://www.youtube.com/channel/UCvQfeQB_3OQwgclBaqamidw",
@@ -285,16 +319,11 @@
         "confirmed": true
       },
       {
-        "label": "Facebook",
-        "url": "https://www.facebook.com/ran2640/",
-        "confirmed": false
-      },
-      {
         "label": "의회 유튜브",
         "url": "https://www.youtube.com/channel/UCvQfeQB_3OQwgclBaqamidw",
         "confirmed": true
       }
     ]
   },
-  "sourceNotice": "자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)"
+  "sourceNotice": "자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-11-01 확인)"
 }
