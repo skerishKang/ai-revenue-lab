@@ -192,6 +192,7 @@
 
   const PROJECT_BINARY_EXTENSION_MEDIA = new Map([
     [".pdf", "application/pdf"],
+    [".hwpx", "application/hwp+zip"],
     [".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
   ]);
 
@@ -837,7 +838,9 @@
       attachmentThumb.hidden = true;
       attachmentKind.hidden = false;
       attachmentKind.textContent = extensionOf(selectedAttachment.name).replace(".", "").toUpperCase() || "DOC";
-      setNote(uiT("attachment-document-note"));
+      setNote(extensionOf(selectedAttachment.name) === ".hwpx"
+        ? "HWPX의 글자를 읽습니다. 표와 이미지의 내용은 일부 읽지 못할 수 있습니다."
+        : uiT("attachment-document-note"));
     }
     attachmentName.textContent = selectedAttachment.name;
     attachmentSize.textContent = formatBytes(selectedAttachment.byteSize);

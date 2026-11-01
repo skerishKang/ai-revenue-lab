@@ -155,11 +155,11 @@ def test_reason_code_allowlist_is_codes_only_and_within_the_core_catalog():
     # Every entry is a bare code string, never a message.
     assert all(isinstance(code, str) and " " not in code for code in codes)
     for expected in ("ooxml_encrypted", "pdf_encrypted", "ooxml_link_entry",
-                     "ooxml_malformed", "ooxml_entry_size"):
+                     "ooxml_malformed", "ooxml_entry_size", "hwpx_missing_part", "hwpx_empty", "hwpx_mimetype_mismatch"):
         assert expected in codes
     # Identity/caller codes and formats the lane never parses stay out.
     for outside in ("invalid_name", "name_required", "unsupported_binary_media_type",
-                    "media_extension_mismatch", "invalid_binary_payload", "hwpx_missing_part",
+                    "media_extension_mismatch", "invalid_binary_payload",
                     "parse_failed", "disk_full"):
         assert outside not in codes
 

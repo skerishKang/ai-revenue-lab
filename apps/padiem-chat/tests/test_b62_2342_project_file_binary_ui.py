@@ -46,9 +46,9 @@ def test_html_has_accessible_project_file_status_surface() -> None:
     assert 'class="project-files-status" id="projectFileStatus" role="status" aria-live="polite" hidden' in html
 
 
-def test_project_file_picker_accepts_text_plus_pdf_docx_only() -> None:
+def test_project_file_picker_accepts_text_pdf_docx_hwpx() -> None:
     html = INDEX_HTML.read_text(encoding="utf-8")
-    accept = 'accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx"'
+    accept = 'accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/hwp+zip,.hwpx"'
     assert accept in html
     assert "presentationml" not in html
     assert "spreadsheetml" not in html
@@ -375,6 +375,16 @@ function pickAndUpload(file) {
   const dialogText = collectText(byId.projectDialog) + " " + collectText(byId.projectFormError);
   if (dialogText.includes("data:application/pdf;base64")) fail("BASE64_RENDERED_IN_DOM");
 
+  // HWPX uses the same raw binary upload contract, without browser extraction.
+  pickAndUpload(makeFile("sample.hwpx", "application/hwp+zip", DOCX_BYTES, null));
+  await tick(80);
+  posts = filePosts();
+  if (posts.length !== 6) fail("HWPX_POST_COUNT");
+  if (posts[5].headers["Content-Type"] !== "application/octet-stream") fail("HWPX_NOT_BINARY");
+  if (posts[5].headers["X-Padiem-Media-Type"] !== "application/hwp+zip") fail("HWPX_MEDIA");
+  if (posts[5].headers["X-Padiem-Filename"] !== "sample.hwpx") fail("HWPX_FILENAME");
+  if (posts[5].body._bytes.length !== DOCX_BYTES.length) fail("HWPX_BODY_MISMATCH");
+
   function findRowText(name) {
     const rows = byId.projectFilesList.children || [];
     for (const row of rows) { if (collectText(row).indexOf(name) >= 0) return name; }
@@ -419,13 +429,13 @@ def test_behavioral_request_shapes_proved() -> None:
     assert payload.get("ok") is True, payload
     # 5 project-file POSTs (text, PDF, DOCX, rejected PDF, retried PDF); the GET file
     # refresh runs once at dialog open and once per SUCCESSFUL POST — never after the 422.
-    assert payload["posts"] == 5
-    assert payload["getFiles"] == 5
+    assert payload["posts"] == 6
+    assert payload["getFiles"] == 6
 
 
 if __name__ == "__main__":
     test_html_has_accessible_project_file_status_surface()
-    test_project_file_picker_accepts_text_plus_pdf_docx_only()
+    test_project_file_picker_accepts_text_pdf_docx_hwpx()
     test_binary_and_text_payload_shapes_are_exact_in_source()
     test_no_console_logging_and_no_leftover_removed_symbol()
     test_status_line_css_and_accessibility_floor_present()

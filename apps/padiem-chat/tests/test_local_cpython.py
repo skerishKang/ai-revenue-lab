@@ -567,3 +567,82 @@ def test_com2_council_and_councillor_entries_and_assets(staging_host_env):
         assert client.get("/councillor/councillor.js").status_code == 200
         assert client.get("/api/auth/status").status_code == 200
         assert client.get("/apps/council/static/missing.js").status_code == 404
+
+
+
+def test_hwpx_project_upload_real_sqlite_and_owner_scope(local_client, monkeypatch):
+    from padiem_ai_core.hwpx_package_serializer import (
+        HwpxPackageContent, HwpxPackageSection, serialize_hwpx_package,
+    )
+    registered = local_client.post("/api/auth/password/register", json={
+        "email":"hwpx-owner@example.test", "password":"test-password-12345"
+    })
+    assert registered.status_code == 200, registered.text
+    project = local_client.post("/api/projects", json={"name":"HWPX sample", "instructions":""})
+    assert project.status_code == 201, project.text
+    project_id = project.json()["project"]["id"]
+    payload = serialize_hwpx_package(HwpxPackageContent(
+        sections=(HwpxPackageSection(paragraphs=("HWPX project context 261101",)),)
+    ))
+    uploaded = local_client.post(f"/api/projects/{project_id}/files", content=payload, headers={
+        "Content-Type":"application/octet-stream", "X-Padiem-Filename":"sample.hwpx",
+        "X-Padiem-Media-Type":"application/hwp+zip",
+    })
+    assert uploaded.status_code == 201, uploaded.text
+    record = uploaded.json()["file"]
+    assert record["media_type"] == "extracted/hwpx"
+    file_id = record["id"]
+    detail = local_client.get(f"/api/projects/{project_id}/files/{file_id}")
+    assert detail.status_code == 200
+    assert "HWPX project context 261101" in detail.json()["file"]["content"]
+    original = local_client.get(f"/api/projects/{project_id}/files/{file_id}/original")
+    assert original.status_code == 200 and original.content == payload
+    assert original.headers["content-type"] == "application/hwp+zip"
+    from app.b14_client import B14Client
+    observed = []
+    async def fake_model(self, messages, **kwargs):
+        observed.append(kwargs.get("additional_system_context"))
+        return {"answer": "synthetic project answer"}
+    monkeypatch.setattr(B14Client, "complete", fake_model)
+    answer = local_client.post("/api/chat", json={
+        "messages":[{"role":"user","content":"Summarize"}], "project_id":project_id
+    })
+    assert answer.status_code == 200, answer.text
+    assert answer.json()["answer"] == "synthetic project answer"
+    assert observed and "HWPX project context 261101" in observed[0]
+    local_client.post("/api/auth/logout")
+    other = local_client.post("/api/auth/password/register", json={
+        "email":"hwpx-other@example.test", "password":"test-password-67890"
+    })
+    assert other.status_code == 200
+    assert local_client.get(f"/api/projects/{project_id}/files/{file_id}").status_code == 404
+    assert local_client.get(f"/api/projects/{project_id}/files/{file_id}/original").status_code == 404
+
+
+
+def test_hwpx_schema_migration_keeps_existing_rows_and_indexes():
+    from pathlib import Path
+    migrations = Path(__file__).resolve().parents[1] / "migrations"
+    con = sqlite3.connect(":memory:")
+    con.executescript("""
+        CREATE TABLE users(id TEXT PRIMARY KEY);
+        CREATE TABLE projects(id TEXT PRIMARY KEY);
+        CREATE TABLE project_files(
+            id TEXT PRIMARY KEY, project_id TEXT NOT NULL, user_id TEXT NOT NULL,
+            name TEXT NOT NULL, media_type TEXT NOT NULL, content_text TEXT NOT NULL,
+            content_chars INTEGER NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+            country TEXT NOT NULL DEFAULT 'kr');
+        INSERT INTO users VALUES ('u'); INSERT INTO projects VALUES ('p');
+        INSERT INTO project_files VALUES ('f','p','u','old.txt','text/plain','hello',5,'a','b','kr');
+    """)
+    con.executescript((migrations / "077_project_files_text_byte_bound.sql").read_text(encoding="utf-8"))
+    con.executescript((migrations / "078_project_files_doc_kind.sql").read_text(encoding="utf-8"))
+    con.execute("UPDATE project_files SET doc_kind='meeting', doc_version_of='old' WHERE id='f'")
+    con.executescript((migrations / "083_project_files_hwpx.sql").read_text(encoding="utf-8"))
+    assert con.execute("SELECT content_text,doc_kind,doc_version_of FROM project_files WHERE id='f'").fetchone() == ("hello","meeting","old")
+    con.execute("INSERT INTO project_files (id,project_id,user_id,name,media_type,content_text,content_chars,created_at,updated_at) VALUES ('new','p','u','x.hwpx','extracted/hwpx','hi',2,'a','b')")
+    indexes = {row[1] for row in con.execute("PRAGMA index_list(project_files)")}
+    assert {"idx_project_files_owner_project","idx_project_files_project_updated","idx_project_files_kind"} <= indexes
+    with pytest.raises(sqlite3.IntegrityError):
+        con.execute("INSERT INTO project_files (id,project_id,user_id,name,media_type,content_text,content_chars,created_at,updated_at) VALUES ('bad','p','u','x','unknown','hi',2,'a','b')")
+    con.close()

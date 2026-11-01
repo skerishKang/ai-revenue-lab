@@ -24,6 +24,7 @@
     freezeFormat({ label: "PDF", extensions: [".pdf"], mediaTypes: ["application/pdf"] }),
     freezeFormat({ label: "DOCX", extensions: [".docx"], mediaTypes: ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"] }),
     freezeFormat({ label: "PPTX", extensions: [".pptx"], mediaTypes: ["application/vnd.openxmlformats-officedocument.presentationml.presentation"] }),
+    freezeFormat({ label: "HWPX", extensions: [".hwpx"], mediaTypes: ["application/hwp+zip"] }),
     freezeFormat({ label: "XLSX", extensions: [".xlsx"], mediaTypes: ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"] }),
   ]);
 

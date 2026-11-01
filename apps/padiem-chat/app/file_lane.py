@@ -28,8 +28,9 @@ KINDS = {
     "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "hwpx": "application/hwp+zip",
 }
-BINARY_KINDS = frozenset({"pdf", "docx", "pptx", "xlsx"})
+BINARY_KINDS = frozenset({"pdf", "docx", "pptx", "xlsx", "hwpx"})
 TICKET_LIFETIME_SECONDS = 600
 
 # The constant reason codes the lane may answer a text read with (#6338): the
@@ -42,6 +43,7 @@ REASON_CODES = frozenset({
     "ooxml_invalid_xml",
     "docx_missing_part", "docx_empty", "pptx_missing_slides", "pptx_empty",
     "xlsx_invalid", "xlsx_no_sheets", "xlsx_empty",
+    "hwpx_missing_part", "hwpx_empty", "hwpx_mimetype_mismatch",
     "pdf_magic_mismatch", "pdf_encrypted", "pdf_invalid", "pdf_no_pages",
     "pdf_empty_text", "pdf_page_text_invalid", "pdf_page_geometry_unavailable",
     "empty_document", "binary_text_rejected", "excessive_control_characters", "invalid_text",

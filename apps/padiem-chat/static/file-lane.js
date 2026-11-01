@@ -5,9 +5,10 @@
     txt: "text/plain", md: "text/markdown", csv: "text/csv", pdf: "application/pdf",
     docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    hwpx: "application/hwp+zip"
   });
-  const BINARY = new Set(["pdf", "docx", "pptx", "xlsx"]);
+  const BINARY = new Set(["pdf", "docx", "pptx", "xlsx", "hwpx"]);
   const extension = (file) => String(file?.name || "").split(".").pop().toLowerCase();
   function shouldUse(file) {
     const kind = extension(file);
