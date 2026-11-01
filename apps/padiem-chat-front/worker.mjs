@@ -31,7 +31,7 @@ const DEFAULT_API_READ_TIMEOUT_MS = 30000;
 // open while a ≤90MB chunk drains to COM2 — a healthy upload must not die on
 // the plain write deadline. PATCH/POST on those paths get their own allowance
 // (TUS_UPLOAD_TIMEOUT_MS); the HEAD offset check keeps the API read deadline.
-const DEFAULT_TUS_TIMEOUT_MS = 120000;
+const DEFAULT_TUS_TIMEOUT_MS = 180000;
 // The common-login callback is a redirect, but COM2 only answers it after an OAuth
 // exchange, a JWKS verification and an identity RPC. Under the plain read deadline
 // the browser saw upstream_timeout while the host was still finishing the login, so

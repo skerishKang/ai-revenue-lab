@@ -69,6 +69,12 @@
   opacity: 0.72;
 }
 
+/* #6126: the legacy-HWP save-as guidance is an ordinary two-line note, so the
+   main sentence and the three HWPX steps render on their own lines. */
+.composer-note {
+  white-space: pre-line;
+}
+
 .composer-note[data-state="error"] {
   color: #a23434;
 }

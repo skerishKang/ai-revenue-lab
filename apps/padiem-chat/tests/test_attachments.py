@@ -282,13 +282,15 @@ def test_hwp_upload_guidance_is_shown_by_real_document_selection():
 const assert = require('node:assert/strict');
 const extensionOf = name => String(name || '').toLowerCase().slice(String(name || '').lastIndexOf('.'));
 const documentMediaType = () => null;
-const uiT = key => key === 'hwp-save-hwpx' ? '한글에서 HWPX로 저장해 올리면 읽을 수 있어요.' : key;
+const uiT = key => key === 'hwp-legacy-guidance' ? '한글에서 ‘다른 이름으로 저장 → HWPX’로 저장한 뒤 다시 올려 주세요.' : key;
 const attachmentCopy = () => ({unsupportedFormat:'unsupported'});
 """ + fn + """
 (async () => {
   for (const name of ['old.hwp', 'OLD.HWP']) {
     await assert.rejects(readDocumentFile({name}), e =>
-      e.message === '한글에서 HWPX로 저장해 올리면 읽을 수 있어요.' && e.uiMessageSafe === true);
+      e.message === '한글에서 ‘다른 이름으로 저장 → HWPX’로 저장한 뒤 다시 올려 주세요.'
+      && e.uiMessageSafe === true
+      && e.code === 'legacy_hwp_unsupported');
   }
   await assert.rejects(readDocumentFile({name:'other.xyz'}), /unsupported/);
 })().catch(e => { console.error(e); process.exit(1); });

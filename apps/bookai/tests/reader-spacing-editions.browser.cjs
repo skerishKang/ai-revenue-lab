@@ -12,6 +12,10 @@ await p.locator('.srsg-panel').getByRole('button',{name:'넓게',exact:true}).cl
 const loose=await first.evaluate(e=>parseFloat(getComputedStyle(e).lineHeight));assert.ok(loose>tight,'loose line height should exceed tight');
 const source=await p.locator('#readerPageBody .sm-verified-source-note').first().innerText();
 assert.ok(source.includes('KRV-1961')&&source.includes('World English Bible'));
-await p.reload({waitUntil:'load'});assert.ok(await p.evaluate(()=>document.body.classList.contains('smr-lh-loose')));await p.close()}
+// Settings commit to IndexedDB asynchronously (#6547): wait for the durable write, then for the
+// restored spacing class once the reader scripts have run after the load event.
+await p.evaluate(()=>BookAILocalDB.flush());
+await p.reload({waitUntil:'load'});
+await p.waitForFunction(()=>document.body.classList.contains('smr-lh-loose'),null,{timeout:15000});await p.close()}
 console.log('PASS: real Acts 9 spacing and edition labels at 390/1440');
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

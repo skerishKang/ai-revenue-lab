@@ -28,9 +28,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: b62-playwright-1.55.0-${{ runner.os }}-${{ runner.arch }}
+          key: b62-playwright-headless-shell-1.55.0-${{ runner.os }}-${{ runner.arch }}
       - name: Install pinned Chromium into shared browser cache
-        run: uvx --from 'playwright==1.55.0' playwright install chromium
+        run: uvx --from 'playwright==1.55.0' playwright install --only-shell chromium
       - name: Verify the browser cache was populated
         run: |
           test -d "$HOME/.cache/ms-playwright"
