@@ -489,3 +489,59 @@ def test_shared_workspace_fallback_only_for_missing_shadow(reason, shared, expec
     monkeypatch.setattr(chat_pc_drive, "_resolve_chat_owner", verified)
     assert asyncio.run(claw_memory_routes._resolve_memory_workspace(request, user)) == expected
     assert calls == ([user] if expected else [])
+
+
+def test_com2_pdfmd_local_roundtrip_and_owner_fence(staging_host_env, monkeypatch):
+    import importlib.util
+    from types import SimpleNamespace
+    from app import document_convert_routes
+
+    monkeypatch.setenv("PADIEM_CHAT_AUTH_MODE", "password")
+    original_find_spec = importlib.util.find_spec
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name, *a, **kw: (
+        object() if name == "pypdf" else original_find_spec(name, *a, **kw)
+    ))
+    monkeypatch.setattr(document_convert_routes, "convert_pdf_to_markdown", lambda **kw: SimpleNamespace(
+        markdown="# synthetic conversion", page_count=1, public_dict=lambda: {}
+    ))
+    app = build_app()
+    assert app.state.pdfmd_com2_ready is True
+    origin = "https://chat-com2-staging.padiem.net"
+    with TestClient(app, base_url=origin, headers={"Origin": origin}) as owner:
+        assert owner.post("/api/auth/password/register", json={
+            "email": "owner@example.com", "password": "test-password-1234"
+        }).status_code == 200
+        listing = owner.get("/api/document-conversions")
+        assert listing.status_code == 200
+        assert listing.json()["new_work_enabled"] is True
+        created = owner.post("/api/document-conversions", json={"mode": "fast"})
+        assert created.status_code == 201, created.text
+        job = created.json()["job"]["id"]
+        uploaded = owner.post(f"/api/document-conversions/{job}/files", content=b"%PDF-1.4\nsynthetic",
+            headers={"Content-Type": "application/octet-stream", "X-Padiem-Filename": "test.pdf",
+                     "X-Padiem-Media-Type": "application/pdf"})
+        assert uploaded.status_code == 201, uploaded.text
+        item = uploaded.json()["items"][0]["id"]
+        converted = owner.post(f"/api/document-conversions/items/{item}/run")
+        assert converted.status_code == 200, converted.text
+        downloaded = owner.get(f"/api/document-conversions/items/{item}/markdown")
+        assert downloaded.status_code == 200 and downloaded.text == "# synthetic conversion"
+        with TestClient(app, base_url=origin, headers={"Origin": origin}) as other:
+            assert other.post("/api/auth/password/register", json={
+                "email": "other@example.com", "password": "test-password-5678"
+            }).status_code == 200
+            assert other.get(f"/api/document-conversions/items/{item}/markdown").status_code == 404
+            assert other.get(f"/api/document-conversions/{job}").status_code == 404
+
+
+def test_com2_pdfmd_missing_dependency_keeps_writes_closed(staging_host_env, monkeypatch):
+    import importlib.util
+    from app import document_convert_routes
+
+    original_find_spec = importlib.util.find_spec
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name, *a, **kw: (
+        None if name == "pypdf" else original_find_spec(name, *a, **kw)
+    ))
+    app = build_app()
+    assert app.state.pdfmd_com2_ready is False
+    assert document_convert_routes.PDFMD_NEW_WORK_DISABLED is True

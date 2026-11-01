@@ -207,7 +207,9 @@
     return (name.replace(/\.[^.]+$/, "") || "document") + ".md";
   }
 
-  window.initPdfMdUtility = function (panel) {
+  window.initPdfMdUtility = function (panel, com2Ready = false) {
+    // The authenticated server response decides when the COM2 host is ready.
+    const PDFMD_NEW_WORK_DISABLED = !com2Ready;
     panel.replaceChildren();
     panel.classList.add("pdfmd-shell");
 
@@ -876,6 +878,10 @@
       histList.replaceChildren(el("p", "pdfmd-empty", "작업 이력을 불러오는 중..."));
       try {
         const data = await api("/api/document-conversions?limit=50");
+        if (PDFMD_NEW_WORK_DISABLED && data.new_work_enabled === true) {
+          window.initPdfMdUtility(panel, true);
+          return;
+        }
         historyJobs = data.jobs || [];
         histTools.hidden = !historyJobs.length;
         renderHistory();
