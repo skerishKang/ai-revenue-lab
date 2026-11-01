@@ -135,3 +135,26 @@
   .hero-title{font-size:36px}
 }
 
+/* ===== B61 pass · reachability fixes (measured in a browser, 390/768/1024/1440) =====
+   Two controls could not receive their own press; both are decorative layers that ate
+   the tap instead of the control underneath. No layout redesign, no new markup. */
+
+/* 1. Index screen: the SELECTED SHEET label is decoration, but it sat on top of the
+   chapter dots — at 390 all 16 dots and at 768 the selected chapter stack resolved to
+   #chapterSpecimenNo instead of themselves. The label keeps painting; it just stops
+   swallowing presses. */
+#index .chapter-specimen{pointer-events:none}
+
+/* 2. Library shelf markers (one per book) need 326px in a single row. The third
+   .lib-bottom column is narrower than that below ~1180px, so the row slid left — off
+   the screen at 390 (5 of 11 markers unreachable) and under #openBook/#nextBook at
+   768 (4 of 11) and 1024 (1 of 11). Below 1180 the markers get a full-width row of
+   their own instead; 1440 keeps the original three-column footer untouched. */
+@media(max-width:1180px){
+  .lib-bottom{grid-template-columns:minmax(0,1fr) auto}
+  .markers{grid-column:1/-1;justify-self:end;margin-top:6px;flex-wrap:wrap}
+}
+@media(max-width:720px){
+  .markers{display:flex;gap:2px}
+}
+

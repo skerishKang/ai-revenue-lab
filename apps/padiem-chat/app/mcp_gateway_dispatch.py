@@ -48,7 +48,17 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
         return {"status": "unavailable", "answer": "작업 기록을 준비하지 못해 실행하지 않았습니다. 잠시 뒤 다시 시도해 주세요."}
     _log_operation(audit, "requested")
     approval = None
-    if approval_id is not None:
+    browser = tool_name in {"pc_browser_open", "pc_browser_read", "pc_browser_screenshot", "pc_browser_act"}
+    if browser and approval_id is not None:
+        outcome = {"status": "confirmation_required", "answer": "이 브라우저 작업은 PADIEM 대화에서 확인해 주세요.",
+                   "confirmation_kind": "conversation"}
+        await _record_outcome(store, audit, outcome)
+        return outcome
+    if browser:
+        # Browser use is predelegated; sensitive actions ask in ordinary chat.
+        # Never reinterpret an old approval button receipt as browser consent.
+        pass
+    elif approval_id is not None:
         try:
             approval = await store.consume_approval(identity=identity, approval_id=approval_id,
                                                     tool_name=tool_name, arguments=arguments)
@@ -77,17 +87,21 @@ async def dispatch_mcp_tool(request, principal, tool_name, arguments, *, approva
     except Exception:
         outcome = {"status": "unavailable", "answer": "PC 작업의 실제 결과를 확인하지 못했습니다. PADIEM에서 작업 상태를 확인해 주세요."}
     if outcome["status"] == "confirmation_required":
-        try:
-            pending = await store.create_approval(identity=identity, tool_name=tool_name, arguments=arguments)
-            outcome = {**outcome, "approval_id": pending["id"], "approval_status": "pending",
-                       "expires_at": pending["expires_at"],
-                       "confirmation_instructions": "PADIEM 설정의 외부 AI 연결에서 이 작업을 승인한 뒤, 같은 도구와 인자로 다시 요청해 주세요. 승인 한 번으로 한 번만 실행합니다."}
-            origin = expected_browser_origin(getattr(request.app.state, "settings", None))
-            if origin:
-                outcome["approval_url"] = origin + "/"
-            audit["approval_id"] = pending["id"]
-        except Exception:
-            outcome = {"status": "unavailable", "answer": "확인할 작업을 저장하지 못해 실행하지 않았습니다. 잠시 뒤 다시 시도해 주세요."}
+        if browser:
+            outcome = {**outcome, "confirmation_kind": "conversation",
+                       "confirmation_instructions": "PADIEM의 해당 대화에서 질문에 답해 주세요. 답변은 새 요청으로 처리됩니다."}
+        else:
+            try:
+                pending = await store.create_approval(identity=identity, tool_name=tool_name, arguments=arguments)
+                outcome = {**outcome, "approval_id": pending["id"], "approval_status": "pending",
+                           "expires_at": pending["expires_at"],
+                           "confirmation_instructions": "PADIEM 설정의 외부 AI 연결에서 이 작업을 승인한 뒤, 같은 도구와 인자로 다시 요청해 주세요. 승인 한 번으로 한 번만 실행합니다."}
+                origin = expected_browser_origin(getattr(request.app.state, "settings", None))
+                if origin:
+                    outcome["approval_url"] = origin + "/"
+                audit["approval_id"] = pending["id"]
+            except Exception:
+                outcome = {"status": "unavailable", "answer": "확인할 작업을 저장하지 못해 실행하지 않았습니다. 잠시 뒤 다시 시도해 주세요."}
     await _record_outcome(store, audit, outcome)
     return outcome
 

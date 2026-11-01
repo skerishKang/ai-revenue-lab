@@ -497,6 +497,8 @@ class P01RequestFactory:
         pc_drive_query: bool = False,
         pc_files_query: bool = False,
         pc_files_device_id: str | None = None,
+        pc_browser_query: bool = False,
+        pc_browser_device_id: str | None = None,
         identity_tier_id: str | None = None,
     ) -> P01RequestBundle:
         if run.terminal:
@@ -563,13 +565,28 @@ class P01RequestFactory:
         )
         desktop_plan = None
         desktop_arguments = None
-        if sum(bool(flag) for flag in (pc_drive_query, pc_files_query, desktop_capture)) > 1:
+        if sum(bool(flag) for flag in (pc_drive_query, pc_files_query, desktop_capture, pc_browser_query)) > 1:
             raise P01AdapterError(
                 "conflicting_pc_observation",
                 "PC drive query, PC file tools and desktop capture cannot run in one turn.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
-        if pc_files_query:
+        if pc_browser_query:
+            from padiem_ai_core.agent_planner import AgentPlan, AgentPlanStep
+            from padiem_ai_core.pc_device_identity import is_pc_device_id
+            if not subject_id or not is_pc_device_id(pc_browser_device_id):
+                raise P01AdapterError(
+                    "pc_browser_owner_required", "Browser tools require the verified owner PC.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                )
+            desktop_plan = AgentPlan(
+                agent_id="agent:padiem:claw-pc-query@1",
+                steps=tuple(AgentPlanStep(step_id=op, objective="Use the owner PC browser: " + op,
+                                         tool_id="claw.pc." + op)
+                            for op in ("browser_open", "browser_read", "browser_screenshot", "browser_act")),
+            )
+            desktop_arguments = {"browser": {"device_id": pc_browser_device_id}}
+        elif pc_files_query:
             if not subject_id:
                 raise P01AdapterError(
                     "pc_files_owner_required",
@@ -900,8 +917,11 @@ class P01CoreOrchestrationAdapter:
         pc_drive_query: bool = False,
         pc_files_query: bool = False,
         pc_files_device_id: str | None = None,
+        pc_browser_query: bool = False,
+        pc_browser_device_id: str | None = None,
         identity_tier_id: str | None = None,
         on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
+        on_pc_progress: Callable[[dict[str, Any]], Awaitable[None]] | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
             bundle = self._factory.build(
@@ -919,6 +939,8 @@ class P01CoreOrchestrationAdapter:
                 pc_drive_query=pc_drive_query,
                 pc_files_query=pc_files_query,
                 pc_files_device_id=pc_files_device_id,
+                pc_browser_query=pc_browser_query,
+                pc_browser_device_id=pc_browser_device_id,
                 identity_tier_id=identity_tier_id,
             )
             projector = ClawOrchestrationProjector(
@@ -956,9 +978,10 @@ class P01CoreOrchestrationAdapter:
                     else:
                         await on_event(event)
 
-                port_result = await run_stream(
-                    bundle.orchestration_request, on_event=project_live_event
-                )
+                stream_options = {"on_event": project_live_event}
+                if on_pc_progress is not None:
+                    stream_options["on_pc_progress"] = on_pc_progress
+                port_result = await run_stream(bundle.orchestration_request, **stream_options)
             approval_pause_wire: EngineApprovalPauseWire | None = None
             if isinstance(port_result, P01PausedWireResult):
                 approval_pause_wire = port_result.wire

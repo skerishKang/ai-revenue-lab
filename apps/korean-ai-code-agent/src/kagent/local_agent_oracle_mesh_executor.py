@@ -144,7 +144,14 @@ PRODUCT_USER_AGENT = "PadiemClaw/1.0 (kagent; oracle-mesh-executor)"
 #: bytes keep their own limits. A server-authorized PC read still names its own
 #: requested amount (the dispatch max_bytes, else the legacy default below).
 MAX_COMMAND_BYTES: int | None = None
-MAX_READ_BYTES_ENVELOPE = 20_000_000
+#: #6606 report follow-up: the read envelope joins the same decision. The
+#: server computes each dispatch's read bound per row and pages a bigger file
+#: through the #6541 first-range + read_file_chunk flow, so a large read
+#: arrives as per-call bounded requests. This executor keeps only the shape
+#: checks — a read bound is a positive integer, and an oversize result is
+#: still refused whole, never truncated — and leaves the one-answer size to
+#: the platform that carries the bytes.
+MAX_READ_BYTES_ENVELOPE: int | None = None
 MAX_READ_BYTES = 6_000_000
 #: Existing PC-file error markers the Engine already maps. A read failure is a
 #: truthful body, not an empty success: the executor reports the marker so the
@@ -661,13 +668,13 @@ class OracleMeshExecutor:
         if kind == "read":
             supplied = dispatch.get("max_bytes")
             if supplied is not None:
-                # The server decides the bound. A value outside the shared
-                # envelope is malformed, and the executor never lets a caller
-                # raise its own limit.
+                # The server decides the bound; the executor checks the shape
+                # only. A read bound is a positive integer — no bool, no zero,
+                # no negative — and the executor never invents one of its own.
                 if (
                     isinstance(supplied, bool)
                     or not isinstance(supplied, int)
-                    or not 0 < supplied <= MAX_READ_BYTES_ENVELOPE
+                    or supplied < 1
                 ):
                     raise OracleMeshChannelRefused(
                         "chat channel returned an unbounded read limit", leg=leg,
@@ -723,7 +730,8 @@ class OracleMeshExecutor:
         read_bound = dispatch.max_bytes
         if read_bound is None:
             read_bound = MAX_READ_BYTES
-        read_bound = max(1, min(read_bound, MAX_READ_BYTES_ENVELOPE))
+        if MAX_READ_BYTES_ENVELOPE is not None:
+            read_bound = max(1, min(read_bound, MAX_READ_BYTES_ENVELOPE))
         call: dict[str, Any] = {
             "node_ref": dispatch.node_ref,
             "file_path": dispatch.file_path,
@@ -1394,7 +1402,7 @@ class OracleMeshExecutor:
                 dispatch.kind != "read"
                 or isinstance(dispatch.max_bytes, bool)
                 or not isinstance(dispatch.max_bytes, int)
-                or not 0 < dispatch.max_bytes <= MAX_READ_BYTES_ENVELOPE
+                or dispatch.max_bytes < 1
             ):
                 raise ValueError("pending read limit is unbounded")
             if dispatch.kind in ("command", "desktop") and (

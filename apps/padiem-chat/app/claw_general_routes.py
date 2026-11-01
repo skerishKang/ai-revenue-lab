@@ -1463,7 +1463,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # model-selected PC file tools. It is classified before the older
     # single-command/TXT lanes so a named TXT is read by the model from the
     # actual listing rather than by a fixed-path shortcut.
-    pc_files_requested = _requested_natural_pc_files(user_text)
+    from .pc_browser_intent import requested_pc_browser
+    pc_browser_requested = requested_pc_browser(user_text)
+    pc_browser_device_id = requested_device_id if pc_browser_requested else None
+    if pc_browser_requested:
+        initial_pc_capture = False
+        desktop_device_id = None
+    pc_files_requested = not pc_browser_requested and _requested_natural_pc_files(user_text)
     if pc_files_requested and attachment_conflict is not None:
         return attachment_conflict
     # The browser hint was already shape-checked once above; the saved target
@@ -1473,7 +1479,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # #4139: natural-language PC state query (no backtick). Routes a clear
     # question about the verified PC to a bounded inventory command on that PC.
     natural_pc_requested, natural_pc_command = _requested_natural_pc_query(user_text)
-    if natural_pc_requested:
+    if natural_pc_requested and not pc_browser_requested:
         if attachment_conflict is not None:
             return attachment_conflict
         if natural_pc_command is None:
@@ -1489,7 +1495,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         initial_pc_drive_query = False
 
     txt_requested, txt_path = _requested_local_txt_path(user_text)
-    if txt_requested and not pc_files_requested:
+    if txt_requested and not pc_files_requested and not pc_browser_requested:
         if attachment_conflict is not None:
             return attachment_conflict
         if txt_path is None:
@@ -1635,6 +1641,11 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     if isinstance(history_read, BaseException):
         raise history_read
     model_user_text = history_read
+    if not pc_browser_requested:
+        pc_browser_requested = requested_pc_browser(user_text, records=getattr(request.state, "claw_pc_action_context", ()))
+        if pc_browser_requested:
+            pc_browser_device_id = requested_device_id
+            pc_files_requested = False
 
     subject_id: str | None = None
     authorized_workspace_id: str | None = None
@@ -1699,10 +1710,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 pc_workspace = await _resolve_memory_workspace(request, pc_owner)
             except Exception:
                 pc_workspace = None
-            pc_target_requested = initial_pc_drive_query or pc_files_requested
+            pc_target_requested = initial_pc_drive_query or pc_files_requested or pc_browser_requested
             explicit_pc_device_id = (
                 desktop_device_id if initial_pc_drive_query
-                else (pc_files_device_id if pc_files_requested else None)
+                else (pc_files_device_id if pc_files_requested else pc_browser_device_id if pc_browser_requested else None)
             )
             selected_pc_device_id = explicit_pc_device_id
             if (
@@ -1767,6 +1778,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                     desktop_device_id = selected_pc_device_id
                 if pc_files_requested:
                     pc_files_device_id = selected_pc_device_id
+                if pc_browser_requested:
+                    pc_browser_device_id = selected_pc_device_id
+            if (pc_browser_requested and pc_browser_device_id is None
+                    and pc_context.tool_available and pc_context.selected_confirmed
+                    and is_pc_device_id(pc_context.execution_device_id)):
+                pc_browser_device_id = pc_context.execution_device_id
             pc_work_text = render_pc_work_context(pc_context)
         _claw_stage(CLAW_STAGE_PC_CONTEXT, pc_context_started)
 
@@ -1970,7 +1987,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # uses, never browser-supplied prior turns, so forged history cannot move the
     # search target. Everything downstream is unchanged when it returns nothing.
     # Private Drive data never enters the public web search judgement/query.
-    if initial_pc_drive_query or pc_files_requested:
+    if initial_pc_drive_query or pc_files_requested or pc_browser_requested:
         # #5015/#4976: a PC drive or file task needs no public web evidence.
         # Skipping the judgement call keeps this turn from spending a model
         # call before the Engine PC tool dispatch.
@@ -1990,7 +2007,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # target conversation, workspace and owner session from that row, so an
     # unstaged run can only fail after the model has already started.
     staged_conversation_id: str | None = None
-    if initial_pc_capture or initial_pc_drive_query or pc_files_requested:
+    if initial_pc_capture or initial_pc_drive_query or pc_files_requested or pc_browser_requested:
         from .claw_memory_routes import _resolve_memory_workspace
         stage_uid = current_user_id(request) if auth_ready(request) else None
         stage = getattr(
@@ -2016,6 +2033,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 user_id=stage_uid, run_id=run.run_id,
                 workspace_id=stage_workspace, user_text=user_text,
                 conversation_id=conversation_id,
+                **({"action": "pc_browser_query"} if pc_browser_requested else {}),
             )
         except Exception:
             await _refund_active_reservation()
@@ -2046,7 +2064,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
                 "role": "tool_result", "content": content, "source": source,
             })
     pc_delegation = None
-    if initial_pc_drive_query or pc_files_requested:
+    if initial_pc_drive_query or pc_files_requested or pc_browser_requested:
         from .pc_delegation_routes import load_pc_delegation
 
         # stage_uid is the authenticated owner whose PC run was just staged.
@@ -2071,7 +2089,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if pc_files_requested:
             live_args["pc_files_query"] = True
             live_args["pc_files_device_id"] = pc_files_device_id
-        if initial_pc_drive_query or pc_files_requested:
+        if pc_browser_requested:
+            live_args["pc_browser_query"] = True
+            live_args["pc_browser_device_id"] = pc_browser_device_id
+        if initial_pc_drive_query or pc_files_requested or pc_browser_requested:
             live_args["pc_action_context"] = pc_action_context
             live_args["pc_delegation"] = pc_delegation
         if selected_model_id is not None:
@@ -2127,7 +2148,10 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if pc_files_requested:
             dispatch_args["pc_files_query"] = True
             dispatch_args["pc_files_device_id"] = pc_files_device_id
-        if initial_pc_drive_query or pc_files_requested:
+        if pc_browser_requested:
+            dispatch_args["pc_browser_query"] = True
+            dispatch_args["pc_browser_device_id"] = pc_browser_device_id
+        if initial_pc_drive_query or pc_files_requested or pc_browser_requested:
             dispatch_args["pc_action_context"] = pc_action_context
             dispatch_args["pc_delegation"] = pc_delegation
         if selected_model_id is not None:
