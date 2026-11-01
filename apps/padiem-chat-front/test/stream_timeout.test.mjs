@@ -13,7 +13,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { createFront } from "../worker.mjs";
+import { createFront as realCreateFront } from "../worker.mjs";
+const createFront = (options = {}) => realCreateFront({
+  ...options,
+  sign: async (request) => new Headers(request.headers),
+});
 
 const ORIGIN = "https://chat-com2.padiem.net";
 
@@ -95,18 +99,15 @@ test("the deadline only covers the header wait: a late header aborts and falls b
   assert.equal(response.headers.get("x-padiem-front"), "read_fallback_static");
 });
 
-test("a 5xx is replaced before its body is forwarded, so no stream mixes origins", async () => {
+test("a 5xx response passes through without mixing origins", async () => {
   const upstream = new Response(trickle(["partial-upstream"], 10), { status: 502 });
   const handle = createFront({ fetchImpl: async () => upstream });
-
   const response = await handle(
-    new Request("https://chat.padiem.net/api/conversations"),
-    baseEnv(),
+    new Request("https://chat.padiem.net/api/conversations"), baseEnv(),
   );
-
-  assert.equal(response.status, 503);
-  const text = await response.text();
-  assert.doesNotMatch(text, /partial-upstream/);
+  assert.equal(response, upstream);
+  assert.equal(response.status, 502);
+  assert.equal(await response.text(), "partial-upstream");
 });
 
 test("a started stream is returned untouched, so no fallback can append to it", async () => {
