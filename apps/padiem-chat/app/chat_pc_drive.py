@@ -48,6 +48,11 @@ CHAT_PC_DRIVE_COMMAND = (
 CHAT_PC_QUERY_AGENT_ID = "agent:padiem:chat-pc-query@1"
 CHAT_PC_QUERY_TOOL_ID = "claw.pc.query_drives"
 CHAT_PC_RUN_PREFIX = "chat_pcq_"
+# #6554: a Gemma route may declare native tools (function calling), but the PC
+# tool set stays off it. PC-tool exposure is an owner decision bound to the
+# Gemini routes; a Gemma allowance would be a separate decision, never a side
+# effect of the tools capability.
+PC_TOOL_EXCLUDED_MODEL_PREFIXES = ("google/gemma-",)
 
 _SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 
@@ -613,6 +618,8 @@ async def chat_pc_route_declares_tools(request: Request, model_id: str) -> bool:
     the declaration, a disabled or owner-excluded route withholds it, and no
     model/provider policy is copied here.
     """
+    if not isinstance(model_id, str) or model_id.startswith(PC_TOOL_EXCLUDED_MODEL_PREFIXES):
+        return False
     state = request.app.state
     rows: Any = None
     for name in ("b14_model_choice_resolver", "b14_catalog_source"):
