@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from padiem_ai_core import output_store
+import padiem_ai_core.output_store as output_store
 from padiem_ai_core.output_store import OutputStore
 
 
