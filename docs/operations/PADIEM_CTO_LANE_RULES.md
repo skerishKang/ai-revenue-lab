@@ -17,6 +17,7 @@
 
 ## 3. 레인 공통 규칙
 - 레인은 **push만**. PR 생성·머지는 CTO.
+- **배포·비밀 교체는 CTO가 프롬프트로 지시한 경우 레인이 수행한다.** 지시 없는 배포는 하지 않는다.
 - 머지는 컴1의 `automerge.py`(CI 감시 후 squash 머지)로 한다. GitHub auto-merge 기능은 쓰지 않는다(`auto_merge=null`이 정상).
 - 비밀 값은 출력·argv·repo 금지. stdin 또는 파일→파일로만. 비밀번호 입력 금지.
 - Cloudflare 배포는 `--keep-vars`. wrangler는 `npx -y wrangler@4.156.0`.
