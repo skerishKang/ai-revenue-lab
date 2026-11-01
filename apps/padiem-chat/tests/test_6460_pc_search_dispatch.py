@@ -15,9 +15,13 @@ import pytest
 from app import oracle_mesh_read_return_routes as routes
 from app.claw_pc_search_command import (
     PC_SEARCH_MAX_LIMIT,
+    PC_SEARCH_MAX_OFFICE_FILES,
     PC_SEARCH_MAX_QUERY_CHARS,
+    PC_SEARCH_OFFICE_PREFIX_BYTES,
+    PC_SEARCH_SCAN_MAX_FILES,
     pc_search_command,
     pc_search_mode,
+    pc_search_path,
     pc_search_query,
 )
 
@@ -36,14 +40,21 @@ def test_query_and_mode_are_bounded():
         assert pc_search_mode(bad) is None
 
 
+ROOTS = [{"label": "문서", "path": ROOT}]
+TWO_ROOTS = [
+    {"label": "검토", "path": "C:/Users/limone/Documents/PADIEM-REVIEW"},
+    {"label": "문서", "path": ROOT},
+]
+
+
 def test_name_search_prefers_everything_and_never_opens_a_cloud_file():
-    script = pc_search_command(root=ROOT, query="견적", mode="name")
+    script = pc_search_command(roots=ROOTS, query="견적", mode="name")
     assert "\r" not in script
-    # Everything first, with the approved root as the only path filter.
+    # Everything first, with each approved root as the only path filter.
     assert "Get-Command es.exe" in script
-    assert "-path $root -n ($limit+1) $query" in script
-    # Fallback stays inside the root and matches the name as a substring.
-    assert "Get-ChildItem -LiteralPath $root -Recurse -File" in script
+    assert "-path $r.path -n ($limit+1) $query" in script
+    # Fallback stays inside a root and matches the name as a substring.
+    assert "Get-ChildItem -LiteralPath $r.path -Recurse -File" in script
     assert "IndexOf($query,[StringComparison]::OrdinalIgnoreCase)" in script
     # Offline (0x1000) and RecallOnDataAccess (0x400000) are reported, not read.
     assert "$offlineMask=4096 -bor 4194304" in script
@@ -53,27 +64,60 @@ def test_name_search_prefers_everything_and_never_opens_a_cloud_file():
     assert "ConvertTo-Json -Compress -Depth 5" in script
 
 
+def test_two_approved_roots_are_searched_one_after_the_other():
+    script = pc_search_command(roots=TWO_ROOTS, query="견적", mode="name")
+    assert "@{label='검토';path='C:/Users/limone/Documents/PADIEM-REVIEW'}" in script
+    assert "@{label='문서';path='" + ROOT + "'}" in script
+    assert "foreach($r in $roots)" in script
+    assert "$multi=($roots.Count -gt 1)" in script
+    # Every root gets its own scan budget: a big first folder can never hide
+    # the folders after it.
+    assert script.count("$seen=0") == 1
+    assert "$flags.scan=$true" in script
+
+
 def test_content_search_uses_ripgrep_and_defers_office_documents():
-    script = pc_search_command(root=ROOT, query="장성군", mode="content")
+    script = pc_search_command(roots=ROOTS, query="장성군", mode="content")
     assert "\r" not in script
     assert "Get-Command rg.exe" in script
     assert "--fixed-strings --max-count 1 -- $query $paths" in script
-    # Office/PDF/HWPX match by name only in this stage.
-    assert "'deferred'" in script
-    for ext in (".docx", ".xlsx", ".pdf", ".hwpx"):
-        assert "'" + ext + "'" in script
     # The scan is bounded and says so instead of running unbounded.
-    assert "$scan=2000" in script
+    assert "$scan=" + str(PC_SEARCH_SCAN_MAX_FILES) in script
     assert "scan_truncated" in script
     # Without ripgrep the same search still runs, through the shell's own cmdlet.
-    assert "Select-String -LiteralPath $f.FullName -SimpleMatch" in script
+    assert "Select-String -LiteralPath $f.item.FullName -SimpleMatch" in script
 
 
-def test_root_and_query_are_single_quoted_literals():
+def test_office_documents_are_read_by_the_reviewed_parser_child():
+    script = pc_search_command(roots=ROOTS, query="프린터", mode="content")
+    # The existing PC-side parser, not a new one: the reviewed child that
+    # calls Core document_normalization over stdin.
+    assert "Get-Command python" in script
+    assert "-P -m kagent.document_parser_child" in script
+    assert "ConvertTo-Json -Compress" in script and "@{name=$o.item.Name" in script
+    for ext, media in (
+        (".docx", "wordprocessingml.document"),
+        (".xlsx", "spreadsheetml.sheet"),
+        (".pdf", "application/pdf"),
+        (".hwpx", "application/hwp+zip"),
+    ):
+        assert "'" + ext + "'" in script
+        assert media in script
+    # One prefix read per document, and the unread part is reported.
+    assert "$prefix=[int64]" + str(PC_SEARCH_OFFICE_PREFIX_BYTES) in script
+    assert "$partial=([int64]$o.item.Length -gt [int64]$len)" in script
+    assert "'prefix_only'" in script
+    assert "'extractor_unavailable'" in script
+    assert "$maxOffice=" + str(PC_SEARCH_MAX_OFFICE_FILES) in script
+
+
+def test_owner_root_and_query_are_single_quoted_literals():
     script = pc_search_command(
-        root="C:/Users/O'Brien/Documents", query="it's", mode="name",
+        roots=[{"label": "O'Brien", "path": "C:/Users/O'Brien/Documents"}],
+        query="it's", mode="name",
     )
-    assert "$root='C:/Users/O''Brien/Documents'" in script
+    assert "label='O''Brien'" in script
+    assert "path='C:/Users/O''Brien/Documents'" in script
     assert "$query='it''s'" in script
     # The model text can never add a statement: a quote is doubled, not closed.
     assert "$query='it's'" not in script
@@ -81,14 +125,27 @@ def test_root_and_query_are_single_quoted_literals():
 
 def test_bad_shapes_are_refused_before_a_command_exists():
     with pytest.raises(ValueError):
-        pc_search_command(root=ROOT, query="견적", mode="path")
+        pc_search_command(roots=ROOTS, query="견적", mode="path")
     for limit in (0, PC_SEARCH_MAX_LIMIT + 1, True, 1.5):
         with pytest.raises(ValueError):
-            pc_search_command(root=ROOT, query="견적", mode="name", limit=limit)
+            pc_search_command(roots=ROOTS, query="견적", mode="name", limit=limit)
     with pytest.raises(ValueError):
-        pc_search_command(root=ROOT, query="", mode="name")
-    with pytest.raises(ValueError):
-        pc_search_command(root="", query="견적", mode="name")
+        pc_search_command(roots=ROOTS, query="", mode="name")
+    for roots in ([], [{"label": "", "path": ROOT}], [{"label": "a", "path": ""}],
+                  [{"path": ROOT}], "C:/x", [{"label": "a", "path": "C:/x" + chr(10) + "y"}]):
+        with pytest.raises(ValueError):
+            pc_search_command(roots=roots, query="견적", mode="name")
+
+
+def test_the_optional_folder_is_a_label_or_a_relative_folder():
+    assert pc_search_path(None) == ""
+    assert pc_search_path("") == ""
+    assert pc_search_path(" . ") == ""
+    assert pc_search_path("문서") == "문서"
+    assert pc_search_path("문서/2026") == "문서/2026"
+    assert pc_search_path(r"문서\2026") == "문서/2026"
+    for bad in ("/abs", "C:/Windows", "C:notes", "a/../b", "a//b", "ab", 5):
+        assert pc_search_path(bad) is None, bad
 
 
 def test_search_needs_the_matching_scope_operation():

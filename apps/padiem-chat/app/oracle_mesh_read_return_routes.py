@@ -60,7 +60,9 @@ from .claw_pc_search_command import (
     PC_SEARCH_MAX_LIMIT,
     pc_search_command,
     pc_search_mode,
+    pc_search_path,
     pc_search_query,
+    pc_search_roots,
 )
 from .claw_local_task_result_projection import result_message_id
 from .control_plane_identity import IdentityBridgeError
@@ -4246,12 +4248,46 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         # constructor. The existing owner/path/size/idempotency checks follow.
         if scope_claim is not None and claim_op not in scope_claim["ops"]:
             return _error(403, "pc_scope_denied")
-        picked = _pc_files_pick_root(roots, payload.get("path"))
-        if picked is None:
-            return _error(422, "oracle_mesh_file_path_invalid")
-        root, relative = picked
-        if op == "read" and not relative:
-            return _error(422, "oracle_mesh_file_path_invalid")
+        search_roots = None
+        if op == "search":
+            # No folder named means every approved root, in order: the owner's
+            # grant is the whole set, so a search never has to guess one and is
+            # never refused for not naming one.
+            search_path = pc_search_path(payload.get("path"))
+            if search_path is None:
+                return _error(422, "oracle_mesh_file_path_invalid")
+            if search_path:
+                picked = _pc_files_pick_root(roots, search_path)
+                if picked is None:
+                    return _error(422, "oracle_mesh_file_path_invalid")
+                picked_root, picked_relative = picked
+                label = next(
+                    (entry["label"] for entry in roots if entry["path"] == picked_root),
+                    None,
+                )
+                if label is None:
+                    return _error(422, "oracle_mesh_file_path_invalid")
+                search_roots = [{
+                    "label": label,
+                    "path": picked_root.rstrip("/") + (
+                        "/" + picked_relative if picked_relative else ""
+                    ),
+                }]
+            else:
+                search_roots = [
+                    {"label": entry["label"], "path": entry["path"]}
+                    for entry in roots
+                ]
+            if pc_search_roots(search_roots) is None:
+                return _error(503, "oracle_mesh_file_root_unavailable")
+            root = relative = None
+        else:
+            picked = _pc_files_pick_root(roots, payload.get("path"))
+            if picked is None:
+                return _error(422, "oracle_mesh_file_path_invalid")
+            root, relative = picked
+            if op == "read" and not relative:
+                return _error(422, "oracle_mesh_file_path_invalid")
         tool_call_ref = payload.get("tool_call_ref")
         if (
             not isinstance(tool_call_ref, str)
@@ -4329,9 +4365,8 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             query = pc_search_query(payload.get("query"))
             if query is None:
                 return _error(422, "oracle_mesh_file_search_invalid")
-            folder = root.rstrip("/") + ("/" + relative if relative else "")
             command = pc_search_command(
-                root=folder, query=query, mode=search_mode,
+                roots=search_roots, query=query, mode=search_mode,
                 limit=PC_SEARCH_MAX_LIMIT,
             )
             return await dispatch_oracle_mesh_command_intent(

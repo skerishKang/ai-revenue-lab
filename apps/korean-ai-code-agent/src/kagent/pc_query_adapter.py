@@ -468,7 +468,8 @@ def pc_search_files_tool_spec() -> ToolSpec:
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_SEARCH_FILES_SCOPE,),
         input_schema={"type":"object","properties":{
-            "query":{"type":"string","minLength":1,"maxLength":200}},
+            "query":{"type":"string","minLength":1,"maxLength":200},
+            "path":{"type":"string","maxLength":2048}},
             "required":["query"],"additionalProperties":False},
         output_contract={"type":"object"}, timeout_seconds=None)
 
@@ -483,7 +484,8 @@ def pc_search_content_tool_spec() -> ToolSpec:
         owner="core", side_effect=ToolSideEffect.READ, approval_policy=ApprovalPolicy.NOT_REQUIRED,
         auth_scope=(PC_SEARCH_CONTENT_SCOPE,),
         input_schema={"type":"object","properties":{
-            "query":{"type":"string","minLength":1,"maxLength":200}},
+            "query":{"type":"string","minLength":1,"maxLength":200},
+            "path":{"type":"string","maxLength":2048}},
             "required":["query"],"additionalProperties":False},
         output_contract={"type":"object"}, timeout_seconds=None)
 
@@ -778,21 +780,31 @@ class StructuredPCQueryStepDriver:
                 return AgentStepDecision.use_tool(invocation)
             if tool_id in PC_SEARCH_TOOL_IDS and isinstance(arguments, Mapping):
                 query = arguments.get("query")
-                # One search text and nothing else: no path, no mode, no
-                # command. Which half of the file is searched is the tool.
+                path = arguments.get("path", "")
+                # One search text, optionally one folder the owner named, and
+                # nothing else: no mode, no command. Which half of the file is
+                # searched is the tool; which folder is the caller's choice.
                 if (
-                    set(arguments) != {"query"}
+                    set(arguments) - {"query", "path"} or "query" not in arguments
                     or not isinstance(query, str)
                     or any(ord(ch) < 32 for ch in query)
                     or not 0 < len(query.strip()) <= 200
+                    or not isinstance(path, str) or len(path) > 2048
+                    or any(ord(ch) < 32 for ch in path)
+                    or (path.strip() not in ("", ".")
+                        and (path.strip().startswith("/")
+                             or (len(path.strip()) >= 2 and path.strip()[1] == ":")))
                 ):
                     raise PCQueryStepError(
                         "model tool selection is invalid or unauthorized",
                         detail="tool_selection_invalid",
                     )
+                step_arguments = {"query": query.strip()}
+                if path.strip() not in ("", "."):
+                    step_arguments["path"] = path.strip()
                 with pc_core_stage("invocation", tool_id):
                     invocation = ToolInvocation(
-                        tool_id=tool_id, arguments={"query": query.strip()},
+                        tool_id=tool_id, arguments=step_arguments,
                     )
                 return AgentStepDecision.use_tool(invocation)
             if (

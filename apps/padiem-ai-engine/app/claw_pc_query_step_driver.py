@@ -838,13 +838,22 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
 #: The closed row vocabulary of one PC search answer (#6460).
 PC_SEARCH_ENGINES = frozenset({"everything", "ripgrep", "select-string", "list"})
 PC_SEARCH_CONTENT_STATES = frozenset(
-    {"matched", "name_only", "deferred", "not_downloaded"}
+    {"matched", "name_only", "deferred", "not_downloaded", "partial"}
+)
+PC_SEARCH_OFFICE_READERS = frozenset({"none", "parser", "unavailable"})
+#: One line the model may relay when the name search used the slow fallback.
+PC_SEARCH_INSTALL_HINT = (
+    "Everything(es.exe)를 설치하면 파일명 검색이 훨씬 빨라집니다."
 )
 PC_SEARCH_MAX_ROWS = 50
 
 
-def _pc_search_query(arguments) -> str:
-    if not isinstance(arguments, Mapping) or set(arguments) != {"query"}:
+def _pc_search_query(arguments) -> tuple[str, str]:
+    """The search text and the folder to search ("" for every approved root)."""
+    if (
+        not isinstance(arguments, Mapping)
+        or set(arguments) - {"query", "path"} or "query" not in arguments
+    ):
         raise ToolHandlerError(
             "pc_search_arguments_invalid", "A search text is required",
         )
@@ -856,7 +865,18 @@ def _pc_search_query(arguments) -> str:
         raise ToolHandlerError(
             "pc_search_arguments_invalid", "A search text is required",
         )
-    return query.strip()
+    path = arguments.get("path", "")
+    if (
+        not isinstance(path, str) or len(path) > 2048
+        or any(ord(ch) < 32 for ch in path)
+    ):
+        raise ToolHandlerError(
+            "pc_search_arguments_invalid", "A search folder is invalid",
+        )
+    path = path.strip()
+    if path in ("", "."):
+        path = ""
+    return query.strip(), path
 
 
 def _pc_search_projection(output: str, *, query: str, mode: str) -> dict[str, Any]:
@@ -875,11 +895,13 @@ def _pc_search_projection(output: str, *, query: str, mode: str) -> dict[str, An
         ) from exc
     entries = parsed.get("entries") if isinstance(parsed, dict) else None
     engine = parsed.get("engine") if isinstance(parsed, dict) else None
+    office = parsed.get("office") if isinstance(parsed, dict) else None
     count = parsed.get("count") if isinstance(parsed, dict) else None
     if (
         not isinstance(parsed, dict) or parsed.get("ok") is not True
         or not isinstance(entries, list) or len(entries) > PC_SEARCH_MAX_ROWS
         or engine not in PC_SEARCH_ENGINES
+        or office not in PC_SEARCH_OFFICE_READERS
         or type(count) is not int or count != len(entries)
     ):
         raise ToolHandlerError(
@@ -897,6 +919,7 @@ def _pc_search_projection(output: str, *, query: str, mode: str) -> dict[str, An
         state = entry.get("content_state")
         line = entry.get("line")
         snippet = entry.get("snippet")
+        reason = entry.get("reason")
         if (
             not isinstance(path, str) or not 0 < len(path) <= 2048
             or any(ord(ch) < 32 for ch in path)
@@ -905,6 +928,15 @@ def _pc_search_projection(output: str, *, query: str, mode: str) -> dict[str, An
             or state not in PC_SEARCH_CONTENT_STATES
             or (line is not None and (type(line) is not int or line < 0))
             or not isinstance(snippet, str) or len(snippet) > 200
+            or (
+                reason not in (None, "")
+                and (
+                    not isinstance(reason, str) or len(reason) > 40
+                    or not reason.isascii()
+                    or any(ch not in "abcdefghijklmnopqrstuvwxyz0123456789_"
+                           for ch in reason)
+                )
+            )
         ):
             raise ToolHandlerError(
                 "pc_search_output_invalid", "PC search result shape is invalid",
@@ -912,14 +944,21 @@ def _pc_search_projection(output: str, *, query: str, mode: str) -> dict[str, An
         rows.append({
             "path": path, "size_bytes": size, "modified_utc": modified,
             "content_state": state, "line": line, "snippet": snippet,
+            "reason": reason or "",
         })
-    return {
+    result = {
         "ok": True, "query": query, "mode": mode, "engine": engine,
+        "office": office,
         "count": len(rows),
         "truncated": parsed.get("truncated") is True,
         "scan_truncated": parsed.get("scan_truncated") is True,
         "entries": rows,
     }
+    if mode == "name" and engine == "list":
+        # Measured fallback: a full folder walk without Everything. The model
+        # may relay this one line; nothing else about the PC changes.
+        result["hint"] = PC_SEARCH_INSTALL_HINT
+    return result
 
 
 def _make_pc_search_handler(
@@ -943,7 +982,7 @@ def _make_pc_search_handler(
                 "pc_files_admission_required", "Verified owner run is required",
             )
         try:
-            query = _pc_search_query(arguments)
+            query, search_path = _pc_search_query(arguments)
         except ToolHandlerError:
             print("pc_files_chat_call mode=arguments stage=pc_search_arguments_invalid",
                   flush=True)
@@ -955,7 +994,7 @@ def _make_pc_search_handler(
             service=service, request_factory=request_factory, secret=secret,
             owner=owner, mode="dispatch",
             payload={
-                "op": "search", "path": ".", "query": query,
+                "op": "search", "path": search_path or ".", "query": query,
                 "search_mode": search_mode, "tool_call_ref": tool_call_ref,
             },
         )
