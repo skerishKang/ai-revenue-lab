@@ -38,13 +38,25 @@
       const tx = db.transaction([STORE, META], 'readwrite');
       const done = complete(tx);
       const marker = tx.objectStore(META).get(MARKER);
+      let conflict = false;
+      let migrated = false;
       marker.onsuccess = () => {
         if (marker.result) return;
-        for (const [key, value] of entries) if (value !== null) tx.objectStore(STORE).put(value, key);
+        migrated = true;
+        const store = tx.objectStore(STORE);
+        for (const [key, value] of entries) {
+          if (value === null) continue;
+          const check = store.get(key);
+          check.onsuccess = () => {
+            if (check.result === undefined) store.put(value, key);
+            else if (check.result !== value) { conflict = true; tx.abort(); }
+          };
+        }
         tx.objectStore(META).put(true, MARKER);
       };
-      await done;
-      return { preserved: entries.length };
+      try { await done; }
+      catch (error) { if (conflict) throw new Error('migration_conflict'); throw error; }
+      return { preserved: entries.length, migrated };
     } finally { db.close(); }
   }
   async function get(key) {
