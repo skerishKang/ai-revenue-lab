@@ -98,6 +98,10 @@ jobs:
     defaults:
       run:
         working-directory: apps/korean-ai-platform
+    env:
+      # B14's call ledger shares Core's pc_work_metrics. Steps run inside the
+      # app directory, so the workspace prefix keeps this independent of cwd.
+      PYTHONPATH: ${{ github.workspace }}/packages/padiem-ai-core
     steps:
       - name: Check out reviewed revision
         uses: actions/checkout@v4

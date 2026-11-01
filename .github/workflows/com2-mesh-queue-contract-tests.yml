@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
-      PYTHONPATH: apps/padiem-chat:packages/padiem-ai-core:packages/padiem-control-plane
+      PYTHONPATH: apps/padiem-chat:packages/padiem-ai-core:packages/padiem-control-plane:apps/korean-ai-code-agent/src
     steps:
       - uses: actions/checkout@v4
 
