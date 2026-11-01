@@ -43,6 +43,11 @@ LICENSE_NOTICE_URLS = frozenset({
     "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer",
     "https://www.gnu.org/licenses/agpl-3.0.html",
     "https://github.com/anomalyco/opencode",
+    # #3782: the PC browser lane's one code dependency, Playwright MCP, and its
+    # Apache-2.0 license text. Navigation only; still no new network dependency.
+    "https://github.com/microsoft/playwright-mcp",
+    "https://github.com/microsoft/playwright",
+    "https://www.apache.org/licenses/LICENSE-2.0",
 })
 
 
