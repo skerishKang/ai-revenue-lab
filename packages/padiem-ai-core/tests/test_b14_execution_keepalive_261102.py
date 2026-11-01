@@ -70,7 +70,9 @@ def test_transport_and_timeout_are_unchanged():
 
 def test_the_streaming_lane_is_deliberately_left_alone():
     """A pooled client must not be handed to the SSE lane."""
-    from padiem_ai_core import b14_streaming
+    # A submodule import, not a package-root import: the root surface is the
+    # declared ``__all__`` only (test_package_root_consumer_inventory).
+    import padiem_ai_core.b14_streaming as b14_streaming
 
     source = inspect.getsource(b14_streaming)
     assert "async with httpx.AsyncClient(" in source

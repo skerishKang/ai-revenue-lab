@@ -13,7 +13,7 @@ from __future__ import annotations
 import pytest
 
 from app.binary_documents import _translate_binary_error, guidance_for_reason_code
-from padiem_ai_core import isolated_parser_contract as contract
+import padiem_ai_core.isolated_parser_contract as contract
 from padiem_ai_core.document_semantics import DocumentNormalizationError
 from padiem_ai_core.isolated_parser_contract import (
     ISOLATED_PARSER_MAX_RESPONSE_BYTES,
