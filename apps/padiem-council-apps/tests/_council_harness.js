@@ -248,6 +248,11 @@ async function fetch(url, init) {
   if (String(url) === "/api/pc/pairings") {
     return json({ links: pcLinks });
   }
+  if (method === "POST" && String(url) === "/api/pc/save") {
+    pcSavesPosted.push(body);
+    if (pcSaveFails) return json({ error: { code: "pc_exchange_save_failed" } }, 502);
+    return json({ ok: true, saved: { name: String((body && body.path) || "").split("/").pop() } });
+  }
   if (method === "POST" && String(url) === "/api/pc/reference") {
     pcReferenceReads.push(body);
     if (pcReferenceCode) return json({ error: { code: pcReferenceCode } }, 422);
@@ -305,8 +310,18 @@ async function fetch(url, init) {
         const rawName = decodeURIComponent(headers["X-Padiem-Filename"] || "photo");
         const mediaType = headers["X-Padiem-Media-Type"] || "application/octet-stream";
         const uploaded = init && init.body;
-        const bytes = uploaded && uploaded.__bytes !== undefined ? uploaded.__bytes : "binary-bytes";
-        const file = stored(rawName, "", mediaType, bytes);
+        const bytes = uploaded && uploaded.__bytes !== undefined ? uploaded.__bytes
+          : (uploaded && typeof uploaded.byteLength === "number" ? uploaded : "binary-bytes");
+        if (uploaded && typeof uploaded.byteLength === "number") {
+          // 2026-11-02: the document export tests read the uploaded payload,
+          // its declared media type and the result kind (doc_kind header).
+          binaryUploads.push({
+            name: rawName, mediaType: mediaType,
+            docKind: headers["X-Padiem-Doc-Kind"] || "", bytes: uploaded,
+          });
+        }
+        if (binaryUploadFail) return json({ error: { code: "unavailable" } }, 503);
+        const file = stored(rawName, "", mediaType, bytes, "", headers["X-Padiem-Doc-Kind"] || "");
         return json({ file });
       }
       if (saveFailureOverride) {
@@ -359,6 +374,9 @@ const pageErrors = [];
 const alerts = [];
 const downloads = [];
 const downloadDetails = [];
+const binaryUploads = [];
+const pcSavesPosted = [];
+let binaryUploadFail = false;
 
 // ── one council-app.js execution against a fresh fake DOM ──────────────────
 class FakeFormData {
@@ -2076,6 +2094,84 @@ const SCENARIOS = {
     out.speech.docx = toB64(out.speech.docx);
     out.book.hwpx = toB64(out.book.hwpx);
     out.book.docx = toB64(out.book.docx);
+    return out;
+  },
+  async pc_save_binary() {
+    // 2026-11-02: 한글/워드 '내 PC에 저장' — 버튼 → 형식 선택(기본 한글) →
+    // 프로젝트 이진 업로드(바이트·형식·파일명·doc_kind) → pc/save(file_id) →
+    // 폴더가 이름으로 들어간 완료 문장. 실패 경로(업로드 실패·PC 없음)도 함께.
+    downloads.length = 0;
+    downloadDetails.length = 0;
+    binaryUploads.length = 0;
+    pcSavesPosted.length = 0;
+    binaryUploadFail = false;
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    pcLinks = [{
+      link_id: "pclink_" + "1".repeat(32), label: "내 PC", state: "active",
+      mesh_node_id: "node/meshdomain1/qa-pc",
+      roots: [{ state: "active", path: "C:/Users/qa" }],
+    }];
+    const exchange = {
+      open(options) {
+        // the real dialog posts the file_id save, then completes with the folder
+        void fetch("/api/pc/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: "문서/2026", file_id: options.fileId }),
+        }).then(async (res) => {
+          const body = await res.json();
+          if (options.onSave) options.onSave(body.saved || {}, "문서");
+        });
+      },
+    };
+    const A = spawnSession({ PadiemPcFileExchange: exchange });
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    const formA = find(A, "councilSpeechForm");
+    formA.querySelector("[name=event]").value = "주민 감사의 밤";
+    formA.querySelector("[name=date]").value = "2026-11-02";
+    find(A, "councilSpeechOutput").value = "존경하는 시민 여러분,\n감사합니다.";
+
+    await find(A, "councilSpeechPcSave").dispatch("click");
+    await sleep(20);
+    const chooser = find(A, "councilSpeechNotice");
+    const choices = chooser.querySelectorAll("button").map((b) => text(b));
+    await chooser.querySelectorAll("button")[0].dispatch("click");
+    await sleep(60);
+    const out = {
+      choices,
+      upload: binaryUploads[0] ? {
+        name: binaryUploads[0].name,
+        mediaType: binaryUploads[0].mediaType,
+        docKind: binaryUploads[0].docKind,
+        bytes: Buffer.from(binaryUploads[0].bytes).toString("base64"),
+      } : null,
+      save: pcSavesPosted[0] || null,
+      notice: text(chooser),
+    };
+
+    // 업로드 실패 → 한국어 안내 + 다시 시도 버튼.
+    binaryUploadFail = true;
+    await find(A, "councilSpeechPcSave").dispatch("click");
+    await sleep(20);
+    const retryChooser = find(A, "councilSpeechNotice");
+    await retryChooser.querySelectorAll("button")[0].dispatch("click");
+    await sleep(40);
+    out.uploadFail = {
+      notice: text(retryChooser),
+      hasRetry: retryChooser.querySelectorAll("button").some((b) => text(b) === "다시 시도"),
+    };
+
+    // PC 연결 없음 → 기존 '컴퓨터 연결하기' 안내(업로드 없이).
+    binaryUploadFail = false;
+    pcLinks = [];
+    await find(A, "councilSpeechPcSave").dispatch("click");
+    await sleep(20);
+    out.noPc = {
+      notice: text(find(A, "councilSpeechNotice")),
+      uploadsAfter: binaryUploads.length,
+      savesAfter: pcSavesPosted.length,
+    };
     return out;
   },
 };
