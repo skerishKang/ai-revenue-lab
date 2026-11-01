@@ -992,6 +992,11 @@ async def _revoke_canonical_session(request: Request) -> str | None:
                                     session_id=canonical_session_id)
     except Exception:
         return "session_revocation_failed"
+    # #6460: the cached connector scope was derived from the session this call
+    # just revoked, so it is dropped with it (logout and the password change
+    # both end a session here).
+    from .pc_scope_cache import invalidate_owner_scope
+    invalidate_owner_scope(claims.user_id)
     return None
 
 

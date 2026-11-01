@@ -27,6 +27,7 @@ from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .pc_pairing_connect_exe_asset import connect_exe_bytes
 from .pc_pairing_agent_install import render_agent_install_block
+from .pc_scope_cache import invalidate_owner_scope
 from .pc_device_pairing_store import (
     PcPairingError,
     drive_root,
@@ -289,6 +290,9 @@ async def pc_pairing_revoke(request: Request) -> JSONResponse:
         return refused
     if not revoked:
         return _error(404, "pc_pairing_link_not_found")
+    # #6460: a removed PC changes what this account's connector scope can reach,
+    # so the short window is dropped here rather than waited out.
+    invalidate_owner_scope(user_id)
     return _json({"ok": True, "revoked": True}, 200)
 
 
@@ -739,6 +743,8 @@ async def pc_pairing_claim(request: Request) -> JSONResponse:
     )
     if refused is not None:
         return refused
+    # #6460: the account just gained a PC; its cached connector scope is stale.
+    invalidate_owner_scope(link.get("user_id"))
     granted = [root for root in link["roots"] if root["state"] == "active"]
     return _json({
         "ok": True,
@@ -852,6 +858,9 @@ async def pc_pairing_adopt(request: Request) -> JSONResponse:
     )
     if refused is not None:
         return refused
+    # #6460: adoption attaches a PC to the target account, so that account's
+    # cached connector scope is dropped too (the caller's stays valid).
+    invalidate_owner_scope(account_id)
     granted = [root for root in adopted["roots"] if root["state"] == "active"]
     return _json({
         "ok": True,
