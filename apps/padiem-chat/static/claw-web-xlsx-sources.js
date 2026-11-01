@@ -267,6 +267,17 @@
     return error;
   }
 
+  // #5882 follow-up (261102): the pending-selection cap refusal. The owner-
+  // facing sentence lives in locale.js under web-xlsx-pending-full and is
+  // never written here; the closed server code stays off the panel for this
+  // refusal, because a machine token under a Korean sentence is internal text
+  // the owner cannot act on. With no locale module loaded the panel falls
+  // back to its existing generic Korean sentence, still without the code.
+  function refusalPresentation(reason) {
+    if (reason !== "web_xlsx_selection_refused") return null;
+    return { message: pcExchangeCopy("web-xlsx-pending-full", ""), hideCode: true };
+  }
+
   async function jsonRequest(url, options) {
     const res = await fetch(url, {
       credentials: "same-origin", cache: "no-store", ...options,
@@ -274,7 +285,9 @@
     const data = await res.json().catch(() => null);
     if (!res.ok || !data || data.ok !== true) {
       const reason = data?.error?.code;
-      const error = safeUiError(reason === "unauthorized" ? "로그인한 후 다시 시도해 주세요."
+      const refusal = refusalPresentation(reason);
+      const error = safeUiError(refusal && refusal.message ? refusal.message
+        : reason === "unauthorized" ? "로그인한 후 다시 시도해 주세요."
         : reason === "web_xlsx_store_unavailable" ? "웹 파일 보관 기능이 아직 연결되지 않았습니다."
         : reason === "web_xlsx_too_large" ? "XLSX 파일은 1 GiB 이하여야 합니다."
         : reason === "invalid_web_xlsx_file" ? "안전하게 확인할 수 있는 XLSX 파일만 보관할 수 있습니다."
@@ -283,6 +296,7 @@
       // retryable rejection from an ambiguous transport failure. It is never
       // used to resend anything automatically.
       if (typeof reason === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(reason)) error.code = reason;
+      if (refusal) error.hideCodeNote = true;
       throw error;
     }
     return data;
@@ -836,7 +850,7 @@
     const report = (value) => { message.textContent = value; };
     const reportError = (error) => {
       report(error?.uiMessageSafe ? error.message : "파일 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.");
-      if (typeof error?.code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(error.code)) {
+      if (!error?.hideCodeNote && typeof error?.code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(error.code)) {
         const note = root.createElement("small");
         note.className = "error-code";
         note.textContent = "참고 코드: " + error.code;
@@ -1384,7 +1398,7 @@
     INLINE_MAX_BYTES, shouldUseFileLane,
     validFile, validateListing, validateSelection, validateWorkConversation,
     validateAdopt, validateSelectionsListing, validateP01Status,
-    validateP01Start, validateP01Decision, init,
+    validateP01Start, validateP01Decision, refusalPresentation, init,
     adoptFromArtifact: (conversationId, artifactId, integrityRef) => (
       active === null ? Promise.resolve(false) : active.adoptFromArtifact(
         conversationId, artifactId, integrityRef)),
