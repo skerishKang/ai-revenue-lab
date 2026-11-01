@@ -40,6 +40,10 @@ function clip(value, limit) {
   const text = String(value ?? "").replace(/\s+/g, " ").trim();
   return text.length > limit ? text.slice(0, Math.max(0, limit - 1)) + "…" : text;
 }
+function removeThoughtBlocks(value) {
+  const withoutClosed = value.replace(/<thought\b[^>]*>[\s\S]*?<\/thought\s*>/gi, "");
+  return withoutClosed.replace(/<thought\b[^>]*>[\s\S]*$/i, "");
+}
 function sameOrigin(request) {
   const requestUrl = new URL(request.url);
   const origin = request.headers.get("origin");
@@ -262,9 +266,11 @@ export default {
       if (!cp || cp.boundary_disposition !== "permitted" || Number(cp.context_filtered_count || 0) !== 0 || Number(cp.context_allowed_count || 0) < 1) {
         return json({ ok: false, error: "engine_permission_projection_invalid" }, 502);
       }
+      const answer = removeThoughtBlocks(payload.answer);
+      if (!answer.trim()) return json({ ok: false, error: "ingress_invalid_response" }, 502);
       return json({
         ok: true,
-        answer: payload.answer,
+        answer,
         runtime: "padiem-ai-engine",
         transport: "authenticated_ingress",
         reference_trust: "UNTRUSTED_REFERENCE",
