@@ -436,7 +436,7 @@ async def run_item_conversion(
     if item is None:
         return None
     await ledger.set_item_status(user_id, item_id, JOB_STATUS_WORKING)
-    original = objects.get(item.original_key)
+    original = await asyncio.to_thread(objects.get, item.original_key)
     if original is None:
         record = await ledger.complete_item(
             user_id,

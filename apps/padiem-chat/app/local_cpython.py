@@ -39,7 +39,7 @@ from .control_plane_identity_worker import CloudflareControlPlaneIdentityAuthori
 from .d1_sqlite import SqliteD1
 from .dispatch_quota import DispatchAwareB14Client
 from .history import D1HistoryStore
-from .local_r2 import LocalDiskR2
+from .local_r2 import ThreadedLocalDiskR2
 from .local_service_bridge import (
     HttpRpcBinding,
     LocalB66PdfRendererClient,
@@ -226,7 +226,7 @@ def build_app():
         print(f"[local] migrations applied: {applied}")
 
     db = SqliteD1(connection)
-    r2 = LocalDiskR2(data_dir / "objects")
+    r2 = ThreadedLocalDiskR2(data_dir / "objects")
 
     # HTTPS stand-ins for the Worker Service bindings. Only an explicitly
     # configured origin+secret pair builds one; a half-configured pair is a
