@@ -17,7 +17,7 @@ class BrowserCacheSeedContract(unittest.TestCase):
         self.assertIn("permissions:\n  contents: read", text)
         self.assertIn("cancel-in-progress: false", text)
         self.assertIn("uses: actions/cache@v4", text)
-        self.assertIn("uvx --from 'playwright==1.55.0' playwright install chromium", text)
+        self.assertIn("uvx --from 'playwright==1.55.0' playwright install --only-shell chromium", text)
         self.assertNotIn("secrets.", text)
         self.assertNotIn("wrangler", text.lower())
         seed_key = next(line.strip() for line in text.splitlines() if line.strip().startswith("key: "))
