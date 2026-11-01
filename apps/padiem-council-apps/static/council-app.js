@@ -87,7 +87,8 @@
   });
   const GEN_ERROR_FALLBACK = "생성에 실패했습니다. 잠시 후 다시 시도해 주세요.";
   const GEN_OFFLINE_COPY = "인터넷 연결을 확인해 주세요.";
-  const GEN_TIMEOUT_MS = 120000;
+  // 임시 완화(2026-11-02 한도 감사): 120초는 긴 생성을 시간으로 죽인다. 근본 해결은 진행 표시 전환.
+  const GEN_TIMEOUT_MS = 300000;
 
   function generationFailureText(error) {
     if (error && error.emptyResult) return "생성 실패: 답을 받지 못했습니다. 다시 시도해 주세요.";

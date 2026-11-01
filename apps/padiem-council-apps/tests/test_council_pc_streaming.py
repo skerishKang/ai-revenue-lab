@@ -82,7 +82,8 @@ def test_generation_is_streamed_from_the_stream_route() -> None:
 
 
 def test_the_timeout_and_error_copy_are_the_ones_6556_shipped() -> None:
-    assert "GEN_TIMEOUT_MS = 120000" in JS
+    # 타임아웃 값은 2026-11-02 한도 감사 4번으로 120초 → 300초 임시 완화(근본은 진행 표시 전환).
+    assert "GEN_TIMEOUT_MS = 300000" in JS
     assert "controller.abort()" in JS
     assert "signal: controller.signal" in JS
     assert 'GEN_ERROR_COPY' in JS

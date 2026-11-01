@@ -25,7 +25,9 @@ from starlette.responses import JSONResponse
 
 INTERNAL_STORE_PATH = "/internal/store"
 QUEUE_SERVICE_SECRET_HEADER = "X-Padiem-Queue-Secret"
-MAX_INTERNAL_BODY_BYTES = 1_000_000
+# 2026-11-02 한도 감사 "바로 바꿔도 되는 것" 2번: 21MB PC 출력 = 21파트 → 3파트.
+# 큐가 큰 본문을 "받을 수 있게" 되는 것뿐 — 기존 1MB 파트 발신자는 그대로 동작(하위호환).
+MAX_INTERNAL_BODY_BYTES = 8_000_000
 MAX_METHOD_NAME_CHARS = 64
 
 #: Arguments the store takes as a real instant. JSON has no datetime, and every one of
