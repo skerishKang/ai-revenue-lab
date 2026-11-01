@@ -23,6 +23,7 @@ from app.orchestration_service import (
     _parse_orchestration_options,
     _validated_pc_tool_arguments,
     _validated_pc_declared_plan,
+    _validated_pc_action_context,
 )
 from app.service import build_execution_request
 
@@ -127,6 +128,7 @@ def _initial_execution_fingerprint(payload: Any) -> str | None:
     try:
         target = _validated_pc_tool_arguments(payload)
         declared_plan = _validated_pc_declared_plan(payload)
+        action_context = _validated_pc_action_context(payload)
     except Exception:
         return None
     from app.pc_tools_turn import parse_pc_tools
@@ -136,6 +138,12 @@ def _initial_execution_fingerprint(payload: Any) -> str | None:
         return None
     if pc_tools is not None:
         logical = request_fingerprint({"logical_execution": logical, "pc_tools": pc_tools})
+    if action_context is not None:
+        # Role/provenance changes alter whether a destructive call may run.
+        # They must not replay a result admitted under different evidence.
+        logical = request_fingerprint(
+            {"logical_execution": logical, "pc_action_context": action_context}
+        )
     if declared_plan is not None:
         # A different requested scope must never replay another run's result.
         # Omission keeps the exact legacy fingerprint.
