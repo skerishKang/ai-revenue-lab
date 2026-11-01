@@ -141,3 +141,10 @@
 .auth-gate-backup { display: grid; gap: 8px; margin-top: 14px; }
 .auth-gate-backup button { min-height: 44px; }
 .auth-gate-backup small { line-height: 1.5; }
+
+/* ===== bookAI pass · reachability fix (measured in a browser, 390/768/1440) =====
+   The SELECTED SHEET label is decoration, but at 390 it sat on top of the chapter
+   selector: all 16 chapter dots and 4 of 6 chapter stacks answered as
+   #chapterSpecimenNo instead of themselves. The label keeps painting; it just stops
+   swallowing presses. 768 and 1440 measured clean before and after. */
+#index .chapter-specimen{pointer-events:none}
