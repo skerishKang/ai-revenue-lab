@@ -69,8 +69,10 @@ def test_saving_a_result_asks_for_the_original_folder_and_a_new_extension() -> N
 
 def test_a_missing_pc_is_explained_with_a_connect_link() -> None:
     js = _js()
-    assert '"PC를 연결하면 내 PC 문서를 바로 변환할 수 있습니다."' in js
-    assert '"이 PC 연결"' in js
+    # #6460: the same sentence and action the council app shows.
+    assert '"컴퓨터를 연결하면 내 PC의 PDF를 가져올 수 있습니다."' in js
+    assert '"컴퓨터 연결하기"' in js
+    assert '"컴퓨터를 연결하면 내 PC에 저장할 수 있습니다."' in js
     assert 'pcNote.id = "pdfmdPcNote";' in js
     assert "pcNote.hidden = true;" in js
     # Only a definite "no PC" shows it; a failed check stays quiet rather than

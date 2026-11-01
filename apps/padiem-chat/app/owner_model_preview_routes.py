@@ -27,10 +27,21 @@ from .model_policy import ADMIN_B14_MODEL_ID
 ROSTER_CACHE_TTL_ENV = "PADIEM_CHAT_MODEL_ROSTER_CACHE_SECONDS"
 _ROSTER_CACHE_TTL_DEFAULT = 30.0
 _ROSTER_CACHE_TTL_MAX = 300.0
+#: Stale-while-revalidate ceiling for an expired entry. The 261102 first-load
+#: measurement: a blocking refresh cost 1.2~1.5 s (two serial B14 GETs, and
+#: 1.2~1.5 s again whenever the 30 s window expired mid-load). Serving a roster
+#: fetched within this ceiling costs the request path nothing and revalidates
+#: in the background; past it a roster is no longer trusted as even nearly
+#: current and the requester waits for a fresh read as before. 5 min is ten
+#: times the #6460 admin-visibility delay, and the roster is read-only
+#: catalog data whose per-request tier filtering still runs on every reply.
+_ROSTER_MAX_STALE_SECONDS = 300.0
 #: Entries hold the resolver itself, so a recycled ``id`` can never hand one
-#: request (or one test) another resolver's rows.
-_ROSTER_CACHE: dict[int, tuple[float, tuple[tuple[str, str], ...], object]] = {}
+#: request (or one test) another resolver's rows. The fourth slot is when the
+#: rows were fetched, the anchor for the stale-while-revalidate ceiling.
+_ROSTER_CACHE: dict[int, tuple[float, tuple[tuple[str, str], ...], object, float]] = {}
 _ROSTER_LOCKS: dict[int, tuple[object, asyncio.Lock]] = {}
+_ROSTER_REFRESH: dict[int, tuple[object, "asyncio.Future[None]"]] = {}
 
 
 def roster_cache_ttl() -> float:
@@ -48,6 +59,7 @@ def roster_cache_ttl() -> float:
 
 def clear_roster_cache() -> None:
     _ROSTER_CACHE.clear()
+    _ROSTER_REFRESH.clear()
 
 
 def _roster_owner(list_fn) -> object:
@@ -77,15 +89,27 @@ def _validated_models(models: object) -> tuple[tuple[str, str], ...]:
 
 
 async def _model_roster(list_fn) -> tuple[tuple[str, str], ...]:
-    """The B14 roster inside the short shared window, single-flight per resolver."""
+    """The B14 roster inside the short shared window, single-flight per resolver.
+
+    An expired entry whose fetch is still inside the stale ceiling is served
+    as-is while one background task revalidates it, so a screen load never
+    waits on B14 for a value the window has only just released. Past the
+    ceiling -- or with nothing cached -- the requester waits for a fresh read,
+    and the lock keeps that wait single-flight exactly as before.
+    """
     owner = _roster_owner(list_fn)
     key = id(owner)
     ttl = roster_cache_ttl()
     now = time.monotonic()
     if ttl > 0:
         cached = _ROSTER_CACHE.get(key)
-        if cached is not None and cached[0] > now and cached[2] is owner:
-            return cached[1]
+        if cached is not None and cached[2] is owner:
+            expires_at, rows, _cached_owner, fetched_at = cached
+            if expires_at > now:
+                return rows
+            if fetched_at + _ROSTER_MAX_STALE_SECONDS > now:
+                _schedule_roster_refresh(key, owner, list_fn, ttl)
+                return rows
     entry = _ROSTER_LOCKS.get(key)
     if entry is None or entry[0] is not owner:
         entry = (owner, asyncio.Lock())
@@ -98,8 +122,41 @@ async def _model_roster(list_fn) -> tuple[tuple[str, str], ...]:
                 return cached[1]
         rows = _validated_models(await list_fn())
         if ttl > 0:
-            _ROSTER_CACHE[key] = (now + ttl, rows, owner)
+            _ROSTER_CACHE[key] = (now + ttl, rows, owner, now)
         return rows
+
+
+def _schedule_roster_refresh(key: int, owner: object, list_fn, ttl: float) -> None:
+    """At most one in-flight revalidation per resolver; reads never await it."""
+    running = _ROSTER_REFRESH.get(key)
+    if running is not None and running[0] is owner and not running[1].done():
+        return
+    future = asyncio.ensure_future(_refresh_roster(key, owner, list_fn, ttl))
+    _ROSTER_REFRESH[key] = (owner, future)
+
+
+async def _refresh_roster(key: int, owner: object, list_fn, ttl: float) -> None:
+    entry = _ROSTER_LOCKS.get(key)
+    if entry is None or entry[0] is not owner:
+        entry = (owner, asyncio.Lock())
+        _ROSTER_LOCKS[key] = entry
+    try:
+        async with entry[1]:
+            now = time.monotonic()
+            cached = _ROSTER_CACHE.get(key)
+            if (cached is not None and cached[2] is owner
+                    and cached[0] > now):
+                # A blocking refresh (past the stale ceiling, or the switch
+                # re-reading under the lock) already produced a fresher value.
+                return
+            rows = _validated_models(await list_fn())
+            _ROSTER_CACHE[key] = (now + ttl, rows, owner, now)
+    except Exception as exc:
+        # A failed revalidation is recorded on the host log and changes
+        # nothing else: the last good rows stay cached until the stale
+        # ceiling, and the next expired read schedules another attempt.
+        print(f"ROSTER_REFRESH_FAILED resolver={type(owner).__name__} "
+              f"error={type(exc).__name__}", flush=True)
 
 
 async def owner_model_name_preview(request: Request) -> JSONResponse:

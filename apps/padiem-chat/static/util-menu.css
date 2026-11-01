@@ -66,9 +66,32 @@
   min-height: 44px; padding: 0 14px;
   border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px;
   background: var(--panel, #ffffff); color: var(--text, #17202a);
-  font: inherit; font-size: 13px; font-weight: 650;
+  font: inherit; font-size: 14px; font-weight: 650;
   cursor: pointer;
 }
+
+/* 업로드 칸과 '내 PC에서 가져오기'는 한 선택의 두 갈래다: 넓으면 나란히,
+   좁으면 같은 줄에서 접혀 내려온다. 두 갈래 모두 44px·14px 을 지킨다. */
+.pdfmd-upload-row { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
+.pdfmd-upload-row .pdfmd-drop { flex: 1 1 260px; min-width: 0; }
+.pdfmd-upload-row .pdfmd-pc-pick { flex: 0 0 auto; }
+
+/* PC 미연결 안내와 '컴퓨터 연결하기' — 의원 앱과 같은 문장·같은 크기. */
+.pdfmd-pc-note {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-top: 10px; color: var(--muted, #53606c); font-size: 14px; line-height: 1.5;
+}
+.pdfmd-pc-note[hidden] { display: none; }
+.pdfmd-link {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 14px;
+  border: 1px solid var(--line, rgba(26, 34, 48, .12)); border-radius: 10px;
+  background: var(--panel, #ffffff); color: var(--text, #17202a);
+  font: inherit; font-size: 14px; font-weight: 650;
+  text-decoration: none; cursor: pointer;
+}
+.pdfmd-link:hover { background: var(--accent-soft); border-color: var(--accent); }
+.pdfmd-link:focus-visible { outline: 3px solid var(--focus-ring, rgba(101, 87, 232, .24)); outline-offset: 2px; }
 .pdfmd-btn:hover:not(:disabled) { background: var(--accent-soft); border-color: var(--accent); }
 .pdfmd-btn:focus-visible,
 .pdfmd-controls select:focus-visible,

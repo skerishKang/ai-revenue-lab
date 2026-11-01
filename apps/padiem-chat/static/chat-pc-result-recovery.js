@@ -28,6 +28,10 @@
     };
     var resolved = new Set();
     var attempted = new Set();
+    // Runs the server answered 404 for. A 404 says the result does not exist,
+    // not "not yet": every check that sees one stops for good, and a later
+    // check for the same run answers from here without any new GET.
+    var gone = new Set();
 
     function scopeNotice(result) {
       var notice = result && result.scope_notice;
@@ -37,6 +41,7 @@
     async function read(runId, conversationId, signal) {
       if (!RUN_ID.test(runId)) return {kind: "rejected"};
       if (resolved.has(runId)) return {kind: "duplicate"};
+      if (gone.has(runId)) return {kind: "rejected", status: 404, gone: true};
       var response;
       try {
         response = await fetchImpl(
@@ -55,9 +60,11 @@
       }
       if (!response || !response.ok) {
         var status = response && response.status;
+        if (status === 404) gone.add(runId);
         return {
           kind: (status === 401 || status === 403 || status === 404) ? "rejected" : "unavailable",
-          status: status
+          status: status,
+          gone: status === 404
         };
       }
       var data;
