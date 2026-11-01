@@ -38,6 +38,7 @@ from app.orchestration_service import (
     _validated_pc_declared_plan,
     _validated_pc_action_context,
     _validated_pc_delegation,
+    _validated_pc_gateway,
     _canonical_pc_plan,
 )
 from app.service import ServiceContractError, ServiceResponse, _service_error, build_execution_request
@@ -83,6 +84,8 @@ def _wire_allowed_fields(payload: Any) -> frozenset[str]:
         allowed |= {"pc_action_context"}
     if _validated_pc_delegation(payload) is not None:
         allowed |= {"pc_delegation"}
+    if _validated_pc_gateway(payload) is not None:
+        allowed |= {"pc_gateway"}
     return allowed
 
 
@@ -247,6 +250,7 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
                 declared_plan=payload.get("declared_plan"),
                 pc_action_context=_validated_pc_action_context(payload),
                 pc_delegation=_validated_pc_delegation(payload),
+                pc_gateway=_validated_pc_gateway(payload),
             )
             if isinstance(attached, ServiceResponse):
                 return attached

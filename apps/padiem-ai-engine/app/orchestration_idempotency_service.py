@@ -25,6 +25,7 @@ from app.orchestration_service import (
     _validated_pc_declared_plan,
     _validated_pc_action_context,
     _validated_pc_delegation,
+    _validated_pc_gateway,
 )
 from app.service import build_execution_request
 
@@ -131,6 +132,7 @@ def _initial_execution_fingerprint(payload: Any) -> str | None:
         declared_plan = _validated_pc_declared_plan(payload)
         action_context = _validated_pc_action_context(payload)
         delegation = _validated_pc_delegation(payload)
+        gateway = _validated_pc_gateway(payload)
     except Exception:
         return None
     from app.pc_tools_turn import parse_pc_tools
@@ -152,6 +154,8 @@ def _initial_execution_fingerprint(payload: Any) -> str | None:
         logical = request_fingerprint(
             {"logical_execution": logical, "pc_delegation": delegation}
         )
+    if gateway is not None:
+        logical = request_fingerprint({"logical_execution": logical, "pc_gateway": gateway})
     if declared_plan is not None:
         # A different requested scope must never replay another run's result.
         # Omission keeps the exact legacy fingerprint.

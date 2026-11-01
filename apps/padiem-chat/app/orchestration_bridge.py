@@ -421,6 +421,7 @@ class B62EngineOrchestrationBridge:
         byok_selection: Mapping[str, str] | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
         pc_delegation: Mapping[str, Any] | None = None,
+        pc_gateway: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         _safe_id("user_id", user_id)
         trace_id = f"b62_orch_{uuid.uuid4().hex[:24]}"
@@ -506,6 +507,9 @@ class B62EngineOrchestrationBridge:
             from padiem_ai_core.pc_delegation import parse_pc_delegation
 
             request["pc_delegation"] = parse_pc_delegation(pc_delegation)
+        if pc_gateway is not None:
+            from padiem_ai_core.pc_gateway import parse_pc_gateway
+            request["pc_gateway"] = parse_pc_gateway(pc_gateway)
         return request
 
     async def _persist_pause(
@@ -549,6 +553,7 @@ class B62EngineOrchestrationBridge:
         product_identity: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
         pc_delegation: Mapping[str, Any] | None = None,
+        pc_gateway: Mapping[str, Any] | None = None,
     ) -> B62OrchestrationResult:
         engine_request = self.build_engine_request(
             user_id=user_id,
@@ -564,6 +569,7 @@ class B62EngineOrchestrationBridge:
             product_identity=product_identity,
             pc_action_context=pc_action_context,
             pc_delegation=pc_delegation,
+            pc_gateway=pc_gateway,
         )
         try:
             raw = await self._client.orchestrate(engine_request)
@@ -588,6 +594,7 @@ class B62EngineOrchestrationBridge:
         additional_system_context: str | None = None, product_identity: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
         pc_delegation: Mapping[str, Any] | None = None,
+        pc_gateway: Mapping[str, Any] | None = None,
     ):
         request = self.build_engine_request(
             user_id=user_id, messages=messages, skill=skill, model_id=model_id,
@@ -596,6 +603,7 @@ class B62EngineOrchestrationBridge:
             additional_system_context=additional_system_context, product_identity=product_identity,
             pc_action_context=pc_action_context,
             pc_delegation=pc_delegation,
+            pc_gateway=pc_gateway,
             **({"byok_selection": byok_selection} if byok_selection is not None else {}),
         )
         wire = request if user_credential_ref is None else {**request, "user_credential_ref": user_credential_ref}

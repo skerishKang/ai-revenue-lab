@@ -24,6 +24,14 @@ from .account_model_selection_routes import (
 from .account_model_selection_store import D1AccountModelSelectionStore
 from .pc_delegation_routes import PC_DELEGATION_PATH, pc_delegation_get, pc_delegation_put
 from .pc_delegation_store import D1PcDelegationStore
+from .mcp_gateway_account_routes import (
+    MCP_TOKENS_PATH, MCP_TOKEN_PATH, MCP_APPROVALS_PATH, MCP_APPROVAL_PATH,
+    mcp_tokens_get, mcp_tokens_post, mcp_token_delete,
+    mcp_approvals_get, mcp_approval_post,
+)
+from .mcp_gateway_store import D1McpGatewayStore
+from .mcp_gateway_transport import MCP_GATEWAY_PATH, mcp_gateway_endpoint
+from .mcp_gateway_execution import execute_mcp_pc_tool
 from .android_auth_store import D1AndroidAuthHandoffStore
 from .lovetree_auth_routes import lovetree_handoff_start
 from .lovetree_auth_store import D1LoveTreeLoginHandoffStore
@@ -538,6 +546,8 @@ def create_app(
     file_lane_client=None,
     account_model_selection_store=None,
     pc_delegation_store=None,
+    mcp_gateway_store=None,
+    mcp_gateway_executor=None,
     shared_auth_comparison_flow=None,
     shared_login_flow=None,
     custom_credential_cipher=None,
@@ -701,6 +711,12 @@ def create_app(
         Route(MODEL_SELECTION_PATH, account_model_selection_put, methods=["PUT"]),
         Route(PC_DELEGATION_PATH, pc_delegation_get, methods=["GET"]),
         Route(PC_DELEGATION_PATH, pc_delegation_put, methods=["PUT"]),
+        Route(MCP_TOKENS_PATH, mcp_tokens_get, methods=["GET"]),
+        Route(MCP_TOKENS_PATH, mcp_tokens_post, methods=["POST"]),
+        Route(MCP_TOKEN_PATH, mcp_token_delete, methods=["DELETE"]),
+        Route(MCP_APPROVALS_PATH, mcp_approvals_get, methods=["GET"]),
+        Route(MCP_APPROVAL_PATH, mcp_approval_post, methods=["POST"]),
+        Route(MCP_GATEWAY_PATH, mcp_gateway_endpoint, methods=["POST", "GET", "DELETE", "OPTIONS"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
         Route(B66_PC_DIRECTORY_PATH, b66_pc_directory, methods=["GET"]),
         Route(B66_PC_TXT_READ_PATH, b66_pc_txt_read_request, methods=["POST"]),
@@ -1163,6 +1179,13 @@ def create_app(
         pc_delegation_store if pc_delegation_store is not None
         else D1PcDelegationStore(d1_binding) if d1_binding is not None else None
     )
+    # Credentials and one-action confirmation receipts share the Chat account
+    # database. Existing pairing, PC grants and P01 admission retain authority.
+    app.state.mcp_gateway_store = (
+        mcp_gateway_store if mcp_gateway_store is not None
+        else D1McpGatewayStore(d1_binding) if d1_binding is not None else None
+    )
+    app.state.mcp_gateway_executor = mcp_gateway_executor or execute_mcp_pc_tool
     app.state.project_file_store = project_file_store
     # #5568: the PDF→Markdown ledger reuses the same D1 and the same private workspace R2
     # binding as project files, so no new secret or binding is introduced. Without the
