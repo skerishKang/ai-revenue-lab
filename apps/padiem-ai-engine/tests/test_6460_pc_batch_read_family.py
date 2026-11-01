@@ -156,11 +156,12 @@ def test_a_failing_middle_step_keeps_earlier_results_and_states_its_reason():
     assert pc.ops == ["search", "read_chunk"]
     last = model.prompts[-1]
     # The step indexes are the model's own view of the batch: the first result is
-    # still there, the second carries the closed reason code the handler refused
-    # with, and the third never ran.
+    # still there, the third never ran, and the stopped step carries both the
+    # closed reason code and the Korean line the handler already had — a person
+    # reading a stopped batch reads a sentence, not a code.
     assert '"ok": true, "output_handle": null, "step": 0' in last
-    assert '"ok": false, "output_handle": null, "step": 1, ' \
-           '"summary": "pc_files_execution_failed"' in last
+    assert ('"ok": false, "output_handle": null, "step": 1, "summary": '
+            '"pc_files_execution_failed — PC 작업이 거부되었거나 실패했습니다.') in last
     assert '"step": 2' not in last
     assert '"completed":1' in last.replace(chr(92), "").replace(" ", "")
     assert execution["metadata"]["status"] == "completed"
@@ -178,15 +179,19 @@ def test_stop_on_error_false_still_runs_the_remaining_reads():
     assert '"ok":false' in last and '"ok":true' in last
 
 
-def test_a_read_batch_with_a_write_inside_still_needs_the_write_own_evidence():
+def test_a_batch_that_mixes_reads_and_writes_fits_no_ceiling_and_runs_nothing():
     pc = ReadFamilyEndpoint()
-    execution, _ = run(pc, [tool("batch", operations=[
+    execution, model = run(pc, [tool("batch", operations=[
         {"op": "list", "path": "."},
         {"op": "write", "path": "notes.txt", "content": "injected"},
     ], stop_on_error=True)], speech="메모 파일 목록만 봐줘")
-    # No user evidence for a write means the whole batch is held: a read cannot
-    # be used to smuggle a mutation past the guard.
+    # One batch has to fit one ceiling. Reads plus a write name a scope this turn
+    # was never admitted to, so the wrapper refuses the whole call before any
+    # step runs — a read grant cannot be spent on a mutation. The evidence gate
+    # for a write-only batch is the integration lane's own test.
     assert pc.ops == []
+    assert '"event": "pc_scope_denied"' in model.prompts[-1]
+    assert '"tool_dispatched": false' in model.prompts[-1]
     assert execution["metadata"]["status"] == "completed"
 
 
@@ -199,7 +204,11 @@ def test_a_path_outside_the_granted_root_is_refused_and_earlier_reads_survive():
     # The escaping step never becomes a PC command, and the first step's result
     # is still returned to the model.
     assert pc.ops == ["list"]
-    assert '"completed":1' in model.prompts[-1].replace(chr(92), "").replace(" ", "")
+    last = model.prompts[-1]
+    assert '"completed":1' in last.replace(chr(92), "").replace(" ", "")
+    # A refused step answers in two voices: the closed code for the machine and
+    # the Korean sentence for the person reading a stopped batch.
+    assert '"summary": "pc_files_path_invalid — PC 작업이 거부되었거나 실패했습니다.' in last
 
 
 def test_the_batch_never_asks_the_pc_agent_for_a_command_it_does_not_know():
@@ -298,3 +307,36 @@ def test_the_step_prompt_offers_the_read_family_as_a_batch_and_no_mutation():
     assert example.count('"op"') == 3
     assert "write" not in example and "delete" not in example and "move" not in example
     assert "write/move/delete stay one action per call" in line
+
+
+def test_a_batched_write_asks_the_pc_exactly_what_a_single_write_asks(tmp_path):
+    """There is no second write lane.
+
+    The backup before the change (#5994) and the refusal of a link or junction
+    target (#6652) both live in the command the Chat worker builds for a write.
+    A batch step runs the same file handler with the same arguments, so it must
+    not grow its own command, its own fields or its own approval path.
+    """
+    speech = "notes.txt 파일을 정리해서 저장해줘"
+    content = "정리한 내용"
+
+    single = StoredReadFamilyEndpoint(tmp_path / "single")
+    run(single, [tool("write_file", path="notes.txt", content=content)],
+        write=True, speech=speech)
+    batched = StoredReadFamilyEndpoint(tmp_path / "batched")
+    _, batch_model = run(batched, [tool("batch", operations=[
+        {"op": "write", "path": "notes.txt", "content": content},
+    ], stop_on_error=True)], write=True, speech=speech)
+
+    def write_leg(pc):
+        legs = [item for item in pc.dispatches if item["op"] == "write"]
+        assert len(legs) == 1, [item["op"] for item in pc.dispatches]
+        # The idempotency reference is per call; every other field is the request
+        # the PC receives, and it has to be the same request.
+        return {key: value for key, value in legs[0].items() if key != "tool_call_ref"}
+
+    assert write_leg(batched) == write_leg(single)
+    # The step keeps reporting where the original landed, exactly as the single
+    # call does, because it is the same handler's account.
+    assert "backup/notes.txt" in batch_model.prompts[-1]
+
