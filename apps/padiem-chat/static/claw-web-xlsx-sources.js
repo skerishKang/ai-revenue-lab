@@ -14,6 +14,11 @@
   const CHAT_ID = /^chat_[a-f0-9]{32}$/;
   const PDF_MAX_BYTES = 4_194_304;
   const ENDPOINT = "/api/claw/office/web-sources";
+  // Same split point as the file-lane attachment lane: above it the browser
+  // uploads to COM2 directly and this page registers only the resulting id.
+  const INLINE_MAX_BYTES = 10_000_000;
+  const UPLOAD_TICKET = ENDPOINT + "/upload-ticket";
+  const FILE_ID = /^file_[a-f0-9]{32}$/;
   const SELECTIONS = "/api/claw/office/web-selections";
   const SELECTION_ID = /^sel_[a-f0-9]{32}$/;
   // #3933: the ONE owner-scoped route that turns an already-completed result
@@ -35,7 +40,13 @@
       && Number.isSafeInteger(file.size_bytes) && file.size_bytes > 0
       && file.size_bytes <= MAX_BYTES
       && HASH.test(file.source_sha256)
+      && (file.file_id === undefined
+        || (typeof file.file_id === "string" && FILE_ID.test(file.file_id)))
       && file.original_immutable === true && file.processing_authorized === false);
+  }
+
+  function shouldUseFileLane(size) {
+    return Number.isSafeInteger(size) && size > INLINE_MAX_BYTES && size <= MAX_BYTES;
   }
 
   function validateSelection(body, source) {
@@ -1105,6 +1116,35 @@
       }
     }
 
+    // Large originals go browser -> COM2 file lane with a ticket; only the
+    // resulting file id reaches this deployment, so no 1 GiB body is proxied.
+    async function saveOriginal(file) {
+      const ticket = await jsonRequest(UPLOAD_TICKET, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ size_bytes: file.size }),
+      });
+      const target = new URL(ticket.upload_url);
+      if (target.protocol !== "https:" || target.username || target.password
+          || target.search || target.hash || target.pathname !== "/files") {
+        throw new Error("파일 서버 주소를 확인하지 못했습니다.");
+      }
+      target.searchParams.set("filename", file.name);
+      const response = await fetch(target.href, {
+        method: "POST", credentials: "include", cache: "no-store",
+        headers: ticket.headers, body: file,
+      });
+      const stored = await response.json().catch(() => null);
+      if (!response.ok || !stored || stored.ok !== true
+          || typeof stored.file_id !== "string" || !FILE_ID.test(stored.file_id)
+          || stored.size_bytes !== file.size) {
+        throw new Error("파일 서버에 원본을 저장하지 못했습니다. 다시 시도해 주세요.");
+      }
+      return jsonRequest(ENDPOINT + "/" + stored.file_id + "/register", {
+        method: "POST", headers: { "Accept": "application/json" },
+      });
+    }
+
     async function save() {
       if (busy) return;
       const file = input.files?.[0];
@@ -1119,15 +1159,17 @@
       setBusy(true);
       report("웹 저장소에 선택한 원본을 보관하고 있습니다.");
       try {
-        const body = await jsonRequest(ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/octet-stream",
-            "Accept": "application/json",
-            "X-Padiem-Filename": encodeURIComponent(file.name),
-          },
-          body: file,
-        });
+        const body = shouldUseFileLane(file.size)
+          ? await saveOriginal(file)
+          : await jsonRequest(ENDPOINT, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/octet-stream",
+              "Accept": "application/json",
+              "X-Padiem-Filename": encodeURIComponent(file.name),
+            },
+            body: file,
+          });
         if (body.processing_started !== false || body.p01_approved !== false
             || body.drive_uploaded !== false || !validFile(body.file)) {
           throw new Error("웹 원본 저장 결과를 확인할 수 없습니다.");
@@ -1171,6 +1213,7 @@
   }
 
   const api = Object.freeze({
+    INLINE_MAX_BYTES, shouldUseFileLane,
     validFile, validateListing, validateSelection, validateWorkConversation,
     validateAdopt, validateSelectionsListing, validateP01Status,
     validateP01Start, validateP01Decision, init,

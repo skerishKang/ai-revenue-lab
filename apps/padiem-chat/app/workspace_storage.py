@@ -16,9 +16,35 @@ GENERATED_DOCUMENT_RETENTION_DAYS = 30
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 MAX_WEB_XLSX_BYTES = 1024 * 1024 * 1024
+#: Above this size the original is uploaded straight to the COM2 file lane and
+#: this store keeps only a reference; at or below it the bytes stay here. The
+#: file-lane attachment lane splits at the same point.
+WEB_XLSX_INLINE_MAX_BYTES = 10_000_000
+_WEB_XLSX_FILE_LANE_MARKER = "filelane:"
+_FILE_LANE_ID_RE = re.compile(r"^file_[0-9a-f]{32}$")
 WEB_XLSX_RETENTION = timedelta(days=1)
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _SAFE_FILENAME_RE = re.compile(r"[^A-Za-z0-9._-]+")
+
+
+def _web_xlsx_filename(filename: Any) -> str:
+    if (type(filename) is not str or not 1 <= len(filename) <= 155
+            or filename in (".", "..")
+            or filename != filename.strip()
+            or any(ord(ch) < 32 or ch in '<>:"/\\|?*' for ch in filename)
+            or not filename.lower().endswith(".xlsx")):
+        raise ValueError("bounded XLSX basename required")
+    return filename
+
+
+def web_xlsx_file_lane_id(metadata: ClawDocumentMetadata) -> str | None:
+    """The file-lane id behind one original, or None when the bytes are in R2."""
+
+    tail = metadata.object_key.rpartition("/")[2]
+    if not tail.startswith(_WEB_XLSX_FILE_LANE_MARKER):
+        return None
+    file_id = tail[len(_WEB_XLSX_FILE_LANE_MARKER):]
+    return file_id if _FILE_LANE_ID_RE.fullmatch(file_id) else None
 
 
 class WorkspaceStorageError(RuntimeError):
@@ -346,13 +372,14 @@ class WorkspaceDocumentStore:
     def _web_xlsx_projection(metadata: ClawDocumentMetadata, prefix: str) -> dict[str, Any]:
         relative = metadata.object_key.removeprefix(prefix)
         parts = relative.split("/")
+        lane_file_id = web_xlsx_file_lane_id(metadata)
         if (not metadata.object_key.startswith(prefix)
                 or len(parts) != 3 or parts[0] != metadata.document_id
                 or len(parts[1]) != 64 or not re.fullmatch(r"[0-9a-f]{64}", parts[1])
-                or parts[2] != metadata.filename
+                or (parts[2] != metadata.filename and lane_file_id is None)
                 or metadata.media_type != XLSX_MEDIA_TYPE):
             raise WorkspaceStorageError("web XLSX metadata scope invalid")
-        return {
+        projection = {
             "document_id": metadata.document_id,
             "filename": metadata.filename,
             "size_bytes": metadata.byte_length,
@@ -361,17 +388,17 @@ class WorkspaceDocumentStore:
             "original_immutable": True,
             "processing_authorized": False,
         }
+        if lane_file_id is not None:
+            # The bytes are the file lane's; the browser can only reach them
+            # through this owner-scoped download, never by naming the id alone.
+            projection["file_id"] = lane_file_id
+        return projection
 
     async def put_web_xlsx(self, *, tenant_id: str, owner_id: str,
                            workspace_id: str, filename: str, body: bytes,
                            now: datetime | None = None) -> dict[str, Any]:
         prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
-        if (type(filename) is not str or not 1 <= len(filename) <= 155
-                or filename in (".", "..")
-                or filename != filename.strip()
-                or any(ord(ch) < 32 or ch in '<>:"/\\|?*' for ch in filename)
-                or not filename.lower().endswith(".xlsx")):
-            raise ValueError("bounded XLSX basename required")
+        _web_xlsx_filename(filename)
         if not isinstance(body, bytes) or not 0 < len(body) <= MAX_WEB_XLSX_BYTES:
             raise ValueError("web Office XLSX exceeds upload limit")
         try:
@@ -412,6 +439,42 @@ class WorkspaceDocumentStore:
             except Exception:
                 pass
             raise WorkspaceStorageError("web XLSX write failed") from exc
+        return self._web_xlsx_projection(metadata, prefix)
+
+    async def put_web_xlsx_reference(self, *, tenant_id: str, owner_id: str,
+                                     workspace_id: str, filename: str,
+                                     file_id: str, source_sha256: str,
+                                     size_bytes: int,
+                                     now: datetime | None = None) -> dict[str, Any]:
+        """Record one original the COM2 file lane already stored.
+
+        The bytes never enter this process: the row keeps the lane id beside the
+        owner, workspace and digest the selection and approval contracts read.
+        """
+        prefix = self._web_xlsx_prefix(tenant_id, owner_id, workspace_id)
+        _web_xlsx_filename(filename)
+        if not isinstance(file_id, str) or not _FILE_LANE_ID_RE.fullmatch(file_id):
+            raise ValueError("file lane id required")
+        if (not isinstance(source_sha256, str)
+                or not re.fullmatch(r"[0-9a-f]{64}", source_sha256)):
+            raise ValueError("source fingerprint required")
+        if type(size_bytes) is not int or not 0 < size_bytes <= MAX_WEB_XLSX_BYTES:
+            raise ValueError("web Office XLSX exceeds upload limit")
+        current = now or _utcnow()
+        if current.tzinfo is None or current.utcoffset() is None:
+            raise ValueError("aware timestamp required")
+        doc_id = _document_id()
+        key = f"{prefix}{doc_id}/{source_sha256}/{_WEB_XLSX_FILE_LANE_MARKER}{file_id}"
+        metadata = ClawDocumentMetadata(
+            document_id=doc_id, tenant_id=tenant_id, object_key=key,
+            filename=filename, media_type=XLSX_MEDIA_TYPE,
+            byte_length=size_bytes, created_at=current,
+            expires_at=current + WEB_XLSX_RETENTION,
+        )
+        try:
+            await self.metadata_store.insert(metadata)
+        except Exception as exc:
+            raise WorkspaceStorageError("web XLSX reference write failed") from exc
         return self._web_xlsx_projection(metadata, prefix)
 
     async def list_web_xlsx(self, *, tenant_id: str, owner_id: str,
@@ -459,6 +522,10 @@ class WorkspaceDocumentStore:
         # Check owner/workspace + immutable content digest BEFORE touching R2.
         if not metadata.object_key.startswith(prefix + doc_id + "/"):
             return None
+        if web_xlsx_file_lane_id(metadata) is not None:
+            # The lane owns these bytes; a caller that needs them must stream
+            # from the lane instead of materializing the whole body here.
+            raise WorkspaceStorageError("web XLSX source is served by the file lane")
         projection = self._web_xlsx_projection(metadata, prefix)
         result = await self.get_for_tenant(
             tenant_id=tenant_id, document_id=doc_id, now=now,
