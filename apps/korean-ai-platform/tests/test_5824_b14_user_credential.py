@@ -373,8 +373,10 @@ async def test_a_malformed_credential_is_refused_without_quoting_it(
 
 
 @pytest.mark.asyncio
-async def test_b14_auto_is_not_served_by_a_request_key(live_lane, captured):
-    """The automatic route has no caller-named provider to honour."""
+async def test_b14_auto_is_an_opaque_caller_model_under_a_request_key(live_lane, captured):
+    """B7: no automatic route exists. Under a request credential the retired id
+    is an opaque model name passed to the caller's own provider — the platform
+    contributes no routing of its own."""
     calls, _written = captured
     app = _app_with(_transport(calls, lambda _r: _completed()))
 
@@ -385,9 +387,9 @@ async def test_b14_auto_is_not_served_by_a_request_key(live_lane, captured):
             CHAT_COMPLETIONS,
             json={**_reference(), "model": "b14/auto"},
         )
-    assert response.status_code == 422
-    assert "b14/auto" in response.json()["error"]["message"]
-    assert calls == []
+    assert response.status_code == 200
+    assert len(calls) == 1
+    assert SENTINEL not in response.text
 
 
 @pytest.mark.asyncio
@@ -411,12 +413,14 @@ async def test_the_auto_stream_lane_is_gone_for_a_credential_holder(
     await drain()
 
     assert auto_preview.status_code == 404
-    assert auto_model.status_code == 422
-    assert "choices" not in auto_model.json()
-    assert calls == []
+    # The retired id under a credential is an opaque caller model now: the
+    # request is dispatched to the caller's own provider (this fake answers an
+    # SSE body on the completed path, so the bounded 502 is the provider's
+    # answer) and no platform auto surface answers it.
+    assert auto_model.status_code == 502
     for response in (auto_preview, auto_model):
         assert SENTINEL not in response.text
-    assert calls == []
+    assert len(calls) == 1
 
 
 @pytest.mark.asyncio

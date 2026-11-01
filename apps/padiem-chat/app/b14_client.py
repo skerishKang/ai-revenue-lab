@@ -637,7 +637,7 @@ class B14Client:
     ) -> AsyncIterator[ChatStreamEvent]:
         """Yield a private text stream through the product-neutral Core runtime."""
 
-        if not isinstance(model, str) or not model.strip() or model.strip() == "b14/auto":
+        if not isinstance(model, str) or not model.strip():
             raise ValueError("private streaming requires an explicit manual model")
         resolved_model = model.strip()
         resolved_skill = skill or get_task_mode()
@@ -694,7 +694,7 @@ class B14Client:
     ) -> AsyncIterator[ChatStreamEvent]:
         """Compatibility entrypoint for B62's simple default UX.
 
-        Despite the historical method name, B62 does not invoke B14's `b14/auto`
+        Despite the historical method name, B62 does not invoke any automatic
         router here. It resolves the B62-owned product profile first, then hands a
         product-neutral ExecutionRequest to Core.
         """
@@ -924,7 +924,6 @@ class B14Client:
         if (
             not isinstance(model, str)
             or not model.strip()
-            or model == "b14/auto"
             or model.startswith("padiem-profile/")
             or len(model) > 256
             or not all(c.isascii() and (c.isalnum() or c in "._:/-") for c in model)
@@ -1006,7 +1005,6 @@ class B14Client:
         if (
             not isinstance(model, str)
             or not model.strip()
-            or model == "b14/auto"
             or model.startswith("padiem-profile/")
             or not all(c.isascii() and (c.isalnum() or c in "._:/-") for c in model)
             or len(model) > 256

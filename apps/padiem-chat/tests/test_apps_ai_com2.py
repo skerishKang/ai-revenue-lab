@@ -216,9 +216,11 @@ def test_thought_removal(text, expected):
     assert strip_thought_blocks(text) == expected
 
 
-def test_invalid_policy_does_not_report_its_contents():
-    with pytest.raises(ValueError, match="^apps_ai_policy_invalid$"):
-        policies_from_env({POLICY_ENV: '{"storymemory":{"allowed_models":["b14/auto"]}}'})
+def test_a_retired_auto_id_policy_is_opaque_configuration():
+    """B7: the per-app lane does not special-case the retired id — it is
+    accepted as opaque configuration and Business 14 owns the refusal."""
+    policies = policies_from_env({POLICY_ENV: '{"storymemory":{"allowed_models":["b14/auto"]}}'})
+    assert policies["sub_app_storymemory"].allowed_models == ("b14/auto",)
 
 
 @pytest.mark.asyncio

@@ -6,7 +6,7 @@ This module keeps a bounded set of explicit current free routes rather than
 existing anonymous/keyless execution contract.
 
 Free availability is volatile. These registrations are dated snapshots, remain
-explicit/manual-only, and are never inserted into ``b14/auto``. The fixed Kilo
+explicit/manual-only, and are never part of any automatic selection. The fixed Kilo
 Gateway origin and upstream model IDs are server-owned metadata; callers
 cannot replace any of them.
 

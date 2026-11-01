@@ -95,8 +95,10 @@ def test_gateway_rejects_the_retired_auto_id_and_drops_scorer_options(
             "business14": {"task_type": "coding"},
         },
     )
-    assert resp_default.status_code == 422
-    assert resp_default.json()["error"]["code"] == "invalid_body"
+    # B7: the retired id is an unknown model now (the scorer-era fields are
+    # dropped in grace either way).
+    assert resp_default.status_code == 400
+    assert resp_default.json()["error"]["code"] == "unsupported_model"
 
     # B4 grace: the retired names are accepted, logged, and dropped.
     resp_opt_in = client.post(

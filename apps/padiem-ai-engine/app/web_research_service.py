@@ -356,11 +356,11 @@ class WebResearchEngineService:
                 status_code=exc.status_code,
             )
 
-        # #5002: the suspended Router auto route is refused by the one shared
-        # engine model rule (app/service.py::_model_policy), which this route
-        # reuses through build_execution_request(). The route therefore answers
-        # the same 422 auto_routing_deferred before any runtime or provider
-        # call, and it never needs a second, divergent judgement of its own.
+        # B7/#5002: no automatic route and no Engine-side special case. The one
+        # shared engine model rule (app/service.py::_model_policy) still demands
+        # an explicit non-empty model, but a named retired id travels to
+        # Business 14 like any model id, which owns the refusal. This route
+        # never needs a second, divergent judgement of its own.
         try:
             research_runtime = self._research_runtime_factory(request.app_id)
             # Evidence-only must not construct, select, or invoke a B14 model.
@@ -403,7 +403,7 @@ class WebResearchEngineService:
                 allowed_tools=(),
                 required_capabilities=(),
                 # The planner must use the request's server-validated explicit
-                # model. It must not fall back to b14/auto or any default.
+                # model. It must not fall back to any default.
                 model_policy=dict(request.agent.model_policy),
                 max_steps=1,
             )

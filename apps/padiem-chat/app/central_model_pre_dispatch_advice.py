@@ -37,7 +37,7 @@ class VerifiedProductModelSelection:
             raise ValueError("model_policy_workspace_not_supported")
         if self.product_id not in PRODUCTS - {"central"} or self.tier not in TIERS:
             raise ValueError("invalid_verified_model_target")
-        if not isinstance(self.exact_model_id, str) or MODEL_ID.fullmatch(self.exact_model_id) is None or self.exact_model_id.startswith("b14/auto"):
+        if not isinstance(self.exact_model_id, str) or MODEL_ID.fullmatch(self.exact_model_id) is None:
             raise ValueError("invalid_verified_model_id")
         if not isinstance(self.authority_ref, str) or not self.authority_ref or len(self.authority_ref) > 128:
             raise ValueError("missing_verified_model_authority")

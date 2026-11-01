@@ -1511,7 +1511,7 @@ class Default(WorkerEntrypoint):
         # model; pricing and generic B14 auto flags do not qualify it.
         # Never pass
         # ordinary quote text into the B62 Plus/Pro/Max HOLD resolver;
-        # never synthesize b14/auto or a hidden retry/fallback.
+        # never synthesize a hidden automatic route or retry/fallback.
         quote_model_resolver = B66ExplicitQuoteModelResolver(service_transport)
         worker_app.state.b66_quote_model_resolver = quote_model_resolver
         # Claw/B66 consume the same B14 owner-allowed/live-ready catalog.

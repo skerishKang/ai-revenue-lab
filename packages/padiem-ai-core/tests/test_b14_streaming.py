@@ -153,30 +153,15 @@ def test_comments_and_sse_metadata_are_ignored():
     assert events[-1].done is True
 
 
-@pytest.mark.parametrize(
-    "req",
-    [
-        request(model="b14/auto"),
-    ],
-)
-def test_unsupported_stream_policy_fails_before_network(req: B14ChatRequest):
-    """B7: the retired auto id is refused; B5 removed the fallback knob, so
-    there is no routing option left that can disqualify a stream request."""
-    calls = 0
+def test_the_stream_lane_has_no_policy_left_to_refuse_locally():
+    """B7: no automatic route and no fallback knob exists, so the Core stream
+    client has no local refusal left — unknown ids are refused by B14 itself
+    (pinned platform-side)."""
+    from padiem_ai_core.b14_streaming import B14StreamingClient as _Client
 
-    async def handler(http_request: httpx.Request) -> httpx.Response:
-        nonlocal calls
-        calls += 1
-        return httpx.Response(500)
-
-    client = B14StreamingClient(
-        B14ExecutionConfig(BASE_URL),
-        transport=httpx.MockTransport(handler),
-    )
-    with pytest.raises(B14ExecutionError) as exc:
-        collect(client, req)
-    assert exc.value.code == "streaming_request_unsupported"
-    assert calls == 0
+    client_methods = _Client.__dict__
+    assert "stream" in client_methods
+    assert "stream_auto" not in client_methods
 
 
 @pytest.mark.parametrize(

@@ -146,7 +146,9 @@ def test_one_authorized_exact_model_through_b14_stub_preserves_b66_payload():
     ({"route_count": 2}, "selection_ambiguous"),
     ({"route_count": True}, "selection_ambiguous"),
     ({"capabilities": frozenset(("coding",))}, "model_capability_unavailable"),
-    ({"model_id": "b14/auto"}, "model_identity_invalid"),
+    # B7: no forbidden-id set exists — a retired-id selection simply is not
+    # the authorized model.
+    ({"model_id": "b14/auto"}, "model_not_authorized"),
     ({"model_id": "padiem-profile/plus-hold"}, "model_identity_invalid"),
     ({"model_id": "padiem-profile/pro-hold"}, "model_identity_invalid"),
     ({"model_id": "padiem-profile/max-hold"}, "model_identity_invalid"),
@@ -314,7 +316,9 @@ def test_module_has_no_worker_or_automatic_policy_runtime_imports():
     import inspect
     from app import b66_registered_model_boundary as source
     code = inspect.getsource(source)
-    assert "b14/auto" in code  # explicit rejection, not dispatch
+    # B7: the module never names or dispatches the retired automatic route —
+    # it only ever pins one exact registered model.
+    assert "b14/auto" not in code
     for forbidden in (
         "from app.model_policy import",
         "from app.pilot.routing_policy import",
@@ -347,7 +351,7 @@ def test_b14_explicit_quote_route_calls_core_once_without_b62_default(monkeypatc
     assert calls == [("document","test-owner/quote-1")]
 
 
-@pytest.mark.parametrize("model",["","b14/auto","padiem-profile/plus-hold","bad space"])
+@pytest.mark.parametrize("model",["","padiem-profile/plus-hold","bad space"])
 def test_b14_explicit_quote_route_does_not_dispatch_invalid_models(monkeypatch,model):
     from app.b14_client import B14Client, ChatRuntimeError
     from app.config import Settings

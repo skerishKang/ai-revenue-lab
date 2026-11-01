@@ -273,8 +273,9 @@ def resolve_manual_route(
 def resolve_route(model_id: str, business14_options: dict[str, Any] | None = None) -> RouteDecision:
     """Resolve a manual route without making upstream calls.
 
-    The retired ``b14/auto`` id never reaches this module: request validation
-    rejects it as a string. Every resolved route is manual.
+    There is no automatic route of any kind: every resolved route is manual,
+    and an id outside the registered catalog is refused by the ordinary
+    unknown-model handling.
 
     Returns RouteDecision. Raises NoSafeRoute if routing fails.
     """

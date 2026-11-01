@@ -92,7 +92,9 @@ def test_exact_quote_off_guard_has_zero_dispatch_before_registry_and_refunds(run
     assert store.bucket_refund_calls == 3
 
 
-@pytest.mark.parametrize("failure", ["binding", "model", "messages", "context", "invalid_shape", "serialization"])
+# B7: the retired id is no longer a local refusal trigger — it reaches the
+# wire and Business 14 owns the refusal (pinned platform-side).
+@pytest.mark.parametrize("failure", ["binding", "messages", "context", "invalid_shape", "serialization"])
 def test_exact_quote_local_failure_refunds_before_any_service_post(failure):
     binding = Binding()
     store = RefundableMemoryStore()
@@ -101,9 +103,7 @@ def test_exact_quote_local_failure_refunds_before_any_service_post(failure):
         require_service_binding=True,
     )
     kwargs = dict(messages=MESSAGES, model=MODEL, additional_system_context=None)
-    if failure == "model":
-        kwargs["model"] = "b14/auto"
-    elif failure == "messages":
+    if failure == "messages":
         kwargs["messages"] = [{"role": "assistant", "content": "invalid"}]
     elif failure == "context":
         # #4379: the provider context carries no PADIEM byte total, so the

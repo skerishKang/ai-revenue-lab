@@ -23,8 +23,8 @@ an authorized ACT-1 read of ``GET /v1/models`` proves it). No route is
 fabricated in the meantime.
 
 Registration is explicit/manual-pin only: the model lives in the exact-ID
-``CATALOG_BY_ID`` table and is NOT appended to ``CATALOG_MODELS``, so
-``b14/auto`` and the legacy public summary surface are untouched. Missing
+``CATALOG_BY_ID`` table and is NOT appended to ``CATALOG_MODELS``, so the
+legacy public summary surface stays untouched. Missing
 credential fails closed with zero upstream calls (generic platform adapter
 contract). Pricing is Credits-denominated — no USD or free claim is
 fabricated.

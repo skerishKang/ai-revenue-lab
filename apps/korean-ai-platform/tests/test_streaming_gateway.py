@@ -410,9 +410,11 @@ def test_canonical_stream_true_does_not_promote_auto_route():
     client = _client()
     response = client.post(CHAT_URL, json=_payload(model="b14/auto"))
 
-    # B7: the retired id is refused at validation, before any stream handling.
-    assert response.status_code == 422
-    assert response.json()["error"]["code"] == "invalid_body"
+    # B7: the retired id has no special case anywhere — a non-catalog model
+    # never enters the stream opt-in and the canonical validator refuses
+    # stream=true as always.
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "stream_not_supported"
 
 
 def test_preview_requires_stream_true():
@@ -444,10 +446,10 @@ def test_auto_or_external_fallback_streaming_is_rejected_before_network(payload_
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload(**payload_update))
 
-    # B7: the retired auto id is refused at validation, before the stream
-    # surface and before any network call.
-    assert response.status_code == 422
-    assert response.json()["error"]["code"] == "invalid_body"
+    # B7: the retired auto id is an unknown model now — the stream surface
+    # refuses it before any network call.
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "unsupported_model"
     assert calls == 0
 
 
