@@ -1667,12 +1667,12 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
                                optimize_for=None, service=None, request_factory=None,
                                secret=None, tool_arguments=None, initial_decision=None,
                                compaction_store=None, compaction_token_budget=None,
-                               compaction_budget_resolver=None):
+                               compaction_budget_resolver=None, compaction_store_factory=None):
     static_arguments = _plan_step_arguments(tool_arguments, "query_drives")
     allowed_tool_ids = _scope_allowed_tool_ids(tool_arguments)
     context_cache: dict[str, Any] = {}
     from app.pc_context_compaction import PCContextCompactor, PCContextCompactionError
-    compactor = PCContextCompactor(store=compaction_store)
+    compactor = PCContextCompactor(store=compaction_store, store_factory=compaction_store_factory)
     budget_cache = {"resolved": compaction_token_budget is not None, "value": compaction_token_budget}
 
     first_decisions = [dict(initial_decision)] if initial_decision is not None else []
@@ -1797,8 +1797,12 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
         metrics = current_pc_work_metrics()
         if metrics is not None:
             try:
-                for _ in range(prepared.get("compactions", 0)):
-                    metrics.mark_compaction()
+                if prepared.get("compactions", 0):
+                    metrics.mark_compaction(
+                        tokens_before=prepared.get("tokens_before"),
+                        tokens_after=prepared.get("tokens_after"),
+                        count=prepared.get("compactions", 0),
+                    )
             except Exception:
                 print("pc_work_metrics_compaction_failed", flush=True)
         if prepared["status"] == "compacted":
@@ -1926,22 +1930,39 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             )
         except PCContextCompactionError as exc:
             print("pc_context_compaction status=" + exc.code, flush=True)
-            raise PCQueryStepError("PC context could not be compacted safely", detail="model_call_failed") from exc
+            # No archive or an unusable summary must not end the turn as an
+            # error. First keep the turn alive with a handle-preserving
+            # reduction; when that still cannot fit, leave a plain progress
+            # checkpoint the next conversation turn can continue from.
+            shrunk = compactor.shrink_oversized(
+                token_budget=budget_cache["value"], render=render_context,
+            )
+            if shrunk is None:
+                from app.pc_context_continuation import checkpoint_answer
+                print("pc_context_continuation status=checkpoint reason=" + exc.code, flush=True)
+                return {"action": "complete",
+                        "answer": checkpoint_answer(observations, reason=exc.code)}
+            print("pc_context_compaction status=shrunk stage=step", flush=True)
+            prepared = {**shrunk, "compactions": 0, "handle": None}
         driver.compaction_status = prepared["status"]
         if prepared["status"] == "compacted" or (prepared["status"] == "budget_unknown" and compaction_budget_resolver is not None):
             print("pc_context_compaction status=" + prepared["status"], flush=True)
         # A turn that did not compact keeps the existing model wire verbatim.
         # Structured source/role metadata is only introduced with a real summary.
-        prompt = (prepared["prompt"] if prepared["status"] == "compacted" or prepared["handle"]
+        compacted = prepared["status"] in {"compacted", "shrunk"} or bool(prepared["handle"])
+        prompt = (prepared["prompt"] if compacted
                   else prompt_prefix + json.dumps(observations, ensure_ascii=False))
-        observed_for_metrics = (prepared["tool_results"] if prepared["status"] == "compacted" or prepared["handle"]
-                                else observations)
+        observed_for_metrics = prepared["tool_results"] if compacted else observations
         from app.pc_work_metrics import current_pc_work_metrics
         metrics = current_pc_work_metrics()
         if metrics is not None:
             try:
-                for _ in range(prepared.get("compactions", 0)):
-                    metrics.mark_compaction()
+                if prepared.get("compactions", 0):
+                    metrics.mark_compaction(
+                        tokens_before=prepared.get("tokens_before"),
+                        tokens_after=prepared.get("tokens_after"),
+                        count=prepared.get("compactions", 0),
+                    )
             except Exception:
                 print("pc_work_metrics_compaction_failed", flush=True)
         answer = await call_model(({"role": "user", "content": prompt},), observed_for_metrics)

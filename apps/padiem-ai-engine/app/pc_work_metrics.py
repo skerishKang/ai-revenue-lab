@@ -48,6 +48,8 @@ class PcWorkMetricsCollector:
         self._stored_outputs: set[str] = set()
         self._background_jobs: set[str] = set()
         self._compactions = 0
+        self._compaction_tokens_before = 0.0
+        self._compaction_tokens_after = 0.0
         self._models: list[dict[str, Any]] = []
         self._confirmation = False
         self._failure_reason = None
@@ -96,10 +98,22 @@ class PcWorkMetricsCollector:
         if self._outcome == "running" and isinstance(output_id, str) and output_id:
             self._stored_outputs.add(output_id)
 
-    def mark_compaction(self):
-        """Called after one actual context compaction succeeds."""
-        if self._outcome == "running":
-            self._compactions += 1
+    def mark_compaction(self, *, tokens_before=None, tokens_after=None, count=1):
+        """Called after actual context compaction succeeds.
+
+        `count` is the number of passes that produced the measured before/after
+        prompt sizes, so a multi-pass compaction still counts every pass while
+        the token sums describe this one prepared turn.
+        """
+        if self._outcome != "running":
+            return
+        steps = count if type(count) is int and count > 0 else 1
+        self._compactions += steps
+        if (type(tokens_before) in {int, float} and type(tokens_after) in {int, float}
+                and tokens_before >= 0 and tokens_after >= 0
+                and tokens_before >= tokens_after):
+            self._compaction_tokens_before += float(tokens_before)
+            self._compaction_tokens_after += float(tokens_after)
 
     def mark_background_job(self, job_id):
         """Count accepted jobs, excluding repeated polling or replay of a job."""
@@ -140,10 +154,14 @@ class PcWorkMetricsCollector:
         missing = sum(model["usage"] is None for model in self._models)
         input_estimate = sum(model["input"] for model in self._models)
         result_estimate = sum(model["results"] for model in self._models)
+        saved = self._compaction_tokens_before - self._compaction_tokens_after
         return validate_pc_work_metrics({
-            "schema_version": 2, "turn_id": self.turn_id, "tool_calls": tools, **totals,
+            "schema_version": 3, "turn_id": self.turn_id, "tool_calls": tools, **totals,
             "stored_output_count": len(self._stored_outputs),
             "compaction_count": self._compactions,
+            "compaction_input_tokens_before": self._compaction_tokens_before,
+            "compaction_input_tokens_after": self._compaction_tokens_after,
+            "compaction_tokens_saved": saved,
             "background_job_count": len(self._background_jobs),
             "truncated_bytes": None if totals["truncated_bytes_unknown_count"] else totals["truncated_bytes_known"],
             "model_calls": len(self._models), "model_input_tokens": None if missing else observed,

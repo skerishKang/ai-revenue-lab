@@ -37,7 +37,14 @@ Mesh 내부 패킷 수나 네트워크 재전송 횟수는 이 값의 의미가 
 | `model_input_tokens_observed`, `model_input_tokens_missing_calls` | 관측된 입력 토큰 합계와 usage 없는 호출 수 |
 | `model_input_tokens_estimated`, `tool_result_tokens_estimated` | 각 모델 호출의 직렬화된 입력·도구 결과 UTF-8 바이트 / 4 추정치. 재전송한 결과는 다시 합산 |
 | `tool_result_input_ratio`, `token_ratio_basis` | 위 추정치끼리의 비율. `utf8_bytes_div4_estimate`로 표시하며 실제 tokenizer 측정값으로 주장하지 않음 |
+| `stored_output_count`, `compaction_count`, `background_job_count` | 큰 출력 보관·문맥 압축·백그라운드 작업의 성공 횟수 |
+| `compaction_input_tokens_before`, `compaction_input_tokens_after`, `compaction_tokens_saved` | 압축 전·후 모델 입력 추정 토큰과 줄어든 양. `schema_version=3`에서만 |
 | `outcome`, `outcome_reason` | 실행기 종료 상태와 구조적으로 관측한 사유 |
+
+문맥 압축은 모델이 선언한 `context_window`의 일정 비율(`PADIEM_PC_CONTEXT_RATIO`, 기본 0.60, 0.20~0.90)을 넘을 때만
+발생한다. 압축 전·후 토큰은 위 `utf8_bytes_div4_estimate`와 같은 추정이며 공급자 usage가 아니다.
+보관 원문은 Engine의 기존 `ENGINE_CONTINUATION` D1 표(`apps/padiem-ai-engine/migrations/0014_engine_context_archive.sql`)에
+owner 범위로 남고 `claw.pc.recall_context`로 다시 읽는다. Chat DB migration 088은 필요하지 않다.
 
 `completed`는 실행기가 정상 terminal까지 간 상태다. 모델의 “완료했습니다” 문장을 판독해서
 성공으로 올리지 않는다. 도중 tool/model 실패가 있었으면 정상 종료 뒤에도 `tool_failed`,

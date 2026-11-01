@@ -26,6 +26,8 @@ _COUNTERS = (
     "model_input_tokens_missing_calls", "model_input_tokens_estimated",
     "tool_result_tokens_estimated", "tool_result_input_ratio",
     "stored_output_count", "compaction_count", "background_job_count",
+    "compaction_input_tokens_before", "compaction_input_tokens_after",
+    "compaction_tokens_saved",
 )
 _TOOL_COUNTERS = (
     "calls", "pc_round_trips", "truncation_count", "truncated_bytes_known",

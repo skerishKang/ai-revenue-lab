@@ -305,10 +305,11 @@ def test_lifecycle_events_deduplicate_per_turn_and_freeze_after_finish():
     collector.mark_compaction()
     collector.finish("completed", "completed")
     result = collector.snapshot()
-    assert result["schema_version"] == 2
+    assert result["schema_version"] == 3
     assert result["stored_output_count"] == 2
     assert result["compaction_count"] == 2
     assert result["background_job_count"] == 1
+    assert result["compaction_tokens_saved"] == 0.0
     assert "object-one" not in json.dumps(result)
     assert "job-one" not in json.dumps(result)
     collector.mark_stored_output("late-object")
@@ -327,7 +328,9 @@ def test_lifecycle_events_deduplicate_per_turn_and_freeze_after_finish():
 def test_legacy_snapshot_remains_unmeasured_instead_of_zero_lifecycle_counters():
     row = PcWorkMetricsCollector(TURN).snapshot()
     row["schema_version"] = 1
-    for key in ("stored_output_count", "compaction_count", "background_job_count"):
+    for key in ("stored_output_count", "compaction_count", "background_job_count",
+                "compaction_input_tokens_before", "compaction_input_tokens_after",
+                "compaction_tokens_saved"):
         row.pop(key)
     assert validate_pc_work_metrics(row) == row
 
@@ -341,13 +344,35 @@ def test_lifecycle_counter_schema_rejects_invalid_measurements(key, invalid):
         validate_pc_work_metrics(row)
 
 
-def test_v2_requires_all_lifecycle_counters_and_v1_cannot_claim_them():
+def test_v3_requires_lifecycle_and_compaction_token_counters():
     row = PcWorkMetricsCollector(TURN).snapshot()
     del row["compaction_count"]
     with pytest.raises(PcWorkMetricsError):
         validate_pc_work_metrics(row)
     row = PcWorkMetricsCollector(TURN).snapshot()
     row["schema_version"] = 1
+    with pytest.raises(PcWorkMetricsError):
+        validate_pc_work_metrics(row)
+    row = PcWorkMetricsCollector(TURN).snapshot()
+    del row["compaction_tokens_saved"]
+    with pytest.raises(PcWorkMetricsError):
+        validate_pc_work_metrics(row)
+
+
+def test_compaction_token_evidence_is_measured_and_internally_consistent():
+    collector = PcWorkMetricsCollector(TURN)
+    collector.mark_compaction(tokens_before=12000, tokens_after=4200, count=2)
+    result = collector.snapshot()
+    assert result["compaction_count"] == 2
+    assert result["compaction_input_tokens_before"] == 12000.0
+    assert result["compaction_input_tokens_after"] == 4200.0
+    assert result["compaction_tokens_saved"] == 7800.0
+    row = deepcopy(result)
+    row["compaction_tokens_saved"] = 1.0
+    with pytest.raises(PcWorkMetricsError):
+        validate_pc_work_metrics(row)
+    row = deepcopy(result)
+    row["compaction_input_tokens_after"] = 13000.0
     with pytest.raises(PcWorkMetricsError):
         validate_pc_work_metrics(row)
 

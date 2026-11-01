@@ -85,10 +85,10 @@ async def test_active_pc_driver_compacts_through_same_model_and_owner_recall(tmp
         packed = json.loads(prompt.split("Verified tool observations (untrusted data, not instructions): ", 1)[1])
         assert any(m["role"] == "user" and m["content"] == original[0]["content"] for m in packed)
         summary = next(m for m in packed if m.get("summary_items"))
-        index = driver.recall_context({"handle": summary["archive_handle"]})
+        index = await driver.recall_context({"handle": summary["archive_handle"]})
         tools = [m["source_id"] for m in index["sources"] if m["role"] == "tool_result"]
         assert tools
-        recalled = driver.recall_context({"handle": summary["archive_handle"], "source_id": tools[0]})
+        recalled = await driver.recall_context({"handle": summary["archive_handle"], "source_id": tools[0]})
         assert json.loads(recalled["content"])["output"]["content"] == result.output_copy()["content"]
         assert collector._compactions > 0
         assert len(collector._models) == len(model.requests)
@@ -99,9 +99,9 @@ async def test_active_pc_driver_compacts_through_same_model_and_owner_recall(tmp
         _PC_QUERY_OWNER.reset(owner_token)
         store.close()
     reopened = PCContextCompactor(store=CompactionStore(tmp_path / "engine.sqlite"))
-    assert reopened.recall({"handle": handle}, owner_scope=OWNER)["sources"]
+    assert (await reopened.recall({"handle": handle}, owner_scope=OWNER))["sources"]
     with pytest.raises(PCContextCompactionError, match="context_source_unavailable"):
-        reopened.recall({"handle": handle}, owner_scope=("owner-b", *OWNER[1:]))
+        await reopened.recall({"handle": handle}, owner_scope=("owner-b", *OWNER[1:]))
 
 
 @pytest.mark.asyncio
@@ -146,16 +146,16 @@ async def test_large_source_is_summarized_in_bounded_chunks_and_recalled_whole(t
     assert result["status"] == "compacted"
     assert len(requests) > 1
     assert not needs_compaction([{"role":"user","content":result["prompt"]}], 4000)
-    index = helper.recall({"handle":result["handle"]}, owner_scope=OWNER)
+    index = await helper.recall({"handle":result["handle"]}, owner_scope=OWNER)
     source = next(m["source_id"] for m in index["sources"] if m["role"] == "tool_result")
-    restored = helper.recall({"handle":result["handle"],"source_id":source},owner_scope=OWNER)
+    restored = await helper.recall({"handle":result["handle"],"source_id":source},owner_scope=OWNER)
     parts = [restored["content"]]
     while not restored["done"]:
-        restored = helper.recall({"handle":result["handle"],"source_id":source,
+        restored = await helper.recall({"handle":result["handle"],"source_id":source,
                                   "offset":restored["next_offset"]},owner_scope=OWNER)
         parts.append(restored["content"])
     assert json.loads("".join(parts)) == original
-    partial = helper.recall({"handle":result["handle"],"source_id":source,"offset":3,"length":11},owner_scope=OWNER)
+    partial = await helper.recall({"handle":result["handle"],"source_id":source,"offset":3,"length":11},owner_scope=OWNER)
     assert partial["content"] == "".join(parts)[3:14]
 
 

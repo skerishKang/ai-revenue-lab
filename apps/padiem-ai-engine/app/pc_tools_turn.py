@@ -321,7 +321,9 @@ class PcToolsTurnRuntime:
             "tools": [tool.to_provider_schema() for tool in native.tools],
         }
         budget_reader = getattr(service._pc_tools_capability, "context_budget", None)
-        budget = await budget_reader(model_id) if callable(budget_reader) else None
+        window = await budget_reader(model_id) if callable(budget_reader) else None
+        from app.pc_context_budget import compaction_budget
+        budget = compaction_budget(window)
         native_over_budget = (type(budget) is int and budget > 0 and needs_compaction(
             [{"role": "user", "content": json.dumps({"messages": messages,
                 "fixed_context": fixed_context}, ensure_ascii=False, default=dict)}], budget))

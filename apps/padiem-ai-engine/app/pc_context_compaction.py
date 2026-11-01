@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import inspect
 import json
 import os
 import uuid
@@ -17,8 +18,13 @@ from typing import Any
 
 from padiem_ai_core.compaction import (
     CompactionStore, DEFAULT_KEEP_RECENT, HEADINGS, SUMMARY_PROMPT,
-    compact, needs_compaction,
+    compact, estimate_tokens, needs_compaction,
 )
+
+
+# A single tool result bigger than this is reduced even inside the recent
+# window; its stored-output handle keeps the original bytes readable.
+TOOL_PREVIEW_CHARS = 4096
 
 
 class PCContextCompactionError(ValueError):
@@ -39,6 +45,33 @@ def _owner(scope: Any) -> str:
     return _json(scope)
 
 
+def _compact_tool_result(content: Any) -> str:
+    """Keep tool identity, status and the stored-output handle, not the body."""
+    try:
+        body = json.loads(content) if isinstance(content, str) else dict(content)
+    except (ValueError, TypeError):
+        body = {}
+    if not isinstance(body, dict):
+        body = {}
+    output = body.get("output")
+    output = output if isinstance(output, dict) else {}
+    ref = output.get("output_ref")
+    ref = ref if isinstance(ref, dict) else {}
+    handle = ref.get("handle") if isinstance(ref.get("handle"), str) else None
+    size = ref.get("size_bytes") if type(ref.get("size_bytes")) is int else None
+    event = body.get("event")
+    status = event.get("status") if isinstance(event, dict) else None
+    compact = {
+        "tool_id": body.get("tool_id") if isinstance(body.get("tool_id"), str) else "claw.pc",
+        "status": status if isinstance(status, str) else None,
+        "ok": output.get("ok") if isinstance(output.get("ok"), bool) else None,
+        "output_ref": {"handle": handle, "size_bytes": size} if handle else None,
+        "note": ("원문은 저장된 출력 핸들에서 읽을 수 있습니다." if handle
+                 else "원문은 실행 기록에 보관되어 있습니다."),
+    }
+    return _json(compact)
+
+
 def _summary_request(sources: list[dict[str, Any]]) -> tuple[dict[str, str], ...]:
     instructions = (
         SUMMARY_PROMPT
@@ -53,9 +86,37 @@ def _summary_request(sources: list[dict[str, Any]]) -> tuple[dict[str, str], ...
             {"role": "user", "content": _json(sources)})
 
 
+class _BufferedArchive:
+    """A sync view over one async store operation.
+
+    Core's compact() validates prior-summary sources before writing. The
+    originals are preloaded once, and writes are buffered until the caller can
+    await the real store.
+    """
+
+    def __init__(self, preloaded: dict[str, dict[str, Any]], owner: str):
+        self._preloaded = preloaded
+        self._owner = owner
+        self.pending: list[dict[str, Any]] = []
+
+    def recall(self, source_ids, *, owner):
+        if owner != self._owner:
+            raise PermissionError("source unavailable for owner")
+        try:
+            return [self._preloaded[source_id] for source_id in source_ids]
+        except KeyError:
+            raise PermissionError("source unavailable for owner") from None
+
+    def save(self, messages, *, owner):
+        if owner != self._owner:
+            raise PermissionError("source unavailable for owner")
+        self.pending.extend(dict(message) for message in messages)
+
+
 class PCContextCompactor:
-    def __init__(self, *, store: CompactionStore | None = None):
+    def __init__(self, *, store: CompactionStore | None = None, store_factory=None):
         self._store = store
+        self._store_factory = store_factory
         self._scope: str | None = None
         self._namespace = "pcctx-" + uuid.uuid4().hex
         self._messages: list[dict[str, Any]] = []
@@ -84,15 +145,54 @@ class PCContextCompactor:
             key = hashlib.sha256(body.encode()).hexdigest()
             self._add("tool-" + key, {"role": "tool_result", "content": body})
 
-    def _archive(self) -> CompactionStore:
+    def _archive(self, owner: str | None = None):
         if self._store is None:
-            # This is the already configured COM2 Engine database, not a new
-            # store location or a request-selected path.
-            path = os.environ.get("PADIEM_ENGINE_LOCAL_DB", "").strip()
-            if not path:
-                raise PCContextCompactionError("context_archive_unavailable")
-            self._store = CompactionStore(path)
+            if self._store_factory is not None and owner is not None:
+                try:
+                    self._store = self._store_factory(owner)
+                except Exception:
+                    raise PCContextCompactionError("context_archive_unavailable") from None
+            else:
+                # This is the already configured COM2 Engine database, not a
+                # new store location or a request-selected path.
+                path = os.environ.get("PADIEM_ENGINE_LOCAL_DB", "").strip()
+                if not path:
+                    raise PCContextCompactionError("context_archive_unavailable")
+                self._store = CompactionStore(path)
         return self._store
+
+    @staticmethod
+    async def _probe(store) -> None:
+        probe = getattr(store, "probe", None)
+        if callable(probe):
+            result = probe()
+            if inspect.isawaitable(result):
+                await result
+
+    @staticmethod
+    async def _save(store, messages, *, owner: str) -> None:
+        saved = store.save(messages, owner=owner)
+        if inspect.isawaitable(saved):
+            await saved
+
+    @staticmethod
+    async def _recall(store, source_ids, *, owner: str):
+        recalled = store.recall(source_ids, owner=owner)
+        if inspect.isawaitable(recalled):
+            recalled = await recalled
+        return recalled
+
+    async def _preload(self, store, messages, *, owner: str) -> dict[str, dict[str, Any]]:
+        wanted: list[str] = []
+        for message in messages:
+            for item in message.get("summary_items") or ():
+                for source_id in item.get("source_ids") or ():
+                    if source_id not in wanted:
+                        wanted.append(source_id)
+        if not wanted:
+            return {}
+        records = await self._recall(store, wanted, owner=owner)
+        return {record["id"]: record for record in records}
 
     def record_decision(self, decision: Mapping[str, Any]) -> None:
         body = _json(decision)
@@ -166,22 +266,40 @@ class PCContextCompactor:
         summarize: Callable[[tuple[dict[str, str], ...]], Awaitable[str]],
     ) -> dict[str, Any]:
         self._sources(input_text=input_text, observations=observations)
+        tokens_before = estimate_tokens(render(self._messages))
         if not isinstance(token_budget, int) or isinstance(token_budget, bool) or token_budget <= 0:
             return {"prompt": render(self._messages), "status": "budget_unknown", "handle": self._handle,
+                    "tokens_before": tokens_before, "tokens_after": tokens_before,
+                    "tokens_saved": 0,
                     "tool_results": [m for m in self._messages if m.get("role") == "tool_result"],
                     "messages": copy.deepcopy(self._messages)}
         if not needs_compaction([{"role": "user", "content": render(self._messages)}], token_budget):
             return {"prompt": render(self._messages), "status": "unchanged", "handle": self._handle,
+                    "tokens_before": tokens_before, "tokens_after": tokens_before,
+                    "tokens_saved": 0,
                     "tool_results": [m for m in self._messages if m.get("role") == "tool_result"],
                     "messages": copy.deepcopy(self._messages)}
         owner = _owner(owner_scope)
         if self._scope is not None and self._scope != owner:
             raise PCContextCompactionError("context_source_unavailable")
-        store = self._archive()
+        store = self._archive(owner)
+        try:
+            await self._probe(store)
+        except PCContextCompactionError:
+            raise
+        except Exception:
+            # The host archive is not provisioned or not reachable. Say so
+            # before spending a summary model call.
+            raise PCContextCompactionError("context_archive_unavailable") from None
         self._scope = owner
         keep = DEFAULT_KEEP_RECENT
         compactions = 0
+        # A static prefix larger than the threshold can never be satisfied by
+        # dropping messages. Bound the passes so the caller gets one checkpoint
+        # instead of an unbounded summary loop.
         while needs_compaction([{"role": "user", "content": render(self._messages)}], token_budget):
+            if compactions >= 6:
+                raise PCContextCompactionError("context_compaction_cycle")
             # Original system/developer instructions retain both bytes and role.
             # Core compact protects users; keep these additional immutable
             # instructions outside its eligible source list.
@@ -206,8 +324,23 @@ class PCContextCompactor:
                     continue
                 raise PCContextCompactionError("context_preserved_input_exceeds_budget")
             summary = await self._summarize(older, budget=token_budget, call=summarize)
+            try:
+                preloaded = await self._preload(store, older, owner=owner)
+            except PCContextCompactionError:
+                raise
+            except Exception:
+                # A host whose archive is missing/unreachable is handled by the
+                # caller's preview shrink/checkpoint, never as a turn error.
+                raise PCContextCompactionError("context_archive_unavailable") from None
+            buffered = _BufferedArchive(preloaded, owner)
             result = compact(eligible, lambda _messages, _prompt: summary,
-                             keep_recent=keep, owner=owner, store=store)
+                             keep_recent=keep, owner=owner, store=buffered)
+            try:
+                await self._save(store, buffered.pending, owner=owner)
+            except PCContextCompactionError:
+                raise
+            except Exception:
+                raise PCContextCompactionError("context_archive_unavailable") from None
             checkpoint_id = self._namespace + ":summary-" + uuid.uuid4().hex
             summary_message = {"id": checkpoint_id, "role": "assistant",
                                "content": result["summary"]["text"],
@@ -221,7 +354,13 @@ class PCContextCompactor:
                 ids = [sid for part in prior for sid in part["source_ids"]] if prior else [message["id"]]
                 archived_ids.extend(sid for sid in ids if sid not in archived_ids)
             handle = self._namespace + ":archive-" + uuid.uuid4().hex
-            store.save([{"id": handle, "role": "archive_index", "source_ids": archived_ids}], owner=owner)
+            try:
+                await self._save(store, [{"id": handle, "role": "archive_index",
+                                          "source_ids": archived_ids}], owner=owner)
+            except PCContextCompactionError:
+                raise
+            except Exception:
+                raise PCContextCompactionError("context_archive_unavailable") from None
             compactions += 1
             self._archived_ids = archived_ids
             self._messages = candidate
@@ -230,9 +369,63 @@ class PCContextCompactor:
             # the next prompt; older references stay immutable in the archive.
             summary_message["archive_handle"] = handle
             keep = 0
+        tokens_after = estimate_tokens(render(self._messages))
         return {"prompt": render(self._messages), "status": "compacted", "handle": self._handle,
-                "compactions": compactions, "tool_results": [m for m in self._messages if m.get("role") == "tool_result"],
-                    "messages": copy.deepcopy(self._messages)}
+                "compactions": compactions,
+                "tokens_before": tokens_before,
+                "tokens_after": tokens_after,
+                "tokens_saved": tokens_before - tokens_after,
+                "tool_results": [m for m in self._messages if m.get("role") == "tool_result"],
+                "messages": copy.deepcopy(self._messages)}
+
+    def shrink_oversized(
+        self, *, token_budget: int | None, render: Callable[[list[dict[str, Any]]], str],
+        keep_recent: int = DEFAULT_KEEP_RECENT,
+    ) -> dict[str, Any] | None:
+        """Deterministic, handle-preserving reduction when no archive exists.
+
+        Older tool results keep only their tool identity, status and stored
+        output handle. The original bytes stay in the existing tool-result
+        ledger/output store; user/system/developer messages are never altered.
+        Returns None when even this reduction cannot meet the budget.
+        """
+        if not isinstance(token_budget, int) or isinstance(token_budget, bool) or token_budget <= 0:
+            return None
+        tokens_before = estimate_tokens(render(self._messages))
+        if not needs_compaction([{"role": "user", "content": render(self._messages)}], token_budget):
+            return {"prompt": render(self._messages), "status": "unchanged",
+                    "messages": copy.deepcopy(self._messages),
+                    "tool_results": [m for m in self._messages if m.get("role") == "tool_result"],
+                    "tokens_before": tokens_before, "tokens_after": tokens_before}
+        tail_start = max(0, len(self._messages) - max(0, keep_recent))
+        candidate: list[dict[str, Any]] = []
+        changed = False
+        for index, message in enumerate(self._messages):
+            role = message.get("role")
+            if role in {"user", "system", "developer"}:
+                candidate.append(message)
+                continue
+            content = message.get("content")
+            oversized = isinstance(content, str) and len(content) > TOOL_PREVIEW_CHARS
+            if role in {"tool", "tool_result"} and (index < tail_start or oversized):
+                # Old results go first; a single oversized recent result is
+                # reduced too, because its handle keeps the original readable.
+                compact = copy.deepcopy(message)
+                compact["content"] = _compact_tool_result(content)
+                candidate.append(compact)
+                changed = True
+                continue
+            candidate.append(message)
+        if not changed:
+            return None
+        prompt = render(candidate)
+        if needs_compaction([{"role": "user", "content": prompt}], token_budget):
+            return None
+        self._messages = candidate
+        tokens_after = estimate_tokens(prompt)
+        return {"prompt": prompt, "status": "shrunk", "messages": copy.deepcopy(candidate),
+                "tool_results": [m for m in candidate if m.get("role") == "tool_result"],
+                "tokens_before": tokens_before, "tokens_after": tokens_after}
 
     @staticmethod
     def native_messages(messages: Sequence[Mapping[str, Any]]) -> tuple[dict[str, Any], ...]:
@@ -249,7 +442,7 @@ class PCContextCompactor:
             result.append(row)
         return tuple(result)
 
-    def recall(self, arguments: Mapping[str, Any], *, owner_scope: Any) -> dict[str, Any]:
+    async def recall(self, arguments: Mapping[str, Any], *, owner_scope: Any) -> dict[str, Any]:
         owner = _owner(owner_scope)
         if self._scope is not None and self._scope != owner:
             raise PCContextCompactionError("context_source_unavailable")
@@ -259,17 +452,17 @@ class PCContextCompactor:
         if not isinstance(handle, str) or not handle:
             raise PCContextCompactionError("invalid_context_recall")
         try:
-            store = self._archive()
-            index = store.recall([handle], owner=owner)[0]
+            store = self._archive(owner)
+            index = (await self._recall(store, [handle], owner=owner))[0]
             if index.get("role") != "archive_index" or not isinstance(index.get("source_ids"), list):
                 raise PermissionError
             if source_id is None:
-                messages = store.recall(index["source_ids"], owner=owner)
+                messages = await self._recall(store, index["source_ids"], owner=owner)
                 return {"ok": True, "handle": handle, "sources": [
                     {"source_id": m["id"], "role": m.get("role")} for m in messages]}
             if not isinstance(source_id, str) or source_id not in index["source_ids"]:
                 raise PermissionError
-            message = store.recall([source_id], owner=owner)[0]
+            message = (await self._recall(store, [source_id], owner=owner))[0]
         except PermissionError:
             raise PCContextCompactionError("context_source_unavailable") from None
         text = message.get("content", "")

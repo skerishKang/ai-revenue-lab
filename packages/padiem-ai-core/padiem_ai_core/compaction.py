@@ -82,11 +82,23 @@ class CompactionStore:
         return result
 
 
+def estimate_tokens(value: Any) -> int:
+    """The same bounded estimate used for the compaction decision.
+
+    Characters and UTF-8 bytes/4 are both considered so a Korean-heavy prompt
+    is not undercounted; this is an estimate, never provider-reported usage.
+    """
+    if isinstance(value, str):
+        text = value
+    else:
+        text = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    return max(len(text), (len(text.encode("utf-8")) + 3) // 4)
+
+
 def needs_compaction(messages: Sequence[Mapping[str, Any]], token_budget: int) -> bool:
     if isinstance(token_budget, bool) or not isinstance(token_budget, int) or token_budget <= 0:
         raise ValueError("token_budget must be a positive integer")
-    text = json.dumps(list(messages), ensure_ascii=False, separators=(",", ":"))
-    return max(len(text), (len(text.encode("utf-8")) + 3) // 4) > token_budget
+    return estimate_tokens(list(messages)) > token_budget
 
 
 def compact(
@@ -105,8 +117,9 @@ def compact(
     Their IDs are recursively replaced with original archived IDs.
     """
     owner = _owner(owner)
-    if not isinstance(store, CompactionStore):
-        raise TypeError("store must be a CompactionStore")
+    if (not callable(getattr(store, "save", None))
+            or not callable(getattr(store, "recall", None))):
+        raise TypeError("store must provide save() and recall()")
     if isinstance(keep_recent, bool) or not isinstance(keep_recent, int) or keep_recent < 0:
         raise ValueError("keep_recent must be a non-negative integer")
     if not callable(summarize_fn):
