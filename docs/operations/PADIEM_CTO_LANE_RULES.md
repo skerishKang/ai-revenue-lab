@@ -24,9 +24,10 @@
 - 지킬 수 없는 조건을 만나면 통째로 멈추지 말고, 가능한 범위까지 하고 못 지킨 부분을 사실대로 적는다.
 - 최신 main에서도 똑같이 재현되는 실패는 내 PR의 차단 사유가 아니다(판정은 CI). 보고에 '기존 실패'로 표시.
 - **배포·비밀 교체는 CTO가 프롬프트로 지시한 경우 레인이 수행한다.** 지시 없는 배포는 하지 않는다.
-- 머지는 컴1에서 `tools/cto/automerge.py <PR>`(CI 감시 → 실패 1회 재실행 → squash 머지)로 한다. 사용법은 `tools/cto/README.md`. GitHub auto-merge 기능은 쓰지 않는다(`auto_merge=null`이 정상).
+- **앞단과 컴2 배포 분담(11-01).** 앞단 Cloudflare Worker(padiem-chat-front·padiem-auth) 배포는 CTO가 컴1에서 `wrangler deploy --keep-vars`(계정 Charliekant)로 한다. 컴2 레인은 컴2 서비스(.env 수정·재시작·`deploy_from_main.sh`)만 책임진다. 앞단 배포 여부 판단은 CTO 보고를 기준으로 한다.
+- 머지는 컴1에서 `tools/cto/automerge.py <PR>`(CI 감시 → 실패 1회 재실행 → squash 머지)로 한다. 사용법은 `tools/cto/README.md`. GitHub auto-merge 기능은 쓰지 않는다(`auto_merge=null`이 정상). 11-01에는 검사 등록 전 머지 시도와 out of date(밀린 브랜치)로 실패한 사례가 있었다. 대응·개선은 아스트라7 작업과 연결.
 - 같은 파일을 건드린 PR이 여럿 밀리면 하나씩 풀지 말고 통합 브랜치 하나로 합쳐 한 번에 머지한다(11-01 #6554).
-- 레인 배분: 아스트라(웹 모델 + Desktop Commander로 CGI-1 원격 작업)는 고칠 파일·함수를 CTO가 짚어 준 한 곳짜리 일. 로컬 코딩 에이전트(컴1·컴2)는 넓은 조사·전체 시험·여러 서비스 연결. 만들기 전에 가져올 오픈소스부터 찾는다(MIT·Apache·BSD 가져옴, GPL·AGPL 등은 방식만 참고 — docs/research/REUSE_CANDIDATES_20261101.md).
+- 레인 배분: 아스트라(웹 모델 + Desktop Commander로 CGI-1 원격 작업)는 고칠 파일·함수를 CTO가 짚어 준 한 곳짜리 일. 로컬 코딩 에이전트(컴1·컴2)는 넓은 조사·전체 시험·여러 서비스 연결. 만들기 전에 가져올 오픈소스부터 찾는다(MIT·Apache·BSD 가져옴, GPL·AGPL 등은 방식만 참고 — docs/research/REUSE_CANDIDATES_20261101.md). 모델 배분(대표 확인 11-01): 컴1=딥시크(코드·통합·원인 찾기), 컴2=qwen(운영), 아스트라=6.1 테라(한 곳짜리 화면·문서), 최고 모델=여러 서비스를 잇는 큰 작업.
 - 비밀 값은 출력·argv·repo 금지. stdin 또는 파일→파일로만. 비밀번호 입력 금지.
 - Cloudflare 배포는 `--keep-vars`. wrangler는 `npx -y wrangler@4.156.0`.
 - 보고는 "됨/안 됨 + 커밋 해시 한 줄". push했다고 보고하기 전에 `git ls-remote`로 원격 SHA를 확인한다(로컬 커밋만 있고 push 안 된 사례 있음).
