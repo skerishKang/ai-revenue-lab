@@ -403,7 +403,7 @@ async def web_xlsx_p01_workcopy_download(request: Request) -> Response:
             return _error(404, "owner_approved_workcopy_not_found")
         document_id = receipt["workcopy_document_id"]
         data = await store.get_for_tenant(
-            tenant_id=workspace, document_id=document_id,
+            tenant_id=workspace, document_id=document_id, user_id=owner,
         )
         if data is None:
             return _error(404, "owner_approved_workcopy_not_found")

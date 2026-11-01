@@ -32,7 +32,11 @@ from app.auth_routes import current_user_id
 from app.calendar_projection import build_range_projection
 from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.history import D1HistoryStore
-from app.workspace_storage import D1ClawDocumentMetadataStore, WorkspaceDocumentStore
+from app.workspace_storage import (
+    DOCX_MEDIA_TYPE,
+    D1ClawDocumentMetadataStore,
+    WorkspaceDocumentStore,
+)
 
 from kagent.claw_memory import ClawFollowupTask, ClawTaskStatus
 
@@ -293,7 +297,13 @@ def _documents() -> tuple[WorkspaceDocumentStore, _Bucket]:
     bucket = _Bucket()
     return (
         WorkspaceDocumentStore(
-            D1ClawDocumentMetadataStore(_db("008_claw_document_metadata.sql")), bucket
+            D1ClawDocumentMetadataStore(
+                _db(
+                    "008_claw_document_metadata.sql",
+                    "080_claw_document_metadata_user_id.sql",
+                )
+            ),
+            bucket,
         ),
         bucket,
     )
@@ -338,7 +348,8 @@ def test_a_tenant_mate_cannot_open_another_users_document_bytes() -> None:
     store, _bucket = _documents()
     meta = asyncio.run(
         store.put_generated_docx(
-            tenant_id=SHARED_TENANT, filename="a-report.docx", body=b"A-PRIVATE-BYTES"
+            tenant_id=SHARED_TENANT, user_id=USER_A,
+            filename="a-report.docx", body=b"A-PRIVATE-BYTES",
         )
     )
     asyncio.run(
@@ -384,7 +395,8 @@ def test_a_document_with_no_minting_run_is_readable_by_no_one() -> None:
     store, _bucket = _documents()
     meta = asyncio.run(
         store.put_generated_docx(
-            tenant_id=SHARED_TENANT, filename="orphan.docx", body=b"ORPHAN-BYTES"
+            tenant_id=SHARED_TENANT, user_id=USER_A,
+            filename="orphan.docx", body=b"ORPHAN-BYTES",
         )
     )
 
@@ -403,7 +415,9 @@ def test_a_document_with_no_minting_run_is_readable_by_no_one() -> None:
 
 def test_comparison_writes_no_document_row_at_all() -> None:
     """② 고정: 견적 비교는 아티팩트 저장소에 행을 남기지 않는다."""
-    conn_pair = _db("008_claw_document_metadata.sql")
+    conn_pair = _db(
+        "008_claw_document_metadata.sql", "080_claw_document_metadata_user_id.sql",
+    )
     store = WorkspaceDocumentStore(D1ClawDocumentMetadataStore(conn_pair), _Bucket())
     history = _history()
     app, a, _b = _artifact_users(history, store)
@@ -433,6 +447,62 @@ def test_comparison_writes_no_document_row_at_all() -> None:
         claw_artifact_preview_routes._resolve_canonical_owner = _REAL_OWNER_PREVIEW
 
     assert rows == 0
+
+
+# --- #6323: the generated-document row carries its owner ---------------------
+
+def _owner_documents() -> tuple[WorkspaceDocumentStore, _D1]:
+    db = _db(
+        "008_claw_document_metadata.sql", "080_claw_document_metadata_user_id.sql",
+    )
+    return WorkspaceDocumentStore(D1ClawDocumentMetadataStore(db), _Bucket()), db
+
+
+def test_a_generated_document_reads_only_for_the_user_who_minted_it() -> None:
+    store, _ = _owner_documents()
+    saved = asyncio.run(store.put_generated_docx(
+        tenant_id=SHARED_TENANT, user_id=USER_A, filename="a.docx", body=b"A-BYTES",
+    ))
+
+    own = asyncio.run(store.get_for_tenant(
+        tenant_id=SHARED_TENANT, document_id=saved.document_id, user_id=USER_A,
+    ))
+    mate = asyncio.run(store.get_for_tenant(
+        tenant_id=SHARED_TENANT, document_id=saved.document_id, user_id=USER_B,
+    ))
+
+    assert own is not None and own[1] == b"A-BYTES"
+    assert mate is None
+
+
+def test_a_row_with_no_owner_is_refused_for_everyone() -> None:
+    """A pre-080 row keeps user_id NULL, and an unproven owner is not an owner."""
+    store, db = _owner_documents()
+    doc_id = "doc_" + "c" * 32
+    db.conn.execute(
+        "INSERT INTO claw_document_metadata "
+        "(document_id, tenant_id, object_key, filename, media_type, byte_length, created_at, expires_at, deleted_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)",
+        (
+            doc_id, SHARED_TENANT,
+            f"workspaces/{SHARED_TENANT}/claw/documents/{doc_id}/orphan.docx",
+            "orphan.docx", DOCX_MEDIA_TYPE, 10,
+            BASE.isoformat(), (BASE + timedelta(days=30)).isoformat(),
+        ),
+    )
+
+    for user in (USER_A, USER_B):
+        assert asyncio.run(store.get_for_tenant(
+            tenant_id=SHARED_TENANT, document_id=doc_id, user_id=user,
+        )) is None
+
+
+def test_a_generated_document_cannot_be_stored_without_an_owner() -> None:
+    store, _ = _owner_documents()
+    with pytest.raises(ValueError):
+        asyncio.run(store.put_generated_docx(
+            tenant_id=SHARED_TENANT, user_id="", filename="a.docx", body=b"A-BYTES",
+        ))
 
 
 _REAL_OWNER = claw_routes._resolve_canonical_owner

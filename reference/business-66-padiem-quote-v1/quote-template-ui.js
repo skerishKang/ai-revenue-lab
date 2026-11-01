@@ -384,7 +384,7 @@
   function buildClonerStatusText(cloner, session) {
     if (!session) return "아직 시작하지 않았습니다.";
     if (session.status === "failed") {
-      return "본뜨기를 진행할 수 없습니다 (" + (session.error ? session.error.code : "unknown") + ").";
+      return "본뜨기를 진행할 수 없습니다. 파일을 확인한 뒤 다시 시도해 주세요.";
     }
     if (session.status === "preflight_ok") {
       return "파일 검증은 끝났습니다. 문서 분석기는 아직 연결되지 않아 후보를 만들 수 없습니다.";

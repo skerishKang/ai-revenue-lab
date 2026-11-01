@@ -672,7 +672,8 @@ const keepFile = (h, id, name, mimeType) => {
       configSource.replace(/\/\*[\s\S]*?\*\//g, "").indexOf("apps.googleusercontent.com") !== -1,
       false, "S19_NO_VALUE_IN_CODE");
     assert.ok(uiSource.includes("describeConfiguration"), "S19_READINESS_REPORT_PRESENT");
-    assert.ok(uiSource.includes("필요한 설정이 없습니다"), "S19_READINESS_NAMES_MISSING_ITEMS");
+    assert.ok(uiSource.includes("drive_configuration_missing"), "S19_READINESS_MISSING_CODE");
+    assert.ok(uiSource.includes("blocking: invalid.concat"), "S19_READINESS_NAMES_RETAINED");
     /* 설정이 없어도 기존 기능은 그대로다 */
     assert.ok(htmlSource.includes('id="easyComposer"'), "S19_COMPOSER_UNCHANGED");
     assert.ok(htmlSource.includes('id="saveHistory"'), "S19_HISTORY_UNCHANGED");

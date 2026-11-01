@@ -15,6 +15,7 @@ root here — a `..`/absolute/drive-shaped key raises instead of escaping.
 """
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 from typing import Any
 
@@ -79,3 +80,10 @@ class LocalDiskR2:
     def delete(self, key: str) -> None:
         path = self._path(key)
         path.unlink(missing_ok=True)
+
+
+class ThreadedLocalDiskR2(LocalDiskR2):
+    """Host binding: perform file reads outside the ASGI event loop."""
+
+    async def get(self, key: str) -> LocalR2Object | None:
+        return await asyncio.to_thread(super().get, key)

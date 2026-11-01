@@ -734,6 +734,7 @@ async def execute_chat_pc_drive_lane(
     device_id: str | None = None,
     run_id: str | None = None,
     conversation_messages: Any = None,
+    pc_action_context: Any = None,
     declared_plan: Any = None,
     selected_tool: str | None = None,
 ) -> tuple[str, str | None] | None:
@@ -914,6 +915,7 @@ async def execute_chat_pc_drive_lane(
         model_id=model_id, conversation_id=conversation_id,
         device_id=device_id, additional_system_context=additional_context,
         run_id=client_run_id, agent_plan=agent_plan,
+        pc_action_context=pc_action_context,
     )
 
 
@@ -933,6 +935,7 @@ async def _execute_chat_pc_files_lane(
     additional_system_context: str | None = None,
     run_id: str | None = None,
     agent_plan: Mapping[str, Any],
+    pc_action_context: Any = None,
 ) -> tuple[str, str | None]:
     """Stage and run the model-selected plan on the Chat product.
 
@@ -990,6 +993,8 @@ async def _execute_chat_pc_files_lane(
             agent_plan=agent_plan,
             additional_system_context=additional_system_context,
             tool_arguments=tool_arguments,
+            pc_action_context=(pc_action_context if pc_action_context is not None else
+                               [{"role": "user", "content": user_text}]),
         )
     except B62OrchestrationError as exc:
         await _append_lane_notice(
