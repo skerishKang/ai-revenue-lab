@@ -229,6 +229,19 @@ def file_resolver(request):
         uid = await owner(request)
         if not uid:
             raise AttachmentValidationError("파일 첨부를 사용하려면 로그인이 필요합니다.")
+        # #6579 step 3: an attachment uploaded through this app's own resumable
+        # lane lives in the workspace bucket under the owner's key. It is
+        # answered here — the browser grammar, the parser authority and the
+        # model contract are all unchanged — and anything else falls through to
+        # the untouched COM2 lane. A foreign id is simply not found locally, so
+        # it gets the lane's own not-found answer.
+        from .tus_chat_attachment import chat_attachment_store
+
+        store = chat_attachment_store(request)
+        if store is not None and isinstance(item, dict) and isinstance(item.get("file_id"), str):
+            local = await store.resolve(uid, item["file_id"])
+            if local is not None:
+                return local
         client = request.app.state.file_lane_client
         return await client.resolve(uid, item)
     return resolve

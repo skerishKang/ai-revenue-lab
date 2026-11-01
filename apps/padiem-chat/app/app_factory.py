@@ -416,6 +416,12 @@ from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
 from .file_lane import BINARY_KINDS, KINDS, FileLaneClient, file_upload_ticket, file_capabilities
+from .tus_chat_attachment import (
+    CHAT_ATTACHMENT_TUS_COLLECTION_PATH,
+    CHAT_ATTACHMENT_TUS_ITEM_PATH,
+    chat_attachment_tus_collection,
+    chat_attachment_tus_item,
+)
 from .same_origin_guard import SameOriginGuardMiddleware
 from .session_revocation_guard import SessionRevocationGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
@@ -720,6 +726,13 @@ def create_app(
         Route("/api/byok/register", byok_register, methods=["POST"]),
         Route("/api/files/ticket", file_upload_ticket, methods=["POST"]),
         Route("/api/files/capabilities", file_capabilities, methods=["GET"]),
+        # #6579 3단계 — Chat 첨부는 base64 본문 대신 조각 업로드(tus 1.0.0)로 먼저
+        # 올리고, 대화 요청에는 참조 ID만 싣는다. 대화 요청 문법
+        # ({"type": "file", "file_id"})은 그대로다. See app/tus_chat_attachment.py.
+        Route(CHAT_ATTACHMENT_TUS_COLLECTION_PATH, chat_attachment_tus_collection,
+              methods=["POST", "OPTIONS"]),
+        Route(CHAT_ATTACHMENT_TUS_ITEM_PATH, chat_attachment_tus_item,
+              methods=["HEAD", "PATCH", "GET"]),
         Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
         Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),

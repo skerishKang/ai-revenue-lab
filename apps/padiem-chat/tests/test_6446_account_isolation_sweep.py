@@ -420,3 +420,54 @@ def test_web_xlsx_tus_upload_is_per_account():
     assert b_client.head(
         WEB_XLSX_TUS_ITEM_PATH.replace("{upload_id}", "guessed-upload-id"),
     ).status_code == 404
+
+
+# ── Chat 첨부 조각 업로드(tus): 남의 첨부는 없는 것과 같다 ─────────────────────
+
+def test_chat_attachment_tus_upload_is_per_account():
+    """#6581 3단계 — Chat 첨부 조각 업로드와 참조 ID도 계정 경계를 넘지 못한다.
+
+    A가 만든 업로드의 진행 상태·결과·추가 전송을 B가 시도하면 셋 다 404다.
+    A가 올린 첨부의 참조 ID를 B가 자기 대화에 넣어도 A의 원본은 읽히지 않는다
+    (저장 해석이 계정별 키 아래에만 있다).
+    """
+    import base64
+    import tempfile
+
+    from app.local_r2 import ThreadedLocalDiskR2
+    from app.tus_chat_attachment import (
+        CHAT_ATTACHMENT_TUS_COLLECTION_PATH, CHAT_ATTACHMENT_TUS_ITEM_PATH,
+        ChatAttachmentStore,
+    )
+
+    app, a_client, b_client, a, b = clients()
+    bucket = ThreadedLocalDiskR2(tempfile.mkdtemp(prefix="chat-attach-sweep-"))
+    app.state.chat_attachment_store = ChatAttachmentStore(bucket)
+
+    metadata = ("filename " + base64.b64encode("A보고서.txt".encode()).decode()
+                + ",filetype " + base64.b64encode(b"text/plain").decode())
+    created = a_client.post(CHAT_ATTACHMENT_TUS_COLLECTION_PATH, headers={
+        "Tus-Resumable": "1.0.0", "Upload-Length": "5", "Upload-Metadata": metadata,
+    })
+    assert created.status_code == 201, created.text
+    upload_id = created.json()["upload_id"]
+    path = CHAT_ATTACHMENT_TUS_ITEM_PATH.replace("{upload_id}", upload_id)
+
+    assert a_client.patch(path, headers={
+        "Tus-Resumable": "1.0.0", "Upload-Offset": "0",
+        "Content-Type": "application/offset+octet-stream",
+    }, content=b"A\xec\x9e\x90\xeb\xa3\x8c"[:5]).status_code == 204
+
+    # B는 같은 URL에서 정확히 같은 404만 본다(존재 부정).
+    for method in ("HEAD", "GET"):
+        assert b_client.request(method, path).status_code == 404, method
+    assert b_client.patch(path, headers={
+        "Tus-Resumable": "1.0.0", "Upload-Offset": "0",
+        "Content-Type": "application/offset+octet-stream",
+    }, content=b"XXXXX").status_code == 404
+    assert b_client.head(
+        CHAT_ATTACHMENT_TUS_ITEM_PATH.replace("{upload_id}", "guessed-upload-id"),
+    ).status_code == 404
+    # B의 계정 키 아래에는 A의 업로드가 없다.
+    assert b_client.head(path).status_code == 404
+    assert a_client.head(path).status_code != 404

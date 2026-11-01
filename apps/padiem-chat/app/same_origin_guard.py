@@ -316,6 +316,7 @@ class SameOriginGuardMiddleware:
             and (
                 (path.startswith("/api/projects/") and "/files/tus/" in path)
                 or path.startswith("/api/claw/office/web-sources/tus/")
+                or path.startswith("/api/chat/attachments/tus/")
             )
         ):
             return None
