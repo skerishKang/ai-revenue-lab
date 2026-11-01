@@ -100,7 +100,12 @@ def b14_source_gets():
         timeout=25,
         check=False,
     )
-    assert child.returncode == 0, "B14 internal metadata builder smoke failed"
+    assert child.returncode == 0, (
+        "B14 internal metadata builder smoke failed:"
+        f" returncode={child.returncode}\n"
+        "stdout (tail):\n" + child.stdout[-2000:] + "\n"
+        "stderr (tail):\n" + child.stderr[-2000:]
+    )
     markers = [line for line in child.stdout.splitlines()
                if line.startswith("B66_SOURCE_GETS=")]
     assert len(markers) == 1, "B14 metadata builder output was not produced exactly once"
