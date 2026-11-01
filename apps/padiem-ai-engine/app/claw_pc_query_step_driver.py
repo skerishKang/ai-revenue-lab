@@ -265,6 +265,10 @@ def _pc_refusal(stage):
 
 
 def _pc_observing_handler(handler, *, tool_id, unexpected_stage="pc_files_internal_error"):
+    from app.pc_work_metrics import observe_pc_handler
+
+    handler = observe_pc_handler(handler, tool_id=tool_id)
+
     def unverified_mutation():
         attempt = _PC_ACTION_ATTEMPT.get()
         if not isinstance(attempt, dict):
@@ -849,6 +853,9 @@ def _build_pc_query_binding(*, service, request_factory, secret, runtime: ToolRu
     and registers the PC file handlers that still live in the Engine.
     """
     contract = build_pc_query_product_contract(app_id=app_id, agent_id=agent_id)
+    from app.pc_work_metrics import observe_pc_transport
+
+    service, request_factory = observe_pc_transport(service, request_factory)
     runtime = runtime or ToolRuntime()
     runtime.register(pc_drives_tool_spec(), _pc_observing_handler(
         _make_query_drives_handler(service=service, request_factory=request_factory,
@@ -991,7 +998,14 @@ class ActionGuardedPCQueryStepDriver(StructuredPCQueryStepDriver):
                     device_id=owner[3] if isinstance(owner, tuple) and len(owner) == 4 else None,
                     context=getattr(self, "_delegation_context", None),
                 )
-        return AgentStepDecision.complete(append_pc_action_facts(question, observations)) if question else selected
+        if question:
+            from app.pc_work_metrics import current_pc_work_metrics
+
+            metrics = current_pc_work_metrics()
+            if metrics is not None:
+                metrics.mark_confirmation_required()
+            return AgentStepDecision.complete(append_pc_action_facts(question, observations))
+        return selected
 
 
 def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_type=None,
@@ -1112,9 +1126,20 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
         request = B14ChatRequest(model=model_id, messages=({"role": "user", "content": prompt},), max_tokens=None,
             routing=B14RoutingOptions(product_tier=model_policy.get("product_tier") if model_policy else None,
                 max_retries=model_policy.get("max_retries") if model_policy else None))
+        from app.pc_work_metrics import current_pc_work_metrics
+
+        metrics = current_pc_work_metrics()
+        try:
+            model_call = metrics.model_start(messages=request.messages, tool_results=observations) if metrics else None
+        except Exception:
+            # Measurement cannot block a model/PC turn or expose its content.
+            print("pc_work_metrics_model_start_failed", flush=True)
+            metrics, model_call = None, None
+        model_response = None
         print("pc_step_model_call stage=start", flush=True)
         try:
             response = await b14_client.execute(request)
+            model_response = response
         except asyncio.CancelledError:
             print("pc_step_model_call stage=done status=cancelled", flush=True)
             raise
@@ -1123,6 +1148,9 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             # execute returned. Only the typed error's bounded HTTP code may
             # enter this log. Never stringify model output or exception text.
             status = exc.upstream_status_code if isinstance(exc, B14ExecutionError) else None
+            if metrics is not None:
+                metrics.mark_failure("model_timeout" if isinstance(exc, asyncio.TimeoutError) or status == 504
+                                     else "model_failed")
             print("pc_step_model_call stage=done status=%s" % (
                 status if isinstance(status, int) and not isinstance(status, bool)
                 and 100 <= status <= 599 else "error"), flush=True)
@@ -1132,6 +1160,12 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
             raise PCQueryStepError(
                 "model call failed", detail="model_call_failed",
             ) from exc
+        finally:
+            if metrics is not None:
+                try:
+                    metrics.model_finish(model_call, usage=getattr(model_response, "usage", None))
+                except Exception:
+                    print("pc_work_metrics_model_finish_failed", flush=True)
         print("pc_step_model_call stage=done status=ok", flush=True)
         answer = getattr(response, "answer", None)
         if not isinstance(answer, str):

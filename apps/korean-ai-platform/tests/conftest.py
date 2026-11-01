@@ -1,8 +1,23 @@
 from __future__ import annotations
 
 import warnings
+import os
+from pathlib import Path
+import sys
 
 import pytest
+
+# The deployed app stages the canonical counter validator beside B14. Tests
+# use the repository source directly, including subprocess import probes, so
+# the test path never relies on a developer's installed Core package.
+_core_source = Path(__file__).resolve().parents[3] / "packages" / "padiem-ai-core"
+if (_core_source / "padiem_ai_core" / "pc_work_metrics.py").is_file():
+    _core_path = str(_core_source)
+    if _core_path not in sys.path:
+        sys.path.insert(0, _core_path)
+    _existing_paths = os.environ.get("PYTHONPATH", "").split(os.pathsep)
+    if _core_path not in _existing_paths:
+        os.environ["PYTHONPATH"] = os.pathsep.join([_core_path, *filter(None, _existing_paths)])
 
 # Suppress known third-party deprecation warnings BEFORE importing TestClient.
 # These are upstream library warnings that our test suite does not control.

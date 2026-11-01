@@ -253,7 +253,9 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             orch_req = attached
             runtime = self._runtime_for_payload(app_id, payload)
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
-            result = await runner.run(orch_req)
+            result = await self._run_pc_measured(
+                runner, orch_req, self._pc_work_metrics(app_id, orch_req, payload),
+            )
         except IdempotencyConflictError:
             return _service_error(
                 "idempotency_conflict",

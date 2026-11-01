@@ -14,6 +14,7 @@ from collections.abc import AsyncIterator, Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import inspect
+import hashlib
 import json
 import re
 import secrets
@@ -283,6 +284,7 @@ class PreparedOrchestrationStream:
     request_fingerprint_value: str | None = None
     pc_progress: bool = False
     pc_turn: bool = False
+    pc_metrics_state: dict[str, bool] | None = None
 
 
 PC_STREAM_HEARTBEAT_SECONDS = 10.0
@@ -590,6 +592,7 @@ class OrchestrationEngineService:
         pc_streaming_runtime_factory: Any | None = None,
         pc_tools_capability: Any | None = None,
         tool_result_ledger_factory: Callable[[str, str | None], Any] | None = None,
+        pc_work_metrics_reporter: Callable[[dict[str, Any]], Awaitable[Any]] | None = None,
     ) -> None:
         if not callable(runtime_factory):
             raise ValueError("runtime_factory must be callable")
@@ -603,6 +606,8 @@ class OrchestrationEngineService:
             raise ValueError("approval_decision_verifier must provide verify()")
         if tool_result_ledger_factory is not None and not callable(tool_result_ledger_factory):
             raise ValueError("tool_result_ledger_factory must be callable")
+        if pc_work_metrics_reporter is not None and not callable(pc_work_metrics_reporter):
+            raise ValueError("pc_work_metrics_reporter must be callable")
         if continuation_store is not None:
             for method in ("issue", "resolve", "claim", "commit", "release", "cancel"):
                 if not callable(getattr(continuation_store, method, None)):
@@ -621,6 +626,7 @@ class OrchestrationEngineService:
         self._runtime_factory = runtime_factory
         self._pc_streaming_runtime_factory = pc_streaming_runtime_factory
         self._pc_tools_capability = pc_tools_capability
+        self._pc_work_metrics_reporter = pc_work_metrics_reporter
         # #4379: the durable ledger owns the tool payloads. The runtime keeps
         # only references, so a long run does not retain every tool output in
         # the Worker.
@@ -1211,6 +1217,78 @@ class OrchestrationEngineService:
         except Exception:
             return None
 
+    def _pc_work_metrics(self, app_id: str, request: OrchestrationRequest, payload: Any):
+        """One server-derived PC turn identity, shared by native child execution."""
+        if (_canonical_pc_plan(app_id, request.agent_plan) is None
+                and "pc_tools" not in payload):
+            return None
+        subject = request.subject_id
+        session = request.execution_request.session_id
+        if not isinstance(subject, str) or not subject or not isinstance(session, str) or not session:
+            return None
+        try:
+            from app.pc_work_metrics import PcWorkMetricsCollector
+            identity = json.dumps([app_id, subject, session], ensure_ascii=False, separators=(",", ":"))
+            turn_id = "pcturn_" + hashlib.sha256(identity.encode("utf-8")).hexdigest()
+            collector = PcWorkMetricsCollector(turn_id=turn_id)
+            collector.ledger_identity = {
+                "product": "claw" if app_id in {"b54-padiem-claw", "padiem-claw"} else "chat",
+                "subject_ref": subject,
+                "session_ref": turn_id,
+            }
+            return collector
+        except Exception:
+            logging.getLogger(__name__).warning("pc_work_metrics_start_failed")
+            return None
+
+    async def _run_pc_measured(self, runner, request, collector, state=None):
+        if collector is None:
+            return await runner.run(request)
+        from app.pc_work_metrics import set_pc_work_metrics, reset_pc_work_metrics
+        from app.usage_lifecycle import is_idempotency_replay
+
+        token = set_pc_work_metrics(collector)
+        outcome, reason, replay = "failed", "execution_failed", False
+        try:
+            result = await runner.run(request)
+            replay = is_idempotency_replay(result)
+            execution = getattr(result, "execution_result", None)
+            terminal = getattr(getattr(execution, "metadata", None), "status", None)
+            terminal = getattr(terminal, "value", terminal)
+            if getattr(result, "approval_pause", None) is not None:
+                outcome, reason = "confirmation_required", "confirmation_required"
+            elif terminal == "completed":
+                outcome, reason = "completed", "completed"
+            elif terminal == "cancelled":
+                outcome, reason = "cancelled", "cancelled"
+            return result
+        except IdempotencyConflictError:
+            # A duplicate in-flight/replayed request is not another PC turn.
+            replay = True
+            raise
+        except asyncio.CancelledError:
+            if state and state.get("consumer_closed"):
+                outcome, reason = "abandoned", "client_disconnected"
+            else:
+                outcome, reason = "cancelled", "cancelled"
+            raise
+        except GeneratorExit:
+            outcome, reason = "abandoned", "client_disconnected"
+            raise
+        finally:
+            try:
+                if not replay:
+                    collector.finish(outcome, reason)
+                    if self._pc_work_metrics_reporter is not None:
+                        await self._pc_work_metrics_reporter({
+                            **collector.ledger_identity, "metrics": collector.snapshot(),
+                        })
+            except Exception:
+                # Observability never changes a model answer or logs its data.
+                logging.getLogger(__name__).warning("pc_work_metrics_report_failed")
+            finally:
+                reset_pc_work_metrics(token)
+
     async def orchestrate_payload(
         self, payload: Any, *, trusted_office_run_id: str | None = None,
     ) -> ServiceResponse:
@@ -1299,7 +1377,9 @@ class OrchestrationEngineService:
             logger.info("pc_engine stage=start run_hash=%s dispatch_id=none trace_id=%s", token, trace)
             try:
                 with credential_scope(user_credential_ref):
-                    result = await runner.run(orch_req)
+                    result = await self._run_pc_measured(
+                        runner, orch_req, self._pc_work_metrics(app_id, orch_req, payload),
+                    )
             except BaseException:
                 logger.info("pc_engine stage=error run_hash=%s dispatch_id=none trace_id=%s", token, trace)
                 raise
@@ -1908,6 +1988,8 @@ class OrchestrationEngineService:
         pc_owner_token = _PC_QUERY_OWNER.set(_pc_query_stream_owner(app_id, orch_req))
         pc_scope_token = PC_QUERY_RUN_SCOPE.set(getattr(orch_req.agent_step_driver, "scope_state", None))
         pc_turn = _canonical_pc_plan(app_id, plan) is not None or "pc_tools" in payload
+        pc_metrics = self._pc_work_metrics(app_id, orch_req, payload)
+        pc_metrics_state = {"consumer_closed": False} if pc_metrics is not None else None
         pc_stream = pc_progress is True and pc_turn
         from app.pc_tools_turn import _PC_TURN_STREAM_SINK
         turn_sink_token = _PC_TURN_STREAM_SINK.set(queue.put_nowait if pc_stream else None)
@@ -1923,7 +2005,7 @@ class OrchestrationEngineService:
             logger = logging.getLogger(__name__)
             logger.info("pc_engine stage=start run_hash=%s dispatch_id=none trace_id=%s", token, trace)
             try:
-                result = await runner.run(orch_req)
+                result = await self._run_pc_measured(runner, orch_req, pc_metrics, pc_metrics_state)
             except BaseException:
                 logger.info("pc_engine stage=error run_hash=%s dispatch_id=none trace_id=%s", token, trace)
                 raise
@@ -1941,10 +2023,19 @@ class OrchestrationEngineService:
             if declared_identity_token is not None:
                 reset_canonical_idempotency_fingerprint(declared_identity_token)
         first_event_task = asyncio.ensure_future(queue.get())
-        done, _pending = await asyncio.wait(
-            {first_event_task, task},
-            return_when=asyncio.FIRST_COMPLETED,
-        )
+        try:
+            done, _pending = await asyncio.wait(
+                {first_event_task, task},
+                return_when=asyncio.FIRST_COMPLETED,
+            )
+        except asyncio.CancelledError:
+            if pc_metrics_state is not None:
+                pc_metrics_state["consumer_closed"] = True
+            first_event_task.cancel()
+            if not task.done():
+                task.cancel()
+            await asyncio.gather(first_event_task, task, return_exceptions=True)
+            raise
         if task in done and first_event_task in done:
             # The queue consumer observed the first event in the same turn the
             # run completed; that observed event is the first visible
@@ -1957,6 +2048,7 @@ class OrchestrationEngineService:
                 request_fingerprint_value=request_fingerprint_value,
                 pc_progress=pc_stream,
                 pc_turn=pc_turn,
+                pc_metrics_state=pc_metrics_state,
             )
         if task in done:
             if first_event_task not in done:
@@ -1979,6 +2071,7 @@ class OrchestrationEngineService:
                     request_fingerprint_value=request_fingerprint_value,
                     pc_progress=pc_stream,
                     pc_turn=pc_turn,
+                    pc_metrics_state=pc_metrics_state,
                 )
             try:
                 await task
@@ -2007,6 +2100,7 @@ class OrchestrationEngineService:
             request_fingerprint_value=request_fingerprint_value,
             pc_progress=pc_stream,
             pc_turn=pc_turn,
+            pc_metrics_state=pc_metrics_state,
         )
 
     async def iter_ndjson(self, prepared: PreparedOrchestrationStream) -> AsyncIterator[str]:
@@ -2111,6 +2205,8 @@ class OrchestrationEngineService:
                 except asyncio.CancelledError:
                     pass
             if not prepared.task.done():
+                if prepared.pc_metrics_state is not None:
+                    prepared.pc_metrics_state["consumer_closed"] = True
                 prepared.task.cancel()
                 try:
                     await prepared.task

@@ -136,6 +136,7 @@ def create_app() -> Starlette:
     # #5318: owner read access to the durable call ledger. Reachable only by a
     # proven server-to-server caller, so it mounts with the other JSON lanes.
     from app.pilot.call_ledger_admin import router as call_ledger_admin_router
+    from app.pilot.pc_work_metrics_routes import router as pc_work_metrics_router
 
     from app.pilot.ui import router as pilot_ui_router
     from starlette.routing import Route as StarletteRoute
@@ -144,6 +145,7 @@ def create_app() -> Starlette:
         *pilot_api_router.routes,
         *pilot_stream_router.routes,
         *provider_readiness_router.routes,
+        *pc_work_metrics_router.routes,
         *call_ledger_admin_router.routes,
     ]:
         new_route = StarletteRoute(
