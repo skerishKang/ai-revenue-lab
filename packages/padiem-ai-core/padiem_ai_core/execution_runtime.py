@@ -8,6 +8,8 @@ from types import MappingProxyType
 from typing import Any, Protocol
 import uuid
 
+from .thought_filter import strip_thought_blocks
+
 from .b14_execution import (
     B14ChatRequest,
     B14ExecutionError,
@@ -429,9 +431,9 @@ class ExecutionResult:
             raise ValueError("answer must be a non-empty string")
         # #5536: a tool call is a complete answer of its own, so the text may
         # be empty when the model answered with a call.
-        if not self.answer.strip() and not tool_calls:
+        if not strip_thought_blocks(self.answer).strip() and not tool_calls:
             raise ValueError("answer must be a non-empty string")
-        object.__setattr__(self, "answer", self.answer.strip())
+        object.__setattr__(self, "answer", strip_thought_blocks(self.answer).strip())
         if not isinstance(self.route, B14RouteMetadata):
             raise ValueError("route must be B14RouteMetadata")
         if not isinstance(self.metadata, RunMetadata):
