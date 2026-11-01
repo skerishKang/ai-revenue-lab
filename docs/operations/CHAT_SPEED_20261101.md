@@ -176,6 +176,7 @@ repeat measurement under representative work before increasing workers.
 | Setting | Initial value / meaning |
 |---|---|
 | `PADIEM_CHAT_AUTH_CACHE_SECONDS` | `30`; `0` disables, supported positive range 1–60 |
+| `PADIEM_CHAT_SHARED_LINK_CACHE_SECONDS` | `600`; `0` disables, supported range 1–900. Remembers which Chat account a signature-verified subject is, so a second login does not repeat the identity RPC. Needs migration 088; dropped by the same invalidation calls as the session cache |
 | `PADIEM_CHAT_SQLITE_READERS` | `2`; `0` restores serial reads |
 | `PADIEM_CHAT_WORKERS` | `1`; measure first, then `2` or `3` on Linux storage |
 | `PADIEM_CHAT_LOCAL_DATA_DIR` | Move complete state to `/opt/padiem/chat-com2/data` before multiple workers |
@@ -189,7 +190,7 @@ backup, move the complete data directory (DB/replay/object files and ownership),
 retain the old rollback copy, update configuration and start with one worker.
 Do not copy only a live main DB file while WAL writes continue. Backup unit
 reads the existing environment file and follows the selected data directory.
-Run migration 087 through the existing startup migration mechanism.
+Run migrations 087 and 088 through the existing startup migration mechanism.
 The Claw JS changes also require the approved front static-asset rollout:
 `padiem-chat-front/wrangler.toml` binds `ASSETS` to `../padiem-chat/static`, and
 the front serves these assets before proxying. Updating only the COM2 checkout

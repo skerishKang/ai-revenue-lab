@@ -52,7 +52,6 @@
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <link rel="stylesheet" href="./calendar.css" />
   <link rel="stylesheet" href="./library.css" />
-  <link rel="stylesheet" href="./quick-launch.css" />
   <link rel="stylesheet" href="./claw-task-hub.css" />
   <link rel="stylesheet" href="./padiem-shared-ui.css" />
   <link rel="stylesheet" href="./claw-connection-guide.css" />
@@ -90,6 +89,9 @@
        (CTO decision on PR #6274). Sits after interaction-polish.css so the
        collapse rules override the glass-menu block below 920px. -->
   <link rel="stylesheet" href="./mobile-header-collapse.css" data-mobile-header-collapse="true" />
+  <!-- Phone floor (44px press target, 14px text, no decorative art on the first
+       screen). Last, because it corrects sizes the theme sheets pin. -->
+  <link rel="stylesheet" href="./mobile-target-legibility.css" data-mobile-target-legibility="true" />
 </head>
 <body>
   <div class="app-shell" data-state="home" data-page-id="home" data-layout-variant="conversation">
@@ -134,19 +136,6 @@
       <nav class="side-nav" aria-label="도구 및 연결">
         <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">연결</span></button>
       </nav>
-      <section class="recent-section quick-launch" aria-labelledby="quickLaunchTitle">
-        <h2 id="quickLaunchTitle" data-locale-key="quick-launch-title">빠른 실행</h2>
-        <div class="quick-launch-tools">
-          <button type="button" data-quick-util="speech" data-locale-key="quick-speech">축사</button>
-          <button type="button" data-quick-util="sns" data-locale-key="quick-sns">SNS</button>
-          <button type="button" data-quick-util="meeting" data-locale-key="quick-meeting">회의정리</button>
-          <button type="button" data-quick-util="claw-quote" data-locale-key="quick-quote">견적</button>
-          <button type="button" data-quick-util="pdfmd" data-locale-key="quick-pdfmd">PDF → MD</button>
-        </div>
-        <h3 data-locale-key="quick-recent-files">최근 프로젝트 파일</h3>
-        <div id="quickRecentFiles" class="quick-recent-files" aria-live="polite"></div>
-        <button type="button" id="quickAllFiles" data-locale-key="quick-all-files">파일 더 보기</button>
-      </section>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
           <h2 id="projectsTitle" data-locale-key="projects">프로젝트</h2>
@@ -268,7 +257,7 @@
             <button class="settings-close" id="settingsCloseButton" type="submit" value="cancel" data-locale-aria-label="settings-close" aria-label="설정 닫기">×</button>
           </div>
           <section class="settings-section" aria-labelledby="appearanceTitle">
-            <p class="settings-label" data-locale-key="appearance">APPEARANCE</p>
+            <p class="settings-label" data-locale-key="appearance">화면</p>
             <h3 id="appearanceTitle" data-locale-key="theme">테마</h3>
             <div class="theme-picker" role="group" data-locale-aria-label="theme-picker" aria-label="테마 선택" id="themePicker">
               <button type="button" class="theme-option" data-theme-value="padiem-home" data-locale-key="home-theme" aria-pressed="false">Padiem Home</button>
@@ -278,7 +267,7 @@
             </div>
           </section>
           <section class="settings-section" aria-labelledby="languageTitle">
-            <p class="settings-label" data-locale-key="language">LANGUAGE</p>
+            <p class="settings-label" data-locale-key="language">언어</p>
             <h3 id="languageTitle" data-locale-key="language-choice">언어</h3>
             <div class="language-picker" role="group" data-locale-aria-label="language-picker" aria-label="언어 선택" id="languagePicker">
               <button type="button" class="language-option" data-locale-value="ko" aria-pressed="true">KR</button>
@@ -345,17 +334,17 @@
             <ul class="mcp-settings-list" id="mcpGatewayApprovals" data-locale-aria-label="mcp-settings-approvals" aria-label="확인이 필요한 작업"></ul>
           </section>
           <section class="settings-section" aria-labelledby="adminSettingsTitle" id="adminSettingsSection" hidden>
-            <p class="settings-label">ADMIN</p>
+            <p class="settings-label" data-locale-key="admin-section">관리자</p>
             <h3 id="adminSettingsTitle" data-locale-key="admin-settings-title">관리자</h3>
             <a class="settings-action settings-link" id="adminHubLink" href="./admin" data-locale-aria-label="admin-hub-aria" data-locale-title="admin-hub-aria" aria-label="총관리자 페이지" title="총관리자 페이지" hidden><span aria-hidden="true">◈</span><span data-locale-key="admin-hub">총관리자</span></a>
           </section>
           <section class="settings-section" aria-labelledby="dataSettingsTitle" id="dataSettingsSection">
-            <p class="settings-label">DATA</p>
+            <p class="settings-label" data-locale-key="data-section">데이터</p>
             <h3 id="dataSettingsTitle" data-locale-key="data-settings-title">데이터 관리</h3>
             <div class="settings-actions" id="dataSettingsActions"></div>
           </section>
           <section class="settings-section" aria-labelledby="accountTitle" id="accountSettingsSection" hidden>
-            <p class="settings-label">ACCOUNT</p>
+            <p class="settings-label" data-locale-key="account-section">계정</p>
             <h3 id="accountTitle" data-locale-key="account-title">계정</h3>
             <div class="settings-actions" id="accountPasswordActions" hidden>
               <button class="settings-action" id="passwordChangeOpen" type="button" data-locale-key="password-change-open">비밀번호 변경</button>
@@ -365,7 +354,7 @@
             </div>
           </section>
           <section class="settings-section settings-help" aria-labelledby="settingsHelpTitle">
-            <p class="settings-label">HELP &amp; GUIDE</p>
+            <p class="settings-label" data-locale-key="help-guide-section">도움말·안내</p>
             <h3 id="settingsHelpTitle" data-locale-key="settings-help-title">문서·사용 안내</h3>
             <details class="settings-guide" id="settingsExcelGuide">
               <summary data-locale-key="settings-help-excel">Excel 원본 보관 방법</summary>
@@ -663,7 +652,7 @@
             <span class="util-tool-icon" aria-hidden="true">⇩</span>
             <strong class="util-tool-name">PDF → Markdown</strong>
             <span class="util-tool-desc">기존 작업 이력·결과 다운로드</span>
-            <span class="util-tool-note">일시 중단 · 신규 업로드는 COM2 이전 후</span>
+            <span class="util-tool-note">일시 중단 · 새 업로드는 잠시 멈춤</span>
             <button type="button" class="util-tool-open" data-util-tool="pdfmd">이력 열기</button>
           </div>
           <div class="util-tool-card">
@@ -939,9 +928,11 @@
             <div class="claw-web-office-actions">
               <label for="clawWebXlsxInput">XLSX 파일 선택</label>
               <input type="file" id="clawWebXlsxInput" />
+              <button type="button" id="clawWebXlsxPcPick" hidden>내 PC에서 가져오기</button>
               <button type="button" id="clawWebXlsxSave">원본 보관</button>
               <button type="button" id="clawWebXlsxRefresh">보관한 원본 조회</button>
             </div>
+            <p class="claw-web-office-pc-note" id="clawWebXlsxPcNote" role="status" hidden></p>
             <p role="status" aria-live="polite" id="clawWebXlsxNotice">파일을 선택하면 원본을 보존하며, 읽기·수정 승인은 별도로 진행합니다.</p>
             <ul id="clawWebXlsxList" aria-label="보관된 웹 Excel 원본"></ul>
             <section id="clawWebXlsxP01Panel" class="claw-web-office-approval" aria-label="선택한 Excel 원본의 P01 승인" hidden>
@@ -1223,7 +1214,7 @@
   <dialog class="project-dialog" id="projectDialog" aria-labelledby="projectDialogTitle">
     <form class="project-form" id="projectForm">
       <div class="project-dialog-header">
-        <div><p>PROJECT</p><h2 id="projectDialogTitle" data-locale-key="project-new">새 프로젝트</h2></div>
+        <div><p data-locale-key="project-section">프로젝트</p><h2 id="projectDialogTitle" data-locale-key="project-new">새 프로젝트</h2></div>
         <button id="projectDialogClose" class="project-dialog-close" type="button" data-locale-aria-label="project-close" aria-label="프로젝트 창 닫기">×</button>
       </div>
       <label for="projectNameInput" data-locale-key="project-name">프로젝트 이름</label>
@@ -1334,6 +1325,7 @@
   <script src="./claw-recovery-truth.js"></script>
   <script src="./claw-pdf-preview.js"></script>
   <script src="./claw-mesh-capture.js"></script>
+  <script src="./pc-browser-progress.js"></script>
   <script src="./calendar.js"></script>
   <script src="./claw-conversation-artifact-context.js"></script>
 <script src="./voice-live-transcript-turn.js"></script>
@@ -1349,6 +1341,9 @@
   <script src="./voice-ui-menu.js"></script>
   <script src="./voice-answer-ui.js"></script>
   <script src="./voice-call-ui.js"></script>
+  <!-- 1GB 통일 3단계 — 진행률·자동 이어 올리기·한국어 안내는 한 모듈이 맡는다. -->
+  <script src="./tus-upload.js"></script>
+  <script src="./project-file-upload.js"></script>
   <script src="./app.js"></script>
   <!-- #5805: the phone header collapse scroll mirror. No parameter, no
        routing, no network; the surface CSS is mobile-header-collapse.css. -->

@@ -396,7 +396,10 @@ def test_com2_command_limit_can_be_configured_without_changing_pc_read_bound():
     from app.history import _oracle_mesh_original_max_bytes
     assert _oracle_mesh_original_max_bytes({"kind": "command"}, None) is None
     assert _oracle_mesh_original_max_bytes({"kind": "command"}, 8_000_000) == 8_000_000
-    assert _oracle_mesh_original_max_bytes({"kind": "read", "root_ref": "pc_files_read"}, None) == 20_000_000
+    # #5882 A: the PC read lane keeps no product store cap of its own — the
+    # bytes are pinned by size + digest above this point, and a file larger
+    # than one answer is paged by the Engine instead of refused here.
+    assert _oracle_mesh_original_max_bytes({"kind": "read", "root_ref": "pc_files_read"}, None) is None
     assert _oracle_mesh_original_max_bytes({"kind": "read", "root_ref": "other"}, None) == 6_000_000
 
 

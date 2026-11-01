@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
 from typing import Any, Awaitable, Callable
 
 from starlette.responses import StreamingResponse
@@ -140,7 +141,13 @@ def live_claw_sse(
 
         async def produce() -> None:
             try:
-                outcome = await adapter.execute(run, on_event=report, **dispatch_args)
+                async def progress(record):
+                    kind, value = project_pc_stream_record(record, pc_run_id=run.run_id)
+                    await queue.put((kind, value))
+                options = dict(dispatch_args)
+                if options.get("pc_browser_query") is True:
+                    options["on_pc_progress"] = progress
+                outcome = await adapter.execute(run, on_event=report, **options)
                 await queue.put(("outcome", outcome))
             except P01AdapterError as exc:
                 if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
@@ -183,6 +190,9 @@ def live_claw_sse(
         try:
             while True:
                 kind, payload = await queue.get()
+                if kind in ("pc_progress", "heartbeat"):
+                    yield _frame(kind, payload)
+                    continue
                 if kind == "p01_event":
                     yield _frame("p01_event", payload)
                     continue
@@ -289,7 +299,9 @@ def live_claw_sse(
 
     return StreamingResponse(
         events(), media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
+        headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no",
+                 **({"X-Padiem-Claw-Run-Id": run.run_id}
+                    if re.fullmatch(r"run_[0-9a-f]{24}", str(getattr(run, "run_id", ""))) else {})},
     )
 
 

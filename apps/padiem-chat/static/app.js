@@ -1210,26 +1210,33 @@
     setProjectFileBusy(true);
     try {
       const projectBinary = projectBinaryMediaType(file);
-      let payload;
       if (projectBinary) {
-        // Send binary directly; do not materialize a Base64 JSON copy.
-        payload = null;
+        // #6579: every binary goes through the shared tus module, which owns the
+        // progress line, the resume policy and the first-party guidance copy.
+        if (!window.PadiemProjectFileUpload) throw mappedUiError(uiT("project-file-save-failed"), null);
+        const uploaded = await window.PadiemProjectFileUpload.upload({
+          file,
+          projectId: editingProjectId,
+          mediaType: projectBinary,
+          onProgress: (sent, total) => {
+            if (projectFileStatus && !projectFileStatus.hidden && total > 0) {
+              const percent = Math.min(100, Math.round((sent / total) * 100));
+              projectFileStatus.textContent = `${uiT("document-saving")} ${percent}%`;
+            }
+          },
+        });
+        if (!uploaded || !uploaded.file) throw mappedUiError(uiT("project-file-save-failed"), null);
       } else {
         const documentFile = await readDocumentFile(file);
-        payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
-      }
-      const requestOptions = projectBinary
-        ? { method: "POST", headers: {
-            "Content-Type": "application/octet-stream", "Accept": "application/json",
-            "X-Padiem-Filename": encodeURIComponent(file.name),
-            "X-Padiem-Media-Type": projectBinary,
-          }, body: file }
-        : { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
-            body: JSON.stringify(payload) };
-      const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, requestOptions);
-      const data = await response.json().catch(() => null);
-      if (!response.ok || !data || !data.file) {
-        throw mappedUiError(uiT("project-file-save-failed"), data);
+        const payload = { name: documentFile.name, media_type: documentFile.mediaType, text: documentFile.text };
+        const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, {
+          method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data || !data.file) {
+          throw mappedUiError(uiT("project-file-save-failed"), data);
+        }
       }
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {
@@ -3148,6 +3155,9 @@
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
+    const pcProgressRunId = window.PadiemPcBrowserSurface?.runIdForProgress?.(
+      response, payload, clawGeneralRequest
+    ) ?? (clawGeneralRequest ? null : payload.pc_run_id);
 
     let answer = "";
     let paragraph = null;
@@ -3177,11 +3187,11 @@
     }
     try {
       await chatTransport.readSseEvents(response, async (frame) => {
-        if (!clawGeneralRequest && ["pc_progress", "heartbeat", "scope_notice"].includes(frame.event)) {
+        if (["pc_progress", "heartbeat", "scope_notice"].includes(frame.event)) {
           let value;
           try { value = JSON.parse(frame.data); } catch (_) { return false; }
           if (frame.event === "pc_progress") {
-            window.PadiemChatLifecycle?.recordPcProgress?.(article, value, payload.pc_run_id);
+            window.PadiemChatLifecycle?.recordPcProgress?.(article, value, pcProgressRunId);
           } else if (frame.event === "heartbeat") {
             window.PadiemChatLifecycle?.recordPcHeartbeat?.(article, value);
           } else {
@@ -3463,7 +3473,14 @@
       // keeps /api/chat/stream unchanged, and the explicit manual form submits
       // through clawManualForm below, never here.
       if (attachment?.fileLane && !attachment.fileId) {
-        const reference = await window.PadiemFileLane.upload(attachment.file, controller.signal);
+        // #6579 step 3: chunk progress rides the same status line; the shared
+        // module resumes a drop and owns the guidance shown on failure.
+        const reference = await window.PadiemFileLane.upload(attachment.file, controller.signal, (state) => {
+          if (!projectFileStatus) return;
+          setNote(state.phase === "finalizing"
+            ? uiT("document-saving")
+            : `${uiT("document-saving")} ${state.percent}%`, "normal");
+        });
         attachment = { ...attachment, ...reference };
       }
       const attachments = attachmentPayload(attachment);
@@ -4704,8 +4721,11 @@
       const title = document.createElement("strong");
       title.textContent = item.title;
       const meta = document.createElement("span");
-      const statusText = uiT(`claw-inbox-status-${String(item.status || "")}`);
-      meta.textContent = statusText === `claw-inbox-status-${String(item.status || "")}` ? String(item.status || "") : statusText;
+      const statusKey = `claw-inbox-status-${String(item.status || "")}`;
+      const statusText = uiT(statusKey);
+      // An unrecognised server token is not screen copy; the raw value used to
+      // be echoed here.
+      meta.textContent = statusText === statusKey ? uiT("status-unknown") : statusText;
       copy.append(title, meta);
 
       const action = document.createElement("button");
@@ -6670,7 +6690,7 @@
     title.textContent = memory.name || "";
     const badge = document.createElement("span");
     badge.className = "claw-approved-card-badge";
-    badge.textContent = memory.status === "approved" ? clawT("claw-memory-status-approved") : (memory.status || "");
+    badge.textContent = memory.status === "approved" ? clawT("claw-memory-status-approved") : uiT("status-unknown");
     head.append(title, badge);
 
     const meta = document.createElement("div");
@@ -6708,7 +6728,7 @@
       { label: clawT("claw-memory-name"), value: memory.name || "" },
       { label: clawT("claw-memory-note"), value: memory.note || "" },
       { label: clawT("claw-memory-channel"), value: memory.source_channel || "" },
-      { label: clawT("claw-memory-status"), value: memory.status === "approved" ? clawT("claw-memory-status-approved") : (memory.status || "") },
+      { label: clawT("claw-memory-status"), value: memory.status === "approved" ? clawT("claw-memory-status-approved") : uiT("status-unknown") },
       { label: clawT("claw-memory-created"), value: memory.created_at || "" },
       { label: clawT("claw-memory-updated"), value: memory.updated_at || "" },
     ];
@@ -6874,6 +6894,9 @@
     const raw = String(status || "");
     const key = `claw-runs-status-${raw}`;
     const text = uiT(key);
+    // Deliberately raw for an unknown run token: #3933 and the run-history UI
+    // contract forbid the client deriving a run status, so an invented Korean
+    // label here would be a second kind of untruth.
     return text === key ? raw : text;
   }
 

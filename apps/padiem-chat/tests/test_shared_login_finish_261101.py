@@ -323,3 +323,19 @@ async def test_profile_and_authority_reasons_use_closed_codes(failure, caplog):
         code = "shared_profile_identity_conflict" if failure == "history_conflict" else failure
     assert (await flow.finish_login(callback)).status_code == 503
     assert_reason_only(caplog, stage, code)
+
+
+# A successful login is the line ops waits for, and it carries the same promise:
+# stage names and milliseconds, never a code, a state value or an identifier.
+@pytest.mark.asyncio
+async def test_a_successful_callback_reports_its_stages_without_the_code(capsys):
+    flow = make_flow()
+    callback = await callback_request(flow)
+    assert (await flow.finish_login(callback)).status_code == 302
+    out = capsys.readouterr().out
+    assert re.search(
+        r"^shared_login_timing outcome=ok total_ms=\d+"
+        r"(?: (?:validate_flow|client_assertion|exchange|resolve_account"
+        r"|provision_profile|issue_session)=\d+)+$", out, re.M), out
+    for private in (CODE, ACCESS, REFRESH, ACCOUNT, GOOGLE_SUBJECT, PROFILE["email"]):
+        assert private not in out

@@ -131,6 +131,47 @@ console.log(window.PadiemComputerConnectionState.classify({...projected,readComp
     assert json.loads(denied.body)["available"] is False
 
 
+def test_queue_backed_presence_receipt_reaches_the_directory(monkeypatch):
+    """The queue door takes keyword arguments; a positional read silently went offline."""
+    from app.queue_store_proxy import QueueBackedPresenceStore
+
+    device = "pc@mesh+9"
+    row = {"device_id": device, "connected": True, "credential_generation": None,
+           "source": "mesh", "received_at": datetime.now(timezone.utc).isoformat()}
+
+    class QueueDoor:
+        def __init__(self):
+            self.calls = []
+
+        async def call(self, name, **arguments):
+            self.calls.append((name, dict(arguments)))
+            return row if name == "load" and arguments.get("device_id") == device else None
+
+    class Links:
+        async def links_for_owner(self, *, user_id):
+            return [{"mesh_node_id": device, "label": "queue test pc"}]
+
+    door = QueueDoor()
+    request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace(
+        mesh_device_presence_store=QueueBackedPresenceStore(door),
+        pc_device_pairing_store=Links(),
+    )))
+
+    async def scope(*args, **kwargs):
+        return PcConnectorScope(status="ready", account_ref="acct_5553", workspace_ref="ws", session_id="session")
+
+    async def no_target(*args, **kwargs):
+        return SimpleNamespace(ready=False, status="unconfigured")
+
+    monkeypatch.setattr(directory, "resolve_pc_connector_scope", scope)
+    monkeypatch.setattr(directory, "resolve_pc_mesh_target", no_target)
+    payload = json.loads(asyncio.run(
+        directory._read_device_directory(request, uid="owner", workspace_id="ws")).body)
+    assert [(d["deviceId"], d["state"], d["usable"]) for d in payload["devices"]] == [
+        (device, "CONNECTED", True)]
+    assert door.calls == [("load", {"device_id": device})]
+
+
 def test_panel_reuses_verified_mesh_directory_when_broker_is_absent(monkeypatch):
     from app import claw_local_access_routes as panel, claw_memory_routes as memory
     payload = {"available": True, "ownerScoped": True, "devices": [{

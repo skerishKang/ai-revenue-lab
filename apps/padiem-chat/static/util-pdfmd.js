@@ -140,6 +140,7 @@
   const PC_COPY = {
     pick: "내 PC에서 가져오기",
     ready: "준비 중",
+    checking: "확인 중",
     noPc: "PC를 연결하면 내 PC 문서를 바로 변환할 수 있습니다.",
     connect: "이 PC 연결",
     save: "내 PC에 저장",
@@ -207,9 +208,17 @@
     return (name.replace(/\.[^.]+$/, "") || "document") + ".md";
   }
 
-  window.initPdfMdUtility = function (panel, com2Ready = false) {
-    // The authenticated server response decides when the COM2 host is ready.
-    const PDFMD_NEW_WORK_DISABLED = !com2Ready;
+  window.initPdfMdUtility = function (panel, workState = "checking") {
+    // Three states, and only the server's answer may claim the last two:
+    // "checking" is the first paint, "open" and "paused" come from the list
+    // route. Controls stay closed until the answer arrives, but the pause
+    // sentence appears only when the server actually says the work is paused —
+    // a screen that guesses "일시 중단" before knowing is a second kind of lie.
+    const PDFMD_CHECKING = workState !== "open" && workState !== "paused";
+    const PDFMD_NEW_WORK_DISABLED = workState === "paused";
+    // Everything that refuses an action: an answer or a promise refuses, an
+    // unknown never refuses but still cannot act.
+    const workBlocked = PDFMD_NEW_WORK_DISABLED || PDFMD_CHECKING;
     panel.replaceChildren();
     panel.classList.add("pdfmd-shell");
 
@@ -218,8 +227,12 @@
     header.appendChild(el("p", "pdfmd-desc", "PDF나 ZIP을 올려 변환하면 원본과 Markdown을 나란히 비교하고 내려받을 수 있습니다. OCR(정밀 변환)은 지원하지 않습니다."));
     panel.appendChild(header);
     if (PDFMD_NEW_WORK_DISABLED) {
-      header.querySelector(".pdfmd-desc").textContent = "문서 처리 서버를 COM2로 이전 중입니다. 신규 PDF·ZIP 업로드 및 변환은 일시 중단하며, 기존 작업 이력과 결과 다운로드는 이용할 수 있습니다.";
+      header.querySelector(".pdfmd-desc").textContent = "지금은 새 변환을 시작할 수 없습니다. 기존 작업 이력과 결과 다운로드는 그대로 이용할 수 있습니다.";
       const notice = el("p", "pdfmd-status", "서비스 준비 중 · 신규 업로드 및 변환 일시 중단");
+      notice.setAttribute("role", "status");
+      panel.appendChild(notice);
+    } else if (PDFMD_CHECKING) {
+      const notice = el("p", "pdfmd-status", "새 변환을 열 수 있는지 확인 중…");
       notice.setAttribute("role", "status");
       panel.appendChild(notice);
     }
@@ -236,7 +249,7 @@
       modeSel.appendChild(o);
     });
     modeField.appendChild(modeSel);
-    modeSel.disabled = PDFMD_NEW_WORK_DISABLED;
+    modeSel.disabled = workBlocked;
     modeSel.setAttribute("aria-describedby", "pdfmdModeHelp");
     controls.appendChild(modeField);
 
@@ -275,24 +288,24 @@
     drop.appendChild(dropCta);
     drop.setAttribute("aria-describedby", "pdfmdDropHint");
     panel.appendChild(drop);
-    if (PDFMD_NEW_WORK_DISABLED) {
+    if (workBlocked) {
       drop.removeAttribute("role");
       drop.removeAttribute("tabindex");
       drop.removeAttribute("aria-label");
       drop.classList.add("pdfmd-paused");
-      drop.style.cursor = "not-allowed";
       drop.style.opacity = "0.65";
-      dropTitle.textContent = "PDF 업로드 준비 중";
-      dropSub.textContent = "COM2 이전 완료 후 이용할 수 있습니다.";
-      dropCta.textContent = "업로드 일시 중단";
+      dropTitle.textContent = PDFMD_NEW_WORK_DISABLED ? "PDF 업로드 준비 중" : "PDF 파일을 선택하세요";
+      dropSub.textContent = PDFMD_NEW_WORK_DISABLED ? "곧 다시 이용할 수 있어요." : "방금 연 화면 · 잠시 후 자동으로 정해집니다.";
+      dropCta.textContent = PDFMD_NEW_WORK_DISABLED ? "업로드 일시 중단" : "확인 중";
     }
+    if (PDFMD_NEW_WORK_DISABLED) drop.style.cursor = "not-allowed";
 
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.multiple = true;
     fileInput.accept = ".pdf,.zip,application/pdf,application/zip";
     fileInput.hidden = true;
-    fileInput.disabled = PDFMD_NEW_WORK_DISABLED;
+    fileInput.disabled = workBlocked;
     panel.appendChild(fileInput);
 
     // #6012: the same documents, taken straight from the owner's own PC.
@@ -398,13 +411,13 @@
       jobIdSpan.textContent = id ? "작업 " + id.slice(-8) : "";
       jobIdSpan.title = id || "";
       jobIdSpan.hidden = !id;
-      newJobBtn.hidden = PDFMD_NEW_WORK_DISABLED || !id;
+      newJobBtn.hidden = workBlocked || !id;
       archiveBtn.hidden = !id;
       markActiveHistory();
     }
 
     function startNewJob() {
-      if (PDFMD_NEW_WORK_DISABLED) return;
+      if (workBlocked) return;
       currentItems = [];
       setJobId(null);
       uploadStatus.textContent = "새 작업을 시작합니다. 파일을 선택하세요.";
@@ -413,7 +426,7 @@
     }
 
     async function createJob() {
-      if (PDFMD_NEW_WORK_DISABLED) return;
+      if (workBlocked) return;
       const mode = modeSel.value;
       uploadStatus.textContent = "작업을 준비하는 중...";
       try {
@@ -441,7 +454,7 @@
     // id; its bytes are read once and handed to the SAME upload the browser
     // path uses, so there is one conversion and one ledger.
     async function importFromPc(picked) {
-      if (!picked || !picked.fileId || PDFMD_NEW_WORK_DISABLED) return;
+      if (!picked || !picked.fileId || workBlocked) return;
       const name = picked.name || "문서.pdf";
       uploadStatus.textContent = name + " 가져오는 중...";
       let blob;
@@ -461,9 +474,9 @@
       if (await uploadFile(file)) pcOrigin.set(name, picked.folder || ".");
     }
 
-    if (PDFMD_NEW_WORK_DISABLED) {
+    if (workBlocked) {
       pcPick.disabled = true;
-      pcPick.textContent = PC_COPY.pick + " · " + PC_COPY.ready;
+      pcPick.textContent = PC_COPY.pick + " · " + (PDFMD_NEW_WORK_DISABLED ? PC_COPY.ready : PC_COPY.checking);
     } else {
       pcPick.addEventListener("click", async () => {
         let component;
@@ -488,7 +501,7 @@
     });
 
     async function uploadFile(file) {
-      if (PDFMD_NEW_WORK_DISABLED) return false;
+      if (workBlocked) return false;
       lastUploadError = "";
       if (!currentJobId) await createJob();
       if (!currentJobId) return false;
@@ -524,7 +537,7 @@
     }
 
     async function uploadFiles(files) {
-      if (PDFMD_NEW_WORK_DISABLED) return;
+      if (workBlocked) return;
       if (!files.length) return;
       let uploaded = 0;
       let failed = 0;
@@ -541,7 +554,7 @@
     }
 
     function openPicker() {
-      if (PDFMD_NEW_WORK_DISABLED) return;
+      if (workBlocked) return;
       fileInput.click();
     }
     drop.addEventListener("click", openPicker);
@@ -551,11 +564,11 @@
         openPicker();
       }
     });
-    drop.addEventListener("dragover", (e) => { e.preventDefault(); if (!PDFMD_NEW_WORK_DISABLED) drop.classList.add("dragover"); });
+    drop.addEventListener("dragover", (e) => { e.preventDefault(); if (!workBlocked) drop.classList.add("dragover"); });
     drop.addEventListener("dragleave", () => drop.classList.remove("dragover"));
     drop.addEventListener("drop", (e) => {
       e.preventDefault();
-      if (PDFMD_NEW_WORK_DISABLED) return;
+      if (workBlocked) return;
       drop.classList.remove("dragover");
       if (e.dataTransfer && e.dataTransfer.files) uploadFiles(Array.from(e.dataTransfer.files));
     });
@@ -615,7 +628,7 @@
 
         const actions = el("div", "pdfmd-item-actions");
 
-        if (!item.has_markdown && !PDFMD_NEW_WORK_DISABLED) {
+        if (!item.has_markdown && !workBlocked) {
           const runBtn = el("button", "pdfmd-btn pdfmd-btn-primary", item.status === "failed" ? "다시 변환" : "변환 실행");
           runBtn.type = "button";
           runBtn.setAttribute("aria-label", item.name + " " + runBtn.textContent);
@@ -878,14 +891,23 @@
       histList.replaceChildren(el("p", "pdfmd-empty", "작업 이력을 불러오는 중..."));
       try {
         const data = await api("/api/document-conversions?limit=50");
-        if (PDFMD_NEW_WORK_DISABLED && data.new_work_enabled === true) {
-          window.initPdfMdUtility(panel, true);
+        const answer = data.new_work_enabled === true ? "open" : "paused";
+        if (answer !== workState) {
+          // One repaint, from the answer. The first paint never claims a pause.
+          window.initPdfMdUtility(panel, answer);
           return;
         }
         historyJobs = data.jobs || [];
         histTools.hidden = !historyJobs.length;
         renderHistory();
       } catch (e) {
+        if (PDFMD_CHECKING) {
+          // No answer is an answer of its own: the work cannot start without
+          // it, so the pause sentence is the truthful one. The history area
+          // still states the reason it could not be read.
+          window.initPdfMdUtility(panel, "paused");
+          return;
+        }
         historyJobs = [];
         histTools.hidden = true;
         histList.replaceChildren();

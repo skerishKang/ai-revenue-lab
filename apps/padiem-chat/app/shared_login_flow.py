@@ -187,9 +187,12 @@ class SharedLoginFlow(ComparisonFlow):
                 raise ValueError('invalid_session_response')
             response.headers.update(headers)
             mark('issue_session')
-            logger.info('shared_login_timing outcome=ok total_ms=%d%s',
-                        int((time.monotonic() - started) * 1000),
-                        ' ' + ' '.join(marks) if marks else '')
+            # This module's logger has no handler in the host, so INFO never
+            # reaches the journal and a successful login left no stage record.
+            # The line is the one ops reads, in the failed line's own shape.
+            print('shared_login_timing outcome=ok total_ms=%d%s' % (
+                int((time.monotonic() - started) * 1000),
+                ' ' + ' '.join(marks) if marks else ''), flush=True)
         except Exception as exc:
             logger.warning('shared_login_finish_failed stage=%s code=%s',
                            stage, _finish_failure_code(exc, stage))

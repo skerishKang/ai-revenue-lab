@@ -28,7 +28,6 @@ from padiem_control_plane.product_tier_routes import (
 
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}\Z")
 _QUOTE_CAPABILITIES = frozenset(("chat",))
-_FORBIDDEN_MODEL_IDS = frozenset(("b14/auto",))
 _TASK_NAME = "b66.quote.variable_extraction.v1"
 
 
@@ -124,7 +123,6 @@ def validate_authorized_route(
         not _safe_id(selection.model_id)
         or not _safe_id(selection.route_id)
         or not _safe_id(selection.owner_policy_id)
-        or selection.model_id in _FORBIDDEN_MODEL_IDS
         or selection.model_id.startswith("padiem-profile/")
     ):
         raise B66ModelRouteError("model_identity_invalid")
@@ -187,7 +185,6 @@ class B14QuoteExactModelExecutor:
     ) -> dict[str, Any]:
         if (
             replace(requirements, selected_model_id=None) != B66QuoteTaskRequirements()
-            or route.model_id in _FORBIDDEN_MODEL_IDS
             or route.model_id != requirements.selected_model_id
             # #2505: the last B66-side gate before the provider call refuses an
             # excluded free candidate.
@@ -322,7 +319,7 @@ class B66RegisteredModelCompletion:
             await self._refund_before_dispatch()
             raise B66ModelRouteError("selection_unavailable")
 
-        if not _safe_id(model_id) or model_id in _FORBIDDEN_MODEL_IDS or model_id.startswith("padiem-profile/"):
+        if not _safe_id(model_id) or model_id.startswith("padiem-profile/"):
             await self._refund_before_dispatch()
             raise B66ModelRouteError("selection_unconfigured")
         # #2505: an excluded free candidate is refused here, before any B14

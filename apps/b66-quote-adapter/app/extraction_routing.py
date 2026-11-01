@@ -57,8 +57,7 @@ MANUAL_FALLBACK_ALLOWED = False
 # never re-activated, no silent substitution).
 B66_MODEL_ROUTE_UNAVAILABLE = "model_route_unavailable"
 
-# Execution stays on the canonical non-streaming completion path (#3212:
-# staged SSE stays ``model=b14/auto`` text-only and is untouched here).
+# Execution stays on the canonical non-streaming completion path (#3212).
 B66_USE_STREAMING = False
 
 # QuoteCore remains the only amount/tax calculation authority. Extracted

@@ -51,12 +51,12 @@ def test_the_harness_flow_passes_every_check():
     output = result.stdout + result.stderr
     assert result.returncode == 0, output
     assert "PC_CONNECT_FLOW=PASS" in output
-    # 30 checks: the first-time flow (modal, one press, download, self-closing
+    # 32 checks: the first-time flow (modal, one press, download, self-closing
     # wait), the one-line no-modal path for a connected account, the refusals
-    # that read as refusals, the popover that carries names and states only,
-    # and the card and the composer chip that never paint an unread state as
-    # "연결 안 됨" or offer "연결하기".
-    assert output.count("PC_CONNECT_FLOW_CHECK") == 30
+    # that read as refusals, the popover that carries names, states and the one
+    # action into the device manager's drive list, and the card and the composer
+    # chip that never paint an unread state as "연결 안 됨" or offer "연결하기".
+    assert output.count("PC_CONNECT_FLOW_CHECK") == 32
     assert "FAIL" not in output
 
 

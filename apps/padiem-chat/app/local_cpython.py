@@ -291,22 +291,67 @@ def build_app():
     # Optional short-lived validation results; roles/entitlements stay live.
     from .auth_validation_cache import SqliteAuthValidationCache
     cache_seconds = _nonnegative_env('PADIEM_CHAT_AUTH_CACHE_SECONDS', 30)
+    link_seconds = _nonnegative_env('PADIEM_CHAT_SHARED_LINK_CACHE_SECONDS', 600)
     app.state.auth_validation_cache = (
-        SqliteAuthValidationCache(db, ttl_seconds=cache_seconds) if cache_seconds else None
+        SqliteAuthValidationCache(db, ttl_seconds=cache_seconds,
+                                  link_ttl_seconds=link_seconds) if cache_seconds else None
     )
+
+    # #5441 / B66 alerts: the transactional-mail channel on the CPython host.
+    # The Worker resolves these names from trusted bindings; here they come from
+    # systemd's EnvironmentFile (app/mail_channel_env.py keeps the same
+    # reuse-first order). An absent credential stays absent: the reset route
+    # answers 503 and signup alerts stay queued, exactly as before this wiring.
+    from .mail_channel_env import resolve_b66_channel, resolve_mail_channel
+    from .password_reset_delivery import build_email_delivery
+
+    mail_api_key, mail_from = resolve_mail_channel(os.environ)
+    app.state.password_reset_delivery = build_email_delivery(
+        resend_api_key=mail_api_key,
+        email_from=mail_from,
+    )
+    b66_member_store = getattr(app.state, "b66_member_admin_store", None)
+    if b66_member_store is not None:
+        from .b66_signup_notifications import B66SignupNotifier
+
+        b66_notifier = B66SignupNotifier(
+            b66_member_store,
+            resend_api_key=mail_api_key,
+            email_from=mail_from,
+            **resolve_b66_channel(os.environ),
+        )
+        app.state.b66_signup_notifier = b66_notifier if b66_notifier.channels else None
 
     # Match the Worker's staged entry layout while keeping the council app as
     # the sole source. The installer checks the checkout contains these assets.
+    # Caching (2026-11-01, Owner-approved): the entry answers no-cache so the
+    # next load always revalidates, and its assets are addressed with
+    # content-hashed URLs by the council app itself (app/asset_versions.py), so
+    # a year of immutable caching is safe — a deploy changes the URL, not the
+    # file, and no edge cache can mask a new deploy (the 2026-11-01 incident).
     council_static = Path(__file__).resolve().parents[2] / "padiem-council-apps" / "static"
 
     async def council_entry(request):
-        return FileResponse(council_static / "index.html")
+        return FileResponse(council_static / "index.html",
+                            headers={"Cache-Control": "no-cache"})
+
+    class CouncilLongCacheStaticFiles(StaticFiles):
+        """/apps/council/static/* files are content-hashed, so a long, immutable
+        cache is safe; 404s keep Starlette's own (header-free) answer."""
+
+        async def get_response(self, path: str, scope):
+            response = await super().get_response(path, scope)
+            if response.status_code == 200:
+                response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+            return response
 
     static_index = next(i for i, route in enumerate(app.router.routes)
                         if isinstance(route, Mount) and route.name == "static")
     app.router.routes[static_index:static_index] = [
         Route("/apps/council/", council_entry, methods=["GET"]),
-        Mount("/apps/council/static", app=StaticFiles(directory=str(council_static)), name="council-assets"),
+        Mount("/apps/council/static",
+              app=CouncilLongCacheStaticFiles(directory=str(council_static)),
+              name="council-assets"),
     ]
 
     # The explicit COM2 queue below replaces them when that backend is selected.

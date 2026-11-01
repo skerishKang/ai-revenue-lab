@@ -63,7 +63,7 @@ def policies_from_env(env: Mapping[str, Any]) -> dict[str, AppAIPolicy]:
             limit = item.get("max_body_bytes", MAX_ENGINE_REQUEST_BYTES)
             if not isinstance(models, list) or not models or any(
                 not isinstance(model, str) or not model.strip() or model != model.strip()
-                or model.lower().startswith("b14/auto") for model in models
+                for model in models
             ):
                 raise ValueError
             if type(tokens) is not int or tokens < 1:

@@ -10,10 +10,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+import ipaddress
 import json
 import re
 from types import MappingProxyType
 from typing import Any, AsyncIterator, Mapping, Protocol
+from urllib.parse import urlsplit, urlunsplit
 
 from .orchestration_stream import EngineNdjsonContractError, EngineStreamError, decode_orchestration_ndjson
 
@@ -157,6 +159,12 @@ _PC_PLAN_STEPS = MappingProxyType({
         ("move_file", "claw.pc.move_file"),
         ("delete_file", "claw.pc.delete_file"),
     ),
+    "browser": (
+        ("browser_open", "claw.pc.browser_open"),
+        ("browser_read", "claw.pc.browser_read"),
+        ("browser_screenshot", "claw.pc.browser_screenshot"),
+        ("browser_act", "claw.pc.browser_act"),
+    ),
 })
 #: Canonical PC device identity grammar (#5172). This client package has no
 #: runtime dependency, so the two patterns are copied verbatim from
@@ -183,7 +191,7 @@ def _trusted_pc_tool_arguments(agent_plan: Any, tool_arguments: Any) -> bool:
         return False
     if agent_plan.get("agent_id") not in _PC_PLAN_AGENT_IDS:
         return False
-    if set(tool_arguments) not in ({"query_drives"}, {"files"}, {"files_list"}, {"files_write"}):
+    if len(tool_arguments) != 1 or next(iter(tool_arguments)) not in _PC_PLAN_STEPS:
         return False
     key = next(iter(tool_arguments))
     steps = agent_plan.get("steps")
@@ -397,8 +405,8 @@ def _pc_tools_context(data, app_id):
     ):
         raise PadiemAiEngineClientError("invalid_engine_request", "PC tools context is invalid")
     scopes = value["allowed_scopes"]
-    if (not isinstance(scopes, list) or not scopes or len(scopes) > 3
-        or any(not isinstance(v, str) or v not in {"query_drives", "files_list", "files", "files_write"} for v in scopes)
+    if (not isinstance(scopes, list) or not scopes or len(scopes) > len(_PC_PLAN_STEPS)
+        or any(not isinstance(v, str) or v not in _PC_PLAN_STEPS for v in scopes)
         or len(set(scopes)) != len(scopes)):
         raise PadiemAiEngineClientError("invalid_engine_request", "PC tools scopes are invalid")
     return {"device_id": value["device_id"], "allowed_scopes": list(scopes)}
@@ -531,14 +539,80 @@ def _pc_delegation(value: Any) -> dict[str, Any]:
         ) from None
 
 
-# Dependency-free mirror of padiem_ai_core.pc_gateway.
+# Dependency-free mirrors of Core public-URL policy and PC gateway provenance.
+def _normalize_gateway_browser_url(value: str) -> str:
+    """Normalize a literal public URL and reject obvious local/private targets.
+
+    This mirrors Core's literal-host policy without adding a runtime dependency.
+    It performs no DNS lookup and does not claim DNS-rebinding protection.
+    """
+
+    if not isinstance(value, str):
+        raise ValueError("URL must be a string")
+    raw = value.strip()
+    if not raw or len(raw) > 2048 or any(ord(ch) < 32 for ch in raw):
+        raise ValueError("URL is empty, too long, or contains control characters")
+
+    try:
+        parsed = urlsplit(raw)
+        port = parsed.port
+    except ValueError as exc:
+        raise ValueError("URL is malformed") from exc
+
+    if parsed.scheme.lower() not in {"http", "https"}:
+        raise ValueError("only public http/https URLs are allowed")
+    if not parsed.hostname:
+        raise ValueError("URL host is required")
+    if parsed.username is not None or parsed.password is not None:
+        raise ValueError("URL userinfo is not allowed")
+    if port is not None and not 1 <= port <= 65535:
+        raise ValueError("URL port is invalid")
+
+    host = parsed.hostname.rstrip(".").lower()
+    try:
+        ascii_host = host.encode("idna").decode("ascii")
+    except UnicodeError as exc:
+        raise ValueError("URL host is invalid") from exc
+
+    if (
+        ascii_host == "localhost"
+        or ascii_host == "localhost.localdomain"
+        or ascii_host == "metadata.google.internal"
+        or any(ascii_host.endswith(suffix) for suffix in (".localhost", ".local", ".internal", ".lan", ".home"))
+    ):
+        raise ValueError("internal network hosts are not allowed")
+
+    try:
+        address = ipaddress.ip_address(ascii_host)
+    except ValueError:
+        if re.fullmatch(r"[0-9.]+", ascii_host):
+            raise ValueError("ambiguous numeric host notation is not allowed")
+    else:
+        mapped = getattr(address, "ipv4_mapped", None)
+        candidate = mapped or address
+        if not candidate.is_global:
+            raise ValueError("non-global IP addresses are not allowed")
+
+    netloc = ascii_host
+    if ":" in ascii_host:
+        netloc = f"[{ascii_host}]"
+    if port is not None:
+        netloc = f"{netloc}:{port}"
+    return urlunsplit((parsed.scheme.lower(), netloc, parsed.path or "/", parsed.query, ""))
+
+
 _PC_GATEWAY_TOOLS = {
     "claw.pc.list_files": {"path"},
     "claw.pc.read_file": {"path"},
     "claw.pc.write_file": {"path", "content"},
     "claw.pc.move_file": {"path", "destination"},
     "claw.pc.delete_file": {"path"},
+    "claw.pc.browser_open": {"url"},
+    "claw.pc.browser_read": set(),
+    "claw.pc.browser_screenshot": set(),
+    "claw.pc.browser_act": {"action", "text", "role", "name", "value"},
 }
+_PC_GATEWAY_BROWSER_TOOLS = frozenset(name for name in _PC_GATEWAY_TOOLS if name.startswith("claw.pc.browser_"))
 _PC_GATEWAY_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 
 
@@ -547,7 +621,7 @@ def _parse_pc_gateway(value):
         return None
     required = {"version", "source", "token_id", "request_id", "tool_id", "arguments"}
     if (not isinstance(value, Mapping) or not required <= set(value)
-            or set(value) - required - {"approval_id", "search_query"}
+            or set(value) - required - {"approval_id", "search_query", "browser_context"}
             or type(value["version"]) is not int or value["version"] != 1
             or value["source"] != "mcp"):
         raise ValueError("Invalid PC gateway provenance")
@@ -557,15 +631,36 @@ def _parse_pc_gateway(value):
     tool = value["tool_id"]
     args = value["arguments"]
     if (not isinstance(tool, str) or tool not in _PC_GATEWAY_TOOLS
-            or not isinstance(args, Mapping) or set(args) != _PC_GATEWAY_TOOLS[tool]
-            or any(not isinstance(item, str) for item in args.values())
-            or not args["path"].strip()
-            or ("destination" in args and not args["destination"].strip())):
+            or not isinstance(args, Mapping)
+            or any(not isinstance(item, str) for item in args.values())):
         raise ValueError("Invalid PC gateway tool arguments")
+    browser = tool in _PC_GATEWAY_BROWSER_TOOLS
+    if tool == "claw.pc.browser_act":
+        if (not set(args) <= _PC_GATEWAY_TOOLS[tool] or args.get("action") not in {"click", "type"}
+                or not (args.get("text", "").strip() or args.get("name", "").strip())
+                or (args.get("action") == "type" and not args.get("value"))):
+            raise ValueError("Invalid PC browser action")
+    elif set(args) != _PC_GATEWAY_TOOLS[tool]:
+        raise ValueError("Invalid PC gateway tool arguments")
+    if browser:
+        if "approval_id" in value or "search_query" in value:
+            raise ValueError("Browser confirmation must use ordinary first-party conversation")
+        if tool == "claw.pc.browser_open":
+            _normalize_gateway_browser_url(args["url"])
+    elif not args["path"].strip() or ("destination" in args and not args["destination"].strip()):
+        raise ValueError("Invalid PC gateway path")
+    if "browser_context" in value:
+        context = value["browser_context"]
+        if not browser or not isinstance(context, Mapping) or set(context) != {"url"}:
+            raise ValueError("Invalid PC browser context")
+        _normalize_gateway_browser_url(context["url"])
     if "search_query" in value and (tool != "claw.pc.list_files"
             or not isinstance(value["search_query"], str) or not value["search_query"].strip()):
         raise ValueError("Invalid PC gateway search")
-    return {**dict(value), "arguments": dict(args)}
+    result = {**dict(value), "arguments": dict(args)}
+    if "browser_context" in result:
+        result["browser_context"] = {"url": _normalize_gateway_browser_url(result["browser_context"]["url"])}
+    return result
 
 
 def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[str, Any]:
@@ -600,7 +695,7 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         declared = data["declared_plan"]
         if not isinstance(declared, str) or declared not in _PC_PLAN_STEPS:
             raise PadiemAiEngineClientError(
-                "invalid_engine_request", "declared_plan must be files_list, files, or query_drives"
+                "invalid_engine_request", "declared_plan must name a supported PC request scope"
             )
     if "agent" not in data or "messages" not in data:
         raise PadiemAiEngineClientError(

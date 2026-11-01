@@ -155,8 +155,8 @@ class DispatchAwareB14Client(B14Client):
 
     Missing Service Bindings and, when the public live deadman switch is armed,
     a non-executable Padiem model policy are local deterministic pre-dispatch
-    failures. The legacy generic ``b14/auto`` route is deferred and rejected
-    before dispatch, so it carries no concrete B62 model assignment. Non-live
+    failures. No automatic route exists, so a request never carries a concrete
+    B62 model assignment without an explicit registered model. Non-live
     B14 test/preflight paths remain available for infrastructure regression
     without representing a public product route.
     """

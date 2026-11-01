@@ -73,6 +73,7 @@ class Packaging(unittest.TestCase):
                 continue
             name, _, value = line.partition("=")
             speed_defaults = {"PADIEM_CHAT_AUTH_CACHE_SECONDS": "30",
+                              "PADIEM_CHAT_SHARED_LINK_CACHE_SECONDS": "600",
                               "PADIEM_CHAT_SQLITE_READERS": "2"}
             if name in speed_defaults:
                 self.assertEqual(value, speed_defaults[name])

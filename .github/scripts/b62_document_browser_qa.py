@@ -127,10 +127,47 @@ async def _run_view(
 
     fixture_id = "file_" + "a" * 32
     uploads: list[bytes] = []
+    tus_upload = {"offset": 0, "length": 0, "chunks": bytearray()}
+    tus_path = "/api/chat/attachments/tus"
+
     async def fixture_route(route):
         request = route.request
         path = urlparse(request.url).path
-        if path == "/health":
+        # #6579 step 3: the chat lane stores .docx through the tus protocol on
+        # this same server. The QA answers the protocol here so the real browser
+        # client runs, and hands the finished original to the chat bridge below.
+        if path == tus_path and request.method == "OPTIONS":
+            await route.fulfill(status=204, headers={
+                "Tus-Version": "1.0.0",
+                "Tus-Max-Size": str(1024 * 1024 * 1024),
+                "X-Padiem-Tus-Chunk-Max": str(90 * 1024 * 1024),
+            })
+        elif path == tus_path and request.method == "POST":
+            tus_upload["length"] = int(request.headers.get("upload-length") or 0)
+            tus_upload["offset"] = 0
+            tus_upload["chunks"] = bytearray()
+            await route.fulfill(status=201, headers={
+                "Location": f"{tus_path}/qa-upload",
+                "Tus-Resumable": "1.0.0",
+            }, json={"upload_id": "qa-upload"})
+        elif path == f"{tus_path}/qa-upload" and request.method == "HEAD":
+            await route.fulfill(status=200, headers={
+                "Upload-Offset": str(tus_upload["offset"]),
+                "Upload-Length": str(tus_upload["length"]),
+            })
+        elif path == f"{tus_path}/qa-upload" and request.method == "PATCH":
+            chunk = request.post_data_buffer or b""
+            tus_upload["chunks"] += chunk
+            tus_upload["offset"] = len(tus_upload["chunks"])
+            await route.fulfill(status=204, headers={"Upload-Offset": str(tus_upload["offset"])})
+        elif path == f"{tus_path}/qa-upload" and request.method == "GET":
+            stored = bytes(tus_upload["chunks"])
+            uploads.append(stored)
+            await route.fulfill(status=201, json={
+                "ok": True,
+                "file": {"file_id": fixture_id, "size_bytes": len(stored)},
+            })
+        elif path == "/health":
             response = await route.fetch()
             payload = await response.json()
             payload["binary_document_attachment_ready"] = True

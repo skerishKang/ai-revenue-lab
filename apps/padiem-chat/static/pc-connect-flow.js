@@ -69,6 +69,7 @@
       toast: "내 컴퓨터 연결됨 ✓",
       popoverTitle: "내 컴퓨터",
       popoverEmpty: "연결된 PC가 없습니다.",
+      popoverDrives: "드라이브 보기",
       unnamed: "이름 없는 PC",
       connectedChip: "내 PC 연결됨",
       connectChip: "연결하기",
@@ -95,6 +96,7 @@
       toast: "My computer connected ✓",
       popoverTitle: "My computer",
       popoverEmpty: "No connected PC yet.",
+      popoverDrives: "View drives",
       unnamed: "Unnamed PC",
       connectedChip: "My PC connected",
       connectChip: "Connect",
@@ -506,12 +508,25 @@
     const title = element("p", "pc-connect-popover-title", vocabName("computer", locale().popoverTitle));
     const list = element("ul", "pc-pairing-list");
     const empty = element("p", "pc-connect-popover-empty", locale().popoverEmpty);
-    root.append(title, list, empty);
+    // #6536: the drive list lives in the existing device manager panel. That
+    // panel lost its own entry line when this popover became the one entry, so
+    // the popover carries the single action that reopens it. No drive data is
+    // read here; the panel owns its own authenticated read.
+    const drives = element("button", "pc-connect-popover-drives", locale().popoverDrives);
+    drives.type = "button";
+    drives.hidden = true;
+    drives.addEventListener("click", () => {
+      const toggle = document.getElementById("clawDeviceManagerToggle");
+      hidePopover();
+      if (toggle && typeof toggle.click === "function") toggle.click();
+    });
+    root.append(title, list, empty, drives);
     document.body.append(root);
     popoverView.root = root;
     popoverView.list = list;
     popoverView.empty = empty;
     popoverView.title = title;
+    popoverView.drives = drives;
     document.addEventListener("click", (event) => {
       const target = event && event.target;
       if (target && typeof target.closest === "function"
@@ -556,6 +571,8 @@
     v.empty.textContent = t.popoverEmpty;
     v.list.replaceChildren();
     const shown = state.links.filter((link) => link && link.state !== "revoked");
+    v.drives.textContent = t.popoverDrives;
+    v.drives.hidden = !shown.length || !document.getElementById("clawDeviceManagerToggle");
     if (!shown.length) {
       v.empty.hidden = false;
       return;

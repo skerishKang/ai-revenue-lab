@@ -163,6 +163,10 @@ from .claw_web_xlsx_source_routes import (
     web_xlsx_sources, web_xlsx_download,
     web_xlsx_upload_ticket, web_xlsx_register,
 )
+from .tus_web_xlsx_upload import (
+    WEB_XLSX_TUS_COLLECTION_PATH, WEB_XLSX_TUS_ITEM_PATH,
+    web_xlsx_tus_collection, web_xlsx_tus_item,
+)
 from .claw_web_xlsx_selection_routes import (
     WEB_SELECTIONS_PATH, WEB_SELECTION_PATH,
     web_xlsx_selections, web_xlsx_selection_detail,
@@ -383,6 +387,7 @@ from .project_file_routes import (
     project_file_original,
     project_files_collection,
 )
+from .tus_project_upload import project_file_tus_collection, project_file_tus_item
 from .document_convert_routes import (
     convert_item_detail,
     convert_item_delete,
@@ -411,6 +416,12 @@ from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
 from .file_lane import BINARY_KINDS, KINDS, FileLaneClient, file_upload_ticket, file_capabilities
+from .tus_chat_attachment import (
+    CHAT_ATTACHMENT_TUS_COLLECTION_PATH,
+    CHAT_ATTACHMENT_TUS_ITEM_PATH,
+    chat_attachment_tus_collection,
+    chat_attachment_tus_item,
+)
 from .same_origin_guard import SameOriginGuardMiddleware
 from .session_revocation_guard import SessionRevocationGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
@@ -640,6 +651,11 @@ def create_app(
         Route("/api/project-files", owner_files_collection, methods=["GET"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
+        # 1GB 통일 1단계 — tus 1.0.0 resumable chunked upload for project binaries.
+        # Registered before the {file_id} catch-all so "tus" is never read as a
+        # file id. See app/tus_project_upload.py.
+        Route("/api/projects/{project_id}/files/tus", project_file_tus_collection, methods=["POST", "OPTIONS"]),
+        Route("/api/projects/{project_id}/files/tus/{upload_id}", project_file_tus_item, methods=["HEAD", "PATCH", "GET"]),
         Route("/api/projects/{project_id}/files/{file_id}/original", project_file_original, methods=["GET"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE", "PUT"]),
         # #5568 PDF→Markdown utility: a work ledger per upload session, one conversion
@@ -710,6 +726,13 @@ def create_app(
         Route("/api/byok/register", byok_register, methods=["POST"]),
         Route("/api/files/ticket", file_upload_ticket, methods=["POST"]),
         Route("/api/files/capabilities", file_capabilities, methods=["GET"]),
+        # #6579 3단계 — Chat 첨부는 base64 본문 대신 조각 업로드(tus 1.0.0)로 먼저
+        # 올리고, 대화 요청에는 참조 ID만 싣는다. 대화 요청 문법
+        # ({"type": "file", "file_id"})은 그대로다. See app/tus_chat_attachment.py.
+        Route(CHAT_ATTACHMENT_TUS_COLLECTION_PATH, chat_attachment_tus_collection,
+              methods=["POST", "OPTIONS"]),
+        Route(CHAT_ATTACHMENT_TUS_ITEM_PATH, chat_attachment_tus_item,
+              methods=["HEAD", "PATCH", "GET"]),
         Route("/api/chat/custom/credential", custom_credential_status, methods=["GET"]),
         Route("/api/chat/custom/credential", custom_credential_save, methods=["PUT"]),
         Route("/api/chat/custom/credential", custom_credential_delete, methods=["DELETE"]),
@@ -843,6 +866,9 @@ def create_app(
         Route(WEB_SOURCE_UPLOAD_TICKET_PATH, web_xlsx_upload_ticket, methods=["POST"]),
         Route(WEB_SOURCE_REGISTER_PATH, web_xlsx_register, methods=["POST"]),
         Route(WEB_SOURCE_DOWNLOAD_PATH, web_xlsx_download, methods=["GET"]),
+        # #6579 step 2: a 1 GiB original arrives as <=90 MiB tus chunks.
+        Route(WEB_XLSX_TUS_COLLECTION_PATH, web_xlsx_tus_collection, methods=["POST", "OPTIONS"]),
+        Route(WEB_XLSX_TUS_ITEM_PATH, web_xlsx_tus_item, methods=["HEAD", "PATCH", "GET"]),
         Route(WEB_SELECTIONS_PATH, web_xlsx_selections, methods=["GET", "POST"]),
         Route(WEB_SELECTION_PATH, web_xlsx_selection_detail, methods=["GET"]),
         Route(WEB_XLSX_REQUEST_P01_PATH, web_xlsx_request_p01, methods=["POST"]),
@@ -1057,6 +1083,11 @@ def create_app(
                 oracle_mesh_engine_desktop_call,
                 oracle_mesh_read_result,
             )
+            from .claw_pc_browser_routes import (
+                BROWSER_CAPTURE_PATH, browser_capture,
+                oracle_mesh_engine_claw_browser_call,
+                oracle_mesh_engine_chat_browser_call,
+            )
             # #5997: the executor renews a live claim while a long command runs.
             from .oracle_mesh_lease_renew_routes import (
                 ORACLE_MESH_READ_RENEW_PATH,
@@ -1067,8 +1098,11 @@ def create_app(
                 Route("/internal/claw/engine-desktop", oracle_mesh_engine_desktop_call, methods=["POST"]),
                 Route("/internal/claw/engine-pc-drive", oracle_mesh_engine_desktop_call, methods=["POST"]),
                 Route("/internal/claw/engine-pc-files", oracle_mesh_engine_claw_files_call, methods=["POST"]),
+                Route("/internal/claw/engine-pc-browser", oracle_mesh_engine_claw_browser_call, methods=["POST"]),
                 Route("/internal/chat/engine-pc-drive", oracle_chat_engine_pc_drive_call, methods=["POST"]),
                 Route("/internal/chat/engine-pc-files", oracle_mesh_engine_chat_files_call, methods=["POST"]),
+                Route("/internal/chat/engine-pc-browser", oracle_mesh_engine_chat_browser_call, methods=["POST"]),
+                Route(BROWSER_CAPTURE_PATH, browser_capture, methods=["GET"]),
                 Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
                 Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check, methods=["POST"]),

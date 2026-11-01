@@ -386,7 +386,7 @@ class CanonicalClawLocalAccessTruthSource:
         if device_id is None:
             return facts
         try:
-            row = store.load(device_id)
+            row = store.load(device_id=device_id)
             if hasattr(row, "__await__"):
                 row = await row
         except Exception:

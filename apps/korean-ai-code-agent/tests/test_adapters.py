@@ -15,7 +15,8 @@ class AdapterBoundaryTests(unittest.TestCase):
         first = adapter.preview(task="로그인 오류를 분석해줘", route="business14/auto")
         second = adapter.preview(task="로그인 오류를 분석해줘", route="business14/auto")
         self.assertEqual(first, second)
-        self.assertEqual(first["route"], "b14/auto")
+        # B7: no route canonicalization — the caller's route name travels verbatim.
+        self.assertEqual(first["route"], "business14/auto")
         self.assertFalse(first["network_called"])
         self.assertEqual(first["status"], "resolved_not_called")
         self.assertNotIn("credential", first)

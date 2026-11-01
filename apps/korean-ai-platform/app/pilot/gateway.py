@@ -272,11 +272,9 @@ def _validate_body(raw: Any) -> dict:
         raise _InvalidBody("model must be a non-empty string")
 
     model = raw["model"].strip()
-    if model == "b14/auto":
-        # The retired b14/auto id is rejected as a string (B1/B7 pattern):
-        # without a credential and with one. The former "reserved for future
-        # development" gate answered a request the product never enables.
-        raise _InvalidBody("b14/auto is retired; select a Business 14 catalog model.")
+    # The retired automatic route has no special case anywhere: an id that is
+    # not a registered catalog model is refused by the ordinary unknown-model
+    # handling like any other string.
     # Provider/model controls supported context size and message count.
     # B14 validates the message shape, not a second artificial context cap.
     msgs = raw.get("messages")

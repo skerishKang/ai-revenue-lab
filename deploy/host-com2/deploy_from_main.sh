@@ -16,7 +16,7 @@
 # The production checkout is an operator setting, never a shared folder. The
 # script refuses a SHA that is not origin/main, a checkout that is the staging
 # checkout, a dirty tracked tree, a Chat database it cannot read, and a new
-# migration — which it never applies by itself.
+  # but an --apply run backs the Chat database up and applies it first.
 #
 # It never edits .env or any secret, never touches Cloudflare, the tunnel or the
 # Windows 18731 release, and never enables a unit.
@@ -31,13 +31,23 @@
 #   PADIEM_COM2_CHAT_HEALTH_ATTEMPTS / PADIEM_COM2_CHAT_HEALTH_INTERVAL
 #   PADIEM_COM2_CHAT_HEALTH_TIMEOUT
 #   PADIEM_COM2_CHAT_DB          Chat SQLite file holding the migration ledger
+#   PADIEM_COM2_CHAT_DB_USER     owner the Chat migration backup and apply run as (default padiem-chat)
 #   PADIEM_COM2_P01_APP          P01 install root (#6442 releases/rollback)
 #   PADIEM_COM2_B14_APP          B14 app tree (a link into the mirror)
 #   PADIEM_COM2_MESH_QUEUE_APP   the PC queue install root (its code also from the mirror)
 #   PADIEM_COM2_MESH_QUEUE_USER  the account that owns that root
 #   PADIEM_COM2_HEALTH_TIMEOUT / PADIEM_COM2_HEALTH_INTERVAL
 #                                how long a start or a rollback may take to become
-#                                healthy (30s, 2s)
+#                                healthy (90s, 2s)
+#   PADIEM_COM2_UNIT_WAIT_TIMEOUT / PADIEM_COM2_PORT_WAIT_TIMEOUT
+#                                how long systemctl is-active and the port bind may
+#                                take before the health contract is even probed (30s)
+#   PADIEM_COM2_STOP_WAIT_TIMEOUT  how long the previous process may take to release
+#                                MainPID 0 and its port (30s)
+#   PADIEM_COM2_WAIT_POLL_INTERVAL  poll gap inside every wait stage (1s)
+#   PADIEM_COM2_SS               ss wrapper
+#   PADIEM_COM2_CHAT_PORT / PADIEM_COM2_P01_PORT / PADIEM_COM2_B14_PORT
+#                                the loopback ports the ladders watch (8798/8811/8789)
 #   PADIEM_COM2_SYSTEMCTL        systemctl wrapper
 #   PADIEM_COM2_PYTHON           python3
 #   PADIEM_COM2_GIT              git
@@ -57,15 +67,27 @@ source_stage_dir=${PADIEM_COM2_SOURCE_DIR:-"${previous_dir%/*}/src"}
 read_check_user=${PADIEM_COM2_READ_CHECK_USER:-padiem-chat}
 staged=''
 stage_only=0
-chat_health_attempts=${PADIEM_COM2_CHAT_HEALTH_ATTEMPTS:-31}
-chat_health_interval=${PADIEM_COM2_CHAT_HEALTH_INTERVAL:-2}
-chat_health_timeout=${PADIEM_COM2_CHAT_HEALTH_TIMEOUT:-60}
 # A service that has not finished binding its loopback port is not an unhealthy
 # service. One probe used to be enough to call a rollback, so every service except
-# Chat (which already had its own patience) retries until this deadline.
-health_timeout=${PADIEM_COM2_HEALTH_TIMEOUT:-30}
+# Chat (which already had its own patience) retries until this deadline. 11-02:
+# the deadline is the whole readiness budget now, and Chat walks the same ladder
+# instead of carrying separate attempt caps.
+health_timeout=${PADIEM_COM2_HEALTH_TIMEOUT:-90}
 health_interval=${PADIEM_COM2_HEALTH_INTERVAL:-2}
+# 11-02 B14: the release was fine, but the probe ran while the unit was still
+# activating and the port did not exist yet, so a good tree rolled itself back.
+# Each readiness stage therefore has its own bound, and the previous process
+# must be provably gone before the new one starts.
+unit_wait_timeout=${PADIEM_COM2_UNIT_WAIT_TIMEOUT:-30}
+port_wait_timeout=${PADIEM_COM2_PORT_WAIT_TIMEOUT:-30}
+stop_wait_timeout=${PADIEM_COM2_STOP_WAIT_TIMEOUT:-30}
+wait_poll_interval=${PADIEM_COM2_WAIT_POLL_INTERVAL:-1}
+ss_bin=${PADIEM_COM2_SS:-ss}
+chat_port=${PADIEM_COM2_CHAT_PORT:-8798}
+p01_port=${PADIEM_COM2_P01_PORT:-8811}
+b14_port=${PADIEM_COM2_B14_PORT:-8789}
 chat_db=${PADIEM_COM2_CHAT_DB:-/mnt/d/padiem/chat-com2/chat.sqlite3}
+chat_db_user=${PADIEM_COM2_CHAT_DB_USER:-padiem-chat}
 p01_root=${PADIEM_COM2_P01_APP:-/opt/padiem/p01}
 b14_app=${PADIEM_COM2_B14_APP:-/opt/padiem/b14/app}
 queue_root=${PADIEM_COM2_MESH_QUEUE_APP:-/opt/padiem/mesh-queue}
@@ -205,27 +227,89 @@ with_service_stopped() {
   if unit_active "$unit"; then "$systemctl_bin" stop "$unit" || return 1; fi
 }
 
-# Retry the real probe while the listener and app are starting. Every attempt
-# must still pass the full health contract; STATUS=0 is not a success.
-wait_chat_health() {
-  local source=$1 attempt deadline remaining pause
-  [[ $chat_health_attempts =~ ^[1-9][0-9]*$ && $chat_health_interval =~ ^[0-9]+$ && $chat_health_timeout =~ ^[1-9][0-9]*$ ]] || return 1
-  deadline=$((SECONDS + chat_health_timeout))
-  for ((attempt=1; attempt<=chat_health_attempts; attempt++)); do
-    remaining=$((deadline - SECONDS))
-    (( remaining > 0 )) || return 1
-    if timeout "${remaining}s" "$python_bin" "$source/deploy/host-com2/chat/health.py" --url "$chat_health_url"; then
+# A listening check against the real `ss -ltn` output shape. The grep consumes
+# the whole stream on purpose: with pipefail, an early -q exit would turn a
+# clean match into a SIGPIPE failure.
+port_listening() {
+  "$ss_bin" -ltn 2>/dev/null | grep -E "[:.]${1}\$" > /dev/null
+}
+
+# Stage a — the unit must reach active before anything else is probed.
+wait_unit_active() {
+  local label=$1 unit=$2 deadline=$((SECONDS + unit_wait_timeout))
+  while :; do
+    if unit_active "$unit"; then
+      say "UNIT_${label}_ACTIVE"
       return 0
     fi
-    remaining=$((deadline - SECONDS))
-    (( remaining > 0 )) || return 1
-    if (( attempt < chat_health_attempts )); then
-      pause=$chat_health_interval
-      if (( pause > remaining )); then pause=$remaining; fi
-      sleep "$pause"
-    fi
+    (( SECONDS < deadline )) || { say "UNIT_${label}_ACTIVE_TIMEOUT"; return 1; }
+    sleep "$wait_poll_interval"
   done
-  return 1
+}
+
+# Stage b — the app binds its loopback port after the unit goes active. Probing
+# the health contract before the bind exists is how a good B14 release rolled
+# itself back on 11-02.
+wait_port_listening() {
+  local label=$1 port=$2 deadline=$((SECONDS + port_wait_timeout))
+  while :; do
+    if port_listening "$port"; then
+      say "PORT_${label}_LISTENING"
+      return 0
+    fi
+    (( SECONDS < deadline )) || { say "PORT_${label}_LISTENING_TIMEOUT"; return 1; }
+    sleep "$wait_poll_interval"
+  done
+}
+
+# The previous process is down when systemd reports MainPID 0. A re-execing or
+# wedged MainPID would leave the port held for the new process to trip over.
+wait_main_pid_gone() {
+  local label=$1 unit=$2 deadline=$((SECONDS + stop_wait_timeout)) pid
+  while :; do
+    pid=$("$systemctl_bin" show -p MainPID --value "$unit" 2>/dev/null || printf '0')
+    if [[ ! $pid =~ ^[0-9]+$ ]] || [[ $pid == 0 ]]; then
+      say "MAINPID_${label}_GONE"
+      return 0
+    fi
+    (( SECONDS < deadline )) || { say "MAINPID_${label}_GONE_TIMEOUT"; return 1; }
+    sleep "$wait_poll_interval"
+  done
+}
+
+# A port the old process still holds makes the new process fail to bind, which
+# reads as a broken release instead of a busy one.
+wait_port_released() {
+  local label=$1 port=$2 deadline=$((SECONDS + stop_wait_timeout))
+  while :; do
+    if ! port_listening "$port"; then
+      say "PORT_${label}_RELEASED"
+      return 0
+    fi
+    (( SECONDS < deadline )) || { say "PORT_${label}_RELEASED_TIMEOUT"; return 1; }
+    sleep "$wait_poll_interval"
+  done
+}
+
+# Run after with_service_stopped: the old process is provably gone (MainPID 0)
+# and the port is free before anything is installed or started.
+wait_service_down() {
+  local label=$1 unit=$2 port=$3
+  wait_main_pid_gone "$label" "$unit" || return 1
+  wait_port_released "$label" "$port" || return 1
+}
+
+# One readiness ladder for every restarted service:
+#   a. unit active       (<= PADIEM_COM2_UNIT_WAIT_TIMEOUT, 30s)
+#   b. port listening    (<= PADIEM_COM2_PORT_WAIT_TIMEOUT, 30s)
+#   c. health contract   (<= PADIEM_COM2_HEALTH_TIMEOUT, 90s — stage d verdict)
+# A stage timeout or a failed contract returns 1 and the caller rolls back.
+wait_service_ready() {
+  local label=$1 unit=$2 port=$3
+  shift 3
+  wait_unit_active "$label" "$unit" || return 1
+  wait_port_listening "$label" "$port" || return 1
+  wait_for_health "$label" "$@"
 }
 
 # stage_code.sh copies these exact paths into the release selected by app.
@@ -399,12 +483,14 @@ deploy_chat() {
   local before_active=0
   if unit_active "$CHAT_UNIT"; then before_active=1; fi
   with_service_stopped "$CHAT_UNIT" || return 1
+  wait_service_down CHAT "$CHAT_UNIT" "$chat_port" || return 1
   bash "$staged/deploy/host-com2/chat/install.sh" \
     --apply --source-root "$staged" || return 1
   assert_service_readable CHAT_LIVE "$staged/apps/padiem-chat/app" "$read_check_user" || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$CHAT_UNIT" || return 1
-    wait_chat_health "$staged"
+    wait_service_ready CHAT "$CHAT_UNIT" "$chat_port" \
+      "$python_bin" "$staged/deploy/host-com2/chat/health.py" --url "$chat_health_url"
   else
     say 'CHAT_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
@@ -414,6 +500,7 @@ deploy_p01() {
   local before_active=0
   if unit_active "$P01_UNIT"; then before_active=1; fi
   with_service_stopped "$P01_UNIT" || return 1
+  wait_service_down P01 "$P01_UNIT" "$p01_port" || return 1
   bash "$staged/deploy/host-com2/p01/install.sh" \
     --apply --source-root "$staged" || return 1
   local live
@@ -421,7 +508,8 @@ deploy_p01() {
   assert_service_readable P01_LIVE "$live" padiem-p01 || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$P01_UNIT" || return 1
-    wait_for_health P01 "$python_bin" "$staged/deploy/host-com2/p01/health.py" --url "$p01_health_url"
+    wait_service_ready P01 "$P01_UNIT" "$p01_port" \
+      "$python_bin" "$staged/deploy/host-com2/p01/health.py" --url "$p01_health_url"
   else
     say 'P01_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
@@ -483,12 +571,14 @@ deploy_b14() {
   local before_active=0
   if unit_active "$B14_UNIT"; then before_active=1; fi
   with_service_stopped "$B14_UNIT" || return 1
+  wait_service_down B14 "$B14_UNIT" "$b14_port" || return 1
   link_b14_app "$staged/apps/korean-ai-platform" || return 1
   bash "$staged/deploy/host-com2/b14/install.sh" --reload || return 1
   assert_service_readable B14_LIVE "$staged/apps/korean-ai-platform" padiem-b14 || return 1
   if (( before_active )); then
     "$systemctl_bin" start "$B14_UNIT" || return 1
-    wait_for_health B14 "$python_bin" "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
+    wait_service_ready B14 "$B14_UNIT" "$b14_port" \
+      "$python_bin" "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
   else
     say 'B14_START=SKIPPED_NOT_ACTIVE_BEFORE'
   fi
@@ -500,10 +590,12 @@ rollback_chat() {
   local previous="$previous_dir/$old"
   [[ -d $previous/deploy/host-com2/chat ]] || { say 'CHAT_ROLLBACK=NO_PREVIOUS_CHECKOUT'; return 1; }
   with_service_stopped "$CHAT_UNIT" || return 1
+  wait_service_down CHAT_ROLLBACK "$CHAT_UNIT" "$chat_port" || return 1
   bash "$previous/deploy/host-com2/chat/install.sh" \
     --apply --source-root "$previous" || return 1
   "$systemctl_bin" start "$CHAT_UNIT" || return 1
-  wait_chat_health "$previous"
+  wait_service_ready CHAT_ROLLBACK "$CHAT_UNIT" "$chat_port" \
+    "$python_bin" "$previous/deploy/host-com2/chat/health.py" --url "$chat_health_url"
 }
 
 # P01's own installer snapshots the replaced app (#6442); rollback re-points the
@@ -513,6 +605,7 @@ rollback_p01() {
   snapshot=$(ls -1dt "$p01_root"/rollback/p01.* 2>/dev/null | head -1 || true)
   [[ -n $snapshot ]] || { say 'P01_ROLLBACK=NO_SNAPSHOT'; return 1; }
   with_service_stopped "$P01_UNIT" || return 1
+  wait_service_down P01_ROLLBACK "$P01_UNIT" "$p01_port" || return 1
   # A snapshot taken before this existed may still be 0600; a rollback that
   # cannot be read is no rollback at all, so fix it and then prove it.
   chmod -R a+rX,u+w,go-w "$snapshot" || return 1
@@ -531,25 +624,27 @@ rollback_p01() {
     return 1
   fi
   "$systemctl_bin" start "$P01_UNIT" || return 1
-  wait_for_health P01_ROLLBACK "$python_bin" "$staged/deploy/host-com2/p01/health.py" --url "$p01_health_url"
+  wait_service_ready P01_ROLLBACK "$P01_UNIT" "$p01_port" "$python_bin" "$staged/deploy/host-com2/p01/health.py" --url "$p01_health_url"
 }
 
 rollback_b14() {
   local previous="$previous_dir/$old/apps/korean-ai-platform" source
   if source=$(b14_rollback_source); then
     with_service_stopped "$B14_UNIT" || return 1
+    wait_service_down B14_ROLLBACK "$B14_UNIT" "$b14_port" || return 1
     link_b14_app "$source" || return 1
     "$systemctl_bin" start "$B14_UNIT" || return 1
-    wait_for_health B14_ROLLBACK "$python_bin" \
-      "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
+    wait_service_ready B14_ROLLBACK "$B14_UNIT" "$b14_port" \
+      "$python_bin" "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
     return
   fi
   # Nothing this script owns can put the code back, so say so instead of guessing.
   # A stopped unit is not a rollback either: bring it up on whatever the link holds.
   printf 'COM2_DEPLOY_B14_ROLLBACK=MANUAL PREVIOUS=%s\n' "$previous" >&2
+  wait_service_down B14_ROLLBACK "$B14_UNIT" "$b14_port" || return 1
   "$systemctl_bin" start "$B14_UNIT" || return 1
-  wait_for_health B14_ROLLBACK "$python_bin" \
-    "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
+  wait_service_ready B14_ROLLBACK "$B14_UNIT" "$b14_port" \
+    "$python_bin" "$staged/deploy/host-com2/b14/health.py" --url "$b14_health_url"
 }
 
 # The queue keeps its database, environment, venv and secrets on the host; only its
@@ -614,7 +709,103 @@ rollback_queue() {
   wait_for_health QUEUE_ROLLBACK bash "$queue_root/deploy/health_check.sh"
 }
 
+# Chat migrations used to stop the run and wait for an operator to apply them. The
+# application applies them on start anyway, so the script now does what the operator
+# did: one consistent backup beside the database, then exactly the files that were
+# pending, as the database owner, with the same ledger the app writes.
+apply_pending_chat_migrations() {
+  local pending=$1 backup stamp
+  local -a as_user=()
+  stamp=$(date +%Y%m%dT%H%M%S)
+  backup="$chat_db.pre-deploy-$stamp"
+  if [[ -e $backup ]]; then
+    say "CHAT_MIGRATION_BACKUP=EXISTS PATH=$backup"
+    return 1
+  fi
+  if [[ -n $chat_db_user && ${EUID} -eq 0 ]] && getent passwd -- "$chat_db_user" >/dev/null 2>&1; then
+    as_user=(runuser -u "$chat_db_user" --)
+  fi
+  # shellcheck disable=SC2086  # the pending names arrive newline-separated
+  "${as_user[@]}" "$python_bin" - "$ops_checkout" "$resolved" "$chat_db" "$backup" "$git_bin" $pending <<'PY'
+import sqlite3
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+checkout, sha, db, backup, git = sys.argv[1:6]
+names = sys.argv[6:]
+if not names:
+    print("COM2_DEPLOY_CHAT_MIGRATION=NONE")
+    sys.exit(1)
+con = sqlite3.connect(db, isolation_level=None)
+dst = sqlite3.connect(backup)
+con.backup(dst)
+dst.close()
+integrity = con.execute("PRAGMA integrity_check").fetchone()
+if not integrity or integrity[0] != "ok":
+    print("COM2_DEPLOY_CHAT_MIGRATION_BACKUP=INTEGRITY_FAIL")
+    sys.exit(1)
+print("COM2_DEPLOY_CHAT_MIGRATION_BACKUP=%s" % backup)
+applied = []
+for name in names:
+    sql = subprocess.run(
+        [git, "-C", checkout, "show", "%s:apps/padiem-chat/migrations/%s" % (sha, name)],
+        capture_output=True, text=True, check=True,
+    ).stdout
+    con.executescript(sql)
+    con.execute(
+        "INSERT OR REPLACE INTO padiem_local_migration_ledger (name, applied_at) VALUES (?, ?)",
+        (name, datetime.now(timezone.utc).isoformat()),
+    )
+    applied.append(name)
+con.close()
+print("COM2_DEPLOY_CHAT_MIGRATION_APPLIED=%s" % ",".join(applied))
+PY
+}
+
+# The installers restart a unit only when it was active before the install. A unit
+# the operator left enabled but stopped therefore received the new code and never
+# came up, and the health gate rolled it back (B14, 2026-11-01). Nothing moves until
+# every selected unit is enabled, and an enabled-but-stopped one is started and
+# health-checked here.
+ensure_unit_ready() {
+  local label=$1 unit=$2
+  shift 2
+  if ! "$systemctl_bin" is-enabled --quiet "$unit"; then
+    say "UNIT_ENABLED_${label}=NO UNIT=$unit"
+    return 1
+  fi
+  if unit_active "$unit"; then
+    say "UNIT_READY_${label}=ACTIVE"
+    return 0
+  fi
+  say "UNIT_READY_${label}=STARTING UNIT=$unit"
+  "$systemctl_bin" start "$unit" || return 1
+  wait_for_health "PRE_${label}" "$@" || return 1
+  say "UNIT_READY_${label}=STARTED"
+}
+
+# $1 the comma-separated list the diff selected.
+ensure_target_units_ready() {
+  local service probe_root
+  probe_root=$ops_checkout
+  [[ -d $source_stage_dir/$resolved ]] && probe_root=$source_stage_dir/$resolved
+  for service in ${1//,/ }; do
+    case $service in
+      chat) ensure_unit_ready CHAT "$CHAT_UNIT" \
+        "$python_bin" "$probe_root/deploy/host-com2/chat/health.py" --url "$chat_health_url" ;;
+      p01) ensure_unit_ready P01 "$P01_UNIT" \
+        "$python_bin" "$probe_root/deploy/host-com2/p01/health.py" --url "$p01_health_url" ;;
+      b14) ensure_unit_ready B14 "$B14_UNIT" \
+        "$python_bin" "$probe_root/deploy/host-com2/b14/health.py" --url "$b14_health_url" ;;
+      queue) ensure_unit_ready QUEUE "$QUEUE_UNIT" \
+        bash "$queue_root/deploy/health_check.sh" ;;
+    esac || fail "UNIT_NOT_READY_${service}"
+  done
+}
+
 run_deploy() {
+
   local sha=$1 origin changed='' services='' pending='' line status=0
   declare -A wanted=([chat]=0 [p01]=0 [b14]=0 [queue]=0)
   declare -A result=([chat]=SKIP [p01]=SKIP [b14]=SKIP [queue]=SKIP)
@@ -684,10 +875,14 @@ run_deploy() {
     say 'PENDING_MIGRATIONS=UNKNOWN'
   elif [[ -n $pending ]]; then
     say "PENDING_MIGRATIONS=$(printf '%s' "$pending" | paste -sd, -)"
-    printf 'COM2_DEPLOY_MIGRATION_FIRST=YES\n' >&2
-    printf '마이그레이션 먼저: %s\n' "$(printf '%s' "$pending" | paste -sd' ' -)" >&2
-    printf 'COM2_DEPLOY=STOP\nCOM2_DEPLOY_REASON=MIGRATION_FIRST\n' >&2
-    exit 3
+    if (( apply )); then
+      apply_pending_chat_migrations "$pending" || fail CHAT_MIGRATION_APPLY_FAILED
+    else
+      printf 'COM2_DEPLOY_MIGRATION_FIRST=YES\n' >&2
+      printf '마이그레이션 먼저: %s\n' "$(printf '%s' "$pending" | paste -sd' ' -)" >&2
+      printf 'COM2_DEPLOY=STOP\nCOM2_DEPLOY_REASON=MIGRATION_FIRST\n' >&2
+      exit 3
+    fi
   else
     say 'PENDING_MIGRATIONS=none'
   fi
@@ -709,6 +904,8 @@ run_deploy() {
     say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} queue:${result[queue]}"
     return 0
   fi
+
+  ensure_target_units_ready "$services"
 
   if [[ -n $("$git_bin" -C "$ops_checkout" status --porcelain --untracked-files=no) ]]; then
     fail CHECKOUT_DIRTY

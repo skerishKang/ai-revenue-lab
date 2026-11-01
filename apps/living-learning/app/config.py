@@ -12,9 +12,8 @@ class Settings(BaseSettings):
     provider_model: str = "mock/mock-fixture"
     provider_type: str = "mock"
     # Opt-in Padiem AI Core execution. These values are ignored in mock mode.
-    # #5002: the Core model must be named explicitly. The suspended ``b14/auto``
-    # route is not a default: an unset model now fails closed at configuration
-    # time instead of sending a request to a route that always answers 422.
+    # #5002: the Core model must be named explicitly. No automatic route
+    # exists: an unset model fails closed at configuration time.
     padiem_core_b14_base_url: str = ""
     padiem_core_model: str = ""
     padiem_core_timeout_seconds: float = 600.0

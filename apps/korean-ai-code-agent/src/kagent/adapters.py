@@ -16,7 +16,7 @@ class DeterministicBusiness14Preview:
     """
 
     def preview(self, *, task: str, route: str) -> dict[str, object]:
-        canonical_route = "b14/auto" if route in {"business14/auto", "b14/auto"} else route
+        canonical_route = route
         digest = hashlib.sha256(f"{canonical_route}\0{task}".encode("utf-8")).hexdigest()[:12]
         return {
             "adapter": "business14-deterministic-mock",

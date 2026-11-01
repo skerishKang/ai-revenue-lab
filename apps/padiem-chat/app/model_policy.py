@@ -237,7 +237,7 @@ EXECUTABLE_B14_MODEL_IDS = _contract_executable_ids() | frozenset({FREE_B14_MODE
 # The default Chat request uses the Free tier. Each grade resolves its primary
 # through the shared declaration. B14 may automatically
 # try the exact owner-pinned backup for the verified grade on recoverable
-# provider failures; arbitrary `b14/auto` selection remains disabled.
+# provider failures; arbitrary automatic selection remains disabled.
 # Retired Space Bunny metadata is not an executable fallback.
 DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 
@@ -302,7 +302,7 @@ def resolve_tier_policy(
         # Verified global model admins only; entitlement is proven by the
         # Chat route's central admin gate before provider dispatch. The lane
         # follows the shared Control Plane admin route (#5685 interim: the
-        # Free Google route), never routes via b14/auto, and carries the
+        # Free Google route), never routes through any automatic selection, and carries the
         # transport profile that matches the resolved model.
         return ResolvedModelPolicy(
             model_id=ADMIN_B14_MODEL_ID,

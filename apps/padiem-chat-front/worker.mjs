@@ -21,11 +21,17 @@
  */
 
 import { signedRequestHeaders } from "./edge-proof.mjs";
+import { errorPageHtml, wantsHtml } from "./error-copy.mjs";
 
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
 const DEFAULT_TIMEOUT_MS = 8000;
 const DEFAULT_API_READ_TIMEOUT_MS = 30000;
+// Resumable chunked uploads (tus, /api/projects/*/files/tus) hold the request
+// open while a ≤90MB chunk drains to COM2 — a healthy upload must not die on
+// the plain write deadline. PATCH/POST on those paths get their own allowance
+// (TUS_UPLOAD_TIMEOUT_MS); the HEAD offset check keeps the API read deadline.
+const DEFAULT_TUS_TIMEOUT_MS = 120000;
 // The common-login callback is a redirect, but COM2 only answers it after an OAuth
 // exchange, a JWKS verification and an identity RPC. Under the plain read deadline
 // the browser saw upstream_timeout while the host was still finishing the login, so
@@ -67,7 +73,20 @@ function connectionRefused(error) {
     /\b(?:ECONNREFUSED|connect(?:ion)? (?:failed|refused))\b/i.test(String(error?.message || ""));
 }
 
-function requestFailure(status, code) {
+function requestFailure(request, status, code) {
+  // A browser that navigated here must not be shown the JSON body it cannot
+  // read as a page; a machine call keeps the JSON it parses.
+  if (wantsHtml(request)) {
+    return new Response(errorPageHtml(code, new URL(request.url).pathname), {
+      status,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-store, max-age=0",
+        "retry-after": "30",
+        "x-padiem-front": code,
+      },
+    });
+  }
   return new Response(JSON.stringify({ error: { code, message: "요청을 처리하지 못했습니다. 다시 시도해 주세요." } }), {
     status,
     headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
@@ -160,6 +179,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const appsAI = request.method === "POST" && url.pathname === "/api/apps/ai";
     const bookAIRecords = url.pathname === "/api/bookai/records";
     const authCallback = READ_METHODS.has(request.method) && url.pathname === "/auth/shared/callback";
+    const tusWrite = (request.method === "PATCH" || request.method === "POST") &&
+      /^\/api\/projects\/[^/]+\/files\/tus(?:\/|$)/.test(url.pathname);
     const upstreamTimeout = numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
     const healthProbe = url.pathname === "/health" && (request.method === "GET" || request.method === "HEAD");
     const streaming = /text\/event-stream/i.test(request.headers.get("accept") || "") ||
@@ -169,13 +190,14 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
       : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
       : authCallback ? numeric(env.AUTH_CALLBACK_TIMEOUT_MS, DEFAULT_AUTH_CALLBACK_TIMEOUT_MS)
+      : tusWrite ? numeric(env.TUS_UPLOAD_TIMEOUT_MS, DEFAULT_TUS_TIMEOUT_MS)
         : upstreamTimeout;
 
     if (isWrite) {
       const response = await forward(request, target, env, timeoutMs);
       if (response === SIGNING_FAILED) return maintenanceResponse("write_refused");
-      if (response === TIMED_OUT) return requestFailure(504, "upstream_timeout");
-      if (response === TRANSPORT_FAILED) return requestFailure(502, "upstream_transport_failed");
+      if (response === TIMED_OUT) return requestFailure(request, 504, "upstream_timeout");
+      if (response === TRANSPORT_FAILED) return requestFailure(request, 502, "upstream_transport_failed");
       if (response !== CONNECTION_REFUSED) return response;
       markFailure(origin.toString());
       if (canonicalWrites || appsAI || bookAIRecords) return maintenanceResponse("write_com2_canonical_refused");
@@ -191,8 +213,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
             response !== TRANSPORT_FAILED && response.status >= 200 && response.status < 300) return response;
         markFailure(origin.toString());
       } else {
-        if (response === TIMED_OUT) return requestFailure(504, "upstream_timeout");
-        if (response === TRANSPORT_FAILED) return requestFailure(502, "upstream_transport_failed");
+        if (response === TIMED_OUT) return requestFailure(request, 504, "upstream_timeout");
+        if (response === TRANSPORT_FAILED) return requestFailure(request, 502, "upstream_transport_failed");
         if (response !== CONNECTION_REFUSED) return response;
         markFailure(origin.toString());
       }

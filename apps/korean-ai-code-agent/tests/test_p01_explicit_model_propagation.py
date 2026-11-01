@@ -204,7 +204,6 @@ class P01ExplicitModelPropagationTests(SyntheticPlusRouteTestCase):
 
     def test_invalid_explicit_selection_is_refused_before_any_request(self) -> None:
         for bad_id in (
-            "b14/auto",
             "padiem-profile/plus",
             "bad id with spaces",
             "",

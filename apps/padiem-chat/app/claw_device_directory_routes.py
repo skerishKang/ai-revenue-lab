@@ -8,6 +8,7 @@ No pairing, credential rotation, P01 grant or device revocation occurs here.
 """
 from __future__ import annotations
 
+import asyncio
 import inspect
 import json
 from datetime import datetime, timezone
@@ -134,7 +135,7 @@ class BrokerDeviceDirectorySource:
             row_facts = facts
             if self._presence_store is not None:
                 try:
-                    presence_row = self._presence_store.load(device_id)
+                    presence_row = self._presence_store.load(device_id=device_id)
                     if inspect.isawaitable(presence_row):
                         presence_row = await presence_row
                 except Exception:
@@ -259,23 +260,51 @@ async def _read_device_directory(
     broker_owner = connector.account_ref if connector.ready else uid
     broker_workspace = connector.workspace_ref if connector.ready else workspace_id
     source = getattr(request.app.state, "claw_device_directory_source", None)
-    broker_reason = None
-    devices = []
-    if getattr(source, "configured", False) is not True:
-        broker_reason = "device_directory_unconfigured"
-    else:
+
+    async def _broker_read() -> tuple[list[Any], str | None]:
+        if getattr(source, "configured", False) is not True:
+            return [], "device_directory_unconfigured"
         try:
-            devices = source.list_devices(
+            value = source.list_devices(
                 owner_id=broker_owner, workspace_id=broker_workspace,
                 now=datetime.now(timezone.utc),
             )
-            if inspect.isawaitable(devices):
-                devices = await devices
+            if inspect.isawaitable(value):
+                value = await value
         except Exception:
-            devices = None
-        if not isinstance(devices, list) or len(devices) > _DEVICE_LIMIT:
-            broker_reason = "device_directory_read_failed"
-            devices = []
+            return [], "device_directory_read_failed"
+        if not isinstance(value, list) or len(value) > _DEVICE_LIMIT:
+            return [], "device_directory_read_failed"
+        return value, None
+
+    async def _link_rows() -> Any:
+        reader = getattr(
+            getattr(request.app.state, "pc_device_pairing_store", None),
+            "links_for_owner", None,
+        )
+        if not callable(reader):
+            return None
+        try:
+            value = reader(user_id=uid)
+            if inspect.isawaitable(value):
+                value = await value
+        except Exception:
+            return None
+        return value if isinstance(value, list) else None
+
+    # The Broker directory, this account's own link table and the Mesh target
+    # its grant points at answer from three different authorities. Serially
+    # that is one identity round trip each, and the measured Claw load paid
+    # every one of them one after another (#6460 4-1, second round). They do
+    # not depend on each other, so they overlap here; the validation order
+    # below is unchanged.
+    (devices, broker_reason), linked, execution = await asyncio.gather(
+        _broker_read(),
+        _link_rows(),
+        resolve_pc_mesh_target(
+            request, owner_id=uid, workspace_id=workspace_id, connector=connector,
+        ),
+    )
     # Closed second serialization boundary: do not leak unexpected source
     # fields even if a future trusted source extends its internal objects.
     safe: list[dict[str, Any]] = []
@@ -334,18 +363,23 @@ async def _read_device_directory(
     # A Mesh grant proves execution authority; a fresh source=mesh receipt
     # separately proves liveness. Neither a grant alone nor a browser flag
     # can claim ONLINE. Never mint an alias for a raw node reference.
-    execution = await resolve_pc_mesh_target(
-        request, owner_id=uid, workspace_id=workspace_id, connector=connector,
-    )
     mesh_ids = {execution.device_id} if execution.ready else set()
     mesh_source = getattr(request.app.state, "oracle_mesh_return_source", None)
     enumerate_devices = getattr(mesh_source, "command_device_ids", None)
     if connector.ready and callable(enumerate_devices):
-        for device_id in enumerate_devices(account_ref=connector.account_ref)[:_DEVICE_LIMIT]:
-            target = await resolve_pc_mesh_target(
-                request, owner_id=uid, workspace_id=workspace_id, connector=connector,
-                device_id=device_id,
+        # One grant per enumerated device, each its own identity round trip.
+        # They are independent reads, so the whole set resolves together
+        # instead of N sequential waits.
+        targets = await asyncio.gather(*[
+            resolve_pc_mesh_target(
+                request, owner_id=uid, workspace_id=workspace_id,
+                connector=connector, device_id=device_id,
             )
+            for device_id in enumerate_devices(
+                account_ref=connector.account_ref,
+            )[:_DEVICE_LIMIT]
+        ])
+        for target in targets:
             if target.ready:
                 mesh_ids.add(target.device_id)
     for mesh_id in sorted(mesh_ids):
@@ -359,7 +393,7 @@ async def _read_device_directory(
         store = getattr(request.app.state, "mesh_device_presence_store", None)
         if callable(getattr(store, "load", None)):
             try:
-                receipt = store.load(mesh_id)
+                receipt = store.load(device_id=mesh_id)
                 if inspect.isawaitable(receipt):
                     receipt = await receipt
             except Exception:
@@ -384,14 +418,7 @@ async def _read_device_directory(
     # nothing has observed is listed as not usable, never as online. Without
     # these rows a second PC had no selectable device at all, and choosing it
     # answered 403 as if it belonged to somebody else.
-    pairing = getattr(request.app.state, "pc_device_pairing_store", None)
-    links_reader = getattr(pairing, "links_for_owner", None)
-    if callable(links_reader):
-        try:
-            linked = await links_reader(user_id=uid)
-        except Exception:
-            linked = None
-        if isinstance(linked, list):
+    if isinstance(linked, list):
             known = {row["deviceId"] for row in safe}
             for link in linked:
                 if len(safe) >= _DEVICE_LIMIT:
@@ -409,7 +436,7 @@ async def _read_device_directory(
                 )
                 if callable(getattr(presence_store, "load", None)):
                     try:
-                        receipt = presence_store.load(node_ref)
+                        receipt = presence_store.load(device_id=node_ref)
                         if inspect.isawaitable(receipt):
                             receipt = await receipt
                     except Exception:
@@ -464,17 +491,28 @@ async def _read_device_directory(
     drive_store = getattr(request.app.state, "mesh_device_drive_store", None)
     load_drives = getattr(drive_store, "load_drives", None)
     if callable(load_drives):
-        for device in safe:
-            if device["revoked"] or device["expired"]:
-                continue
-            try:
-                snapshot = load_drives(device_id=device["deviceId"])
-                if inspect.isawaitable(snapshot):
-                    snapshot = await snapshot
-                device.update(_drive_snapshot_projection(snapshot, device["deviceId"]))
-            except Exception:
+        pending = [
+            device for device in safe
+            if not device["revoked"] and not device["expired"]
+        ]
+
+        async def _drives(device_id: str) -> Any:
+            value = load_drives(device_id=device_id)
+            return await value if inspect.isawaitable(value) else value
+
+        snapshots = await asyncio.gather(
+            *[_drives(device["deviceId"]) for device in pending],
+            return_exceptions=True,
+        )
+        for device, snapshot in zip(pending, snapshots):
+            if isinstance(snapshot, BaseException):
                 # An unavailable inventory must not hide a usable computer or
                 # invent an empty/current drive list.
+                device["drivesStatus"] = "unavailable"
+                continue
+            try:
+                device.update(_drive_snapshot_projection(snapshot, device["deviceId"]))
+            except Exception:
                 device["drivesStatus"] = "unavailable"
     return _response({
         "ok": True, "available": True, "ownerScoped": True,

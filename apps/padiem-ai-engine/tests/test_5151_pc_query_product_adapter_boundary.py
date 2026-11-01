@@ -120,7 +120,7 @@ def test_engine_binding_registers_the_same_closed_pc_tools() -> None:
         engine_driver.PC_SEARCH_FILES_TOOL_ID,
         engine_driver.PC_SEARCH_CONTENT_TOOL_ID,
         engine_driver.PC_READ_CHUNK_TOOL_ID,
-    } | REMOTE_TOOL_IDS
+    } | REMOTE_TOOL_IDS | product_adapter.PC_BROWSER_TOOL_IDS
     canonical = {entry.canonical_tool_id for entry in binding.registry.entries}
     assert canonical == {
         product_adapter.PC_DRIVES_CANONICAL_TOOL_ID,
@@ -132,7 +132,7 @@ def test_engine_binding_registers_the_same_closed_pc_tools() -> None:
         product_adapter.PC_SEARCH_FILES_CANONICAL_TOOL_ID,
         product_adapter.PC_SEARCH_CONTENT_CANONICAL_TOOL_ID,
         product_adapter.PC_READ_CHUNK_CANONICAL_TOOL_ID,
-    } | set(REMOTE_CANONICAL_IDS.values())
+    } | set(REMOTE_CANONICAL_IDS.values()) | set(product_adapter.BROWSER_CANONICAL_IDS.values())
     authority = binding.authorities[product_adapter.PC_QUERY_AGENT_ID]
     assert authority.authorization.granted_auth_scopes == (
         product_adapter.PC_QUERY_SCOPE,
@@ -144,7 +144,7 @@ def test_engine_binding_registers_the_same_closed_pc_tools() -> None:
         product_adapter.PC_SEARCH_FILES_SCOPE,
         product_adapter.PC_SEARCH_CONTENT_SCOPE,
         product_adapter.PC_READ_CHUNK_SCOPE,
-    ) + tuple(sorted(REMOTE_TOOL_IDS))
+    ) + tuple(sorted(REMOTE_TOOL_IDS | product_adapter.PC_BROWSER_TOOL_IDS))
 
 
 def test_step_policy_uses_the_trusted_plan_target_and_refuses_a_model_device() -> None:

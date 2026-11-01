@@ -232,6 +232,22 @@ def build_chat_pc_files_write_agent_plan() -> dict[str, Any]:
     }
 
 
+def build_chat_pc_browser_agent_plan() -> dict[str, Any]:
+    """The dedicated browser lane; no folder or file capability is added."""
+    return {
+        "agent_id": CHAT_PC_QUERY_AGENT_ID,
+        "steps": [
+            {"step_id": op, "objective": objective, "tool_id": "claw.pc." + op}
+            for op, objective in (
+                ("browser_open", "Open the user's requested public page on the verified PC"),
+                ("browser_read", "Read the observed page as reference material"),
+                ("browser_screenshot", "Capture the observed page"),
+                ("browser_act", "Perform a grounded action on the observed page"),
+            )
+        ],
+    }
+
+
 # #5573 (3-B-2): the closed PC tool set offered to a model on the streaming
 # lane. These names mirror the canonical Engine plan keys; the model's
 # arguments carry no authority, and the lane re-verifies the PC on entry.
@@ -255,6 +271,14 @@ CHAT_PC_TOOL_DEFINITIONS: tuple[ToolDefinition, ...] = (
         description=(
             "Find, list or read text files on the user's verified PC when the "
             "user asks about a file's content."
+        ),
+    ),
+    ToolDefinition(
+        name="browser",
+        description=(
+            "Open, read, capture or interact with a public webpage in the user's "
+            "verified PC work browser. Login, payment, posting and sending require "
+            "a conversational confirmation before execution."
         ),
     ),
 )
@@ -303,6 +327,8 @@ def chat_pc_plan_for_tool(tool_name: str) -> dict[str, Any] | None:
         return build_chat_pc_files_agent_plan(list_only=False)
     if tool_name == "files_write":
         return build_chat_pc_files_write_agent_plan()
+    if tool_name == "browser":
+        return build_chat_pc_browser_agent_plan()
     return None
 
 
@@ -352,6 +378,8 @@ def _tool_arguments_for_plan(
         key = "files_list"
     elif "claw.pc.write_file" in tool_ids:
         key = "files_write"
+    elif "claw.pc.browser_open" in tool_ids:
+        key = "browser"
     else:
         return None
     return {key: {"device_id": device_id}}
@@ -576,10 +604,15 @@ async def resolve_chat_pc_stream_context(
         # The existing command grant allows drive inventory; file scopes also
         # require the same approved root that the signed file API resolves.
         from .oracle_mesh_read_return_routes import _engine_pc_files_target
-        target, error = await _engine_pc_files_target(
-            request, session=session, selected_device_id=device_id, user_id=uid,
-        )
-        scopes = ["query_drives"]
+        scopes = ["query_drives", "browser"]
+        try:
+            target, error = await _engine_pc_files_target(
+                request, session=session, selected_device_id=device_id, user_id=uid,
+            )
+        except Exception:
+            # File-root availability cannot withhold the independent browser
+            # lane after the device's existing command grant was verified.
+            target, error = None, "unavailable"
         if error is None and target is not None:
             scopes.extend(["files_list", "files"])
             # The owner asked to change something: the same turn may write,
@@ -965,12 +998,16 @@ async def _execute_chat_pc_files_lane(
         isinstance(step, Mapping) and step.get("tool_id") == CHAT_PC_QUERY_TOOL_ID
         for step in agent_plan.get("steps", ())
     )
+    browser_only = any(
+        isinstance(step, Mapping) and step.get("tool_id") == "claw.pc.browser_open"
+        for step in agent_plan.get("steps", ())
+    )
     try:
         staged_conversation_id = await store.record_chat_pc_drive_run(
             user_id=uid, run_id=lane_run_id, workspace_id=workspace_id,
             user_text=user_text, conversation_id=conversation_id,
-            action="pc_drive_query" if drive_only else "pc_files_query",
-            title_prefix="PC 드라이브 조회: " if drive_only else "PC 파일 탐색: ",
+            action="pc_drive_query" if drive_only else "pc_browser_query" if browser_only else "pc_files_query",
+            title_prefix="PC 드라이브 조회: " if drive_only else "PC 브라우저: " if browser_only else "PC 파일 탐색: ",
         )
     except HistoryForbidden as exc:
         raise ChatPCDriveError(
@@ -1172,6 +1209,7 @@ __all__ = [
     "CHAT_PC_TOOL_DEFINITIONS",
     "ChatPCDriveError",
     "build_chat_pc_agent_plan",
+    "build_chat_pc_browser_agent_plan",
     "build_chat_pc_files_agent_plan",
     "chat_pc_plan_for_tool",
     "chat_pc_route_declares_tools",

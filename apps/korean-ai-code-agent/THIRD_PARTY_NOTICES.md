@@ -36,3 +36,19 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Playwright MCP (PC browser use, #3782)
+
+The PC browser lane runs Microsoft's Playwright MCP server as a private stdio
+child process (`kagent.pc_browser_tools`). It is not vendored, bundled or
+imported: an exact pinned version (`@playwright/mcp@0.0.83`) is started with
+`npx` when, and only when, a browser step runs, in a dedicated work profile.
+
+- Upstream repository: `https://github.com/microsoft/playwright-mcp`
+- Upstream license: Apache License 2.0
+- Also used transitively: Playwright (`https://github.com/microsoft/playwright`),
+  Apache License 2.0
+- License text: `https://www.apache.org/licenses/LICENSE-2.0`
+
+The user-facing notice for this dependency is also published in
+`apps/padiem-chat/static/third-party-licenses.html`.

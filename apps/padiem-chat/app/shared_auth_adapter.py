@@ -68,12 +68,21 @@ class SharedChatAuth:
                     if not isinstance(user_id, str) or not user_id:
                         raise ValueError('missing_product_link')
                     return user_id, expires
+                async def load_link():
+                    # A session key is new on every login, so the authority was
+                    # re-asked which account this subject is even though the link
+                    # it answers with had not changed.
+                    if cache is None:
+                        return await load_mapping()
+                    user_id = await cache.get_or_load_account_link(account_id, load_mapping)
+                    return user_id, expires
                 session_id = verified.get('sessionId')
                 if cache is not None and isinstance(session_id, str) and session_id:
-                    return await cache.get_or_load('shared', account_id, session_id, load_mapping)
+                    return await cache.get_or_load('shared', account_id, session_id, load_link)
                 # Disabled caching and verifier contracts without a signed
-                # session ID must perform a fresh authority lookup every time.
-                return (await load_mapping())[0]
+                # session ID fall back to the subject's own cache, or to a fresh
+                # authority lookup when even that is switched off.
+                return (await load_link())[0]
             cached = self._mapping.get(account_id)
             if cached and cached[1] > self._clock():
                 return cached[0]

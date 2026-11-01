@@ -189,12 +189,24 @@ def test_the_us_uk_frame_keeps_the_two_column_shape_and_the_lift() -> None:
 
 def test_no_dead_control_came_over_from_the_prototype() -> None:
     """The design's nav row and rail point at screens this app does not have. A control that
-    leads nowhere is worse than no control."""
+    leads nowhere is worse than no control.
+
+    2026-11-01 order: the header now carries the design's nav row and a search field —
+    allowed only because each is wired to a screen this app actually has. The nav items
+    may only target home, the tools section or the three tools (checked against the
+    harness-verified data-nav set), and the search field is the wired tool finder
+    (#councilSearchForm → wireSearch), not the prototype's decorative global search.
+    The decorative screens the design only pretends at stay banned, as does any
+    second, unwired search surface (the old council-search class name)."""
     for dead in ("활용 사례", "공지사항", "내 서랍", "템플릿 라이브러리", "전체 도구 보기",
                  "council-search", "council-rail", "pa-nav", "pa-rail"):
         assert dead not in HTML, f"{dead} arrived without a screen behind it"
-    assert '<input' not in HTML.split("</header>")[0].replace('name="identifier"', "") \
-        or "search" not in HTML, "no search field may be painted without a search behind it"
+    header = HTML.split("</header>")[0].replace('name="identifier"', "")
+    if "<input" in header:
+        # A header search field exists — it must be the wired one, nothing else.
+        assert 'id="councilSearchForm"' in header, "an unwired header input showed up"
+        assert 'role="search"' in header, "the search field lost its search role"
+        assert "wireSearch" in JS and "bestToolFor" in JS, "the search field has no logic"
 
 
 def test_the_app_still_owns_no_account_state_of_its_own() -> None:

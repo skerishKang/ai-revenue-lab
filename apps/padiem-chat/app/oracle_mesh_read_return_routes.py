@@ -2328,18 +2328,18 @@ def _verified_result_text(
 def _verified_read_result_text(
     dispatch: dict[str, Any], wire: dict[str, Any],
 ) -> str | None:
-    """Verify a read body against its lane's server-computed bound.
+    """Verify a read body by its own bytes and digest (#5882 A).
 
-    The PC-files read lane is limited to 20 MB; other read consumers keep the
-    shared 6 MB envelope. This is the result-store enforcement, independent of
-    the executor's own bound.
+    The PC read lane no longer has a product cap of its own: a 20 MB answer
+    bound refused a body the connector had already produced and the digest had
+    already proved, while the reader's real limits are the connector's read
+    envelope (what it is asked for) and the store. A file larger than one
+    answer is paged by the Engine from its first range, not rejected here.
+    Other read consumers keep the shared 6 MB envelope unchanged.
     """
-    limit = (
-        PC_FILES_READ_MAX_BYTES
-        if dispatch.get("root_ref") == _PC_FILES_READ_ROOT_REF
-        else _MAX_FILE_TEXT_BYTES
-    )
-    return _verified_result_text(dispatch, wire, max_bytes=limit)
+    if dispatch.get("root_ref") == _PC_FILES_READ_ROOT_REF:
+        return _verified_result_text(dispatch, wire, max_bytes=None)
+    return _verified_result_text(dispatch, wire, max_bytes=_MAX_FILE_TEXT_BYTES)
 
 
 def _command_header(dispatch: dict[str, Any], wire: dict[str, Any]) -> list[str]:
@@ -3447,6 +3447,12 @@ PC_FILES_MAX_PATH_CHARS = 2048
 #: 10 ms CPU budget. The old silent `-First 200` cut had no continuation; this
 #: constant has one.
 PC_FILES_LIST_PAGE_SIZE = 200
+#: The read bound this deployment asks an installed connector for. It is the
+#: connector's own read envelope (``MAX_READ_BYTES_ENVELOPE`` in kagent's
+#: oracle-mesh executor), not a product cap on a file's size: a file larger than
+#: this is answered with its first range and paged through read_file_chunk
+#: (#5882 A). Raising or removing it needs a new connector version, because an
+#: installed executor refuses a bound above its envelope.
 PC_FILES_READ_MAX_BYTES = 20_000_000
 PC_FILES_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 #: Stable per-call reference suffix the Engine uses for read_file. The poll
@@ -4638,8 +4644,14 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         return _error(404, "oracle_mesh_run_unavailable")
     if scope_claim is not None and kind == "read" and "read" not in scope_claim["ops"]:
         return _error(403, "pc_scope_denied")
-    if new_mode and dispatch.get("device_id") != device_id:
-        return _error(404, "oracle_mesh_run_unavailable")
+    if new_mode:
+        # The public row carries no device binding; the owner-scoped private
+        # read is where it lives.
+        private_reader = getattr(history_store, "get_pc_output_dispatch_for_owner", None)
+        private = await private_reader(user_id=uid, dispatch_id=dispatch_id) if callable(private_reader) else None
+        bound = private.get("device_id") if isinstance(private, dict) else dispatch.get("device_id")
+        if bound != device_id:
+            return _error(404, "oracle_mesh_run_unavailable")
     state = dispatch.get("state")
     if state not in {"pending", "received", "store_failed", "done", "failed"}:
         return _error(503, "oracle_mesh_dispatch_unavailable")

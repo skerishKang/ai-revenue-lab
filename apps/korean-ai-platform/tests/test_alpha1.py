@@ -318,8 +318,9 @@ class TestManualRoute:
 
 class TestAutoRoute:
 
-    def test_auto_route_id_is_rejected(self, client, monkeypatch):
-        """B7: b14/auto is retired; the string is refused before any routing."""
+    def test_auto_route_id_is_an_unknown_model(self, client, monkeypatch):
+        """B7: the retired id has no special case anywhere — without a provider
+        key it is refused like any unknown model."""
         monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
         monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
         resp = client.post(
@@ -330,16 +331,16 @@ class TestAutoRoute:
                 "business14": {"required_capabilities": ["chat"]},
             },
         )
-        assert resp.status_code == 422
-        assert resp.json()["error"]["code"] == "invalid_body"
+        assert resp.status_code == 401
+        assert resp.json()["error"]["code"] == "missing_provider_key"
 
-    def test_resolve_endpoint_rejects_retired_auto_id(self, client):
+    def test_resolve_endpoint_treats_retired_auto_id_as_unknown(self, client):
         resp = client.post(
             "/api/pilot/router/resolve",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
         )
-        assert resp.status_code == 422
-        assert resp.json()["error"]["code"] == "invalid_body"
+        assert resp.status_code == 400
+        assert resp.json()["error"]["code"] == "unsupported_model"
 
     def test_resolve_endpoint_still_resolves_catalog_models(self, client):
         resp = client.post(
@@ -413,8 +414,8 @@ class TestFallbackLogic:
 
 class TestFallbackExecution:
     def test_retired_auto_chain_cannot_walk_anymore(self, client):
-        """B7: the fixed chain is gone; the retired id is refused outright."""
-        from app.pilot.errors import UpstreamRateLimited  # noqa: F401  (contract kept by tier-roster suites)
+        """B7: the fixed chain is gone; the retired id without a provider key
+        is refused like any unknown model."""
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={
@@ -423,8 +424,8 @@ class TestFallbackExecution:
                 "business14": {"max_attempts": 3},
             },
         )
-        assert resp.status_code == 422
-        assert resp.json()["error"]["code"] == "invalid_body"
+        assert resp.status_code == 401
+        assert resp.json()["error"]["code"] == "missing_provider_key"
 
 
 class TestLiveFailClosed:
@@ -503,16 +504,17 @@ class TestMockMode:
         assert data["business14"]["route_evidence_status"] == "mock_no_upstream_call"
         assert data["choices"][0]["message"]["content"]
 
-    def test_mock_mode_rejects_retired_auto_model(self, client, monkeypatch):
-        """B7: mock mode answers the retired id with the same 422 refusal."""
+    def test_mock_mode_treats_retired_auto_model_as_unknown(self, client, monkeypatch):
+        """B7: mock mode refuses the retired id like any unknown model (no
+        provider key to name a route)."""
         monkeypatch.setenv("PADIEM_B14_CREDENTIAL_01", "sk-chain-unit-agnes-0123456789")
         monkeypatch.delenv("PADIEM_B14_CREDENTIAL_12", raising=False)
         resp = client.post(
             "/api/pilot/v1/chat/completions",
             json={"model": "b14/auto", "messages": [{"role": "user", "content": "hi"}]},
         )
-        assert resp.status_code == 422
-        assert resp.json()["error"]["code"] == "invalid_body"
+        assert resp.status_code == 401
+        assert resp.json()["error"]["code"] == "missing_provider_key"
 
     def test_mock_mode_zero_upstream(self, client):
         """Mock mode must never reach an upstream transport."""
@@ -1249,7 +1251,8 @@ class TestFallbackFailClosed:
 
 class TestFallbackActualEvidence:
     def test_retired_auto_chain_is_refused_before_any_dispatch(self, client):
-        """B7: the auto chain (and its two-model walk) is gone; the id is refused."""
+        """B7: the auto chain (and its two-model walk) is gone; the retired id
+        without a provider key is refused like any unknown model."""
         _set_live()
         original = plat.call_platform_chat_completions
         calls = []
@@ -1271,8 +1274,8 @@ class TestFallbackActualEvidence:
         finally:
             plat.call_platform_chat_completions = original
 
-        assert resp.status_code == 422
-        assert resp.json()["error"]["code"] == "invalid_body"
+        assert resp.status_code == 401
+        assert resp.json()["error"]["code"] == "missing_provider_key"
         assert calls == []
 
 

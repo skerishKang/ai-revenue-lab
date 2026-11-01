@@ -45,6 +45,85 @@ async def _r2_call(bucket, method: str, *args, **kwargs):
     return result
 
 
+class OriginalStorageUnavailable(RuntimeError):
+    """The original-bytes bucket is not bound; the row cannot keep its original."""
+
+
+async def save_binary_project_file(request: Request, *, uid: str, pid: str, name: str, media_type: str, data):
+    """Store one binary project file through the unchanged save flow.
+
+    *data* is a seekable binary file (the direct route's spool or the tus
+    completion file); the helper seeks as needed. Shared by both entry points so
+    the tus hand-off keeps the same parsing authority, row creation and
+    original-bytes object storage (docs/research/LARGE_UPLOAD_1GB_DESIGN_20261101.md
+    A안 1단계). Raises the validation errors the collection route already maps
+    (DocumentValidationError · DocumentNormalizationError · ValueError ·
+    ProjectFileLimitError) and OriginalStorageUnavailable for storage outages.
+    """
+    store: ProjectFileStore = request.app.state.project_file_store
+    image_body = None
+    if media_type in IMAGE_PROJECT_FILE_MEDIA:
+        # #5728 — an image is preserved byte-for-byte: no document
+        # parser runs, the stored record keeps its original
+        # media_type and an empty text body, and the owner re-reads
+        # the exact original through the /original route. The
+        # declared type must still match the actual bytes — the
+        # same honesty the document path enforces through its
+        # parser's format checks.
+        image_body = data.read()
+        if not image_media_type_matches(media_type, image_body[:12]):
+            raise DocumentValidationError("이미지 형식이 일치하지 않습니다.")
+        created = await store.create_file(uid, pid, name, media_type, "")
+    else:
+        # Local Core PDF parsing can use the seekable file directly.
+        # The Worker isolated-parser wire contract still requires bytes.
+        source = data if media_type == "application/pdf" and not production_worker_runtime() else data.read()
+        parsed = await parse_binary_document_via_authority_async(
+            name=name, media_type=media_type, payload=source,
+        )
+        created = await store.create_file(
+            uid, pid, parsed.name, _extracted_media_type(parsed.media_type), parsed.text,
+        )
+    workspace_store = getattr(request.app.state, "workspace_document_store", None)
+    bucket = getattr(workspace_store, "r2_bucket", None)
+    if bucket is None:
+        await store.delete_file(uid, pid, created.id)
+        raise OriginalStorageUnavailable()
+    try:
+        if image_body is not None:
+            # The image bytes were already read whole for the
+            # magic check; storing them avoids a second pass.
+            await _r2_call(
+                bucket, "put", _project_original_object_key(uid, pid, created.id),
+                image_body, httpMetadata={"contentType": media_type},
+            )
+        else:
+            data.seek(0)
+            # #6579 step 2: a 1 GiB original must not become one `bytes` object.
+            # A bound store that offers a streaming write gets the file itself
+            # (moved when it shares the filesystem, bounded blocks otherwise).
+            # The Cloudflare binding is bytes-only today, so it keeps the exact
+            # contract this route already had — the original is never dropped or
+            # half-written either way.
+            key = _project_original_object_key(uid, pid, created.id)
+            write_stream = getattr(bucket, "put_stream", None)
+            if callable(write_stream):
+                written = write_stream(key, data, {"contentType": media_type})
+                if inspect.isawaitable(written):
+                    await written
+            else:
+                # R2 Python binding receives bytes; avoid a second parse-time
+                # copy for PDFs while preserving the existing storage contract.
+                await _r2_call(
+                    bucket, "put", key, data.read(),
+                    httpMetadata={"contentType": media_type},
+                )
+    except Exception:
+        await store.delete_file(uid, pid, created.id)
+        raise OriginalStorageUnavailable() from None
+    return created
+
+
 #: #5882 PR-E — the request body bound follows the row's own ceiling instead of
 #: the former arbitrary 160,000 bytes. The body carries exactly one row's text in
 #: JSON, so it is the D1 per-row byte limit (project_files.PROJECT_FILE_MAX_TEXT_BYTES
@@ -216,56 +295,9 @@ async def project_files_collection(request: Request) -> JSONResponse:
         try:
             name = unquote(encoded_name, encoding="utf-8", errors="strict")
             async with open_bounded_spooled_request(request, max_bytes=MAX_BINARY_DOCUMENT_BYTES) as spool:
-                image_body = None
-                if media_type in IMAGE_PROJECT_FILE_MEDIA:
-                    # #5728 — an image is preserved byte-for-byte: no document
-                    # parser runs, the stored record keeps its original
-                    # media_type and an empty text body, and the owner re-reads
-                    # the exact original through the /original route. The
-                    # declared type must still match the actual bytes — the
-                    # same honesty the document path enforces through its
-                    # parser's format checks.
-                    image_body = spool.read()
-                    if not image_media_type_matches(media_type, image_body[:12]):
-                        return JSONResponse(
-                            {"error": {"code": "invalid_document", "message": "이미지 형식이 일치하지 않습니다."}},
-                            status_code=422,
-                        )
-                    created = await store.create_file(uid, pid, name, media_type, "")
-                else:
-                    # Local Core PDF parsing can use the seekable spool directly.
-                    # The Worker isolated-parser wire contract still requires bytes.
-                    source = spool if media_type == "application/pdf" and not production_worker_runtime() else spool.read()
-                    parsed = await parse_binary_document_via_authority_async(
-                        name=name, media_type=media_type, payload=source,
-                    )
-                    created = await store.create_file(
-                        uid, pid, parsed.name, _extracted_media_type(parsed.media_type), parsed.text,
-                    )
-                workspace_store = getattr(request.app.state, "workspace_document_store", None)
-                bucket = getattr(workspace_store, "r2_bucket", None)
-                if bucket is None:
-                    await store.delete_file(uid, pid, created.id)
-                    return _unavailable()
-                try:
-                    if image_body is not None:
-                        # The image bytes were already read whole for the
-                        # magic check; storing them avoids a second spool pass.
-                        await _r2_call(
-                            bucket, "put", _project_original_object_key(uid, pid, created.id),
-                            image_body, httpMetadata={"contentType": media_type},
-                        )
-                    else:
-                        spool.seek(0)
-                        # R2 Python binding receives bytes; avoid a second parse-time
-                        # copy for PDFs while preserving the existing storage contract.
-                        await _r2_call(
-                            bucket, "put", _project_original_object_key(uid, pid, created.id),
-                            spool.read(), httpMetadata={"contentType": media_type},
-                        )
-                except Exception:
-                    await store.delete_file(uid, pid, created.id)
-                    return _unavailable()
+                created = await save_binary_project_file(
+                    request, uid=uid, pid=pid, name=name, media_type=media_type, data=spool,
+                )
                 return JSONResponse({"file": created.public_dict()}, status_code=201)
         except RequestBodyTooLarge:
             return JSONResponse({"error": {"code": "invalid_document"}}, status_code=413)

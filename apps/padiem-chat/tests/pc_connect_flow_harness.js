@@ -4,7 +4,8 @@
 // account (zero PCs) gets one modal whose single press downloads the connect
 // program and whose wait closes itself when the server sees the PC; an account
 // that already has a PC never sees the modal, only one line; and the popover
-// carries names and states and nothing else.
+// carries names, states and the one action into the device manager's drive
+// list — never an identity, drive or folder field.
 const fs = require("node:fs");
 const vm = require("node:vm");
 
@@ -83,7 +84,11 @@ function makeDom(responses, options = {}) {
   const starterInner = new El("span");
   starterInner.append(strong, small);
   starter.append(starterInner);
-  body.append(chip, starter);
+  const managerToggle = new El("button");
+  managerToggle.id = "clawDeviceManagerToggle";
+  managerToggle.clicks = 0;
+  managerToggle.addEventListener("click", () => { managerToggle.clicks += 1; });
+  body.append(chip, starter, managerToggle);
   const root = new El("html");
   root.lang = options.lang || "ko";
   const calls = [];
@@ -168,8 +173,8 @@ function makeDom(responses, options = {}) {
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
   vm.runInContext(script, sandbox);
-  return { body, chip, starter, calls, downloads, store, events, sandbox, window: windowObj,
-    blobs: globalThis.blobs };
+  return { body, chip, starter, managerToggle, calls, downloads, store, events, sandbox,
+    window: windowObj, blobs: globalThis.blobs };
 }
 
 const LINK = {
@@ -413,6 +418,14 @@ async function main() {
     && popover.allText().includes("집 PC") && popover.allText().includes("연결됨")
     && popover.allText().includes("회사 노트북") && popover.allText().includes("멈춤"),
     popover ? popover.allText() : "no popover");
+  const driveEntry = popover.querySelector(".pc-connect-popover-drives");
+  check("the popover carries the one action into the drive list",
+    driveEntry && driveEntry.hidden === false && driveEntry.allText().includes("드라이브 보기"),
+    driveEntry ? JSON.stringify({ text: driveEntry.allText(), hidden: driveEntry.hidden }) : "no entry");
+  if (driveEntry) driveEntry.click();
+  check("that action opens the existing device manager and closes the popover",
+    listed.managerToggle.clicks === 1 && popover.hidden === true,
+    JSON.stringify({ clicks: listed.managerToggle.clicks, hidden: popover.hidden }));
   check("the popover carries no identity, drive or folder field",
     !popover.allText().includes("node/meshdomain")
     && !popover.allText().includes("C:/Users")

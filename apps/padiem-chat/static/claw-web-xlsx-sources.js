@@ -17,7 +17,6 @@
   // Same split point as the file-lane attachment lane: above it the browser
   // uploads to COM2 directly and this page registers only the resulting id.
   const INLINE_MAX_BYTES = 10_000_000;
-  const UPLOAD_TICKET = ENDPOINT + "/upload-ticket";
   const FILE_ID = /^file_[a-f0-9]{32}$/;
   const SELECTIONS = "/api/claw/office/web-selections";
   const SELECTION_ID = /^sel_[a-f0-9]{32}$/;
@@ -47,6 +46,91 @@
 
   function shouldUseFileLane(size) {
     return Number.isSafeInteger(size) && size > INLINE_MAX_BYTES && size <= MAX_BYTES;
+  }
+
+  // #6460 3장: the quote form joins the "from my PC" menu chain. The shared
+  // part (static/pc-file-exchange.js, #6012) is only ever consumed here — it
+  // has no extension filter of its own, so this screen refuses anything that
+  // is not an Excel form before a single byte moves.
+  const PC_EXCHANGE_SCRIPT = "./pc-file-exchange.js";
+  const PC_EXCHANGE_CSS = "./pc-file-exchange.css";
+  const PC_PICK_RE = /\.(?:xlsx|xls|xlsm)$/i;
+  const PC_PAIRINGS = "/api/pc/pairings";
+  const PC_FILE_FETCH = "/api/pc/file";
+  const XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  const PC_COPY = {
+    pick: "내 PC에서 가져오기",
+    connect: "이 PC 연결",
+    importing: "가져오는 중…",
+    noFile: "PC에서 가져온 파일을 읽지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    notExcel: "엑셀 양식(.xlsx·.xls·.xlsm) 파일만 가져올 수 있습니다.",
+    // PDF·MD와 같은 문구 키: 공용 부품의 첫 마디(pc-exchange-no-pc)를 그대로 쓴다.
+    noPcFallback: "아직 연결된 PC가 없어요. PC를 연결한 뒤 다시 시도해 주세요.",
+  };
+
+  function pcExchangeCopy(key, fallback) {
+    const locale = window.__padiemLocale;
+    if (locale && typeof locale.text === "function") {
+      try {
+        const value = locale.text(key);
+        if (value && value !== key) return value;
+      } catch (_) {}
+    }
+    return fallback;
+  }
+
+  let pcExchangeLoading = null;
+  function loadPcExchange() {
+    if (window.PadiemPcFileExchange) return Promise.resolve(window.PadiemPcFileExchange);
+    if (pcExchangeLoading) return pcExchangeLoading;
+    pcExchangeLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      if (head && !document.querySelector('link[href="' + PC_EXCHANGE_CSS + '"]')) {
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = PC_EXCHANGE_CSS;
+        head.appendChild(css);
+      }
+      const script = document.createElement("script");
+      script.src = PC_EXCHANGE_SCRIPT;
+      script.addEventListener("load", () => {
+        if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
+        else reject(new Error("pc_exchange_unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("pc_exchange_unavailable")), { once: true });
+      head.appendChild(script);
+    });
+    return pcExchangeLoading;
+  }
+
+  async function pcLinked() {
+    // PDF·MD와 같은 판정: 서버의 pairings 기록만이 연결을 말할 수 있다.
+    if (window.PadiemAuthGate?.authenticated() === false) return null;
+    try {
+      const response = await fetch(PC_PAIRINGS, {
+        credentials: "same-origin", cache: "no-store", headers: { Accept: "application/json" },
+      });
+      if (!response.ok) return null;
+      const body = await response.json().catch(() => null);
+      const links = body && Array.isArray(body.links) ? body.links : [];
+      return links.some((link) => link && link.state === "active");
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function openPcConnect() {
+    // The Connectors surface owns the computer card: no second pairing screen.
+    const flow = window.PadiemPcConnectFlow;
+    if (flow && typeof flow.open === "function") { void flow.open(); return; }
+    const opener = document.getElementById("connectorsNavButton");
+    if (!opener) return;
+    opener.click();
+    const card = document.getElementById("connectorComputerCard");
+    if (!card) return;
+    if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+    if (typeof card.focus === "function") card.focus({ preventScroll: true });
+    if (typeof card.scrollIntoView === "function") card.scrollIntoView({ block: "nearest" });
   }
 
   function validateSelection(body, source) {
@@ -219,6 +303,10 @@
     const requestStart = $("clawWebXlsxP01Start");
     const approve = $("clawWebXlsxP01Approve");
     const deny = $("clawWebXlsxP01Deny");
+    // #6460 3장: the PC-import button and its connection note are optional
+    // nodes — an older cached page must never lose the direct picker over them.
+    const pcPick = $("clawWebXlsxPcPick");
+    const pcNote = $("clawWebXlsxPcNote");
     const workcopyLink = root.createElement("a");
     workcopyLink.hidden = true;
     workcopyLink.textContent = "승인된 작업 사본 다운로드 (XLSX)";
@@ -1095,6 +1183,72 @@
       }
     }
 
+    // #6460 3장: a form picked on the owner's PC rides the SAME save() flow as
+    // a browser pick — one validation, one size ceiling, one tus/inline split
+    // (static/tus-upload.js since #6584), one web-source ledger. No second
+    // upload route exists for this screen.
+    async function importFromPc(picked) {
+      if (!picked || !picked.fileId) return;
+      const name = typeof picked.name === "string" ? picked.name : "";
+      if (!PC_PICK_RE.test(name)) {
+        report(PC_COPY.notExcel);
+        return;
+      }
+      report(name + " " + PC_COPY.importing);
+      let blob;
+      try {
+        const response = await fetch(
+          PC_FILE_FETCH + "?dispatch_id=" + encodeURIComponent(picked.fileId),
+          { credentials: "same-origin", cache: "no-store" },
+        );
+        if (!response.ok) throw new Error("pc_file_" + response.status);
+        blob = await response.blob();
+      } catch (_) {
+        report(PC_COPY.noFile);
+        return;
+      }
+      await save(new window.File([blob], name, { type: XLSX_MEDIA_TYPE }));
+    }
+
+    function wirePcImport() {
+      if (!pcPick || !pcNote) return;
+      const pcText = root.createElement("span");
+      pcText.textContent = pcExchangeCopy("pc-exchange-no-pc", PC_COPY.noPcFallback) + " ";
+      const connect = root.createElement("button");
+      connect.type = "button";
+      connect.textContent = PC_COPY.connect;
+      connect.addEventListener("click", () => openPcConnect());
+      pcPick.addEventListener("click", async () => {
+        let component = null;
+        try {
+          component = await loadPcExchange();
+        } catch (_) {
+          component = null;
+        }
+        if (!component || typeof component.open !== "function") {
+          report(PC_COPY.noFile);
+          return;
+        }
+        component.open({
+          mode: "import",
+          onSelect: (picked) => { void importFromPc(picked); },
+        });
+      });
+      // Only the server's pairing answer may reveal or hide the button: an
+      // unlinked owner keeps the direct picker and gets the same words the
+      // shared part says everywhere else, never a guess.
+      void pcLinked().then((linked) => {
+        if (linked === true) {
+          pcPick.hidden = false;
+          pcNote.hidden = true;
+        } else if (linked === false) {
+          pcPick.hidden = true;
+          pcNote.replaceChildren(pcText, connect);
+          pcNote.hidden = false;
+        }
+      });
+    }
+
     async function reload(force = false) {
       // See selectSource: `force` keeps the caller-owned page latch held.
       if (busy && !force) return;
@@ -1132,38 +1286,35 @@
       }
     }
 
-    // Large originals go browser -> COM2 file lane with a ticket; only the
-    // resulting file id reaches this deployment, so no 1 GiB body is proxied.
-    async function saveOriginal(file) {
-      const ticket = await jsonRequest(UPLOAD_TICKET, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ size_bytes: file.size }),
-      });
-      const target = new URL(ticket.upload_url);
-      if (target.protocol !== "https:" || target.username || target.password
-          || target.search || target.hash || target.pathname !== "/files") {
-        throw new Error("파일 서버 주소를 확인하지 못했습니다.");
+    // 1GB 통일 3단계 — 10MB 초과 원본은 공용 조각 업로드(tus 1.0.0)로 이 서버에
+    // 바로 보관한다. 100MB 요청 한도에 걸리지 않고, 진행률·이어 올리기·한국어
+    // 안내는 공용 화면 모듈(static/tus-upload.js)이 맡는다. 완료본 응답 모양은
+    // 기존 웹 XLSX 201 과 같다.
+    async function saveResumable(file) {
+      if (!window.PadiemTusUpload) {
+        throw safeUiError("업로드 준비를 마치지 못했어요. 페이지를 새로 고친 뒤 다시 시도해 주세요.");
       }
-      target.searchParams.set("filename", file.name);
-      const response = await fetch(target.href, {
-        method: "POST", credentials: "include", cache: "no-store",
-        headers: ticket.headers, body: file,
+      const body = await window.PadiemTusUpload.upload({
+        file,
+        endpoint: ENDPOINT + "/tus",
+        mediaType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        onState: (state) => {
+          if (state.phase === "finalizing") report("원본 저장을 마무리하고 있습니다.");
+          else if (state.phase !== "discovering") {
+            report((state.phase === "resuming" ? "이어서 올리는 중입니다 — " : "원본을 올리는 중입니다 — ") + state.percent + "%");
+          }
+        },
       });
-      const stored = await response.json().catch(() => null);
-      if (!response.ok || !stored || stored.ok !== true
-          || typeof stored.file_id !== "string" || !FILE_ID.test(stored.file_id)
-          || stored.size_bytes !== file.size) {
-        throw new Error("파일 서버에 원본을 저장하지 못했습니다. 다시 시도해 주세요.");
-      }
-      return jsonRequest(ENDPOINT + "/" + stored.file_id + "/register", {
-        method: "POST", headers: { "Accept": "application/json" },
-      });
+      if (!body || body.ok !== true) throw safeUiError("웹 원본 저장 결과를 확인할 수 없습니다.");
+      return body;
     }
 
-    async function save() {
+    async function save(fileOverride) {
       if (busy) return;
-      const file = input.files?.[0];
+      // fileOverride: a form fetched from the owner's PC (#6460 3장) rides the
+      // exact same validation, size ceilings and tus/inline split as a browser
+      // pick — there is no second upload path for this screen.
+      const file = fileOverride || input.files?.[0];
       if (!file || !file.name.toLowerCase().endsWith(".xlsx")) {
         report("XLSX 파일 하나를 먼저 선택해 주세요.");
         return;
@@ -1176,7 +1327,7 @@
       report("웹 저장소에 선택한 원본을 보관하고 있습니다.");
       try {
         const body = shouldUseFileLane(file.size)
-          ? await saveOriginal(file)
+          ? await saveResumable(file)
           : await jsonRequest(ENDPOINT, {
             method: "POST",
             headers: {
@@ -1215,6 +1366,7 @@
     panel.addEventListener("toggle", () => {
       if (panel.open && !loaded) void reload();
     });
+    wirePcImport();
     const instance = {
       adoptFromArtifact,
       getState: () => ({

@@ -358,6 +358,7 @@ async function fetch(url, init) {
 const pageErrors = [];
 const alerts = [];
 const downloads = [];
+const downloadDetails = [];
 
 // ── one council-app.js execution against a fresh fake DOM ──────────────────
 class FakeFormData {
@@ -369,7 +370,11 @@ class FakeFormData {
   }
 }
 
-function FakeBlob() {}
+function FakeBlob(parts, options) {
+  // 2026-11-01: the export tests read the bytes a download would carry.
+  this.parts = Array.isArray(parts) ? parts : (parts === undefined ? [] : [parts]);
+  this.type = (options && options.type) || "";
+}
 class FakeFile extends FakeBlob {
   constructor(parts, name, options) {
     super();
@@ -489,6 +494,27 @@ function spawnSession(windowState = {}) {
     root.append(section);
   });
 
+  // nav_search 시나리오용: 시안(04) 상단 메뉴와 검색 상자. index.html의 마크업을
+  // 그대로 받아 본다(항목은 data-nav, 검색은 #councilSearchForm/#councilSearch).
+  const nav = mk("nav", "councilNav", "council-nav");
+  ["home", "tools", "speech", "sns", "meeting"].forEach((name) => {
+    const item = mk("button", null, "council-nav-item");
+    item.setAttribute("data-nav", name);
+    item.textContent = name;
+    nav.append(item);
+  });
+  root.append(nav);
+  const searchWrap = mk("div", null, "council-tool-search-wrap");
+  const searchForm = mk("form", "councilSearchForm", "council-tool-search");
+  const searchInput = mk("input", "councilSearch", "council-tool-search-input");
+  const searchGo = mk("button", "councilSearchGo", "council-tool-search-go");
+  searchGo.type = "submit";
+  const searchStatus = mk("p", "councilSearchStatus", "council-tool-search-status");
+  searchStatus.hidden = true;
+  searchForm.append(searchInput, searchGo);
+  searchWrap.append(searchForm, searchStatus);
+  root.append(searchWrap);
+
   // The shipped module binds document-level listeners (the Escape rule, the
   // popover's outside click). The fake document must actually deliver them, or
   // a scenario would prove nothing about those handlers.
@@ -506,7 +532,15 @@ function spawnSession(windowState = {}) {
         // The download control builds an <a download>; record the file name the
         // user would actually receive, then let the click resolve.
         if (String(tag).toLowerCase() === "a") {
-          node.click = async function () { downloads.push(String(this.download || "")); };
+          node.click = async function () {
+            const name = String(this.download || "");
+            downloads.push(name);
+            // 2026-11-01: only byte-carrying downloads (HWPX/DOCX) land here —
+            // the export tests read the payload with the name.
+            if (this.__exportBytes) {
+              downloadDetails.push({ download: name, bytes: this.__exportBytes });
+            }
+          };
         }
         return node;
       },
@@ -526,11 +560,17 @@ function spawnSession(windowState = {}) {
     Blob: FakeBlob,
     File: FakeFile,
     TextDecoder,
+    TextEncoder,
     FileReader: FakeFileReader,
     URL: { createObjectURL: () => "blob:fixture", revokeObjectURL() {} },
     FormData: FakeFormData,
   };
   vm.createContext(ctx);
+  // The page loads document-export.js alongside the app (defer); the sandbox
+  // does the same so the export buttons exercise the real byte builders.
+  vm.runInContext(
+    fs.readFileSync(councilPath.replace(/council-app\.js$/, "document-export.js"), "utf8"),
+    ctx, { filename: "document-export.js" });
   vm.runInContext(fs.readFileSync(councilPath, "utf8"), ctx, { filename: "council-app.js" });
   return { root, byId, ctx };
 }
@@ -1903,6 +1943,140 @@ const SCENARIOS = {
     if (builder === "meeting") return { prompt: api.meeting.buildPrompt(toForm(payload)) };
     if (builder === "book") return { prompt: api.meeting.buildBookPrompt(payload.contents || []) };
     throw new Error("unknown builder: " + builder);
+  },
+  async nav_search() {
+    // 2026-11-01: 시안(04) 상단 메뉴·검색 상자. 메뉴 항목은 실제 있는 화면으로만
+    // 연결되고(홈·업무 도구·도구 3종), 검색은 도구 3종 안에서만 길을 찾는다.
+    // fail-closed 게이트는 메뉴·검색 경로에서도 동일하게 유지된다.
+    const sessionOf = (state) => {
+      authState = state;
+      return spawnSession();
+    };
+    const navItem = (s, name) => s.root.querySelectorAll("[data-nav]")
+      .find((n) => n.getAttribute("data-nav") === name);
+    const snapshotState = (s) => ({
+      inWorkspace: s.root.classList.contains("council-in-workspace"),
+      activeTool: s.root.dataset.activeTool || null,
+      barHidden: find(s, "councilWorkspaceBar").hidden,
+      title: text(find(s, "councilWorkspaceTitle")),
+      openBodies: ["councilSpeechBody", "councilSnsBody", "councilMeetingBody"]
+        .filter((id) => !find(s, id).hidden),
+      forms: s.root.querySelectorAll(".council-form").length,
+    });
+
+    const s = sessionOf({ authenticated: true, user: { name: "테스트 사용자" } });
+    const api = s.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(30);
+    const out = { signedIn: {} };
+
+    await navItem(s, "speech").dispatch("click");
+    await sleep(40);
+    out.signedIn.navSpeech = snapshotState(s);
+
+    await navItem(s, "tools").dispatch("click");
+    await sleep(40);
+    out.signedIn.navTools = snapshotState(s);
+
+    await navItem(s, "meeting").dispatch("click");
+    await sleep(40);
+    out.signedIn.navMeeting = snapshotState(s);
+
+    await navItem(s, "home").dispatch("click");
+    await sleep(40);
+    out.signedIn.navHome = snapshotState(s);
+
+    const form = find(s, "councilSearchForm");
+    const input = find(s, "councilSearch");
+    const status = find(s, "councilSearchStatus");
+    input.value = "축사";
+    await form.dispatch("submit");
+    await sleep(40);
+    out.signedIn.searchSpeech = { state: snapshotState(s), statusHidden: status.hidden };
+
+    input.value = "전혀 어울리지 않는 낱말";
+    await form.dispatch("submit");
+    await sleep(40);
+    out.signedIn.searchMiss = {
+      state: snapshotState(s),
+      statusShown: !status.hidden,
+      statusText: text(status),
+    };
+
+    const off = sessionOf({ authenticated: false, methods: { password: true } });
+    const apiOff = off.ctx.window.PadiemCouncilApps;
+    await apiOff.init();
+    await sleep(30);
+    await navItem(off, "sns").dispatch("click");
+    await sleep(40);
+    out.signedOut = {
+      navSns: snapshotState(off),
+      panelHidden: find(off, "councilAuthPanel").hidden,
+    };
+    const formOff = find(off, "councilSearchForm");
+    const inputOff = find(off, "councilSearch");
+    inputOff.value = "SNS";
+    await formOff.dispatch("submit");
+    await sleep(40);
+    out.signedOut.searchSns = snapshotState(off);
+    return out;
+  },
+  async export() {
+    // 2026-11-01: 한글(HWPX)·워드(DOCX)·텍스트 내려받기. 실제 버튼 클릭이
+    // 만드는 바이트와 파일 이름을 그대로 관찰한다. 활동집은 초안의 구조
+    // (제목·기간·회의별 소제목·본문)가 문서로 옮겨지는지 함께 본다.
+    downloads.length = 0;
+    downloadDetails.length = 0;
+    const s = spawnSession({ authenticated: true, user: { name: "테스트 사용자" } });
+    const api = s.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(30);
+    const out = {};
+
+    // 축사: 폼의 행사명·날짜가 문서 제목과 파일명에 그대로 간다.
+    const speechForm = find(s, "councilSpeechForm");
+    speechForm.querySelector("[name=event]").value = "주민 감사의 밤";
+    speechForm.querySelector("[name=date]").value = "2026-11-01";
+    find(s, "councilSpeechOutput").value =
+      "존경하는 시민 여러분,\n\n함께 감사를 나누는 자리였습니다.\n감사합니다.";
+    await find(s, "councilSpeechDownloadHwpx").dispatch("click");
+    await sleep(20);
+    await find(s, "councilSpeechDownloadDocx").dispatch("click");
+    await sleep(20);
+    await find(s, "councilSpeechDownload").dispatch("click");
+    await sleep(20);
+    out.speech = {
+      hwpx: downloadDetails[0], docx: downloadDetails[1], txt: downloads[2],
+    };
+
+    // 활동집: "1. 제목" 첫 줄·기간 줄·"제N장" 소제목·본문 — 구조 보존 확인.
+    find(s, "councilBookOutput").value = [
+      "1. 10월 활동집",
+      "기간: 2026-10-01 ~ 2026-10-31",
+      "제1장 주민 간담회",
+      "관내 주민 40명이 참석해 정자 조성을 논의했다.",
+      "",
+      "제2장 현장 방문",
+      "함께 현장을 살폈다.",
+    ].join("\n");
+    await find(s, "councilBookDownloadHwpx").dispatch("click");
+    await sleep(20);
+    await find(s, "councilBookDownloadDocx").dispatch("click");
+    await sleep(20);
+    await find(s, "councilBookDownload").dispatch("click");
+    await sleep(20);
+    out.book = {
+      hwpx: downloadDetails[2], docx: downloadDetails[3], txt: downloads[5],
+    };
+    const toB64 = (detail) => ({
+      download: detail.download,
+      bytes: detail.bytes ? Buffer.from(detail.bytes).toString("base64") : null,
+    });
+    out.speech.hwpx = toB64(out.speech.hwpx);
+    out.speech.docx = toB64(out.speech.docx);
+    out.book.hwpx = toB64(out.book.hwpx);
+    out.book.docx = toB64(out.book.docx);
+    return out;
   },
 };
 

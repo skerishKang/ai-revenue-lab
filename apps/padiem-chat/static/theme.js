@@ -220,21 +220,21 @@
 
     var label=document.createElement("p");
     label.className="glass-variant-label";
-    label.textContent="Shell mask";
+    label.textContent=(window.__padiemLocale&&window.__padiemLocale.text("glass-mask-mode"))||"외투 마스크 모드";
     control.appendChild(label);
 
     var group=document.createElement("div");
     group.className="glass-variant-picker glass-mask-picker";
     group.setAttribute("role","group");
-    group.setAttribute("aria-label","Shell mask mode");
+    group.setAttribute("aria-label",(window.__padiemLocale&&window.__padiemLocale.text("glass-mask-mode"))||"외투 마스크 모드");
 
-    [["auto","Auto"],["on","On"],["off","Off"]].forEach(function(item){
+    [["auto","glass-mask-auto","자동"],["on","glass-mask-on","켜기"],["off","glass-mask-off","끄기"]].forEach(function(item){
       var button=document.createElement("button");
       button.type="button";
       button.className="glass-variant-option";
       button.setAttribute("data-glass-mask-value",item[0]);
       button.setAttribute("aria-pressed","false");
-      button.textContent=item[1];
+      button.textContent=(window.__padiemLocale&&window.__padiemLocale.text(item[1]))||item[2];
       group.appendChild(button);
     });
     control.appendChild(group);
@@ -244,7 +244,7 @@
     var speedLabel=document.createElement("label");
     speedLabel.className="glass-speed-label";
     speedLabel.setAttribute("for","glassSpeedRange");
-    speedLabel.textContent="Motion speed";
+    speedLabel.textContent=(window.__padiemLocale&&window.__padiemLocale.text("glass-motion-speed"))||"모션 속도";
     var range=document.createElement("input");
     range.type="range";
     range.id="glassSpeedRange";

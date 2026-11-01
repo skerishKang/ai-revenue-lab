@@ -113,7 +113,10 @@ def test_private_stream_uses_core_contract_and_manual_free_only_payload():
     asyncio.run(scenario())
 
 
-def test_private_stream_requires_explicit_manual_model_before_network():
+def test_the_retired_auto_id_streams_as_an_opaque_caller_model():
+    """B7: the private stream lane has no local refusal for the retired id —
+    it is an opaque model name passed to the caller's own provider, which owns
+    the answer (this fake answers 500)."""
     calls = 0
 
     async def handler(request: httpx.Request) -> httpx.Response:
@@ -124,12 +127,12 @@ def test_private_stream_requires_explicit_manual_model_before_network():
     client = B14Client(_settings(), stream_transport=httpx.MockTransport(handler))
 
     async def scenario():
-        with pytest.raises(ValueError, match="explicit manual model"):
+        with pytest.raises(ChatRuntimeError):
             async for _ in client.stream_text_preview(MESSAGES, model="b14/auto"):
                 pass
 
     asyncio.run(scenario())
-    assert calls == 0
+    assert calls == 1
 
 
 def test_private_stream_missing_required_binding_fails_closed_without_public_http():

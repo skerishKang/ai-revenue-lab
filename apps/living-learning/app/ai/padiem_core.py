@@ -105,9 +105,8 @@ class PadiemCoreProvider:
         self,
         *,
         runtime: ExecutionRunner,
-        # #5002: no default model. The suspended ``b14/auto`` route is not a
-        # default; an empty model fails closed through the existing
-        # non-empty check instead of naming a route that always answers 422.
+        # #5002: no default model. No automatic route exists; an empty model
+        # fails closed through the existing non-empty check.
         model: str = "",
         max_tokens: int = DEFAULT_MAX_TOKENS,
         temperature: float = DEFAULT_TEMPERATURE,
