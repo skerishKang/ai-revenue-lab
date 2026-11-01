@@ -33,10 +33,21 @@ def connect(path: str) -> sqlite3.Connection:
     return connection
 
 
+class _InlineOwner:
+    async def _invoke(self, function):
+        return function()
+
+
 class _Statement:
-    def __init__(self, owner: "SqliteD1", sql: str):
-        self._owner = owner
-        self._connection = owner.connection
+    def __init__(self, owner: "SqliteD1 | sqlite3.Connection", sql: str):
+        # A bare connection is still accepted (older callers and tests build a statement
+        # directly); it runs inline, without the binding's thread hop or lock.
+        if isinstance(owner, sqlite3.Connection):
+            self._owner = _InlineOwner()
+            self._connection = owner
+        else:
+            self._owner = owner
+            self._connection = owner.connection
         self._sql = sql
         self._values: tuple[Any, ...] = ()
 
