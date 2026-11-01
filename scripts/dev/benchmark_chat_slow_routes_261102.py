@@ -122,6 +122,58 @@ def _timed(call) -> float:
     return round((time.perf_counter() - started) * 1000, 1)
 
 
+def _scope_timings(delay: float, *, cache_seconds: str | None) -> tuple[float, float]:
+    """First (miss) and second (hit) connector-scope resolution."""
+    import app.pc_work_context as context
+    from app.pc_scope_cache import clear_scope_cache
+
+    class Authority:
+        async def resolve_connector_owner_scope(self, *, session_id):
+            await asyncio.sleep(delay)
+            return {"account_ref": "account-1", "workspace_ref": "connector-ws"}
+
+    def session(name: str) -> SimpleNamespace:
+        return SimpleNamespace(session_id=name, tenant_id=WS,
+                               subject=SimpleNamespace(subject_id="subject-1"))
+
+    async def owner_session(_request, _owner_id):
+        await asyncio.sleep(delay)
+        return WS, session("sess-b62")
+
+    async def b54(_authority, _owner_id):
+        await asyncio.sleep(delay)
+        return SimpleNamespace(auth_session=session("sess-b54"))
+
+    import padiem_control_plane.b54_identity_bridge as bridge
+
+    request = _request("/api/claw/local-access/devices")
+    request.app.state.control_plane_identity_authority = Authority()
+    request.app.state.identity_shadow_store = object()
+    original_owner_session = context._resolve_owner_session
+    original_bridge = bridge.resolve_current_b54_canonical_session
+    context._resolve_owner_session = owner_session
+    bridge.resolve_current_b54_canonical_session = b54
+    previous = os.environ.pop("PADIEM_CHAT_SCOPE_CACHE_SECONDS", None)
+    if cache_seconds is not None:
+        os.environ["PADIEM_CHAT_SCOPE_CACHE_SECONDS"] = cache_seconds
+    try:
+        clear_scope_cache()
+        first = _timed(context.resolve_pc_connector_scope(
+            request, owner_id=UID, workspace_id=WS,
+        ))
+        second = _timed(context.resolve_pc_connector_scope(
+            request, owner_id=UID, workspace_id=WS,
+        ))
+    finally:
+        context._resolve_owner_session = original_owner_session
+        bridge.resolve_current_b54_canonical_session = original_bridge
+        os.environ.pop("PADIEM_CHAT_SCOPE_CACHE_SECONDS", None)
+        if previous is not None:
+            os.environ["PADIEM_CHAT_SCOPE_CACHE_SECONDS"] = previous
+        clear_scope_cache()
+    return first, second
+
+
 def main() -> int:
     print(f"dependency delay: {DELAY * 1000:.0f} ms per authority read")
     for count in (0, 3):
@@ -129,6 +181,10 @@ def main() -> int:
         samples = [_timed(devices.claw_device_directory(request)) for _ in range(3)]
         print(f"/api/claw/local-access/devices (+{count} enumerated PCs): "
               f"median {statistics.median(samples):.0f} ms  samples {samples}")
+    for label, ttl in (("window off", "0"), ("30s window", None)):
+        first, second = _scope_timings(DELAY, cache_seconds=ttl)
+        print(f"connector scope resolve ({label}): first {first:.0f} ms / "
+              f"second {second:.0f} ms")
     calls = {"n": 0}
     request = _models_request(calls)
     first = _timed(models.claw_verified_model_choices(request))

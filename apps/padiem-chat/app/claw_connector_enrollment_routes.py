@@ -26,6 +26,7 @@ from padiem_control_plane.padiem_connector_enrollment_server import CanonicalCon
 from .auth_routes import auth_ready, current_user_id
 from .b54_canonical_session import resolve_current_b54_canonical_session
 from .control_plane_identity import IdentityBridgeError
+from .pc_scope_cache import invalidate_owner_scope
 
 CONNECTOR_ENROLLMENT_ISSUE_PATH = "/api/claw/connector/enrollments/issue"
 CONNECTOR_ENROLLMENT_REDEEM_PATH = "/api/claw/connector/enrollments/redeem"
@@ -315,11 +316,14 @@ async def connector_enrollment_consent_grant(request: Request) -> JSONResponse:
             session_id=session.session_id, device_id=wire["device_id"], confirmed=True,
             confirmation_version=wire["confirmation_version"],
         )
-        return _public_consent_success(receipt, expected_device_id=wire["device_id"])
     except Exception as exc:
         code = getattr(exc, "code", "")
         return _error(403 if code in {"connector_enrollment_explicit_consent_required", "enrollment_consent_required", "canonical_tenant_membership_inactive"} else 503,
                       code if isinstance(code, str) and _SAFE_VALUE.fullmatch(code) else "enrollment_server_dependency_unavailable")
+    # #6460: a connector consent is a connector change, so this account's short
+    # cached connector scope is dropped instead of being waited out.
+    invalidate_owner_scope(current_user_id(request))
+    return _public_consent_success(receipt, expected_device_id=wire["device_id"])
 
 
 async def connector_enrollment_consent_revoke(request: Request) -> JSONResponse:
@@ -338,11 +342,13 @@ async def connector_enrollment_consent_revoke(request: Request) -> JSONResponse:
             session_id=session.session_id, consent_id=wire["consent_id"], confirmed=True,
             confirmation_version=wire["confirmation_version"],
         )
-        return _public_consent_success(receipt, expected_consent_id=wire["consent_id"], revoked=True)
     except Exception as exc:
         code = getattr(exc, "code", "")
         return _error(403 if code in {"connector_enrollment_explicit_consent_required", "enrollment_consent_required", "enrollment_consent_withdrawn"} else 503,
                       code if isinstance(code, str) and _SAFE_VALUE.fullmatch(code) else "enrollment_server_dependency_unavailable")
+    # #6460: revocation is the change most worth reading on the next request.
+    invalidate_owner_scope(current_user_id(request))
+    return _public_consent_success(receipt, expected_consent_id=wire["consent_id"], revoked=True)
 
 
 async def connector_enrollment_issue(request: Request) -> JSONResponse:

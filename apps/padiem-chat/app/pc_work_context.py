@@ -27,6 +27,8 @@ from typing import Any, Mapping
 
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 
+from .pc_scope_cache import KIND_CONNECTOR_SCOPE, cached_connector_scope
+
 PC_WORK_CONTEXT_VERSION = "padiem-pc-work-context.v1"
 PC_DRIVE_TOOL_ID = "claw.pc.query_drives"
 PC_LIST_FILES_TOOL_ID = "claw.pc.list_files"
@@ -295,7 +297,40 @@ async def resolve_pc_connector_scope(
     connector scope, not under the B62 product user id. Callers that read the
     Broker directory use these values; the B62 owner/workspace still scopes the
     product preference and authorization.
+
+    #6460 4-1 third round: this answer is the same three authority reads on
+    every Claw request (b62 -> b54 -> connector scope) and was 4.6 s of identity
+    time per directory read, so a successful, READY result is shared inside a
+    short, switchable, account-scoped window (``PADIEM_CHAT_SCOPE_CACHE_SECONDS``).
+    A refusal is never stored, and Chat's own pairing/consent/logout paths drop
+    the window explicitly; a revocation made in another service can be observed
+    up to the window late, never forever.
     """
+    state = getattr(getattr(request, "app", None), "state", None)
+    authority = getattr(state, "control_plane_identity_authority", None)
+    # The window only exists for a canonically composed identity (authority and
+    # shadow store together, which is what makes this answer canonical at all).
+    # A partially composed app resolves per request, exactly as before.
+    if authority is None or getattr(state, "identity_shadow_store", None) is None:
+        return await _resolve_connector_scope_now(
+            request, owner_id=owner_id, workspace_id=workspace_id,
+        )
+    return await cached_connector_scope(
+        state=state,
+        authority=authority,
+        owner_id=owner_id,
+        workspace_id=workspace_id,
+        kind=KIND_CONNECTOR_SCOPE,
+        loader=lambda: _resolve_connector_scope_now(
+            request, owner_id=owner_id, workspace_id=workspace_id,
+        ),
+    )
+
+
+async def _resolve_connector_scope_now(
+    request: Any, *, owner_id: str, workspace_id: str,
+) -> PcConnectorScope:
+    """One uncached resolution; every check below still fails closed."""
     resolved_workspace, b62_session = await _resolve_owner_session(request, owner_id)
     if resolved_workspace != workspace_id or b62_session is None:
         return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
