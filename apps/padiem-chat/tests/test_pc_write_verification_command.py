@@ -14,7 +14,7 @@ from app.oracle_mesh_read_return_routes import _pc_write_command
 
 def command(op):
     return _pc_write_command(
-        op=op, target="C:/granted/original.txt", relative="original.txt",
+        op=op, root="C:/granted", target="C:/granted/original.txt", relative="original.txt",
         backup_dir="C:/.padiem-backup/2026-11-01",
         destination="C:/granted/moved.txt" if op == "move" else None,
         content_b64=base64.b64encode("본문".encode()).decode() if op == "write" else None,

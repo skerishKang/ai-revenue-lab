@@ -35,9 +35,18 @@ BS = chr(92)
 BACKUP_DIR = "C:" + BS + PC_BACKUP_FOLDER + BS + "2026-10-28"
 
 
+def _root_of(target: str) -> str:
+    """The granted root these contract tests use: the drive root itself."""
+    return target[:3]
+
+
 def _command(op, *, target, relative, destination=None, content=None):
+    # The granted root is the drive root here: the guard's prefix rule keeps
+    # every target inside it, and the reparse walk starts below the root.
+    root = target[:3]
     return _pc_write_command(
         op=op,
+        root=root + BS,
         target=target,
         backup_dir=BACKUP_DIR,
         relative=relative,
@@ -129,7 +138,7 @@ def test_every_step_prints_one_account_line_and_no_confirmation_prompt():
                   "destination": "C:/b.txt"}),
         ("delete", {"target": "C:" + BS + "a.txt", "relative": "a.txt"}),
     ):
-        command = _pc_write_command(op=op, backup_dir=BACKUP_DIR, **kwargs)
+        command = _pc_write_command(op=op, root=_root_of(kwargs['target']), backup_dir=BACKUP_DIR, **kwargs)
         assert command.count("Write-Output ('" + PC_WRITE_ACCOUNT_PREFIX + "' + $encoded)") == 1
         lowered = command.lower()
         for prompt in ("read-host", "confirm", "shouldcontinue", "-whatif"):
@@ -155,7 +164,7 @@ def test_the_command_is_one_line_because_the_agent_cannot_finish_more():
                   "destination": "C:/b.txt"}),
         ("delete", {"target": "C:" + BS + "a.txt", "relative": "a.txt"}),
     ):
-        command = _pc_write_command(op=op, backup_dir=BACKUP_DIR, **kwargs)
+        command = _pc_write_command(op=op, root=_root_of(kwargs['target']), backup_dir=BACKUP_DIR, **kwargs)
         assert "\n" not in command and "\r" not in command, op
         # One line is only readable if the statements are separated, and the
         # concatenation has to be an expression: bare ``Write-Output 'a' + $b``
@@ -182,7 +191,7 @@ def test_the_parent_folder_is_taken_where_the_pc_can_understand_it():
                   "destination": "C:/b.txt"}),
         ("delete", {"target": "C:" + BS + "a.txt", "relative": "a.txt"}),
     ):
-        assert "Split-Path" not in _pc_write_command(op=op, backup_dir=BACKUP_DIR, **kwargs)
+        assert "Split-Path" not in _pc_write_command(op=op, root=_root_of(kwargs['target']), backup_dir=BACKUP_DIR, **kwargs)
 
 
 def test_the_account_round_trips_through_the_engine_marker_shape():
