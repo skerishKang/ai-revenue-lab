@@ -250,9 +250,26 @@ const FILL_ANSWER = {
   mapping: { Sheet1: { B5: "대한건설", B6: "2026-10-29", D9: 30000 } },
   extend: [{ sheet: "Sheet1", template_row: 12, at_row: 13, count: 2 }],
 };
+let missingRole = false;
+let chatRequest = null;
 const windowStub = {
-  fetch: async (url) => {
+  fetch: async (url, options) => {
     const target = String(url || "");
+    if (target.includes("/api/b66/pc-quote/forms")) {
+      const data = JSON.parse(options.body);
+      const roles = ["item", "quantity", "unit_price", "amount", "subtotal", "tax", "total", "date", "recipient"];
+      const analysis = Object.fromEntries(roles.map((role, i) => [role, {
+        requires_confirmation: false, candidates: [{sheet:"Sheet1", cell:"A" + (i + 2)}]
+      }]));
+      if (missingRole) analysis.unit_price = {requires_confirmation:true,candidates:[]};
+      const payload = data.analyze_only ? {ok:true, analysis, structure:{sheets:[{name:"Sheet1",cells:[],merged:[]}],truncated:false}}
+        : {ok:true, form:{saved_skill_id:"b66skill_" + "c".repeat(32)}};
+      return {ok:true,status:200,json:async () => payload};
+    }
+    if (target === "/api/chat") {
+      chatRequest = JSON.parse(options.body);
+      return {ok:true,status:200,json:async () => ({answer:JSON.stringify({unit_price:{sheet:"Sheet1",cell:"D12"}})})};
+    }
     if (target.includes("/api/b66/pc-quote/fill")) {
       return { ok: true, status: 200, json: async () => FILL_ANSWER };
     }
@@ -333,8 +350,15 @@ test("filling my PC form shows what went into which cell before saving", async (
 
   doc.getElementById("b66QuotePcPick").click();
   await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+  const section = doc.getElementById("b66QuotePcMapping");
+  let confirm = null;
+  walk(section, node => { if (node.tagName === "button" && node.textContent === "quote-map-save") confirm = node; });
+  assert.ok(confirm, "the form mapping can be saved");
+  confirm.click();
+  await new Promise((resolve) => setImmediate(resolve));
   const make = doc.getElementById("b66QuotePcMake");
-  assert.equal(make.hidden, false, "picking a form enables the make button");
+  assert.equal(make.hidden, false, "confirming the mapping enables the make button");
 
   make.click();
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -356,4 +380,42 @@ test("filling my PC form shows what went into which cell before saving", async (
   assert.equal(save.hidden, false, "saving is offered next to the review");
   // The review is plain text, never markup built from the fill answer.
   assert.equal(review.innerHTML, undefined, "no markup is written from the model's values");
+});
+
+
+test("PDF failure leaves the filled XLSX save available with useful guidance", async () => {
+  const pdf = doc.getElementById("b66QuotePcPdf");
+  const save = doc.getElementById("b66QuotePcSave");
+  assert.equal(pdf.hidden, false);
+  pdf.click();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(save.hidden, false);
+  assert.ok(doc.getElementById("b66QuotePcFormStatus").textContent.includes("엑셀 파일을 저장한 뒤 다시 시도"));
+});
+
+
+test("missing cell goes to chat and is offered for owner confirmation", async () => {
+  missingRole = true;
+  chatRequest = null;
+  doc.getElementById("b66QuotePcPick").click();
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.ok(chatRequest, "chat was called for the missing role");
+  assert.ok(chatRequest.messages[0].content.includes("unit_price"));
+  assert.ok(!chatRequest.messages[0].content.includes('"recipient"'));
+  const mapping = doc.getElementById("b66QuotePcMapping");
+  const rows = [];
+  walk(mapping, node => { if (node.className === "b66-quote-map-row") rows.push(node); });
+  const question = rows[2];
+  assert.ok(question, "missing unit price is shown as a question");
+  const choices = [];
+  walk(question, node => { if (node.tagName === "button") choices.push(node); });
+  assert.ok(choices.some(button => button.textContent === "quote-map-yes"));
+  assert.ok(choices.some(button => button.textContent === "quote-map-other"));
+  choices.find(button => button.textContent === "quote-map-yes").click();
+  let save;
+  walk(mapping, node => { if (node.tagName === "button" && node.textContent === "quote-map-save") save = node; });
+  save.click();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(doc.getElementById("b66QuotePcMake").hidden, false);
 });

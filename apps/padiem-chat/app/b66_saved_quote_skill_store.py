@@ -214,8 +214,32 @@ def _clean_form_item_rows(value: object) -> list[dict[str, Any]]:
     return kept
 
 
+_FORM_MAPPING_ROLES = frozenset({
+    "item", "quantity", "unit_price", "amount", "subtotal", "tax", "total", "date", "recipient",
+})
+
+
+def _clean_confirmed_mapping(value: object, structure: dict[str, Any]) -> dict[str, dict[str, str]]:
+    if value is None:
+        return {}
+    if not isinstance(value, dict) or set(value) - _FORM_MAPPING_ROLES:
+        raise SavedQuoteSkillStoreError("form mapping is invalid")
+    names = {sheet["name"] for sheet in structure["sheets"]}
+    result = {}
+    for role, selected in value.items():
+        if (not isinstance(selected, dict) or set(selected) != {"sheet", "cell"}
+                or not isinstance(selected["sheet"], str)
+                or selected["sheet"] not in names
+                or not isinstance(selected["cell"], str)
+                or not _FORM_CELL_RE.fullmatch(selected["cell"])):
+            raise SavedQuoteSkillStoreError("form mapping is invalid")
+        result[role] = {"sheet": selected["sheet"], "cell": selected["cell"]}
+    return result
+
+
 def _clean_form(value: object) -> dict[str, Any]:
-    if not isinstance(value, dict) or set(value) != {"path", "filename", "structure", "item_rows"}:
+    required = {"path", "filename", "structure", "item_rows"}
+    if not isinstance(value, dict) or not required <= set(value) or set(value) - required - {"mapping"}:
         raise SavedQuoteSkillStoreError("form is invalid")
     form = {
         "path": _clean_form_path(value.get("path")),
@@ -223,6 +247,8 @@ def _clean_form(value: object) -> dict[str, Any]:
         "structure": _clean_form_structure(value.get("structure")),
         "item_rows": _clean_form_item_rows(value.get("item_rows")),
     }
+    if "mapping" in value:
+        form["mapping"] = _clean_confirmed_mapping(value["mapping"], form["structure"])
     try:
         encoded = json.dumps(form, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8")
     except (TypeError, ValueError, UnicodeEncodeError) as exc:
@@ -435,6 +461,7 @@ def _public_projection(row: dict[str, Any], *, include_skill: bool) -> dict[str,
     if kind == SKILL_KIND_PC_FORM:
         form = payload.get("form") if payload else None
         form = form if isinstance(form, dict) else {}
+        projected["form_mapping_confirmed"] = bool(form.get("mapping"))
         projected["form_path"] = form.get("path") if isinstance(form.get("path"), str) else ""
         projected["form_filename"] = (
             form.get("filename") if isinstance(form.get("filename"), str) else ""

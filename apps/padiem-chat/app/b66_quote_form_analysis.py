@@ -83,6 +83,8 @@ def analyze_quote_form(structure):
                     target = _letters(col + 1) + str(row)
                 target = _merged_anchor(target, merged)
                 existing = cells.get(target)
+                if existing and not str(existing.get("text", "")).strip():
+                    existing = None
                 # Never propose overwriting a label, example value or merged label.
                 if not target or target == address:
                     continue

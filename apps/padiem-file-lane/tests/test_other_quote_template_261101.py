@@ -155,3 +155,44 @@ def test_other_company_form_real_file_lane_and_pdf_geometry(tmp_path):
                          "Subtotal", "VAT 10%", "Grand total", "270,000",
                          "27,000", "297,000", "Delivery within 14 days"):
             assert expected in text
+
+
+def test_file_lane_pdf_matches_reference_and_is_owner_scoped(tmp_path, monkeypatch):
+    fitz = pytest.importorskip("fitz")
+    from padiem_file_lane import xlsx_pdf
+    exe = soffice()
+    if not exe:
+        pytest.skip("LibreOffice is required for independent PDF comparison")
+    monkeypatch.setattr(xlsx_pdf.shutil, "which", lambda _: exe)
+    reference_file = tmp_path / "reference.xlsx"
+    reference_file.write_bytes(workbook(populated=True))
+    reference_pdf = pdf_from_xlsx(reference_file, tmp_path / "reference-output")
+    with TestClient(create_app(root=tmp_path / "lane", secret=SECRET)) as client:
+        upload = client.post("/files", params={"filename": "form.xlsx"}, content=workbook(), headers=ticket())
+        file_id = upload.json()["file_id"]
+        filled = client.post(f"/files/{file_id}/fill", headers=ticket(), json={
+            "mapping": {"Offer": VALUES}, "filename": "filled.xlsx",
+        })
+        assert filled.status_code == 201
+        response = client.get(f"/files/{filled.json()['file_id']}/pdf", headers=ticket())
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "application/pdf"
+        assert client.get(f"/files/{filled.json()['file_id']}/pdf").status_code == 401
+        with fitz.open(reference_pdf) as expected, fitz.open(stream=response.content, filetype="pdf") as actual:
+            assert len(expected) == len(actual) == 1
+            assert expected[0].get_text("words") == actual[0].get_text("words")
+            assert expected[0].get_pixmap().samples == actual[0].get_pixmap().samples
+
+
+def test_pdf_unavailable_does_not_prevent_xlsx_download(tmp_path, monkeypatch):
+    from padiem_file_lane import xlsx_pdf
+    monkeypatch.setattr(xlsx_pdf.shutil, "which", lambda _: None)
+    with TestClient(create_app(root=tmp_path / "lane", secret=SECRET)) as client:
+        upload = client.post("/files", params={"filename": "form.xlsx"}, content=workbook(), headers=ticket())
+        file_id = upload.json()["file_id"]
+        response = client.get(f"/files/{file_id}/pdf", headers=ticket())
+        assert response.status_code == 503
+        assert response.json()["error"]["code"] == "xlsx_pdf_unavailable"
+        original = client.get(f"/files/{file_id}/raw", headers=ticket())
+        assert original.status_code == 200
+        assert original.content.startswith(b"PK")
