@@ -905,12 +905,18 @@ class PolicyTests(unittest.TestCase):
     """The timeout and the byte ceilings are bounded on both sides."""
 
     def test_default_timeout_is_the_central_decision(self) -> None:
-        # #4379: the parser isolation carries no PADIEM wall-clock ceiling, so
-        # the default is no wait ceiling at all.
-        self.assertIsNone(isolation.DOCUMENT_PARSER_TIMEOUT_SECONDS)
-        self.assertIsNone(
-            isolation.DEFAULT_PARSER_ISOLATION_POLICY.timeout_seconds
+        # #4379 dropped the ceiling; #2824 puts a finite one back, because an
+        # unbounded wait held the whole PC work turn open with nothing above
+        # this module able to interrupt it.
+        self.assertEqual(
+            isolation.DOCUMENT_PARSER_TIMEOUT_SECONDS,
+            isolation.DOCUMENT_PARSER_TIMEOUT_DEFAULT_SECONDS,
         )
+        self.assertEqual(
+            isolation.DEFAULT_PARSER_ISOLATION_POLICY.timeout_seconds,
+            isolation.DOCUMENT_PARSER_TIMEOUT_DEFAULT_SECONDS,
+        )
+        # The policy ceiling is unchanged; only the environment value is clamped.
         self.assertIsNone(isolation.DOCUMENT_PARSER_TIMEOUT_MAX_SECONDS)
 
     def test_unbounded_or_non_positive_timeouts_are_rejected(self) -> None:
@@ -1037,8 +1043,10 @@ class LifecycleBoundTests(unittest.TestCase):
                 if knob != "timeout_seconds"
             }
         )
-        # #4379: no wait ceiling is applied unless a policy asks for one.
-        self.assertIsNone(policy.timeout_seconds)
+        # #2824: an unset policy field now takes the finite default ceiling.
+        self.assertEqual(
+            policy.timeout_seconds, isolation.DOCUMENT_PARSER_TIMEOUT_DEFAULT_SECONDS
+        )
         self.assertEqual(policy.terminate_grace_seconds, 2.0)
         self.assertEqual(policy.kill_grace_seconds, 2.0)
         self.assertEqual(policy.drain_join_seconds, 2.0)
