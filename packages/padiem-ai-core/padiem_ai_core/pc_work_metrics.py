@@ -40,6 +40,12 @@ PC_METRIC_KEYS_V1 = frozenset(PC_METRIC_COUNTERS) | {
 }
 
 PC_METRIC_KEYS = PC_METRIC_KEYS_V1 | frozenset(PC_METRIC_LIFECYCLE_COUNTERS)
+# Version 3 adds the measured prompt-size change of the compactions above.
+PC_METRIC_COMPACTION_TOKEN_KEYS = (
+    "compaction_input_tokens_before", "compaction_input_tokens_after",
+    "compaction_tokens_saved",
+)
+PC_METRIC_KEYS_V3 = PC_METRIC_KEYS | frozenset(PC_METRIC_COMPACTION_TOKEN_KEYS)
 
 
 class PcWorkMetricsError(ValueError):
@@ -67,9 +73,10 @@ def validate_pc_work_metrics(value: Any) -> dict[str, Any]:
     if not isinstance(value, Mapping):
         raise PcWorkMetricsError("invalid PC metric fields")
     version = value.get("schema_version")
-    if type(version) is not int or version not in {1, 2}:
+    if type(version) is not int or version not in {1, 2, 3}:
         raise PcWorkMetricsError("invalid PC metric version")
-    expected_keys = PC_METRIC_KEYS_V1 if version == 1 else PC_METRIC_KEYS
+    expected_keys = (PC_METRIC_KEYS_V1 if version == 1
+                     else PC_METRIC_KEYS if version == 2 else PC_METRIC_KEYS_V3)
     if set(value) != expected_keys:
         raise PcWorkMetricsError("invalid PC metric fields")
     turn_id = value["turn_id"]
@@ -89,9 +96,18 @@ def validate_pc_work_metrics(value: Any) -> dict[str, Any]:
         normalized_tools[tool_id] = row
     result = dict(value)
     # Keep v1 evidence unchanged: an unmeasured lifecycle counter is not zero.
-    if version == 2:
+    if version >= 2:
         for key in PC_METRIC_LIFECYCLE_COUNTERS:
             result[key] = _count(value[key])
+    if version == 3:
+        for key in PC_METRIC_COMPACTION_TOKEN_KEYS:
+            result[key] = _number(value[key])
+        before = result["compaction_input_tokens_before"]
+        after = result["compaction_input_tokens_after"]
+        if after > before or not math.isclose(
+                result["compaction_tokens_saved"], before - after,
+                rel_tol=1e-9, abs_tol=1e-9):
+            raise PcWorkMetricsError("inconsistent PC compaction token evidence")
     result["tool_calls"] = normalized_tools
     for key in PC_METRIC_COUNTERS:
         result[key] = _count(value[key])

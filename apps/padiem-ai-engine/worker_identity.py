@@ -1159,6 +1159,8 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         desktop_binding = build_claw_desktop_tool_binding(
             service=chat_service, request_factory=Request, secret=desktop_secret,
         )
+        from app.pc_context_budget import catalog_compaction_budget
+        from app.compaction_d1 import D1ContextArchive
         from app.claw_pc_query_step_driver import (
             CHAT_APP_ID, build_chat_pc_query_tool_binding,
             build_claw_pc_query_tool_binding, build_live_pc_query_driver,
@@ -1259,6 +1261,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         except (ValueError, TypeError):
             web_xlsx_owner_grant = None
     pc_catalog = CatalogToolCapabilities(binding, Request)
+    # #6460 5-1: archived context originals live on the Engine's existing
+    # ENGINE_CONTINUATION D1 surface. No new binding or store location.
+    compaction_db = legacy_worker._binding_value(env, ENGINE_CONTINUATION_BINDING_NAME)
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,
@@ -1302,7 +1307,13 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                         secret=desktop_secret,
                         tool_arguments=tool_arguments,
                         initial_decision=initial_decision,
-                        compaction_budget_resolver=pc_catalog.context_budget,
+                        compaction_budget_resolver=(
+                            lambda model_id: catalog_compaction_budget(pc_catalog, model_id)
+                        ),
+                        compaction_store_factory=(
+                            (lambda owner: D1ContextArchive(compaction_db, owner=owner))
+                            if compaction_db is not None else None
+                        ),
                     ))
                 if chat_service is not None and isinstance(desktop_secret, str)
                 and len(desktop_secret) >= 32 else None

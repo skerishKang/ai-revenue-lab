@@ -14,11 +14,11 @@ action harness and result verification.
 | Large output | Chat file/drive callbacks use `oracle_mesh_read_return_routes._engine_pc_public_output` after verifying the original result digest, then `QueueForwardingHistoryStore.store_pc_output` uploads it to the authenticated COM2 queue `/internal/store`. |
 | Durable storage | Queue `PcOutputStore` uses Core `OutputStore`. Upload parts stay inside the existing RPC body limit; size and digest are checked before publishing a handle. |
 | Model observation | Engine `claw_pc_query_step_driver` receives `output_ref` (head, tail, size, handle), not an unbounded copy of the original. Read/search calls use the same signed callback and selected owner/device. |
-| Context | Engine `PCContextCompactor` uses Core compaction and the existing model client/model policy. The selected model catalogue supplies the context budget. User/system/developer originals retain their roles and content; archived non-user material can be recalled. |
+| Context | Engine `PCContextCompactor` uses Core compaction and the existing model client/model policy. The catalogue supplies the model's `context_window`; compaction starts at `PADIEM_PC_CONTEXT_RATIO` (default 0.60) of it. User/system/developer originals retain their roles and content; archived non-user material is owner-scoped in `padiem_engine_context_archive_v1` (Engine D1/SQLite) and recalled with `claw.pc.recall_context`. |
 | Background execution | Signed `job_start` stages an existing reviewed file operation with trusted background metadata. Queue dispatch ID is the job ID. The existing Mesh executor runs `RemoteBackgroundJobs` using its current remote command/read ports. |
 | Queue | The 8797 service stages dispatch and background metadata atomically. Selection and claim serialize the same device/node; unrelated PCs can progress. Existing leases, cancellation and result delivery remain authoritative. |
 | Batch | Core `pc_batch.run_batch` is injected with actual existing PC handlers and durable output storage. All steps pass evidence/delegation preflight before execution; each executed action retains verification. |
-| Measurement | Existing turn collector and B14 reporting include `stored_output_count`, `compaction_count`, `background_job_count`. Schema v2 retains old v1 compatibility without inventing missing historical measurements. |
+| Measurement | Existing turn collector and B14 reporting include `stored_output_count`, `compaction_count`, `background_job_count`; schema v3 adds measured compaction input tokens before/after and the saved difference while v1/v2 rows stay valid. |
 
 ## Model tools
 
@@ -46,8 +46,13 @@ Recalled/output content is source material, never a new instruction or grant.
 - Queue output storage defaults to `pc-outputs` beside the existing queue DB.
   Existing `PADIEM_OUTPUT_STORE_DIR` can override this. The queue installer
   preserves this directory when refreshing source; Core's existing retention applies.
-- Context originals use the host Engine's existing `PADIEM_ENGINE_LOCAL_DB`.
-  An unknown catalogue budget is not replaced with a guessed model context size.
+- Context originals use the Engine's existing `ENGINE_CONTINUATION` D1 surface
+  (the same SQLite facade on the COM2 host), migration 0014. An unknown catalogue
+  budget is not replaced with a guessed model context size.
+- When a summary or archive cannot be produced, the turn does not end as an
+  error: an oversized tool result is reduced to its stored-output handle, and a
+  turn that still cannot fit ends with a plain progress checkpoint naming what
+  was checked and the next step for the next conversation turn.
 - Background receipts/output live under the executor's existing persistent work
   directory. Recovered completed/interrupted receipts are not re-executed.
 - A pending job receipt is not verified completion. The existing remote port

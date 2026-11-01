@@ -125,9 +125,13 @@ def make_remote_handler(tool_id, *, service, request_factory, secret, signed_cal
             recall = getattr(driver, "recall_context", None)
             if not callable(recall):
                 raise ToolHandlerError("context_source_unavailable", "Original context is unavailable")
+            import inspect
             from app.pc_context_compaction import PCContextCompactionError
             try:
-                return recall(arguments)
+                result = recall(arguments)
+                if inspect.isawaitable(result):
+                    result = await result
+                return result
             except PCContextCompactionError as error:
                 raise ToolHandlerError(error.code, "Original context is unavailable") from None
 

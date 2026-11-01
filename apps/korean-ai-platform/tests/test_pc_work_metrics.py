@@ -329,6 +329,27 @@ def test_0003_upgrades_existing_b14_without_new_usage_store(tmp_path):
     current.close()
 
 
+def test_v3_compaction_token_evidence_persists_and_is_summarized(backed_client):
+    client, store, db = backed_client
+    insert(store, suffix="compaction", turn=SECOND)
+    measured = metrics(
+        SECOND, schema_version=3, stored_output_count=0, compaction_count=2,
+        background_job_count=0,
+        compaction_input_tokens_before=12000.0,
+        compaction_input_tokens_after=4200.0,
+        compaction_tokens_saved=7800.0,
+    )
+    report = client.post(REPORT, json=envelope(SECOND, measurement=measured))
+    assert report.status_code == 200, report.text
+    result = client.get(RECENT).json()
+    turns = {row["session_ref"]: row["metrics"] for row in result["turns"]}
+    assert turns[SECOND] == measured
+    assert result["summary"]["counters"]["compaction_tokens_saved"] == {
+        "average": 7800.0, "max": 7800.0, "observed_turns": 1, "missing_turns": 0,
+    }
+    assert db.connect().execute("SELECT COUNT(*) FROM b14_model_call").fetchone()[0] == 1
+
+
 def test_v2_lifecycle_counters_persist_and_v1_remains_missing_in_summary(backed_client):
     client, store, db = backed_client
     insert(store, suffix="legacy", turn=TURN)
