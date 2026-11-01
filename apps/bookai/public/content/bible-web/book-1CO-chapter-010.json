@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:010",
+  "unit_ordinal": 1072,
+  "unit_label": "1CO 10",
+  "book_code": "1CO",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:10:1",
+      "sequence": 28565,
+      "chapter_label": "1CO 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Now I would not have you ignorant, brothers, that our fathers were all under the cloud, and all passed through the sea;",
+      "ko": "형제들아 너희가 알지 못하기를 내가 원치 아니하노니 우리 조상들이 다 구름 아래 있고 바다 가운데로 지나며",
+      "source_text_hash": "8bcb5340ee990043cb3fd2dc8be226ed7c927dc21238c6a04f9a96472e308985",
+      "translation_text_hash": "38355a640e1ad7bce21350778d186447284896bc058dd7e799d9603cb46a161d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희가 알지 못하기를 내가 원치 아니하노니 우리 조상들이 다 구름 아래 있고 바다 가운데로 지나며"
+      ],
+      "raw_text_hashes": [
+        "38355a640e1ad7bce21350778d186447284896bc058dd7e799d9603cb46a161d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:2",
+      "sequence": 28566,
+      "chapter_label": "1CO 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "and were all baptized into Moses in the cloud and in the sea;",
+      "ko": "모세에게 속하여 다 구름과 바다에서 세례를 받고",
+      "source_text_hash": "a81c5b71eb2c5ba02c93d136d95652648a3bdf43431ccee7e9bc95bd828e35c3",
+      "translation_text_hash": "2480fe1af193f5f63bc6513fec1ed6a87bf7a516794878631e21c19563c8f112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세에게 속하여 다 구름과 바다에서 세례를 받고"
+      ],
+      "raw_text_hashes": [
+        "2480fe1af193f5f63bc6513fec1ed6a87bf7a516794878631e21c19563c8f112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:3",
+      "sequence": 28567,
+      "chapter_label": "1CO 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "and all ate the same spiritual food;",
+      "ko": "다 같은 신령한 식물을 먹으며",
+      "source_text_hash": "7bb7e1bcf1c01bff529911e5c00c717b57ce3a32211415f92b0b415d23b37046",
+      "translation_text_hash": "878984384ac8d4cd48d711a84811b4fdc2ffb9538ca7a1ac4f08efef968a4f1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 같은 신령한 식물을 먹으며"
+      ],
+      "raw_text_hashes": [
+        "878984384ac8d4cd48d711a84811b4fdc2ffb9538ca7a1ac4f08efef968a4f1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:4",
+      "sequence": 28568,
+      "chapter_label": "1CO 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "and all drank the same spiritual drink. For they drank of a spiritual rock that followed them, and the rock was Christ.",
+      "ko": "다 같은 신령한 음료를 마셨으니 이는 저희를 따르는 신령한 반석으로부터 마셨으매 그 반석은 곧 그리스도시라",
+      "source_text_hash": "2702b1f1ea281c314d05f290c84c42d82829d9d2deee475fb5ca9813a2028d3c",
+      "translation_text_hash": "4093f4faade645fa752c70791b9442bd904429c2d25cddc1a4b573abd7b0b7a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 같은 신령한 음료를 마셨으니 이는 저희를 따르는 신령한 반석으로부터 마셨으매 그 반석은 곧 그리스도시라"
+      ],
+      "raw_text_hashes": [
+        "4093f4faade645fa752c70791b9442bd904429c2d25cddc1a4b573abd7b0b7a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:5",
+      "sequence": 28569,
+      "chapter_label": "1CO 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "However with most of them, God was not well pleased, for they were overthrown in the wilderness.",
+      "ko": "그러나 저희의 다수를 하나님이 기뻐하지 아니하신고로 저희가 광야에서 멸망을 받았느니라",
+      "source_text_hash": "43a12b4490e668d2c17a633b4f4e612bc830e3f87053a66d17fc42be91133e83",
+      "translation_text_hash": "5cce846482c37eadfa01c6672b825e2df19c9dd5648ec62fb7333722985e6a98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 저희의 다수를 하나님이 기뻐하지 아니하신고로 저희가 광야에서 멸망을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "5cce846482c37eadfa01c6672b825e2df19c9dd5648ec62fb7333722985e6a98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:6",
+      "sequence": 28570,
+      "chapter_label": "1CO 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "Now these things were our examples, to the intent we should not lust after evil things as they also lusted.",
+      "ko": "그런 일은 우리의 거울이 되어 우리로 하여금 저희가 악을 즐겨한 것 같이 즐겨하는 자가 되지 않게 하려 함이니",
+      "source_text_hash": "50c526bbbb91a3b587d248692d3ea52bbf18f33b053ef1d4d95b3f516cc8ef42",
+      "translation_text_hash": "e290f23e745b2e537472aad9b420a7e8f4fbdecf00f3a4340265fc53f929d21e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런 일은 우리의 거울이 되어 우리로 하여금 저희가 악을 즐겨한 것 같이 즐겨하는 자가 되지 않게 하려 함이니"
+      ],
+      "raw_text_hashes": [
+        "e290f23e745b2e537472aad9b420a7e8f4fbdecf00f3a4340265fc53f929d21e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:7",
+      "sequence": 28571,
+      "chapter_label": "1CO 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "Don’t be idolaters, as some of them were. As it is written, “The people sat down to eat and drink, and rose up to play.”",
+      "ko": "저희 중에 어떤 이들과 같이 너희는 우상 숭배하는 자가 되지 말라 기록된바 백성이 앉아서 먹고 마시며 일어나서 뛰논다 함과 같으니라",
+      "source_text_hash": "febcea9063199e7fb65e88801ea7e873913dfcd7cbcb801c23e54f6b67de5f36",
+      "translation_text_hash": "2e432fab84b2bbba4d667792605282f49f915f6dd7fcc7b8b93690287ece849e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 중에 어떤 이들과 같이 너희는 우상 숭배하는 자가 되지 말라 기록된바 백성이 앉아서 먹고 마시며 일어나서 뛰논다 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "2e432fab84b2bbba4d667792605282f49f915f6dd7fcc7b8b93690287ece849e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:8",
+      "sequence": 28572,
+      "chapter_label": "1CO 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "Let’s not commit sexual immorality, as some of them committed, and in one day twenty-three thousand fell.",
+      "ko": "저희 중에 어떤 이들이 간음하다가 하루에 이만 삼천 명이 죽었나니 우리는 저희와 같이 간음하지 말자",
+      "source_text_hash": "72f6ffe09c45055584e40a24a2b4947d5eb243303ff96bf322b7368163f0b8b4",
+      "translation_text_hash": "c3699cfacdb899eeaee91b9f6c64320b5cb80a2773755581a8389345232c8ac0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 중에 어떤 이들이 간음하다가 하루에 이만 삼천 명이 죽었나니 우리는 저희와 같이 간음하지 말자"
+      ],
+      "raw_text_hashes": [
+        "c3699cfacdb899eeaee91b9f6c64320b5cb80a2773755581a8389345232c8ac0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:9",
+      "sequence": 28573,
+      "chapter_label": "1CO 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Let’s not test Christ, as some of them tested, and perished by the serpents.",
+      "ko": "저희 중에 어떤이들이 주를 시험하다가 뱀에게 멸망하였나니 우리는 저희와 같이 시험하지 말자",
+      "source_text_hash": "bbae6b9c055923035d9904c8dfa87ef93c7fe1f24e29aab7ff1b47216169cced",
+      "translation_text_hash": "f441044b6b12e91490db5e15385f9ca5860d084a1b6eb98e8f00bdab1e2e80a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 중에 어떤이들이 주를 시험하다가 뱀에게 멸망하였나니 우리는 저희와 같이 시험하지 말자"
+      ],
+      "raw_text_hashes": [
+        "f441044b6b12e91490db5e15385f9ca5860d084a1b6eb98e8f00bdab1e2e80a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:10",
+      "sequence": 28574,
+      "chapter_label": "1CO 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "Don’t grumble, as some of them also grumbled, and perished by the destroyer.",
+      "ko": "저희 중에 어떤이들이 원망하다가 멸망시키는 자에게 멸망하였나니 너희는 저희와 같이 원망하지 말라",
+      "source_text_hash": "c836be989e4875a9fbd12ff5215ebea089b5e5ae5d7a9f08f8159a3937d1f317",
+      "translation_text_hash": "c0438c18da58f455df8056bac5ee7678647172eef52b5cb03412a31f6fedc55e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 중에 어떤이들이 원망하다가 멸망시키는 자에게 멸망하였나니 너희는 저희와 같이 원망하지 말라"
+      ],
+      "raw_text_hashes": [
+        "c0438c18da58f455df8056bac5ee7678647172eef52b5cb03412a31f6fedc55e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:11",
+      "sequence": 28575,
+      "chapter_label": "1CO 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "Now all these things happened to them by way of example, and they were written for our admonition, on whom the ends of the ages have come.",
+      "ko": "저희에게 당한 이런 일이 거울이 되고 또한 말세를 만난 우리의 경계로 기록하였느니라",
+      "source_text_hash": "95e85eafb2b4cd3f0652d353b9b6226000c74ac19bd6f9c6eb60465130dc145c",
+      "translation_text_hash": "a67f1eeae30ead6e3f421f2ae831ac93fe87464154a646a23553452e87ab43de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 당한 이런 일이 거울이 되고 또한 말세를 만난 우리의 경계로 기록하였느니라"
+      ],
+      "raw_text_hashes": [
+        "a67f1eeae30ead6e3f421f2ae831ac93fe87464154a646a23553452e87ab43de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:12",
+      "sequence": 28576,
+      "chapter_label": "1CO 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore let him who thinks he stands be careful that he doesn’t fall.",
+      "ko": "그런즉 선 줄로 생각하는 자는 넘어질까 조심하라",
+      "source_text_hash": "02adf9e736197d574312039f329382a5d527411bea4933473fdb211f9aeb660e",
+      "translation_text_hash": "0a9810cfe9a73a7b1ef27e5e3ee073cf81607b86e5609170f0573c57de79ba95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 선 줄로 생각하는 자는 넘어질까 조심하라"
+      ],
+      "raw_text_hashes": [
+        "0a9810cfe9a73a7b1ef27e5e3ee073cf81607b86e5609170f0573c57de79ba95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:13",
+      "sequence": 28577,
+      "chapter_label": "1CO 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "No temptation has taken you except what is common to man. God is faithful, who will not allow you to be tempted above what you are able, but will with the temptation also make the way of escape, that you may be able to endure it.",
+      "ko": "사람이 감당할 시험 밖에는 너희에게 당한 것이 없나니 오직 하나님은 미쁘사 너희가 감당치 못할 시험 당함을 허락지 아니하시고 시험 당할 즈음에 또한 피할 길을 내사 너희로 능히 감당하게 하시느니라",
+      "source_text_hash": "f68330b7d567363d8952a1053b78a7a8eaeb00c531eacfe1fed5207538c2e477",
+      "translation_text_hash": "3ff0db5bd353dfb1ad19cea4e538aaa32003db78a6f07e55f37f4b70824763cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 감당할 시험 밖에는 너희에게 당한 것이 없나니 오직 하나님은 미쁘사 너희가 감당치 못할 시험 당함을 허락지 아니하시고 시험 당할 즈음에 또한 피할 길을 내사 너희로 능히 감당하게 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "3ff0db5bd353dfb1ad19cea4e538aaa32003db78a6f07e55f37f4b70824763cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:14",
+      "sequence": 28578,
+      "chapter_label": "1CO 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore, my beloved, flee from idolatry.",
+      "ko": "그런즉 내 사랑하는 자들아 우상 숭배하는 일을 피하라",
+      "source_text_hash": "066f95e1f28f5fab082a67f358a81df0bbc5a9d07c6218aeb6f641dad9668e24",
+      "translation_text_hash": "b2964480bbd04887e8db26b7a7ed135bd1cf19895841ae04d2249e54f883c317",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내 사랑하는 자들아 우상 숭배하는 일을 피하라"
+      ],
+      "raw_text_hashes": [
+        "b2964480bbd04887e8db26b7a7ed135bd1cf19895841ae04d2249e54f883c317"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:15",
+      "sequence": 28579,
+      "chapter_label": "1CO 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "I speak as to wise men. Judge what I say.",
+      "ko": "나는 지혜 있는 자들에게 말함과 같이 하노니 너희는 내 이르는 말을 스스로 판단하라",
+      "source_text_hash": "fc1508b3089bdf3f1593b0c9c920f7f2e58886ed9a842d1b0a4d25da2b25d0af",
+      "translation_text_hash": "958ca020c9618f27692b98bf74a7064eb04db26fb766549fa8cd35e397b3162f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 지혜 있는 자들에게 말함과 같이 하노니 너희는 내 이르는 말을 스스로 판단하라"
+      ],
+      "raw_text_hashes": [
+        "958ca020c9618f27692b98bf74a7064eb04db26fb766549fa8cd35e397b3162f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:16",
+      "sequence": 28580,
+      "chapter_label": "1CO 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "The cup of blessing which we bless, isn’t it a sharing of the blood of Christ? The bread which we break, isn’t it a sharing of the body of Christ?",
+      "ko": "우리가 축복하는바 축복의 잔은 그리스도의 피에 참예함이 아니며 우리가 떼는 떡은 그리스도의 몸에 참예함이 아니냐",
+      "source_text_hash": "5f8655f84e2bb4cae755352ebe0e3b6e1f9d9a6afd8ff5e84c873eae70246f77",
+      "translation_text_hash": "90478caafa56a8f5822fa0822e1b4beab9937964ac540a26d20cc8e3dbdf0c49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 축복하는바 축복의 잔은 그리스도의 피에 참예함이 아니며 우리가 떼는 떡은 그리스도의 몸에 참예함이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "90478caafa56a8f5822fa0822e1b4beab9937964ac540a26d20cc8e3dbdf0c49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:17",
+      "sequence": 28581,
+      "chapter_label": "1CO 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "Because there is one loaf of bread, we, who are many, are one body; for we all partake of the one loaf of bread.",
+      "ko": "떡이 하나요 많은 우리가 한 몸이니 이는 우리가 다 한 떡에 참예함이라",
+      "source_text_hash": "24fbf2e20f62dd9338c0887af6b355364126812f547039186d8cda77bc51207c",
+      "translation_text_hash": "3b1e419a9974c96aace2efc4781051cc39f219083ae2eef4f54453baa5498384",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떡이 하나요 많은 우리가 한 몸이니 이는 우리가 다 한 떡에 참예함이라"
+      ],
+      "raw_text_hashes": [
+        "3b1e419a9974c96aace2efc4781051cc39f219083ae2eef4f54453baa5498384"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:18",
+      "sequence": 28582,
+      "chapter_label": "1CO 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "Consider Israel according to the flesh. Don’t those who eat the sacrifices participate in the altar?",
+      "ko": "육신을 따라 난 이스라엘을 보라 제물을 먹는 자들이 제단에 참예하는 자들이 아니냐",
+      "source_text_hash": "22294dd7915759ae290cfe7b7310e5c89be31cee6e09a197b190c5b3137caf8b",
+      "translation_text_hash": "9a125c6e8f38ea7ad103fdd948bb9f80f7dd5f32e1e93a82f91a6d5447ee919e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육신을 따라 난 이스라엘을 보라 제물을 먹는 자들이 제단에 참예하는 자들이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "9a125c6e8f38ea7ad103fdd948bb9f80f7dd5f32e1e93a82f91a6d5447ee919e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:19",
+      "sequence": 28583,
+      "chapter_label": "1CO 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "What am I saying then? That a thing sacrificed to idols is anything, or that an idol is anything?",
+      "ko": "그런즉 내가 무엇을 말하느뇨 우상의 제물은 무엇이며 우상은 무엇이라 하느뇨",
+      "source_text_hash": "1af86384adc524a6dc49085113b2d2caaac1065275a6b075965e89cf50a0fd2a",
+      "translation_text_hash": "15cb72ca2b9c0bf258632fe2014eec92d8698bd06ffeb1a32a7dd375676a3527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내가 무엇을 말하느뇨 우상의 제물은 무엇이며 우상은 무엇이라 하느뇨"
+      ],
+      "raw_text_hashes": [
+        "15cb72ca2b9c0bf258632fe2014eec92d8698bd06ffeb1a32a7dd375676a3527"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:20",
+      "sequence": 28584,
+      "chapter_label": "1CO 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "But I say that the things which the Gentiles sacrifice, they sacrifice to demons and not to God, and I don’t desire that you would have fellowship with demons.",
+      "ko": "대저 이방인의 제사하는 것은 귀신에게 하는 것이요 하나님께 제사하는 것이 아니니 나는 너희가 귀신과 교제하는 자 되기를 원치 아니하노라",
+      "source_text_hash": "3ddceff26e45d553b0a124b7912b9407056e0f0c9fe97bdda0ba95b5f91de11b",
+      "translation_text_hash": "5022fdba443ba8cc291bf6c6c7add93b3981b0ef062e4f6b9fa601043ce9e327",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 이방인의 제사하는 것은 귀신에게 하는 것이요 하나님께 제사하는 것이 아니니 나는 너희가 귀신과 교제하는 자 되기를 원치 아니하노라"
+      ],
+      "raw_text_hashes": [
+        "5022fdba443ba8cc291bf6c6c7add93b3981b0ef062e4f6b9fa601043ce9e327"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:21",
+      "sequence": 28585,
+      "chapter_label": "1CO 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "You can’t both drink the cup of the Lord and the cup of demons. You can’t both partake of the table of the Lord and of the table of demons.",
+      "ko": "너희가 주의 잔과 귀신의 잔을 겸하여 마시지 못하고 주의 상과 귀신의 상에 겸하여 참예치 못하리라",
+      "source_text_hash": "756d2971e001df136dda69470c1456051e1af44a967f2833f14f8ba868c2c416",
+      "translation_text_hash": "39b9732f22b32be085886f4f8d2919015eba0b108cd82fa44e4d2753bd08b3d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 주의 잔과 귀신의 잔을 겸하여 마시지 못하고 주의 상과 귀신의 상에 겸하여 참예치 못하리라"
+      ],
+      "raw_text_hashes": [
+        "39b9732f22b32be085886f4f8d2919015eba0b108cd82fa44e4d2753bd08b3d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:22",
+      "sequence": 28586,
+      "chapter_label": "1CO 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "Or do we provoke the Lord to jealousy? Are we stronger than he?",
+      "ko": "그러면 우리가 주를 노여워하시게 하겠느냐 우리가 주보다 강한 자냐",
+      "source_text_hash": "b71f92640fd55435520c4635632788793ce7a7a03cd5e4b4499cb4ac69010f57",
+      "translation_text_hash": "a88fdc1ba23f1184d80d481f140435320f338c674b353e1669d8b49cab04f31e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 우리가 주를 노여워하시게 하겠느냐 우리가 주보다 강한 자냐"
+      ],
+      "raw_text_hashes": [
+        "a88fdc1ba23f1184d80d481f140435320f338c674b353e1669d8b49cab04f31e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:23",
+      "sequence": 28587,
+      "chapter_label": "1CO 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "“All things are lawful for me,” but not all things are profitable. “All things are lawful for me,” but not all things build up.",
+      "ko": "모든 것이 가하나 모든 것이 유익한 것이 아니요 모든 것이 가하나 모든 것이 덕을 세우는 것이 아니니",
+      "source_text_hash": "19f75fa4106c6cb851cfb16aec1a30605596317abe1413fcba1982dccdff14ff",
+      "translation_text_hash": "6ebcc925d11a77f31603caed5b5d5f5843c8f876018aaa2e3aef808697242cef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 것이 가하나 모든 것이 유익한 것이 아니요 모든 것이 가하나 모든 것이 덕을 세우는 것이 아니니"
+      ],
+      "raw_text_hashes": [
+        "6ebcc925d11a77f31603caed5b5d5f5843c8f876018aaa2e3aef808697242cef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:24",
+      "sequence": 28588,
+      "chapter_label": "1CO 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "Let no one seek his own, but each one his neighbor’s good.",
+      "ko": "누구든지 자기의 유익을 구치 말고 남의 유익을 구하라",
+      "source_text_hash": "28323f488ca4f16a3e3e5abbdd11ea0fc27c9051d1c913f3de497921e43eb27f",
+      "translation_text_hash": "2d992d1f2195fee0f7dd47313f6d97418cccae9100a6dbb088eb39905bd8273c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 자기의 유익을 구치 말고 남의 유익을 구하라"
+      ],
+      "raw_text_hashes": [
+        "2d992d1f2195fee0f7dd47313f6d97418cccae9100a6dbb088eb39905bd8273c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:25",
+      "sequence": 28589,
+      "chapter_label": "1CO 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "Whatever is sold in the butcher shop, eat, asking no question for the sake of conscience,",
+      "ko": "무릇 시장에서 파는 것은 양심을 위하여 묻지 말고 먹으라",
+      "source_text_hash": "894b7e329e093bbad2092410264e25303fc083cad9b8648827733d7c3f7ae1bb",
+      "translation_text_hash": "700200e8542b74497d5779a988c0e6bb67b87048bfdafb4856417eec6bbf29c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 시장에서 파는 것은 양심을 위하여 묻지 말고 먹으라"
+      ],
+      "raw_text_hashes": [
+        "700200e8542b74497d5779a988c0e6bb67b87048bfdafb4856417eec6bbf29c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:26",
+      "sequence": 28590,
+      "chapter_label": "1CO 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "for “the earth is the Lord’s, and its fullness.”",
+      "ko": "이는 땅과 거기 충만한 것이 주의 것임이니라",
+      "source_text_hash": "6bce5373eb38373e79a5c7de28e1facce5a7cf54a2d196dad31fc8013cf7c912",
+      "translation_text_hash": "a986221c913862dd5fe2920790af31b091af01f5311f3c9e010be02dac71d2ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 땅과 거기 충만한 것이 주의 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "a986221c913862dd5fe2920790af31b091af01f5311f3c9e010be02dac71d2ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:27",
+      "sequence": 28591,
+      "chapter_label": "1CO 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "But if one of those who don’t believe invites you to a meal, and you are inclined to go, eat whatever is set before you, asking no questions for the sake of conscience.",
+      "ko": "불신자 중 누가 너희를 청하매 너희가 가고자 하거든 너희 앞에 무엇이든지 차려 놓은 것은 양심을 위하여 묻지 말고 먹으라",
+      "source_text_hash": "6c3012c5c32816a70156e8da76fe065cb636c0fd3a76f6c71e3133ac29ddbd45",
+      "translation_text_hash": "e251c469dde809234c416b1f546cf9966327228436a8dad7c203d3bddbeeb91d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불신자 중 누가 너희를 청하매 너희가 가고자 하거든 너희 앞에 무엇이든지 차려 놓은 것은 양심을 위하여 묻지 말고 먹으라"
+      ],
+      "raw_text_hashes": [
+        "e251c469dde809234c416b1f546cf9966327228436a8dad7c203d3bddbeeb91d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:28",
+      "sequence": 28592,
+      "chapter_label": "1CO 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "But if anyone says to you, “This was offered to idols,” don’t eat it for the sake of the one who told you, and for the sake of conscience. For “the earth is the Lord’s, with all its fullness.”",
+      "ko": "누가 너희에게 이것이 제물이라 말하거든 알게 한 자와 및 양심을 위하여 먹지 말라",
+      "source_text_hash": "cfe3b34fd8f0fba0a191207cb2096c3dc1cc2441b63b600b479b70203b0d344f",
+      "translation_text_hash": "ea9208249e3d9840d789fedc662e86c2732de5e37dc4014efc1d2669da128d14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 너희에게 이것이 제물이라 말하거든 알게 한 자와 및 양심을 위하여 먹지 말라"
+      ],
+      "raw_text_hashes": [
+        "ea9208249e3d9840d789fedc662e86c2732de5e37dc4014efc1d2669da128d14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:29",
+      "sequence": 28593,
+      "chapter_label": "1CO 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "Conscience, I say, not your own, but the other’s conscience. For why is my liberty judged by another conscience?",
+      "ko": "내가 말한 양심은 너희의 것이 아니요 남의 것이니 어찌하여 내 자유가 남의 양심으로 말미암아 판단을 받으리요",
+      "source_text_hash": "c7fabb78f6789ea30d8b3caacafe28f4deede1fdc3da2b4c15a5cd8d5ca0dbfa",
+      "translation_text_hash": "d1e472db17b914b70fa893e5063164141af7bbbfc9905e04ffc4286e68693ced",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말한 양심은 너희의 것이 아니요 남의 것이니 어찌하여 내 자유가 남의 양심으로 말미암아 판단을 받으리요"
+      ],
+      "raw_text_hashes": [
+        "d1e472db17b914b70fa893e5063164141af7bbbfc9905e04ffc4286e68693ced"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:30",
+      "sequence": 28594,
+      "chapter_label": "1CO 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "If I partake with thankfulness, why am I denounced for something I give thanks for?",
+      "ko": "만일 내가 감사함으로 참예하면 어찌하여 내가 감사하다 하는 것에 대하여 비방을 받으리요",
+      "source_text_hash": "0e983dea6a62d835bd5f3892467d6627296ec54c3adaa00a507eb8c274aec8d5",
+      "translation_text_hash": "c56bd1c574a7b6cb119720d36d4e1715730b81806978993333300884e5d49fb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 내가 감사함으로 참예하면 어찌하여 내가 감사하다 하는 것에 대하여 비방을 받으리요"
+      ],
+      "raw_text_hashes": [
+        "c56bd1c574a7b6cb119720d36d4e1715730b81806978993333300884e5d49fb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:31",
+      "sequence": 28595,
+      "chapter_label": "1CO 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "Whether therefore you eat or drink, or whatever you do, do all to the glory of God.",
+      "ko": "그런즉 너희가 먹든지 마시든지 무엇을 하든지 다 하나님의 영광을 위하여 하라",
+      "source_text_hash": "a13b4f99e21321683109250f2fd0cc8f8b29c3899f1b9059115ad60307a59416",
+      "translation_text_hash": "53d6cc9fe662c73143e753662a579bb610d30eb8b16ce00276121851e39ab3e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희가 먹든지 마시든지 무엇을 하든지 다 하나님의 영광을 위하여 하라"
+      ],
+      "raw_text_hashes": [
+        "53d6cc9fe662c73143e753662a579bb610d30eb8b16ce00276121851e39ab3e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:32",
+      "sequence": 28596,
+      "chapter_label": "1CO 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "Give no occasion for stumbling, whether to Jews, to Greeks, or to the assembly of God;",
+      "ko": "유대인에게나 헬라인에게나 하나님의 교회에나 거치는 자가 되지 말고",
+      "source_text_hash": "aeae0e0da885776519af232f3caa3d821786229d3576b29354855da51c749ada",
+      "translation_text_hash": "7b7fbd55bef9bfe21db1f97f5d77b1da27c24511de0d1a90632b7c75c9e96dd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인에게나 헬라인에게나 하나님의 교회에나 거치는 자가 되지 말고"
+      ],
+      "raw_text_hashes": [
+        "7b7fbd55bef9bfe21db1f97f5d77b1da27c24511de0d1a90632b7c75c9e96dd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:10:33",
+      "sequence": 28597,
+      "chapter_label": "1CO 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CO",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "even as I also please all men in all things, not seeking my own profit, but the profit of the many, that they may be saved.",
+      "ko": "나와 같이 모든 일에 모든 사람을 기쁘게 하여 나의 유익을 구치 아니하고 많은 사람의 유익을 구하여 저희로 구원을 얻게 하라",
+      "source_text_hash": "7982307c90e7cec9ca39d625df0beb761a37320f2cb3924018afa007bbbd4007",
+      "translation_text_hash": "66f6f247e5cb774df7e9d6f185bbf780000d62b6df83e0be07adf774af95e302",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 같이 모든 일에 모든 사람을 기쁘게 하여 나의 유익을 구치 아니하고 많은 사람의 유익을 구하여 저희로 구원을 얻게 하라"
+      ],
+      "raw_text_hashes": [
+        "66f6f247e5cb774df7e9d6f185bbf780000d62b6df83e0be07adf774af95e302"
+      ]
+    }
+  ]
+}

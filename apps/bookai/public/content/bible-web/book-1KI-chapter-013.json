@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:013",
+  "unit_ordinal": 304,
+  "unit_label": "1KI 13",
+  "book_code": "1KI",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:13:1",
+      "sequence": 9186,
+      "chapter_label": "1KI 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "Behold, a man of God came out of Judah by the LORD’s word to Bethel; and Jeroboam was standing by the altar to burn incense.",
+      "ko": "때에 하나님의 사람이 여호와의 말씀으로 인하여 유다에서부터 벧엘에 이르니 마침 여로보암이 단 곁에 서서 분향하는지라",
+      "source_text_hash": "f4fd914ff741c6f476a8d1d84c71af8a99c6988ba4dbf515d3ef5aa101bd66a6",
+      "translation_text_hash": "430f0175d3b0569d3ac38e3821200174db4333fbff856f8dd3e13f6ab9aff4f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 하나님의 사람이 여호와의 말씀으로 인하여 유다에서부터 벧엘에 이르니 마침 여로보암이 단 곁에 서서 분향하는지라"
+      ],
+      "raw_text_hashes": [
+        "430f0175d3b0569d3ac38e3821200174db4333fbff856f8dd3e13f6ab9aff4f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:2",
+      "sequence": 9187,
+      "chapter_label": "1KI 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "He cried against the altar by the LORD’s word, and said, “Altar! Altar! The LORD says: ‘Behold, a son will be born to David’s house, Josiah by name. On you he will sacrifice the priests of the high places who burn incense on you, and they will burn men’s bones on you.’”",
+      "ko": "하나님의 사람이 단을 향하여 여호와의 말씀으로 외쳐 가로되 단아 단아 여호와께서 말씀하시기를 다윗의 집에 요시야라 이름하는 아들을 낳으리니 저가 네 위에 분향하는 산당 제사장을 네 위에 제사할 것이요 또 사람의 뼈를 네 위에 사르리라 하셨느니라 하고",
+      "source_text_hash": "c0edad75383036bd803b45e4b6e844849c879e9ef7d60127d046e75a16842bc1",
+      "translation_text_hash": "69ac3b9467d2bd90e432c4ff444d86224eaa886590087d43d416a2e3000ac2eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람이 단을 향하여 여호와의 말씀으로 외쳐 가로되 단아 단아 여호와께서 말씀하시기를 다윗의 집에 요시야라 이름하는 아들을 낳으리니 저가 네 위에 분향하는 산당 제사장을 네 위에 제사할 것이요 또 사람의 뼈를 네 위에 사르리라 하셨느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "69ac3b9467d2bd90e432c4ff444d86224eaa886590087d43d416a2e3000ac2eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:3",
+      "sequence": 9188,
+      "chapter_label": "1KI 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "He gave a sign the same day, saying, “This is the sign which the LORD has spoken: Behold, the altar will be split apart, and the ashes that are on it will be poured out.”",
+      "ko": "그 날에 저가 예조를 들어 가로되 이는 여호와의 말씀하신 예조라 단이 갈라지며 그 위에 있는 재가 쏟아지리라 하매",
+      "source_text_hash": "93ae9ecbf6942b65b1ec7646ddb9dd06124f2e4df4ff1a03121ba029fda2c571",
+      "translation_text_hash": "19bb093f0f474ebacf37d42e7be52b789937b4b2eb64a14d1532e1f4e4ad6bc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 저가 예조를 들어 가로되 이는 여호와의 말씀하신 예조라 단이 갈라지며 그 위에 있는 재가 쏟아지리라 하매"
+      ],
+      "raw_text_hashes": [
+        "19bb093f0f474ebacf37d42e7be52b789937b4b2eb64a14d1532e1f4e4ad6bc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:4",
+      "sequence": 9189,
+      "chapter_label": "1KI 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "When the king heard the saying of the man of God, which he cried against the altar in Bethel, Jeroboam put out his hand from the altar, saying, “Seize him!” His hand, which he put out against him, dried up, so that he could not draw it back again to himself.",
+      "ko": "여로보암왕이 하나님의 사람의 벧엘에 있는 단을 향하여 외쳐 말함을 들을 때에 단에서 손을 펴며 저를 잡으라 하더라 저를 향하여 편 손이 말라 다시 거두지 못하며",
+      "source_text_hash": "6a54943a54aabca5b8351e40d7bfb984ac651c4fb7a2dc2f69c6a00b23058603",
+      "translation_text_hash": "0d501d7d9115ba3011d8d5bf7064c293d97ea2b7f26770323f48c2599c63b100",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암왕이 하나님의 사람의 벧엘에 있는 단을 향하여 외쳐 말함을 들을 때에 단에서 손을 펴며 저를 잡으라 하더라 저를 향하여 편 손이 말라 다시 거두지 못하며"
+      ],
+      "raw_text_hashes": [
+        "0d501d7d9115ba3011d8d5bf7064c293d97ea2b7f26770323f48c2599c63b100"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:5",
+      "sequence": 9190,
+      "chapter_label": "1KI 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "The altar was also split apart, and the ashes poured out from the altar, according to the sign which the man of God had given by the LORD’s word.",
+      "ko": "하나님의 사람의 여호와의 말씀으로 보인 예조대로 단이 갈라지며 재가 단에서 쏟아진지라",
+      "source_text_hash": "82da01c8582e8f7d7b5116ccd5871fd32c639bbde5fe9bf761d960283ac811a8",
+      "translation_text_hash": "7f155c136f346d2e9253b84c4dd67080eb212a29e03e10d97aa582a52e710982",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람의 여호와의 말씀으로 보인 예조대로 단이 갈라지며 재가 단에서 쏟아진지라"
+      ],
+      "raw_text_hashes": [
+        "7f155c136f346d2e9253b84c4dd67080eb212a29e03e10d97aa582a52e710982"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:6",
+      "sequence": 9191,
+      "chapter_label": "1KI 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "The king answered the man of God, “Now intercede for the favor of the LORD your God, and pray for me, that my hand may be restored to me.” The man of God interceded with the LORD, and the king’s hand was restored to him, and became as it was before.",
+      "ko": "왕이 하나님의 사람에게 말하여 가로되 청컨대 너는 나를 위하여 네 하나님 여호와께 은혜를 구하여 내 손으로 다시 성하게 기도하라 하나님의 사람이 여호와께 은혜를 구하니 왕의 손이 다시 성하여 전과 같이 되니라",
+      "source_text_hash": "c264056a9c6a1d39ceb427436e2b75c0f9c64ddf089e5b38bc1f28505b8e26aa",
+      "translation_text_hash": "0565cdff9cd107b90f45220605065c9775d3771af71ac9e60f41801e321c4c93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 하나님의 사람에게 말하여 가로되 청컨대 너는 나를 위하여 네 하나님 여호와께 은혜를 구하여 내 손으로 다시 성하게 기도하라 하나님의 사람이 여호와께 은혜를 구하니 왕의 손이 다시 성하여 전과 같이 되니라"
+      ],
+      "raw_text_hashes": [
+        "0565cdff9cd107b90f45220605065c9775d3771af71ac9e60f41801e321c4c93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:7",
+      "sequence": 9192,
+      "chapter_label": "1KI 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "The king said to the man of God, “Come home with me and refresh yourself, and I will give you a reward.”",
+      "ko": "왕이 하나님의 사람에게 이르되 나와 함께 집에 가서 몸을 쉬라 내가 네게 예물을 주리라",
+      "source_text_hash": "76e37df1508e8a8ae2fdf36542191993f614a0bd457e5bc11e93f3b1818dfaae",
+      "translation_text_hash": "86ea9c35e3483cafcb3ca41c99799765dcceac46ecd24865c46e058d91b17a11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 하나님의 사람에게 이르되 나와 함께 집에 가서 몸을 쉬라 내가 네게 예물을 주리라"
+      ],
+      "raw_text_hashes": [
+        "86ea9c35e3483cafcb3ca41c99799765dcceac46ecd24865c46e058d91b17a11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:8",
+      "sequence": 9193,
+      "chapter_label": "1KI 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "The man of God said to the king, “Even if you gave me half of your house, I would not go in with you, neither would I eat bread nor drink water in this place;",
+      "ko": "하나님의 사람이 왕께 대답하되 왕께서 왕의 집 절반으로 내게 준다 할찌라도 나는 왕과 함께 들어가지도 아니하고 이곳에서는 떡도 먹지 아니하고 물도 마시지 아니하리니",
+      "source_text_hash": "b928b43619f48679f2c9b51a046e239c1cbc2346e73c7bb382c88b8d527d85e5",
+      "translation_text_hash": "346b7f6a6980821272779d4fcae4d91a530693300a8ae5c0692c8cbc139b6363",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람이 왕께 대답하되 왕께서 왕의 집 절반으로 내게 준다 할찌라도 나는 왕과 함께 들어가지도 아니하고 이곳에서는 떡도 먹지 아니하고 물도 마시지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "346b7f6a6980821272779d4fcae4d91a530693300a8ae5c0692c8cbc139b6363"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:9",
+      "sequence": 9194,
+      "chapter_label": "1KI 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "for so was it commanded me by the LORD’s word, saying, ‘You shall eat no bread, drink no water, and don’t return by the way that you came.’”",
+      "ko": "이는 곧 여호와의 말씀이 내게 명하여 이르시기를 떡도 먹지 말며 물도 마시지 말고 왔던 길로 도로 가지도 말라 하셨음이니이다 하고",
+      "source_text_hash": "31655ebecd594b064738883ccbd4c91100dc47cad0a9efb53ee46215cffdd72d",
+      "translation_text_hash": "18c77365b88e63a3501c1ad243e7ee5be7367b60915fe29c7844a3296d8fe545",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 곧 여호와의 말씀이 내게 명하여 이르시기를 떡도 먹지 말며 물도 마시지 말고 왔던 길로 도로 가지도 말라 하셨음이니이다 하고"
+      ],
+      "raw_text_hashes": [
+        "18c77365b88e63a3501c1ad243e7ee5be7367b60915fe29c7844a3296d8fe545"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:10",
+      "sequence": 9195,
+      "chapter_label": "1KI 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "So he went another way, and didn’t return by the way that he came to Bethel.",
+      "ko": "이에 다른 길로 가고 자기가 벧엘에 오던 길로 좇아 돌아가지 아니하니라",
+      "source_text_hash": "313d5962b94f644abfee12a4c90b9970c2481279fe9aa49598a971653c912c76",
+      "translation_text_hash": "838aec94a2b18096291418592a6633f42a3d476a1882bb51b5ba9cb84d9b3663",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다른 길로 가고 자기가 벧엘에 오던 길로 좇아 돌아가지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "838aec94a2b18096291418592a6633f42a3d476a1882bb51b5ba9cb84d9b3663"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:11",
+      "sequence": 9196,
+      "chapter_label": "1KI 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Now an old prophet lived in Bethel, and one of his sons came and told him all the works that the man of God had done that day in Bethel. They also told their father the words which he had spoken to the king.",
+      "ko": "벧엘에 한 늙은 선지자가 살더니 그 아들들이 와서 이 날에 하나님의 사람이 벧엘에서 행한 모든 일을 저에게 고하고 또 그가 왕에게 고한 말씀도 저희가 그 아비에게 고한지라",
+      "source_text_hash": "169a1d770920a54b029a2f07d43715d02e798a62ba5bc9aacab0964e96aaa476",
+      "translation_text_hash": "9ff2a8c5516e314eed7bc41752bf0762aa9a87821b0cbebf2da95af83436aa67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧엘에 한 늙은 선지자가 살더니 그 아들들이 와서 이 날에 하나님의 사람이 벧엘에서 행한 모든 일을 저에게 고하고 또 그가 왕에게 고한 말씀도 저희가 그 아비에게 고한지라"
+      ],
+      "raw_text_hashes": [
+        "9ff2a8c5516e314eed7bc41752bf0762aa9a87821b0cbebf2da95af83436aa67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:12",
+      "sequence": 9197,
+      "chapter_label": "1KI 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "Their father said to them, “Which way did he go?” Now his sons had seen which way the man of God went, who came from Judah.",
+      "ko": "그 아비가 저희에게 이르되 그가 어느 길로 가더냐 하니 그 아들들이 유다에서부터 온 하나님의 사람의 간 길을 보았음이라",
+      "source_text_hash": "8bd4cac713a9594228be78329fd4e0bfeb660f468bfbd19ab2f3f4c3fc477778",
+      "translation_text_hash": "b56e8812e681ff89bf79c1fe11cdce8afb1b4089e83ba17ff559c7ba4afaa42e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비가 저희에게 이르되 그가 어느 길로 가더냐 하니 그 아들들이 유다에서부터 온 하나님의 사람의 간 길을 보았음이라"
+      ],
+      "raw_text_hashes": [
+        "b56e8812e681ff89bf79c1fe11cdce8afb1b4089e83ba17ff559c7ba4afaa42e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:13",
+      "sequence": 9198,
+      "chapter_label": "1KI 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "He said to his sons, “Saddle the donkey for me.” So they saddled the donkey for him; and he rode on it.",
+      "ko": "저가 그 아들들에게 이르되 나를 위하여 나귀에 안장을 지우라 저희가 나귀에 안장을 지우니 저가 타고",
+      "source_text_hash": "bdf4e6345116e7c2f4932389245378c16ca04a3caf534ca49fefffa64f6c4019",
+      "translation_text_hash": "4f6c9dd46056d51e36786facf735825654da4c7d65f8d411382cfb358792c4a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 그 아들들에게 이르되 나를 위하여 나귀에 안장을 지우라 저희가 나귀에 안장을 지우니 저가 타고"
+      ],
+      "raw_text_hashes": [
+        "4f6c9dd46056d51e36786facf735825654da4c7d65f8d411382cfb358792c4a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:14",
+      "sequence": 9199,
+      "chapter_label": "1KI 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "He went after the man of God, and found him sitting under an oak. He said to him, “Are you the man of God who came from Judah?” He said, “I am.”",
+      "ko": "하나님의 사람의 뒤를 좇아 가서 상수리나무 아래 앉은 것을 보고 이르되 그대가 유다에서 온 하나님의 사람이뇨 대답하되 그러하다",
+      "source_text_hash": "37e1d77509cccbe3982cc453c5bd3fb62acbe986795550652b43db5335b3ce84",
+      "translation_text_hash": "5d99846b4b9c45e0c2e6675e50e42de325a4ff329dac16b791bab93c8cb88de5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람의 뒤를 좇아 가서 상수리나무 아래 앉은 것을 보고 이르되 그대가 유다에서 온 하나님의 사람이뇨 대답하되 그러하다"
+      ],
+      "raw_text_hashes": [
+        "5d99846b4b9c45e0c2e6675e50e42de325a4ff329dac16b791bab93c8cb88de5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:15",
+      "sequence": 9200,
+      "chapter_label": "1KI 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Then he said to him, “Come home with me and eat bread.”",
+      "ko": "저가 그 사람에게 이르되 나와 함께 집으로 가서 떡을 먹으라",
+      "source_text_hash": "876df4cd18c3e406bc40cdad006eae2a8670f7f34f7355ce41d92f1d1f58a4ec",
+      "translation_text_hash": "baf05231e3a8debfd8161d2cb8a827beba06ae0052f99b4a9719b38511be43b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 그 사람에게 이르되 나와 함께 집으로 가서 떡을 먹으라"
+      ],
+      "raw_text_hashes": [
+        "baf05231e3a8debfd8161d2cb8a827beba06ae0052f99b4a9719b38511be43b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:16",
+      "sequence": 9201,
+      "chapter_label": "1KI 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "He said, “I may not return with you, nor go in with you. I will not eat bread or drink water with you in this place.",
+      "ko": "대답하되 나는 그대와 함께 돌아가지도 못하겠고 그대와 함께 들어 가지도 못하겠으며 내가 이곳에서 그대와 함께 떡도 먹지 아니하고 물도 마시지 아니하리니",
+      "source_text_hash": "c62cfb302ccaed99e3862214d581c13453e766679f69ff748a5dd9c5101c672c",
+      "translation_text_hash": "064fd25a9a2901d7e9299f74c4cd2ec9609762a86e6008af2512f17cd8cd2dcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 나는 그대와 함께 돌아가지도 못하겠고 그대와 함께 들어 가지도 못하겠으며 내가 이곳에서 그대와 함께 떡도 먹지 아니하고 물도 마시지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "064fd25a9a2901d7e9299f74c4cd2ec9609762a86e6008af2512f17cd8cd2dcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:17",
+      "sequence": 9202,
+      "chapter_label": "1KI 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "For it was said to me by the LORD’s word, ‘You shall eat no bread or drink water there, and don’t turn again to go by the way that you came.’”",
+      "ko": "이는 여호와의 말씀이 내게 이르시기를 네가 거기서 떡도 먹지 말고 물도 마시지 말며 또 네가 오던 길로 돌아가지도 말라 하셨음이로라",
+      "source_text_hash": "884c68135ce6cebf5110fc4bf37764106720c1dcd3c6473458f72e3e26e2dd23",
+      "translation_text_hash": "6eff8b95009c413bb9bfa347f9ab971c0ee8d094e6162094ad02bfba46bf1fd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와의 말씀이 내게 이르시기를 네가 거기서 떡도 먹지 말고 물도 마시지 말며 또 네가 오던 길로 돌아가지도 말라 하셨음이로라"
+      ],
+      "raw_text_hashes": [
+        "6eff8b95009c413bb9bfa347f9ab971c0ee8d094e6162094ad02bfba46bf1fd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:18",
+      "sequence": 9203,
+      "chapter_label": "1KI 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "He said to him, “I also am a prophet as you are; and an angel spoke to me by the LORD’s word, saying, ‘Bring him back with you into your house, that he may eat bread and drink water.’” He lied to him.",
+      "ko": "저가 그 사람에게 이르되 나도 그대와 같은 선지자라 천사가 여호와의 말씀으로 내게 이르기를 그를 네 집으로 데리고 돌아가서 그에게 떡을 먹이고 물을 마시우라 하였느니라 하니 이는 그 사람을 속임이라",
+      "source_text_hash": "c09a553bdf0890764e1761c469fe7309d6696b53a743f24e6d2e5ce57b1ebcb7",
+      "translation_text_hash": "7bb0cfbddb8984026b6f78bfa014d8f48c8c44f0b6c586d3f05718bddbb712b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 그 사람에게 이르되 나도 그대와 같은 선지자라 천사가 여호와의 말씀으로 내게 이르기를 그를 네 집으로 데리고 돌아가서 그에게 떡을 먹이고 물을 마시우라 하였느니라 하니 이는 그 사람을 속임이라"
+      ],
+      "raw_text_hashes": [
+        "7bb0cfbddb8984026b6f78bfa014d8f48c8c44f0b6c586d3f05718bddbb712b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:19",
+      "sequence": 9204,
+      "chapter_label": "1KI 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "So he went back with him, ate bread in his house, and drank water.",
+      "ko": "이에 그 사람이 저와 함께 돌아가서 그 집에서 떡을 먹으며 물을 마시니라",
+      "source_text_hash": "a04e57165ce3cdc982f6ca9401a89db2d46e87cb42d8ed218a4f5270d4ca4bf6",
+      "translation_text_hash": "ba3fa77fde495d4a74e7975dc89b5d5ddaa6e5f997f18caf51c5fb4fb5c377e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 사람이 저와 함께 돌아가서 그 집에서 떡을 먹으며 물을 마시니라"
+      ],
+      "raw_text_hashes": [
+        "ba3fa77fde495d4a74e7975dc89b5d5ddaa6e5f997f18caf51c5fb4fb5c377e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:20",
+      "sequence": 9205,
+      "chapter_label": "1KI 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "As they sat at the table, the LORD’s word came to the prophet who brought him back;",
+      "ko": "저희가 상 앞에 앉았을 때에 여호와의 말씀이 그 사람을 데려온 선지자에게 임하니",
+      "source_text_hash": "77afcd1eae3edce6d05050031524b33c3e9ff9e14daed54bf522fc71564798c5",
+      "translation_text_hash": "5016c5716afde9b76c72171dbb26be582843e5258216613676d6d9c07b57f274",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 상 앞에 앉았을 때에 여호와의 말씀이 그 사람을 데려온 선지자에게 임하니"
+      ],
+      "raw_text_hashes": [
+        "5016c5716afde9b76c72171dbb26be582843e5258216613676d6d9c07b57f274"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:21",
+      "sequence": 9206,
+      "chapter_label": "1KI 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "and he cried out to the man of God who came from Judah, saying, “The LORD says, ‘Because you have been disobedient to the LORD’s word, and have not kept the commandment which the LORD your God commanded you,",
+      "ko": "저가 유다에서부터 온 하나님의 사람을 향하여 외쳐 가로되 여호와의 말씀에 네가 여호와의 말씀을 어기며 네 하나님 여호와가 네게 명한 명령을 지키지 아니하고",
+      "source_text_hash": "0e93e655bbacd02e79bc0ab5ac6a34e634696680e78f951fe223cef172f8965c",
+      "translation_text_hash": "d25b5a941c5f6dd85a2e1a6d03b7a7629d90820933b84216d4409d158f93d5c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 유다에서부터 온 하나님의 사람을 향하여 외쳐 가로되 여호와의 말씀에 네가 여호와의 말씀을 어기며 네 하나님 여호와가 네게 명한 명령을 지키지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "d25b5a941c5f6dd85a2e1a6d03b7a7629d90820933b84216d4409d158f93d5c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:22",
+      "sequence": 9207,
+      "chapter_label": "1KI 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "but came back, and have eaten bread and drank water in the place of which he said to you, “Eat no bread, and drink no water,” your body will not come to the tomb of your fathers.’”",
+      "ko": "돌아와서 여호와가 너더러 떡도 먹지 말고 물도 마시지 말라 한 곳에서 떡을 먹고 물을 마셨으니 네 시체가 네 열조의 묘실에 들어 가지 못하리라 하셨느니라 하니라",
+      "source_text_hash": "22eaa2d04b8e9059377b689531d6e4245e099164d78a3f336632b1ac1cfb035d",
+      "translation_text_hash": "f391e3b90a4973b737eaeff213135ef6c21a3083c6f796be80887b9ba0c61f90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌아와서 여호와가 너더러 떡도 먹지 말고 물도 마시지 말라 한 곳에서 떡을 먹고 물을 마셨으니 네 시체가 네 열조의 묘실에 들어 가지 못하리라 하셨느니라 하니라"
+      ],
+      "raw_text_hashes": [
+        "f391e3b90a4973b737eaeff213135ef6c21a3083c6f796be80887b9ba0c61f90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:23",
+      "sequence": 9208,
+      "chapter_label": "1KI 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "After he had eaten bread and after he drank, he saddled the donkey for the prophet whom he had brought back.",
+      "ko": "자기가 데리고 온 선지자가 떡을 먹고 물을 마신 후에 그를 위하여 나귀에 안장을 지우니라",
+      "source_text_hash": "0253e41fee5173153dcd3383b00f658a104ecd7c2ab280bd4542303c35d044a4",
+      "translation_text_hash": "8ce2f5168d65cceb96c574ec9bef42bd2b385a857cb92eb5e0e91c54ace33a51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기가 데리고 온 선지자가 떡을 먹고 물을 마신 후에 그를 위하여 나귀에 안장을 지우니라"
+      ],
+      "raw_text_hashes": [
+        "8ce2f5168d65cceb96c574ec9bef42bd2b385a857cb92eb5e0e91c54ace33a51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:24",
+      "sequence": 9209,
+      "chapter_label": "1KI 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "When he had gone, a lion met him by the way and killed him. His body was thrown on the path, and the donkey stood by it. The lion also stood by the body.",
+      "ko": "이에 그 사람이 가더니 사자가 길에서 저를 만나 죽이매 그 시체가 길에 버린 바 되니 나귀는 그 곁에 섰고 사자도 그 시체 곁에 섰더라",
+      "source_text_hash": "081afd100a040a95aa8dd47b240a8c139f8f5946073c5870d29067737505fab8",
+      "translation_text_hash": "e1f97144ad04ac455b1018bc2d32010b95dd02b31df380212bba66270aa89ff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 사람이 가더니 사자가 길에서 저를 만나 죽이매 그 시체가 길에 버린 바 되니 나귀는 그 곁에 섰고 사자도 그 시체 곁에 섰더라"
+      ],
+      "raw_text_hashes": [
+        "e1f97144ad04ac455b1018bc2d32010b95dd02b31df380212bba66270aa89ff3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:25",
+      "sequence": 9210,
+      "chapter_label": "1KI 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "Behold, men passed by and saw the body thrown on the path, and the lion standing by the body; and they came and told it in the city where the old prophet lived.",
+      "ko": "지나가는 사람들이 길에 버린 시체와 그 시체 곁에 선 사자를 보고 그 늙은 선지자가 사는 성읍에 와서 말한지라",
+      "source_text_hash": "1557876973d51b99810ef7c3359d3dbbb8f29aa912ad8036c79d45bec30a6bf6",
+      "translation_text_hash": "4c7efa75687c05aeb9cd8a3fa8ca592beaf8baa976e4fc94b47f140b31ca8bef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지나가는 사람들이 길에 버린 시체와 그 시체 곁에 선 사자를 보고 그 늙은 선지자가 사는 성읍에 와서 말한지라"
+      ],
+      "raw_text_hashes": [
+        "4c7efa75687c05aeb9cd8a3fa8ca592beaf8baa976e4fc94b47f140b31ca8bef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:26",
+      "sequence": 9211,
+      "chapter_label": "1KI 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "When the prophet who brought him back from the way heard of it, he said, “It is the man of God who was disobedient to the LORD’s word. Therefore the LORD has delivered him to the lion, which has mauled him and slain him, according to the LORD’s word which he spoke to him.”",
+      "ko": "그 사람을 길에서 데리고 돌아간 선지자가 듣고 말하되 이는 여호와의 말씀을 어긴 하나님의 사람이로다 여호와께서 그에게 하신 말씀과 같이 여호와께서 그를 사자에게 붙이시매 사자가 그를 찢어 죽였도다 하고",
+      "source_text_hash": "8f52daaae258eee7158d8fee5b7e91c8751ec854f99113975c968e90c359fa07",
+      "translation_text_hash": "7f0d4fdb570fc53a7d27edaf6bffe888bfcde9e11da81b50f371ee526ef184dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람을 길에서 데리고 돌아간 선지자가 듣고 말하되 이는 여호와의 말씀을 어긴 하나님의 사람이로다 여호와께서 그에게 하신 말씀과 같이 여호와께서 그를 사자에게 붙이시매 사자가 그를 찢어 죽였도다 하고"
+      ],
+      "raw_text_hashes": [
+        "7f0d4fdb570fc53a7d27edaf6bffe888bfcde9e11da81b50f371ee526ef184dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:27",
+      "sequence": 9212,
+      "chapter_label": "1KI 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "He said to his sons, saying, “Saddle the donkey for me,” and they saddled it.",
+      "ko": "이에 그 아들들에게 말하여 가로되 나를 위하여 나귀에 안장을 지우라 저희가 안장을 지우매",
+      "source_text_hash": "0ac48584f5e6f3de97194cacb520314dac299c6717a8052343845da1c8fe95b4",
+      "translation_text_hash": "90f5922069414db9b3d08a7bfdad529623f62685abd71fa6e071d9c6bb125c11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 아들들에게 말하여 가로되 나를 위하여 나귀에 안장을 지우라 저희가 안장을 지우매"
+      ],
+      "raw_text_hashes": [
+        "90f5922069414db9b3d08a7bfdad529623f62685abd71fa6e071d9c6bb125c11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:28",
+      "sequence": 9213,
+      "chapter_label": "1KI 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "He went and found his body thrown on the path, and the donkey and the lion standing by the body. The lion had not eaten the body nor mauled the donkey.",
+      "ko": "저가 가서 본즉 그 시체가 길에 버린바 되었고 나귀와 사자는 그 시체 곁에 섰는데 사자가 시체를 먹지도 아니하였고 나귀를 찢지도 아니하였더라",
+      "source_text_hash": "cc61a433e8d1f375c80ce3c23c127c337f921f2f6be004e702e4b4828ffa08e1",
+      "translation_text_hash": "cd85f8609ef445a36e5e302bf277c7d37f4590464f98e6af921dc0d56e6587da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 가서 본즉 그 시체가 길에 버린바 되었고 나귀와 사자는 그 시체 곁에 섰는데 사자가 시체를 먹지도 아니하였고 나귀를 찢지도 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "cd85f8609ef445a36e5e302bf277c7d37f4590464f98e6af921dc0d56e6587da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:29",
+      "sequence": 9214,
+      "chapter_label": "1KI 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "The prophet took up the body of the man of God, and laid it on the donkey, and brought it back. He came to the city of the old prophet to mourn, and to bury him.",
+      "ko": "늙은 선지자가 하나님의 사람의 시체를 떠들어 나귀에 실어가지고 돌아와 자기 성읍으로 들어가서 슬피 울며 장사하되",
+      "source_text_hash": "12514da828f23af1a7475cafd7bc9fe4f60d740f9dfabe76c0e2877cde7c5206",
+      "translation_text_hash": "4d340cb969e7d552e70c9ce9614fcd0d7d3d05e4fad15f8cd27d55e77acc29e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늙은 선지자가 하나님의 사람의 시체를 떠들어 나귀에 실어가지고 돌아와 자기 성읍으로 들어가서 슬피 울며 장사하되"
+      ],
+      "raw_text_hashes": [
+        "4d340cb969e7d552e70c9ce9614fcd0d7d3d05e4fad15f8cd27d55e77acc29e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:30",
+      "sequence": 9215,
+      "chapter_label": "1KI 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "He laid his body in his own grave; and they mourned over him, saying, “Alas, my brother!”",
+      "ko": "곧 그 시체를 자기의 묘실에 두고 그를 위하여 슬피 울며 가로되 오호라 나의 형제여 하니라",
+      "source_text_hash": "ac07a1e69eefaaaf670cc745debd31b248210f9a5b095a586c2a1d27b1f2db82",
+      "translation_text_hash": "fe502adc12e31abd0c799894b29dcc9c97556efec1ffa77eda727609dd3f2f54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 시체를 자기의 묘실에 두고 그를 위하여 슬피 울며 가로되 오호라 나의 형제여 하니라"
+      ],
+      "raw_text_hashes": [
+        "fe502adc12e31abd0c799894b29dcc9c97556efec1ffa77eda727609dd3f2f54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:31",
+      "sequence": 9216,
+      "chapter_label": "1KI 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "After he had buried him, he spoke to his sons, saying, “When I am dead, bury me in the tomb in which the man of God is buried. Lay my bones beside his bones.",
+      "ko": "그 사람을 장사한 후에 저가 그 아들들에게 말하여 가로되 내가 죽거든 하나님의 사람을 장사한 묘실에 나를 장사하되 내 뼈를 그의 뼈 곁에 두라",
+      "source_text_hash": "2d84ce53eade2f864f15937363b1f43c1ad2970ef91c4c096ef1823d16d2137d",
+      "translation_text_hash": "2af83a1f17615703e82caefd667c512ebed63dca24aa989b2c17bf9b0a38312e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람을 장사한 후에 저가 그 아들들에게 말하여 가로되 내가 죽거든 하나님의 사람을 장사한 묘실에 나를 장사하되 내 뼈를 그의 뼈 곁에 두라"
+      ],
+      "raw_text_hashes": [
+        "2af83a1f17615703e82caefd667c512ebed63dca24aa989b2c17bf9b0a38312e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:32",
+      "sequence": 9217,
+      "chapter_label": "1KI 13",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 32
+        }
+      ],
+      "en": "For the saying which he cried by the LORD’s word against the altar in Bethel, and against all the houses of the high places which are in the cities of Samaria, will surely happen.”",
+      "ko": "그가 여호와의 말씀으로 벧엘에 있는 단을 향하고 또 사마리아 성읍들에 있는 모든 산당을 향하여 외쳐 말한 것이 반드시 이룰 것임이니라",
+      "source_text_hash": "cab118598506f512da600b9a12313726fd2db0164c088870a92b4612406e463c",
+      "translation_text_hash": "fdea2b305c3a09834975c98adc5a9cee65c70b013609b038b520e6577602d564",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 여호와의 말씀으로 벧엘에 있는 단을 향하고 또 사마리아 성읍들에 있는 모든 산당을 향하여 외쳐 말한 것이 반드시 이룰 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "fdea2b305c3a09834975c98adc5a9cee65c70b013609b038b520e6577602d564"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:33",
+      "sequence": 9218,
+      "chapter_label": "1KI 13",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 33
+        }
+      ],
+      "en": "After this thing, Jeroboam didn’t turn from his evil way, but again made priests of the high places from among all the people. Whoever wanted to, he consecrated him, that there might be priests of the high places.",
+      "ko": "여로보암이 이 일 후에도 그 악한 길에서 떠나 돌이키지 아니하고 다시 보통 백성으로 산당의 제사장을 삼되 누구든지 자원하면 그 사람으로 산당의 제사장을 삼았으므로",
+      "source_text_hash": "55c8d8965af897d3b3a7184e646a331958ce72e855317f714c7e4bc9bc59685a",
+      "translation_text_hash": "2aad9d3d0c3a3bb2d520b44fa49d162b652ed1c8e9a7cf424bc697a8287acbf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암이 이 일 후에도 그 악한 길에서 떠나 돌이키지 아니하고 다시 보통 백성으로 산당의 제사장을 삼되 누구든지 자원하면 그 사람으로 산당의 제사장을 삼았으므로"
+      ],
+      "raw_text_hashes": [
+        "2aad9d3d0c3a3bb2d520b44fa49d162b652ed1c8e9a7cf424bc697a8287acbf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:13:34",
+      "sequence": 9219,
+      "chapter_label": "1KI 13",
+      "verse_label": "34",
+      "locator": {
+        "book": "1KI",
+        "chapter": 13,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 13,
+          "verse": 34
+        }
+      ],
+      "en": "This thing became sin to the house of Jeroboam, even to cut it off and to destroy it from off the surface of the earth.",
+      "ko": "이 일이 여로보암 집에 죄가 되어 그 집이 지면에서 끊어져 멸망케 되니라",
+      "source_text_hash": "123261e198251578f9a988dda69c5f676f3273d4960d42ccce93206f703c30a3",
+      "translation_text_hash": "bc6ab1096a4d3d269ffd34728dce2bd53ce4aad85461e765a1c36245037f4575",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 여로보암 집에 죄가 되어 그 집이 지면에서 끊어져 멸망케 되니라"
+      ],
+      "raw_text_hashes": [
+        "bc6ab1096a4d3d269ffd34728dce2bd53ce4aad85461e765a1c36245037f4575"
+      ]
+    }
+  ]
+}

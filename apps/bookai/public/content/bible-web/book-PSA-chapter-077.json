@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:077",
+  "unit_ordinal": 555,
+  "unit_label": "PSA 77",
+  "book_code": "PSA",
+  "chapter_number": 77,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:77:1",
+      "sequence": 15095,
+      "chapter_label": "PSA 77",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 1
+        }
+      ],
+      "en": "My cry goes to God! Indeed, I cry to God for help, and for him to listen to me.",
+      "ko": "내가 내 음성으로 하나님께 부르짖으리니 하나님께 내 음성으로 부르짖으면 내게 귀를 기울이시리로다",
+      "source_text_hash": "b820ef8ff00cd64299d34f77b911a8d5b5b92149bb3f590f76e3c7a08aeb9a5c",
+      "translation_text_hash": "bbccb81335c816005e912c508a27aeea0f81e2c7bc8d4aa7f0848f99a1bbf5d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 음성으로 하나님께 부르짖으리니 하나님께 내 음성으로 부르짖으면 내게 귀를 기울이시리로다"
+      ],
+      "raw_text_hashes": [
+        "bbccb81335c816005e912c508a27aeea0f81e2c7bc8d4aa7f0848f99a1bbf5d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:2",
+      "sequence": 15096,
+      "chapter_label": "PSA 77",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 2
+        }
+      ],
+      "en": "In the day of my trouble I sought the Lord. My hand was stretched out in the night, and didn’t get tired. My soul refused to be comforted.",
+      "ko": "나의 환난날에 내가 주를 찾았으며 밤에는 내 손을 들고 거두지 아니하였으며 내 영혼이 위로 받기를 거절하였도다",
+      "source_text_hash": "54766280f7b99f901af78d11b23e2690aae32c9d5cba2e6d275033d987f504e0",
+      "translation_text_hash": "7a4e483057855965f58b70ef6aaed7ec0786cd2386d0be6d898450dad3c3c270",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 환난날에 내가 주를 찾았으며 밤에는 내 손을 들고 거두지 아니하였으며 내 영혼이 위로 받기를 거절하였도다"
+      ],
+      "raw_text_hashes": [
+        "7a4e483057855965f58b70ef6aaed7ec0786cd2386d0be6d898450dad3c3c270"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:3",
+      "sequence": 15097,
+      "chapter_label": "PSA 77",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 3
+        }
+      ],
+      "en": "I remember God, and I groan. I complain, and my spirit is overwhelmed. Selah.",
+      "ko": "내가 하나님을 생각하고 불안하여 근심하니 내 심령이 상하도다(셀라)",
+      "source_text_hash": "8ef0733c92d65a181096f0e3a7aea4a497c8468d23ac28cb82c80382ebb9485d",
+      "translation_text_hash": "a96c8063b2645d5703e704e6e5932a53b90f1db64a6d07ab2fa13859bcd3b364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하나님을 생각하고 불안하여 근심하니 내 심령이 상하도다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "a96c8063b2645d5703e704e6e5932a53b90f1db64a6d07ab2fa13859bcd3b364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:4",
+      "sequence": 15098,
+      "chapter_label": "PSA 77",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 4
+        }
+      ],
+      "en": "You hold my eyelids open. I am so troubled that I can’t speak.",
+      "ko": "주께서 나로 눈을 붙이지 못하게 하시니 내가 괴로워 말할 수 없나이다",
+      "source_text_hash": "b5326f7e9752003e78b90780dcdd6ee51a90cbeac21facd2fa20bb0bc1c16b52",
+      "translation_text_hash": "704dde5fdda4a7152ef0074969174d04f841947da572a21ecae164af4d048c87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나로 눈을 붙이지 못하게 하시니 내가 괴로워 말할 수 없나이다"
+      ],
+      "raw_text_hashes": [
+        "704dde5fdda4a7152ef0074969174d04f841947da572a21ecae164af4d048c87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:5",
+      "sequence": 15099,
+      "chapter_label": "PSA 77",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 5
+        }
+      ],
+      "en": "I have considered the days of old, the years of ancient times.",
+      "ko": "내가 옛날 곧 이전 해를 생각하였사오며",
+      "source_text_hash": "1dd4ec70ac8b296c029a79a6ce32c11a96847cf34ff3c0abdd2f1888fc21a033",
+      "translation_text_hash": "4793b85c04287180cd0b70e528e9f0c44a7f1cc11847a709f659973365c8d0fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 옛날 곧 이전 해를 생각하였사오며"
+      ],
+      "raw_text_hashes": [
+        "4793b85c04287180cd0b70e528e9f0c44a7f1cc11847a709f659973365c8d0fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:6",
+      "sequence": 15100,
+      "chapter_label": "PSA 77",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 6
+        }
+      ],
+      "en": "I remember my song in the night. I consider in my own heart; my spirit diligently inquires:",
+      "ko": "밤에 한 나의 노래를 기억하여 마음에 묵상하며 심령이 궁구하기를",
+      "source_text_hash": "6df1b08f520444f341a51bffc7d4145a5a7bdd5b2e297761c2e267b50c3e0ddd",
+      "translation_text_hash": "a1fed86c6d72f2308b8b4e68d920f76021c2d6b8b8e84d0e393fae647149a701",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 한 나의 노래를 기억하여 마음에 묵상하며 심령이 궁구하기를"
+      ],
+      "raw_text_hashes": [
+        "a1fed86c6d72f2308b8b4e68d920f76021c2d6b8b8e84d0e393fae647149a701"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:7",
+      "sequence": 15101,
+      "chapter_label": "PSA 77",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 7
+        }
+      ],
+      "en": "“Will the Lord reject us forever? Will he be favorable no more?",
+      "ko": "주께서 영원히 버리실까, 다시는 은혜를 베풀지 아니하실까,",
+      "source_text_hash": "f59886a2cdfb46dad296b8967b8dc7a47a8bda04272c3dd420ece1c0024a33f7",
+      "translation_text_hash": "9a63aefb99b790ff3d25c91e5298edcd89bf61279de62ce9114988b4e7223ba0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 영원히 버리실까, 다시는 은혜를 베풀지 아니하실까,"
+      ],
+      "raw_text_hashes": [
+        "9a63aefb99b790ff3d25c91e5298edcd89bf61279de62ce9114988b4e7223ba0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:8",
+      "sequence": 15102,
+      "chapter_label": "PSA 77",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 8
+        }
+      ],
+      "en": "Has his loving kindness vanished forever? Does his promise fail for generations?",
+      "ko": "그 인자하심이 길이 다하였는가, 그 허락을 영구히 폐하셨는가,",
+      "source_text_hash": "3e3e6275658fe4075acb2c0e6f0dc8e505e3f0363a229ef596fb4f9462c92cd0",
+      "translation_text_hash": "be9a523ce698918fce8547d9a572bd443b63a5aa81c005aa78aff7c2e861f323",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 인자하심이 길이 다하였는가, 그 허락을 영구히 폐하셨는가,"
+      ],
+      "raw_text_hashes": [
+        "be9a523ce698918fce8547d9a572bd443b63a5aa81c005aa78aff7c2e861f323"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:9",
+      "sequence": 15103,
+      "chapter_label": "PSA 77",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 9
+        }
+      ],
+      "en": "Has God forgotten to be gracious? Has he, in anger, withheld his compassion?” Selah.",
+      "ko": "하나님이 은혜 베푸심을 잊으셨는가, 노하심으로 그 긍휼을 막으셨는가 하였나이다(셀라)",
+      "source_text_hash": "5343e52d6564250ecb9ea1852301499bfb2ba9cb5d27bd350aea09153aa24e8c",
+      "translation_text_hash": "032be9e6452aed92ea71197a1c799620bd32d189c5098374f55039d658237055",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 은혜 베푸심을 잊으셨는가, 노하심으로 그 긍휼을 막으셨는가 하였나이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "032be9e6452aed92ea71197a1c799620bd32d189c5098374f55039d658237055"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:10",
+      "sequence": 15104,
+      "chapter_label": "PSA 77",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 10
+        }
+      ],
+      "en": "Then I thought, “I will appeal to this: the years of the right hand of the Most High.”",
+      "ko": "또 내가 말하기를 이는 나의 연약함이라 지존자의 오른손의 해",
+      "source_text_hash": "27cb554b122c27ac2d58391fdf457d8f4aba21b625a54a73d99946e1ea0d1aa1",
+      "translation_text_hash": "033390b0c462af5e60e0de90ccd5fa3e6a012ce0eced747f6f4711f3c4396552",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 말하기를 이는 나의 연약함이라 지존자의 오른손의 해"
+      ],
+      "raw_text_hashes": [
+        "033390b0c462af5e60e0de90ccd5fa3e6a012ce0eced747f6f4711f3c4396552"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:11",
+      "sequence": 15105,
+      "chapter_label": "PSA 77",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 11
+        }
+      ],
+      "en": "I will remember the LORD’s deeds; for I will remember your wonders of old.",
+      "ko": "곧 여호와의 옛적 기사를 기억하여 그 행하신 일을 진술하리이다",
+      "source_text_hash": "0d93983ad716c31e70ce7a6eeabe316fa05bec4a11c8098202d91e4fa7b1f953",
+      "translation_text_hash": "c87eab94d74b67a3243fdddd181300cc8478bc9fe8d4394ef755c131fcb04d79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 여호와의 옛적 기사를 기억하여 그 행하신 일을 진술하리이다"
+      ],
+      "raw_text_hashes": [
+        "c87eab94d74b67a3243fdddd181300cc8478bc9fe8d4394ef755c131fcb04d79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:12",
+      "sequence": 15106,
+      "chapter_label": "PSA 77",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 12
+        }
+      ],
+      "en": "I will also meditate on all your work, and consider your doings.",
+      "ko": "또 주의 모든 일을 묵상하며 주의 행사를 깊이 생각하리이다",
+      "source_text_hash": "06c874d217380f45d3e8cb47a789a7596d1cbcd76a147c368caf09ccabef3a93",
+      "translation_text_hash": "79d5d556b6cfb27c85e93d09e4895a1d7f1441d982b7ffaf2487b74e3907cd3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주의 모든 일을 묵상하며 주의 행사를 깊이 생각하리이다"
+      ],
+      "raw_text_hashes": [
+        "79d5d556b6cfb27c85e93d09e4895a1d7f1441d982b7ffaf2487b74e3907cd3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:13",
+      "sequence": 15107,
+      "chapter_label": "PSA 77",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 13
+        }
+      ],
+      "en": "Your way, God, is in the sanctuary. What god is great like God?",
+      "ko": "하나님이여 주의 도는 극히 거룩하시오니 하나님과 같이 큰 신이 누구오니이까",
+      "source_text_hash": "5be4c4829f980bfce854b41bcea6d044b5c18d363e398e92ac55b14a0d37e440",
+      "translation_text_hash": "e77377d6482eab17bd7a2aa088301e09ba886e0c89fa886a7bd5483d8703a959",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주의 도는 극히 거룩하시오니 하나님과 같이 큰 신이 누구오니이까"
+      ],
+      "raw_text_hashes": [
+        "e77377d6482eab17bd7a2aa088301e09ba886e0c89fa886a7bd5483d8703a959"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:14",
+      "sequence": 15108,
+      "chapter_label": "PSA 77",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 14
+        }
+      ],
+      "en": "You are the God who does wonders. You have made your strength known among the peoples.",
+      "ko": "주는 기사를 행하신 하나님이시라 민족들 중에 주의 능력을 알리시고",
+      "source_text_hash": "7255d72499a5c780d05d682549db363ef817e68e031f28116a1e1a99653c8917",
+      "translation_text_hash": "c3533cfa1958845604fedc9574ac8105f123e26a4eb75fc5eede38b66f1805d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 기사를 행하신 하나님이시라 민족들 중에 주의 능력을 알리시고"
+      ],
+      "raw_text_hashes": [
+        "c3533cfa1958845604fedc9574ac8105f123e26a4eb75fc5eede38b66f1805d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:15",
+      "sequence": 15109,
+      "chapter_label": "PSA 77",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 15
+        }
+      ],
+      "en": "You have redeemed your people with your arm, the sons of Jacob and Joseph. Selah.",
+      "ko": "주의 팔로 주의 백성 곧 야곱과 요셉의 자손을 구속하셨나이다 (셀라)",
+      "source_text_hash": "6a1274ea9b5054815f04c4a83213d99c155161c838f3f3138258698f15d4bee3",
+      "translation_text_hash": "eb0a86b8caa2aaceb2de18d08a24c936a9746b0af6fd019154880fb6faec63cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 팔로 주의 백성 곧 야곱과 요셉의 자손을 구속하셨나이다 (셀라)"
+      ],
+      "raw_text_hashes": [
+        "eb0a86b8caa2aaceb2de18d08a24c936a9746b0af6fd019154880fb6faec63cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:16",
+      "sequence": 15110,
+      "chapter_label": "PSA 77",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 16
+        }
+      ],
+      "en": "The waters saw you, God. The waters saw you, and they writhed. The depths also convulsed.",
+      "ko": "하나님이여 물들이 주를 보았나이다 물들이 주를 보고 두려워하며 깊음도 진동하였고",
+      "source_text_hash": "8467f76b662f0fc7baff16e14471a665303e7b08ea6d9f4c91c9bb57e373cfd2",
+      "translation_text_hash": "c4652340313d6c6193f38721ba1821fd9f59efa872377cd99d7694d0923bf1b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 물들이 주를 보았나이다 물들이 주를 보고 두려워하며 깊음도 진동하였고"
+      ],
+      "raw_text_hashes": [
+        "c4652340313d6c6193f38721ba1821fd9f59efa872377cd99d7694d0923bf1b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:17",
+      "sequence": 15111,
+      "chapter_label": "PSA 77",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 17
+        }
+      ],
+      "en": "The clouds poured out water. The skies resounded with thunder. Your arrows also flashed around.",
+      "ko": "구름이 물을 쏟고 궁창이 소리를 발하며 주의 살도 날아 나갔나이다",
+      "source_text_hash": "54803c5b5d7f74b9a7d54c4c437e6868dc298fc9915975d3f5494afd7a8e6732",
+      "translation_text_hash": "2feb644d738d018ed95b0bec654167a29e9be83eb764b25c7c7cbd9b350f067d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름이 물을 쏟고 궁창이 소리를 발하며 주의 살도 날아 나갔나이다"
+      ],
+      "raw_text_hashes": [
+        "2feb644d738d018ed95b0bec654167a29e9be83eb764b25c7c7cbd9b350f067d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:18",
+      "sequence": 15112,
+      "chapter_label": "PSA 77",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 18
+        }
+      ],
+      "en": "The voice of your thunder was in the whirlwind. The lightnings lit up the world. The earth trembled and shook.",
+      "ko": "회리바람 중에 주의 우뢰의 소리가 있으며 번개가 세계를 비취며 땅이 흔들리고 움직였나이다",
+      "source_text_hash": "07b3131c78012da1661f7378ac0648baff022b59d807bb849a2c0911712fb6cf",
+      "translation_text_hash": "a50ce75856ae1485603feaf11792cef5d4b21826a747dc79a0e2762f9edddc2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회리바람 중에 주의 우뢰의 소리가 있으며 번개가 세계를 비취며 땅이 흔들리고 움직였나이다"
+      ],
+      "raw_text_hashes": [
+        "a50ce75856ae1485603feaf11792cef5d4b21826a747dc79a0e2762f9edddc2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:19",
+      "sequence": 15113,
+      "chapter_label": "PSA 77",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 19
+        }
+      ],
+      "en": "Your way was through the sea, your paths through the great waters. Your footsteps were not known.",
+      "ko": "주의 길이 바다에 있었고 주의 첩경이 큰 물에 있었으나 주의 종적을 알 수 없었나이다",
+      "source_text_hash": "6e3d5b18f10cc5b81ac2961492a14e0c5967504b434e36dab9e24467dae5310f",
+      "translation_text_hash": "4d709e46378e0ddc32c77ae938dd09212f86dd4a8fd20d95266608b79298b217",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 길이 바다에 있었고 주의 첩경이 큰 물에 있었으나 주의 종적을 알 수 없었나이다"
+      ],
+      "raw_text_hashes": [
+        "4d709e46378e0ddc32c77ae938dd09212f86dd4a8fd20d95266608b79298b217"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:77:20",
+      "sequence": 15114,
+      "chapter_label": "PSA 77",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 77,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 77,
+          "verse": 20
+        }
+      ],
+      "en": "You led your people like a flock, by the hand of Moses and Aaron.",
+      "ko": "주의 백성을 무리양 같이 모세와 아론의 손으로 인도하셨나이다",
+      "source_text_hash": "4d68863f3f4dfe2d5b55ca0853d9cf717d100c53b1cc01c1a4ae4b958432f344",
+      "translation_text_hash": "339cbc93b68d08e33ed329e3f957f0643adf6e6a7b642355f13b40ffb44ee0cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 백성을 무리양 같이 모세와 아론의 손으로 인도하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "339cbc93b68d08e33ed329e3f957f0643adf6e6a7b642355f13b40ffb44ee0cf"
+      ]
+    }
+  ]
+}

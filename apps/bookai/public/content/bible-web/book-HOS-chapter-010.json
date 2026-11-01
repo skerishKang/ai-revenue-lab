@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:010",
+  "unit_ordinal": 872,
+  "unit_label": "HOS 10",
+  "book_code": "HOS",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:10:1",
+      "sequence": 22227,
+      "chapter_label": "HOS 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Israel is a luxuriant vine that produces his fruit. According to the abundance of his fruit he has multiplied his altars. As their land has prospered, they have adorned their sacred stones.",
+      "ko": "이스라엘은 열매 맺는 무성한 포도나무라 그 열매가 많을수록 제단을 많게 하며 그 땅이 아름다울수록 주상을 아름답게 하도다",
+      "source_text_hash": "257511275e16942220730a3c2154642719d904603550fc97253c59e38f96bcff",
+      "translation_text_hash": "e8445cac4ff75a9d2afaa14e8b2eb32a35fd5ab2181eb7903cd2982703198d13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘은 열매 맺는 무성한 포도나무라 그 열매가 많을수록 제단을 많게 하며 그 땅이 아름다울수록 주상을 아름답게 하도다"
+      ],
+      "raw_text_hashes": [
+        "e8445cac4ff75a9d2afaa14e8b2eb32a35fd5ab2181eb7903cd2982703198d13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:2",
+      "sequence": 22228,
+      "chapter_label": "HOS 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "Their heart is divided. Now they will be found guilty. He will demolish their altars. He will destroy their sacred stones.",
+      "ko": "저희가 두 마음을 품었으니 이제 죄를 받을 것이라 하나님이 그 제단을 쳐서 깨치시며 그 주상을 헐으시리라",
+      "source_text_hash": "a2461295d7ef5a9f7d1907518cc7f332830060c9b1409873884395ba47b08120",
+      "translation_text_hash": "30b72c5607a738eb0d172b6db90a3f3aca8f1fc6ffbc8f58860b54aac55f440d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 두 마음을 품었으니 이제 죄를 받을 것이라 하나님이 그 제단을 쳐서 깨치시며 그 주상을 헐으시리라"
+      ],
+      "raw_text_hashes": [
+        "30b72c5607a738eb0d172b6db90a3f3aca8f1fc6ffbc8f58860b54aac55f440d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:3",
+      "sequence": 22229,
+      "chapter_label": "HOS 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Surely now they will say, “We have no king; for we don’t fear the LORD; and the king, what can he do for us?”",
+      "ko": "저희가 이제 이르기를 우리가 여호와를 두려워 아니하므로 우리에게 왕이 없거니와 왕이 우리를 위하여 무엇을 하리요 하리로다",
+      "source_text_hash": "525fbbd34e7188ba6b2ba4d6a8dcdab7cf088ba170be51374bb1cbceab430573",
+      "translation_text_hash": "33c085a23976bf0b847638f0c03d472148d1f8dbc0d715cf1f476aad46a29451",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이제 이르기를 우리가 여호와를 두려워 아니하므로 우리에게 왕이 없거니와 왕이 우리를 위하여 무엇을 하리요 하리로다"
+      ],
+      "raw_text_hashes": [
+        "33c085a23976bf0b847638f0c03d472148d1f8dbc0d715cf1f476aad46a29451"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:4",
+      "sequence": 22230,
+      "chapter_label": "HOS 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "They make promises, swearing falsely in making covenants. Therefore judgment springs up like poisonous weeds in the furrows of the field.",
+      "ko": "저희가 헛된 말을 내며 거짓 맹세를 발하여 언약을 세우니 그 재판이 밭이랑에 돋는 독한 인진같으리로다",
+      "source_text_hash": "902549afbd6eb0f864549327eb53e7013e481130ba13923b924dcf5ccb3fc2b2",
+      "translation_text_hash": "38ec1ad2e3584d2e680fe5f1013b69f270cfa3c25acdf188b601d31938f3a04d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 헛된 말을 내며 거짓 맹세를 발하여 언약을 세우니 그 재판이 밭이랑에 돋는 독한 인진같으리로다"
+      ],
+      "raw_text_hashes": [
+        "38ec1ad2e3584d2e680fe5f1013b69f270cfa3c25acdf188b601d31938f3a04d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:5",
+      "sequence": 22231,
+      "chapter_label": "HOS 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "The inhabitants of Samaria will be in terror for the calves of Beth Aven, for its people will mourn over it, along with its priests who rejoiced over it, for its glory, because it has departed from it.",
+      "ko": "사마리아 거민이 벧아웬의 송아지를 인하여 두려워할 것이라 그 백성이 슬퍼하며 그것을 기뻐하던 제사장들도 슬퍼하리니 이는 그 영광이 떠나감이며",
+      "source_text_hash": "2cd630eecc8bdedadc3c8f0f0daa9e4d2aa15f356cc8aa6c6191e75811d38abf",
+      "translation_text_hash": "63277e018a63e7e84d5567e4ea47583056b7980a7f6bb0a9e5b82f08dc8e1b85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아 거민이 벧아웬의 송아지를 인하여 두려워할 것이라 그 백성이 슬퍼하며 그것을 기뻐하던 제사장들도 슬퍼하리니 이는 그 영광이 떠나감이며"
+      ],
+      "raw_text_hashes": [
+        "63277e018a63e7e84d5567e4ea47583056b7980a7f6bb0a9e5b82f08dc8e1b85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:6",
+      "sequence": 22232,
+      "chapter_label": "HOS 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "It also will be carried to Assyria for a present to a great king. Ephraim will receive shame, and Israel will be ashamed of his own counsel.",
+      "ko": "그 송아지는 앗수르로 옮겨다가 예물로 야렙 왕에게 드리리니 에브라임은 수치를 받을 것이요 이스라엘은 자기들의 계의를 부끄러워할 것이며",
+      "source_text_hash": "697492ef80e1841abc912f2c3207c3da874a57c470cff0376c8a42f96c3bc0cf",
+      "translation_text_hash": "24fd515c3fe431e8aa476f289b26e5bd31f0a669346889e9afede5d10b4bb0b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 송아지는 앗수르로 옮겨다가 예물로 야렙 왕에게 드리리니 에브라임은 수치를 받을 것이요 이스라엘은 자기들의 계의를 부끄러워할 것이며"
+      ],
+      "raw_text_hashes": [
+        "24fd515c3fe431e8aa476f289b26e5bd31f0a669346889e9afede5d10b4bb0b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:7",
+      "sequence": 22233,
+      "chapter_label": "HOS 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "Samaria and her king float away like a twig on the water.",
+      "ko": "사마리아 왕은 물 위에 거품 같이 멸망할 것이며",
+      "source_text_hash": "61c9f17c578c9ba800cdf0fd25b1d0d3aebc2e846690014a021138960a3169ff",
+      "translation_text_hash": "ac8a89a0845d06393c1e917e4b87beecee1a958fd12bcbbbbf128efbf224f805",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아 왕은 물 위에 거품 같이 멸망할 것이며"
+      ],
+      "raw_text_hashes": [
+        "ac8a89a0845d06393c1e917e4b87beecee1a958fd12bcbbbbf128efbf224f805"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:8",
+      "sequence": 22234,
+      "chapter_label": "HOS 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "The high places also of Aven, the sin of Israel, will be destroyed. The thorn and the thistle will come up on their altars. They will tell the mountains, “Cover us!” and the hills, “Fall on us!”",
+      "ko": "이스라엘의 죄 된 아웬의 산당은 패괴되어 가시와 찔레가 그 단 위에 날 것이니 그 때에 저희가 산더러 우리를 가리우라 할 것이요 작은 산더러 우리 위에 무너지라 하리라",
+      "source_text_hash": "bc03945bb156a5622173899e74f65a54793b9d73eaac87ce88c08e39c97c86b2",
+      "translation_text_hash": "a25025f36b59df23d51344d284bd8a531394e67bbb07168aa0b8f1bff5eb52d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 죄 된 아웬의 산당은 패괴되어 가시와 찔레가 그 단 위에 날 것이니 그 때에 저희가 산더러 우리를 가리우라 할 것이요 작은 산더러 우리 위에 무너지라 하리라"
+      ],
+      "raw_text_hashes": [
+        "a25025f36b59df23d51344d284bd8a531394e67bbb07168aa0b8f1bff5eb52d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:9",
+      "sequence": 22235,
+      "chapter_label": "HOS 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "“Israel, you have sinned from the days of Gibeah. There they remained. The battle against the children of iniquity doesn’t overtake them in Gibeah.",
+      "ko": "이스라엘아 네가 기브아의 시대로부터 범죄하였거늘 무리가 기브아에 서서 흉악한 족속을 치는 전쟁을 거기서 면하였도다",
+      "source_text_hash": "c7101aa991872fe5b79a3c982c035d1df385aa51f947a067ba82f6fc7c851bbd",
+      "translation_text_hash": "795e651eba04f3e6c0b604b5d02cf02d008625678aef25d6a4d6bb7c0958091e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 네가 기브아의 시대로부터 범죄하였거늘 무리가 기브아에 서서 흉악한 족속을 치는 전쟁을 거기서 면하였도다"
+      ],
+      "raw_text_hashes": [
+        "795e651eba04f3e6c0b604b5d02cf02d008625678aef25d6a4d6bb7c0958091e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:10",
+      "sequence": 22236,
+      "chapter_label": "HOS 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "When it is my desire, I will chastise them; and the nations will be gathered against them when they are bound to their two transgressions.",
+      "ko": "내가 원하는 때에 저희를 징계하리니 저희가 두가지 죄에 걸릴 때에 만민이 모여서 저희를 치리라",
+      "source_text_hash": "f6f2d6e0a38256fea2e2193b4ccd2a25c725cc3723d969d6f5fa5b780d0fcfe1",
+      "translation_text_hash": "8d69e71c4d6cdb0aacd4b8736c6b6c4cfb29153f6bdc48cb8901bfc8c42ad669",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 원하는 때에 저희를 징계하리니 저희가 두가지 죄에 걸릴 때에 만민이 모여서 저희를 치리라"
+      ],
+      "raw_text_hashes": [
+        "8d69e71c4d6cdb0aacd4b8736c6b6c4cfb29153f6bdc48cb8901bfc8c42ad669"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:11",
+      "sequence": 22237,
+      "chapter_label": "HOS 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "Ephraim is a trained heifer that loves to thresh, so I will put a yoke on her beautiful neck. I will set a rider on Ephraim. Judah will plow. Jacob will break his clods.",
+      "ko": "에브라임은 마치 길들인 암소 같아서 곡식 밟기를 좋아하나 내가 그 아름다운 목에 멍에를 메우고 그의 위에 사람을 태우리니 유다가 밭을 갈고 야곱이 흙덩이를 깨뜨리리라",
+      "source_text_hash": "41843f893540a2da5125df12f5d74a87c55b2f0c302f04df6b5b4d53f047915d",
+      "translation_text_hash": "dc8bb97ebf7a748866eaedf823729eb8a6d5999c8c3bef9f9cffd1420670f503",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임은 마치 길들인 암소 같아서 곡식 밟기를 좋아하나 내가 그 아름다운 목에 멍에를 메우고 그의 위에 사람을 태우리니 유다가 밭을 갈고 야곱이 흙덩이를 깨뜨리리라"
+      ],
+      "raw_text_hashes": [
+        "dc8bb97ebf7a748866eaedf823729eb8a6d5999c8c3bef9f9cffd1420670f503"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:12",
+      "sequence": 22238,
+      "chapter_label": "HOS 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Sow to yourselves in righteousness, reap according to kindness. Break up your fallow ground, for it is time to seek the LORD, until he comes and rains righteousness on you.",
+      "ko": "너희가 자기를 위하여 의를 심고 긍휼을 거두라 지금이 곧 여호와를 찾을 때니 너희 묵은 땅을 기경하라 마침내 여호와께서 임하사 의를 비처럼 너희에게 내리시리라",
+      "source_text_hash": "4f5b44955783898bf69cfd2cb421eab23f20d2642a6872494daffc34266629a7",
+      "translation_text_hash": "8c9af16dfcfecbc3ca6e7f97d85cd8a884e919d1e24140ea3ddf03c74aec7930",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 자기를 위하여 의를 심고 긍휼을 거두라 지금이 곧 여호와를 찾을 때니 너희 묵은 땅을 기경하라 마침내 여호와께서 임하사 의를 비처럼 너희에게 내리시리라"
+      ],
+      "raw_text_hashes": [
+        "8c9af16dfcfecbc3ca6e7f97d85cd8a884e919d1e24140ea3ddf03c74aec7930"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:13",
+      "sequence": 22239,
+      "chapter_label": "HOS 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "You have plowed wickedness. You have reaped iniquity. You have eaten the fruit of lies, for you trusted in your way, in the multitude of your mighty men.",
+      "ko": "너희는 악을 밭갈아 죄를 거두고 거짓 열매를 먹었나니 이는 네가 네 길과 네 용사의 많음을 의뢰하였음이라",
+      "source_text_hash": "45265fee68ca1616460a453f4d5c7d793c5705f1c2ded1e43e7a41918afbec83",
+      "translation_text_hash": "d7c55d2b9500b7115625b7bad79d7a87ad9ae0d685b5e58cd37f56375037ad42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 악을 밭갈아 죄를 거두고 거짓 열매를 먹었나니 이는 네가 네 길과 네 용사의 많음을 의뢰하였음이라"
+      ],
+      "raw_text_hashes": [
+        "d7c55d2b9500b7115625b7bad79d7a87ad9ae0d685b5e58cd37f56375037ad42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:14",
+      "sequence": 22240,
+      "chapter_label": "HOS 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore a battle roar will arise among your people, and all your fortresses will be destroyed, as Shalman destroyed Beth Arbel in the day of battle. The mother was dashed in pieces with her children.",
+      "ko": "그러므로 너희 백성 중에 요란함이 일어나며 네 산성들이 다 훼파되되 살만이 전쟁의 날에 벧아벨을 훼파한 것 같이 될 것이라 그 때에 어미와 자식이 함께 부숴졌도다",
+      "source_text_hash": "ceacadd9edb11b8185cd307a5314f87ef751300dfd1be56712005fcf4300039a",
+      "translation_text_hash": "7f500ac83d33359e64fa416128e79993c6844b37d0737a7fe8bb66b5e0340a38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희 백성 중에 요란함이 일어나며 네 산성들이 다 훼파되되 살만이 전쟁의 날에 벧아벨을 훼파한 것 같이 될 것이라 그 때에 어미와 자식이 함께 부숴졌도다"
+      ],
+      "raw_text_hashes": [
+        "7f500ac83d33359e64fa416128e79993c6844b37d0737a7fe8bb66b5e0340a38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:10:15",
+      "sequence": 22241,
+      "chapter_label": "HOS 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "HOS",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "So Bethel will do to you because of your great wickedness. At daybreak the king of Israel will be destroyed.",
+      "ko": "너희의 큰 악을 인하여 벧엘이 이같이 너희에게 행하리니 이스라엘 왕이 새벽에 멸절하리로다",
+      "source_text_hash": "f55373f9382c953a6d36c69413aebde111ba90ecba6ea72c481c20d6fc279745",
+      "translation_text_hash": "b1e41fc5c8a4270e77d9565049a4431f4579fdace8ce1e090a36935b0307ed4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 큰 악을 인하여 벧엘이 이같이 너희에게 행하리니 이스라엘 왕이 새벽에 멸절하리로다"
+      ],
+      "raw_text_hashes": [
+        "b1e41fc5c8a4270e77d9565049a4431f4579fdace8ce1e090a36935b0307ed4e"
+      ]
+    }
+  ]
+}

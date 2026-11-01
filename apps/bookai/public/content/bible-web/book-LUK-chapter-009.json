@@ -1,0 +1,1997 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:009",
+  "unit_ordinal": 982,
+  "unit_label": "LUK 9",
+  "book_code": "LUK",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:9:1",
+      "sequence": 25303,
+      "chapter_label": "LUK 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "He called the twelve together and gave them power and authority over all demons, and to cure diseases.",
+      "ko": "예수께서 열 두 제자를 불러 모으사 모든 귀신을 제어하며 병을 고치는 능력과 권세를 주시고",
+      "source_text_hash": "6bb0b63eca852835295341485f9b09f813dc9eaf91a89d09b39a83a06d7e5ac4",
+      "translation_text_hash": "54b6cd793ef6fdf0823ed092cab0e4ade6549b328099aea713a94ed888aabbea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 열 두 제자를 불러 모으사 모든 귀신을 제어하며 병을 고치는 능력과 권세를 주시고"
+      ],
+      "raw_text_hashes": [
+        "54b6cd793ef6fdf0823ed092cab0e4ade6549b328099aea713a94ed888aabbea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:2",
+      "sequence": 25304,
+      "chapter_label": "LUK 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "He sent them out to preach God’s Kingdom and to heal the sick.",
+      "ko": "하나님의 나라를 전파하며 앓는 자를 고치게 하려고 내어 보내시며",
+      "source_text_hash": "9b3dc38125abf681169334ad7f213f0d6cb34ccb75752c3da8a84260aff9014c",
+      "translation_text_hash": "211a01afa3173116fa3601d2116a64e71e832f854dbe50b332e25c14f57630a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 나라를 전파하며 앓는 자를 고치게 하려고 내어 보내시며"
+      ],
+      "raw_text_hashes": [
+        "211a01afa3173116fa3601d2116a64e71e832f854dbe50b332e25c14f57630a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:3",
+      "sequence": 25305,
+      "chapter_label": "LUK 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "He said to them, “Take nothing for your journey—no staffs, nor wallet, nor bread, nor money. Don’t have two tunics each.",
+      "ko": "이르시되 여행을 위하여 아무 것도 가지지 말라 지팡이나 주머니나 양식이나 돈이나 두 벌 옷을 가지지 말며",
+      "source_text_hash": "0ec6970fb5809d0b4f955e1262954b40d2b48a55836cd2b12189f8b50168c43e",
+      "translation_text_hash": "1ad5dc637bf9f331814b243ddb6f164a023ed9b1a84caa224857a78becd387a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 여행을 위하여 아무 것도 가지지 말라 지팡이나 주머니나 양식이나 돈이나 두 벌 옷을 가지지 말며"
+      ],
+      "raw_text_hashes": [
+        "1ad5dc637bf9f331814b243ddb6f164a023ed9b1a84caa224857a78becd387a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:4",
+      "sequence": 25306,
+      "chapter_label": "LUK 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "Into whatever house you enter, stay there, and depart from there.",
+      "ko": "어느 집에 들어가든지 거기서 유하다가 거기서 떠나라",
+      "source_text_hash": "3d874770c141e8e2a38073e70799e35e4ee01eb11bf8fa97f018b421964fe2ff",
+      "translation_text_hash": "abd3d474f65824224f5ed625061769919631a7be67c7f8a16f5166c81c41c430",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 집에 들어가든지 거기서 유하다가 거기서 떠나라"
+      ],
+      "raw_text_hashes": [
+        "abd3d474f65824224f5ed625061769919631a7be67c7f8a16f5166c81c41c430"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:5",
+      "sequence": 25307,
+      "chapter_label": "LUK 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "As many as don’t receive you, when you depart from that city, shake off even the dust from your feet for a testimony against them.”",
+      "ko": "누구든지 너희를 영접지 아니하거든 그 성에서 떠날 때에 너희 발에서 먼지를 떨어버려 저희에게 증거를 삼으라 하시니",
+      "source_text_hash": "12f7cd193528a14f04d266d6b75ccd53f7cf11f8e3ca812343e56a62bf423527",
+      "translation_text_hash": "e4c2bff323a57a04e99e8ef7383da0cb2748c41f7c85a6ffb9292fe3a8c9d19f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 너희를 영접지 아니하거든 그 성에서 떠날 때에 너희 발에서 먼지를 떨어버려 저희에게 증거를 삼으라 하시니"
+      ],
+      "raw_text_hashes": [
+        "e4c2bff323a57a04e99e8ef7383da0cb2748c41f7c85a6ffb9292fe3a8c9d19f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:6",
+      "sequence": 25308,
+      "chapter_label": "LUK 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "They departed and went throughout the villages, preaching the Good News and healing everywhere.",
+      "ko": "제자들이 나가 각 촌에 두루 행하여 처처에 복음을 전하며 병을 고치더라",
+      "source_text_hash": "1089ca77647c85b6569ccda4d52d01eb0c494dff859902c8c4bef38a6da11860",
+      "translation_text_hash": "739ccf142ee7d784d35d580154a4a2307c2b5c881c7c20912e081cc63e3ce002",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 나가 각 촌에 두루 행하여 처처에 복음을 전하며 병을 고치더라"
+      ],
+      "raw_text_hashes": [
+        "739ccf142ee7d784d35d580154a4a2307c2b5c881c7c20912e081cc63e3ce002"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:7",
+      "sequence": 25309,
+      "chapter_label": "LUK 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Now Herod the tetrarch heard of all that was done by him; and he was very perplexed, because it was said by some that John had risen from the dead,",
+      "ko": "분봉왕 헤롯이 이 모든 일을 듣고 심히 당황하여 하니 이는 혹은 요한이 죽은 자 가운데서 살아났다고도 하며",
+      "source_text_hash": "f657d944bf151302a20a2358aaa0579a56cadf5d2768ab57741575d04fd2b5be",
+      "translation_text_hash": "43302fdcab14edfa7c361afe75fc2e0eaee7b252d645468ec1513802971c72f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "분봉왕 헤롯이 이 모든 일을 듣고 심히 당황하여 하니 이는 혹은 요한이 죽은 자 가운데서 살아났다고도 하며"
+      ],
+      "raw_text_hashes": [
+        "43302fdcab14edfa7c361afe75fc2e0eaee7b252d645468ec1513802971c72f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:8",
+      "sequence": 25310,
+      "chapter_label": "LUK 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "and by some that Elijah had appeared, and by others that one of the old prophets had risen again.",
+      "ko": "혹은 엘리야가 나타났다고도 하며 혹은 옛 선지자 하나가 다시 살아났다고도 함이라",
+      "source_text_hash": "c12bf6017c5179a7b25022ea7e37739d8ac52c101d75a2f589d4f1b947a6dd56",
+      "translation_text_hash": "6983e1e8b0a255c3a4c8ca9518084a0b7ad3181e07486ef71b4b508801230708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 엘리야가 나타났다고도 하며 혹은 옛 선지자 하나가 다시 살아났다고도 함이라"
+      ],
+      "raw_text_hashes": [
+        "6983e1e8b0a255c3a4c8ca9518084a0b7ad3181e07486ef71b4b508801230708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:9",
+      "sequence": 25311,
+      "chapter_label": "LUK 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "Herod said, “I beheaded John, but who is this about whom I hear such things?” He sought to see him.",
+      "ko": "헤롯이 가로되 요한은 내가 목을 베었거늘 이제 이런 일이 들리니 이 사람이 누군고 하며 저를 보고자 하더라",
+      "source_text_hash": "12ea24d543a781e47d781fc82fd551f505b4c00523cd73fd5e8a59e7c4bbb2e7",
+      "translation_text_hash": "5a20dd3e54d89801ff44c78ab7d607ac923e3bfef897a7808105a49b524a1888",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 가로되 요한은 내가 목을 베었거늘 이제 이런 일이 들리니 이 사람이 누군고 하며 저를 보고자 하더라"
+      ],
+      "raw_text_hashes": [
+        "5a20dd3e54d89801ff44c78ab7d607ac923e3bfef897a7808105a49b524a1888"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:10",
+      "sequence": 25312,
+      "chapter_label": "LUK 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "The apostles, when they had returned, told him what things they had done. He took them and withdrew apart to a desert region of a city called Bethsaida.",
+      "ko": "사도들이 돌아와 자기들의 모든 행한 것을 예수께 고한대 데리시고 따로 벳새다라는 고을로 떠나 가셨으나",
+      "source_text_hash": "e4900ae56712aeb8f692fc5032af5869ce711c7123a1873568380468c8cac88c",
+      "translation_text_hash": "458b9a88aaf7fde8313a87bf68e3dda10269a5da7b647da03611b2c54f633a39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들이 돌아와 자기들의 모든 행한 것을 예수께 고한대 데리시고 따로 벳새다라는 고을로 떠나 가셨으나"
+      ],
+      "raw_text_hashes": [
+        "458b9a88aaf7fde8313a87bf68e3dda10269a5da7b647da03611b2c54f633a39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:11",
+      "sequence": 25313,
+      "chapter_label": "LUK 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "But the multitudes, perceiving it, followed him. He welcomed them, spoke to them of God’s Kingdom, and he cured those who needed healing.",
+      "ko": "무리가 알고 따라왔거늘 예수께서 저희를 영접하사 하나님 나라의 일을 이야기하시며 병 고칠 자들은 고치시더라",
+      "source_text_hash": "b6024275bec88f63c1cc6cb6064f6f9022887338ca4a890d5ab4384a09c4429c",
+      "translation_text_hash": "5b4b1879b22c6f6bac130ff12beb5f14481b6bccc63d04c2627e2975f8f28683",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 알고 따라왔거늘 예수께서 저희를 영접하사 하나님 나라의 일을 이야기하시며 병 고칠 자들은 고치시더라"
+      ],
+      "raw_text_hashes": [
+        "5b4b1879b22c6f6bac130ff12beb5f14481b6bccc63d04c2627e2975f8f28683"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:12",
+      "sequence": 25314,
+      "chapter_label": "LUK 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "The day began to wear away; and the twelve came and said to him, “Send the multitude away, that they may go into the surrounding villages and farms and lodge and get food, for we are here in a deserted place.”",
+      "ko": "날이 저물어가매 열 두 사도가 나아와 여짜오되 무리를 보내어 두루 마을과 촌으로 가서 유하며 먹을 것을 얻게 하소서 우리 있는 여기가 빈 들이니이다",
+      "source_text_hash": "64cd16dd7467aa882623407f6642af4b2f71629e40fe3995bcb6a7ed431fc74a",
+      "translation_text_hash": "538e9afbb6d1e4e57ba9dbb6b636aaf1c7fc4af3ab94555c64bbdc96b536643c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 저물어가매 열 두 사도가 나아와 여짜오되 무리를 보내어 두루 마을과 촌으로 가서 유하며 먹을 것을 얻게 하소서 우리 있는 여기가 빈 들이니이다"
+      ],
+      "raw_text_hashes": [
+        "538e9afbb6d1e4e57ba9dbb6b636aaf1c7fc4af3ab94555c64bbdc96b536643c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:13",
+      "sequence": 25315,
+      "chapter_label": "LUK 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "But he said to them, “You give them something to eat.”They said, “We have no more than five loaves and two fish, unless we should go and buy food for all these people.”",
+      "ko": "예수께서 이르시되 너희가 먹을 것을 주어라 하시니 여짜오되 우리에게 떡 다섯 개와 물고기 두 마리 밖에 없으니 이 모든 사람을 위하여 먹을 것을 사지 아니하고는 할수 없삽나이다 하였으니",
+      "source_text_hash": "0f12e1103a17adb0df01a7d1564f3f57630d2f12fd2e29a169d7566b1b7b5444",
+      "translation_text_hash": "a5aa061370864e68a10d7ade58271af4ae4010bce133b4cfccb660a670a1654a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 너희가 먹을 것을 주어라 하시니 여짜오되 우리에게 떡 다섯 개와 물고기 두 마리 밖에 없으니 이 모든 사람을 위하여 먹을 것을 사지 아니하고는 할수 없삽나이다 하였으니"
+      ],
+      "raw_text_hashes": [
+        "a5aa061370864e68a10d7ade58271af4ae4010bce133b4cfccb660a670a1654a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:14",
+      "sequence": 25316,
+      "chapter_label": "LUK 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "For they were about five thousand men. He said to his disciples, “Make them sit down in groups of about fifty each.”",
+      "ko": "이는 남자가 한 오천 명됨이러라 제자들에게 이르시되 떼를 지어 한 오십명씩 앉히라 하시니",
+      "source_text_hash": "f703bf183f4519b4632797de29581bac50a0b05199c0fbe3ce0cdfcd61f491c6",
+      "translation_text_hash": "b0914b174e289d0f3dd606bbd39823edbc3fcd9622e7c9795baf33d72ea969c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 남자가 한 오천 명됨이러라 제자들에게 이르시되 떼를 지어 한 오십명씩 앉히라 하시니"
+      ],
+      "raw_text_hashes": [
+        "b0914b174e289d0f3dd606bbd39823edbc3fcd9622e7c9795baf33d72ea969c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:15",
+      "sequence": 25317,
+      "chapter_label": "LUK 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "They did so, and made them all sit down.",
+      "ko": "제자들이 이렇게 하여 다 앉힌 후",
+      "source_text_hash": "e07d4345129816729918e70df4e69b84370e9dd5821106fa667ee02786a7b119",
+      "translation_text_hash": "2fcf9433a8acc2199812c3d12ea7e562dd1decb1ff634109513ea3cacf07ce58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 이렇게 하여 다 앉힌 후"
+      ],
+      "raw_text_hashes": [
+        "2fcf9433a8acc2199812c3d12ea7e562dd1decb1ff634109513ea3cacf07ce58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:16",
+      "sequence": 25318,
+      "chapter_label": "LUK 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "He took the five loaves and the two fish, and looking up to the sky, he blessed them, broke them, and gave them to the disciples to set before the multitude.",
+      "ko": "예수께서 떡 다섯 개와 물고기 두 마리를 가지사 하늘을 우러러 축사하시고 떼어 제자들에게 주어 무리 앞에 놓게 하시니",
+      "source_text_hash": "02d6c95c490576f571d0d19c66ae8fdf46e8c2409c3518977c2a69968fcf29bc",
+      "translation_text_hash": "bb73848bb2ef23211c1fa49cbe411f673bd06e9c7c83a1d6e507382bf8122445",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 떡 다섯 개와 물고기 두 마리를 가지사 하늘을 우러러 축사하시고 떼어 제자들에게 주어 무리 앞에 놓게 하시니"
+      ],
+      "raw_text_hashes": [
+        "bb73848bb2ef23211c1fa49cbe411f673bd06e9c7c83a1d6e507382bf8122445"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:17",
+      "sequence": 25319,
+      "chapter_label": "LUK 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "They ate and were all filled. They gathered up twelve baskets of broken pieces that were left over.",
+      "ko": "먹고 다 배불렀더라 그 남은 조각 열 두 바구니를 거두니라",
+      "source_text_hash": "5da2573ddf013b4806b1699ccc90d38b095b17accc5307d31e716898a7fc2a6f",
+      "translation_text_hash": "8d1a06cc7c6c18aaf4502a955dfae82a72a2d1ef950adc2ce6a1778fad91008e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먹고 다 배불렀더라 그 남은 조각 열 두 바구니를 거두니라"
+      ],
+      "raw_text_hashes": [
+        "8d1a06cc7c6c18aaf4502a955dfae82a72a2d1ef950adc2ce6a1778fad91008e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:18",
+      "sequence": 25320,
+      "chapter_label": "LUK 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "As he was praying alone, the disciples were near him, and he asked them, “Who do the multitudes say that I am?”",
+      "ko": "예수께서 따로 기도하실 때에 제자들이 주와 함께 있더니 물어 가라사대 무리가 나를 누구라고 하느냐",
+      "source_text_hash": "a22245e8fdbd946905c01eaef664dee1f0de12d028301cb8f9c2863639f98376",
+      "translation_text_hash": "6141862bbde39b93a3592296da2855dac616dfc8a1e84e7b1630803c6b8e2d3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 따로 기도하실 때에 제자들이 주와 함께 있더니 물어 가라사대 무리가 나를 누구라고 하느냐"
+      ],
+      "raw_text_hashes": [
+        "6141862bbde39b93a3592296da2855dac616dfc8a1e84e7b1630803c6b8e2d3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:19",
+      "sequence": 25321,
+      "chapter_label": "LUK 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "They answered, “‘John the Baptizer,’ but others say, ‘Elijah,’ and others, that one of the old prophets has risen again.”",
+      "ko": "대답하여 가로되 세례 요한이라 하고 더러는 엘리야라, 더러는 옛 선지자 중의 하나가 살아났다 하나이다",
+      "source_text_hash": "17e9c3b41f195a22b82a1fdd5580561c129e6eb254c0219e22b9415fbe0298c5",
+      "translation_text_hash": "5611d18e2b36002ed1efc5d7490a4937f423c9aa5f76c141558a3ae73ffc69b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가로되 세례 요한이라 하고 더러는 엘리야라, 더러는 옛 선지자 중의 하나가 살아났다 하나이다"
+      ],
+      "raw_text_hashes": [
+        "5611d18e2b36002ed1efc5d7490a4937f423c9aa5f76c141558a3ae73ffc69b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:20",
+      "sequence": 25322,
+      "chapter_label": "LUK 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "He said to them, “But who do you say that I am?”Peter answered, “The Christ of God.”",
+      "ko": "예수께서 이르시되 너희는 나를 누구라 하느냐 베드로가 대답하여 가로되 하나님의 그리스도시니이다 하니",
+      "source_text_hash": "4a04f433c833972e11b92668cdbb797e8b69a9b1bfb8326c0e928501e4835e12",
+      "translation_text_hash": "2e9f8590ac3f75c7e54489c1181ff576050d587508aa1f49ebd1ee6a9acc352a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 너희는 나를 누구라 하느냐 베드로가 대답하여 가로되 하나님의 그리스도시니이다 하니"
+      ],
+      "raw_text_hashes": [
+        "2e9f8590ac3f75c7e54489c1181ff576050d587508aa1f49ebd1ee6a9acc352a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:21",
+      "sequence": 25323,
+      "chapter_label": "LUK 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "But he warned them and commanded them to tell this to no one,",
+      "ko": "경계하사 이 말을 아무에게도 이르지 말라 명하시고",
+      "source_text_hash": "303ad630105a6b3cb180a61b23a08dcece6f5695a3fbb45384259fa4f87fac30",
+      "translation_text_hash": "ab6354bb9ce3ae04acdc74778023a68af3f37346e41978bcab5874b99703d256",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "경계하사 이 말을 아무에게도 이르지 말라 명하시고"
+      ],
+      "raw_text_hashes": [
+        "ab6354bb9ce3ae04acdc74778023a68af3f37346e41978bcab5874b99703d256"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:22",
+      "sequence": 25324,
+      "chapter_label": "LUK 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "saying, “The Son of Man must suffer many things, and be rejected by the elders, chief priests, and scribes, and be killed, and the third day be raised up.”",
+      "ko": "가라사대 인자가 많은 고난을 받고 장로들과 대제사장들과 서기관들에게 버린바 되어 죽임을 당하고 제 삼일에 살아나야 하리라 하시고",
+      "source_text_hash": "0767cb8bb966c2e6696384acd5a20a1f70b974de6ae9108460e04d9de24effd9",
+      "translation_text_hash": "a207d19fbf3bad8581e38d7cac5dedacb0224e31ebf830c8a3a3a62c113cf18f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 인자가 많은 고난을 받고 장로들과 대제사장들과 서기관들에게 버린바 되어 죽임을 당하고 제 삼일에 살아나야 하리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "a207d19fbf3bad8581e38d7cac5dedacb0224e31ebf830c8a3a3a62c113cf18f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:23",
+      "sequence": 25325,
+      "chapter_label": "LUK 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "He said to all, “If anyone desires to come after me, let him deny himself, take up his cross,and follow me.",
+      "ko": "또 무리에게 이르시되 아무든지 나를 따라 오려거든 자기를 부인하고 날마다 제 십자가를 지고 나를 좇을 것이니라",
+      "source_text_hash": "cae0dfa17ff0c31a62ba2029943f82e741009a7208a9f6c15877de1a0dc784fc",
+      "translation_text_hash": "bf881e964d2f13254a52da0d48856e47c314e85337a8800eb10bca2bf1a44c81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 무리에게 이르시되 아무든지 나를 따라 오려거든 자기를 부인하고 날마다 제 십자가를 지고 나를 좇을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "bf881e964d2f13254a52da0d48856e47c314e85337a8800eb10bca2bf1a44c81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:24",
+      "sequence": 25326,
+      "chapter_label": "LUK 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "For whoever desires to save his life will lose it, but whoever will lose his life for my sake will save it.",
+      "ko": "누구든지 제 목숨을 구원코자 하면 잃을 것이요 누구든지 나를 위하여 제 목숨을 잃으면 구원하리라",
+      "source_text_hash": "320cedceb7b17f5b7a914a5b90341be7eb154fe3a4aa66248f487490feeef796",
+      "translation_text_hash": "34e3c7caafa601e6bd8174167c5d76ad7e6241e7262e088dda8a9683b9b79f47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 제 목숨을 구원코자 하면 잃을 것이요 누구든지 나를 위하여 제 목숨을 잃으면 구원하리라"
+      ],
+      "raw_text_hashes": [
+        "34e3c7caafa601e6bd8174167c5d76ad7e6241e7262e088dda8a9683b9b79f47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:25",
+      "sequence": 25327,
+      "chapter_label": "LUK 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "For what does it profit a man if he gains the whole world, and loses or forfeits his own self?",
+      "ko": "사람이 만일 온 천하를 얻고도 자기를 잃든지 빼앗기든지 하면 무엇이 유익하리요",
+      "source_text_hash": "895d436452938268e1bb750cabf3aff8f21c5fb7d4f3392c717b139ac035fb90",
+      "translation_text_hash": "708508e095b3e970a6917d53497e2ffdfd444026fe43aedd70e9aec5e1d55662",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 만일 온 천하를 얻고도 자기를 잃든지 빼앗기든지 하면 무엇이 유익하리요"
+      ],
+      "raw_text_hashes": [
+        "708508e095b3e970a6917d53497e2ffdfd444026fe43aedd70e9aec5e1d55662"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:26",
+      "sequence": 25328,
+      "chapter_label": "LUK 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "For whoever will be ashamed of me and of my words, of him will the Son of Man be ashamed when he comes in his glory, and the glory of the Father, and of the holy angels.",
+      "ko": "누구든지 나와 내 말을 부끄러워하면 인자도 자기와 아버지와 거룩한 천사들의 영광으로 올 때에 그 사람을 부끄러워하리라",
+      "source_text_hash": "fa82673b17835e7fba4b2524d1a9def1a5e365ce0a943a57a5588ab3002646e9",
+      "translation_text_hash": "9981ed273f7e389f0464f30f1d35dae6f44f517de018acf9efb2e1bf07c68a90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 나와 내 말을 부끄러워하면 인자도 자기와 아버지와 거룩한 천사들의 영광으로 올 때에 그 사람을 부끄러워하리라"
+      ],
+      "raw_text_hashes": [
+        "9981ed273f7e389f0464f30f1d35dae6f44f517de018acf9efb2e1bf07c68a90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:27",
+      "sequence": 25329,
+      "chapter_label": "LUK 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "But I tell you the truth: There are some of those who stand here who will in no way taste of death until they see God’s Kingdom.”",
+      "ko": "내가 참으로 너희에게 이르노니 여기 섰는 사람 중에 죽기 전에 하나님의 나라를 볼 자들도 있느니라",
+      "source_text_hash": "a91ee1b26ce14833461f5acc03a1dd1bc17d876cc73c3224303501fe27f16591",
+      "translation_text_hash": "7274dc6552e5fef1ab775fb51e1ab9ae807bf3d57d8cca784e2e9e04f56246b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 참으로 너희에게 이르노니 여기 섰는 사람 중에 죽기 전에 하나님의 나라를 볼 자들도 있느니라"
+      ],
+      "raw_text_hashes": [
+        "7274dc6552e5fef1ab775fb51e1ab9ae807bf3d57d8cca784e2e9e04f56246b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:28",
+      "sequence": 25330,
+      "chapter_label": "LUK 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "About eight days after these sayings, he took with him Peter, John, and James, and went up onto the mountain to pray.",
+      "ko": "이 말씀을 하신 후 팔일쯤 되어 예수께서 베드로와 요한과 야고보를 데리시고 기도하시러 산에 올라가사",
+      "source_text_hash": "55f90c800eef046cbccd5e8e86370af283479af3c66176647b5095a178e097d1",
+      "translation_text_hash": "4a3cbea28423decb3e4321dcbf95e038e804109de2bca081ca8b9970c0cb9b2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하신 후 팔일쯤 되어 예수께서 베드로와 요한과 야고보를 데리시고 기도하시러 산에 올라가사"
+      ],
+      "raw_text_hashes": [
+        "4a3cbea28423decb3e4321dcbf95e038e804109de2bca081ca8b9970c0cb9b2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:29",
+      "sequence": 25331,
+      "chapter_label": "LUK 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "As he was praying, the appearance of his face was altered, and his clothing became white and dazzling.",
+      "ko": "기도하실 때에 용모가 변화되고 그 옷이 희어져 광채가 나더라",
+      "source_text_hash": "4e1d1ce66a90729586b34767da3735642af711040c0e5f559a18675ad3eac9b9",
+      "translation_text_hash": "f60dc4f6f7e0c5ae2848e27bcbe6869164a04ba7e39119f7f8098b8f9d1f364d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기도하실 때에 용모가 변화되고 그 옷이 희어져 광채가 나더라"
+      ],
+      "raw_text_hashes": [
+        "f60dc4f6f7e0c5ae2848e27bcbe6869164a04ba7e39119f7f8098b8f9d1f364d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:30",
+      "sequence": 25332,
+      "chapter_label": "LUK 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "Behold, two men were talking with him, who were Moses and Elijah,",
+      "ko": "문득 두 사람이 예수와 함께 말하니 이는 모세와 엘리야라",
+      "source_text_hash": "5e3a193c7817bb027c0a96611b450de1f50b9566176247e41fb4c2bcd4ef358e",
+      "translation_text_hash": "c38f0800cc513891e5dc59c36e3a161374d2103eb1de57f7b7ffef43da93f000",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문득 두 사람이 예수와 함께 말하니 이는 모세와 엘리야라"
+      ],
+      "raw_text_hashes": [
+        "c38f0800cc513891e5dc59c36e3a161374d2103eb1de57f7b7ffef43da93f000"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:31",
+      "sequence": 25333,
+      "chapter_label": "LUK 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "who appeared in glory and spoke of his departure, which he was about to accomplish at Jerusalem.",
+      "ko": "영광 중에 나타나서 장차 예수께서 예루살렘에서 별세하실 것을 말씀할쌔",
+      "source_text_hash": "83070185dba2723452b1248f1141bd6cd482dcdc805025212ba10e445610ca3f",
+      "translation_text_hash": "dd319327faeb233a53c1ad51705912002eef4d379c3256118cf3cfe6bcaec048",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영광 중에 나타나서 장차 예수께서 예루살렘에서 별세하실 것을 말씀할쌔"
+      ],
+      "raw_text_hashes": [
+        "dd319327faeb233a53c1ad51705912002eef4d379c3256118cf3cfe6bcaec048"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:32",
+      "sequence": 25334,
+      "chapter_label": "LUK 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "Now Peter and those who were with him were heavy with sleep, but when they were fully awake, they saw his glory, and the two men who stood with him.",
+      "ko": "베드로와 및 함께 있는 자들이 곤하여 졸다가 아주 깨어 예수의 영광과 및 함께 선 두 사람을 보더니",
+      "source_text_hash": "2c17fd4072ce2926ebd569f68af5013ffb1dfcb584358598a6ff3ed693a3ed3e",
+      "translation_text_hash": "cd8726731a2dd6a6ffc450e0f009d42d799be3bf36b2163914b4239e0aa21992",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로와 및 함께 있는 자들이 곤하여 졸다가 아주 깨어 예수의 영광과 및 함께 선 두 사람을 보더니"
+      ],
+      "raw_text_hashes": [
+        "cd8726731a2dd6a6ffc450e0f009d42d799be3bf36b2163914b4239e0aa21992"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:33",
+      "sequence": 25335,
+      "chapter_label": "LUK 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "As they were parting from him, Peter said to Jesus, “Master, it is good for us to be here. Let’s make three tents: one for you, one for Moses, and one for Elijah,” not knowing what he said.",
+      "ko": "두 사람이 떠날 때에 베드로가 예수께 여짜오되 주여 우리가 여기 있는 것이 좋사오니 우리가 초막 셋을 짓되 하나는 주를 위하여, 하나는 모세를 위하여, 하나는 엘리야를 위하여 하사이다 하되 자기의 하는 말을 자기도 알지 못하더라",
+      "source_text_hash": "20b29ea39d425b74373d350365b01950a9846633bf7b730a3a2a31bc76c60dfd",
+      "translation_text_hash": "deddaee083d0cfd15021fee454b672feb20956c0fff960e265b0cd6c66b430ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 떠날 때에 베드로가 예수께 여짜오되 주여 우리가 여기 있는 것이 좋사오니 우리가 초막 셋을 짓되 하나는 주를 위하여, 하나는 모세를 위하여, 하나는 엘리야를 위하여 하사이다 하되 자기의 하는 말을 자기도 알지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "deddaee083d0cfd15021fee454b672feb20956c0fff960e265b0cd6c66b430ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:34",
+      "sequence": 25336,
+      "chapter_label": "LUK 9",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 34
+        }
+      ],
+      "en": "While he said these things, a cloud came and overshadowed them, and they were afraid as they entered into the cloud.",
+      "ko": "이 말 할 즈음에 구름이 와서 저희를 덮는지라 구름 속으로 들어갈 때에 저희가 무서워하더니",
+      "source_text_hash": "9ca73af07a59842990affb1c9ac1fdb0f9e33e82737387eae5a9aa56c5951a66",
+      "translation_text_hash": "eda51a584bab2795ad4dfa0cf421b9c15a62286a2c62831bb0e50487ba7a5d6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말 할 즈음에 구름이 와서 저희를 덮는지라 구름 속으로 들어갈 때에 저희가 무서워하더니"
+      ],
+      "raw_text_hashes": [
+        "eda51a584bab2795ad4dfa0cf421b9c15a62286a2c62831bb0e50487ba7a5d6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:35",
+      "sequence": 25337,
+      "chapter_label": "LUK 9",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 35
+        }
+      ],
+      "en": "A voice came out of the cloud, saying, “This is my beloved Son. Listen to him!”",
+      "ko": "구름 속에서 소리가 나서 가로되 이는 나의 아들 곧 택함을 받은 자니 너희는 저의 말을 들으라 하고",
+      "source_text_hash": "75053fa2a3b57ddc0784e8cad9b657fd7be760440bb78d16f351a5a10a0f89e4",
+      "translation_text_hash": "dee53602f1aeaed2c6111a01ba4567ed8c85e9376bca827afc0901f99f026c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름 속에서 소리가 나서 가로되 이는 나의 아들 곧 택함을 받은 자니 너희는 저의 말을 들으라 하고"
+      ],
+      "raw_text_hashes": [
+        "dee53602f1aeaed2c6111a01ba4567ed8c85e9376bca827afc0901f99f026c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:36",
+      "sequence": 25338,
+      "chapter_label": "LUK 9",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 36
+        }
+      ],
+      "en": "When the voice came, Jesus was found alone. They were silent, and told no one in those days any of the things which they had seen.",
+      "ko": "소리가 그치매 오직 예수만 보이시더라 제자들이 잠잠하여 그 본 것을 무엇이든지 그 때에는 아무에게도 이르지 아니하니라",
+      "source_text_hash": "07e945f01203b98fcdf1f2fdc9fd27271376e1b35583ccf09bd32ecd015219d6",
+      "translation_text_hash": "d41b765114f3c27b31ef7b026a00b3217bdd820d8a86a7c2735b0100785a4501",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소리가 그치매 오직 예수만 보이시더라 제자들이 잠잠하여 그 본 것을 무엇이든지 그 때에는 아무에게도 이르지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "d41b765114f3c27b31ef7b026a00b3217bdd820d8a86a7c2735b0100785a4501"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:37",
+      "sequence": 25339,
+      "chapter_label": "LUK 9",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 37
+        }
+      ],
+      "en": "On the next day, when they had come down from the mountain, a great multitude met him.",
+      "ko": "이튿날 산에서 내려 오시니 큰 무리가 맞을쌔",
+      "source_text_hash": "d05261683d2e369f2b33a4b9dcc55bd1edae12b9fe6102bfcd891fc195e84eb7",
+      "translation_text_hash": "635edf1feb646e78dc8aa3e7b6e930b6565535c84b12d14bfb071174d8b4d545",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 산에서 내려 오시니 큰 무리가 맞을쌔"
+      ],
+      "raw_text_hashes": [
+        "635edf1feb646e78dc8aa3e7b6e930b6565535c84b12d14bfb071174d8b4d545"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:38",
+      "sequence": 25340,
+      "chapter_label": "LUK 9",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 38
+        }
+      ],
+      "en": "Behold, a man from the crowd called out, saying, “Teacher, I beg you to look at my son, for he is my only born child.",
+      "ko": "무리 중에 한 사람이 소리질러 가로되 선생님 청컨대 내 아들을 돌아보아 주옵소서 이는 내 외아들이니이다",
+      "source_text_hash": "4d4ccaf0b3bc9ae343f91c73008ca6adaf64f3a9c1752381fba54a32650d8c89",
+      "translation_text_hash": "138b805400d973a337b67d0a353d354f299c97746a46d97ba1d109c0d1693042",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리 중에 한 사람이 소리질러 가로되 선생님 청컨대 내 아들을 돌아보아 주옵소서 이는 내 외아들이니이다"
+      ],
+      "raw_text_hashes": [
+        "138b805400d973a337b67d0a353d354f299c97746a46d97ba1d109c0d1693042"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:39",
+      "sequence": 25341,
+      "chapter_label": "LUK 9",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 39
+        }
+      ],
+      "en": "Behold, a spirit takes him, he suddenly cries out, and it convulses him so that he foams; and it hardly departs from him, bruising him severely.",
+      "ko": "귀신이 저를 잡아 졸지에 부르짖게 하고 경련을 일으켜 거품을 흘리게 하며 심히 상하게 하고야 겨우 떠나 가나이다",
+      "source_text_hash": "be1965f9589abe8fbff725e4e9fffed875b0afc8238397a3e57c0a4bb87396be",
+      "translation_text_hash": "8b3b3aa1da9331ecf8b56d0b63d2986c67535a63d682a489e8bc436c2c1ab714",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀신이 저를 잡아 졸지에 부르짖게 하고 경련을 일으켜 거품을 흘리게 하며 심히 상하게 하고야 겨우 떠나 가나이다"
+      ],
+      "raw_text_hashes": [
+        "8b3b3aa1da9331ecf8b56d0b63d2986c67535a63d682a489e8bc436c2c1ab714"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:40",
+      "sequence": 25342,
+      "chapter_label": "LUK 9",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 40
+        }
+      ],
+      "en": "I begged your disciples to cast it out, and they couldn’t.”",
+      "ko": "당신의 제자들에게 내어 쫓아 주기를 구하였으나 저희가 능히 못하더이다",
+      "source_text_hash": "9fda329047c7eff3ba4ce673086a7ab711875e2573f9fcd7d59839eba7230199",
+      "translation_text_hash": "419bd7959ea303b208a149aae3787c2082af6bae7e662f9a41cf371ba84bd232",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신의 제자들에게 내어 쫓아 주기를 구하였으나 저희가 능히 못하더이다"
+      ],
+      "raw_text_hashes": [
+        "419bd7959ea303b208a149aae3787c2082af6bae7e662f9a41cf371ba84bd232"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:41",
+      "sequence": 25343,
+      "chapter_label": "LUK 9",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 41
+        }
+      ],
+      "en": "Jesus answered, “Faithless and perverse generation, how long shall I be with you and bear with you? Bring your son here.”",
+      "ko": "예수께서 대답하여 가라사대 믿음이 없고 패역한 세대여 내가 얼마나 너희와 함께 있으며 너희를 참으리요 네 아들을 이리로 데리고 오라 하시니",
+      "source_text_hash": "27e01351dff5c01cb873043a6bfb0ed66d407e8cfd9cb44db884b493994d60c5",
+      "translation_text_hash": "3b50e7220adda451e89011d48c3609be90f1f5608199dfc9f68d82f560053a25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 믿음이 없고 패역한 세대여 내가 얼마나 너희와 함께 있으며 너희를 참으리요 네 아들을 이리로 데리고 오라 하시니"
+      ],
+      "raw_text_hashes": [
+        "3b50e7220adda451e89011d48c3609be90f1f5608199dfc9f68d82f560053a25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:42",
+      "sequence": 25344,
+      "chapter_label": "LUK 9",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 42
+        }
+      ],
+      "en": "While he was still coming, the demon threw him down and convulsed him violently. But Jesus rebuked the unclean spirit, healed the boy, and gave him back to his father.",
+      "ko": "올 때에 귀신이 거꾸러뜨리고 심한 경련을 일으키게 하는지라 예수께서 더러운 귀신을 꾸짖으시고 아이를 낫게 하사 그 아비에게 도로 주시니",
+      "source_text_hash": "e4294e0e5b91bc6b411fb29e934cd4fa437a26d6c3d7b3d3543f1cf09263318c",
+      "translation_text_hash": "0b22eb4e264271052a1f97bebd47450ee824726a26b51f30122e81e71eb11082",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "올 때에 귀신이 거꾸러뜨리고 심한 경련을 일으키게 하는지라 예수께서 더러운 귀신을 꾸짖으시고 아이를 낫게 하사 그 아비에게 도로 주시니"
+      ],
+      "raw_text_hashes": [
+        "0b22eb4e264271052a1f97bebd47450ee824726a26b51f30122e81e71eb11082"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:43",
+      "sequence": 25345,
+      "chapter_label": "LUK 9",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 43
+        }
+      ],
+      "en": "They were all astonished at the majesty of God. But while all were marveling at all the things which Jesus did, he said to his disciples,",
+      "ko": "사람들이 다 하나님의 위엄을 놀라니라 저희가 다 그 행하시는 모든 일을 기이히 여길쌔 예수께서 제자들에게 이르시되",
+      "source_text_hash": "acc272ef61c7b3fe09ba000abc20555fabd30747343daa355aae710ab42b8d0f",
+      "translation_text_hash": "68180f08f1c85e729ff0e3a022f9fd1614c1036cc075780166968bd6e2e30fff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 다 하나님의 위엄을 놀라니라 저희가 다 그 행하시는 모든 일을 기이히 여길쌔 예수께서 제자들에게 이르시되"
+      ],
+      "raw_text_hashes": [
+        "68180f08f1c85e729ff0e3a022f9fd1614c1036cc075780166968bd6e2e30fff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:44",
+      "sequence": 25346,
+      "chapter_label": "LUK 9",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 44
+        }
+      ],
+      "en": "“Let these words sink into your ears, for the Son of Man will be delivered up into the hands of men.”",
+      "ko": "이 말을 너희 귀에 담아 두라 인자가 장차 사람들의 손에 넘기우리라 하시되",
+      "source_text_hash": "2823a96c641c979ab6a57b199c64c02b457b23d6015d952ca275daa2712ed1e0",
+      "translation_text_hash": "2db0bd9f1dbbc547a666fe461a19d429e1ee1000d88107d2c7e66ece504b6c90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말을 너희 귀에 담아 두라 인자가 장차 사람들의 손에 넘기우리라 하시되"
+      ],
+      "raw_text_hashes": [
+        "2db0bd9f1dbbc547a666fe461a19d429e1ee1000d88107d2c7e66ece504b6c90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:45",
+      "sequence": 25347,
+      "chapter_label": "LUK 9",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 45
+        }
+      ],
+      "en": "But they didn’t understand this saying. It was concealed from them, that they should not perceive it, and they were afraid to ask him about this saying.",
+      "ko": "저희가 이 말씀을 알지 못하였나니 이는 저희로 깨닫지 못하게 숨김이 되었음이라 또 저희는 이 말씀을 묻기도 두려워하더라",
+      "source_text_hash": "2a8410be220f7d255dbfd017af7d34fc19a12a22659c9bf9e7fad5e54d35df9f",
+      "translation_text_hash": "097c75ba2e3de85b508dd526f5f47c99fee2d014690eb0b235a3776e9ca675e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이 말씀을 알지 못하였나니 이는 저희로 깨닫지 못하게 숨김이 되었음이라 또 저희는 이 말씀을 묻기도 두려워하더라"
+      ],
+      "raw_text_hashes": [
+        "097c75ba2e3de85b508dd526f5f47c99fee2d014690eb0b235a3776e9ca675e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:46",
+      "sequence": 25348,
+      "chapter_label": "LUK 9",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 46
+        }
+      ],
+      "en": "An argument arose among them about which of them was the greatest.",
+      "ko": "제자 중에서 누가 크냐 하는 변론이 일어나니",
+      "source_text_hash": "9259a23e7a5be20d987b31cabc8e4a31e1c14a077b13ccdf113091b0549382eb",
+      "translation_text_hash": "90f5040ad1febca9ead5eb5e27d5b33c499056abed989a11542e5ce01bdd1567",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자 중에서 누가 크냐 하는 변론이 일어나니"
+      ],
+      "raw_text_hashes": [
+        "90f5040ad1febca9ead5eb5e27d5b33c499056abed989a11542e5ce01bdd1567"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:47",
+      "sequence": 25349,
+      "chapter_label": "LUK 9",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 47
+        }
+      ],
+      "en": "Jesus, perceiving the reasoning of their hearts, took a little child, and set him by his side,",
+      "ko": "예수께서 그 마음에 변론하는 것을 아시고 어린 아이 하나를 데려다가 자기 곁에 세우시고",
+      "source_text_hash": "c9120e4cf90a715eac8a090b2a1bad36fd944ec3beb950ac97d177442f411246",
+      "translation_text_hash": "6aa905fa4e6808261b523e5ac78b29c2e9f5ef201e28f8345de6ab85f76aa6a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 마음에 변론하는 것을 아시고 어린 아이 하나를 데려다가 자기 곁에 세우시고"
+      ],
+      "raw_text_hashes": [
+        "6aa905fa4e6808261b523e5ac78b29c2e9f5ef201e28f8345de6ab85f76aa6a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:48",
+      "sequence": 25350,
+      "chapter_label": "LUK 9",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 48
+        }
+      ],
+      "en": "and said to them, “Whoever receives this little child in my name receives me. Whoever receives me receives him who sent me. For whoever is least among you all, this one will be great.”",
+      "ko": "저희에게 이르시되 누구든지 내 이름으로 이 어린 아이를 영접하면 곧 나를 영접함이요 또 누구든지 나를 영접하면 곧 나 보내신 이를 영접함이라 너희 모든 사람 중에 가장 작은 그이가 큰 자니라",
+      "source_text_hash": "cf37de6b51a31613239f2d60fa59d4ab5653047e04697838d8aab50cb879acb3",
+      "translation_text_hash": "1adceec8af2b2256086532183cfc700dc9ad03e29a153d87cf9ff5d9e7dc286d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 이르시되 누구든지 내 이름으로 이 어린 아이를 영접하면 곧 나를 영접함이요 또 누구든지 나를 영접하면 곧 나 보내신 이를 영접함이라 너희 모든 사람 중에 가장 작은 그이가 큰 자니라"
+      ],
+      "raw_text_hashes": [
+        "1adceec8af2b2256086532183cfc700dc9ad03e29a153d87cf9ff5d9e7dc286d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:49",
+      "sequence": 25351,
+      "chapter_label": "LUK 9",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 49
+        }
+      ],
+      "en": "John answered, “Master, we saw someone casting out demons in your name, and we forbade him, because he doesn’t follow with us.”",
+      "ko": "요한이 여짜오되 주여 어떤 사람이 주의 이름으로 귀신을 내어 쫓는 것을 우리가 보고 우리와 함께 따르지 아니하므로 금하였나이다",
+      "source_text_hash": "d5aea6c58e7163ec7e84a7f2b35d94bc17f7ddb40b5b45104bd432ea8ef8a5df",
+      "translation_text_hash": "ccc24efcb3d45e27990a28c487e5b1afa44f00007eebf32197ce767aad25abae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 여짜오되 주여 어떤 사람이 주의 이름으로 귀신을 내어 쫓는 것을 우리가 보고 우리와 함께 따르지 아니하므로 금하였나이다"
+      ],
+      "raw_text_hashes": [
+        "ccc24efcb3d45e27990a28c487e5b1afa44f00007eebf32197ce767aad25abae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:50",
+      "sequence": 25352,
+      "chapter_label": "LUK 9",
+      "verse_label": "50",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 50
+        }
+      ],
+      "en": "Jesus said to him, “Don’t forbid him, for he who is not against us is for us.”",
+      "ko": "예수께서 가라사대 금하지 말라 너희를 반대하지 않는 자는 너희를 위하는 자니라 하시니라",
+      "source_text_hash": "231647021eebb8d163056ee58ab09353d60f5ae6405866fe3f17d712ff217541",
+      "translation_text_hash": "cef1d6e23f4fefff951a30a5693195ea8c61780757ee166608e873297b17fe97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 금하지 말라 너희를 반대하지 않는 자는 너희를 위하는 자니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "cef1d6e23f4fefff951a30a5693195ea8c61780757ee166608e873297b17fe97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:51",
+      "sequence": 25353,
+      "chapter_label": "LUK 9",
+      "verse_label": "51",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 51
+        }
+      ],
+      "en": "It came to pass, when the days were near that he should be taken up, he intently set his face to go to Jerusalem",
+      "ko": "예수께서 승천하실 기약이 차가매 예루살렘을 향하여 올라가기로 굳게 결심하시고",
+      "source_text_hash": "3bd24b1722482f11018142aa799a660a3410b4c12a6bc3a917e21130213206b3",
+      "translation_text_hash": "1199aeb8bc20569355991d92907c71d25816c0fde6da9d496da4c8c45a0c97d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 승천하실 기약이 차가매 예루살렘을 향하여 올라가기로 굳게 결심하시고"
+      ],
+      "raw_text_hashes": [
+        "1199aeb8bc20569355991d92907c71d25816c0fde6da9d496da4c8c45a0c97d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:52",
+      "sequence": 25354,
+      "chapter_label": "LUK 9",
+      "verse_label": "52",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 52
+        }
+      ],
+      "en": "and sent messengers before his face. They went and entered into a village of the Samaritans, so as to prepare for him.",
+      "ko": "사자들을 앞서 보내시매 저희가 가서 예수를 위하여 예비하려고 사마리아인의 한 촌에 들어갔더니",
+      "source_text_hash": "0a8cf00bb28b7bcdaed9494b4a6388c22f2c0c05e04a99f2595f85a75e39f345",
+      "translation_text_hash": "1518f3796f0acfbe2fc7342ecf489037a814b47e0d55fdd2fd7c9f757a02fff4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자들을 앞서 보내시매 저희가 가서 예수를 위하여 예비하려고 사마리아인의 한 촌에 들어갔더니"
+      ],
+      "raw_text_hashes": [
+        "1518f3796f0acfbe2fc7342ecf489037a814b47e0d55fdd2fd7c9f757a02fff4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:53",
+      "sequence": 25355,
+      "chapter_label": "LUK 9",
+      "verse_label": "53",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 53
+        }
+      ],
+      "en": "They didn’t receive him, because he was traveling with his face set toward Jerusalem.",
+      "ko": "예수께서 예루살렘을 향하여 가시는고로 저희가 받아 들이지 아니하는지라",
+      "source_text_hash": "5cee29e17fae56a04a767ede6ba8d61a383e62ab3e896feffd3ad1cfc3da6011",
+      "translation_text_hash": "a1c21d5b4e7788b3de70d650a573fbad6f94c47b5eb9cd6c4509281c4d825fde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 예루살렘을 향하여 가시는고로 저희가 받아 들이지 아니하는지라"
+      ],
+      "raw_text_hashes": [
+        "a1c21d5b4e7788b3de70d650a573fbad6f94c47b5eb9cd6c4509281c4d825fde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:54",
+      "sequence": 25356,
+      "chapter_label": "LUK 9",
+      "verse_label": "54",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 54
+        }
+      ],
+      "en": "When his disciples, James and John, saw this, they said, “Lord, do you want us to command fire to come down from the sky and destroy them, just as Elijah did?”",
+      "ko": "제자 야고보와 요한이 이를 보고 가로되 주여 우리가 불을 명하여 하늘로 좇아 내려 저희를 멸하라 하기를 원하시나이까",
+      "source_text_hash": "ab53cee5be258b435dee32e1ab967322191eb975be5541de09d05a5c40af74d1",
+      "translation_text_hash": "66f968d0cb5028b2cb8a7e0952c626f768cf68b9a1d5479cc99abbd1be718680",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자 야고보와 요한이 이를 보고 가로되 주여 우리가 불을 명하여 하늘로 좇아 내려 저희를 멸하라 하기를 원하시나이까"
+      ],
+      "raw_text_hashes": [
+        "66f968d0cb5028b2cb8a7e0952c626f768cf68b9a1d5479cc99abbd1be718680"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:55",
+      "sequence": 25357,
+      "chapter_label": "LUK 9",
+      "verse_label": "55",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 55
+        }
+      ],
+      "en": "But he turned and rebuked them, “You don’t know of what kind of spirit you are.",
+      "ko": "예수께서 돌아보시며 꾸짖으시고",
+      "source_text_hash": "47ba13279f1cf6e95e61243444c185d2fa9018bd97ff7f01679d63d65171d041",
+      "translation_text_hash": "08b98d826e8bd6f580d11713c3b2a1522a3e02f734a973a0fa75ae2879d39300",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 돌아보시며 꾸짖으시고"
+      ],
+      "raw_text_hashes": [
+        "08b98d826e8bd6f580d11713c3b2a1522a3e02f734a973a0fa75ae2879d39300"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:56",
+      "sequence": 25358,
+      "chapter_label": "LUK 9",
+      "verse_label": "56",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 56
+        }
+      ],
+      "en": "For the Son of Man didn’t come to destroy men’s lives, but to save them.”They went to another village.",
+      "ko": "함께 다른 촌으로 가시니라",
+      "source_text_hash": "91477372497fb5dfc4060d46c35ddcf0abf4be46608a34be87e03b984b0fc926",
+      "translation_text_hash": "3efd643e92e356e209bdf62f70dd7682e77f2c96bc665ab6539a71ed14a9d8de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "함께 다른 촌으로 가시니라"
+      ],
+      "raw_text_hashes": [
+        "3efd643e92e356e209bdf62f70dd7682e77f2c96bc665ab6539a71ed14a9d8de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:57",
+      "sequence": 25359,
+      "chapter_label": "LUK 9",
+      "verse_label": "57",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 57
+        }
+      ],
+      "en": "As they went on the way, a certain man said to him, “I want to follow you wherever you go, Lord.”",
+      "ko": "길 가실 때에 혹이 여짜오되 어디로 가시든지 저는 좇으리이다",
+      "source_text_hash": "7a9cb1289cbacfc81e6fcbe9b55ae1c5c37e9608d50ffa9f432a384edd325de9",
+      "translation_text_hash": "32ac1667440bab20290c8c3a4115b38751ed06293e9519af557ba1006fd9677c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길 가실 때에 혹이 여짜오되 어디로 가시든지 저는 좇으리이다"
+      ],
+      "raw_text_hashes": [
+        "32ac1667440bab20290c8c3a4115b38751ed06293e9519af557ba1006fd9677c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:58",
+      "sequence": 25360,
+      "chapter_label": "LUK 9",
+      "verse_label": "58",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 58
+        }
+      ],
+      "en": "Jesus said to him, “The foxes have holes and the birds of the sky have nests, but the Son of Man has no place to lay his head.”",
+      "ko": "예수께서 가라사대 여우도 굴이 있고 공중의 새도 집이 있으되 인자는 머리 둘 곳이 없도다 하시고",
+      "source_text_hash": "8df885221ed5276aa7e28d0f2ae28a67e0e462b5476af7b0ba8ba04ce60386d0",
+      "translation_text_hash": "a8340d58ed221f9ed2be4e970fb2609c2984115fe904baf43155ad5c67ba295f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 여우도 굴이 있고 공중의 새도 집이 있으되 인자는 머리 둘 곳이 없도다 하시고"
+      ],
+      "raw_text_hashes": [
+        "a8340d58ed221f9ed2be4e970fb2609c2984115fe904baf43155ad5c67ba295f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:59",
+      "sequence": 25361,
+      "chapter_label": "LUK 9",
+      "verse_label": "59",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 59
+        }
+      ],
+      "en": "He said to another, “Follow me!”But he said, “Lord, allow me first to go and bury my father.”",
+      "ko": "또 다른 사람에게 나를 좇으라 하시니 그가 가로되 나로 먼저 가서 내 부친을 장사하게 허락하옵소서",
+      "source_text_hash": "803954c11156c4aff3845358456aa3644ec3d1e8a298ea0796679daf15c41f6e",
+      "translation_text_hash": "99977acea10d9918b563aa1fbcbef9ac1adff21e2edd4102c8f803cc29996a5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 사람에게 나를 좇으라 하시니 그가 가로되 나로 먼저 가서 내 부친을 장사하게 허락하옵소서"
+      ],
+      "raw_text_hashes": [
+        "99977acea10d9918b563aa1fbcbef9ac1adff21e2edd4102c8f803cc29996a5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:60",
+      "sequence": 25362,
+      "chapter_label": "LUK 9",
+      "verse_label": "60",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 60
+        }
+      ],
+      "en": "But Jesus said to him, “Leave the dead to bury their own dead, but you go and announce God’s Kingdom.”",
+      "ko": "가라사대 죽은 자들로 자기의 죽은 자들을 장사하게 하고 너는 가서 하나님의 나라를 전파하라 하시고",
+      "source_text_hash": "34e41eaadb334eb6fdf3a96f9990b60dfad4ddb7ca1a18123c2c686610e94bda",
+      "translation_text_hash": "31312d827350caf2ce5085ebdfab1d7603c71ea5d88ad550b2edcfe87eabff15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 죽은 자들로 자기의 죽은 자들을 장사하게 하고 너는 가서 하나님의 나라를 전파하라 하시고"
+      ],
+      "raw_text_hashes": [
+        "31312d827350caf2ce5085ebdfab1d7603c71ea5d88ad550b2edcfe87eabff15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:61",
+      "sequence": 25363,
+      "chapter_label": "LUK 9",
+      "verse_label": "61",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 61
+        }
+      ],
+      "en": "Another also said, “I want to follow you, Lord, but first allow me to say good-bye to those who are at my house.”",
+      "ko": "또 다른 사람이 가로되 주여 내가 주를 좇겠나이다 마는 나로 먼저 내 가족을 작별케 허락하소서",
+      "source_text_hash": "4dd401b1bc23c63a7e844369c4c107fcb11e1a446a09458dd4b9d829f6f883a2",
+      "translation_text_hash": "565cd160b5ea571d4a25bd7920e58ec1929eced34298ce6bd9eb26e483d316e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 사람이 가로되 주여 내가 주를 좇겠나이다 마는 나로 먼저 내 가족을 작별케 허락하소서"
+      ],
+      "raw_text_hashes": [
+        "565cd160b5ea571d4a25bd7920e58ec1929eced34298ce6bd9eb26e483d316e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:9:62",
+      "sequence": 25364,
+      "chapter_label": "LUK 9",
+      "verse_label": "62",
+      "locator": {
+        "book": "LUK",
+        "chapter": 9,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 9,
+          "verse": 62
+        }
+      ],
+      "en": "But Jesus said to him, “No one, having put his hand to the plow and looking back, is fit for God’s Kingdom.”",
+      "ko": "예수께서 이르시되 손에 쟁기를 잡고 뒤를 돌아보는 자는 하나님의 나라에 합당치 아니하니라 하시니라",
+      "source_text_hash": "a61830a76a42e862e332909d80f58059db37931625a453bc2ca9bac184aa507b",
+      "translation_text_hash": "2ca881c1c71982fa696c381c1c03771a47bf40b881861b839ee673fd08c4d944",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 손에 쟁기를 잡고 뒤를 돌아보는 자는 하나님의 나라에 합당치 아니하니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "2ca881c1c71982fa696c381c1c03771a47bf40b881861b839ee673fd08c4d944"
+      ]
+    }
+  ]
+}

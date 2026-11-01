@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZR:chapter:009",
+  "unit_ordinal": 412,
+  "unit_label": "EZR 9",
+  "book_code": "EZR",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZR:9:1",
+      "sequence": 12239,
+      "chapter_label": "EZR 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Now when these things were done, the princes came near to me, saying, “The people of Israel, the priests, and the Levites have not separated themselves from the peoples of the lands, following their abominations, even those of the Canaanites, the Hittites, the Perizzites, the Jebusites, the Ammonites, the Moabites, the Egyptians, and the Amorites.",
+      "ko": "이 일 후에 방백들이 내게 나아와 가로되 이스라엘 백성과 제사장들과 레위 사람들이 이 땅 백성과 떠나지 아니하고 가나안 사람과 헷 사람과 브리스 사람과 여부스 사람과 암몬 사람과 모압 사람과 애굽 사람과 아모리 사람의 가증한 일을 행하여",
+      "source_text_hash": "31b8bc060202afac7a321259cfeb862e9fb0f1a62c20977985175d2fd8bd4e76",
+      "translation_text_hash": "a8ea8fdb560bbe65c062f53910e95673bcb173f7f8ecfd212487f288c3d08f4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일 후에 방백들이 내게 나아와 가로되 이스라엘 백성과 제사장들과 레위 사람들이 이 땅 백성과 떠나지 아니하고 가나안 사람과 헷 사람과 브리스 사람과 여부스 사람과 암몬 사람과 모압 사람과 애굽 사람과 아모리 사람의 가증한 일을 행하여"
+      ],
+      "raw_text_hashes": [
+        "a8ea8fdb560bbe65c062f53910e95673bcb173f7f8ecfd212487f288c3d08f4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:2",
+      "sequence": 12240,
+      "chapter_label": "EZR 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "For they have taken of their daughters for themselves and for their sons, so that the holy offspring have mixed themselves with the peoples of the lands. Yes, the hand of the princes and rulers has been chief in this trespass.”",
+      "ko": "그들의 딸을 취하여 아내와 며느리를 삼아 거룩한 자손으로 이방 족속과 서로 섞이게 하는데 방백들과 두목들이 이 죄에 더욱 으뜸이 되었다 하는지라",
+      "source_text_hash": "37afcbf52227f86c7e4675d8a78809edcdc3438da2775360f5f538c02d71e8a7",
+      "translation_text_hash": "b8d0267a417c033fd7c1e81a70727616a8d9aa54a6a9941142f84bf1c2a22492",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 딸을 취하여 아내와 며느리를 삼아 거룩한 자손으로 이방 족속과 서로 섞이게 하는데 방백들과 두목들이 이 죄에 더욱 으뜸이 되었다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "b8d0267a417c033fd7c1e81a70727616a8d9aa54a6a9941142f84bf1c2a22492"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:3",
+      "sequence": 12241,
+      "chapter_label": "EZR 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "When I heard this thing, I tore my garment and my robe, and pulled the hair out of my head and of my beard, and sat down confounded.",
+      "ko": "내가 이 일을 듣고 속옷과 겉옷을 찢고 머리털과 수염을 뜯으며 기가 막혀 앉으니",
+      "source_text_hash": "a2056169e2df903e23833a930177cfab16c1249db37b07f7795c191bc9df1126",
+      "translation_text_hash": "16c97332e641c15cbcfa7e38d73bb84ee4d79d35530b687e7f183ce8288565ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 일을 듣고 속옷과 겉옷을 찢고 머리털과 수염을 뜯으며 기가 막혀 앉으니"
+      ],
+      "raw_text_hashes": [
+        "16c97332e641c15cbcfa7e38d73bb84ee4d79d35530b687e7f183ce8288565ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:4",
+      "sequence": 12242,
+      "chapter_label": "EZR 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "Then everyone who trembled at the words of the God of Israel were assembled to me because of the trespass of the exiles; and I sat confounded until the evening offering.",
+      "ko": "이에 이스라엘 하나님의 말씀을 인하여 떠는 자가 이 사로잡혔던 자의 죄를 인하여 다 내게로 모여 오더라 내가 저녁 제사 드릴 때까지 기가 막혀 앉았더니",
+      "source_text_hash": "3e16709e46185208e9426c50c5da2e415b115858a1a060e8a52830b992853bc8",
+      "translation_text_hash": "dd9b0b5285ef16415f8d261e37a03de002fe8c48155c78a8422c8d851a0fe3da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이스라엘 하나님의 말씀을 인하여 떠는 자가 이 사로잡혔던 자의 죄를 인하여 다 내게로 모여 오더라 내가 저녁 제사 드릴 때까지 기가 막혀 앉았더니"
+      ],
+      "raw_text_hashes": [
+        "dd9b0b5285ef16415f8d261e37a03de002fe8c48155c78a8422c8d851a0fe3da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:5",
+      "sequence": 12243,
+      "chapter_label": "EZR 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "At the evening offering I rose up from my humiliation, even with my garment and my robe torn; and I fell on my knees, and spread out my hands to the LORD my God;",
+      "ko": "저녁 제사를 드릴 때에 내가 근심 중에 일어나서 속옷과 겉옷을 찢은대로 무릎을 꿇고 나의 하나님 여호와를 향하여 손을 들고",
+      "source_text_hash": "e13711ff9eb48104ddbd2d605181574cada6471c8dc11405c26fc8afb1f6da09",
+      "translation_text_hash": "75569ae755faa774d760d2e964dbadcc3984d559793fbcc1d55a217a88e0ac4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁 제사를 드릴 때에 내가 근심 중에 일어나서 속옷과 겉옷을 찢은대로 무릎을 꿇고 나의 하나님 여호와를 향하여 손을 들고"
+      ],
+      "raw_text_hashes": [
+        "75569ae755faa774d760d2e964dbadcc3984d559793fbcc1d55a217a88e0ac4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:6",
+      "sequence": 12244,
+      "chapter_label": "EZR 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "and I said, “My God, I am ashamed and blush to lift up my face to you, my God, for our iniquities have increased over our head, and our guiltiness has grown up to the heavens.",
+      "ko": "말하기를 나의 하나님이여 내가 부끄러워 낯이 뜨뜻하여 감히 나의 하나님을 향하여 얼굴을 들지 못하오니 이는 우리 죄악이 많아 정수리에 넘치고 우리 허물이 커서 하늘에 미침이니이다",
+      "source_text_hash": "f6a06c38e691bf658f6aa7f8a6a827f2b5956139a6e3afee8438e61fe1b85bb7",
+      "translation_text_hash": "2d4432b46d0cfe550984e3003688a8ae452568eb2119726074c03b93b97b75fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 나의 하나님이여 내가 부끄러워 낯이 뜨뜻하여 감히 나의 하나님을 향하여 얼굴을 들지 못하오니 이는 우리 죄악이 많아 정수리에 넘치고 우리 허물이 커서 하늘에 미침이니이다"
+      ],
+      "raw_text_hashes": [
+        "2d4432b46d0cfe550984e3003688a8ae452568eb2119726074c03b93b97b75fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:7",
+      "sequence": 12245,
+      "chapter_label": "EZR 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Since the days of our fathers we have been exceedingly guilty to this day; and for our iniquities we, our kings, and our priests have been delivered into the hand of the kings of the lands, to the sword, to captivity, to plunder, and to confusion of face, as it is this day.",
+      "ko": "우리의 열조 때로부터 오늘까지 우리 죄가 심하매 우리의 죄악으로 인하여 우리와 우리 왕들과 우리 제사장들을 열방 왕들의 손에 붙이사 칼에 죽으며 사로잡히며 노략을 당하며 얼굴을 부끄럽게 하심이 오늘날 같으니이다",
+      "source_text_hash": "afaef8483600bb6a64521557afe37fb2012c39d707fcb5b65355d1c6dd829f0c",
+      "translation_text_hash": "1e4899a6f0f65946e8f56eadd23e78441ace331e7a01acac41929c68a601e0b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 열조 때로부터 오늘까지 우리 죄가 심하매 우리의 죄악으로 인하여 우리와 우리 왕들과 우리 제사장들을 열방 왕들의 손에 붙이사 칼에 죽으며 사로잡히며 노략을 당하며 얼굴을 부끄럽게 하심이 오늘날 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "1e4899a6f0f65946e8f56eadd23e78441ace331e7a01acac41929c68a601e0b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:8",
+      "sequence": 12246,
+      "chapter_label": "EZR 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Now for a little moment grace has been shown from the LORD our God, to leave us a remnant to escape, and to give us a stake in his holy place, that our God may lighten our eyes, and revive us a little in our bondage.",
+      "ko": "이제 우리 하나님 여호와께서 우리에게 잠간 은혜를 베푸사 얼마를 남겨두어 피하게 하신 우리를 그 거룩한 처소에 박힌 못과 같게 하시고 우리 눈을 밝히사 우리로 종노릇 하는 중에서 조금 소성하게 하셨나이다",
+      "source_text_hash": "50612b044adfbb361cdcc75827a830f84638b4bb0c32ffd4d078cbe4da79b8c9",
+      "translation_text_hash": "4e6d856e9ce166b29095d0efae824bac6d9e23408ca404ec80e498d54361258f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 우리 하나님 여호와께서 우리에게 잠간 은혜를 베푸사 얼마를 남겨두어 피하게 하신 우리를 그 거룩한 처소에 박힌 못과 같게 하시고 우리 눈을 밝히사 우리로 종노릇 하는 중에서 조금 소성하게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "4e6d856e9ce166b29095d0efae824bac6d9e23408ca404ec80e498d54361258f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:9",
+      "sequence": 12247,
+      "chapter_label": "EZR 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "For we are bondservants; yet our God has not forsaken us in our bondage, but has extended loving kindness to us in the sight of the kings of Persia, to revive us, to set up the house of our God, and to repair its ruins, and to give us a wall in Judah and in Jerusalem.",
+      "ko": "우리가 비록 노예가 되었사오나 우리 하나님이 우리를 그 복역하는 중에 버리지 아니하시고 바사 열왕 앞에서 우리로 긍휼히 여김을 입고 소성하여 우리 하나님의 전을 세우게 하시며 그 퇴락한 것을 수리하게 하시며 유다와 예루살렘에서 우리에게 울을 주셨나이다",
+      "source_text_hash": "ebfe260fd6858c6cbfbb9c11958c5666536a330e029fcbac4bb49117ba118551",
+      "translation_text_hash": "a5f2b9674b895c6534c68938323b302505c05040860148f1908ce3808566ef8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 비록 노예가 되었사오나 우리 하나님이 우리를 그 복역하는 중에 버리지 아니하시고 바사 열왕 앞에서 우리로 긍휼히 여김을 입고 소성하여 우리 하나님의 전을 세우게 하시며 그 퇴락한 것을 수리하게 하시며 유다와 예루살렘에서 우리에게 울을 주셨나이다"
+      ],
+      "raw_text_hashes": [
+        "a5f2b9674b895c6534c68938323b302505c05040860148f1908ce3808566ef8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:10",
+      "sequence": 12248,
+      "chapter_label": "EZR 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "“Now, our God, what shall we say after this? For we have forsaken your commandments,",
+      "ko": "우리 하나님이여 이렇게 하신 후에도 우리가 주의 계명을 배반하였사오니 이제 무슨 말씀을 하오리이까",
+      "source_text_hash": "2299fbb2ab7b96431671a3a0754dfbc1808756d3211dcf0e57cc9721693edbc1",
+      "translation_text_hash": "b33a3133f47f4dae37514f9a4bdb4433444f3a7f710e2f28be338e4868de83f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님이여 이렇게 하신 후에도 우리가 주의 계명을 배반하였사오니 이제 무슨 말씀을 하오리이까"
+      ],
+      "raw_text_hashes": [
+        "b33a3133f47f4dae37514f9a4bdb4433444f3a7f710e2f28be338e4868de83f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:11",
+      "sequence": 12249,
+      "chapter_label": "EZR 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "which you have commanded by your servants the prophets, saying, ‘The land to which you go to possess is an unclean land through the uncleanness of the peoples of the lands, through their abominations, which have filled it from one end to another with their filthiness.",
+      "ko": "전에 주께서 주의 종 선지자들로 명하여 이르시되 너희가 가서 얻으려하는 땅은 더러운 땅이니 이는 이방 백성들이 더럽고 가증한 일을 행하여 이 가에서 저 가까지 그 더러움으로 채웠음이라",
+      "source_text_hash": "f09cc9bd01b7d93683688bfa5a1c405dcb1caf3943606882721572e40d0bb84e",
+      "translation_text_hash": "20e92b187baab047985875cfe7269ff3d8ab040bb23f7078f917ccf51be946ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 주께서 주의 종 선지자들로 명하여 이르시되 너희가 가서 얻으려하는 땅은 더러운 땅이니 이는 이방 백성들이 더럽고 가증한 일을 행하여 이 가에서 저 가까지 그 더러움으로 채웠음이라"
+      ],
+      "raw_text_hashes": [
+        "20e92b187baab047985875cfe7269ff3d8ab040bb23f7078f917ccf51be946ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:12",
+      "sequence": 12250,
+      "chapter_label": "EZR 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "Now therefore don’t give your daughters to their sons. Don’t take their daughters to your sons, nor seek their peace or their prosperity forever, that you may be strong and eat the good of the land, and leave it for an inheritance to your children forever.’",
+      "ko": "그런즉 너희 여자들을 저희 아들들에게 주지 말고 저희 딸을 너희 아들을 위하여 데려오지 말며 그들을 위하여 평강과 형통을 영영히 구하지 말라 그리하면 너희가 왕성하여 그 땅의 아름다운 것을 먹으며 그 땅을 자손에게 유전하여 영원한 기업을 삼게 되리라 하셨나이다",
+      "source_text_hash": "8baa0a3270ccf8db181cc24c6713f02a34dda419c5ad1d50f2132217c8ef58e4",
+      "translation_text_hash": "02e0d5ad627a3b2af7c7f2bcf3553c5fb8748649c33c3b0f2e7168714f19f19f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희 여자들을 저희 아들들에게 주지 말고 저희 딸을 너희 아들을 위하여 데려오지 말며 그들을 위하여 평강과 형통을 영영히 구하지 말라 그리하면 너희가 왕성하여 그 땅의 아름다운 것을 먹으며 그 땅을 자손에게 유전하여 영원한 기업을 삼게 되리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "02e0d5ad627a3b2af7c7f2bcf3553c5fb8748649c33c3b0f2e7168714f19f19f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:13",
+      "sequence": 12251,
+      "chapter_label": "EZR 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "“After all that has come on us for our evil deeds and for our great guilt, since you, our God, have punished us less than our iniquities deserve, and have given us such a remnant,",
+      "ko": "우리의 악한 행실과 큰 죄로 인하여 이 모든 일을 당하였사오나 우리 하나님이 우리 죄악보다 형벌을 경하게 하시고 이만큼 백성을 남겨 주셨사오니",
+      "source_text_hash": "46975c2f263028df01c3ef6ca1cb999289fb3ea9b55733d3d0541df38ec996fc",
+      "translation_text_hash": "e0ddc2a7ca05fc791acbe1b50ec86be9e37915bc28692674200b961a8d3fc457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 악한 행실과 큰 죄로 인하여 이 모든 일을 당하였사오나 우리 하나님이 우리 죄악보다 형벌을 경하게 하시고 이만큼 백성을 남겨 주셨사오니"
+      ],
+      "raw_text_hashes": [
+        "e0ddc2a7ca05fc791acbe1b50ec86be9e37915bc28692674200b961a8d3fc457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:14",
+      "sequence": 12252,
+      "chapter_label": "EZR 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "shall we again break your commandments, and join ourselves with the peoples that do these abominations? Wouldn’t you be angry with us until you had consumed us, so that there would be no remnant, nor any to escape?",
+      "ko": "우리가 어찌 다시 주의 계명을 거역하고 이 가증한 일을 행하는 족속들과 연혼하오리이까 그리하오면 주께서 어찌 진노하사 우리를 멸하시고 남아 피할 자가 없도록 하시지 아니하시리이까",
+      "source_text_hash": "674aab9eb5a95e2fced00242d2be219986fac90d3b71b66a0ea25d1bb9f899c7",
+      "translation_text_hash": "8c57a60d5e0d86326f6876b3c79c76fae0b2e905917ef61727c942005f4677ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 어찌 다시 주의 계명을 거역하고 이 가증한 일을 행하는 족속들과 연혼하오리이까 그리하오면 주께서 어찌 진노하사 우리를 멸하시고 남아 피할 자가 없도록 하시지 아니하시리이까"
+      ],
+      "raw_text_hashes": [
+        "8c57a60d5e0d86326f6876b3c79c76fae0b2e905917ef61727c942005f4677ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:9:15",
+      "sequence": 12253,
+      "chapter_label": "EZR 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZR",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "LORD, the God of Israel, you are righteous; for we are left a remnant that has escaped, as it is today. Behold, we are before you in our guiltiness; for no one can stand before you because of this.”",
+      "ko": "이스라엘 하나님 여호와여 주는 의롭도소이다 우리가 남아 피한 것이 오늘날과 같사옵거늘 도리어 주께 범죄하였사오니 이로 인하여 주 앞에 한 사람도 감히 서지 못하겠나이다",
+      "source_text_hash": "8007c80c75b4fb6c87257c6a4b5f070cf7a97f59d25cbfbce81e55d3e759bb3f",
+      "translation_text_hash": "67268abfdc6b2944fedd220657035d84ee4ac60fcfe3af816fd20dc3e3dcc62e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 하나님 여호와여 주는 의롭도소이다 우리가 남아 피한 것이 오늘날과 같사옵거늘 도리어 주께 범죄하였사오니 이로 인하여 주 앞에 한 사람도 감히 서지 못하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "67268abfdc6b2944fedd220657035d84ee4ac60fcfe3af816fd20dc3e3dcc62e"
+      ]
+    }
+  ]
+}

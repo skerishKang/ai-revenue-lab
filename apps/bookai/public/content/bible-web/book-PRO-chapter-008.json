@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:008",
+  "unit_ordinal": 636,
+  "unit_label": "PRO 8",
+  "book_code": "PRO",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:8:1",
+      "sequence": 16604,
+      "chapter_label": "PRO 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Doesn’t wisdom cry out? Doesn’t understanding raise her voice?",
+      "ko": "지혜가 부르지 아니하느냐 명철이 소리를 높이지 아니하느냐",
+      "source_text_hash": "3f810e27d349c32beb427e112058de3432e0498b3177f9ddd8af2273cce0a5a2",
+      "translation_text_hash": "b6aa9d690c0e2e3b312c81d47fad944ea006d29347955680ab58f278fffe2d1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜가 부르지 아니하느냐 명철이 소리를 높이지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "b6aa9d690c0e2e3b312c81d47fad944ea006d29347955680ab58f278fffe2d1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:2",
+      "sequence": 16605,
+      "chapter_label": "PRO 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "On the top of high places by the way, where the paths meet, she stands.",
+      "ko": "그가 길 가의 높은 곳과 사거리에 서며",
+      "source_text_hash": "916af5532e2482b1680e75c55ece3e9c584da49bf9e9e4b816cfbaa15ac4a29e",
+      "translation_text_hash": "a4edf2c156e8cb721aeeda107443952be85195c26ea49b16dbc2affff5440aea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 길 가의 높은 곳과 사거리에 서며"
+      ],
+      "raw_text_hashes": [
+        "a4edf2c156e8cb721aeeda107443952be85195c26ea49b16dbc2affff5440aea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:3",
+      "sequence": 16606,
+      "chapter_label": "PRO 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Beside the gates, at the entry of the city, at the entry doors, she cries aloud:",
+      "ko": "성문 곁과 문 어귀와 여러 출입하는 문에서 불러 가로되",
+      "source_text_hash": "d58783a283888992c34e3993f11849cc48dc0017289e66073f9cadcfe51658c2",
+      "translation_text_hash": "8c6b2f478cd06dc158af1b35445e9c4b34e461d563ee84089bbcbbc27a07b829",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문 곁과 문 어귀와 여러 출입하는 문에서 불러 가로되"
+      ],
+      "raw_text_hashes": [
+        "8c6b2f478cd06dc158af1b35445e9c4b34e461d563ee84089bbcbbc27a07b829"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:4",
+      "sequence": 16607,
+      "chapter_label": "PRO 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "“I call to you men! I send my voice to the sons of mankind.",
+      "ko": "사람들아 내가 너희를 부르며 내가 인자들에게 소리를 높이노라",
+      "source_text_hash": "7d4fac7e7643c6033132fedfb2df4be58afc287d59f5bfedcfc0de92a74bd404",
+      "translation_text_hash": "d80a9a6146251e9795659ba450be86b1d3bd841b063a2b6c9edcb5dd62b6ef52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들아 내가 너희를 부르며 내가 인자들에게 소리를 높이노라"
+      ],
+      "raw_text_hashes": [
+        "d80a9a6146251e9795659ba450be86b1d3bd841b063a2b6c9edcb5dd62b6ef52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:5",
+      "sequence": 16608,
+      "chapter_label": "PRO 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "You simple, understand prudence! You fools, be of an understanding heart!",
+      "ko": "어리석은 자들아 너희는 명철할찌니라 미련한 자들아 너희는 마음이 밝을찌니라 너희는 들을찌어다",
+      "source_text_hash": "807c4c573f8f5a0b84968e4ce4a2cad5f89ad7c62af6579a432e2948d2305590",
+      "translation_text_hash": "c57ca0f23ecfc510ac270561c34a71ede17bacc37f6c5fb370bf0af6953aa4ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어리석은 자들아 너희는 명철할찌니라 미련한 자들아 너희는 마음이 밝을찌니라 너희는 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "c57ca0f23ecfc510ac270561c34a71ede17bacc37f6c5fb370bf0af6953aa4ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:6",
+      "sequence": 16609,
+      "chapter_label": "PRO 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "Hear, for I will speak excellent things. The opening of my lips is for right things.",
+      "ko": "내가 가장 선한 것을 말하리라 내 입술을 열어 정직을 내리라",
+      "source_text_hash": "74173b75277a8f1aa7a7a08fe8a099ad476e3bd6767523561c34df0c22425bcd",
+      "translation_text_hash": "d81747ab2976e954796bab973c805494419a57eaa141082b2591784590598281",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가장 선한 것을 말하리라 내 입술을 열어 정직을 내리라"
+      ],
+      "raw_text_hashes": [
+        "d81747ab2976e954796bab973c805494419a57eaa141082b2591784590598281"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:7",
+      "sequence": 16610,
+      "chapter_label": "PRO 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "For my mouth speaks truth. Wickedness is an abomination to my lips.",
+      "ko": "내 입은 진리를 말하며 내 입술은 악을 미워하느니라",
+      "source_text_hash": "dc7d463148ac8ab1283a2069f92cac1ce0746919707ba66d86789d64f2cd4649",
+      "translation_text_hash": "03a8fb9b992140a28d6854fc37375156596306476de251913684852f723bf1b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 입은 진리를 말하며 내 입술은 악을 미워하느니라"
+      ],
+      "raw_text_hashes": [
+        "03a8fb9b992140a28d6854fc37375156596306476de251913684852f723bf1b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:8",
+      "sequence": 16611,
+      "chapter_label": "PRO 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "All the words of my mouth are in righteousness. There is nothing crooked or perverse in them.",
+      "ko": "내 입의 말은 다 의로운즉 그 가운데 굽은 것과 패역한 것이 없나니",
+      "source_text_hash": "c61c7b27e7f43da1160fb68cdd293c4e2aa9af2c040ed5476eb8e80adbc0cfac",
+      "translation_text_hash": "88bbc71d8aacbe72e9d579e4512eec6c8932c48a617159668a5c08b391b51867",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 입의 말은 다 의로운즉 그 가운데 굽은 것과 패역한 것이 없나니"
+      ],
+      "raw_text_hashes": [
+        "88bbc71d8aacbe72e9d579e4512eec6c8932c48a617159668a5c08b391b51867"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:9",
+      "sequence": 16612,
+      "chapter_label": "PRO 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "They are all plain to him who understands, right to those who find knowledge.",
+      "ko": "이는 다 총명 있는 자의 밝히 아는바요 지식 얻은 자의 정직히 여기는바니라",
+      "source_text_hash": "c1b4ba645966f84aad16e60ce9ce0f9804ecf5de84aaedb6d95c1c002647233d",
+      "translation_text_hash": "c3b5b7da0c7028be0b37329b77ba53f1cc39ab81a0f406a203af7199a8f0c9d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다 총명 있는 자의 밝히 아는바요 지식 얻은 자의 정직히 여기는바니라"
+      ],
+      "raw_text_hashes": [
+        "c3b5b7da0c7028be0b37329b77ba53f1cc39ab81a0f406a203af7199a8f0c9d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:10",
+      "sequence": 16613,
+      "chapter_label": "PRO 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Receive my instruction rather than silver, knowledge rather than choice gold.",
+      "ko": "너희가 은을 받지 말고 나의 훈계를 받으며 정금보다 지식을 얻으라",
+      "source_text_hash": "90f823f3a519080901d8324c64e4b62f004d7a5d3492f396f3fd139efb59911b",
+      "translation_text_hash": "6763e853cde1055733d3ceeee3df21f054b23cdf6b282070b0794fb5f0dd8a77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 은을 받지 말고 나의 훈계를 받으며 정금보다 지식을 얻으라"
+      ],
+      "raw_text_hashes": [
+        "6763e853cde1055733d3ceeee3df21f054b23cdf6b282070b0794fb5f0dd8a77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:11",
+      "sequence": 16614,
+      "chapter_label": "PRO 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "For wisdom is better than rubies. All the things that may be desired can’t be compared to it.",
+      "ko": "대저 지혜는 진주보다 나으므로 무릇 원하는 것을 이에 비교할 수 없음이니라",
+      "source_text_hash": "4e7758875aa2e7db8f3a2ac283eb7d1e37b9febdca30084f672a274d490b239d",
+      "translation_text_hash": "6311c50251ad470717fd33ae62ffc2418cc817e732303d65cdf76c650e8f4bf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 지혜는 진주보다 나으므로 무릇 원하는 것을 이에 비교할 수 없음이니라"
+      ],
+      "raw_text_hashes": [
+        "6311c50251ad470717fd33ae62ffc2418cc817e732303d65cdf76c650e8f4bf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:12",
+      "sequence": 16615,
+      "chapter_label": "PRO 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "“I, wisdom, have made prudence my dwelling. Find out knowledge and discretion.",
+      "ko": "나 지혜는 명철로 주소를 삼으며 지식과 근신을 찾아 얻나니",
+      "source_text_hash": "90ca13e35a4dd21b9744f346c8db3256802e5aac03b938ba54453b0b58b3e8bb",
+      "translation_text_hash": "e92dac6813cf61c846138e9de8c3343ff00484599f48c402729f4f5e15ffd5da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 지혜는 명철로 주소를 삼으며 지식과 근신을 찾아 얻나니"
+      ],
+      "raw_text_hashes": [
+        "e92dac6813cf61c846138e9de8c3343ff00484599f48c402729f4f5e15ffd5da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:13",
+      "sequence": 16616,
+      "chapter_label": "PRO 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "The fear of the LORD is to hate evil. I hate pride, arrogance, the evil way, and the perverse mouth.",
+      "ko": "여호와를 경외하는 것은 악을 미워하는 것이라 나는 교만과 거만과 악한 행실과 패역한 입을 미워하느니라",
+      "source_text_hash": "02e0665b2d2b5e7269d16217503ce75969c6d2d08ad30bd9ceaff55b68a3f5e6",
+      "translation_text_hash": "2f147cbf413c4d23559e55719565b7c9cbe46ae827f24ce8d1c1f27930fda460",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외하는 것은 악을 미워하는 것이라 나는 교만과 거만과 악한 행실과 패역한 입을 미워하느니라"
+      ],
+      "raw_text_hashes": [
+        "2f147cbf413c4d23559e55719565b7c9cbe46ae827f24ce8d1c1f27930fda460"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:14",
+      "sequence": 16617,
+      "chapter_label": "PRO 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "Counsel and sound knowledge are mine. I have understanding and power.",
+      "ko": "내게는 도략과 참 지식이 있으며 나는 명철이라 내게 능력이 있으므로",
+      "source_text_hash": "dec15c4b57565332d64c7e39b31b4fc2ee3a9cc41c4ccacff4b63f6ef6aef263",
+      "translation_text_hash": "1e5184203158604880a6cefba335c507ae0843a8384789cda25237e2c10380a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게는 도략과 참 지식이 있으며 나는 명철이라 내게 능력이 있으므로"
+      ],
+      "raw_text_hashes": [
+        "1e5184203158604880a6cefba335c507ae0843a8384789cda25237e2c10380a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:15",
+      "sequence": 16618,
+      "chapter_label": "PRO 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "By me kings reign, and princes decree justice.",
+      "ko": "나로 말미암아 왕들이 치리하며 방백들이 공의를 세우며",
+      "source_text_hash": "cf10910667beb61754cf0be07ece3d5368b5703d7832770d7384d8dccc15fd57",
+      "translation_text_hash": "79cf9d0724e8488ed053fe427f35b8d09cbf1aec833c64f5c9d9fdf992de688b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 말미암아 왕들이 치리하며 방백들이 공의를 세우며"
+      ],
+      "raw_text_hashes": [
+        "79cf9d0724e8488ed053fe427f35b8d09cbf1aec833c64f5c9d9fdf992de688b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:16",
+      "sequence": 16619,
+      "chapter_label": "PRO 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "By me princes rule, nobles, and all the righteous rulers of the earth.",
+      "ko": "나로 말미암아 재상과 존귀한 자 곧 세상의 모든 재판관들이 다스리느니라",
+      "source_text_hash": "34900ad3e4ad43ddc749886c46fbe3e66b9c16c85e0999b749219abf6f569dad",
+      "translation_text_hash": "4249c904a80af35ed4acc08dc4e1477132bb50a8eeb104f4aa19e366175a2091",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 말미암아 재상과 존귀한 자 곧 세상의 모든 재판관들이 다스리느니라"
+      ],
+      "raw_text_hashes": [
+        "4249c904a80af35ed4acc08dc4e1477132bb50a8eeb104f4aa19e366175a2091"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:17",
+      "sequence": 16620,
+      "chapter_label": "PRO 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "I love those who love me. Those who seek me diligently will find me.",
+      "ko": "나를 사랑하는 자들이 나의 사랑을 입으며 나를 간절히 찾는 자가 나를 만날 것이니라",
+      "source_text_hash": "f183baf381717e81ed503d5b50aece696ba5c334dcecdcebe309fcbe44a5f85d",
+      "translation_text_hash": "20515030fe2d40db9f5963da49065fe03bc889c05d7980e90810ee17b9d14e3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 사랑하는 자들이 나의 사랑을 입으며 나를 간절히 찾는 자가 나를 만날 것이니라"
+      ],
+      "raw_text_hashes": [
+        "20515030fe2d40db9f5963da49065fe03bc889c05d7980e90810ee17b9d14e3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:18",
+      "sequence": 16621,
+      "chapter_label": "PRO 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "With me are riches, honor, enduring wealth, and prosperity.",
+      "ko": "부귀가 내게 있고 장구한 재물과 의도 그러하니라",
+      "source_text_hash": "81a9d777515be83261cc2318be72b38e6a4b2f0c62832a29fb336b4cba93ca67",
+      "translation_text_hash": "f03b860d66d469364e7ce0903660de809c701ab359e8a50b5742055a5acc411d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부귀가 내게 있고 장구한 재물과 의도 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "f03b860d66d469364e7ce0903660de809c701ab359e8a50b5742055a5acc411d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:19",
+      "sequence": 16622,
+      "chapter_label": "PRO 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "My fruit is better than gold, yes, than fine gold, my yield than choice silver.",
+      "ko": "내 열매는 금이나 정금보다 나으며 내 소득은 천은보다 나으니라",
+      "source_text_hash": "223a0a1349288c143e4d2707513ce36abf4d5a45e6d366ad5f869837f21814ed",
+      "translation_text_hash": "f521de675069ca8daeadd5f2bd4b74f5630389b96885905c2ded298609e43eaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 열매는 금이나 정금보다 나으며 내 소득은 천은보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "f521de675069ca8daeadd5f2bd4b74f5630389b96885905c2ded298609e43eaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:20",
+      "sequence": 16623,
+      "chapter_label": "PRO 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "I walk in the way of righteousness, in the middle of the paths of justice,",
+      "ko": "나는 의로운 길로 행하며 공평한 길 가운데로 다니나니",
+      "source_text_hash": "a6c13b7bca7d8a2570fde17315eee6460d59a1630329a5488ef8c917455e1142",
+      "translation_text_hash": "ab035a6d7d7759afa0ad04ed3ae9be34baf9506f3dc7b55d5f8e4ace9e7286da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 의로운 길로 행하며 공평한 길 가운데로 다니나니"
+      ],
+      "raw_text_hashes": [
+        "ab035a6d7d7759afa0ad04ed3ae9be34baf9506f3dc7b55d5f8e4ace9e7286da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:21",
+      "sequence": 16624,
+      "chapter_label": "PRO 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "that I may give wealth to those who love me. I fill their treasuries.",
+      "ko": "이는 나를 사랑하는 자로 재물을 얻어서 그 곳간에 채우게 하려함이니라",
+      "source_text_hash": "b4d479b1fa141a4c0801a32672a6f6af40d7228729ac3f910d6a8cccbf58b220",
+      "translation_text_hash": "2ac9bba4f1532f2f799854938cff6e14361a0865ec51ae30459605554e265dee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 나를 사랑하는 자로 재물을 얻어서 그 곳간에 채우게 하려함이니라"
+      ],
+      "raw_text_hashes": [
+        "2ac9bba4f1532f2f799854938cff6e14361a0865ec51ae30459605554e265dee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:22",
+      "sequence": 16625,
+      "chapter_label": "PRO 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "“The LORD possessed me in the beginning of his work, before his deeds of old.",
+      "ko": "여호와께서 그 조화의 시작 곧 태초에 일하시기 전에 나를 가지셨으며",
+      "source_text_hash": "9a7c7f1cf2ca87d76954bc72d92ba0abd37e0aa589ce1c09458cfcb884513376",
+      "translation_text_hash": "90a1919667b43737a46fb4f293dc79b3cf319050a10cb1a3784b7e8a67ece0df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 조화의 시작 곧 태초에 일하시기 전에 나를 가지셨으며"
+      ],
+      "raw_text_hashes": [
+        "90a1919667b43737a46fb4f293dc79b3cf319050a10cb1a3784b7e8a67ece0df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:23",
+      "sequence": 16626,
+      "chapter_label": "PRO 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "I was set up from everlasting, from the beginning, before the earth existed.",
+      "ko": "만세전부터, 상고부터, 땅이 생기기 전부터 내가 세움을 입었나니",
+      "source_text_hash": "7405f6a84eedd9a34adacd3b8837540abe12476605578fd097a4d75eb86a22a6",
+      "translation_text_hash": "7453ba532732842ee0daa6e5688307e8f3b27b682556c074cbf7ee1490ad31aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만세전부터, 상고부터, 땅이 생기기 전부터 내가 세움을 입었나니"
+      ],
+      "raw_text_hashes": [
+        "7453ba532732842ee0daa6e5688307e8f3b27b682556c074cbf7ee1490ad31aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:24",
+      "sequence": 16627,
+      "chapter_label": "PRO 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "When there were no depths, I was born, when there were no springs abounding with water.",
+      "ko": "아직 바다가 생기지 아니하였고 큰 샘들이 있기 전에 내가 이미 났으며",
+      "source_text_hash": "e690470d0bfcb3a953128cb776a29d448a2a9ed8af2d176f67799e5b6ddea5f4",
+      "translation_text_hash": "98e029ff32c3ee4ce52b8cdd6fbf2f658c1628d197ca92c41eeaeb774ac3ad15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아직 바다가 생기지 아니하였고 큰 샘들이 있기 전에 내가 이미 났으며"
+      ],
+      "raw_text_hashes": [
+        "98e029ff32c3ee4ce52b8cdd6fbf2f658c1628d197ca92c41eeaeb774ac3ad15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:25",
+      "sequence": 16628,
+      "chapter_label": "PRO 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "Before the mountains were settled in place, before the hills, I was born;",
+      "ko": "산이 세우심을 입기 전에, 언덕이 생기기 전에 내가 이미 났으니",
+      "source_text_hash": "1183a7486122058da14c76b05493b814fd146fa1fbc94d695490a23c289b5357",
+      "translation_text_hash": "3f824b28e5c8c6af2ea7de7ba85a1073fa615419b21d57e0a7fda150d8a522b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산이 세우심을 입기 전에, 언덕이 생기기 전에 내가 이미 났으니"
+      ],
+      "raw_text_hashes": [
+        "3f824b28e5c8c6af2ea7de7ba85a1073fa615419b21d57e0a7fda150d8a522b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:26",
+      "sequence": 16629,
+      "chapter_label": "PRO 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "while as yet he had not made the earth, nor the fields, nor the beginning of the dust of the world.",
+      "ko": "하나님이 아직 땅도, 들도, 세상 진토의 근원도 짓지 아니하셨을 때에라",
+      "source_text_hash": "4dda8906e4f21d21892640522135efead34efc364be9770a0bc1387d07cb3a9c",
+      "translation_text_hash": "94fd658574e5f6e1c3fc6f956544426931cd199eff51957cf3da9d2ef594c594",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 아직 땅도, 들도, 세상 진토의 근원도 짓지 아니하셨을 때에라"
+      ],
+      "raw_text_hashes": [
+        "94fd658574e5f6e1c3fc6f956544426931cd199eff51957cf3da9d2ef594c594"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:27",
+      "sequence": 16630,
+      "chapter_label": "PRO 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "When he established the heavens, I was there. When he set a circle on the surface of the deep,",
+      "ko": "그가 하늘을 지으시며 궁창으로 해면에 두르실 때에 내가 거기 있었고",
+      "source_text_hash": "a8b837417b37057dcc61957266953a0141315ca7f6a7fe549c58f4301780875a",
+      "translation_text_hash": "092ed52d1bdaa7e9facd19ecfb8e844a6302607e5e0282ecc05b67942d67c2f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 하늘을 지으시며 궁창으로 해면에 두르실 때에 내가 거기 있었고"
+      ],
+      "raw_text_hashes": [
+        "092ed52d1bdaa7e9facd19ecfb8e844a6302607e5e0282ecc05b67942d67c2f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:28",
+      "sequence": 16631,
+      "chapter_label": "PRO 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "when he established the clouds above, when the springs of the deep became strong,",
+      "ko": "그가 위로 구름 하늘을 견고하게 하시며 바다의 샘들을 힘 있게 하시며",
+      "source_text_hash": "59327dfcc482a43dd8cca0cb8e50005d257650808c12e81bdd82fb6dd837ae47",
+      "translation_text_hash": "3e3b14e441a56b1a9996d23e01f62da722bf31c3742803870c2e09f00539e5f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 위로 구름 하늘을 견고하게 하시며 바다의 샘들을 힘 있게 하시며"
+      ],
+      "raw_text_hashes": [
+        "3e3b14e441a56b1a9996d23e01f62da722bf31c3742803870c2e09f00539e5f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:29",
+      "sequence": 16632,
+      "chapter_label": "PRO 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "when he gave to the sea its boundary, that the waters should not violate his commandment, when he marked out the foundations of the earth,",
+      "ko": "바다의 한계를 정하여 물로 명령을 거스리지 못하게 하시며 또 땅의 기초를 정하실 때에",
+      "source_text_hash": "ae29ef1d9ad6b5e8cc95616e991a007902be9b92299c900b7fef63144119a5f3",
+      "translation_text_hash": "f2fd5c35912211412b62506ff8c698e1c2c1860515e4c074859ae6f0284c9da1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다의 한계를 정하여 물로 명령을 거스리지 못하게 하시며 또 땅의 기초를 정하실 때에"
+      ],
+      "raw_text_hashes": [
+        "f2fd5c35912211412b62506ff8c698e1c2c1860515e4c074859ae6f0284c9da1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:30",
+      "sequence": 16633,
+      "chapter_label": "PRO 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "then I was the craftsman by his side. I was a delight day by day, always rejoicing before him,",
+      "ko": "내가 그 곁에 있어서 창조자가 되어 날마다 그 기뻐하신바가 되었으며 항상 그 앞에서 즐거워하였으며",
+      "source_text_hash": "5cae6939bed057d5555973fcc55d69c13264b3b82617d2859a93b311e688a61a",
+      "translation_text_hash": "140fd2f3ec059010c34942543e89823f40e8df0d73f3b77610e76f7dccd168f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 곁에 있어서 창조자가 되어 날마다 그 기뻐하신바가 되었으며 항상 그 앞에서 즐거워하였으며"
+      ],
+      "raw_text_hashes": [
+        "140fd2f3ec059010c34942543e89823f40e8df0d73f3b77610e76f7dccd168f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:31",
+      "sequence": 16634,
+      "chapter_label": "PRO 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "rejoicing in his whole world. My delight was with the sons of men.",
+      "ko": "사람이 거처할 땅에서 즐거워하며 인자들을 기뻐하였었느니라",
+      "source_text_hash": "398e9290f80d4c9cd6bb9f3a7920386410a9e975a01acc1d8d33043b7f3b4e86",
+      "translation_text_hash": "4a4202bebe56564ce2187305b71a638b54bec4450fb7665a4427758b8d284e42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 거처할 땅에서 즐거워하며 인자들을 기뻐하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "4a4202bebe56564ce2187305b71a638b54bec4450fb7665a4427758b8d284e42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:32",
+      "sequence": 16635,
+      "chapter_label": "PRO 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "“Now therefore, my sons, listen to me, for blessed are those who keep my ways.",
+      "ko": "아들들아 이제 내게 들으라 내 도를 지키는 자가 복이 있느니라",
+      "source_text_hash": "99ee730820e7b91e2e6de56070d6cbf046d9b6ab449832bc8f00980f2da36310",
+      "translation_text_hash": "5dc0db35ee36363d149922c5039faf9d91989100f1b3bfa738ea90371b87928a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들들아 이제 내게 들으라 내 도를 지키는 자가 복이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "5dc0db35ee36363d149922c5039faf9d91989100f1b3bfa738ea90371b87928a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:33",
+      "sequence": 16636,
+      "chapter_label": "PRO 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "Hear instruction, and be wise. Don’t refuse it.",
+      "ko": "훈계를 들어서 지혜를 얻으라 그것을 버리지 말라",
+      "source_text_hash": "021f9d8e11f95d510f3bf63fc94740f899706fcb4b3ad0df26d746c1b027aeb4",
+      "translation_text_hash": "62e77b94d52a1ed1f490081a4b3f6e8c3d65178c672185799d4355f4714e22c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "훈계를 들어서 지혜를 얻으라 그것을 버리지 말라"
+      ],
+      "raw_text_hashes": [
+        "62e77b94d52a1ed1f490081a4b3f6e8c3d65178c672185799d4355f4714e22c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:34",
+      "sequence": 16637,
+      "chapter_label": "PRO 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "Blessed is the man who hears me, watching daily at my gates, waiting at my door posts.",
+      "ko": "누구든지 내게 들으며 날마다 내 문 곁에서 기다리며 문설주 옆에서 기다리는 자는 복이 있나니",
+      "source_text_hash": "9aa31de8fd12a3385ad401b5f6b8083f87e90ad8209ca460ec30f7098051504a",
+      "translation_text_hash": "68910666512ab4da0b70fb6895f8b6ceeb4f35555987a34253d440f1c180c22a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 내게 들으며 날마다 내 문 곁에서 기다리며 문설주 옆에서 기다리는 자는 복이 있나니"
+      ],
+      "raw_text_hashes": [
+        "68910666512ab4da0b70fb6895f8b6ceeb4f35555987a34253d440f1c180c22a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:35",
+      "sequence": 16638,
+      "chapter_label": "PRO 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "For whoever finds me finds life, and will obtain favor from the LORD.",
+      "ko": "대저 나를 얻는 자는 생명을 얻고 여호와께 은총을 얻을 것임이니라",
+      "source_text_hash": "f7b6a6d56cbdcc7e84687fdca8465c0c6ddc6921bc0dc5f831dd249dfb3ce08c",
+      "translation_text_hash": "9518e75f888d26e4c41e372d75f0f187c9abb02a60eca46abef679c8e069c074",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 나를 얻는 자는 생명을 얻고 여호와께 은총을 얻을 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "9518e75f888d26e4c41e372d75f0f187c9abb02a60eca46abef679c8e069c074"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:8:36",
+      "sequence": 16639,
+      "chapter_label": "PRO 8",
+      "verse_label": "36",
+      "locator": {
+        "book": "PRO",
+        "chapter": 8,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 8,
+          "verse": 36
+        }
+      ],
+      "en": "But he who sins against me wrongs his own soul. All those who hate me love death.”",
+      "ko": "그러나 나를 잃는 자는 자기의 영혼을 해하는 자라 무릇 나를 미워하는 자는 사망을 사랑하느니라",
+      "source_text_hash": "7b250c78459afbb14e451c36e08a288d92329a5c8560156518ba437bdf9fe1f6",
+      "translation_text_hash": "48ab54eb00d3caa08a5603ca9e89a1a168a5ead269e19d63c651bba1ce16f0c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나를 잃는 자는 자기의 영혼을 해하는 자라 무릇 나를 미워하는 자는 사망을 사랑하느니라"
+      ],
+      "raw_text_hashes": [
+        "48ab54eb00d3caa08a5603ca9e89a1a168a5ead269e19d63c651bba1ce16f0c6"
+      ]
+    }
+  ]
+}

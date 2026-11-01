@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:036",
+  "unit_ordinal": 403,
+  "unit_label": "2CH 36",
+  "book_code": "2CH",
+  "chapter_number": 36,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:36:1",
+      "sequence": 11995,
+      "chapter_label": "2CH 36",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 1
+        }
+      ],
+      "en": "Then the people of the land took Jehoahaz the son of Josiah, and made him king in his father’s place in Jerusalem.",
+      "ko": "국민이 요시야의 아들 여호아하스를 세워 그 부친을 대신하여 예루살렘에서 왕을 삼으니",
+      "source_text_hash": "7e02ee473f05b45f5cf9f433d0480d39e20a579cb8fdaf89a6cf1883d9438793",
+      "translation_text_hash": "dc08987526dc0eaa7b5a5ad5aa29e0db0235b4ab3611cc0212a63d7fbf071d68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "국민이 요시야의 아들 여호아하스를 세워 그 부친을 대신하여 예루살렘에서 왕을 삼으니"
+      ],
+      "raw_text_hashes": [
+        "dc08987526dc0eaa7b5a5ad5aa29e0db0235b4ab3611cc0212a63d7fbf071d68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:2",
+      "sequence": 11996,
+      "chapter_label": "2CH 36",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 2
+        }
+      ],
+      "en": "Joahaz was twenty-three years old when he began to reign; and he reigned three months in Jerusalem.",
+      "ko": "여호아하스가 위에 나아갈 때에 나이 이십 삼세더라 저가 예루살렘에서 치리한지 석달에",
+      "source_text_hash": "a6f257ebf8262b261660bae100f401fb306a88facf8017763499e25376585d6c",
+      "translation_text_hash": "95319e279331c09f97414ae75db5c0f4059c9e67469fa6bd0af081e1d047bcc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호아하스가 위에 나아갈 때에 나이 이십 삼세더라 저가 예루살렘에서 치리한지 석달에"
+      ],
+      "raw_text_hashes": [
+        "95319e279331c09f97414ae75db5c0f4059c9e67469fa6bd0af081e1d047bcc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:3",
+      "sequence": 11997,
+      "chapter_label": "2CH 36",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 3
+        }
+      ],
+      "en": "The king of Egypt removed him from office at Jerusalem, and fined the land one hundred talents of silver and a talent of gold.",
+      "ko": "애굽 왕이 예루살렘에서 그 위를 폐하고 또 그 나라로 은 일백 달란트와 금 한 달란트를 벌금으로 내게하며",
+      "source_text_hash": "0a67c86e087b657677b0090a3d87ddbc4e6d292f94945646ec6075387ae65572",
+      "translation_text_hash": "4f0982bd9e60676da78b4d99b4138889c9c51e746de65994d847a3a013d704bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 왕이 예루살렘에서 그 위를 폐하고 또 그 나라로 은 일백 달란트와 금 한 달란트를 벌금으로 내게하며"
+      ],
+      "raw_text_hashes": [
+        "4f0982bd9e60676da78b4d99b4138889c9c51e746de65994d847a3a013d704bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:4",
+      "sequence": 11998,
+      "chapter_label": "2CH 36",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 4
+        }
+      ],
+      "en": "The king of Egypt made Eliakim his brother king over Judah and Jerusalem, and changed his name to Jehoiakim. Neco took Joahaz his brother, and carried him to Egypt.",
+      "ko": "애굽 왕 느고가 또 그 형제 엘리아김을 세워 유다와 예루살렘 왕을 삼고 그 이름을 고쳐 여호야김이라 하고 그 형제 여호아하스를 애굽으로 잡아 갔더라",
+      "source_text_hash": "23ae16cdda6ed22a80a13473830f2f0c94b980d30e2f582955e9fa49a79002c5",
+      "translation_text_hash": "6d23e0be39b6ee7dea8a2f649ef79ef5bb7b375982371f0a6bd117458d51e34c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 왕 느고가 또 그 형제 엘리아김을 세워 유다와 예루살렘 왕을 삼고 그 이름을 고쳐 여호야김이라 하고 그 형제 여호아하스를 애굽으로 잡아 갔더라"
+      ],
+      "raw_text_hashes": [
+        "6d23e0be39b6ee7dea8a2f649ef79ef5bb7b375982371f0a6bd117458d51e34c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:5",
+      "sequence": 11999,
+      "chapter_label": "2CH 36",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 5
+        }
+      ],
+      "en": "Jehoiakim was twenty-five years old when he began to reign, and he reigned eleven years in Jerusalem. He did that which was evil in the LORD his God’s sight.",
+      "ko": "여호야김이 위에 나아갈 때에 나이 이십 오세라 예루살렘에서 십일년을 치리하며 그 하나님 여호와 보시기에 악을 행하였더라",
+      "source_text_hash": "591597222f940827da43a401c39c35a56d57b4ddf19819569ee35963a87a5621",
+      "translation_text_hash": "4c90e4ea40a103e19b52027d1b7384ccad918729e38d83d15b30c0f556e3eb27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김이 위에 나아갈 때에 나이 이십 오세라 예루살렘에서 십일년을 치리하며 그 하나님 여호와 보시기에 악을 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "4c90e4ea40a103e19b52027d1b7384ccad918729e38d83d15b30c0f556e3eb27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:6",
+      "sequence": 12000,
+      "chapter_label": "2CH 36",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 6
+        }
+      ],
+      "en": "Nebuchadnezzar king of Babylon came up against him, and bound him in fetters to carry him to Babylon.",
+      "ko": "바벨론 왕 느부갓네살이 올라와서 치고 저를 쇠사슬로 결박하여 바벨론으로 잡아가고",
+      "source_text_hash": "d7b48b57acc730ae9ac8ef8fe1760b9fd9cbb07776da8c057ba462f199a3edbb",
+      "translation_text_hash": "3a8586f39c79bd178f5c98280d150391201d15770df17baf05884a4bdc369695",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕 느부갓네살이 올라와서 치고 저를 쇠사슬로 결박하여 바벨론으로 잡아가고"
+      ],
+      "raw_text_hashes": [
+        "3a8586f39c79bd178f5c98280d150391201d15770df17baf05884a4bdc369695"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:7",
+      "sequence": 12001,
+      "chapter_label": "2CH 36",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 7
+        }
+      ],
+      "en": "Nebuchadnezzar also carried some of the vessels of the LORD’s house to Babylon, and put them in his temple at Babylon.",
+      "ko": "느부갓네살이 또 여호와의 전 기구들을 바벨론으로 가져다가 바벨론에 있는 자기 신당에 두었더라",
+      "source_text_hash": "590e5c1c95de0f835afa49337d416294b61e79a7b6e6639c03973e159968a004",
+      "translation_text_hash": "6de14b079534e0f2a8c5e7a90d116213782d37555ff4d7c172d493c22cbe801e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살이 또 여호와의 전 기구들을 바벨론으로 가져다가 바벨론에 있는 자기 신당에 두었더라"
+      ],
+      "raw_text_hashes": [
+        "6de14b079534e0f2a8c5e7a90d116213782d37555ff4d7c172d493c22cbe801e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:8",
+      "sequence": 12002,
+      "chapter_label": "2CH 36",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 8
+        }
+      ],
+      "en": "Now the rest of the acts of Jehoiakim, and his abominations which he did, and that which was found in him, behold, they are written in the book of the kings of Israel and Judah; and Jehoiachin his son reigned in his place.",
+      "ko": "여호야김의 남은 사적과 그 행한 모든 가증한 일과 그 심술이 이스라엘과 유다 열왕기에 기록되니라 그 아들 여호야긴이 대신하여 왕이 되니라",
+      "source_text_hash": "a104ef8f88b1f35f98bc2e2aa438e73005ff7df1d5a8ffa9198e22c169555414",
+      "translation_text_hash": "3e8497b88169d916554e5bac45718122c7119037276651d00488e99ad44f3697",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김의 남은 사적과 그 행한 모든 가증한 일과 그 심술이 이스라엘과 유다 열왕기에 기록되니라 그 아들 여호야긴이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "3e8497b88169d916554e5bac45718122c7119037276651d00488e99ad44f3697"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:9",
+      "sequence": 12003,
+      "chapter_label": "2CH 36",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 9
+        }
+      ],
+      "en": "Jehoiachin was eight years old when he began to reign, and he reigned three months and ten days in Jerusalem. He did that which was evil in the LORD’s sight.",
+      "ko": "여호야긴이 위에 나아갈 때에 나이 팔세라 예루살렘에서 석달 열흘을 치리하며 여호와 보시기에 악을 행하였더라",
+      "source_text_hash": "f2b40b2332c18c8a04fd766d4f2f9696dc52c0224160b8b20081186864796f3c",
+      "translation_text_hash": "b28998bb04203f9032e007bdccf369ec234023eff435722815530e334f6337cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야긴이 위에 나아갈 때에 나이 팔세라 예루살렘에서 석달 열흘을 치리하며 여호와 보시기에 악을 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "b28998bb04203f9032e007bdccf369ec234023eff435722815530e334f6337cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:10",
+      "sequence": 12004,
+      "chapter_label": "2CH 36",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 10
+        }
+      ],
+      "en": "At the return of the year, King Nebuchadnezzar sent and brought him to Babylon, with the valuable vessels of the LORD’s house, and made Zedekiah his brother king over Judah and Jerusalem.",
+      "ko": "세초에 느부갓네살이 보내어 여호야긴을 바벨론으로 잡아가고 여호와의 전의 귀한 기구도 함께 가져가고 그 아자비 시드기야를 세워 유다와 예루살렘 왕을 삼았더라",
+      "source_text_hash": "f3e659af32924f0b524b6a0a9f6541c773f59dd4f1e55a32dda98cabfb0d3842",
+      "translation_text_hash": "7db86e54b348ca89198c81f586b2bc815d40ebe3f4037f147c5e61a035549e46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세초에 느부갓네살이 보내어 여호야긴을 바벨론으로 잡아가고 여호와의 전의 귀한 기구도 함께 가져가고 그 아자비 시드기야를 세워 유다와 예루살렘 왕을 삼았더라"
+      ],
+      "raw_text_hashes": [
+        "7db86e54b348ca89198c81f586b2bc815d40ebe3f4037f147c5e61a035549e46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:11",
+      "sequence": 12005,
+      "chapter_label": "2CH 36",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 11
+        }
+      ],
+      "en": "Zedekiah was twenty-one years old when he began to reign, and he reigned eleven years in Jerusalem.",
+      "ko": "시드기야가 위에 나아갈 때에 나이 이십 일세라 예루살렘에서 십 일년을 치리하며",
+      "source_text_hash": "752a92770dab046af80342b41818b192f0301b5b75fee12778cb4a8615295e6a",
+      "translation_text_hash": "cb502dabaeaefc24ac91ed24fe2b3fbceaf59dcdf3e37cd76ed036988673ba2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야가 위에 나아갈 때에 나이 이십 일세라 예루살렘에서 십 일년을 치리하며"
+      ],
+      "raw_text_hashes": [
+        "cb502dabaeaefc24ac91ed24fe2b3fbceaf59dcdf3e37cd76ed036988673ba2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:12",
+      "sequence": 12006,
+      "chapter_label": "2CH 36",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 12
+        }
+      ],
+      "en": "He did that which was evil in the LORD his God’s sight. He didn’t humble himself before Jeremiah the prophet speaking from the LORD’s mouth.",
+      "ko": "그 하나님 여호와 보시기에 악을 행하고 선지자 예레미야가 여호와의 말씀으로 일러도 그의 앞에서 겸비치 아니하였으며",
+      "source_text_hash": "d5488e9938b380c45299f26cb0869623daaea36dfcd3853b5da766c90aa3f62d",
+      "translation_text_hash": "fdf589ff884f52acda7083b74f42298804aff622777bf69868931832cc07c495",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 하나님 여호와 보시기에 악을 행하고 선지자 예레미야가 여호와의 말씀으로 일러도 그의 앞에서 겸비치 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "fdf589ff884f52acda7083b74f42298804aff622777bf69868931832cc07c495"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:13",
+      "sequence": 12007,
+      "chapter_label": "2CH 36",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 13
+        }
+      ],
+      "en": "He also rebelled against King Nebuchadnezzar, who had made him swear by God; but he stiffened his neck, and hardened his heart against turning to the LORD, the God of Israel.",
+      "ko": "느부갓네살왕이 저로 그 하나님을 가리켜 맹세케 하였으나 저가 배반하고 목을 곧게 하며 마음을 강퍅케 하여 이스라엘 하나님 여호와께로 돌아오지 아니하였고",
+      "source_text_hash": "2ea63049dbcb967f64a1bdfecca752a2886fa16304e81bc59a6ab34bef3ee43f",
+      "translation_text_hash": "72e760c6434cacad285f380112ed0cce844d851b0a22679a339cd775ef373a49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살왕이 저로 그 하나님을 가리켜 맹세케 하였으나 저가 배반하고 목을 곧게 하며 마음을 강퍅케 하여 이스라엘 하나님 여호와께로 돌아오지 아니하였고"
+      ],
+      "raw_text_hashes": [
+        "72e760c6434cacad285f380112ed0cce844d851b0a22679a339cd775ef373a49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:14",
+      "sequence": 12008,
+      "chapter_label": "2CH 36",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 14
+        }
+      ],
+      "en": "Moreover all the chiefs of the priests and the people trespassed very greatly after all the abominations of the nations; and they polluted the LORD’s house which he had made holy in Jerusalem.",
+      "ko": "제사장의 어른들과 백성도 크게 범죄하여 이방 모든 가증한 일을 본받아서 여호와께서 예루살렘에 거룩하게 두신 그 전을 더럽게 하였으며",
+      "source_text_hash": "0bfae02dcc7a34d36a15504279a2c689421fe5e8e9083e3f963a3498a2df783d",
+      "translation_text_hash": "6f3088554cd9171152e210f484277dca74fa47794f563f3efb28328b80f6cb4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장의 어른들과 백성도 크게 범죄하여 이방 모든 가증한 일을 본받아서 여호와께서 예루살렘에 거룩하게 두신 그 전을 더럽게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "6f3088554cd9171152e210f484277dca74fa47794f563f3efb28328b80f6cb4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:15",
+      "sequence": 12009,
+      "chapter_label": "2CH 36",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD, the God of their fathers, sent to them by his messengers, rising up early and sending, because he had compassion on his people and on his dwelling place;",
+      "ko": "그 열조의 하나님 여호와께서 그 백성과 그 거하시는 곳을 아끼사 부지런히 그 사자들을 그 백성에게 보내어 이르셨으나",
+      "source_text_hash": "fec9facd3b7a1555d039311d6c363d9e3caaba9b7ad6d82c8bf201ad96c6db85",
+      "translation_text_hash": "23b286e620651a5e98506962d6bfa51ef9f8dd7ba0cb2587a523655524cd2ba0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 열조의 하나님 여호와께서 그 백성과 그 거하시는 곳을 아끼사 부지런히 그 사자들을 그 백성에게 보내어 이르셨으나"
+      ],
+      "raw_text_hashes": [
+        "23b286e620651a5e98506962d6bfa51ef9f8dd7ba0cb2587a523655524cd2ba0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:16",
+      "sequence": 12010,
+      "chapter_label": "2CH 36",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 16
+        }
+      ],
+      "en": "but they mocked the messengers of God, despised his words, and scoffed at his prophets, until the LORD’s wrath arose against his people, until there was no remedy.",
+      "ko": "그 백성이 하나님의 사자를 비웃고 말씀을 멸시하며 그 선지자를 욕하여 여호와의 진노로 그 백성에게 미쳐서 만회할 수 없게 하였으므로",
+      "source_text_hash": "c16be69d36ace8e6eb8d18fd8deaa01a80a5af1648f0f970a626f0b0545060e9",
+      "translation_text_hash": "441cc4ca6681c5dee3d4bda50c04417f995f2754982a8a63ee0cf12624df7a4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 백성이 하나님의 사자를 비웃고 말씀을 멸시하며 그 선지자를 욕하여 여호와의 진노로 그 백성에게 미쳐서 만회할 수 없게 하였으므로"
+      ],
+      "raw_text_hashes": [
+        "441cc4ca6681c5dee3d4bda50c04417f995f2754982a8a63ee0cf12624df7a4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:17",
+      "sequence": 12011,
+      "chapter_label": "2CH 36",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 17
+        }
+      ],
+      "en": "Therefore he brought on them the king of the Chaldeans, who killed their young men with the sword in the house of their sanctuary, and had no compassion on young man or virgin, old man or infirm. He gave them all into his hand.",
+      "ko": "하나님이 갈대아 왕의 손에 저희를 다 붙이시매 저가 와서 그 성전에서 칼로 청년을 죽이며 청년 남녀와 노인과 백발노옹을 긍휼히 여기지 아니하였으며",
+      "source_text_hash": "77e07859d5a1f4854c113e30faf634c48d7509240ea155188c84af65557b108c",
+      "translation_text_hash": "9c722fcc1c6795c02dc0c2558999db611c5105ce06f2ca0041d02ad3d72c5cb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 갈대아 왕의 손에 저희를 다 붙이시매 저가 와서 그 성전에서 칼로 청년을 죽이며 청년 남녀와 노인과 백발노옹을 긍휼히 여기지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "9c722fcc1c6795c02dc0c2558999db611c5105ce06f2ca0041d02ad3d72c5cb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:18",
+      "sequence": 12012,
+      "chapter_label": "2CH 36",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 18
+        }
+      ],
+      "en": "All the vessels of God’s house, great and small, and the treasures of the LORD’s house, and the treasures of the king and of his princes, all these he brought to Babylon.",
+      "ko": "또 하나님의 전의 대소 기명들과 여호와의 전의 보물과 왕과 방백들의 보물을 다 바벨론으로 가져가고",
+      "source_text_hash": "4186438cec9f1048be80a3fe0e49e5fd5078f98f103da5c27f62fa054304e2a9",
+      "translation_text_hash": "8bd6b7f59176ed933310ee8ba059802dfeadee9e649e82a6c6b5f976b9dff186",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나님의 전의 대소 기명들과 여호와의 전의 보물과 왕과 방백들의 보물을 다 바벨론으로 가져가고"
+      ],
+      "raw_text_hashes": [
+        "8bd6b7f59176ed933310ee8ba059802dfeadee9e649e82a6c6b5f976b9dff186"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:19",
+      "sequence": 12013,
+      "chapter_label": "2CH 36",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 19
+        }
+      ],
+      "en": "They burned God’s house, broke down the wall of Jerusalem, burned all its palaces with fire, and destroyed all of its valuable vessels.",
+      "ko": "또 하나님의 전을 불사르며 예루살렘 성을 헐며 그 모든 궁실을 불사르며 그 모든 귀한 기명을 훼파하고",
+      "source_text_hash": "a58eb2d889c0e39a147f0d345f83b60f55e43a1915df6eae337c029c88cd2e4e",
+      "translation_text_hash": "9966f55eb082a59bb8951f9d103969922f348faf737fff081882a8e2e3a1625f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나님의 전을 불사르며 예루살렘 성을 헐며 그 모든 궁실을 불사르며 그 모든 귀한 기명을 훼파하고"
+      ],
+      "raw_text_hashes": [
+        "9966f55eb082a59bb8951f9d103969922f348faf737fff081882a8e2e3a1625f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:20",
+      "sequence": 12014,
+      "chapter_label": "2CH 36",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 20
+        }
+      ],
+      "en": "He carried those who had escaped from the sword away to Babylon, and they were servants to him and his sons until the reign of the kingdom of Persia,",
+      "ko": "무릇 칼에서 벗어난 자를 저가 바벨론으로 사로잡아가매 무리가 거기서 갈대아 왕과 그 자손의 노예가 되어 바사국이 주재할 때까지 이르니라",
+      "source_text_hash": "49fe9de524ae7731f9b7cbf52825d1b3bb404a74b2b9e9408fb5dd66f50ddfb1",
+      "translation_text_hash": "fc0be15b490345ec116323f8603067547c0e726fbb8d603b8e06d059d09a52ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 칼에서 벗어난 자를 저가 바벨론으로 사로잡아가매 무리가 거기서 갈대아 왕과 그 자손의 노예가 되어 바사국이 주재할 때까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "fc0be15b490345ec116323f8603067547c0e726fbb8d603b8e06d059d09a52ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:21",
+      "sequence": 12015,
+      "chapter_label": "2CH 36",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 21
+        }
+      ],
+      "en": "to fulfill the LORD’s word by Jeremiah’s mouth, until the land had enjoyed its Sabbaths. As long as it lay desolate, it kept Sabbath, to fulfill seventy years.",
+      "ko": "이에 토지가 황무하여 안식년을 누림 같이 안식하여 칠십년을 지내었으니 여호와께서 예레미야의 입으로 하신 말씀이 응하였더라",
+      "source_text_hash": "505bfae28730e161dbb41f7ca8795511475be0a6377801573446b5026ab27ecf",
+      "translation_text_hash": "95f05969d7fbc1bf32db56a169ab7d5eab194442b70ee08b007bf8f9aaa3f35a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 토지가 황무하여 안식년을 누림 같이 안식하여 칠십년을 지내었으니 여호와께서 예레미야의 입으로 하신 말씀이 응하였더라"
+      ],
+      "raw_text_hashes": [
+        "95f05969d7fbc1bf32db56a169ab7d5eab194442b70ee08b007bf8f9aaa3f35a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:22",
+      "sequence": 12016,
+      "chapter_label": "2CH 36",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 22
+        }
+      ],
+      "en": "Now in the first year of Cyrus king of Persia, that the LORD’s word by the mouth of Jeremiah might be accomplished, the LORD stirred up the spirit of Cyrus king of Persia, so that he made a proclamation throughout all his kingdom, and put it also in writing, saying,",
+      "ko": "바사 왕 고레스 원년에 여호와께서 예레미야의 입으로 하신 말씀을 응하게 하시려고 바사 왕 고레스의 마음을 감동시키시매 저가 온 나라에 공포도 하고 조서도 내려 가로되",
+      "source_text_hash": "44c6633a9da63608a97c2b05a722d32b041162fd05ef3eb6964a6f7f7fd269b2",
+      "translation_text_hash": "53d3d8715c442df4353b4a20d9b767aadd9e90d4241ca80687d3913e9ed0f971",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바사 왕 고레스 원년에 여호와께서 예레미야의 입으로 하신 말씀을 응하게 하시려고 바사 왕 고레스의 마음을 감동시키시매 저가 온 나라에 공포도 하고 조서도 내려 가로되"
+      ],
+      "raw_text_hashes": [
+        "53d3d8715c442df4353b4a20d9b767aadd9e90d4241ca80687d3913e9ed0f971"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:36:23",
+      "sequence": 12017,
+      "chapter_label": "2CH 36",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 36,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 36,
+          "verse": 23
+        }
+      ],
+      "en": "“Cyrus king of Persia says, ‘The LORD, the God of heaven, has given all the kingdoms of the earth to me; and he has commanded me to build him a house in Jerusalem, which is in Judah. Whoever there is among you of all his people, the LORD his God be with him, and let him go up.’”",
+      "ko": "바사 왕 고레스는 말하노니 하늘의 신 여호와께서 세상 만국으로 내게 주셨고 나를 명하여 유다 예루살렘에 전을 건축하라 하셨나니 너희 중에 무릇 그 백성 된 자는 다 올라갈찌어다 너희 하나님 여호와께서 함께하시기를 원하노라 하였더라",
+      "source_text_hash": "a1227020b0be1269fc68f22d85902dce74e86c03f4cbae999903a439bdb85f70",
+      "translation_text_hash": "1ac31a27b54a4b907006005d5d00aaae2d4eab7abc1ba9f36de6b17819822d22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바사 왕 고레스는 말하노니 하늘의 신 여호와께서 세상 만국으로 내게 주셨고 나를 명하여 유다 예루살렘에 전을 건축하라 하셨나니 너희 중에 무릇 그 백성 된 자는 다 올라갈찌어다 너희 하나님 여호와께서 함께하시기를 원하노라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "1ac31a27b54a4b907006005d5d00aaae2d4eab7abc1ba9f36de6b17819822d22"
+      ]
+    }
+  ]
+}

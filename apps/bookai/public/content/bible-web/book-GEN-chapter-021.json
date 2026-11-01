@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:021",
+  "unit_ordinal": 21,
+  "unit_label": "GEN 21",
+  "book_code": "GEN",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:21:1",
+      "sequence": 515,
+      "chapter_label": "GEN 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD visited Sarah as he had said, and the LORD did to Sarah as he had spoken.",
+      "ko": "여호와께서 그 말씀대로 사라를 권고하셨고 여호와께서 그 말씀대로 사라에게 행하셨으므로",
+      "source_text_hash": "056ac9dfb28bc5e4afbc0933756ef20d737c457375eba8b2e3e3d6da62f2db88",
+      "translation_text_hash": "dcf38fea819a291c37e85a7fdd8d164f37dfd677f4d74adea108dfbdef47a0c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 말씀대로 사라를 권고하셨고 여호와께서 그 말씀대로 사라에게 행하셨으므로"
+      ],
+      "raw_text_hashes": [
+        "dcf38fea819a291c37e85a7fdd8d164f37dfd677f4d74adea108dfbdef47a0c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:2",
+      "sequence": 516,
+      "chapter_label": "GEN 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "Sarah conceived, and bore Abraham a son in his old age, at the set time of which God had spoken to him.",
+      "ko": "사라가 잉태하고 하나님의 말씀하신 기한에 미쳐 늙은 아브라함에게 아들을 낳으니",
+      "source_text_hash": "6a1ddc1e86d695598dca63d905a4469cf81fd2dcbf51f7c1fe408fc4a7c6c320",
+      "translation_text_hash": "ffba0d13462597e090e819393251ffa36e0244543aecb3cc1419ae57ea28a5b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사라가 잉태하고 하나님의 말씀하신 기한에 미쳐 늙은 아브라함에게 아들을 낳으니"
+      ],
+      "raw_text_hashes": [
+        "ffba0d13462597e090e819393251ffa36e0244543aecb3cc1419ae57ea28a5b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:3",
+      "sequence": 517,
+      "chapter_label": "GEN 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "Abraham called his son who was born to him, whom Sarah bore to him, Isaac.",
+      "ko": "아브라함이 그 낳은 아들 곧 사라가 자기에게 낳은 아들을 이름하여 이삭이라 하였고",
+      "source_text_hash": "2e1c22c4790f1d932d58d7f0ab7f2d081ddb93092dc24894799281f1365373b7",
+      "translation_text_hash": "b4320cebd7ac38c2c6b90903a483063295f78bec742ec40ad3fd233036cb613b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 그 낳은 아들 곧 사라가 자기에게 낳은 아들을 이름하여 이삭이라 하였고"
+      ],
+      "raw_text_hashes": [
+        "b4320cebd7ac38c2c6b90903a483063295f78bec742ec40ad3fd233036cb613b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:4",
+      "sequence": 518,
+      "chapter_label": "GEN 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "Abraham circumcised his son, Isaac, when he was eight days old, as God had commanded him.",
+      "ko": "그 아들 이삭이 난지 팔일만에 그가 하나님의 명대로 할례를 행하였더라",
+      "source_text_hash": "4d7b4fcce0d1d33afe5be789048b2f0a4e7f0fd439d1dfb98dc568d2ba160e35",
+      "translation_text_hash": "5c5706d2f3bc424762b86146b1135d95420f06a146aa9ae043ead0e1dee7201a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들 이삭이 난지 팔일만에 그가 하나님의 명대로 할례를 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "5c5706d2f3bc424762b86146b1135d95420f06a146aa9ae043ead0e1dee7201a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:5",
+      "sequence": 519,
+      "chapter_label": "GEN 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "Abraham was one hundred years old when his son, Isaac, was born to him.",
+      "ko": "아브라함이 그 아들 이삭을 낳을 때에 백세라",
+      "source_text_hash": "8a138482e18be25c9e34c05e99744851c22c22a59379e0079320979e76094abd",
+      "translation_text_hash": "21e6434a1429f06aff3c1ce19c266b807523d824c3c3b09f4861a3b103dd2025",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 그 아들 이삭을 낳을 때에 백세라"
+      ],
+      "raw_text_hashes": [
+        "21e6434a1429f06aff3c1ce19c266b807523d824c3c3b09f4861a3b103dd2025"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:6",
+      "sequence": 520,
+      "chapter_label": "GEN 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "Sarah said, “God has made me laugh. Everyone who hears will laugh with me.”",
+      "ko": "사라가 가로되 하나님이 나로 웃게 하시니 듣는 자가 다 나와 함께 웃으리로다",
+      "source_text_hash": "1571aafd9092ff3ba0bd2330a1e2aa4e7fd7f8ae7330eafd3f1e4e3764636cf1",
+      "translation_text_hash": "b5f410e5e38db04b2056b38204cb037cb7d964b24d91f8ec99f282cc30914a75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사라가 가로되 하나님이 나로 웃게 하시니 듣는 자가 다 나와 함께 웃으리로다"
+      ],
+      "raw_text_hashes": [
+        "b5f410e5e38db04b2056b38204cb037cb7d964b24d91f8ec99f282cc30914a75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:7",
+      "sequence": 521,
+      "chapter_label": "GEN 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "She said, “Who would have said to Abraham that Sarah would nurse children? For I have borne him a son in his old age.”",
+      "ko": "또 가로되 사라가 자식들을 젖 먹이겠다고 누가 아브라함에게 말하였으리요 마는 아브라함 노경에 내가 아들을 낳았도다 하니라",
+      "source_text_hash": "e2ab3ba10c4bd4b5d82f219583f22c844404d3a06711554886709e4e9fab3a53",
+      "translation_text_hash": "705dc1f3820adc4647c842e57ba6d93c44e0d5d8513528f167b44aaff4011f5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 사라가 자식들을 젖 먹이겠다고 누가 아브라함에게 말하였으리요 마는 아브라함 노경에 내가 아들을 낳았도다 하니라"
+      ],
+      "raw_text_hashes": [
+        "705dc1f3820adc4647c842e57ba6d93c44e0d5d8513528f167b44aaff4011f5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:8",
+      "sequence": 522,
+      "chapter_label": "GEN 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "The child grew and was weaned. Abraham made a great feast on the day that Isaac was weaned.",
+      "ko": "아이가 자라매 젖을 떼고 이삭의 젖을 떼는 날에 아브라함이 대연을 배설하였더라",
+      "source_text_hash": "46b4111e85336fea6fe139ce98ee823bfec8cbd8fc5d2ef4a1791cc1e8302a1f",
+      "translation_text_hash": "231d2dbcbae30f45c7e3f919c3e0ec73bc7bed5836da4803be938884a6b82808",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이가 자라매 젖을 떼고 이삭의 젖을 떼는 날에 아브라함이 대연을 배설하였더라"
+      ],
+      "raw_text_hashes": [
+        "231d2dbcbae30f45c7e3f919c3e0ec73bc7bed5836da4803be938884a6b82808"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:9",
+      "sequence": 523,
+      "chapter_label": "GEN 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "Sarah saw the son of Hagar the Egyptian, whom she had borne to Abraham, mocking.",
+      "ko": "사라가 본즉 아브라함의 아들 애굽 여인 하갈의 소생이 이삭을 희롱하는지라",
+      "source_text_hash": "0d4ff1d1c7ff666a386fb6fa79c2c252e2a9498e4109ea66841688a2d8d654c1",
+      "translation_text_hash": "eefe47bb16ab650955a1c421274459b3ac759fa2381274b0469d7fbc8478fa22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사라가 본즉 아브라함의 아들 애굽 여인 하갈의 소생이 이삭을 희롱하는지라"
+      ],
+      "raw_text_hashes": [
+        "eefe47bb16ab650955a1c421274459b3ac759fa2381274b0469d7fbc8478fa22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:10",
+      "sequence": 524,
+      "chapter_label": "GEN 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore she said to Abraham, “Cast out this servant and her son! For the son of this servant will not be heir with my son, Isaac.”",
+      "ko": "그가 아브라함에게 이르되 이 여종과 그 아들을 내어쫓으라 이 종의 아들은 내 아들 이삭과 함께 기업을 얻지 못하리라 하매",
+      "source_text_hash": "8e0f39c444e0ce58d5806434e47c4aa9c10cdc0afa620523632f049d36bb93a5",
+      "translation_text_hash": "805724972a6c48e9c2df9c558a83b8810b4f0bd54f7319232de5fd35d19f7cba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아브라함에게 이르되 이 여종과 그 아들을 내어쫓으라 이 종의 아들은 내 아들 이삭과 함께 기업을 얻지 못하리라 하매"
+      ],
+      "raw_text_hashes": [
+        "805724972a6c48e9c2df9c558a83b8810b4f0bd54f7319232de5fd35d19f7cba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:11",
+      "sequence": 525,
+      "chapter_label": "GEN 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "The thing was very grievous in Abraham’s sight on account of his son.",
+      "ko": "아브라함이 그 아들을 위하여 그 일이 깊이 근심이 되었더니",
+      "source_text_hash": "f67fda7973800729647f21a92c96712a06e9c9bed61bd9532987ed0db513e0ac",
+      "translation_text_hash": "d1a4e208b4d0195129b112b8f04dfcbcd8e7355dfea92772497c2809f5da8fef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 그 아들을 위하여 그 일이 깊이 근심이 되었더니"
+      ],
+      "raw_text_hashes": [
+        "d1a4e208b4d0195129b112b8f04dfcbcd8e7355dfea92772497c2809f5da8fef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:12",
+      "sequence": 526,
+      "chapter_label": "GEN 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "God said to Abraham, “Don’t let it be grievous in your sight because of the boy, and because of your servant. In all that Sarah says to you, listen to her voice. For your offspring will be named through Isaac.",
+      "ko": "하나님이 아브라함에게 이르시되 네 아이나 네 여종을 위하여 근심치 말고 사라가 네게 이른 말을 다 들으라 이삭에게서 나는 자라야 네 씨라 칭할 것임이니라",
+      "source_text_hash": "9cb9d04b1bd6514938b30dd1ce82354de073299d65c4d71be3d902471366a2ef",
+      "translation_text_hash": "519b0165373db4b6212b32e3d102484286ff9eeb08538265bdc85d6d7be47728",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 아브라함에게 이르시되 네 아이나 네 여종을 위하여 근심치 말고 사라가 네게 이른 말을 다 들으라 이삭에게서 나는 자라야 네 씨라 칭할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "519b0165373db4b6212b32e3d102484286ff9eeb08538265bdc85d6d7be47728"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:13",
+      "sequence": 527,
+      "chapter_label": "GEN 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "I will also make a nation of the son of the servant, because he is your child.”",
+      "ko": "그러나 여종의 아들도 네 씨니 내가 그로 한 민족을 이루게 하리라 하신지라",
+      "source_text_hash": "525590f3f9bd2c4e42a280065e2ee2d5073e583f0d233d2334a132762c049a3f",
+      "translation_text_hash": "261f77e8114a29fb545a9bd49b47df2d0d4dc1e76c0cde81fd834ee0d671b373",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 여종의 아들도 네 씨니 내가 그로 한 민족을 이루게 하리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "261f77e8114a29fb545a9bd49b47df2d0d4dc1e76c0cde81fd834ee0d671b373"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:14",
+      "sequence": 528,
+      "chapter_label": "GEN 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "Abraham rose up early in the morning, and took bread and a container of water, and gave it to Hagar, putting it on her shoulder; and gave her the child, and sent her away. She departed, and wandered in the wilderness of Beersheba.",
+      "ko": "아브라함이 아침에 일찌기 일어나 떡과 물 한 가죽부대를 취하여 하갈의 어깨에 메워 주고 그 자식을 이끌고 가게 하매 하갈이 나가서 브엘세바 들에서 방황하더니",
+      "source_text_hash": "39814e3997b8ca60a473b6cfb15bde9f95752c00668845236efcfe13bb57f584",
+      "translation_text_hash": "45781977b7447e45c2e21953e854f6aa1b84625372b803271872731bc247b29d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 아침에 일찌기 일어나 떡과 물 한 가죽부대를 취하여 하갈의 어깨에 메워 주고 그 자식을 이끌고 가게 하매 하갈이 나가서 브엘세바 들에서 방황하더니"
+      ],
+      "raw_text_hashes": [
+        "45781977b7447e45c2e21953e854f6aa1b84625372b803271872731bc247b29d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:15",
+      "sequence": 529,
+      "chapter_label": "GEN 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "The water in the container was spent, and she put the child under one of the shrubs.",
+      "ko": "가죽부대의 물이 다한지라 그 자식을 떨기나무 아래 두며",
+      "source_text_hash": "3c1c94196ef34b5d0cacddd09eaa571e18a6788752cb36ee3ad5f369b390d24f",
+      "translation_text_hash": "b197d86a3e1fa4c0727bbfb93c91e0e72f04413fde5d064cd4a51bc3d8fd6f3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가죽부대의 물이 다한지라 그 자식을 떨기나무 아래 두며"
+      ],
+      "raw_text_hashes": [
+        "b197d86a3e1fa4c0727bbfb93c91e0e72f04413fde5d064cd4a51bc3d8fd6f3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:16",
+      "sequence": 530,
+      "chapter_label": "GEN 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "She went and sat down opposite him, a good way off, about a bow shot away. For she said, “Don’t let me see the death of the child.” She sat opposite him, and lifted up her voice, and wept.",
+      "ko": "가로되 자식의 죽는 것을 참아 보지 못하겠다 하고 살 한 바탕쯤 가서 마주 앉아 바라보며 방성대곡하니",
+      "source_text_hash": "74af54ee2e22a688ce8984dfcde47aaa4f2de350e3325d4ed17e3ee3cbcf7fec",
+      "translation_text_hash": "dc9c603d42c8c15748f00a25511b14fb28ea15a7f213b9757d6cf6a65fa42f26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 자식의 죽는 것을 참아 보지 못하겠다 하고 살 한 바탕쯤 가서 마주 앉아 바라보며 방성대곡하니"
+      ],
+      "raw_text_hashes": [
+        "dc9c603d42c8c15748f00a25511b14fb28ea15a7f213b9757d6cf6a65fa42f26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:17",
+      "sequence": 531,
+      "chapter_label": "GEN 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "God heard the voice of the boy. The angel of God called to Hagar out of the sky, and said to her, “What troubles you, Hagar? Don’t be afraid. For God has heard the voice of the boy where he is.",
+      "ko": "하나님이 그 아이의 소리를 들으시므로 하나님의 사자가 하늘에서부터 하갈을 불러 가라사대 하갈아 무슨 일이냐 두려워 말라 하나님이 저기 있는 아이의 소리를 들으셨나니",
+      "source_text_hash": "a443057bff6d82e30e15309b50299a79190346456d40d633e5e256edb1457ee4",
+      "translation_text_hash": "6c784aa5018bd9af090cb1cb8d3caaccb6f029636703e5ee6c515d0a3005acc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 아이의 소리를 들으시므로 하나님의 사자가 하늘에서부터 하갈을 불러 가라사대 하갈아 무슨 일이냐 두려워 말라 하나님이 저기 있는 아이의 소리를 들으셨나니"
+      ],
+      "raw_text_hashes": [
+        "6c784aa5018bd9af090cb1cb8d3caaccb6f029636703e5ee6c515d0a3005acc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:18",
+      "sequence": 532,
+      "chapter_label": "GEN 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "Get up, lift up the boy, and hold him with your hand. For I will make him a great nation.”",
+      "ko": "일어나 아이를 일으켜 네 손으로 붙들라 그로 큰 민족을 이루게 하리라 하시니라",
+      "source_text_hash": "3ea0dd5f1492e4fc5ed1364640a50303cd868e60c481eb66744b14b10bd515a3",
+      "translation_text_hash": "d70d46a9012b91761e3b52f83339cdbe2f24f1a51424fcb76e55db6e42363523",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 아이를 일으켜 네 손으로 붙들라 그로 큰 민족을 이루게 하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d70d46a9012b91761e3b52f83339cdbe2f24f1a51424fcb76e55db6e42363523"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:19",
+      "sequence": 533,
+      "chapter_label": "GEN 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "God opened her eyes, and she saw a well of water. She went, filled the container with water, and gave the boy a drink.",
+      "ko": "하나님이 하갈의 눈을 밝히시매 샘물을 보고 가서 가죽부대에 물을 채워다가 그 아이에게 마시웠더라",
+      "source_text_hash": "9d678b22f871015f155089377364c698d3e8db89f3a51da7e015966c78d09ea0",
+      "translation_text_hash": "d4c393922b1803e99e856c184f0fd0313ed982640181e90061a03426304c1ec8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 하갈의 눈을 밝히시매 샘물을 보고 가서 가죽부대에 물을 채워다가 그 아이에게 마시웠더라"
+      ],
+      "raw_text_hashes": [
+        "d4c393922b1803e99e856c184f0fd0313ed982640181e90061a03426304c1ec8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:20",
+      "sequence": 534,
+      "chapter_label": "GEN 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "God was with the boy, and he grew. He lived in the wilderness, and as he grew up, he became an archer.",
+      "ko": "하나님이 그 아이와 함께 계시매 그가 장성하여 광야에 거하며 활 쏘는 자가 되었더니",
+      "source_text_hash": "0cd878b7509673d6a108e9387c6da384451b051454391bf24fb5c4030ceaced4",
+      "translation_text_hash": "2eaaa0b3ec2f60faf641752ebb1a121a65a61f9a637de001147c3bc042618a54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 아이와 함께 계시매 그가 장성하여 광야에 거하며 활 쏘는 자가 되었더니"
+      ],
+      "raw_text_hashes": [
+        "2eaaa0b3ec2f60faf641752ebb1a121a65a61f9a637de001147c3bc042618a54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:21",
+      "sequence": 535,
+      "chapter_label": "GEN 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "He lived in the wilderness of Paran. His mother got a wife for him out of the land of Egypt.",
+      "ko": "그가 바란 광야에 거할 때에 그 어미가 그를 위하여 애굽 땅 여인을 취하여 아내를 삼게 하였더라",
+      "source_text_hash": "0a406ef066fcd7fa74864bfebd9b485d3ef60d9a2e61ba4ecc788dbd24804a70",
+      "translation_text_hash": "d494cd9aded1f7c705999f8ed6db909784f1d218243cf009410d5a20edadc68e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 바란 광야에 거할 때에 그 어미가 그를 위하여 애굽 땅 여인을 취하여 아내를 삼게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "d494cd9aded1f7c705999f8ed6db909784f1d218243cf009410d5a20edadc68e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:22",
+      "sequence": 536,
+      "chapter_label": "GEN 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "At that time, Abimelech and Phicol the captain of his army spoke to Abraham, saying, “God is with you in all that you do.",
+      "ko": "때에 아비멜렉과 그 군대 장관 비골이 아브라함에게 말하여 가로되 네가 무슨 일을 하든지 하나님이 너와 함께 계시도다",
+      "source_text_hash": "d5dc2c7e392df34fb97e35f2a85b7c28eade40be3c24ac71dc258ffe09533b6d",
+      "translation_text_hash": "69a59f4423f3d9d55975a49118041db1748fda711dc9eb5e109ab1133ebbbf42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 아비멜렉과 그 군대 장관 비골이 아브라함에게 말하여 가로되 네가 무슨 일을 하든지 하나님이 너와 함께 계시도다"
+      ],
+      "raw_text_hashes": [
+        "69a59f4423f3d9d55975a49118041db1748fda711dc9eb5e109ab1133ebbbf42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:23",
+      "sequence": 537,
+      "chapter_label": "GEN 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "Now, therefore, swear to me here by God that you will not deal falsely with me, nor with my son, nor with my son’s son. But according to the kindness that I have done to you, you shall do to me, and to the land in which you have lived as a foreigner.”",
+      "ko": "그런즉 너는 나와 내 아들과 내 손자에게 거짓되이 행치 않기를 이제 여기서 하나님을 가리켜 내게 맹세하라 내가 네게 후대한대로 너도 나와 너의 머무는 이 땅에 행할 것이니라",
+      "source_text_hash": "68fff0d5c7e66080d50632ab32f53b3969335813451723c356e01ec3e5a73876",
+      "translation_text_hash": "4df2a1fbaf3c542785c8f76a516680eb742688bfddac3257b0f948f23cfa6386",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 나와 내 아들과 내 손자에게 거짓되이 행치 않기를 이제 여기서 하나님을 가리켜 내게 맹세하라 내가 네게 후대한대로 너도 나와 너의 머무는 이 땅에 행할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "4df2a1fbaf3c542785c8f76a516680eb742688bfddac3257b0f948f23cfa6386"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:24",
+      "sequence": 538,
+      "chapter_label": "GEN 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "Abraham said, “I will swear.”",
+      "ko": "아브라함이 가로되 내가 맹세하리라 하고",
+      "source_text_hash": "af29c3d436c3501a1e1e1087eceefd8cb78e9a6595bd8df4de3c26b300384619",
+      "translation_text_hash": "be455b85b691187309ce2dbd561e8a467e89d9821078a6fc4e20f2d5a06855b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 가로되 내가 맹세하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "be455b85b691187309ce2dbd561e8a467e89d9821078a6fc4e20f2d5a06855b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:25",
+      "sequence": 539,
+      "chapter_label": "GEN 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "Abraham complained to Abimelech because of a water well, which Abimelech’s servants had violently taken away.",
+      "ko": "아비멜렉의 종들이 아브라함의 우물을 늑탈한 일에 대하여 아브라함이 아비멜렉을 책망하매",
+      "source_text_hash": "aa1604824a00a54dc3451d4cd044b6bf3523e3425a4f20ee54fe4a7c3e5967c8",
+      "translation_text_hash": "591de269e89c845831ec4199488cb1fcd90fc33645d5801fb11a36be5ed7d8b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉의 종들이 아브라함의 우물을 늑탈한 일에 대하여 아브라함이 아비멜렉을 책망하매"
+      ],
+      "raw_text_hashes": [
+        "591de269e89c845831ec4199488cb1fcd90fc33645d5801fb11a36be5ed7d8b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:26",
+      "sequence": 540,
+      "chapter_label": "GEN 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "Abimelech said, “I don’t know who has done this thing. You didn’t tell me, and I didn’t hear of it until today.”",
+      "ko": "아비멜렉이 가로되 누가 그리하였는지 내가 알지 못하노라 너도 내게 고하지 아니하였고 나도 듣지 못하였더니 오늘이야 들었노라",
+      "source_text_hash": "a012aee386e66e44bc7592341e57f710529301e4c4f9cc924c589c500596d846",
+      "translation_text_hash": "e7fa9a793058478eb8a24e48ad08a6769528c6a782479fad847aef6be4266f6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 가로되 누가 그리하였는지 내가 알지 못하노라 너도 내게 고하지 아니하였고 나도 듣지 못하였더니 오늘이야 들었노라"
+      ],
+      "raw_text_hashes": [
+        "e7fa9a793058478eb8a24e48ad08a6769528c6a782479fad847aef6be4266f6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:27",
+      "sequence": 541,
+      "chapter_label": "GEN 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "Abraham took sheep and cattle, and gave them to Abimelech. Those two made a covenant.",
+      "ko": "아브라함이 양과 소를 취하여 아비멜렉에게 주고 두 사람이 서로 언약을 세우니라",
+      "source_text_hash": "41b2799762b3426697e90692f550d4057866ab39c9f18de4bebcf91275f8381f",
+      "translation_text_hash": "7c2b246091ed187fb89a4bfdf4c6f09fd52bcd1281c67d96c76a25e3866868e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 양과 소를 취하여 아비멜렉에게 주고 두 사람이 서로 언약을 세우니라"
+      ],
+      "raw_text_hashes": [
+        "7c2b246091ed187fb89a4bfdf4c6f09fd52bcd1281c67d96c76a25e3866868e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:28",
+      "sequence": 542,
+      "chapter_label": "GEN 21",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 28
+        }
+      ],
+      "en": "Abraham set seven ewe lambs of the flock by themselves.",
+      "ko": "아브라함이 일곱 암양 새끼를 따로 놓으니",
+      "source_text_hash": "0e99b42e72afda416881f26fa15882c6d3c9cb475ab0971b3ac174d938d67628",
+      "translation_text_hash": "5b1bee7d3779bf4f0d663977190312518fe57a370a762fb9d0c69f09f153460c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 일곱 암양 새끼를 따로 놓으니"
+      ],
+      "raw_text_hashes": [
+        "5b1bee7d3779bf4f0d663977190312518fe57a370a762fb9d0c69f09f153460c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:29",
+      "sequence": 543,
+      "chapter_label": "GEN 21",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 29
+        }
+      ],
+      "en": "Abimelech said to Abraham, “What do these seven ewe lambs, which you have set by themselves, mean?”",
+      "ko": "아비멜렉이 아브라함에게 이르되 이 일곱 암양 새끼를 따로 놓음은 어찜이뇨",
+      "source_text_hash": "3f9d661b8becdddbe5aae7543d61bd069910e879070a7b10c28284018b765454",
+      "translation_text_hash": "e1da09ec935dc6c31826bbb2ddaf11e644722cc62bc752e71ae2539ea7884e6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 아브라함에게 이르되 이 일곱 암양 새끼를 따로 놓음은 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "e1da09ec935dc6c31826bbb2ddaf11e644722cc62bc752e71ae2539ea7884e6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:30",
+      "sequence": 544,
+      "chapter_label": "GEN 21",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 30
+        }
+      ],
+      "en": "He said, “You shall take these seven ewe lambs from my hand, that it may be a witness to me, that I have dug this well.”",
+      "ko": "아브라함이 가로되 너는 내 손에서 이 암양 새끼 일곱을 받아 내가 이 우물 판 증거를 삼으라 하고",
+      "source_text_hash": "cee23452ff7eab69fdb762bb085831c5dd2eb9ecb77c166ab2b529c91dd2851c",
+      "translation_text_hash": "d85afb546693497a549d5dbf824958f08d46bbaf361af6b59d6d015440819eee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 가로되 너는 내 손에서 이 암양 새끼 일곱을 받아 내가 이 우물 판 증거를 삼으라 하고"
+      ],
+      "raw_text_hashes": [
+        "d85afb546693497a549d5dbf824958f08d46bbaf361af6b59d6d015440819eee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:31",
+      "sequence": 545,
+      "chapter_label": "GEN 21",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 31
+        }
+      ],
+      "en": "Therefore he called that place Beersheba, because they both swore an oath there.",
+      "ko": "두 사람이 거기서 서로 맹세하였으므로 그곳을 브엘세바라 이름하였더라",
+      "source_text_hash": "e84433282369ee6f460b4459c0182d4eabd691352bcee430aa2372563eb07f7b",
+      "translation_text_hash": "a57ce7f84691807137bb77f5da4e8c2e5848bf9d28f84ee50c45e384e178420c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 거기서 서로 맹세하였으므로 그곳을 브엘세바라 이름하였더라"
+      ],
+      "raw_text_hashes": [
+        "a57ce7f84691807137bb77f5da4e8c2e5848bf9d28f84ee50c45e384e178420c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:32",
+      "sequence": 546,
+      "chapter_label": "GEN 21",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 32
+        }
+      ],
+      "en": "So they made a covenant at Beersheba. Abimelech rose up with Phicol, the captain of his army, and they returned into the land of the Philistines.",
+      "ko": "그들이 브엘세바에서 언약을 세우매 아비멜렉과 그 군대장관 비골은 떠나 블레셋 족속의 땅으로 돌아갔고",
+      "source_text_hash": "62ef69ca0686ecfe5d1a86d560b5ccc7ddbb2c4a29eeb3d98fb9bcce5f8c2ad2",
+      "translation_text_hash": "faef753ce4cfd3cc549d06b2cd6f2ee7e3976854a73f920505e727298120d7cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 브엘세바에서 언약을 세우매 아비멜렉과 그 군대장관 비골은 떠나 블레셋 족속의 땅으로 돌아갔고"
+      ],
+      "raw_text_hashes": [
+        "faef753ce4cfd3cc549d06b2cd6f2ee7e3976854a73f920505e727298120d7cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:33",
+      "sequence": 547,
+      "chapter_label": "GEN 21",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 33
+        }
+      ],
+      "en": "Abraham planted a tamarisk tree in Beersheba, and there he called on the name of the LORD, the Everlasting God.",
+      "ko": "아브라함은 브엘세바에 에셀나무를 심고 거기서 영생하시는 하나님 여호와의 이름을 불렀으며",
+      "source_text_hash": "777fd98c2b12b20d78c3f4f04531fa4cea1b9a3e4b38d1c27b65246619bf2182",
+      "translation_text_hash": "6d711b04bbc047b00e04a8352289206e74f970a54a8ff6b53e4e284b16a6b650",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함은 브엘세바에 에셀나무를 심고 거기서 영생하시는 하나님 여호와의 이름을 불렀으며"
+      ],
+      "raw_text_hashes": [
+        "6d711b04bbc047b00e04a8352289206e74f970a54a8ff6b53e4e284b16a6b650"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:21:34",
+      "sequence": 548,
+      "chapter_label": "GEN 21",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 21,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 21,
+          "verse": 34
+        }
+      ],
+      "en": "Abraham lived as a foreigner in the land of the Philistines many days.",
+      "ko": "그가 블레셋 족속의 땅에서 여러날을 지내었더라",
+      "source_text_hash": "57b43521e0117f58eeb121f8ea465e4a1574dfe6f062cfec0e2be45939790103",
+      "translation_text_hash": "141f452efe22d02b0b0856c63296c946ed2b9559862f26abeff65fafca5c7aa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 블레셋 족속의 땅에서 여러날을 지내었더라"
+      ],
+      "raw_text_hashes": [
+        "141f452efe22d02b0b0856c63296c946ed2b9559862f26abeff65fafca5c7aa1"
+      ]
+    }
+  ]
+}

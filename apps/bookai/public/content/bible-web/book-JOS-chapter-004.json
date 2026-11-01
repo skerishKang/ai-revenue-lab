@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:004",
+  "unit_ordinal": 191,
+  "unit_label": "JOS 4",
+  "book_code": "JOS",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:4:1",
+      "sequence": 5912,
+      "chapter_label": "JOS 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "When all the nation had completely crossed over the Jordan, the LORD spoke to Joshua, saying,",
+      "ko": "온 백성이 요단 건너기를 마치매 여호와께서 여호수아에게 일러 가라사대",
+      "source_text_hash": "87cd74f38a414723e0ce736eb18c458670a659a748ec61e49c198d34cdd3f675",
+      "translation_text_hash": "4c5cd2d9370ecd0793a80c6fdff6a1bb1ad998ea6ca8858a39ee23f56196f1cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 백성이 요단 건너기를 마치매 여호와께서 여호수아에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "4c5cd2d9370ecd0793a80c6fdff6a1bb1ad998ea6ca8858a39ee23f56196f1cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:2",
+      "sequence": 5913,
+      "chapter_label": "JOS 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "“Take twelve men out of the people, a man out of every tribe,",
+      "ko": "백성의 매 지파에 한 사람씩 열 두 사람을 택하고",
+      "source_text_hash": "eb63516c190f0c74278cb4f9158bb801f900cd4ad94bc6bba8b977b6b9c8e050",
+      "translation_text_hash": "ba54af1afe513ea2e4b44469abccdad7abb15eddb213411a189c34dddef2585a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성의 매 지파에 한 사람씩 열 두 사람을 택하고"
+      ],
+      "raw_text_hashes": [
+        "ba54af1afe513ea2e4b44469abccdad7abb15eddb213411a189c34dddef2585a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:3",
+      "sequence": 5914,
+      "chapter_label": "JOS 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "and command them, saying, ‘Take from out of the middle of the Jordan, out of the place where the priests’ feet stood firm, twelve stones, carry them over with you, and lay them down in the place where you’ll camp tonight.’”",
+      "ko": "그들에게 명하여 이르기를 요단 가운데 제사장들의 발이 굳게 선 그곳에서 돌 열 둘을 취하고 그것을 가져다가 오늘밤 너희의 유숙할 그곳에 두라 하라",
+      "source_text_hash": "bc0aa2d4de69be37f44b7c666448bca3a7a1bec351d9e5a8c82a68e7560001c4",
+      "translation_text_hash": "d8373bf90fa74d7829b2bfef837561a4a0d178231dc5eccb6da1895be508b785",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 명하여 이르기를 요단 가운데 제사장들의 발이 굳게 선 그곳에서 돌 열 둘을 취하고 그것을 가져다가 오늘밤 너희의 유숙할 그곳에 두라 하라"
+      ],
+      "raw_text_hashes": [
+        "d8373bf90fa74d7829b2bfef837561a4a0d178231dc5eccb6da1895be508b785"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:4",
+      "sequence": 5915,
+      "chapter_label": "JOS 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Then Joshua called the twelve men whom he had prepared of the children of Israel, a man out of every tribe.",
+      "ko": "여호수아가 이스라엘 자손 중에서 매 지파에 한 사람씩 예비한 그 열 두 사람을 불러서",
+      "source_text_hash": "7d05c2390734beb492729128b8539fc704b9207d3ae0acfa3b41d47253304435",
+      "translation_text_hash": "d7b03b71af4fde610bdcbde747bb8b0767068cb92c43a8cdc7e5c21b46f8db73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 이스라엘 자손 중에서 매 지파에 한 사람씩 예비한 그 열 두 사람을 불러서"
+      ],
+      "raw_text_hashes": [
+        "d7b03b71af4fde610bdcbde747bb8b0767068cb92c43a8cdc7e5c21b46f8db73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:5",
+      "sequence": 5916,
+      "chapter_label": "JOS 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Joshua said to them, “Cross before the ark of the LORD your God into the middle of the Jordan, and each of you pick up a stone and put it on your shoulder, according to the number of the tribes of the children of Israel;",
+      "ko": "그들에게 이르되 요단 가운데 너희 하나님 여호와의 궤 앞으로 들어가서 이스라엘 자손들의 지파 수대로 각기 돌 한개씩 취하여 어깨에 메라",
+      "source_text_hash": "2bcf361456ebdfcd07ae5b1998e85f9039779a175a10b33fc65fd88e6c5a3982",
+      "translation_text_hash": "f6437bb5101b8f02745f6128f64b5a24f60838994faa20424124314a82f40c82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르되 요단 가운데 너희 하나님 여호와의 궤 앞으로 들어가서 이스라엘 자손들의 지파 수대로 각기 돌 한개씩 취하여 어깨에 메라"
+      ],
+      "raw_text_hashes": [
+        "f6437bb5101b8f02745f6128f64b5a24f60838994faa20424124314a82f40c82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:6",
+      "sequence": 5917,
+      "chapter_label": "JOS 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "that this may be a sign among you, that when your children ask in the future, saying, ‘What do you mean by these stones?’",
+      "ko": "이것이 너희 중에 표징이 되리라 후일에 너희 자손이 물어 가로되 이 돌들은 무슨 뜻이뇨 하거든",
+      "source_text_hash": "c80ad53afef8f8c9ed43a1fbf5c349d7dd8d7e6e503a5e3c412ac22e66fafc0c",
+      "translation_text_hash": "f9e14aab3cf37421f798c12b9da41af84050f35475a165d505604be488852d66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 너희 중에 표징이 되리라 후일에 너희 자손이 물어 가로되 이 돌들은 무슨 뜻이뇨 하거든"
+      ],
+      "raw_text_hashes": [
+        "f9e14aab3cf37421f798c12b9da41af84050f35475a165d505604be488852d66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:7",
+      "sequence": 5918,
+      "chapter_label": "JOS 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "then you shall tell them, ‘Because the waters of the Jordan were cut off before the ark of the LORD’s covenant. When it crossed over the Jordan, the waters of the Jordan were cut off. These stones shall be for a memorial to the children of Israel forever.’”",
+      "ko": "그들에게 이르기를 요단 물이 여호와의 언약궤 앞에서 끊어졌었나니 곧 언약궤가 요단을 건널때에 요단 물이 끊어졌으므로 이 돌들이 이스라엘 자손에게 영영한 기념이 되리라 하라",
+      "source_text_hash": "d2cf19d5dda87a0031bdc909e3f91d33709d22580479d38d113df345b6020675",
+      "translation_text_hash": "167db3d203e4f11c68615915c70f4dfd0c8844aad4c709a08b47a7dcca401acb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르기를 요단 물이 여호와의 언약궤 앞에서 끊어졌었나니 곧 언약궤가 요단을 건널때에 요단 물이 끊어졌으므로 이 돌들이 이스라엘 자손에게 영영한 기념이 되리라 하라"
+      ],
+      "raw_text_hashes": [
+        "167db3d203e4f11c68615915c70f4dfd0c8844aad4c709a08b47a7dcca401acb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:8",
+      "sequence": 5919,
+      "chapter_label": "JOS 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "The children of Israel did as Joshua commanded, and took up twelve stones out of the middle of the Jordan, as the LORD spoke to Joshua, according to the number of the tribes of the children of Israel. They carried them over with them to the place where they camped, and laid them down there.",
+      "ko": "이스라엘 자손들이 여호수아의 명한대로 행하되 여호와께서 여호수아에게 이르신대로 이스라엘 자손들의 지파 수를 따라 요단 가운데서 돌 열 둘을 취하여 자기들의 유숙할 곳으로 가져다가 거기 두었더라",
+      "source_text_hash": "6c0308636eba84273db80ffab3f167545c792771a5698babf6a6b6d8fe7666f8",
+      "translation_text_hash": "a717588102f958e2ed08b3eeb3d5e4e0e9a11276cc0d56594b3266a32dadb6ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들이 여호수아의 명한대로 행하되 여호와께서 여호수아에게 이르신대로 이스라엘 자손들의 지파 수를 따라 요단 가운데서 돌 열 둘을 취하여 자기들의 유숙할 곳으로 가져다가 거기 두었더라"
+      ],
+      "raw_text_hashes": [
+        "a717588102f958e2ed08b3eeb3d5e4e0e9a11276cc0d56594b3266a32dadb6ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:9",
+      "sequence": 5920,
+      "chapter_label": "JOS 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Joshua set up twelve stones in the middle of the Jordan, in the place where the feet of the priests who bore the ark of the covenant stood; and they are there to this day.",
+      "ko": "여호수아가 또 요단 가운데 곧 언약궤를 멘 제사장들의 발이 선 곳에 돌 열 둘을 세웠더니 오늘까지 거기 있더라",
+      "source_text_hash": "839c6e3159de25d871be1bfa9e9fe3c613f9c67645a48f3819069945f293fe9b",
+      "translation_text_hash": "0be664d14e8d95f4a0b6eb32a949cb95024107d245e49727f69b4d2a63c8acc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 또 요단 가운데 곧 언약궤를 멘 제사장들의 발이 선 곳에 돌 열 둘을 세웠더니 오늘까지 거기 있더라"
+      ],
+      "raw_text_hashes": [
+        "0be664d14e8d95f4a0b6eb32a949cb95024107d245e49727f69b4d2a63c8acc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:10",
+      "sequence": 5921,
+      "chapter_label": "JOS 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "For the priests who bore the ark stood in the middle of the Jordan until everything was finished that the LORD commanded Joshua to speak to the people, according to all that Moses commanded Joshua; and the people hurried and passed over.",
+      "ko": "궤를 멘 제사장들이 여호와께서 여호수아에게 명하사 백성에게 이르게 하신 일 곧 모세가 여호수아에게 명한 일이 다 마치기까지 요단 가운데 섰고 백성은 속히 건넜으며",
+      "source_text_hash": "42953c3893c3b058a780762510b7c5bdf1f534c8bf5ff8990f755ee7b5a21107",
+      "translation_text_hash": "d6cfa5c2f4a3f2dc36c04a72a84d294a8cd17867438435154c1e8cfa0d34abab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궤를 멘 제사장들이 여호와께서 여호수아에게 명하사 백성에게 이르게 하신 일 곧 모세가 여호수아에게 명한 일이 다 마치기까지 요단 가운데 섰고 백성은 속히 건넜으며"
+      ],
+      "raw_text_hashes": [
+        "d6cfa5c2f4a3f2dc36c04a72a84d294a8cd17867438435154c1e8cfa0d34abab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:11",
+      "sequence": 5922,
+      "chapter_label": "JOS 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "When all the people had completely crossed over, the LORD’s ark crossed over with the priests in the presence of the people.",
+      "ko": "모든 백성이 건너기를 마친 후에 여호와의 궤와 제사장들이 백성의 목전에서 건넜으며",
+      "source_text_hash": "bb85b58173b3a3231fe6a514a0fc09b03d506df1cf2dbd47771d315cce51685d",
+      "translation_text_hash": "7bc52c235b289307fb0daf543bae90401a27b7ca1563f4c077d0c319c13ad63b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 건너기를 마친 후에 여호와의 궤와 제사장들이 백성의 목전에서 건넜으며"
+      ],
+      "raw_text_hashes": [
+        "7bc52c235b289307fb0daf543bae90401a27b7ca1563f4c077d0c319c13ad63b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:12",
+      "sequence": 5923,
+      "chapter_label": "JOS 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "The children of Reuben, and the children of Gad, and the half-tribe of Manasseh crossed over armed before the children of Israel, as Moses spoke to them.",
+      "ko": "르우벤 자손과 갓 자손과 므낫세 반 지파는 모세가 그들에게 이른 것 같이 무장하고 이스라엘 자손들보다 앞서 건너갔으니",
+      "source_text_hash": "e81202bbcabc4a9f888072b3bbf9c6cdcee26d48e0586f1ed20997a9aa6a92c1",
+      "translation_text_hash": "03a55400008f947f7ed70e3147f75739e5a43f0b6e8e59a7459ed36ed10568a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손과 갓 자손과 므낫세 반 지파는 모세가 그들에게 이른 것 같이 무장하고 이스라엘 자손들보다 앞서 건너갔으니"
+      ],
+      "raw_text_hashes": [
+        "03a55400008f947f7ed70e3147f75739e5a43f0b6e8e59a7459ed36ed10568a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:13",
+      "sequence": 5924,
+      "chapter_label": "JOS 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "About forty thousand men, ready and armed for war, passed over before the LORD to battle, to the plains of Jericho.",
+      "ko": "사만명 가량이라 무장하고 여호와 앞에서 건너가서 싸우려고 여리고 평지에 이르니라",
+      "source_text_hash": "9f867f1a7361872e0443b95f0be7d54fb826359205b50a9b279493c177f28c88",
+      "translation_text_hash": "dc04fd9ec8319d6b24b62d6f242c5f121618c8a2e0300a79628372e8b53602d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사만명 가량이라 무장하고 여호와 앞에서 건너가서 싸우려고 여리고 평지에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "dc04fd9ec8319d6b24b62d6f242c5f121618c8a2e0300a79628372e8b53602d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:14",
+      "sequence": 5925,
+      "chapter_label": "JOS 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "On that day, the LORD magnified Joshua in the sight of all Israel; and they feared him, as they feared Moses, all the days of his life.",
+      "ko": "그 날에 여호와께서 모든 이스라엘의 목전에서 여호수아를 크게 하시매 그의 생존한 날 동안에 백성이 두려워하기를 모세를 두려워하던것 같이 하였더라",
+      "source_text_hash": "9e6e40f5aee7ffba3f2fe816f46cbaf73623e41de589548448340f6bc2d1313c",
+      "translation_text_hash": "e3b908c89cbc9fe16edebfa234271574fa89e4d24eed64926381bee0c1dfec74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 여호와께서 모든 이스라엘의 목전에서 여호수아를 크게 하시매 그의 생존한 날 동안에 백성이 두려워하기를 모세를 두려워하던것 같이 하였더라"
+      ],
+      "raw_text_hashes": [
+        "e3b908c89cbc9fe16edebfa234271574fa89e4d24eed64926381bee0c1dfec74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:15",
+      "sequence": 5926,
+      "chapter_label": "JOS 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD spoke to Joshua, saying,",
+      "ko": "여호와께서 여호수아에게 일러 가라사대",
+      "source_text_hash": "0f522429c2698d92d41ebd42d9096b9098e7e3f3442ff4e4684d05c5dc7bb63e",
+      "translation_text_hash": "01b37ef22947b834f057eac4f4857a8b2df2abed1e6f252309e1feaa1d379854",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "01b37ef22947b834f057eac4f4857a8b2df2abed1e6f252309e1feaa1d379854"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:16",
+      "sequence": 5927,
+      "chapter_label": "JOS 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "“Command the priests who bear the ark of the covenant, that they come up out of the Jordan.”",
+      "ko": "증거궤를 멘 제사장들을 명하여 요단에서 올라오게 하라 하신지라",
+      "source_text_hash": "91b8949f12f6e2c56b57d283d8fb97f25db86a18c1fc3b8bb5d7a5b771f95eee",
+      "translation_text_hash": "bf02b84afaba589e84829afcb2de81f8f8d4d34216846ccad8dc57d673d10fb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "증거궤를 멘 제사장들을 명하여 요단에서 올라오게 하라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "bf02b84afaba589e84829afcb2de81f8f8d4d34216846ccad8dc57d673d10fb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:17",
+      "sequence": 5928,
+      "chapter_label": "JOS 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "Joshua therefore commanded the priests, saying, “Come up out of the Jordan!”",
+      "ko": "여호수아가 제사장들에게 명하여 요단에서 올라오라 하매",
+      "source_text_hash": "905d532802361f20016004fb9b66b3f2d3aa8ef342e108926914ec91c5427334",
+      "translation_text_hash": "6b371e72a4a3c95b2f36219d6856e3a23c2a101021c80bd09044592be768c8b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 제사장들에게 명하여 요단에서 올라오라 하매"
+      ],
+      "raw_text_hashes": [
+        "6b371e72a4a3c95b2f36219d6856e3a23c2a101021c80bd09044592be768c8b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:18",
+      "sequence": 5929,
+      "chapter_label": "JOS 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "When the priests who bore the ark of the LORD’s covenant had come up out of the middle of the Jordan, and the soles of the priests’ feet had been lifted up to the dry ground, the waters of the Jordan returned to their place, and went over all its banks, as before.",
+      "ko": "여호와의 언약궤를 멘 제사장들이 요단 가운데서 나오며 그 발바닥으로 육지를 밟는 동시에 요단 물이 본 곳으로 도로 흘러 여전히 언덕에 넘쳤더라",
+      "source_text_hash": "5f85bbb826610c8a7d237d77ba51ce2f31046d4f4ad52edf70922e99c2cf11dd",
+      "translation_text_hash": "46b5cc12f5cd01df244c47687e6c137914ba4d27428f6206c13e8aba520cb40b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 언약궤를 멘 제사장들이 요단 가운데서 나오며 그 발바닥으로 육지를 밟는 동시에 요단 물이 본 곳으로 도로 흘러 여전히 언덕에 넘쳤더라"
+      ],
+      "raw_text_hashes": [
+        "46b5cc12f5cd01df244c47687e6c137914ba4d27428f6206c13e8aba520cb40b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:19",
+      "sequence": 5930,
+      "chapter_label": "JOS 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "The people came up out of the Jordan on the tenth day of the first month, and encamped in Gilgal, on the east border of Jericho.",
+      "ko": "정월 십일에 백성이 요단에서 올라와서 여리고 동편 지경 길갈에 진 치매",
+      "source_text_hash": "af8c0f685854e0a2e4a6f56565e217dca3b718c51ab51c6f8a95db107704f390",
+      "translation_text_hash": "f59021f5fdc7ec39402711fc41a1d476687ad3069d07a077267e363da59273ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월 십일에 백성이 요단에서 올라와서 여리고 동편 지경 길갈에 진 치매"
+      ],
+      "raw_text_hashes": [
+        "f59021f5fdc7ec39402711fc41a1d476687ad3069d07a077267e363da59273ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:20",
+      "sequence": 5931,
+      "chapter_label": "JOS 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Joshua set up those twelve stones, which they took out of the Jordan, in Gilgal.",
+      "ko": "여호수아가 그 요단에서 가져 온 열 두 돌을 길갈에 세우고",
+      "source_text_hash": "da532156dfbd78e584a036847dd55334ade665d737c5b698d545a575f1427c99",
+      "translation_text_hash": "b8944b96fe01fb2a569991e5460b2cd5f28c25b954eda521f9a6e5ceaf133733",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 그 요단에서 가져 온 열 두 돌을 길갈에 세우고"
+      ],
+      "raw_text_hashes": [
+        "b8944b96fe01fb2a569991e5460b2cd5f28c25b954eda521f9a6e5ceaf133733"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:21",
+      "sequence": 5932,
+      "chapter_label": "JOS 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "He spoke to the children of Israel, saying, “When your children ask their fathers in time to come, saying, ‘What do these stones mean?’",
+      "ko": "이스라엘 자손들에게 일러 가로되 후일에 너희 자손이 그 아비에게 묻기를 이 돌은 무슨 뜻이냐 하거든",
+      "source_text_hash": "d8d8191760995aeabf9cbf27dc82f13cb043ce25b1f28a5d8160a59201217816",
+      "translation_text_hash": "7c5325e8a00bb5208b620aa12468735ded1ce2119f2b8160e94cd96e87dcb0cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들에게 일러 가로되 후일에 너희 자손이 그 아비에게 묻기를 이 돌은 무슨 뜻이냐 하거든"
+      ],
+      "raw_text_hashes": [
+        "7c5325e8a00bb5208b620aa12468735ded1ce2119f2b8160e94cd96e87dcb0cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:22",
+      "sequence": 5933,
+      "chapter_label": "JOS 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "Then you shall let your children know, saying, ‘Israel came over this Jordan on dry land.",
+      "ko": "너희는 자손에게 알게 하여 이르기를 이스라엘이 마른 땅을 밟고 이 요단을 건넜음이라",
+      "source_text_hash": "5cf614f8cb6b02c984807adeeeeb947737991323d902b8d9e09a1957be960fd5",
+      "translation_text_hash": "bebdd2b76fa1123bfbeb7f4ab17e93c13fadd973ae55ca6d4cd7c63174ec58d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 자손에게 알게 하여 이르기를 이스라엘이 마른 땅을 밟고 이 요단을 건넜음이라"
+      ],
+      "raw_text_hashes": [
+        "bebdd2b76fa1123bfbeb7f4ab17e93c13fadd973ae55ca6d4cd7c63174ec58d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:23",
+      "sequence": 5934,
+      "chapter_label": "JOS 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "For the LORD your God dried up the waters of the Jordan from before you until you had crossed over, as the LORD your God did to the Red Sea, which he dried up from before us, until we had crossed over,",
+      "ko": "너희 하나님 여호와께서 요단 물을 너희 앞에 마르게 하사 너희로 건너게 하신 것이 너희 하나님 여호와께서 우리 앞에 홍해를 말리시고 우리로 건너게 하심과 같았나니",
+      "source_text_hash": "b6b5e81ac64c6a91a0f0cb670869362df3faba6cd23fb482b57125db8bc7b7dd",
+      "translation_text_hash": "784521265feb334f48f1c9aac5de67b0c077b2dc5b30208ac35683970eb18ce5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와께서 요단 물을 너희 앞에 마르게 하사 너희로 건너게 하신 것이 너희 하나님 여호와께서 우리 앞에 홍해를 말리시고 우리로 건너게 하심과 같았나니"
+      ],
+      "raw_text_hashes": [
+        "784521265feb334f48f1c9aac5de67b0c077b2dc5b30208ac35683970eb18ce5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:4:24",
+      "sequence": 5935,
+      "chapter_label": "JOS 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "that all the peoples of the earth may know that the LORD’s hand is mighty, and that you may fear the LORD your God forever.’”",
+      "ko": "이는 땅의 모든 백성으로 여호와의 손이 능하심을 알게 하며 너희로 너희 하나님 여호와를 영원토록 경외하게 하려 하심이라 하라",
+      "source_text_hash": "09f09878cd0ae40f23ed83ba6d5a7b9019b71bf9334ff6f3eae6e6550c86378a",
+      "translation_text_hash": "d2eff27069d2ac06bd4f5e21660313f2d664a1348b52727141c3a8e2d8be6996",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 땅의 모든 백성으로 여호와의 손이 능하심을 알게 하며 너희로 너희 하나님 여호와를 영원토록 경외하게 하려 하심이라 하라"
+      ],
+      "raw_text_hashes": [
+        "d2eff27069d2ac06bd4f5e21660313f2d664a1348b52727141c3a8e2d8be6996"
+      ]
+    }
+  ]
+}

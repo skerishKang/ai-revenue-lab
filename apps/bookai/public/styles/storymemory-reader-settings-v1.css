@@ -1,0 +1,120 @@
+
+/* ===== Reader Settings v1 (#1291) — scoped overrides; zero change at defaults ===== */
+.srsg-btn{position:absolute;right:16px;bottom:16px;z-index:60;width:34px;height:34px;border-radius:50%;border:1px solid rgba(45,34,24,.18);background:rgba(255,253,248,.94);color:#4a443c;font:400 15px/1 var(--sans);display:none;place-items:center;box-shadow:0 6px 18px rgba(31,25,18,.14);padding:0}
+#reader.active .srsg-btn{display:grid}
+body.focus-reading #reader.active .srsg-btn{opacity:.25}
+.srsg-panel{position:absolute;right:16px;bottom:58px;z-index:61;width:292px;max-height:calc(100% - 150px);overflow-y:auto;background:#fffdf8;border:1px solid rgba(45,34,24,.18);border-radius:14px;box-shadow:0 18px 44px rgba(31,25,18,.24);padding:13px 14px 12px;display:none;font-family:var(--sans)}
+body.smr-open #reader.active .srsg-panel{display:block}
+.srsg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.srsg-head b{font:600 12px var(--sans);letter-spacing:.02em;color:#201e1a}
+.srsg-x{border:0;background:none;font:400 15px var(--sans);color:#8a8378;padding:0 4px;line-height:1}
+.srsg-row{margin-bottom:10px}
+.srsg-label{font:600 9px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#8a8378;margin-bottom:5px}
+.srsg-seg{display:flex;gap:4px;flex-wrap:wrap}
+.srsg-seg button{font:500 11px/1 var(--sans);padding:6px 9px;border-radius:8px;border:1px solid rgba(45,34,24,.16);background:#fff;color:#4a443c}
+.srsg-seg button.on{background:#201e1a;color:#fffdf8;border-color:#201e1a}
+.srsg-sw{display:flex;gap:6px}
+.srsg-sw button{width:38px;height:24px;border-radius:7px;border:1px solid rgba(45,34,24,.24);padding:0}
+.srsg-sw button.on{outline:2px solid var(--accent);outline-offset:1px}
+.srsg-reset{width:100%;font:600 10px var(--sans);letter-spacing:.06em;padding:7px;border-radius:8px;border:1px dashed rgba(45,34,24,.32);background:transparent;color:#6b6459;margin-top:2px}
+@media(max-width:768px){
+  .srsg-panel{left:10px;right:10px;width:auto;bottom:56px;max-height:calc(100% - 130px)}
+  .srsg-btn{right:10px;bottom:10px}
+}
+/* font size (default 'base' renders no rule) */
+body.smr-fs-sm #readerPageBody .verse{font-size:calc(clamp(17px,1.4vw,21px)*.92)!important}
+body.smr-fs-lg #readerPageBody .verse{font-size:calc(clamp(17px,1.4vw,21px)*1.1)!important}
+body.smr-fs-xl #readerPageBody .verse{font-size:calc(clamp(17px,1.4vw,21px)*1.22)!important}
+body.smr-fs-sm #readerPageBody .verse-en{font-size:calc(clamp(13px,1.1vw,15px)*.92)!important}
+body.smr-fs-lg #readerPageBody .verse-en{font-size:calc(clamp(13px,1.1vw,15px)*1.1)!important}
+body.smr-fs-xl #readerPageBody .verse-en{font-size:calc(clamp(13px,1.1vw,15px)*1.22)!important}
+@media(max-width:768px){
+  body.smr-fs-sm #readerPageBody .verse{font-size:14.7px!important}
+  body.smr-fs-lg #readerPageBody .verse{font-size:17.6px!important}
+  body.smr-fs-xl #readerPageBody .verse{font-size:19.5px!important}
+  body.smr-fs-sm #readerPageBody .verse-en{font-size:12px!important}
+  body.smr-fs-lg #readerPageBody .verse-en{font-size:14.3px!important}
+  body.smr-fs-xl #readerPageBody .verse-en{font-size:15.9px!important}
+}
+/* line height (default 'relaxed'=1.9 renders no rule) */
+body.smr-lh-tight #readerPageBody .verse{line-height:1.6!important}
+body.smr-lh-loose #readerPageBody .verse{line-height:2.2!important}
+/* english WEB mode */
+body.smr-en-compact #readerPageBody .verse-en{font-size:12px;line-height:1.5;margin:2px 0 8px;opacity:.58}
+body.smr-en-hide #readerPageBody .verse-en{display:none!important}
+/* verse numbers */
+body.smr-vn-hide #readerPageBody .vn{display:none!important}
+/* themes (default = untouched current look) */
+body.smr-theme-light #readerPageBody .verse{color:#26221d}
+body.smr-theme-light #readerPageBody .verse-en{color:#79726a}
+body.smr-theme-light #readerPageBody .vn{color:#a89f93}
+body.smr-theme-light #reader .paper-head h1{color:#26221d}
+body.smr-theme-sepia #readerPageBody .verse{color:#5a4632}
+body.smr-theme-sepia #readerPageBody .verse-en{color:#6e5841}
+body.smr-theme-sepia #readerPageBody .vn{color:#a38c6b}
+body.smr-theme-sepia #readerPageBody .dropcap{color:#7c5f42}
+body.smr-theme-sepia #reader .paper-head h1{color:#5a4632}
+body.smr-theme-dark #readerPageBody .verse{color:#e9e1d2}
+body.smr-theme-dark #readerPageBody .verse-en{color:#a99e8a}
+body.smr-theme-dark #readerPageBody .vn{color:#8a7f6c}
+body.smr-theme-dark #readerPageBody .dropcap{color:#e9e1d2}
+body.smr-theme-dark #readerPageBody .reader-page-note{background:#2e2820;color:#b7ac97;border-color:rgba(233,225,210,.14)}
+body.smr-theme-dark #reader .paper-head h1{color:#e9e1d2}
+body.smr-theme-dark #reader .paper-head small{color:#8a7f6c}
+body.smr-theme-dark #reader .paper-footer{color:#8a7f6c}
+body.smr-theme-dark #reader .folio-hairline{background:rgba(233,225,210,.12)}
+body.smr-theme-dark #reader .paper-grain{opacity:.14}
+body.smr-theme-dark #reader .paper-lamp{opacity:.25}
+body.smr-theme-dark #reader .print-edge-guide{border-color:rgba(233,225,210,.1)}
+body.smr-theme-dark #reader .section-ornament span{background:rgba(233,225,210,.18)}
+/* ===== B61 #1936 D: bottom-right consolidation =====
+   Single overflow toggle replaces the five always-visible controls (gear + the
+   four .smal-dock buttons, reparented here with handlers intact). All five
+   actions live in the menu. Menu z:62 clears .srsg-panel (z:61, untouched);
+   max-height/overflow reuse the .srsg-panel pattern. */
+#reader.active .reader-stage > .smal-dock{display:none}
+#reader.active .reader-stage > .srsg-btn{display:none}
+#reader.active .smal-overflow-menu .srsg-btn{position:static;width:100%;height:auto;display:flex;align-items:center;gap:10px;padding:8px 10px;border:0;border-radius:8px;background:transparent;box-shadow:none;color:#2b231a;font:400 13px/1.4 var(--sans);cursor:pointer;text-align:left}
+.smal-overflow-btn{position:absolute;right:16px;bottom:16px;z-index:60;width:34px;height:34px;border-radius:50%;border:1px solid rgba(45,34,24,.18);background:rgba(255,253,248,.94);color:#4a443c;font:400 15px/1 var(--sans);display:none;place-items:center;box-shadow:0 6px 18px rgba(31,25,18,.14);padding:0;cursor:pointer}
+#reader.active .smal-overflow-btn{display:grid}
+#reader.active .smal-overflow-btn[aria-expanded="true"]{background:#9c583d;color:#fffdf8;border-color:#9c583d}
+body.focus-reading #reader.active .smal-overflow-btn{opacity:.25}
+.smal-overflow-menu{position:absolute;right:16px;bottom:58px;z-index:62;width:256px;max-height:calc(100% - 150px);overflow-y:auto;background:#fffdf8;border:1px solid rgba(45,34,24,.18);border-radius:14px;box-shadow:0 18px 44px rgba(31,25,18,.24);padding:8px;display:none;flex-direction:column;gap:2px;font-family:var(--sans)}
+body.smal-overflow-open #reader.active .smal-overflow-menu{display:flex}
+body.focus-reading #reader.active .smal-overflow-menu{opacity:.25}
+.smal-overflow-menu .smal-ov-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 10px;border:0;border-radius:8px;background:transparent;color:#2b231a;font:400 13px/1.4 var(--sans);cursor:pointer}
+.smal-overflow-menu .smal-ov-item:hover{background:rgba(94,72,50,.10)}
+.smal-overflow-menu .smal-ov-item[aria-pressed="true"]{background:rgba(156,88,61,.16)}
+.smal-overflow-menu .smal-ov-item:disabled{opacity:.35;cursor:default}
+.smal-overflow-menu .smal-ov-ic{flex:none;width:20px;text-align:center;font-size:15px}
+.smal-overflow-menu .smal-ov-lb{flex:1;min-width:0;white-space:normal;overflow:visible}
+body.smr-theme-dark .smal-overflow-btn{background:#2e2822;border-color:rgba(222,196,146,.25);color:#e9e1d2}
+body.smr-theme-dark .smal-overflow-menu{background:#2e2822;border-color:rgba(222,196,146,.25)}
+body.smr-theme-dark .smal-overflow-menu .smal-ov-item,body.smr-theme-dark #reader.active .smal-overflow-menu .srsg-btn{color:#e9e1d2}
+body.smr-theme-dark .smal-overflow-menu .smal-ov-item:hover{background:rgba(255,255,255,.08)}
+/* Desktop-only AI entry mirrors the reachability contract: #smalAiBtn is
+   display:none below 769px (mobile uses .mobile-dock); inside the overflow
+   menu it shows on desktop exactly as it did inside .smal-dock. */
+@media(min-width:769px){
+  #reader.active .smal-overflow-menu #smalAiBtn{display:flex}
+}
+@media(max-width:768px){
+  .smal-overflow-btn{right:10px;bottom:10px}
+  .smal-overflow-menu{left:10px;right:10px;width:auto;bottom:56px;max-height:calc(100% - 130px)}
+}
+/* ===== B61 #1936 REWORK (2026-09-07) — overlap + header-clip fixes =====
+   [수정2] AI 패널이 열린 조합(ai-open)에서 우측 하단 메뉴/버튼이 패널
+   영역(right:12 + width≤240 → 좌측경계≈right:252) 안으로 들어가 라벨이
+   가려지던 문제. 메뉴·버튼 우측 앵커를 패널 좌측 경계 밖(right:272)으로
+   빼 겹침 제거. memory-open(좌측)과는 무관. */
+body.ai-open .smal-overflow-btn{right:272px}
+body.ai-open .smal-overflow-menu{right:272px}
+/* [수정3] 우측 상단 AI 패널 헤더 "READING COMPANION"가 패널 폭 부족 시
+   overflow:hidden에 잘리던 문제. 헤더 높이를 auto로 풀고 actions를 wrap
+   처리해 잘림 없이 두 줄로 펼쳐지도록. 텍스트 그대로 유지(승인 카테고리명). */
+.ai-panel .ai-head-compact{height:auto!important;min-height:42px!important;flex-wrap:wrap!important}
+.ai-panel .ai-head-compact .ai-head-actions{flex-wrap:wrap!important;min-width:0!important}
+.ai-panel .ai-head-compact small{white-space:normal!important;overflow:hidden!important}
+
+/* Keep reading settings above the AI panel while open. */
+body.smr-open #reader.active .reader-stage{z-index:100!important}

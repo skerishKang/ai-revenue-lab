@@ -1,0 +1,1517 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:048",
+  "unit_ordinal": 793,
+  "unit_label": "JER 48",
+  "book_code": "JER",
+  "chapter_number": 48,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:48:1",
+      "sequence": 20082,
+      "chapter_label": "JER 48",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 1
+        }
+      ],
+      "en": "Of Moab. The LORD of Armies, the God of Israel, says: “Woe to Nebo! For it is laid waste. Kiriathaim is disappointed. It is taken. Misgab is put to shame and broken down.",
+      "ko": "모압에 대한 말씀이라 만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 슬프다 느보여 그것이 황폐되었도다 기랴다임이 수치를 당하여 점령되었고 미스갑이 수치를 당하여 파괴되었으니",
+      "source_text_hash": "ab53eaa7fe1b5ce58df5768a72427f10e22841b0d350fcd1be8af09307d4bdc9",
+      "translation_text_hash": "ba2c4311df940061a47c160ca8d2dff490400165af335804d74b335eca9ff7b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압에 대한 말씀이라 만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 슬프다 느보여 그것이 황폐되었도다 기랴다임이 수치를 당하여 점령되었고 미스갑이 수치를 당하여 파괴되었으니"
+      ],
+      "raw_text_hashes": [
+        "ba2c4311df940061a47c160ca8d2dff490400165af335804d74b335eca9ff7b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:2",
+      "sequence": 20083,
+      "chapter_label": "JER 48",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 2
+        }
+      ],
+      "en": "The praise of Moab is no more. In Heshbon they have devised evil against her: ‘Come! Let’s cut her off from being a nation.’ You also, Madmen, will be brought to silence. The sword will pursue you.",
+      "ko": "모압의 칭송이 없어졌도다 헤스본에서 무리가 그를 모해하여 이르기를 와서 그를 끊어서 나라를 이루지 못하게 하자 하는도다 맛멘이여 너도 적막하게 되리니 칼이 너를 따르리로다",
+      "source_text_hash": "00a5868e8b8a798ebd462f6af5c9a832ac5c93e635ba46c2a301092751c7b696",
+      "translation_text_hash": "82656f446c31282c507132aa7eca7b0aa0fba21125a8083e94f2a6fcdf741e86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압의 칭송이 없어졌도다 헤스본에서 무리가 그를 모해하여 이르기를 와서 그를 끊어서 나라를 이루지 못하게 하자 하는도다 맛멘이여 너도 적막하게 되리니 칼이 너를 따르리로다"
+      ],
+      "raw_text_hashes": [
+        "82656f446c31282c507132aa7eca7b0aa0fba21125a8083e94f2a6fcdf741e86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:3",
+      "sequence": 20084,
+      "chapter_label": "JER 48",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 3
+        }
+      ],
+      "en": "The sound of a cry from Horonaim, desolation and great destruction!",
+      "ko": "호로나임에서 부르짖는 소리여 황무와 큰 파멸이로다",
+      "source_text_hash": "ccb46ab884d9e7f2d521c4372f32d01cf06d6ac81f75bbac1197818b963b894e",
+      "translation_text_hash": "278a22f5eb340a7d24ae80594c6c847cb69363eb8e68b32dfb15c981a42d7231",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호로나임에서 부르짖는 소리여 황무와 큰 파멸이로다"
+      ],
+      "raw_text_hashes": [
+        "278a22f5eb340a7d24ae80594c6c847cb69363eb8e68b32dfb15c981a42d7231"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:4",
+      "sequence": 20085,
+      "chapter_label": "JER 48",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 4
+        }
+      ],
+      "en": "Moab is destroyed. Her little ones have caused a cry to be heard.",
+      "ko": "모압이 멸망을 당하여 그 영아들의 부르짖음이 들리는도다",
+      "source_text_hash": "825b244ee05c091eb864548db742939b6ef888f211bbabbf0e6d39b72dbc43c3",
+      "translation_text_hash": "8138ef7b53a698fc769c670f7cfdf55591f2074cabc88d28d94c83bc647006df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압이 멸망을 당하여 그 영아들의 부르짖음이 들리는도다"
+      ],
+      "raw_text_hashes": [
+        "8138ef7b53a698fc769c670f7cfdf55591f2074cabc88d28d94c83bc647006df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:5",
+      "sequence": 20086,
+      "chapter_label": "JER 48",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 5
+        }
+      ],
+      "en": "For they will go up by the ascent of Luhith with continual weeping. For at the descent of Horonaim they have heard the distress of the cry of destruction.",
+      "ko": "그들이 울고 울며 루힛 언덕으로 올라감이여 호로나임 내려가는데서 참패를 부르짖는 고통이 들리도다",
+      "source_text_hash": "f82e3c699979cf7ffc23adc4b41de804c118a5715bcf80feca0af7e7400f79f2",
+      "translation_text_hash": "7f45b1aa7e438f95bbd126461b842dd569d3afb36b05f1d42fb276caac13f669",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 울고 울며 루힛 언덕으로 올라감이여 호로나임 내려가는데서 참패를 부르짖는 고통이 들리도다"
+      ],
+      "raw_text_hashes": [
+        "7f45b1aa7e438f95bbd126461b842dd569d3afb36b05f1d42fb276caac13f669"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:6",
+      "sequence": 20087,
+      "chapter_label": "JER 48",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 6
+        }
+      ],
+      "en": "Flee! Save your lives! Be like the juniper bush in the wilderness.",
+      "ko": "도망하여 네 생명을 구원하여 광야의 떨기나무 같이 될찌어다",
+      "source_text_hash": "5afee538a62c6f6d25b9387e5854f9b0795c6273a667140f45f3517890c3b536",
+      "translation_text_hash": "119a2f8fafe801f36db686110471bf111157da65811a11ea3c2dbeadf8016197",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도망하여 네 생명을 구원하여 광야의 떨기나무 같이 될찌어다"
+      ],
+      "raw_text_hashes": [
+        "119a2f8fafe801f36db686110471bf111157da65811a11ea3c2dbeadf8016197"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:7",
+      "sequence": 20088,
+      "chapter_label": "JER 48",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 7
+        }
+      ],
+      "en": "For, because you have trusted in your works and in your treasures, you also will be taken. Chemosh will go out into captivity, his priests and his princes together.",
+      "ko": "네가 네 공작과 보물을 의뢰하므로 너도 취함을 당할 것이요 그모스는 그 제사장들과 방백들과 함께 포로되어 갈 것이라",
+      "source_text_hash": "a8061fd05bbd9e54e8a51cb1064bea7a5557ed7d32364f1dace073441a6193f1",
+      "translation_text_hash": "ced0447297f98ec4b13c4034e9e0876381c76c62040460aac2365a59c58d552d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 공작과 보물을 의뢰하므로 너도 취함을 당할 것이요 그모스는 그 제사장들과 방백들과 함께 포로되어 갈 것이라"
+      ],
+      "raw_text_hashes": [
+        "ced0447297f98ec4b13c4034e9e0876381c76c62040460aac2365a59c58d552d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:8",
+      "sequence": 20089,
+      "chapter_label": "JER 48",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 8
+        }
+      ],
+      "en": "The destroyer will come on every city, and no city will escape; the valley also will perish, and the plain will be destroyed, as the LORD has spoken.",
+      "ko": "파멸하는 자가 각 성에 이를 것인즉 한 성도 면치 못할 것이며 골짜기는 훼파되며 평원은 파멸되어 여호와의 말씀과 같으리로다",
+      "source_text_hash": "656f29993e54bc1456f8a5e1b3f7b59758519e5201171084e1e7cdfd192a14de",
+      "translation_text_hash": "eff1819ce9cb052144973fceb3811ebd0167d5700a09c466b537d060f6885105",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파멸하는 자가 각 성에 이를 것인즉 한 성도 면치 못할 것이며 골짜기는 훼파되며 평원은 파멸되어 여호와의 말씀과 같으리로다"
+      ],
+      "raw_text_hashes": [
+        "eff1819ce9cb052144973fceb3811ebd0167d5700a09c466b537d060f6885105"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:9",
+      "sequence": 20090,
+      "chapter_label": "JER 48",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 9
+        }
+      ],
+      "en": "Give wings to Moab, that she may fly and get herself away: and her cities will become a desolation, without anyone to dwell in them.",
+      "ko": "모압에 날개를 주어 날아 피하게 하라 그 성읍들이 황무하여 거기 거하는 자 없으리로다",
+      "source_text_hash": "7a6e7857aec5895f1c4125736ed87cad1202fb31f63482c6a64ec49f0ed2deae",
+      "translation_text_hash": "65bed721e469bd3986eebcb86c9b94781b59bbb3fdb48d5b9d047f1d53c0504a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압에 날개를 주어 날아 피하게 하라 그 성읍들이 황무하여 거기 거하는 자 없으리로다"
+      ],
+      "raw_text_hashes": [
+        "65bed721e469bd3986eebcb86c9b94781b59bbb3fdb48d5b9d047f1d53c0504a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:10",
+      "sequence": 20091,
+      "chapter_label": "JER 48",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 10
+        }
+      ],
+      "en": "“Cursed is he who does the work of the LORD negligently; and cursed is he who keeps back his sword from blood.",
+      "ko": "여호와의 일을 태만히 하는 자는 저주를 받을 것이요 자기 칼을 금하여 피를 흘리지 아니하는 자도 저주를 당할 것이로다",
+      "source_text_hash": "a55f8124749ced0f3bacd88796167c3b21493a2ba7e8b064a7e1c5c5bc6e1deb",
+      "translation_text_hash": "16a1703e8bfe9dd3e0dc8f049a0e767d4664374eb9233fec4003dd5cd551b4d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 일을 태만히 하는 자는 저주를 받을 것이요 자기 칼을 금하여 피를 흘리지 아니하는 자도 저주를 당할 것이로다"
+      ],
+      "raw_text_hashes": [
+        "16a1703e8bfe9dd3e0dc8f049a0e767d4664374eb9233fec4003dd5cd551b4d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:11",
+      "sequence": 20092,
+      "chapter_label": "JER 48",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 11
+        }
+      ],
+      "en": "“Moab has been at ease from his youth, and he has settled on his dregs, and has not been emptied from vessel to vessel, neither has he gone into captivity; therefore his taste remains in him, and his scent is not changed.",
+      "ko": "모압은 예로부터 평안하고 포로도 되지 아니하였으므로 마치 술의 그 찌끼 위에 있고 이 그릇에서 저 그릇으로 옮기지 않음 같아서 그 맛이 남아 있고 냄새가 변치 아니하였도다",
+      "source_text_hash": "44970891ccf9edaad6845a60fad29a5745ffc6433b4757aaac175e220645efe8",
+      "translation_text_hash": "dd709e8f67af5c56864410c0a63445283f7a2b88568e65c3da4de9f9a4998c5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압은 예로부터 평안하고 포로도 되지 아니하였으므로 마치 술의 그 찌끼 위에 있고 이 그릇에서 저 그릇으로 옮기지 않음 같아서 그 맛이 남아 있고 냄새가 변치 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "dd709e8f67af5c56864410c0a63445283f7a2b88568e65c3da4de9f9a4998c5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:12",
+      "sequence": 20093,
+      "chapter_label": "JER 48",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore behold, the days come,” says the LORD, “that I will send to him those who pour off, and they will pour him off; and they will empty his vessels, and break their containers in pieces.",
+      "ko": "그러므로 나 여호와가 말하노라 날이 이르리니 내가 그 그릇을 기울일 자를 보낼 것이라 그들이 기울여서 그 그릇을 비게 하고 그 병들을 부수리니",
+      "source_text_hash": "2fabde69a73b48600bb66535c749170ea9da583c98fbccaa2c7b68d95473f265",
+      "translation_text_hash": "4b76c3b0b298571a76d86141b9e949adf2539b5411cb0ac07b5e8eb2e02818a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 여호와가 말하노라 날이 이르리니 내가 그 그릇을 기울일 자를 보낼 것이라 그들이 기울여서 그 그릇을 비게 하고 그 병들을 부수리니"
+      ],
+      "raw_text_hashes": [
+        "4b76c3b0b298571a76d86141b9e949adf2539b5411cb0ac07b5e8eb2e02818a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:13",
+      "sequence": 20094,
+      "chapter_label": "JER 48",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 13
+        }
+      ],
+      "en": "Moab will be ashamed of Chemosh, as the house of Israel was ashamed of Bethel, their confidence.",
+      "ko": "이스라엘 집이 벧엘을 의뢰하므로 수치를 당한 것 같이 모압이 그모스로 인하여 수치를 당하리로다",
+      "source_text_hash": "5d0b161f78ba87e9f0e0babec2c221b149c9b04ebc24a455d16619134935b215",
+      "translation_text_hash": "d37a9ccdd6a8862df2ec2a72691a8c63e1973855958339961f54a0c2f9bc0d83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 집이 벧엘을 의뢰하므로 수치를 당한 것 같이 모압이 그모스로 인하여 수치를 당하리로다"
+      ],
+      "raw_text_hashes": [
+        "d37a9ccdd6a8862df2ec2a72691a8c63e1973855958339961f54a0c2f9bc0d83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:14",
+      "sequence": 20095,
+      "chapter_label": "JER 48",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 14
+        }
+      ],
+      "en": "“How do you say, ‘We are mighty men, and valiant men for the war’?",
+      "ko": "너희가 어찌하여 말하기를 우리는 용사요 전쟁의 맹사라 하느뇨",
+      "source_text_hash": "44b3ffffeaeaa4ab728e614de255e67927f1d73a77d109be3d8deea8f95da670",
+      "translation_text_hash": "f1712e7bb0a197d62989d12f2ba019ae78fd85283bd05f547ba6d439b07f74cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 어찌하여 말하기를 우리는 용사요 전쟁의 맹사라 하느뇨"
+      ],
+      "raw_text_hashes": [
+        "f1712e7bb0a197d62989d12f2ba019ae78fd85283bd05f547ba6d439b07f74cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:15",
+      "sequence": 20096,
+      "chapter_label": "JER 48",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 15
+        }
+      ],
+      "en": "Moab is laid waste, and they have gone up into his cities, and his chosen young men have gone down to the slaughter,” says the King, whose name is the LORD of Armies.",
+      "ko": "만군의 여호와라 일컫는 왕이 이같이 말하노라 모압이 황폐되었도다 그 성읍들은 연기가 되어 올라가고 그 택한 청년들은 내려가서 살륙을 당하니",
+      "source_text_hash": "79320f71831dcec2ce223fac916baa8576e71305bcbf60b0141b2295be83a7a7",
+      "translation_text_hash": "0f45ec8a57ab2dec647f87498380d24c1fc3ed99f6d6b7916f415dd019315571",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와라 일컫는 왕이 이같이 말하노라 모압이 황폐되었도다 그 성읍들은 연기가 되어 올라가고 그 택한 청년들은 내려가서 살륙을 당하니"
+      ],
+      "raw_text_hashes": [
+        "0f45ec8a57ab2dec647f87498380d24c1fc3ed99f6d6b7916f415dd019315571"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:16",
+      "sequence": 20097,
+      "chapter_label": "JER 48",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 16
+        }
+      ],
+      "en": "“The calamity of Moab is near to come, and his affliction hurries fast.",
+      "ko": "모압의 재난이 가까왔고 그 고난이 속히 임하리로다",
+      "source_text_hash": "0595fffa6d40745fb6e367399165d21fbf7ffe61e2d4ce6637d090942453bd50",
+      "translation_text_hash": "e9130ab50318a09045153595d7183c442f6a111aae0b5710cf2f370a5c29f5aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압의 재난이 가까왔고 그 고난이 속히 임하리로다"
+      ],
+      "raw_text_hashes": [
+        "e9130ab50318a09045153595d7183c442f6a111aae0b5710cf2f370a5c29f5aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:17",
+      "sequence": 20098,
+      "chapter_label": "JER 48",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 17
+        }
+      ],
+      "en": "All you who are around him, bemoan him; and all you who know his name, say, ‘How the strong staff is broken, the beautiful rod!’",
+      "ko": "그의 사면에 있는 모든 자여, 그 이름을 아는 모든 자여, 그를 위하여 탄식하여 말하기를 어찌하여 강한 막대기, 아름다운 지팡이가 부러졌는고 할찌니라",
+      "source_text_hash": "06ef69229f86498d3f8e59c5a01bff37d9c1bd43cf1b8460a48c81f5b74ea99e",
+      "translation_text_hash": "7146d2cbec05a26e29a9d8c423036e440e5a308021a319070da7fa91d1de9596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 사면에 있는 모든 자여, 그 이름을 아는 모든 자여, 그를 위하여 탄식하여 말하기를 어찌하여 강한 막대기, 아름다운 지팡이가 부러졌는고 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "7146d2cbec05a26e29a9d8c423036e440e5a308021a319070da7fa91d1de9596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:18",
+      "sequence": 20099,
+      "chapter_label": "JER 48",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 18
+        }
+      ],
+      "en": "“You daughter who dwells in Dibon, come down from your glory, and sit in thirst; for the destroyer of Moab has come up against you. He has destroyed your strongholds.",
+      "ko": "디본에 거하는 딸아 네 영광 자리에서 내려 메마른데 앉으라 모압을 파멸하는 자가 올라와서 너를 쳐서 네 요새를 파하였음이로다",
+      "source_text_hash": "f9cb065a7a4756796836a17b4ab73d8c1290094bf48505570c4bde1b6ca58d7e",
+      "translation_text_hash": "7754d900cf479802faf4d0ef4733e1d380cc933ba1594fb7f53ff703d7b223e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디본에 거하는 딸아 네 영광 자리에서 내려 메마른데 앉으라 모압을 파멸하는 자가 올라와서 너를 쳐서 네 요새를 파하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "7754d900cf479802faf4d0ef4733e1d380cc933ba1594fb7f53ff703d7b223e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:19",
+      "sequence": 20100,
+      "chapter_label": "JER 48",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 19
+        }
+      ],
+      "en": "Inhabitant of Aroer, stand by the way and watch. Ask him who flees, and her who escapes; say, ‘What has been done?’",
+      "ko": "아로엘에 거하는 여인이여 길곁에 서서 지키며 도망하는 자와 피하는 자에게 일이 어찌 되었는가 물을찌어다",
+      "source_text_hash": "ea794cd0a8611dda92c78ba8a86fa3826f7a63fa4ac931198da946a46b6b22bc",
+      "translation_text_hash": "0f4861b5ea92b28976b557f2e4d1a989e1082c3a3a799e4882c61ad08f7e483a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아로엘에 거하는 여인이여 길곁에 서서 지키며 도망하는 자와 피하는 자에게 일이 어찌 되었는가 물을찌어다"
+      ],
+      "raw_text_hashes": [
+        "0f4861b5ea92b28976b557f2e4d1a989e1082c3a3a799e4882c61ad08f7e483a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:20",
+      "sequence": 20101,
+      "chapter_label": "JER 48",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 20
+        }
+      ],
+      "en": "Moab is disappointed; for it is broken down. Wail and cry! Tell it by the Arnon, that Moab is laid waste.",
+      "ko": "모압이 패하여 수치를 받나니 너희는 곡하며 부르짖으며 아르논 가에서 이르기를 모압이 황무하였다 할찌어다",
+      "source_text_hash": "5f04ab59b8db5575d63b6092d7e68297f737483a9dd49d2ebca57c006a48ead2",
+      "translation_text_hash": "10c5b168162c04979f01a53c0e6194498fa06707d5cfb76271b09ec53ac0d021",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압이 패하여 수치를 받나니 너희는 곡하며 부르짖으며 아르논 가에서 이르기를 모압이 황무하였다 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "10c5b168162c04979f01a53c0e6194498fa06707d5cfb76271b09ec53ac0d021"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:21",
+      "sequence": 20102,
+      "chapter_label": "JER 48",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 21
+        }
+      ],
+      "en": "Judgment has come on the plain country— on Holon, on Jahzah, on Mephaath,",
+      "ko": "심판이 평지에 임하였나니 곧 홀론과 야사와 메바앗과",
+      "source_text_hash": "496cb91ad7e89d113e87135284819d0a25e79a7694a50d2e49f73ce8e12e696d",
+      "translation_text_hash": "0baf7dba1a5dfcf0c1ac6cf72d9c950b065a328d980e4be7ed54cda8a4aa61eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심판이 평지에 임하였나니 곧 홀론과 야사와 메바앗과"
+      ],
+      "raw_text_hashes": [
+        "0baf7dba1a5dfcf0c1ac6cf72d9c950b065a328d980e4be7ed54cda8a4aa61eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:22",
+      "sequence": 20103,
+      "chapter_label": "JER 48",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 22
+        }
+      ],
+      "en": "on Dibon, on Nebo, on Beth Diblathaim,",
+      "ko": "디본과 느보와 벧디불라다임과",
+      "source_text_hash": "017b61ee16fd0e71fab7273e1c8fdbe933c80077f6fddf1e6fa2c4b1257e9d0d",
+      "translation_text_hash": "2d9c557cfc842d94d6403e763e1f017e708b6f19f35246d8aa30c9562b82555b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디본과 느보와 벧디불라다임과"
+      ],
+      "raw_text_hashes": [
+        "2d9c557cfc842d94d6403e763e1f017e708b6f19f35246d8aa30c9562b82555b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:23",
+      "sequence": 20104,
+      "chapter_label": "JER 48",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 23
+        }
+      ],
+      "en": "on Kiriathaim, on Beth Gamul, on Beth Meon,",
+      "ko": "기랴다임과 벧가물과 벧므온과",
+      "source_text_hash": "ca3d3642011e176bab691184b2bd8dba67299d44bd6ad0edae2bd6e6336d891a",
+      "translation_text_hash": "0d544cf97855c5142cce30dcb1720d4eb213abff91dc7b5956b69f0857b6a393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기랴다임과 벧가물과 벧므온과"
+      ],
+      "raw_text_hashes": [
+        "0d544cf97855c5142cce30dcb1720d4eb213abff91dc7b5956b69f0857b6a393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:24",
+      "sequence": 20105,
+      "chapter_label": "JER 48",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 24
+        }
+      ],
+      "en": "on Kerioth, on Bozrah, and on all the cities of the land of Moab, far or near.",
+      "ko": "그리욧과 보스라와 모압 땅 원근 모든 성에로다",
+      "source_text_hash": "1648d593dff502886eeb4a0d2eaa5c8ce426494fa8d28e1366cc517ebf858af7",
+      "translation_text_hash": "56ab6e6e61fe540d0a46ee0b7e162bd0d14da8eccefdb4cfb1d480ded966cf75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리욧과 보스라와 모압 땅 원근 모든 성에로다"
+      ],
+      "raw_text_hashes": [
+        "56ab6e6e61fe540d0a46ee0b7e162bd0d14da8eccefdb4cfb1d480ded966cf75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:25",
+      "sequence": 20106,
+      "chapter_label": "JER 48",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 25
+        }
+      ],
+      "en": "The horn of Moab is cut off, and his arm is broken,” says the LORD.",
+      "ko": "모압의 뿔이 찍혔고 그 팔이 부러졌도다 여호와의 말이니라",
+      "source_text_hash": "d5c3d569ce878a954459803be886f788c9630089a5eb00b9731c7b94913bbf2e",
+      "translation_text_hash": "9d16d2d3a9404506ad744f1ca48efa2c5bd7e91bb9f57f70dda6d3e0ede9c43a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압의 뿔이 찍혔고 그 팔이 부러졌도다 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "9d16d2d3a9404506ad744f1ca48efa2c5bd7e91bb9f57f70dda6d3e0ede9c43a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:26",
+      "sequence": 20107,
+      "chapter_label": "JER 48",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 26
+        }
+      ],
+      "en": "“Make him drunk, for he magnified himself against the LORD. Moab will wallow in his vomit, and he also will be in derision.",
+      "ko": "모압으로 취하게 할찌어다 이는 그가 나 여호와를 거스려 자만함이라 그가 그 토한 것에서 굴므로 조롱거리가 되리로다",
+      "source_text_hash": "7da17f1e8106c5e86a3e8a67b626277e749c74b6295ad91bec1aa2215401de39",
+      "translation_text_hash": "b4ec2b17ea7b3fa435e71a38f9f6c3d13758d75135cf75df88d02157545c56da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압으로 취하게 할찌어다 이는 그가 나 여호와를 거스려 자만함이라 그가 그 토한 것에서 굴므로 조롱거리가 되리로다"
+      ],
+      "raw_text_hashes": [
+        "b4ec2b17ea7b3fa435e71a38f9f6c3d13758d75135cf75df88d02157545c56da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:27",
+      "sequence": 20108,
+      "chapter_label": "JER 48",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 27
+        }
+      ],
+      "en": "For wasn’t Israel a derision to you? Was he found among thieves? For as often as you speak of him, you shake your head.",
+      "ko": "네가 이스라엘을 조롱하지 아니하였느냐 그가 도적 중에서 발견되었느냐 네가 그를 말할 때마다 네 머리를 흔드는도다",
+      "source_text_hash": "15682c7ffdf5f9cf0a3efda7f0aad4c03528fa0fd48e8fff81c132db2f833d07",
+      "translation_text_hash": "70abefb21073afba1d6869bd0727f9edd12a34a985ba0aae5591dc55eb77fdfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이스라엘을 조롱하지 아니하였느냐 그가 도적 중에서 발견되었느냐 네가 그를 말할 때마다 네 머리를 흔드는도다"
+      ],
+      "raw_text_hashes": [
+        "70abefb21073afba1d6869bd0727f9edd12a34a985ba0aae5591dc55eb77fdfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:28",
+      "sequence": 20109,
+      "chapter_label": "JER 48",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 28
+        }
+      ],
+      "en": "You inhabitants of Moab, leave the cities, and dwell in the rock. Be like the dove that makes her nest over the mouth of the abyss.",
+      "ko": "모압 거민들아 너희는 성읍을 떠나 바위 사이에 거할찌어다 깊은 골짜기 어귀에 깃들이는 비둘기 같이 할찌어다",
+      "source_text_hash": "97b1198008b5632eba79007a204098c8f7509363190d5ddad24770afe5202f12",
+      "translation_text_hash": "94d2e889d60ac88b1db487d989f6ecb6625ab95e39b7a2d51e27c85ca96637e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압 거민들아 너희는 성읍을 떠나 바위 사이에 거할찌어다 깊은 골짜기 어귀에 깃들이는 비둘기 같이 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "94d2e889d60ac88b1db487d989f6ecb6625ab95e39b7a2d51e27c85ca96637e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:29",
+      "sequence": 20110,
+      "chapter_label": "JER 48",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 29
+        }
+      ],
+      "en": "“We have heard of the pride of Moab. He is very proud in his loftiness, his pride, his arrogance, and the arrogance of his heart.",
+      "ko": "우리가 모압의 교만을 들었나니 심한 교만 곧 그 자고와 오만과 자긍과 그 마음의 거만이로다",
+      "source_text_hash": "a12ceb9295763a3daa9259d37fee441bcf2f6b4f46413fefc8cb7ccd4e811c39",
+      "translation_text_hash": "e5eb6473a2dccbcb17b6e146508bdbdce9a58ac75b3f3697ec70bb759b96280c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 모압의 교만을 들었나니 심한 교만 곧 그 자고와 오만과 자긍과 그 마음의 거만이로다"
+      ],
+      "raw_text_hashes": [
+        "e5eb6473a2dccbcb17b6e146508bdbdce9a58ac75b3f3697ec70bb759b96280c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:30",
+      "sequence": 20111,
+      "chapter_label": "JER 48",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 30
+        }
+      ],
+      "en": "I know his wrath,” says the LORD, “that it is nothing; his boastings have done nothing.",
+      "ko": "나 여호와가 말하노라 내가 그 노함의 허탄함을 아노니 그가 자긍하여도 아무 것도 성취치 못하였도다",
+      "source_text_hash": "cb92053d0dc40bd420c850781d54a202a81f5377a49cd044e8d16bad8e4084da",
+      "translation_text_hash": "14c480e2ac28c66bca68bacfb009a6a7092d74433169ab92b152d9c92efd8aa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내가 그 노함의 허탄함을 아노니 그가 자긍하여도 아무 것도 성취치 못하였도다"
+      ],
+      "raw_text_hashes": [
+        "14c480e2ac28c66bca68bacfb009a6a7092d74433169ab92b152d9c92efd8aa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:31",
+      "sequence": 20112,
+      "chapter_label": "JER 48",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 31
+        }
+      ],
+      "en": "Therefore I will wail for Moab. Yes, I will cry out for all Moab. They will mourn for the men of Kir Heres.",
+      "ko": "그러므로 내가 모압을 위하여 울며 온 모압을 위하여 부르짖으리니 무리가 길헤레스 사람을 위하여 슬퍼하리로다",
+      "source_text_hash": "3bc0b57cc290780dee0de22e48214e70c44544111c4ea0c54e6f657962362bed",
+      "translation_text_hash": "0b194dbf572c43c3e6fd52521fe4de0b9ed0e76abf5cb04918f5f10870ca2733",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 모압을 위하여 울며 온 모압을 위하여 부르짖으리니 무리가 길헤레스 사람을 위하여 슬퍼하리로다"
+      ],
+      "raw_text_hashes": [
+        "0b194dbf572c43c3e6fd52521fe4de0b9ed0e76abf5cb04918f5f10870ca2733"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:32",
+      "sequence": 20113,
+      "chapter_label": "JER 48",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 32
+        }
+      ],
+      "en": "With more than the weeping of Jazer I will weep for you, vine of Sibmah. Your branches passed over the sea. They reached even to the sea of Jazer. The destroyer has fallen on your summer fruits and on your vintage.",
+      "ko": "십마의 포도나무여 너의 가지가 바다를 넘어 야셀 바다까지 뻗었더니 너의 여름 실과와 포도에 파멸하는 자가 이르렀으니 내가 너를 위하여 곡하기를 야셀의 곡함보다 더하리로다",
+      "source_text_hash": "e41aec14b943ec23bc81781954058be184c2ef320665c4510cb8cea9f8babaa5",
+      "translation_text_hash": "a57cf98be145e72e18ded938cc7c6834f97a00424a45df920d4dade64f0db172",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십마의 포도나무여 너의 가지가 바다를 넘어 야셀 바다까지 뻗었더니 너의 여름 실과와 포도에 파멸하는 자가 이르렀으니 내가 너를 위하여 곡하기를 야셀의 곡함보다 더하리로다"
+      ],
+      "raw_text_hashes": [
+        "a57cf98be145e72e18ded938cc7c6834f97a00424a45df920d4dade64f0db172"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:33",
+      "sequence": 20114,
+      "chapter_label": "JER 48",
+      "verse_label": "33",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 33
+        }
+      ],
+      "en": "Gladness and joy is taken away from the fruitful field and from the land of Moab. I have caused wine to cease from the wine presses. No one will tread with shouting. The shouting will be no shouting.",
+      "ko": "기쁨과 즐거움이 옥토와 모압 땅에서 빼앗겼도다 내가 포도주 틀에 포도주가 없게 하리니 외치며 밟는 자가 없을 것이라 그 외침은 즐거운 외침이 되지 못하리로다",
+      "source_text_hash": "13b5af27da8c4c9b20dc97b74bcc5904b9cc9c70e9e05c0a0a9e9912648ff138",
+      "translation_text_hash": "aa2e509f876eae4a02a81eac53c9de025f87b02ae47ee3a663d02cbde7ccf46f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기쁨과 즐거움이 옥토와 모압 땅에서 빼앗겼도다 내가 포도주 틀에 포도주가 없게 하리니 외치며 밟는 자가 없을 것이라 그 외침은 즐거운 외침이 되지 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "aa2e509f876eae4a02a81eac53c9de025f87b02ae47ee3a663d02cbde7ccf46f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:34",
+      "sequence": 20115,
+      "chapter_label": "JER 48",
+      "verse_label": "34",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 34
+        }
+      ],
+      "en": "From the cry of Heshbon even to Elealeh, even to Jahaz they have uttered their voice, from Zoar even to Horonaim, to Eglath Shelishiyah; for the waters of Nimrim will also become desolate.",
+      "ko": "헤스본에서 엘르알레를 지나 야하스까지와 소알에서 호로나임을 지나 에글랏셀리시야까지의 사람들이 소리를 발하여 부르짖음은 니므림의 물도 말랐음이로다",
+      "source_text_hash": "ab802d9f9914f30e4d49dd06284475d53e861eac7b231de450e068974e6e38a4",
+      "translation_text_hash": "55dbf3110e39fb82dc30c541b72a8419b25d3bf2595bea907bf3349fd092ec28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본에서 엘르알레를 지나 야하스까지와 소알에서 호로나임을 지나 에글랏셀리시야까지의 사람들이 소리를 발하여 부르짖음은 니므림의 물도 말랐음이로다"
+      ],
+      "raw_text_hashes": [
+        "55dbf3110e39fb82dc30c541b72a8419b25d3bf2595bea907bf3349fd092ec28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:35",
+      "sequence": 20116,
+      "chapter_label": "JER 48",
+      "verse_label": "35",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 35
+        }
+      ],
+      "en": "Moreover I will cause to cease in Moab,” says the LORD, “him who offers in the high place, and him who burns incense to his gods.",
+      "ko": "나 여호와가 말하노라 모압 산당에서 제사하며 그 신들에게 분향하는 자를 내가 그치게 하리라",
+      "source_text_hash": "e387c609c5285265e7c03a8a2a75bc5c1cb9346ca174ab74be7cbf5fa5b8599f",
+      "translation_text_hash": "a0496942f5e87f1b2cda4fbb89d5fe57156e67c2696ea94e5236e3bfc75ffb2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 모압 산당에서 제사하며 그 신들에게 분향하는 자를 내가 그치게 하리라"
+      ],
+      "raw_text_hashes": [
+        "a0496942f5e87f1b2cda4fbb89d5fe57156e67c2696ea94e5236e3bfc75ffb2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:36",
+      "sequence": 20117,
+      "chapter_label": "JER 48",
+      "verse_label": "36",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 36
+        }
+      ],
+      "en": "Therefore my heart sounds for Moab like flutes, and my heart sounds like flutes for the men of Kir Heres. Therefore the abundance that he has gotten has perished.",
+      "ko": "그러므로 나의 마음이 모압을 위하여 피리 같이 소리하며 나의 마음이 길헤레스 사람들을 위하여 피리 같이 소리하나니 이는 그 모았던 재물이 없어졌음이니라",
+      "source_text_hash": "ab7dc96d882512ec3804f5320a1730ecaaf9edbd090393d7ec0f505c2592afe4",
+      "translation_text_hash": "020e43600d8e91c60f93a4f60bfa41f26fd41afc933767225aeec237190177a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나의 마음이 모압을 위하여 피리 같이 소리하며 나의 마음이 길헤레스 사람들을 위하여 피리 같이 소리하나니 이는 그 모았던 재물이 없어졌음이니라"
+      ],
+      "raw_text_hashes": [
+        "020e43600d8e91c60f93a4f60bfa41f26fd41afc933767225aeec237190177a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:37",
+      "sequence": 20118,
+      "chapter_label": "JER 48",
+      "verse_label": "37",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 37
+        }
+      ],
+      "en": "For every head is bald, and every beard clipped. There are cuttings on all the hands, and sackcloth on the waist.",
+      "ko": "각 사람의 두발이 밀렸고 수염이 깎였으며 손이 베어졌으며 허리에 굵은 베가 둘렸고",
+      "source_text_hash": "a301816f402acd06351277e85742da57e5a4c989b906a8f0c09477e3f6f2bc3b",
+      "translation_text_hash": "8c5d0e970a015cff6dcc93200729d49726b0f32d77101a358567fb7f96a0a9ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 사람의 두발이 밀렸고 수염이 깎였으며 손이 베어졌으며 허리에 굵은 베가 둘렸고"
+      ],
+      "raw_text_hashes": [
+        "8c5d0e970a015cff6dcc93200729d49726b0f32d77101a358567fb7f96a0a9ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:38",
+      "sequence": 20119,
+      "chapter_label": "JER 48",
+      "verse_label": "38",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 38
+        }
+      ],
+      "en": "On all the housetops of Moab, and in its streets, there is lamentation everywhere; for I have broken Moab like a vessel in which no one delights,” says the LORD.",
+      "ko": "모압의 모든 지붕에서와 거리 각처에서 애곡함이 있으니 내가 모압을 재미 없는 그릇 같이 깨뜨렸음이니라 여호와의 말이니라",
+      "source_text_hash": "26a80c18476727d6ce330694e7add00df65b177e7164df3b4d3d8f0a1e47f1af",
+      "translation_text_hash": "04172161fe59d525ad79fe02c31e8627f919f8d43a7e358e654bd5db9ce48c5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압의 모든 지붕에서와 거리 각처에서 애곡함이 있으니 내가 모압을 재미 없는 그릇 같이 깨뜨렸음이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "04172161fe59d525ad79fe02c31e8627f919f8d43a7e358e654bd5db9ce48c5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:39",
+      "sequence": 20120,
+      "chapter_label": "JER 48",
+      "verse_label": "39",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 39
+        }
+      ],
+      "en": "“How it is broken down! How they wail! How Moab has turned the back with shame! So will Moab become a derision and a terror to all who are around him.”",
+      "ko": "아하 모압이 파괴되었도다 그들이 애곡하는도다 모압이 부끄러워서 등을 돌이켰도다 그런즉 모압이 그 사방 모든 자의 조롱거리와 두려움이 되리로다",
+      "source_text_hash": "9890dd6c9ee66274f874d2717a2864da57d0b0da0ab1f381d62d435faab2b663",
+      "translation_text_hash": "d7953223751622322629af1375c958d641ffa0d29eada09b629bde3d679d7543",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하 모압이 파괴되었도다 그들이 애곡하는도다 모압이 부끄러워서 등을 돌이켰도다 그런즉 모압이 그 사방 모든 자의 조롱거리와 두려움이 되리로다"
+      ],
+      "raw_text_hashes": [
+        "d7953223751622322629af1375c958d641ffa0d29eada09b629bde3d679d7543"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:40",
+      "sequence": 20121,
+      "chapter_label": "JER 48",
+      "verse_label": "40",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 40
+        }
+      ],
+      "en": "For the LORD says: “Behold, he will fly as an eagle, and will spread out his wings against Moab.",
+      "ko": "나 여호와가 이같이 말하노라 보라 그가 독수리 같이 날아와서 모압 위에 그 날개를 펴리라",
+      "source_text_hash": "375ed2457480ee4f84e2b2a60294b70ef3b461cc97d575dcd402f81e5562e537",
+      "translation_text_hash": "826e486fa49904e8581dc56f8d9b1057b40bc483b07c6b364b73287c263af9ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 보라 그가 독수리 같이 날아와서 모압 위에 그 날개를 펴리라"
+      ],
+      "raw_text_hashes": [
+        "826e486fa49904e8581dc56f8d9b1057b40bc483b07c6b364b73287c263af9ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:41",
+      "sequence": 20122,
+      "chapter_label": "JER 48",
+      "verse_label": "41",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 41
+        }
+      ],
+      "en": "Kerioth is taken, and the strongholds are seized. The heart of the mighty men of Moab at that day will be as the heart of a woman in her pangs.",
+      "ko": "성읍들이 취함을 당하며 요새가 함락되는 날에 모압 용사의 마음이 구로하는 여인 같을 것이라",
+      "source_text_hash": "d8fd007202bd1091bb21913364d7502dfb8d70a7d910192b05039a1062c7b024",
+      "translation_text_hash": "385b68c02a754cce645a591f696c017bf71d7ab4cd5300e57f4f2113411f7127",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성읍들이 취함을 당하며 요새가 함락되는 날에 모압 용사의 마음이 구로하는 여인 같을 것이라"
+      ],
+      "raw_text_hashes": [
+        "385b68c02a754cce645a591f696c017bf71d7ab4cd5300e57f4f2113411f7127"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:42",
+      "sequence": 20123,
+      "chapter_label": "JER 48",
+      "verse_label": "42",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 42
+        }
+      ],
+      "en": "Moab will be destroyed from being a people, because he has magnified himself against the LORD.",
+      "ko": "모압이 여호와를 거스려 자만하였으므로 멸망하고 다시 나라를 이루지 못하리로다",
+      "source_text_hash": "e1ae0f48aa0b13e9efa70c00786257d05b26a398dfdfd49e310fde199a75ed68",
+      "translation_text_hash": "0796f51dea229bc498cd6df970e64c126380ee40f77a4cfc7292fe53a800fcc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압이 여호와를 거스려 자만하였으므로 멸망하고 다시 나라를 이루지 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "0796f51dea229bc498cd6df970e64c126380ee40f77a4cfc7292fe53a800fcc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:43",
+      "sequence": 20124,
+      "chapter_label": "JER 48",
+      "verse_label": "43",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 43
+        }
+      ],
+      "en": "Terror, the pit, and the snare are on you, inhabitant of Moab,” says the LORD.",
+      "ko": "나 여호와가 말하노라 모압 거민아 두려움과 함정과 올무가 네게 임하나니",
+      "source_text_hash": "ceea401a05d652f135f065a663e530a6ea62ff89a1acc41e3a9dd37d7fd058fb",
+      "translation_text_hash": "2dedef37d88558b750853ffe10d2f7f3e63f7de3c092fb88b200cb1b4fd2f212",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 모압 거민아 두려움과 함정과 올무가 네게 임하나니"
+      ],
+      "raw_text_hashes": [
+        "2dedef37d88558b750853ffe10d2f7f3e63f7de3c092fb88b200cb1b4fd2f212"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:44",
+      "sequence": 20125,
+      "chapter_label": "JER 48",
+      "verse_label": "44",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 44
+        }
+      ],
+      "en": "“He who flees from the terror will fall into the pit; and he who gets up out of the pit will be taken in the snare, for I will bring on him, even on Moab, the year of their visitation,” says the LORD.",
+      "ko": "두려움에서 도망하는 자는 함정에 떨어지겠고 함정에서 나오는 자는 올무에 걸리리니 이는 내가 모압의 벌 받을 해로 임하게 할것임이니라 여호와의 말이니라",
+      "source_text_hash": "4eb327e94e2e059961e744e4427b746b35a08f1cc9f6ce3b4d418ed776c43ff9",
+      "translation_text_hash": "038fcfecf574b0b7f9b535087162f5bb7aa625d4306708b1c41c95e316c74e8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려움에서 도망하는 자는 함정에 떨어지겠고 함정에서 나오는 자는 올무에 걸리리니 이는 내가 모압의 벌 받을 해로 임하게 할것임이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "038fcfecf574b0b7f9b535087162f5bb7aa625d4306708b1c41c95e316c74e8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:45",
+      "sequence": 20126,
+      "chapter_label": "JER 48",
+      "verse_label": "45",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 45
+        }
+      ],
+      "en": "“Those who fled stand without strength under the shadow of Heshbon; for a fire has gone out of Heshbon, and a flame from the middle of Sihon, and has devoured the corner of Moab, and the crown of the head of the tumultuous ones.",
+      "ko": "도망하는 자들이 기진하여 헤스본 그늘 아래 서니 이는 불이 헤스본에서 발하며 화염이 시혼의 속에서 나서 모압의 살쩍과 훤화하는 자들의 정수리를 사름이로다",
+      "source_text_hash": "3fe3998fb76fd415b5b9986db2e09a82e0de51d148e8606f9050abc68660ec67",
+      "translation_text_hash": "4c0aa088033ea9a9ebcedcef62f1016d99663d711b1b739f9a2982aed605c3ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도망하는 자들이 기진하여 헤스본 그늘 아래 서니 이는 불이 헤스본에서 발하며 화염이 시혼의 속에서 나서 모압의 살쩍과 훤화하는 자들의 정수리를 사름이로다"
+      ],
+      "raw_text_hashes": [
+        "4c0aa088033ea9a9ebcedcef62f1016d99663d711b1b739f9a2982aed605c3ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:46",
+      "sequence": 20127,
+      "chapter_label": "JER 48",
+      "verse_label": "46",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 46
+        }
+      ],
+      "en": "Woe to you, O Moab! The people of Chemosh are undone; for your sons are taken away captive, and your daughters into captivity.",
+      "ko": "모압이여 네게 화 있도다 그모스 백성이 망하였도다 네 아들들은 사로잡혀 갔고 네 딸들은 포로가 되었도다",
+      "source_text_hash": "a1985b595b2224b0f668a0c9bad412c2c139e31d7a58ecf19ea1530a78ec5b13",
+      "translation_text_hash": "d18a9a1bea82e1a18029f4aaa127b344f7c946fa6009106cfc724aa6dd94d2cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압이여 네게 화 있도다 그모스 백성이 망하였도다 네 아들들은 사로잡혀 갔고 네 딸들은 포로가 되었도다"
+      ],
+      "raw_text_hashes": [
+        "d18a9a1bea82e1a18029f4aaa127b344f7c946fa6009106cfc724aa6dd94d2cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:48:47",
+      "sequence": 20128,
+      "chapter_label": "JER 48",
+      "verse_label": "47",
+      "locator": {
+        "book": "JER",
+        "chapter": 48,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 48,
+          "verse": 47
+        }
+      ],
+      "en": "“Yet I will reverse the captivity of Moab in the latter days,” says the LORD. Thus far is the judgment of Moab.",
+      "ko": "그러나 내가 말일에 모압의 포로로 돌아오게 하리라 여호와의 말이니라 하시니라 모압을 심판하는 말씀이 이에 그쳤느니라",
+      "source_text_hash": "7639a37f9f532d8d8230eb2049710db5410c82d3033a206fc37e174098ab6daa",
+      "translation_text_hash": "98a89894aaf99edc8ab3ed13f843bfe75c2dda364cd53e092eb1eb1f2dfc6a1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 말일에 모압의 포로로 돌아오게 하리라 여호와의 말이니라 하시니라 모압을 심판하는 말씀이 이에 그쳤느니라"
+      ],
+      "raw_text_hashes": [
+        "98a89894aaf99edc8ab3ed13f843bfe75c2dda364cd53e092eb1eb1f2dfc6a1b"
+      ]
+    }
+  ]
+}

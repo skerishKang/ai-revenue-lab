@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:024",
+  "unit_ordinal": 291,
+  "unit_label": "2SA 24",
+  "book_code": "2SA",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:24:1",
+      "sequence": 8694,
+      "chapter_label": "2SA 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "Again the LORD’s anger burned against Israel, and he moved David against them, saying, “Go, count Israel and Judah.”",
+      "ko": "여호와께서 다시 이스라엘을 향하여 진노하사 저희를 치시려고 다윗을 감동시키사 가서 이스라엘과 유다의 인구를 조사하라 하신지라",
+      "source_text_hash": "668efe2dc0e81b056cf0473dd22e52c54a00302b48762248c53ce6d80bff73ec",
+      "translation_text_hash": "48de2f11b9a0dcbb121daa7765e76133e6eaf6ec0ff64310864fb4808fa4cd8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 다시 이스라엘을 향하여 진노하사 저희를 치시려고 다윗을 감동시키사 가서 이스라엘과 유다의 인구를 조사하라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "48de2f11b9a0dcbb121daa7765e76133e6eaf6ec0ff64310864fb4808fa4cd8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:2",
+      "sequence": 8695,
+      "chapter_label": "2SA 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "The king said to Joab the captain of the army, who was with him, “Now go back and forth through all the tribes of Israel, from Dan even to Beersheba, and count the people, that I may know the sum of the people.”",
+      "ko": "왕이 이에 그 곁에 있는 군대 장관 요압에게 이르되 너는 이스라엘 모든 지파 가운데로 다니며 단에서부터 브엘세바까지 인구를 조사하여 그 도수를 내게 알게 하라",
+      "source_text_hash": "f5fc0d55eeb210f33231dc6908813f69854536fb96130ae9bf3f99cd10816562",
+      "translation_text_hash": "ba01f491af3e6f15ac001997a070a63b67a3459c0168e246b7b97cc2e462f3ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이에 그 곁에 있는 군대 장관 요압에게 이르되 너는 이스라엘 모든 지파 가운데로 다니며 단에서부터 브엘세바까지 인구를 조사하여 그 도수를 내게 알게 하라"
+      ],
+      "raw_text_hashes": [
+        "ba01f491af3e6f15ac001997a070a63b67a3459c0168e246b7b97cc2e462f3ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:3",
+      "sequence": 8696,
+      "chapter_label": "2SA 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "Joab said to the king, “Now may the LORD your God add to the people, however many they may be, one hundred times; and may the eyes of my lord the king see it. But why does my lord the king delight in this thing?”",
+      "ko": "요압이 왕께 고하되 이 백성은 얼마든지 왕의 하나님 여호와께서 백배나 더하게 하사 내 주 왕의 눈으로 보게 하시기를 원하나이다 그런데 내 주 왕은 어찌하여 이런 일을 기뻐하시나이까 하되",
+      "source_text_hash": "6de204fb6b58a82ddd42a066afee756b43d3efac68518d494f4c6a004dca2e67",
+      "translation_text_hash": "51811b27434bf247761e326dfd713ba46c3daefbf244dbac99a9efffd6413863",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 왕께 고하되 이 백성은 얼마든지 왕의 하나님 여호와께서 백배나 더하게 하사 내 주 왕의 눈으로 보게 하시기를 원하나이다 그런데 내 주 왕은 어찌하여 이런 일을 기뻐하시나이까 하되"
+      ],
+      "raw_text_hashes": [
+        "51811b27434bf247761e326dfd713ba46c3daefbf244dbac99a9efffd6413863"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:4",
+      "sequence": 8697,
+      "chapter_label": "2SA 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "Notwithstanding, the king’s word prevailed against Joab and against the captains of the army. Joab and the captains of the army went out from the presence of the king to count the people of Israel.",
+      "ko": "왕의 명령이 요압과 군대장관들을 재촉한지라 요압과 장관들이 이스라엘 인구를 조사하려고 왕의 앞에서 물러나서",
+      "source_text_hash": "f9dda0d7a469015c0df5f256dc1890813eb494811fab92bb635173c19531b3c3",
+      "translation_text_hash": "8745baab8d8ca11e27b010db003fbcd7fd904d44c24da3abced0bed215ed4810",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 명령이 요압과 군대장관들을 재촉한지라 요압과 장관들이 이스라엘 인구를 조사하려고 왕의 앞에서 물러나서"
+      ],
+      "raw_text_hashes": [
+        "8745baab8d8ca11e27b010db003fbcd7fd904d44c24da3abced0bed215ed4810"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:5",
+      "sequence": 8698,
+      "chapter_label": "2SA 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "They passed over the Jordan and encamped in Aroer, on the right side of the city that is in the middle of the valley of Gad, and to Jazer;",
+      "ko": "요단을 건너 갓 골짜기 가운데 성읍 아로엘 우편 곧 야셀 맞은편에 이르러 장막을 치고",
+      "source_text_hash": "9d4f675519c98e8aad3ec7e9442400f3d96fc7d25b91ad15dfb6cd9cc49208c0",
+      "translation_text_hash": "eb1f8ba01136d648663f229cb71b3ea9a7ebe7d5e4c7b75e7a2a6073c9a9acb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요단을 건너 갓 골짜기 가운데 성읍 아로엘 우편 곧 야셀 맞은편에 이르러 장막을 치고"
+      ],
+      "raw_text_hashes": [
+        "eb1f8ba01136d648663f229cb71b3ea9a7ebe7d5e4c7b75e7a2a6073c9a9acb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:6",
+      "sequence": 8699,
+      "chapter_label": "2SA 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "then they came to Gilead and to the land of Tahtim Hodshi; and they came to Dan Jaan and around to Sidon,",
+      "ko": "길르앗에 이르고 닷딤홋시 땅에 이르고 또 다냐안에 이르러서는 시돈으로 돌아서",
+      "source_text_hash": "0d5db0663c0bc7b56b3c98be756f76a7c6d927f603a28b18e00bc902d2877429",
+      "translation_text_hash": "0598cff8304240578c3269604aefabad93b5b51e6cab7e11be607f10d03c49c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗에 이르고 닷딤홋시 땅에 이르고 또 다냐안에 이르러서는 시돈으로 돌아서"
+      ],
+      "raw_text_hashes": [
+        "0598cff8304240578c3269604aefabad93b5b51e6cab7e11be607f10d03c49c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:7",
+      "sequence": 8700,
+      "chapter_label": "2SA 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "and came to the stronghold of Tyre, and to all the cities of the Hivites and of the Canaanites; and they went out to the south of Judah, at Beersheba.",
+      "ko": "두로 견고한 성에 이르고 히위 사람과 가나안 사람의 모든 성읍에 이르고 유다 남편으로 나와서 브엘세바에 이르니라",
+      "source_text_hash": "db060cc7707529b85c5d6b519fba46644eda50a6bda757f2949f74daa2f50b2f",
+      "translation_text_hash": "125d66f197694bce463ed123fd9e1a6c3532d1405ac71cff214596c415d714d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두로 견고한 성에 이르고 히위 사람과 가나안 사람의 모든 성읍에 이르고 유다 남편으로 나와서 브엘세바에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "125d66f197694bce463ed123fd9e1a6c3532d1405ac71cff214596c415d714d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:8",
+      "sequence": 8701,
+      "chapter_label": "2SA 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "So when they had gone back and forth through all the land, they came to Jerusalem at the end of nine months and twenty days.",
+      "ko": "저희 무리가 국중을 두루 돌아 아홉달 스무날만에 예루살렘에 이르러",
+      "source_text_hash": "9f61967e7099d3d82a02cc8d48b7ab85377d894933fcf569ef36c62ff245cc3e",
+      "translation_text_hash": "813991d4e7a5db4cb87b9436058d15d479bb05ca438a317a1b8dd32f61e3599c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 무리가 국중을 두루 돌아 아홉달 스무날만에 예루살렘에 이르러"
+      ],
+      "raw_text_hashes": [
+        "813991d4e7a5db4cb87b9436058d15d479bb05ca438a317a1b8dd32f61e3599c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:9",
+      "sequence": 8702,
+      "chapter_label": "2SA 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "Joab gave up the sum of the counting of the people to the king; and there were in Israel eight hundred thousand valiant men who drew the sword, and the men of Judah were five hundred thousand men.",
+      "ko": "요압이 인구 도수를 왕께 고하니 곧 이스라엘에서 칼을 빼는 담대한 자가 팔십만이요 유다 사람이 오십만이었더라",
+      "source_text_hash": "49b71509fc9a0ef513751c1a3ec59089f70b3c930506ad758de76da94426ac6f",
+      "translation_text_hash": "a4c251fa62b1aafce252dddb2996c750a727acc211695eaa755eff149f5d36af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 인구 도수를 왕께 고하니 곧 이스라엘에서 칼을 빼는 담대한 자가 팔십만이요 유다 사람이 오십만이었더라"
+      ],
+      "raw_text_hashes": [
+        "a4c251fa62b1aafce252dddb2996c750a727acc211695eaa755eff149f5d36af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:10",
+      "sequence": 8703,
+      "chapter_label": "2SA 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "David’s heart struck him after he had counted the people. David said to the LORD, “I have sinned greatly in that which I have done. But now, the LORD, put away, I beg you, the iniquity of your servant; for I have done very foolishly.”",
+      "ko": "다윗이 인구 수를 조사한 후에 그 마음에 자책하고 여호와께 아뢰되 내가 이 일을 행함으로 큰 죄를 범하였나이다 여호와여 이제 간구하옵나니 종의 죄를 사하여 주옵소서 내가 심히 미련하게 행하였나이다 하니라",
+      "source_text_hash": "059c7633a66b3a4822f01eb602c53ee88f001aa0eaade369359ae48b50d5f227",
+      "translation_text_hash": "357acb147e3de8f30e2f64db7149af0cc68ae578e2d7966df16f70f0485f4e32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 인구 수를 조사한 후에 그 마음에 자책하고 여호와께 아뢰되 내가 이 일을 행함으로 큰 죄를 범하였나이다 여호와여 이제 간구하옵나니 종의 죄를 사하여 주옵소서 내가 심히 미련하게 행하였나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "357acb147e3de8f30e2f64db7149af0cc68ae578e2d7966df16f70f0485f4e32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:11",
+      "sequence": 8704,
+      "chapter_label": "2SA 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "When David rose up in the morning, the LORD’s word came to the prophet Gad, David’s seer, saying,",
+      "ko": "다윗이 아침에 일어날 때에 여호와의 말씀이 다윗의 선견자 된 선지자 갓에게 임하여 가라사대",
+      "source_text_hash": "4493417b365e3868c16cca0bafb0081aa5c57038e263e0f65390913ce64b5de3",
+      "translation_text_hash": "ee55a5b4771130d341db6ad46adff18b71a03f4bb689333e22ef2bfc3a11e645",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아침에 일어날 때에 여호와의 말씀이 다윗의 선견자 된 선지자 갓에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "ee55a5b4771130d341db6ad46adff18b71a03f4bb689333e22ef2bfc3a11e645"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:12",
+      "sequence": 8705,
+      "chapter_label": "2SA 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "“Go and speak to David, ‘The LORD says, “I offer you three things. Choose one of them, that I may do it to you.”’”",
+      "ko": "가서 다윗에게 말하기를 여호와의 말씀에 내가 네게 세가지를 보이노니 너는 그 중에서 하나를 택하라 내가 그것을 네게 행하리라 하셨다 하라",
+      "source_text_hash": "c4ce1c6474b6d0d0fee75652f7ebbe1dd71b1986cc414e2e65d871b9134f3647",
+      "translation_text_hash": "96909c6e7bc9cd98819025c831018baf832fad8622dd1ec98a832a213c0d5a41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 다윗에게 말하기를 여호와의 말씀에 내가 네게 세가지를 보이노니 너는 그 중에서 하나를 택하라 내가 그것을 네게 행하리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "96909c6e7bc9cd98819025c831018baf832fad8622dd1ec98a832a213c0d5a41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:13",
+      "sequence": 8706,
+      "chapter_label": "2SA 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "So Gad came to David, and told him, saying, “Shall seven years of famine come to you in your land? Or will you flee three months before your foes while they pursue you? Or shall there be three days’ pestilence in your land? Now answer, and consider what answer I shall return to him who sent me.”",
+      "ko": "갓이 다윗에게 이르러 고하여 가로되 왕의 땅에 칠년 기근이 있을 것이니이까 혹시 왕이 왕의 대적에게 쫓겨 석달을 그 앞에서 도망하실 것이니이까 혹시 왕의 땅에 삼일 동안 온역이 있을 것이니이까 왕은 생각하여 보고 나를 보내신이에게 대답하게 하소서",
+      "source_text_hash": "bc24cebfc7fd77043a5523e8c104b4f01c24e832b18c92de090732dae324b466",
+      "translation_text_hash": "13eba6efd37ea3f3c6dd4fd8a36003625722b85ab1b8142d027b562cba856e28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓이 다윗에게 이르러 고하여 가로되 왕의 땅에 칠년 기근이 있을 것이니이까 혹시 왕이 왕의 대적에게 쫓겨 석달을 그 앞에서 도망하실 것이니이까 혹시 왕의 땅에 삼일 동안 온역이 있을 것이니이까 왕은 생각하여 보고 나를 보내신이에게 대답하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "13eba6efd37ea3f3c6dd4fd8a36003625722b85ab1b8142d027b562cba856e28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:14",
+      "sequence": 8707,
+      "chapter_label": "2SA 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "David said to Gad, “I am in distress. Let us fall now into the LORD’s hand, for his mercies are great. Let me not fall into man’s hand.”",
+      "ko": "다윗이 갓에게 이르되 내가 곤경에 있도다 여호와께서는 긍휼이 크시니 우리가 여호와의 손에 빠지고 내가 사람의 손에 빠지지 않기를 원하노라",
+      "source_text_hash": "e41e72ed690cb9c2fa01cc45a09bc741b7460dc3f44ef2a76eccbab1dcb17c40",
+      "translation_text_hash": "76a4b4066de52b8521aa1b068fd583616a029ac178a20da368d370b2dbfdea4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 갓에게 이르되 내가 곤경에 있도다 여호와께서는 긍휼이 크시니 우리가 여호와의 손에 빠지고 내가 사람의 손에 빠지지 않기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "76a4b4066de52b8521aa1b068fd583616a029ac178a20da368d370b2dbfdea4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:15",
+      "sequence": 8708,
+      "chapter_label": "2SA 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "So the LORD sent a pestilence on Israel from the morning even to the appointed time; and seventy thousand men died of the people from Dan even to Beersheba.",
+      "ko": "이에 여호와께서 그 아침부터 정하신 때까지 온역을 이스라엘에게 내리시니 단부터 브엘세바까지 백성의 죽은 자가 칠만인이라",
+      "source_text_hash": "045176139a6ffbcfbc61186b9d929a43f7a944a0c561e4c054685c934c47737c",
+      "translation_text_hash": "57d6b9eb5f944edfafc3ae8f8205bf02beb24af2f538ef3969658fa2d70bc3c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호와께서 그 아침부터 정하신 때까지 온역을 이스라엘에게 내리시니 단부터 브엘세바까지 백성의 죽은 자가 칠만인이라"
+      ],
+      "raw_text_hashes": [
+        "57d6b9eb5f944edfafc3ae8f8205bf02beb24af2f538ef3969658fa2d70bc3c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:16",
+      "sequence": 8709,
+      "chapter_label": "2SA 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "When the angel stretched out his hand toward Jerusalem to destroy it, the LORD relented of the disaster, and said to the angel who destroyed the people, “It is enough. Now withdraw your hand.” The LORD’s angel was by the threshing floor of Araunah the Jebusite.",
+      "ko": "천사가 예루살렘을 향하여 그 손을 들어 멸하려 하더니 여호와께서 이 재앙 내림을 뉘우치사 백성을 멸하는 천사에게 이르시되 족하다 이제는 네 손을 거두라 하시니 때에 여호와의 사자가 여부스 사람 아라우나의 타작마당 곁에 있는지라",
+      "source_text_hash": "1b015491b4c182cb6173315571c55e1b173dcce8a72459077083ee3d0960e9a5",
+      "translation_text_hash": "b711838b68a8efdb23e52540e4176dec6db860fb10d8ccc15bf54200ab2dfb27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 예루살렘을 향하여 그 손을 들어 멸하려 하더니 여호와께서 이 재앙 내림을 뉘우치사 백성을 멸하는 천사에게 이르시되 족하다 이제는 네 손을 거두라 하시니 때에 여호와의 사자가 여부스 사람 아라우나의 타작마당 곁에 있는지라"
+      ],
+      "raw_text_hashes": [
+        "b711838b68a8efdb23e52540e4176dec6db860fb10d8ccc15bf54200ab2dfb27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:17",
+      "sequence": 8710,
+      "chapter_label": "2SA 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "David spoke to the LORD when he saw the angel who struck the people, and said, “Behold, I have sinned, and I have done perversely; but these sheep, what have they done? Please let your hand be against me, and against my father’s house.”",
+      "ko": "다윗이 백성을 치는 천사를 보고 곧 여호와께 아뢰어 가로되 나는 범죄하였고 악을 행하였삽거니와 이 양 무리는 무엇을 행하였나이까 청컨대 주의 손으로 나와 내 아비의 집을 치소서 하니라",
+      "source_text_hash": "53f191c2c54d865e16650ccf3d78b5bb92e8e58b8538d84fdfb36fbd455a5425",
+      "translation_text_hash": "99e45cfb705036ef8b0a51f15ac15e26f82891f6a11f26e884e08afb9c46a3b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 백성을 치는 천사를 보고 곧 여호와께 아뢰어 가로되 나는 범죄하였고 악을 행하였삽거니와 이 양 무리는 무엇을 행하였나이까 청컨대 주의 손으로 나와 내 아비의 집을 치소서 하니라"
+      ],
+      "raw_text_hashes": [
+        "99e45cfb705036ef8b0a51f15ac15e26f82891f6a11f26e884e08afb9c46a3b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:18",
+      "sequence": 8711,
+      "chapter_label": "2SA 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "Gad came that day to David and said to him, “Go up, build an altar to the LORD on the threshing floor of Araunah the Jebusite.”",
+      "ko": "이 날에 갓이 다윗에게 이르러 고하되 올라가서 여부스 사람 아라우나의 타작마당에서 여호와를 위하여 단을 쌓으소서 하매",
+      "source_text_hash": "30e17eddeb13ca0b816f4a4a8110561ea27a54839819af990b287542770bb145",
+      "translation_text_hash": "4af1e4e87a06cf070a28f6e163e2886913aeae2721d7389f479c3f7491796506",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 갓이 다윗에게 이르러 고하되 올라가서 여부스 사람 아라우나의 타작마당에서 여호와를 위하여 단을 쌓으소서 하매"
+      ],
+      "raw_text_hashes": [
+        "4af1e4e87a06cf070a28f6e163e2886913aeae2721d7389f479c3f7491796506"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:19",
+      "sequence": 8712,
+      "chapter_label": "2SA 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "David went up according to the saying of Gad, as the LORD commanded.",
+      "ko": "다윗이 여호와의 명하신바 갓의 말대로 올라가니라",
+      "source_text_hash": "4b3165a8ce20de963c2a9412547c07b3b28757b04add151a0d650b7a07f2071a",
+      "translation_text_hash": "c7b3939b1b1b533ad65071dc44bc409177cc6234b8bf3141febdc55c6938e431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 여호와의 명하신바 갓의 말대로 올라가니라"
+      ],
+      "raw_text_hashes": [
+        "c7b3939b1b1b533ad65071dc44bc409177cc6234b8bf3141febdc55c6938e431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:20",
+      "sequence": 8713,
+      "chapter_label": "2SA 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "Araunah looked out, and saw the king and his servants coming on toward him. Then Araunah went out and bowed himself before the king with his face to the ground.",
+      "ko": "아라우나가 바라보다가 왕과 그 신복들이 자기를 향하여 옴을 보고 나가서 왕의 앞에서 얼굴을 땅에 대고 절하며",
+      "source_text_hash": "da14fe071bc3e3d32b091aacc5aafae7370c844976da507036c07f8faa435356",
+      "translation_text_hash": "87d176ca3a1d86da18b3d8a2653614056a3d40b8f3d310e7166c3389bf7f49a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아라우나가 바라보다가 왕과 그 신복들이 자기를 향하여 옴을 보고 나가서 왕의 앞에서 얼굴을 땅에 대고 절하며"
+      ],
+      "raw_text_hashes": [
+        "87d176ca3a1d86da18b3d8a2653614056a3d40b8f3d310e7166c3389bf7f49a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:21",
+      "sequence": 8714,
+      "chapter_label": "2SA 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "Araunah said, “Why has my lord the king come to his servant?” David said, “To buy your threshing floor, to build an altar to the LORD, that the plague may be stopped from afflicting the people.”",
+      "ko": "가로되 어찌하여 내 주 왕께서 종에게 임하시나이까 다윗이 가로되 네게서 타작마당을 사서 여호와께 단을 쌓아 백성에게 내리는 재앙을 그치게 하려 함이로라",
+      "source_text_hash": "49c367a0f19b7ab0e82c1760600982c30eacbbb63a6b18b401e3c52d0bfbee2a",
+      "translation_text_hash": "f5525ac05169be2ca09255a7ceaafda11b4d5f7f28204648975654b037440e11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 어찌하여 내 주 왕께서 종에게 임하시나이까 다윗이 가로되 네게서 타작마당을 사서 여호와께 단을 쌓아 백성에게 내리는 재앙을 그치게 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "f5525ac05169be2ca09255a7ceaafda11b4d5f7f28204648975654b037440e11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:22",
+      "sequence": 8715,
+      "chapter_label": "2SA 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "Araunah said to David, “Let my lord the king take and offer up what seems good to him. Behold, the cattle for the burnt offering, and the threshing sledges and the yokes of the oxen for the wood.",
+      "ko": "아라우나가 다윗에게 고하되 원컨대 내 주 왕은 좋게 여기시는 대로 취하여 드리소서 번제에 대하여는 소가 있고 땔 나무에 대하여는 마당질하는 제구와 소의 멍에가 있나이다",
+      "source_text_hash": "7e63d3b7a2e88acc7249887ffceb17bb77108f4e788588de6a93daddf6ab9c41",
+      "translation_text_hash": "ad636fdd85c042bd9176ab97d8ce23f7c3ab326e0e968e92d861fe51e188e42c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아라우나가 다윗에게 고하되 원컨대 내 주 왕은 좋게 여기시는 대로 취하여 드리소서 번제에 대하여는 소가 있고 땔 나무에 대하여는 마당질하는 제구와 소의 멍에가 있나이다"
+      ],
+      "raw_text_hashes": [
+        "ad636fdd85c042bd9176ab97d8ce23f7c3ab326e0e968e92d861fe51e188e42c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:23",
+      "sequence": 8716,
+      "chapter_label": "2SA 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "All this, O king, does Araunah give to the king.” Araunah said to the king, “May the LORD your God accept you.”",
+      "ko": "왕이여 아라우나가 이것을 다 왕께 드리나이다 하고 또 왕께 고하되 왕의 하나님 여호와께서 왕을 기쁘게 받으시기를 원하나이다",
+      "source_text_hash": "cd12095b4e8abf8454d3e14d715dbb7fd401d0bd124d68de0f41d0c343732151",
+      "translation_text_hash": "738c90a353c72eca20ec8e735c3b5c5cf6f1e966aaed4ade1e08968e3978ee72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이여 아라우나가 이것을 다 왕께 드리나이다 하고 또 왕께 고하되 왕의 하나님 여호와께서 왕을 기쁘게 받으시기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "738c90a353c72eca20ec8e735c3b5c5cf6f1e966aaed4ade1e08968e3978ee72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:24",
+      "sequence": 8717,
+      "chapter_label": "2SA 24",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 24
+        }
+      ],
+      "en": "The king said to Araunah, “No, but I will most certainly buy it from you for a price. I will not offer burnt offerings to the LORD my God which cost me nothing.” So David bought the threshing floor and the oxen for fifty shekels of silver.",
+      "ko": "왕이 아라우나에게 이르되 그렇지 아니하다 내가 값을 주고 네게서 사리라 값 없이는 내 하나님 여호와께 번제를 드리지 아니하리라 하고 은 오십 세겔로 타작마당과 소를 사고",
+      "source_text_hash": "caf352fc2ffc2d4397a896dad5fe322d5ef617cbcd4da62dce0bb567e6c37a12",
+      "translation_text_hash": "760c1484ff7a767e63a3e31fa3ba7f53c4e5f6e6180ad73ff19445c0d2c4fc36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 아라우나에게 이르되 그렇지 아니하다 내가 값을 주고 네게서 사리라 값 없이는 내 하나님 여호와께 번제를 드리지 아니하리라 하고 은 오십 세겔로 타작마당과 소를 사고"
+      ],
+      "raw_text_hashes": [
+        "760c1484ff7a767e63a3e31fa3ba7f53c4e5f6e6180ad73ff19445c0d2c4fc36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:24:25",
+      "sequence": 8718,
+      "chapter_label": "2SA 24",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 24,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 24,
+          "verse": 25
+        }
+      ],
+      "en": "David built an altar to the LORD there, and offered burnt offerings and peace offerings. So the LORD was entreated for the land, and the plague was removed from Israel.",
+      "ko": "그곳에서 여호와를 위하여 단을 쌓고 번제와 화목제를 드렸더니 이에 여호와께서 그 땅을 위하여 기도를 들으시매 이스라엘에게 내리는 재앙이 그쳤더라",
+      "source_text_hash": "a2f8d39d5ab2fb290ab364269ec3da0b56eb5c8eb5dfbd0e9e1e5a01533b5fb5",
+      "translation_text_hash": "b02a6a6103dce3cd57db41dce183984d17f74bee89abf3be7633d0394efeb779",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그곳에서 여호와를 위하여 단을 쌓고 번제와 화목제를 드렸더니 이에 여호와께서 그 땅을 위하여 기도를 들으시매 이스라엘에게 내리는 재앙이 그쳤더라"
+      ],
+      "raw_text_hashes": [
+        "b02a6a6103dce3cd57db41dce183984d17f74bee89abf3be7633d0394efeb779"
+      ]
+    }
+  ]
+}

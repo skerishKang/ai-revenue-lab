@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:032",
+  "unit_ordinal": 468,
+  "unit_label": "JOB 32",
+  "book_code": "JOB",
+  "chapter_number": 32,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:32:1",
+      "sequence": 13630,
+      "chapter_label": "JOB 32",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 1
+        }
+      ],
+      "en": "So these three men ceased to answer Job, because he was righteous in his own eyes.",
+      "ko": "욥이 스스로 의롭게 여기므로 그 세 사람의 대답이 그치매",
+      "source_text_hash": "f15bacb363a63867c551788f68c802bc2c3fc9d86d426814663ad341b59adad3",
+      "translation_text_hash": "31d677610246b0ee25772331ce4db7f22a8c6e94342b5ed21d08d2355a5c8095",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 스스로 의롭게 여기므로 그 세 사람의 대답이 그치매"
+      ],
+      "raw_text_hashes": [
+        "31d677610246b0ee25772331ce4db7f22a8c6e94342b5ed21d08d2355a5c8095"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:2",
+      "sequence": 13631,
+      "chapter_label": "JOB 32",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 2
+        }
+      ],
+      "en": "Then the wrath of Elihu the son of Barachel, the Buzite, of the family of Ram, was kindled against Job. His wrath was kindled because he justified himself rather than God.",
+      "ko": "람 족속 부스 사람 바라겔의 아들 엘리후가 노를 발하니 그가 욥에게 노를 발함은 욥이 하나님보다 자기가 의롭다 함이요",
+      "source_text_hash": "fc25164456a7ae56f921a60ac1c172d7782b5785edeffd94585e0b60dc50c317",
+      "translation_text_hash": "b21ce1318246329ca45c5cb9d2e8ff2554965da9b31ad5d721acf9023e89431c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "람 족속 부스 사람 바라겔의 아들 엘리후가 노를 발하니 그가 욥에게 노를 발함은 욥이 하나님보다 자기가 의롭다 함이요"
+      ],
+      "raw_text_hashes": [
+        "b21ce1318246329ca45c5cb9d2e8ff2554965da9b31ad5d721acf9023e89431c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:3",
+      "sequence": 13632,
+      "chapter_label": "JOB 32",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 3
+        }
+      ],
+      "en": "Also his wrath was kindled against his three friends, because they had found no answer, and yet had condemned Job.",
+      "ko": "또 세 친구에게 노를 발함은 그들이 능히 대답지는 못하여도 욥을 정죄함이라",
+      "source_text_hash": "03c097268a910068c264f321d24c89b22d0fe93a463ffa5f2dd23b0ca2dce5e2",
+      "translation_text_hash": "9a6337095ef4807ade7e6f92f701c0c47dd602d8a1a4118ec614b62fc96a519b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 세 친구에게 노를 발함은 그들이 능히 대답지는 못하여도 욥을 정죄함이라"
+      ],
+      "raw_text_hashes": [
+        "9a6337095ef4807ade7e6f92f701c0c47dd602d8a1a4118ec614b62fc96a519b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:4",
+      "sequence": 13633,
+      "chapter_label": "JOB 32",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 4
+        }
+      ],
+      "en": "Now Elihu had waited to speak to Job, because they were older than he.",
+      "ko": "엘리후가 그들의 나이 자기보다 많으므로 욥에게 말하기를 참고 있다가",
+      "source_text_hash": "3853531962da5e4539baf6453221e309519b8edb34b2c9655856afa9bb5f48be",
+      "translation_text_hash": "d45af19c33efb9dc7692bcd8b5c055a947f231ea8492557205dc6614f937474e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리후가 그들의 나이 자기보다 많으므로 욥에게 말하기를 참고 있다가"
+      ],
+      "raw_text_hashes": [
+        "d45af19c33efb9dc7692bcd8b5c055a947f231ea8492557205dc6614f937474e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:5",
+      "sequence": 13634,
+      "chapter_label": "JOB 32",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 5
+        }
+      ],
+      "en": "When Elihu saw that there was no answer in the mouth of these three men, his wrath was kindled.",
+      "ko": "세 사람의 입에 대답이 없음을 보고 노를 발하니라",
+      "source_text_hash": "1c04617c614858e0c76404b53e9f8444c819164ca88e1971694c352dba194d97",
+      "translation_text_hash": "d163fbcc8c853e6eb810a0becb11e2dc80e6b72f9a62f4001dbe28ac4ce77b61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세 사람의 입에 대답이 없음을 보고 노를 발하니라"
+      ],
+      "raw_text_hashes": [
+        "d163fbcc8c853e6eb810a0becb11e2dc80e6b72f9a62f4001dbe28ac4ce77b61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:6",
+      "sequence": 13635,
+      "chapter_label": "JOB 32",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 6
+        }
+      ],
+      "en": "Elihu the son of Barachel the Buzite answered, “I am young, and you are very old. Therefore I held back, and didn’t dare show you my opinion.",
+      "ko": "부스 사람 바라겔의 아들 엘리후가 발언하여 가로되 나는 년소하고 당신들은 년로하므로 참고 나의 의견을 감히 진술치 못하였노라",
+      "source_text_hash": "7f8060c9c20ff6c8fbc7a2e733cd07afe388c884f78b878107d5dbade4d34445",
+      "translation_text_hash": "16222014307bb3ed3e4bdae287e40250ade090d1fe5dc74f715f3357134206c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부스 사람 바라겔의 아들 엘리후가 발언하여 가로되 나는 년소하고 당신들은 년로하므로 참고 나의 의견을 감히 진술치 못하였노라"
+      ],
+      "raw_text_hashes": [
+        "16222014307bb3ed3e4bdae287e40250ade090d1fe5dc74f715f3357134206c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:7",
+      "sequence": 13636,
+      "chapter_label": "JOB 32",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 7
+        }
+      ],
+      "en": "I said, ‘Days should speak, and multitude of years should teach wisdom.’",
+      "ko": "내가 말하기를 날이 많은 자가 말을 낼 것이요 해가 오랜 자가 지혜를 가르칠 것이라 하였으나",
+      "source_text_hash": "6a85d162bf5c7d4e1f98d0c593e25d53fbd90f1150a62553e09142aaa8563ba8",
+      "translation_text_hash": "5a23ff646a58da110d72f316909adff43b8d94e62934014e421c99310df5b6f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하기를 날이 많은 자가 말을 낼 것이요 해가 오랜 자가 지혜를 가르칠 것이라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "5a23ff646a58da110d72f316909adff43b8d94e62934014e421c99310df5b6f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:8",
+      "sequence": 13637,
+      "chapter_label": "JOB 32",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 8
+        }
+      ],
+      "en": "But there is a spirit in man, and the Spirit of the Almighty gives them understanding.",
+      "ko": "사람의 속에는 심령이 있고 전능자의 기운이 사람에게 총명을 주시나니",
+      "source_text_hash": "48d2bb638bdeba8931e09fa898e2e0bd594adf89504a05bf7f85af34445e7e4d",
+      "translation_text_hash": "904376c94ffbaefd3fa84737daccc6b70286622a63725ca429333b97bba6b71d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 속에는 심령이 있고 전능자의 기운이 사람에게 총명을 주시나니"
+      ],
+      "raw_text_hashes": [
+        "904376c94ffbaefd3fa84737daccc6b70286622a63725ca429333b97bba6b71d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:9",
+      "sequence": 13638,
+      "chapter_label": "JOB 32",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 9
+        }
+      ],
+      "en": "It is not the great who are wise, nor the aged who understand justice.",
+      "ko": "대인이라고 지혜로운 것이 아니요 노인이라고 공의를 깨닫는 것이 아니라",
+      "source_text_hash": "fb3247fab2d5598c6872eb49b7fd2f43230f5adaf65451651af6653002b6d727",
+      "translation_text_hash": "448fbc6ae6e4fe20c023e43dbf437021ff5c49430824d62e52d90afde3e18705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대인이라고 지혜로운 것이 아니요 노인이라고 공의를 깨닫는 것이 아니라"
+      ],
+      "raw_text_hashes": [
+        "448fbc6ae6e4fe20c023e43dbf437021ff5c49430824d62e52d90afde3e18705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:10",
+      "sequence": 13639,
+      "chapter_label": "JOB 32",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore I said, ‘Listen to me; I also will show my opinion.’",
+      "ko": "그러므로 내가 말하노니 내 말을 들으라 나도 내 의견을 보이리라",
+      "source_text_hash": "f32bf4d36749167b44cf521b7e78934da03bd0c91094462e81b101fbdfd893df",
+      "translation_text_hash": "a0a141b1f73ffa72e817307ee19181ca479e0280ee5dbcf12a8ec2399efaec75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 말하노니 내 말을 들으라 나도 내 의견을 보이리라"
+      ],
+      "raw_text_hashes": [
+        "a0a141b1f73ffa72e817307ee19181ca479e0280ee5dbcf12a8ec2399efaec75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:11",
+      "sequence": 13640,
+      "chapter_label": "JOB 32",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 11
+        }
+      ],
+      "en": "“Behold, I waited for your words, and I listened for your reasoning, while you searched out what to say.",
+      "ko": "내가 당신들의 말을 기다렸고 당신들이 할 말을 합당하도록 하여 보는 동안에 그 변론에 내 귀를 기울였더니",
+      "source_text_hash": "7a116cc7274d8eab11ef3a01a8e7aa63c1cfa7065b87138bf5587c87e1fcb2dc",
+      "translation_text_hash": "effbbc638f49094d61a63b2a13b1fca0670bdbeaf656d2c413505cc623836afc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 당신들의 말을 기다렸고 당신들이 할 말을 합당하도록 하여 보는 동안에 그 변론에 내 귀를 기울였더니"
+      ],
+      "raw_text_hashes": [
+        "effbbc638f49094d61a63b2a13b1fca0670bdbeaf656d2c413505cc623836afc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:12",
+      "sequence": 13641,
+      "chapter_label": "JOB 32",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 12
+        }
+      ],
+      "en": "Yes, I gave you my full attention, but there was no one who convinced Job, or who answered his words, among you.",
+      "ko": "자세히 들은즉 당신들 가운데 욥을 꺾어 그 말을 대답하는 자가 없도다",
+      "source_text_hash": "07be471880fa58513fc187b966d1e8527966bf1bea44d2918e31c05d12288ec3",
+      "translation_text_hash": "d37351a4905acc302cb5658cb2cd18185cfc6124856e3d1974fcbd913a5aeb9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자세히 들은즉 당신들 가운데 욥을 꺾어 그 말을 대답하는 자가 없도다"
+      ],
+      "raw_text_hashes": [
+        "d37351a4905acc302cb5658cb2cd18185cfc6124856e3d1974fcbd913a5aeb9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:13",
+      "sequence": 13642,
+      "chapter_label": "JOB 32",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 13
+        }
+      ],
+      "en": "Beware lest you say, ‘We have found wisdom. God may refute him, not man;’",
+      "ko": "당신들이 혹시라도 말하기를 우리가 지혜를 깨달았었구나 그를 이길 자는 하나님이시요 사람이 아니라 하지 말찌니라",
+      "source_text_hash": "5a6126dabfceedee41b1e81903ef8d8d52b560f6ef210912ae5898c0a7087088",
+      "translation_text_hash": "cd1e9c04f8424252fd6389a4ad09db75cf39ebe37b7d1dd1627be16b34dad30e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신들이 혹시라도 말하기를 우리가 지혜를 깨달았었구나 그를 이길 자는 하나님이시요 사람이 아니라 하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "cd1e9c04f8424252fd6389a4ad09db75cf39ebe37b7d1dd1627be16b34dad30e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:14",
+      "sequence": 13643,
+      "chapter_label": "JOB 32",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 14
+        }
+      ],
+      "en": "for he has not directed his words against me; neither will I answer him with your speeches.",
+      "ko": "그가 내게 말을 내지 아니하였으니 나도 당신들의 말처럼 그에게 대답지 아니하리라",
+      "source_text_hash": "7930256a55b0d1e034030406cf9f90685f92afafbb5e1338ed36c1fcf7b69ce6",
+      "translation_text_hash": "5c3d98c635ab654840542f1a644dd6674c3bd08a6fafc75f280ba1bdd77c06cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 말을 내지 아니하였으니 나도 당신들의 말처럼 그에게 대답지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "5c3d98c635ab654840542f1a644dd6674c3bd08a6fafc75f280ba1bdd77c06cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:15",
+      "sequence": 13644,
+      "chapter_label": "JOB 32",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 15
+        }
+      ],
+      "en": "“They are amazed. They answer no more. They don’t have a word to say.",
+      "ko": "그들이 놀라서 다시 대답하지 못하니 할 말이 없음이로구나",
+      "source_text_hash": "85608abfa60d2a663d7b8210bf20e2a342be5355747c61ea94e65a8c67933944",
+      "translation_text_hash": "df87b53e3ff70234cba999215690118b0e37f718d1deeaf9ba11e836e6513f19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 놀라서 다시 대답하지 못하니 할 말이 없음이로구나"
+      ],
+      "raw_text_hashes": [
+        "df87b53e3ff70234cba999215690118b0e37f718d1deeaf9ba11e836e6513f19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:16",
+      "sequence": 13645,
+      "chapter_label": "JOB 32",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 16
+        }
+      ],
+      "en": "Shall I wait, because they don’t speak, because they stand still, and answer no more?",
+      "ko": "그들이 말이 없이 가만히 서서 다시 대답지 아니한즉 내가 어찌 더 기다리랴",
+      "source_text_hash": "07c1af36601a1b1100abdce81a4fff32ffc0574a29952e2534720626f3da8cc5",
+      "translation_text_hash": "263c8240ccf28b65defc9ba439ee8cc91384c5dbe2758fdbc386b613c6e11f48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 말이 없이 가만히 서서 다시 대답지 아니한즉 내가 어찌 더 기다리랴"
+      ],
+      "raw_text_hashes": [
+        "263c8240ccf28b65defc9ba439ee8cc91384c5dbe2758fdbc386b613c6e11f48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:17",
+      "sequence": 13646,
+      "chapter_label": "JOB 32",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 17
+        }
+      ],
+      "en": "I also will answer my part, and I also will show my opinion.",
+      "ko": "나도 내 본분대로 대답하고 나도 내 의향을 보이리니",
+      "source_text_hash": "d5c23ae1817a37b5797d2e9951ff027e6b463658990ce39297ac538425875199",
+      "translation_text_hash": "fc68ab3de4873f7ca4f33e8c0d5b34813d70e6ec343d46fe4ea7cc95b601fef4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 내 본분대로 대답하고 나도 내 의향을 보이리니"
+      ],
+      "raw_text_hashes": [
+        "fc68ab3de4873f7ca4f33e8c0d5b34813d70e6ec343d46fe4ea7cc95b601fef4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:18",
+      "sequence": 13647,
+      "chapter_label": "JOB 32",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 18
+        }
+      ],
+      "en": "For I am full of words. The spirit within me constrains me.",
+      "ko": "내게 말이 가득하고 내 심령이 나를 강박함이니라",
+      "source_text_hash": "5e7892b3f981949c2f88b0501427a984759e9e2f0f5a1ef8ac22df8a3d311575",
+      "translation_text_hash": "3e707b31a6fbd1c33476c40708c3ff4b0a525680b940ee878b94645716a88764",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 말이 가득하고 내 심령이 나를 강박함이니라"
+      ],
+      "raw_text_hashes": [
+        "3e707b31a6fbd1c33476c40708c3ff4b0a525680b940ee878b94645716a88764"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:19",
+      "sequence": 13648,
+      "chapter_label": "JOB 32",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 19
+        }
+      ],
+      "en": "Behold, my breast is as wine which has no vent; like new wineskins it is ready to burst.",
+      "ko": "보라 내 가슴은 봉한 포도주 같고 새 가죽 부대가 터지게 됨 같구나",
+      "source_text_hash": "54f3d4e80db5d1c8feeaca344edbb5100c3fe440123205bdb66b951d06718add",
+      "translation_text_hash": "7e0ab2c5ea8669212b9a766da736122d99ea37b23e9e889af29e4a904bd5647f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내 가슴은 봉한 포도주 같고 새 가죽 부대가 터지게 됨 같구나"
+      ],
+      "raw_text_hashes": [
+        "7e0ab2c5ea8669212b9a766da736122d99ea37b23e9e889af29e4a904bd5647f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:20",
+      "sequence": 13649,
+      "chapter_label": "JOB 32",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 20
+        }
+      ],
+      "en": "I will speak, that I may be refreshed. I will open my lips and answer.",
+      "ko": "내가 말을 발하여야 시원할 것이라 내 입을 열어 대답하리라",
+      "source_text_hash": "070f17b9391657081a544d80583bea1c4a53c49d9a0a03cc9d787a10747a0fef",
+      "translation_text_hash": "7144d7403fa2eaad6929b1c75cc2a96a1bc16a6f63c50e17564dd72926c58870",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말을 발하여야 시원할 것이라 내 입을 열어 대답하리라"
+      ],
+      "raw_text_hashes": [
+        "7144d7403fa2eaad6929b1c75cc2a96a1bc16a6f63c50e17564dd72926c58870"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:21",
+      "sequence": 13650,
+      "chapter_label": "JOB 32",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 21
+        }
+      ],
+      "en": "Please don’t let me respect any man’s person, neither will I give flattering titles to any man.",
+      "ko": "나는 결코 사람의 낯을 보지 아니하며 사람에게 아첨하지 아니하나니",
+      "source_text_hash": "f9b69951bae33e3809d4bdadd9e2ce70a3fce7ea17cf61c799525e11edbf96b0",
+      "translation_text_hash": "c4bcdeffd6df3e04d6e322a74b3ecc65111c1ff4791518b6c14635b4eacfd0eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 결코 사람의 낯을 보지 아니하며 사람에게 아첨하지 아니하나니"
+      ],
+      "raw_text_hashes": [
+        "c4bcdeffd6df3e04d6e322a74b3ecc65111c1ff4791518b6c14635b4eacfd0eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:32:22",
+      "sequence": 13651,
+      "chapter_label": "JOB 32",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 32,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 32,
+          "verse": 22
+        }
+      ],
+      "en": "For I don’t know how to give flattering titles, or else my Maker would soon take me away.",
+      "ko": "이는 아첨할줄을 알지 못함이라 만일 그리하면 나를 지으신 자가 속히 나를 취하시리로다",
+      "source_text_hash": "7a42defbff32d5c5326afe25f2bbe60500cdd8a91fae358deb229785ad91fd54",
+      "translation_text_hash": "af1b000f65356d871f48f8c0188cf0ce3a2ee72433a674c76d82af0689292cde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 아첨할줄을 알지 못함이라 만일 그리하면 나를 지으신 자가 속히 나를 취하시리로다"
+      ],
+      "raw_text_hashes": [
+        "af1b000f65356d871f48f8c0188cf0ce3a2ee72433a674c76d82af0689292cde"
+      ]
+    }
+  ]
+}

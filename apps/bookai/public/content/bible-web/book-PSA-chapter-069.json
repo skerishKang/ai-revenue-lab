@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:069",
+  "unit_ordinal": 547,
+  "unit_label": "PSA 69",
+  "book_code": "PSA",
+  "chapter_number": 69,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:69:1",
+      "sequence": 14937,
+      "chapter_label": "PSA 69",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 1
+        }
+      ],
+      "en": "Save me, God, for the waters have come up to my neck!",
+      "ko": "하나님이여 나를 구원하소서 물들이 내 영혼까지 흘러 들어왔나이다",
+      "source_text_hash": "56f4114bbd9fd39671f38346e73ae64d6e365a62ebf5acf798cfa81cfdc7d1c9",
+      "translation_text_hash": "e2b0ec7cd90fb93cca91d4bac9c3c14008815fd7c869f5c4896a64a01b8e49f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나를 구원하소서 물들이 내 영혼까지 흘러 들어왔나이다"
+      ],
+      "raw_text_hashes": [
+        "e2b0ec7cd90fb93cca91d4bac9c3c14008815fd7c869f5c4896a64a01b8e49f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:2",
+      "sequence": 14938,
+      "chapter_label": "PSA 69",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 2
+        }
+      ],
+      "en": "I sink in deep mire, where there is no foothold. I have come into deep waters, where the floods overflow me.",
+      "ko": "내가 설 곳이 없는 깊은 수렁에 빠지며 깊은 물에 들어가니 큰 물이 내게 넘치나이다",
+      "source_text_hash": "81e54d6ee60bc7b912f4b359c30f9ef87decab63dc14c4c74de02472cbffbd0f",
+      "translation_text_hash": "1835a190a29e0cc975651d8ef6025024804f5569c9a30e87870781d4a1558d53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 설 곳이 없는 깊은 수렁에 빠지며 깊은 물에 들어가니 큰 물이 내게 넘치나이다"
+      ],
+      "raw_text_hashes": [
+        "1835a190a29e0cc975651d8ef6025024804f5569c9a30e87870781d4a1558d53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:3",
+      "sequence": 14939,
+      "chapter_label": "PSA 69",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 3
+        }
+      ],
+      "en": "I am weary with my crying. My throat is dry. My eyes fail looking for my God.",
+      "ko": "내가 부르짖음으로 피곤하여 내 목이 마르며 내 하나님을 바람으로 내 눈이 쇠하였나이다",
+      "source_text_hash": "9281c93bcc1972c0098cb499658aa794902d2dc9bf4826773990eee9771994b3",
+      "translation_text_hash": "8188c9534511fb7e8d33d4d29c8a68ad4941019fa18509c9b56b915806c5c8b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 부르짖음으로 피곤하여 내 목이 마르며 내 하나님을 바람으로 내 눈이 쇠하였나이다"
+      ],
+      "raw_text_hashes": [
+        "8188c9534511fb7e8d33d4d29c8a68ad4941019fa18509c9b56b915806c5c8b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:4",
+      "sequence": 14940,
+      "chapter_label": "PSA 69",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 4
+        }
+      ],
+      "en": "Those who hate me without a cause are more than the hairs of my head. Those who want to cut me off, being my enemies wrongfully, are mighty. I have to restore what I didn’t take away.",
+      "ko": "무고히 나를 미워하는 자가 내 머리털보다 많고 무리히 내 원수가 되어 나를 끊으려 하는 자가 강하였으니 내가 취치 아니한 것도 물어 주게 되었나이다",
+      "source_text_hash": "06e510a96802daa4f1e6a019dfd0236137c06a2eaf9b56928333760adaae045c",
+      "translation_text_hash": "6682d6f6fe1a0b90b63582c18b78eea18a473abf042197ac60aad5a86618f550",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무고히 나를 미워하는 자가 내 머리털보다 많고 무리히 내 원수가 되어 나를 끊으려 하는 자가 강하였으니 내가 취치 아니한 것도 물어 주게 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "6682d6f6fe1a0b90b63582c18b78eea18a473abf042197ac60aad5a86618f550"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:5",
+      "sequence": 14941,
+      "chapter_label": "PSA 69",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 5
+        }
+      ],
+      "en": "God, you know my foolishness. My sins aren’t hidden from you.",
+      "ko": "하나님이여 나의 우매함을 아시오니 내 죄가 주의 앞에서 숨김이 없나이다",
+      "source_text_hash": "3930423549f3eadc1689443afcbe70051d1c8174a278ab7ae6fa02040420d75f",
+      "translation_text_hash": "9300dc21db297bcf1415642b56d432fb3c175e4ed1a0215a7c9b23f01c602608",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나의 우매함을 아시오니 내 죄가 주의 앞에서 숨김이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "9300dc21db297bcf1415642b56d432fb3c175e4ed1a0215a7c9b23f01c602608"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:6",
+      "sequence": 14942,
+      "chapter_label": "PSA 69",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 6
+        }
+      ],
+      "en": "Don’t let those who wait for you be shamed through me, Lord GOD of Armies. Don’t let those who seek you be brought to dishonor through me, God of Israel.",
+      "ko": "만군의 주 여호와여 주를 바라는 자로 나를 인하여 수치를 당케 마옵소서 이스라엘의 하나님이여 주를 찾는 자로 나를 인하여 욕을 당케 마옵소서",
+      "source_text_hash": "15e030910d58b5306d75926c8eb9968b2cc6b46ef4cccf29c3396a8bfa5edcf1",
+      "translation_text_hash": "0089c2b09791e508037f9d52f404240e485910ec0f1655db42dd39002f062710",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 주 여호와여 주를 바라는 자로 나를 인하여 수치를 당케 마옵소서 이스라엘의 하나님이여 주를 찾는 자로 나를 인하여 욕을 당케 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "0089c2b09791e508037f9d52f404240e485910ec0f1655db42dd39002f062710"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:7",
+      "sequence": 14943,
+      "chapter_label": "PSA 69",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 7
+        }
+      ],
+      "en": "Because for your sake, I have borne reproach. Shame has covered my face.",
+      "ko": "내가 주를 위하여 훼방을 받았사오니 수치가 내 얼굴에 덮였나이다",
+      "source_text_hash": "dbffe8f60adfc7d37efbacc963ae902479abb181db6ec803de68108ac8bbde6c",
+      "translation_text_hash": "1646715576e9763c235a603d6d78a07ac58b3aa4038d50dea7f7a8c1c11fba65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주를 위하여 훼방을 받았사오니 수치가 내 얼굴에 덮였나이다"
+      ],
+      "raw_text_hashes": [
+        "1646715576e9763c235a603d6d78a07ac58b3aa4038d50dea7f7a8c1c11fba65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:8",
+      "sequence": 14944,
+      "chapter_label": "PSA 69",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 8
+        }
+      ],
+      "en": "I have become a stranger to my brothers, an alien to my mother’s children.",
+      "ko": "내가 내 형제에게는 객이 되고 내 모친의 자녀에게는 외인이 되었나이다",
+      "source_text_hash": "8006cd3c8d5851c58ae8a69e7dea9f1708261180150d207525b1ed4731b84da7",
+      "translation_text_hash": "0a215670d0b07817b67cbc252048a7f1ca95bf542ccc73ce6ca4723ef8fe5af0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 형제에게는 객이 되고 내 모친의 자녀에게는 외인이 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "0a215670d0b07817b67cbc252048a7f1ca95bf542ccc73ce6ca4723ef8fe5af0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:9",
+      "sequence": 14945,
+      "chapter_label": "PSA 69",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 9
+        }
+      ],
+      "en": "For the zeal of your house consumes me. The reproaches of those who reproach you have fallen on me.",
+      "ko": "주의 집을 위하는 열성이 나를 삼키고 주를 훼방하는 훼방이 내게 미쳤나이다",
+      "source_text_hash": "d266a0671fc902cfa046d24f7442526204ee3b727043a76e476c3af9101531cf",
+      "translation_text_hash": "2874e951a4fd47f35756f3faa432c57f8dce88628264ead9b8786adbc2484027",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 집을 위하는 열성이 나를 삼키고 주를 훼방하는 훼방이 내게 미쳤나이다"
+      ],
+      "raw_text_hashes": [
+        "2874e951a4fd47f35756f3faa432c57f8dce88628264ead9b8786adbc2484027"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:10",
+      "sequence": 14946,
+      "chapter_label": "PSA 69",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 10
+        }
+      ],
+      "en": "When I wept and I fasted, that was to my reproach.",
+      "ko": "내가 곡하고 금식함으로 내 영혼을 경계하였더니 그것이 도리어 나의 욕이 되었으며",
+      "source_text_hash": "7c3cd70cded68addde5a474cf75a3f3dc91c18e292f36ea0a14a3612b4aeb522",
+      "translation_text_hash": "57652a426338f0502fada0198d135e0e55e32451136fe0b6439743af27afab33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 곡하고 금식함으로 내 영혼을 경계하였더니 그것이 도리어 나의 욕이 되었으며"
+      ],
+      "raw_text_hashes": [
+        "57652a426338f0502fada0198d135e0e55e32451136fe0b6439743af27afab33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:11",
+      "sequence": 14947,
+      "chapter_label": "PSA 69",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 11
+        }
+      ],
+      "en": "When I made sackcloth my clothing, I became a byword to them.",
+      "ko": "내가 굵은 베로 내 옷을 삼았더니 내가 저희의 말거리가 되었나이다",
+      "source_text_hash": "ded5dcb0422c29e894e2d034529d7244e582436f3588cbede63754d280188859",
+      "translation_text_hash": "188f7961dfd1ea2dd8373cdea879b7cdac8d8129ca51504f6d61f6ad19be7b5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 굵은 베로 내 옷을 삼았더니 내가 저희의 말거리가 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "188f7961dfd1ea2dd8373cdea879b7cdac8d8129ca51504f6d61f6ad19be7b5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:12",
+      "sequence": 14948,
+      "chapter_label": "PSA 69",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 12
+        }
+      ],
+      "en": "Those who sit in the gate talk about me. I am the song of the drunkards.",
+      "ko": "성문에 앉은 자가 나를 말하며 취한 무리가 나를 가져 노래하나이다",
+      "source_text_hash": "daff53d153f9e836d0ac708774ff04921dee425f949c26d39166f20ccea275ab",
+      "translation_text_hash": "0614871aae24f4adcec5d386ab932e0cee7e82072ae53a44721beb069dd2c7a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문에 앉은 자가 나를 말하며 취한 무리가 나를 가져 노래하나이다"
+      ],
+      "raw_text_hashes": [
+        "0614871aae24f4adcec5d386ab932e0cee7e82072ae53a44721beb069dd2c7a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:13",
+      "sequence": 14949,
+      "chapter_label": "PSA 69",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 13
+        }
+      ],
+      "en": "But as for me, my prayer is to you, LORD, in an acceptable time. God, in the abundance of your loving kindness, answer me in the truth of your salvation.",
+      "ko": "여호와여 열납하시는 때에 나는 주께 기도하오니 하나님이여 많은 인자와 구원의 진리로 내게 응답하소서",
+      "source_text_hash": "43635de124bd6edf60cce344ddf25067d3865caff54cfc9898a30768e32378f3",
+      "translation_text_hash": "c5cb058f26a1c92b2b26a033cfd81886554f9a5ae965e8d59759f60e3311afe2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 열납하시는 때에 나는 주께 기도하오니 하나님이여 많은 인자와 구원의 진리로 내게 응답하소서"
+      ],
+      "raw_text_hashes": [
+        "c5cb058f26a1c92b2b26a033cfd81886554f9a5ae965e8d59759f60e3311afe2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:14",
+      "sequence": 14950,
+      "chapter_label": "PSA 69",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 14
+        }
+      ],
+      "en": "Deliver me out of the mire, and don’t let me sink. Let me be delivered from those who hate me, and out of the deep waters.",
+      "ko": "나를 수렁에서 건지사 빠지지 말게 하시고 나를 미워하는 자에게서와 깊은 물에서 건지소서",
+      "source_text_hash": "0ec352238cb7b86de0b02efe7ebe79e396b4d669cba1863bb958c9520c169628",
+      "translation_text_hash": "4ae1da8eb1897e6304b853dfd83aabd3dcdb02a8b253c102e6d8db70f5dbd5ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 수렁에서 건지사 빠지지 말게 하시고 나를 미워하는 자에게서와 깊은 물에서 건지소서"
+      ],
+      "raw_text_hashes": [
+        "4ae1da8eb1897e6304b853dfd83aabd3dcdb02a8b253c102e6d8db70f5dbd5ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:15",
+      "sequence": 14951,
+      "chapter_label": "PSA 69",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 15
+        }
+      ],
+      "en": "Don’t let the flood waters overwhelm me, neither let the deep swallow me up. Don’t let the pit shut its mouth on me.",
+      "ko": "큰 물이 나를 엄몰하거나 깊음이 나를 삼키지 못하게 하시며 웅덩이로 내 위에 그 입을 닫지 못하게 하소서",
+      "source_text_hash": "4897032df56bd380a1773d582372c6061e03be3358cc942cfd286adcb51c8aa6",
+      "translation_text_hash": "1e9aacce113c9af564d25047d6b1db28379be30d429c73f459c410d395bb4885",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 물이 나를 엄몰하거나 깊음이 나를 삼키지 못하게 하시며 웅덩이로 내 위에 그 입을 닫지 못하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "1e9aacce113c9af564d25047d6b1db28379be30d429c73f459c410d395bb4885"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:16",
+      "sequence": 14952,
+      "chapter_label": "PSA 69",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 16
+        }
+      ],
+      "en": "Answer me, LORD, for your loving kindness is good. According to the multitude of your tender mercies, turn to me.",
+      "ko": "여호와여 주의 인자하심이 선하시오니 내게 응답하시며 주의 많은 긍휼을 따라 내게로 돌이키소서",
+      "source_text_hash": "6e13bb8cff49b54d1e6f101ce95585c92a633f6f980a5a8677d115526bbd03d7",
+      "translation_text_hash": "a405d7e666560236a71266583ffa2dfe38879e89ec34ee3e7903be57a444203e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 인자하심이 선하시오니 내게 응답하시며 주의 많은 긍휼을 따라 내게로 돌이키소서"
+      ],
+      "raw_text_hashes": [
+        "a405d7e666560236a71266583ffa2dfe38879e89ec34ee3e7903be57a444203e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:17",
+      "sequence": 14953,
+      "chapter_label": "PSA 69",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 17
+        }
+      ],
+      "en": "Don’t hide your face from your servant, for I am in distress. Answer me speedily!",
+      "ko": "주의 얼굴을 주의 종에게서 숨기지 마소서 내가 환난 중에 있사오니 속히 내게 응답하소서",
+      "source_text_hash": "51c19ab1f9a0a3a69649b3ed1b01f1e3b29d12475556afb23c7f6746d919e8e0",
+      "translation_text_hash": "fdeaa79660cbee452c245d1d383caaad9df0df49306655a00569dfb5a7b42292",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 얼굴을 주의 종에게서 숨기지 마소서 내가 환난 중에 있사오니 속히 내게 응답하소서"
+      ],
+      "raw_text_hashes": [
+        "fdeaa79660cbee452c245d1d383caaad9df0df49306655a00569dfb5a7b42292"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:18",
+      "sequence": 14954,
+      "chapter_label": "PSA 69",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 18
+        }
+      ],
+      "en": "Draw near to my soul and redeem it. Ransom me because of my enemies.",
+      "ko": "내 영혼에게 가까이하사 구속하시며 내 원수를 인하여 나를 속량하소서",
+      "source_text_hash": "95165908198a446d46e2523ef28ed2f7eb285338ba6e66615b9a8b94dbe65bd1",
+      "translation_text_hash": "6ec0f13a1ae32bb284f8ba1cdebce4b068b2d4b61fd190591f101e05ea1311b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼에게 가까이하사 구속하시며 내 원수를 인하여 나를 속량하소서"
+      ],
+      "raw_text_hashes": [
+        "6ec0f13a1ae32bb284f8ba1cdebce4b068b2d4b61fd190591f101e05ea1311b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:19",
+      "sequence": 14955,
+      "chapter_label": "PSA 69",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 19
+        }
+      ],
+      "en": "You know my reproach, my shame, and my dishonor. My adversaries are all before you.",
+      "ko": "주께서 나의 훼방과 수치와 능욕을 아시나이다 내 대적이 다 주의 앞에 있나이다",
+      "source_text_hash": "61e290b24ff3729a7c2beef66cda79b3e0f4dc95590c78cb644fb2e6371e8c8e",
+      "translation_text_hash": "81e5e81d0364a92c37e08fef198f818fde5c8a592c036739ae06190144517b3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나의 훼방과 수치와 능욕을 아시나이다 내 대적이 다 주의 앞에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "81e5e81d0364a92c37e08fef198f818fde5c8a592c036739ae06190144517b3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:20",
+      "sequence": 14956,
+      "chapter_label": "PSA 69",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 20
+        }
+      ],
+      "en": "Reproach has broken my heart, and I am full of heaviness. I looked for some to take pity, but there was none; for comforters, but I found none.",
+      "ko": "훼방이 내 마음을 상하여 근심이 충만하니 긍휼히 여길 자를 바라나 없고 안위할 자를 바라나 찾지 못하였나이다",
+      "source_text_hash": "4ad3ea1643ac2898f1c8342065c20117dba272ce301ae45474b3efd50b9e7333",
+      "translation_text_hash": "fb23fc355f4104b42714f5478b83aae417cfe4e690663629660b3f7eb8d2c727",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "훼방이 내 마음을 상하여 근심이 충만하니 긍휼히 여길 자를 바라나 없고 안위할 자를 바라나 찾지 못하였나이다"
+      ],
+      "raw_text_hashes": [
+        "fb23fc355f4104b42714f5478b83aae417cfe4e690663629660b3f7eb8d2c727"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:21",
+      "sequence": 14957,
+      "chapter_label": "PSA 69",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 21
+        }
+      ],
+      "en": "They also gave me poison for my food. In my thirst, they gave me vinegar to drink.",
+      "ko": "저희가 쓸개를 나의 식물로 주며 갈할 때에 초로 마시웠사오니",
+      "source_text_hash": "8a1654396dcb1c28e3d3d0460c1912404ab8a73a7b43613bfb5570af14e40922",
+      "translation_text_hash": "d0e861b408c630ba2e74ce26a1be5f7e75756a1996706640df7b44852ba60249",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 쓸개를 나의 식물로 주며 갈할 때에 초로 마시웠사오니"
+      ],
+      "raw_text_hashes": [
+        "d0e861b408c630ba2e74ce26a1be5f7e75756a1996706640df7b44852ba60249"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:22",
+      "sequence": 14958,
+      "chapter_label": "PSA 69",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 22
+        }
+      ],
+      "en": "Let their table before them become a snare. May it become a retribution and a trap.",
+      "ko": "저희 앞에 밥상이 올무가 되게 하시며 저희 평안이 덫이 되게 하소서",
+      "source_text_hash": "2dbf1604777b5b41a7a5dec0d6e4ab4c5c1b1bf03ac824c6fead8d79b499f143",
+      "translation_text_hash": "6578d552fd57019b214ebbab17f9d24ab068045572c1619353e43be3a87990fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 앞에 밥상이 올무가 되게 하시며 저희 평안이 덫이 되게 하소서"
+      ],
+      "raw_text_hashes": [
+        "6578d552fd57019b214ebbab17f9d24ab068045572c1619353e43be3a87990fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:23",
+      "sequence": 14959,
+      "chapter_label": "PSA 69",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 23
+        }
+      ],
+      "en": "Let their eyes be darkened, so that they can’t see. Let their backs be continually bent.",
+      "ko": "저희 눈이 어두워 보지 못하게 하시며 그 허리가 항상 떨리게 하소서",
+      "source_text_hash": "abce7347dd20be1672d4bd06072a3da17cbb6391a3d0c90da5d794218baf6d24",
+      "translation_text_hash": "a37a94e7b4a0f3210bd7697d10d7a9e70b53945a90bf62c8cbf0c809076d0ec4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 눈이 어두워 보지 못하게 하시며 그 허리가 항상 떨리게 하소서"
+      ],
+      "raw_text_hashes": [
+        "a37a94e7b4a0f3210bd7697d10d7a9e70b53945a90bf62c8cbf0c809076d0ec4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:24",
+      "sequence": 14960,
+      "chapter_label": "PSA 69",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 24
+        }
+      ],
+      "en": "Pour out your indignation on them. Let the fierceness of your anger overtake them.",
+      "ko": "주의 분노를 저희 위에 부으시며 주의 맹렬하신 노로 저희에게 미치게 하소서",
+      "source_text_hash": "3cc22a1e1a2379f1926a5acf2f33b111bb16da9c795198c6341e67135e09a7cc",
+      "translation_text_hash": "bd8263a05fac1ccb447b53e2914dd63ec115323388a6a1a6c73b985ce6797563",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 분노를 저희 위에 부으시며 주의 맹렬하신 노로 저희에게 미치게 하소서"
+      ],
+      "raw_text_hashes": [
+        "bd8263a05fac1ccb447b53e2914dd63ec115323388a6a1a6c73b985ce6797563"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:25",
+      "sequence": 14961,
+      "chapter_label": "PSA 69",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 25
+        }
+      ],
+      "en": "Let their habitation be desolate. Let no one dwell in their tents.",
+      "ko": "저희 거처로 황폐하게 하시며 그 장막에 거하는 자가 없게 하소서",
+      "source_text_hash": "186ca96625abc9ec4d1990fecb84e96b623b495e7e975041cac719c7eebd05cd",
+      "translation_text_hash": "2500ed8393935ee16498ede4d5d11812bb68d882284886fbad119919796ad30a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 거처로 황폐하게 하시며 그 장막에 거하는 자가 없게 하소서"
+      ],
+      "raw_text_hashes": [
+        "2500ed8393935ee16498ede4d5d11812bb68d882284886fbad119919796ad30a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:26",
+      "sequence": 14962,
+      "chapter_label": "PSA 69",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 26
+        }
+      ],
+      "en": "For they persecute him whom you have wounded. They tell of the sorrow of those whom you have hurt.",
+      "ko": "대저 저희가 주의 치신 자를 핍박하며 주께서 상케 하신 자의 슬픔을 말하였사오니",
+      "source_text_hash": "5d3eb5038fe8975ee633e2fe89702ec3891255944cd0de563707e3610a839295",
+      "translation_text_hash": "e741d62f1354e2b7e0f83aa9607d1091a564a2f29a2f70be68add446efc3945e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 저희가 주의 치신 자를 핍박하며 주께서 상케 하신 자의 슬픔을 말하였사오니"
+      ],
+      "raw_text_hashes": [
+        "e741d62f1354e2b7e0f83aa9607d1091a564a2f29a2f70be68add446efc3945e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:27",
+      "sequence": 14963,
+      "chapter_label": "PSA 69",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 27
+        }
+      ],
+      "en": "Charge them with crime upon crime. Don’t let them come into your righteousness.",
+      "ko": "저희 죄악에 죄악을 더 정하사 주의 의에 들어오지 못하게 하소서",
+      "source_text_hash": "6f3e38f64509b105898ec4fb0bcb8c0d14e1bf5ab0ba90a6850de1320abd42f6",
+      "translation_text_hash": "97a96c01e9f5ac09cc5488f9f9553ad71e3bac6be6d9728f0364d7be42ee4687",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 죄악에 죄악을 더 정하사 주의 의에 들어오지 못하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "97a96c01e9f5ac09cc5488f9f9553ad71e3bac6be6d9728f0364d7be42ee4687"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:28",
+      "sequence": 14964,
+      "chapter_label": "PSA 69",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 28
+        }
+      ],
+      "en": "Let them be blotted out of the book of life, and not be written with the righteous.",
+      "ko": "저희를 생명책에서 도말하사 의인과 함께 기록되게 마소서",
+      "source_text_hash": "f5d352295600511ee365f96f5515c93296c9e8160d4756760f24a140e962195b",
+      "translation_text_hash": "0d21ac1ef8e2b2976cd524ca6c5fa02dfa11d53726802c4f310d7569d336545a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 생명책에서 도말하사 의인과 함께 기록되게 마소서"
+      ],
+      "raw_text_hashes": [
+        "0d21ac1ef8e2b2976cd524ca6c5fa02dfa11d53726802c4f310d7569d336545a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:29",
+      "sequence": 14965,
+      "chapter_label": "PSA 69",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 29
+        }
+      ],
+      "en": "But I am in pain and distress. Let your salvation, God, protect me.",
+      "ko": "오직 나는 가난하고 슬프오니 하나님이여 주의 구원으로 나를 높이소서",
+      "source_text_hash": "d995d02873472fbb195ca5a5d93f53cf18103886e337cdcf79db22cfd5480ab0",
+      "translation_text_hash": "c5ed2e49cbe58b126114ec59110c31205b0f9eed93f2d9b061474b57b47191d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 나는 가난하고 슬프오니 하나님이여 주의 구원으로 나를 높이소서"
+      ],
+      "raw_text_hashes": [
+        "c5ed2e49cbe58b126114ec59110c31205b0f9eed93f2d9b061474b57b47191d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:30",
+      "sequence": 14966,
+      "chapter_label": "PSA 69",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 30
+        }
+      ],
+      "en": "I will praise the name of God with a song, and will magnify him with thanksgiving.",
+      "ko": "내가 노래로 하나님의 이름을 찬송하며 감사함으로 하나님을 광대하시다 하리니",
+      "source_text_hash": "3f32bb8469b10671e91c2b0679b04d71eb9fc552ccd8c427d116116b9b3c5b84",
+      "translation_text_hash": "d0d11a98a55e5a2a7850d3b24bf7054f5566773dc0cd8abd866ab2c83d2b360f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 노래로 하나님의 이름을 찬송하며 감사함으로 하나님을 광대하시다 하리니"
+      ],
+      "raw_text_hashes": [
+        "d0d11a98a55e5a2a7850d3b24bf7054f5566773dc0cd8abd866ab2c83d2b360f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:31",
+      "sequence": 14967,
+      "chapter_label": "PSA 69",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 31
+        }
+      ],
+      "en": "It will please the LORD better than an ox, or a bull that has horns and hoofs.",
+      "ko": "이것이 소 곧 뿔과 굽이 있는 황소를 드림보다 여호와를 더욱 기쁘시게 함이 될것이라",
+      "source_text_hash": "e623ca60537236c998ab8669175646428d3fec3d96d50fc81a51f14617dcacdc",
+      "translation_text_hash": "26bb49e20be06b20bdce24f68d26e1d34677ebbd9cdceef145a0ce772c3f8ea7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 소 곧 뿔과 굽이 있는 황소를 드림보다 여호와를 더욱 기쁘시게 함이 될것이라"
+      ],
+      "raw_text_hashes": [
+        "26bb49e20be06b20bdce24f68d26e1d34677ebbd9cdceef145a0ce772c3f8ea7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:32",
+      "sequence": 14968,
+      "chapter_label": "PSA 69",
+      "verse_label": "32",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 32
+        }
+      ],
+      "en": "The humble have seen it, and are glad. You who seek after God, let your heart live.",
+      "ko": "온유한 자가 이를 보고 기뻐하나니 하나님을 찾는 너희들아 너희 마음을 소생케 할찌어다",
+      "source_text_hash": "3c395b421d72eeade026afd614fe4521d2c12c9c457f311e2b5486062e303153",
+      "translation_text_hash": "7258584f60d0bcbd0934988ba3421b6b430598b4609842d61f713514092840c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온유한 자가 이를 보고 기뻐하나니 하나님을 찾는 너희들아 너희 마음을 소생케 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "7258584f60d0bcbd0934988ba3421b6b430598b4609842d61f713514092840c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:33",
+      "sequence": 14969,
+      "chapter_label": "PSA 69",
+      "verse_label": "33",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 33
+        }
+      ],
+      "en": "For the LORD hears the needy, and doesn’t despise his captive people.",
+      "ko": "여호와는 궁핍한 자를 들으시며 자기를 인하여 수금된 자를 멸시치 아니하시나니",
+      "source_text_hash": "4dd456737f1107fce096a723dd79b7663897b155417b3720e478c87dc3ac91ac",
+      "translation_text_hash": "69f95deb73e68b114c4cc9f665bc8a4592db76610d3338eebf84912da8d14290",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 궁핍한 자를 들으시며 자기를 인하여 수금된 자를 멸시치 아니하시나니"
+      ],
+      "raw_text_hashes": [
+        "69f95deb73e68b114c4cc9f665bc8a4592db76610d3338eebf84912da8d14290"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:34",
+      "sequence": 14970,
+      "chapter_label": "PSA 69",
+      "verse_label": "34",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 34
+        }
+      ],
+      "en": "Let heaven and earth praise him; the seas, and everything that moves therein!",
+      "ko": "천지가 그를 찬송할 것이요 바다와 그 중의 모든 동물도 그리할찌로다",
+      "source_text_hash": "e547d69f6bcc1022670cbbe91624ed3d5fd4dddc212e3fdc406b4c8a83f2b24f",
+      "translation_text_hash": "891144938d6575ddf0f354c455e30b9d4580c47a74d68e64c66aec0dc81b8569",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천지가 그를 찬송할 것이요 바다와 그 중의 모든 동물도 그리할찌로다"
+      ],
+      "raw_text_hashes": [
+        "891144938d6575ddf0f354c455e30b9d4580c47a74d68e64c66aec0dc81b8569"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:35",
+      "sequence": 14971,
+      "chapter_label": "PSA 69",
+      "verse_label": "35",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 35
+        }
+      ],
+      "en": "For God will save Zion, and build the cities of Judah. They shall settle there, and own it.",
+      "ko": "하나님이 시온을 구원하시고 유다 성읍들을 건설하시리니 무리가 거기 거하여 소유를 삼으리로다",
+      "source_text_hash": "1d33623fb34b08ccbbdf5116857f959806bf90be2734b93c02b115ea0c0441f8",
+      "translation_text_hash": "469dae34d77a44453112e718f14281fcb494a6890068a3d9d15ec1ca0c68cd52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 시온을 구원하시고 유다 성읍들을 건설하시리니 무리가 거기 거하여 소유를 삼으리로다"
+      ],
+      "raw_text_hashes": [
+        "469dae34d77a44453112e718f14281fcb494a6890068a3d9d15ec1ca0c68cd52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:69:36",
+      "sequence": 14972,
+      "chapter_label": "PSA 69",
+      "verse_label": "36",
+      "locator": {
+        "book": "PSA",
+        "chapter": 69,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 69,
+          "verse": 36
+        }
+      ],
+      "en": "The children also of his servants shall inherit it. Those who love his name shall dwell therein.",
+      "ko": "그 종들의 후손이 또한 이를 상속하고 그 이름을 사랑하는 자가 그 중에 거하리로다",
+      "source_text_hash": "d0d66503d0a0b02ab9b1688a8c823630ac40d514c449b5cbd38fc7175e801e8f",
+      "translation_text_hash": "ad6c0496b9a2a979ef9295ab2ad1d3408c23a4ee5e30eddc0f49dafd067c3b2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 종들의 후손이 또한 이를 상속하고 그 이름을 사랑하는 자가 그 중에 거하리로다"
+      ],
+      "raw_text_hashes": [
+        "ad6c0496b9a2a979ef9295ab2ad1d3408c23a4ee5e30eddc0f49dafd067c3b2a"
+      ]
+    }
+  ]
+}

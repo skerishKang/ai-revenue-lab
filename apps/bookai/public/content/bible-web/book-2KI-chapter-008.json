@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:008",
+  "unit_ordinal": 321,
+  "unit_label": "2KI 8",
+  "book_code": "2KI",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:8:1",
+      "sequence": 9729,
+      "chapter_label": "2KI 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Now Elisha had spoken to the woman whose son he had restored to life, saying, “Arise, and go, you and your household, and stay for a while wherever you can; for the LORD has called for a famine. It will also come on the land for seven years.”",
+      "ko": "엘리사가 이전에 아들을 다시 살려준 여인에게 이르되 너는 일어나서 네 권속과 함께 거할만한 곳으로 가서 거하라 여호와께서 기근을 명하셨으니 그대로 이 땅에 칠년 동안 임하리라",
+      "source_text_hash": "56621bd78e70e6c62f921bf593d7f73c2fce445a1b6a31869e0d8c138e84e525",
+      "translation_text_hash": "563c09502866dbcbcbb3d6f2412ab3821c112fda1b9b5cfebcfda5d7ffbf4f0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 이전에 아들을 다시 살려준 여인에게 이르되 너는 일어나서 네 권속과 함께 거할만한 곳으로 가서 거하라 여호와께서 기근을 명하셨으니 그대로 이 땅에 칠년 동안 임하리라"
+      ],
+      "raw_text_hashes": [
+        "563c09502866dbcbcbb3d6f2412ab3821c112fda1b9b5cfebcfda5d7ffbf4f0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:2",
+      "sequence": 9730,
+      "chapter_label": "2KI 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "The woman arose, and did according to the man of God’s word. She went with her household, and lived in the land of the Philistines for seven years.",
+      "ko": "여인이 일어나서 하나님의 사람의 말대로 행하여 그 권속과 함께 가서 블레셋 사람의 땅에 칠년을 우거하다가",
+      "source_text_hash": "902647baa397f6d485f46b586ecccd82602c391cf5636341b7b09ab5690d3abe",
+      "translation_text_hash": "053766c44eeef6a4c0787d741e523998fde731feda00558e845826b5bcf5ea44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 일어나서 하나님의 사람의 말대로 행하여 그 권속과 함께 가서 블레셋 사람의 땅에 칠년을 우거하다가"
+      ],
+      "raw_text_hashes": [
+        "053766c44eeef6a4c0787d741e523998fde731feda00558e845826b5bcf5ea44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:3",
+      "sequence": 9731,
+      "chapter_label": "2KI 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "At the end of seven years, the woman returned from the land of the Philistines. Then she went out to beg the king for her house and for her land.",
+      "ko": "칠년이 다하매 여인이 블레셋 사람의 땅에서 돌아와서 자기 집과 전토를 위하여 호소하려 하여 왕에게 나아갔더라",
+      "source_text_hash": "503b19e47e2de1b0f319ad563ec297dc306ff3f0458530c256eed08ea494ebb6",
+      "translation_text_hash": "b50f5d9c71ffdaea5f63effcef11a354395a4f3524ce0863d4593b93410da612",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠년이 다하매 여인이 블레셋 사람의 땅에서 돌아와서 자기 집과 전토를 위하여 호소하려 하여 왕에게 나아갔더라"
+      ],
+      "raw_text_hashes": [
+        "b50f5d9c71ffdaea5f63effcef11a354395a4f3524ce0863d4593b93410da612"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:4",
+      "sequence": 9732,
+      "chapter_label": "2KI 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Now the king was talking with Gehazi the servant of the man of God, saying, “Please tell me all the great things that Elisha has done.”",
+      "ko": "때에 왕이 하나님의 사람의 사환 게하시와 서로 말씀하며 가로되 너는 엘리사의 행한 모든 큰 일을 내게 고하라 하니",
+      "source_text_hash": "8a9d9345ed1e0b28e7df1379d835258caa054b4e00ed52a8825549a3b73c4017",
+      "translation_text_hash": "cd13d8b99dd55ea76b84129983aba3ef20fcff9755c0af4c1073395fb6f733b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 왕이 하나님의 사람의 사환 게하시와 서로 말씀하며 가로되 너는 엘리사의 행한 모든 큰 일을 내게 고하라 하니"
+      ],
+      "raw_text_hashes": [
+        "cd13d8b99dd55ea76b84129983aba3ef20fcff9755c0af4c1073395fb6f733b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:5",
+      "sequence": 9733,
+      "chapter_label": "2KI 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "As he was telling the king how he had restored to life him who was dead, behold, the woman whose son he had restored to life begged the king for her house and for her land. Gehazi said, “My lord, O king, this is the woman, and this is her son, whom Elisha restored to life.”",
+      "ko": "게하시가 곧 엘리사가 죽은 자를 다시 살린 일을 왕에게 이야기할 때에 그 다시 살린 아이의 어미가 자기 집과 전토를 위하여 왕에게 호소하는지라 게하시가 가로되 내 주 왕이여 이는 그 여인이요 저는 그 아들이니 곧 엘리사가 다시 살린 자니이다",
+      "source_text_hash": "8f4aae6bccb1442a3dbd098b74ba636dc7501a93dc7e62308f5f69ec74d13dc8",
+      "translation_text_hash": "f999b862fde6f01cadb0806e5fd42e666d988933bb63e6b68debea2d10dba65e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게하시가 곧 엘리사가 죽은 자를 다시 살린 일을 왕에게 이야기할 때에 그 다시 살린 아이의 어미가 자기 집과 전토를 위하여 왕에게 호소하는지라 게하시가 가로되 내 주 왕이여 이는 그 여인이요 저는 그 아들이니 곧 엘리사가 다시 살린 자니이다"
+      ],
+      "raw_text_hashes": [
+        "f999b862fde6f01cadb0806e5fd42e666d988933bb63e6b68debea2d10dba65e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:6",
+      "sequence": 9734,
+      "chapter_label": "2KI 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "When the king asked the woman, she told him. So the king appointed to her a certain officer, saying, “Restore all that was hers, and all the fruits of the field since the day that she left the land, even until now.”",
+      "ko": "왕이 그 여인에게 물으매 여인이 고한지라 왕이 저를 위하여 한 관리를 임명하여 가로되 무릇 이 여인에게 속한 것과 이 땅에서 떠날 때부터 이제까지 그 밭의 소출을 다 돌려주라 하였더라",
+      "source_text_hash": "9a8fffb08860075a3bf1078fec6d5881d51704cbbdd50fb02e4bc43e5b78655d",
+      "translation_text_hash": "842a57f346867f9866370dd4d01712a776d9a90b8b6bd26c6be7f9c8a93a859c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그 여인에게 물으매 여인이 고한지라 왕이 저를 위하여 한 관리를 임명하여 가로되 무릇 이 여인에게 속한 것과 이 땅에서 떠날 때부터 이제까지 그 밭의 소출을 다 돌려주라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "842a57f346867f9866370dd4d01712a776d9a90b8b6bd26c6be7f9c8a93a859c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:7",
+      "sequence": 9735,
+      "chapter_label": "2KI 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Elisha came to Damascus; and Benhadad the king of Syria was sick. He was told, “The man of God has come here.”",
+      "ko": "엘리사가 다메섹에 갔을 때에 아람 왕 벤하닷이 병들었더니 혹이 왕에게 고하여 가로되 하나님의 사람이 여기 이르렀나이다",
+      "source_text_hash": "cda8376bd93d485ca18a9156d95e2ab29e7faff4b7b72132c35e4c7400978304",
+      "translation_text_hash": "c57df7d1878dc663bf3cd560b8941bee81387ac73bbea5b4f3bf8cedccc6acea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 다메섹에 갔을 때에 아람 왕 벤하닷이 병들었더니 혹이 왕에게 고하여 가로되 하나님의 사람이 여기 이르렀나이다"
+      ],
+      "raw_text_hashes": [
+        "c57df7d1878dc663bf3cd560b8941bee81387ac73bbea5b4f3bf8cedccc6acea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:8",
+      "sequence": 9736,
+      "chapter_label": "2KI 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "The king said to Hazael, “Take a present in your hand, and go meet the man of God, and inquire of the LORD by him, saying, ‘Will I recover from this sickness?’”",
+      "ko": "왕이 하사엘에게 이르되 너는 손에 예물을 가지고 가서 하나님의 사람을 맞고 저로 말미암아 여호와께 나의 이 병이 낫겠나 물으라",
+      "source_text_hash": "274a8e4e01582a633f8a8e9a84cf1096c6ee08d1b40753dcbf37b167823bed52",
+      "translation_text_hash": "de97721a4e88abb1a16fb51fcd092ec996ceb8b2c3d38d319381ca3354502a09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 하사엘에게 이르되 너는 손에 예물을 가지고 가서 하나님의 사람을 맞고 저로 말미암아 여호와께 나의 이 병이 낫겠나 물으라"
+      ],
+      "raw_text_hashes": [
+        "de97721a4e88abb1a16fb51fcd092ec996ceb8b2c3d38d319381ca3354502a09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:9",
+      "sequence": 9737,
+      "chapter_label": "2KI 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "So Hazael went to meet him and took a present with him, even of every good thing of Damascus, forty camels’ burden, and came and stood before him and said, “Your son Benhadad king of Syria has sent me to you, saying, ‘Will I recover from this sickness?’”",
+      "ko": "하사엘이 드디어 맞으러 갈쌔 다메섹 모든 아름다운 물품으로 예물을 삼아가지고 약대 사십에 싣고 나아가서 저의 앞에 서서 가로되 당신의 아들 아람 왕 벤하닷이 나를 당신에게 보내어 가로되 나의 이 병이 낫겠나이까 하더이다",
+      "source_text_hash": "4be96a500a3e2d6a6c1da8a38adaeeb037d7d4a802073459432dfd0b9e81dd7d",
+      "translation_text_hash": "fd5b1f2b929c96dd5f9b9e79809d3d6aca31281551232798bdfdcdb988ea8133",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하사엘이 드디어 맞으러 갈쌔 다메섹 모든 아름다운 물품으로 예물을 삼아가지고 약대 사십에 싣고 나아가서 저의 앞에 서서 가로되 당신의 아들 아람 왕 벤하닷이 나를 당신에게 보내어 가로되 나의 이 병이 낫겠나이까 하더이다"
+      ],
+      "raw_text_hashes": [
+        "fd5b1f2b929c96dd5f9b9e79809d3d6aca31281551232798bdfdcdb988ea8133"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:10",
+      "sequence": 9738,
+      "chapter_label": "2KI 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Elisha said to him, “Go, tell him, ‘You will surely recover;’ however the LORD has shown me that he will surely die.”",
+      "ko": "엘리사가 가로되 너는 가서 저에게 고하기를 왕이 정녕 나으리라 하라 그러나 여호와께서 저가 정녕 죽으리라고 내게 알게 하셨느니라 하고",
+      "source_text_hash": "f794e84880fc2e329b4dc40bf2b54e23a67233010987adf9535b29d4d19e3033",
+      "translation_text_hash": "8dd6f95e046c77e7d3825adcb1348499847e0fd4c7531315db1c9bee176b86d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 가로되 너는 가서 저에게 고하기를 왕이 정녕 나으리라 하라 그러나 여호와께서 저가 정녕 죽으리라고 내게 알게 하셨느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "8dd6f95e046c77e7d3825adcb1348499847e0fd4c7531315db1c9bee176b86d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:11",
+      "sequence": 9739,
+      "chapter_label": "2KI 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "He settled his gaze steadfastly on him, until he was ashamed. Then the man of God wept.",
+      "ko": "하나님의 사람이 저가 부끄러워하기까지 쏘아보다가 우니",
+      "source_text_hash": "2a048c924016e06551b9080a1fc8b5fff273c3d2a57dc081f5f74d82a7eed440",
+      "translation_text_hash": "f0373b7bbd77699fdc4df79f2426dcb5951c739270de0a094800cf699b52be21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람이 저가 부끄러워하기까지 쏘아보다가 우니"
+      ],
+      "raw_text_hashes": [
+        "f0373b7bbd77699fdc4df79f2426dcb5951c739270de0a094800cf699b52be21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:12",
+      "sequence": 9740,
+      "chapter_label": "2KI 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Hazael said, “Why do you weep, my lord?” He answered, “Because I know the evil that you will do to the children of Israel. You will set their strongholds on fire, and you will kill their young men with the sword, and will dash their little ones in pieces, and rip up their pregnant women.”",
+      "ko": "하사엘이 가로되 내 주여 어찌하여 우시나이까 대답하되 네가 이스라엘 자손에게 행할 모든 악을 내가 앎이라 네가 저희 성에 불을 놓으며 장정을 칼로 죽이며 어린 아이를 메어치며 아이 밴 부녀를 가르리라",
+      "source_text_hash": "3b025bcc84afdb224f6f165f8e977be980a31195f53bf67e2c1fe77f8b7844ab",
+      "translation_text_hash": "814dbf1c06fc0d8465bb90a848766e37c3f34085ef1e80250363d738a6fbbe25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하사엘이 가로되 내 주여 어찌하여 우시나이까 대답하되 네가 이스라엘 자손에게 행할 모든 악을 내가 앎이라 네가 저희 성에 불을 놓으며 장정을 칼로 죽이며 어린 아이를 메어치며 아이 밴 부녀를 가르리라"
+      ],
+      "raw_text_hashes": [
+        "814dbf1c06fc0d8465bb90a848766e37c3f34085ef1e80250363d738a6fbbe25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:13",
+      "sequence": 9741,
+      "chapter_label": "2KI 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "Hazael said, “But what is your servant, who is but a dog, that he could do this great thing?” Elisha answered, “The LORD has shown me that you will be king over Syria.”",
+      "ko": "하사엘이 가로되 당신의 개 같은 종이 무엇이관대 이런 큰 일을 행하오리이까 엘리사가 대답하되 여호와께서 네가 아람 왕이 될 것을 내게 알게 하셨느니라",
+      "source_text_hash": "80045518a9922eaccec0942d4dd2e31cc52b156f50ae066a2dc170ac3ab637d2",
+      "translation_text_hash": "f2206b5b7995abacf9ff3aa5a9d60ee89525c16f6a4adcac10d40b37c801117d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하사엘이 가로되 당신의 개 같은 종이 무엇이관대 이런 큰 일을 행하오리이까 엘리사가 대답하되 여호와께서 네가 아람 왕이 될 것을 내게 알게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f2206b5b7995abacf9ff3aa5a9d60ee89525c16f6a4adcac10d40b37c801117d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:14",
+      "sequence": 9742,
+      "chapter_label": "2KI 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "Then he departed from Elisha, and came to his master, who said to him, “What did Elisha say to you?” He answered, “He told me that you would surely recover.”",
+      "ko": "저가 엘리사를 떠나가서 그 주인에게 나아가니 왕이 묻되 엘리사가 네게 무슨 말을 하더냐 대답하되 저가 내게 이르기를 왕이 정녕 나으시리라 하더이다",
+      "source_text_hash": "674c58674232c305dc2e150e381162420217c2f7a7482194971a7a1b4e85e17d",
+      "translation_text_hash": "7ee19fa778a5f9c4e4284cf7683669ad7371ae24b265fc6e34f5953f9a859064",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 엘리사를 떠나가서 그 주인에게 나아가니 왕이 묻되 엘리사가 네게 무슨 말을 하더냐 대답하되 저가 내게 이르기를 왕이 정녕 나으시리라 하더이다"
+      ],
+      "raw_text_hashes": [
+        "7ee19fa778a5f9c4e4284cf7683669ad7371ae24b265fc6e34f5953f9a859064"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:15",
+      "sequence": 9743,
+      "chapter_label": "2KI 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "On the next day, he took a thick cloth, dipped it in water, and spread it on the king’s face, so that he died. Then Hazael reigned in his place.",
+      "ko": "그 이튿날에 하사엘이 이불을 물에 적시어 왕의 얼굴에 덮으매 왕이 죽은지라 저가 대신하여 왕이 되니라",
+      "source_text_hash": "5591ef7a62d221fe1917d33224a608e65a2f9fdfaa589b67f09a4ed1d009ba84",
+      "translation_text_hash": "3c9fc7ea57106c16e4b7378aab4261350a7d443174baba30673058fa7e040fc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이튿날에 하사엘이 이불을 물에 적시어 왕의 얼굴에 덮으매 왕이 죽은지라 저가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "3c9fc7ea57106c16e4b7378aab4261350a7d443174baba30673058fa7e040fc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:16",
+      "sequence": 9744,
+      "chapter_label": "2KI 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "In the fifth year of Joram the son of Ahab king of Israel, Jehoshaphat being king of Judah then, Jehoram the son of Jehoshaphat king of Judah began to reign.",
+      "ko": "이스라엘 왕 아합의 아들 요람 제 오년에 유다 왕 여호사밧이 오히려 위에 있을 때에 그 아들 여호람이 왕이 되니라",
+      "source_text_hash": "c2b7794f63c4db2a7ed5a82afe771dbc16aadd07b5ad653789ed0615254ed873",
+      "translation_text_hash": "881d04792a3144901629218ccc1896eb5433286c960be8a8fa36c3768f6c3958",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 아합의 아들 요람 제 오년에 유다 왕 여호사밧이 오히려 위에 있을 때에 그 아들 여호람이 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "881d04792a3144901629218ccc1896eb5433286c960be8a8fa36c3768f6c3958"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:17",
+      "sequence": 9745,
+      "chapter_label": "2KI 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "He was thirty-two years old when he began to reign. He reigned eight years in Jerusalem.",
+      "ko": "여호람이 위에 나아갈 때에 나이 삼십 이세라 예루살렘에서 팔년을 치리하니라",
+      "source_text_hash": "baa3dd7af64ebc5d12bc6e3389d4494ba31865003f6b095bae2f71ac205bf466",
+      "translation_text_hash": "caee88de220b068f5e4e9ec4075c91855a10cb165d81d43790be285c03797e1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람이 위에 나아갈 때에 나이 삼십 이세라 예루살렘에서 팔년을 치리하니라"
+      ],
+      "raw_text_hashes": [
+        "caee88de220b068f5e4e9ec4075c91855a10cb165d81d43790be285c03797e1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:18",
+      "sequence": 9746,
+      "chapter_label": "2KI 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "He walked in the way of the kings of Israel, as did Ahab’s house, for he married Ahab’s daughter. He did that which was evil in the LORD’s sight.",
+      "ko": "저가 이스라엘 왕들의 길로 행하여 아합의 집과 같이 하였으니 이는 아합의 딸이 그 아내가 되었음이라 저가 여호와 보시기에 악을 행하였으나",
+      "source_text_hash": "42921e023ad969701e2334dfc1d7dc638f4bfd5449584a8b6d78d53989566988",
+      "translation_text_hash": "6016cf576273268c937025c5dc315ec2dc6c1dd089eca559dd426866c07faf04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이스라엘 왕들의 길로 행하여 아합의 집과 같이 하였으니 이는 아합의 딸이 그 아내가 되었음이라 저가 여호와 보시기에 악을 행하였으나"
+      ],
+      "raw_text_hashes": [
+        "6016cf576273268c937025c5dc315ec2dc6c1dd089eca559dd426866c07faf04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:19",
+      "sequence": 9747,
+      "chapter_label": "2KI 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "However, the LORD would not destroy Judah, for David his servant’s sake, as he promised him to give to him a lamp for his children always.",
+      "ko": "여호와께서 그 종 다윗을 위하여 유다 멸하기를 즐겨하지 아니하셨으니 이는 저와 그 자손에게 항상 등불을 주겠다고 허하셨음이더라",
+      "source_text_hash": "3200235d8897078494856eb4a135c47a0fe3c8737f222058419d8b93f8a72b1d",
+      "translation_text_hash": "95fcface27cc826c858b0d138810862fd2a56de7688d911a8306581bfc90d6a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 종 다윗을 위하여 유다 멸하기를 즐겨하지 아니하셨으니 이는 저와 그 자손에게 항상 등불을 주겠다고 허하셨음이더라"
+      ],
+      "raw_text_hashes": [
+        "95fcface27cc826c858b0d138810862fd2a56de7688d911a8306581bfc90d6a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:20",
+      "sequence": 9748,
+      "chapter_label": "2KI 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "In his days Edom revolted from under the hand of Judah, and made a king over themselves.",
+      "ko": "여호람 때에 에돔이 배반하여 유다의 수하에서 벗어나 자기 위에 왕을 세운고로",
+      "source_text_hash": "24461c351cf0da21f1ef64702fee29a751b18b9278ced29dffe4816aff82b70f",
+      "translation_text_hash": "592dbb472d862af4fb1762d5e7dbbc8803443b09b52378c36621a7301a2ba04b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람 때에 에돔이 배반하여 유다의 수하에서 벗어나 자기 위에 왕을 세운고로"
+      ],
+      "raw_text_hashes": [
+        "592dbb472d862af4fb1762d5e7dbbc8803443b09b52378c36621a7301a2ba04b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:21",
+      "sequence": 9749,
+      "chapter_label": "2KI 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "Then Joram crossed over to Zair, and all his chariots with him; and he rose up by night and struck the Edomites who surrounded him with the captains of the chariots; and the people fled to their tents.",
+      "ko": "여호람이 모든 병거를 거느리고 사일로 갔더니 밤에 일어나 자기를 에워싼 에돔 사람과 그 병거의 장관들을 치니 이에 백성이 도망하여 각각 그 장막으로 돌아갔더라",
+      "source_text_hash": "f4bea0cf9091e0731ca8553269161bea6973c87baae9a7372eccae2dd0efb306",
+      "translation_text_hash": "f67cad733f1f00bd7b84a78ac5a4cdc87f213cca70e21958f8cc154b5074f9b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람이 모든 병거를 거느리고 사일로 갔더니 밤에 일어나 자기를 에워싼 에돔 사람과 그 병거의 장관들을 치니 이에 백성이 도망하여 각각 그 장막으로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "f67cad733f1f00bd7b84a78ac5a4cdc87f213cca70e21958f8cc154b5074f9b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:22",
+      "sequence": 9750,
+      "chapter_label": "2KI 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "So Edom revolted from under the hand of Judah to this day. Then Libnah revolted at the same time.",
+      "ko": "이와 같이 에돔이 배반하여 유다의 수하에서 벗어났더니 오늘날까지 그러하였으며 그 때에 립나도 배반하였더라",
+      "source_text_hash": "60336f7122245b9f1c0efa4eb0f424942aabd4e2db0fa9905cf3abac06ac74a5",
+      "translation_text_hash": "2dcd1b13268e8f960c1f61739f08a4ec74570257ce57dae64bed08069a2c3905",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 에돔이 배반하여 유다의 수하에서 벗어났더니 오늘날까지 그러하였으며 그 때에 립나도 배반하였더라"
+      ],
+      "raw_text_hashes": [
+        "2dcd1b13268e8f960c1f61739f08a4ec74570257ce57dae64bed08069a2c3905"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:23",
+      "sequence": 9751,
+      "chapter_label": "2KI 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "The rest of the acts of Joram, and all that he did, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "여호람의 남은 사적과 그 행한 모든 일은 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "744297c2c38ffb1977df7bce200bf4fc5e9f37b78fd19dbb9ff674c816c63441",
+      "translation_text_hash": "bb1e6326342f503258830184515c44633784323429b009f02ff7a8815820f96c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람의 남은 사적과 그 행한 모든 일은 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "bb1e6326342f503258830184515c44633784323429b009f02ff7a8815820f96c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:24",
+      "sequence": 9752,
+      "chapter_label": "2KI 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "Joram slept with his fathers, and was buried with his fathers in David’s city; and Ahaziah his son reigned in his place.",
+      "ko": "여호람이 그 열조와 함께 자매 그 열조들과 함께 다윗 성에 장사되고 그 아들 아하시야가 대신하여 왕이 되니라",
+      "source_text_hash": "82a45586d761c61e088a9d955722fe79ececb17da105f12e56f4e828b12632af",
+      "translation_text_hash": "5db5fbcf288574452ba5e469a9fdce08b9280532b9b818981404f3d2f38e3ebe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람이 그 열조와 함께 자매 그 열조들과 함께 다윗 성에 장사되고 그 아들 아하시야가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "5db5fbcf288574452ba5e469a9fdce08b9280532b9b818981404f3d2f38e3ebe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:25",
+      "sequence": 9753,
+      "chapter_label": "2KI 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "In the twelfth year of Joram the son of Ahab king of Israel, Ahaziah the son of Jehoram king of Judah began to reign.",
+      "ko": "이스라엘 왕 아합의 아들 요람 제 십이년에 유다 왕 여호람의 아들 아하시야가 왕이 되니",
+      "source_text_hash": "518b9c2f44e30fc6acd66b962d1b3d7bd396c1e9c917b4c020e1a3c774a74c44",
+      "translation_text_hash": "55eb808223f1f67fccd6f2f0da47f6772b7105ec0015803866ec1bbe0e8d44ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 아합의 아들 요람 제 십이년에 유다 왕 여호람의 아들 아하시야가 왕이 되니"
+      ],
+      "raw_text_hashes": [
+        "55eb808223f1f67fccd6f2f0da47f6772b7105ec0015803866ec1bbe0e8d44ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:26",
+      "sequence": 9754,
+      "chapter_label": "2KI 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "Ahaziah was twenty-two years old when he began to reign; and he reigned one year in Jerusalem. His mother’s name was Athaliah the daughter of Omri king of Israel.",
+      "ko": "아하시야가 위에 나아갈 때에 나이 이십이세라 예루살렘에서 일년을 치리하니라 그 모친의 이름은 아달랴라 이스라엘 왕 오므리의 손녀더라",
+      "source_text_hash": "6c703a3bd56ad1bda2e4fd17d6135d55ae822bf99a42b7a808a44cd77ee17cc7",
+      "translation_text_hash": "b9e171fffb32c922779caa06845e735da118771fc548e98fcbfbd02b6e338899",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하시야가 위에 나아갈 때에 나이 이십이세라 예루살렘에서 일년을 치리하니라 그 모친의 이름은 아달랴라 이스라엘 왕 오므리의 손녀더라"
+      ],
+      "raw_text_hashes": [
+        "b9e171fffb32c922779caa06845e735da118771fc548e98fcbfbd02b6e338899"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:27",
+      "sequence": 9755,
+      "chapter_label": "2KI 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "He walked in the way of Ahab’s house and did that which was evil in the LORD’s sight, as did Ahab’s house, for he was the son-in-law of Ahab’s house.",
+      "ko": "아하시야가 아합의 집 길로 행하여 아합의 집과 같이 여호와 보시기에 악을 행하였으니 저는 아합의 집의 사위가 되었음이러라",
+      "source_text_hash": "6c808c1f6020d3220a997f9f752a59afedd1848dbbb5244fb74d0fb80a450fbb",
+      "translation_text_hash": "0120e8506122cde7a3315703b76cc7af0312d0fbc08e06b9801bbbae7c1cfff6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하시야가 아합의 집 길로 행하여 아합의 집과 같이 여호와 보시기에 악을 행하였으니 저는 아합의 집의 사위가 되었음이러라"
+      ],
+      "raw_text_hashes": [
+        "0120e8506122cde7a3315703b76cc7af0312d0fbc08e06b9801bbbae7c1cfff6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:28",
+      "sequence": 9756,
+      "chapter_label": "2KI 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "He went with Joram the son of Ahab to war against Hazael king of Syria at Ramoth Gilead, and the Syrians wounded Joram.",
+      "ko": "저가 아합의 아들 요람과 함께 길르앗 라못으로 가서 아람 왕 하사엘로 더불어 싸우더니 아람 사람들이 요람을 상하게 한지라",
+      "source_text_hash": "19f564802b8f6f27c39b6970866aa0b8a5c348b6540c96b91b0f277c2a6874ce",
+      "translation_text_hash": "5d369a80bccac396c5409b2806866dafae6582b2b5fe0fe74872a01f13ce073f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 아합의 아들 요람과 함께 길르앗 라못으로 가서 아람 왕 하사엘로 더불어 싸우더니 아람 사람들이 요람을 상하게 한지라"
+      ],
+      "raw_text_hashes": [
+        "5d369a80bccac396c5409b2806866dafae6582b2b5fe0fe74872a01f13ce073f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:8:29",
+      "sequence": 9757,
+      "chapter_label": "2KI 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "King Joram returned to be healed in Jezreel from the wounds which the Syrians had given him at Ramah, when he fought against Hazael king of Syria. Ahaziah the son of Jehoram, king of Judah, went down to see Joram the son of Ahab in Jezreel, because he was sick.",
+      "ko": "요람왕이 아람 왕 하사엘과 싸울 때에 라마에서 아람 사람에게 맞아 상한 것을 치료하려 하여 이스르엘로 돌아왔더라 아합의 아들 요람이 병이 있으므로 유다 왕 여호람의 아들 아하시야가 이스르엘에 내려가서 방문하였더라",
+      "source_text_hash": "03b1a2b65df13cf9ec2836baace7055681f73aa593299dec51e32ce4670ec41e",
+      "translation_text_hash": "af7a3090b4da9c58266f78d6881bcf5b20b3c7ecd4b229b54f54d6d9e9d1aed4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요람왕이 아람 왕 하사엘과 싸울 때에 라마에서 아람 사람에게 맞아 상한 것을 치료하려 하여 이스르엘로 돌아왔더라 아합의 아들 요람이 병이 있으므로 유다 왕 여호람의 아들 아하시야가 이스르엘에 내려가서 방문하였더라"
+      ],
+      "raw_text_hashes": [
+        "af7a3090b4da9c58266f78d6881bcf5b20b3c7ecd4b229b54f54d6d9e9d1aed4"
+      ]
+    }
+  ]
+}

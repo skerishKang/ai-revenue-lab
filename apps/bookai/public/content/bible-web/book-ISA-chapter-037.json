@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:037",
+  "unit_ordinal": 716,
+  "unit_label": "ISA 37",
+  "book_code": "ISA",
+  "chapter_number": 37,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:37:1",
+      "sequence": 18354,
+      "chapter_label": "ISA 37",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 1
+        }
+      ],
+      "en": "When King Hezekiah heard it, he tore his clothes, covered himself with sackcloth, and went into the LORD’s house.",
+      "ko": "히스기야왕이 듣고 그 옷을 찢고 굵은 베를 입고 여호와의 전으로 갔고",
+      "source_text_hash": "e271162620eff4737128c86f0e916e0f9daf0570da24ae5b8bff10d75a3aa1cf",
+      "translation_text_hash": "6768663a1a6c3c35693b9563ed9bdf8f2c95ef057047b9d5da74c53524d8b3e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야왕이 듣고 그 옷을 찢고 굵은 베를 입고 여호와의 전으로 갔고"
+      ],
+      "raw_text_hashes": [
+        "6768663a1a6c3c35693b9563ed9bdf8f2c95ef057047b9d5da74c53524d8b3e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:2",
+      "sequence": 18355,
+      "chapter_label": "ISA 37",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 2
+        }
+      ],
+      "en": "He sent Eliakim, who was over the household, and Shebna the scribe, and the elders of the priests, covered with sackcloth, to Isaiah the prophet, the son of Amoz.",
+      "ko": "궁내대신 엘리아김과 서기관 셉나와 제사장 중 어른들도 굵은 베를 입으니라 왕이 그들을 아모스의 아들 선지자 이사야에게로 보내매",
+      "source_text_hash": "d541978a9261bce29550d87e64e43cf59c0c2a56ae4cbebd901a489e76b7448d",
+      "translation_text_hash": "539b7650ac826b2f95a7a64fd9b7e416e1fc97c2d46117136c2daccb4512daa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궁내대신 엘리아김과 서기관 셉나와 제사장 중 어른들도 굵은 베를 입으니라 왕이 그들을 아모스의 아들 선지자 이사야에게로 보내매"
+      ],
+      "raw_text_hashes": [
+        "539b7650ac826b2f95a7a64fd9b7e416e1fc97c2d46117136c2daccb4512daa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:3",
+      "sequence": 18356,
+      "chapter_label": "ISA 37",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 3
+        }
+      ],
+      "en": "They said to him, “Hezekiah says, ‘Today is a day of trouble, and of rebuke, and of rejection; for the children have come to the birth, and there is no strength to give birth.",
+      "ko": "그들이 이사야에게 이르되 히스기야의 말씀에 오늘은 환난과 책벌과 능욕의 날이라 아이를 낳으려 하나 해산할 힘이 없음 같도다",
+      "source_text_hash": "d78bdba8184b72e85a1b35b19f5a569257bf80a8094145ed2b8c31b54609c120",
+      "translation_text_hash": "cece5829908e4aea57619a21472440bc2a0fa3a3c266eda0442a5401b6c31918",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이사야에게 이르되 히스기야의 말씀에 오늘은 환난과 책벌과 능욕의 날이라 아이를 낳으려 하나 해산할 힘이 없음 같도다"
+      ],
+      "raw_text_hashes": [
+        "cece5829908e4aea57619a21472440bc2a0fa3a3c266eda0442a5401b6c31918"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:4",
+      "sequence": 18357,
+      "chapter_label": "ISA 37",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 4
+        }
+      ],
+      "en": "It may be the LORD your God will hear the words of Rabshakeh, whom the king of Assyria his master has sent to defy the living God, and will rebuke the words which the LORD your God has heard. Therefore lift up your prayer for the remnant that is left.’”",
+      "ko": "당신의 하나님 여호와께서 랍사게의 말을 들으셨을 것이라 그가 그 주 앗수르 왕의 보냄을 받고 사시는 하나님을 훼방하였은즉 당신의 하나님 여호와께서 혹시 그 말에 견책하실까 하노라 그런즉 바라건대 당신은 이 남아 있는 자를 위하여 기도하라 하시더이다",
+      "source_text_hash": "130f2abdd820e6b3ea14f1c064ed3630e46d92940313a3f207862768078c1420",
+      "translation_text_hash": "4e8aa437fe39cfdcf5e6d377a51cafe9c2c9e2dbe3f27e00d935ad8ebe7e6778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신의 하나님 여호와께서 랍사게의 말을 들으셨을 것이라 그가 그 주 앗수르 왕의 보냄을 받고 사시는 하나님을 훼방하였은즉 당신의 하나님 여호와께서 혹시 그 말에 견책하실까 하노라 그런즉 바라건대 당신은 이 남아 있는 자를 위하여 기도하라 하시더이다"
+      ],
+      "raw_text_hashes": [
+        "4e8aa437fe39cfdcf5e6d377a51cafe9c2c9e2dbe3f27e00d935ad8ebe7e6778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:5",
+      "sequence": 18358,
+      "chapter_label": "ISA 37",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 5
+        }
+      ],
+      "en": "So the servants of King Hezekiah came to Isaiah.",
+      "ko": "이와 같이 히스기야왕의 신하들이 이사야에게 나아가매",
+      "source_text_hash": "63894251e995a2c776deef4f963468016b924b3ecc1dea5ddfb76e202fb9d864",
+      "translation_text_hash": "22dd59c64797546889925a01b3b28789691452ba651a28f103efa93f46bdb66c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 히스기야왕의 신하들이 이사야에게 나아가매"
+      ],
+      "raw_text_hashes": [
+        "22dd59c64797546889925a01b3b28789691452ba651a28f103efa93f46bdb66c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:6",
+      "sequence": 18359,
+      "chapter_label": "ISA 37",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 6
+        }
+      ],
+      "en": "Isaiah said to them, “Tell your master, ‘The LORD says, “Don’t be afraid of the words that you have heard, with which the servants of the king of Assyria have blasphemed me.",
+      "ko": "이사야가 그들에게 이르되 너희는 너희 주에게 이렇게 고하라 여호와께서 말씀하시되 너희의 들은바 앗수르 왕의 종들이 나를 능욕한 말을 인하여 두려워 말라",
+      "source_text_hash": "3e19a8204b365c326c387115579846bb16ad420af283935f57d6189caf53fd97",
+      "translation_text_hash": "3b9c5a4e73e4473bc17fb183d49972c197f333fad144999f9d7d46184341d9e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이사야가 그들에게 이르되 너희는 너희 주에게 이렇게 고하라 여호와께서 말씀하시되 너희의 들은바 앗수르 왕의 종들이 나를 능욕한 말을 인하여 두려워 말라"
+      ],
+      "raw_text_hashes": [
+        "3b9c5a4e73e4473bc17fb183d49972c197f333fad144999f9d7d46184341d9e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:7",
+      "sequence": 18360,
+      "chapter_label": "ISA 37",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, I will put a spirit in him and he will hear news, and will return to his own land. I will cause him to fall by the sword in his own land.”’”",
+      "ko": "보라 내가 신을 그의 속에 두리니 그가 풍성을 듣고 그 고토로 돌아갈 것이며 또 내가 그를 그 고토에서 칼에 죽게 하리라 하셨느니라",
+      "source_text_hash": "0330cf4e9276dd294fadb73871e830901e4251b486448f329f26291d888e83ef",
+      "translation_text_hash": "65de59501f443e983cc131cb29fc97b8e9cffe8306d5cb0f1c338264e5a0e8c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 신을 그의 속에 두리니 그가 풍성을 듣고 그 고토로 돌아갈 것이며 또 내가 그를 그 고토에서 칼에 죽게 하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "65de59501f443e983cc131cb29fc97b8e9cffe8306d5cb0f1c338264e5a0e8c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:8",
+      "sequence": 18361,
+      "chapter_label": "ISA 37",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 8
+        }
+      ],
+      "en": "So Rabshakeh returned, and found the king of Assyria warring against Libnah, for he heard that he had departed from Lachish.",
+      "ko": "랍사게가 앗수르 왕이 라기스를 떠났다 함을 듣고 돌아가다가 그 왕이 립나 치는 것을 만나니라",
+      "source_text_hash": "5c1df1ec3c8bec0e60218b50e7fc9fd71a4de230380668a48eca435d346c3f65",
+      "translation_text_hash": "01175ccbed0d1b4526d9cc0fec951d46ac9f5113fb1564ad7c9cc6e875608f19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "랍사게가 앗수르 왕이 라기스를 떠났다 함을 듣고 돌아가다가 그 왕이 립나 치는 것을 만나니라"
+      ],
+      "raw_text_hashes": [
+        "01175ccbed0d1b4526d9cc0fec951d46ac9f5113fb1564ad7c9cc6e875608f19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:9",
+      "sequence": 18362,
+      "chapter_label": "ISA 37",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 9
+        }
+      ],
+      "en": "He heard news concerning Tirhakah king of Ethiopia, “He has come out to fight against you.” When he heard it, he sent messengers to Hezekiah, saying,",
+      "ko": "그 때에 앗수르 왕이 구스 왕 디르하가의 일에 대하여 들은즉 이르기를 그가 나와서 왕과 싸우려 한다 하는지라 이 말을 듣고 사자들을 히스기야에게 보내며 가로되",
+      "source_text_hash": "7de181b199604ba7ef4bf1fe191d3ac793ec7286d2e999246ddcf53ca83a2dca",
+      "translation_text_hash": "e2b631d857ccb7260d762d848d3ffbd4a2c6a3887b441448204745a76594a04e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 앗수르 왕이 구스 왕 디르하가의 일에 대하여 들은즉 이르기를 그가 나와서 왕과 싸우려 한다 하는지라 이 말을 듣고 사자들을 히스기야에게 보내며 가로되"
+      ],
+      "raw_text_hashes": [
+        "e2b631d857ccb7260d762d848d3ffbd4a2c6a3887b441448204745a76594a04e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:10",
+      "sequence": 18363,
+      "chapter_label": "ISA 37",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 10
+        }
+      ],
+      "en": "“Thus you shall speak to Hezekiah king of Judah, saying, ‘Don’t let your God in whom you trust deceive you, saying, “Jerusalem won’t be given into the hand of the king of Assyria.”",
+      "ko": "너희는 유다 왕 히스기야에게 이같이 고하여 이르기를 너는 너의 의뢰하는 하나님이 예루살렘이 앗수르 왕의 손에 넘어가지 아니하리라 하는 말에 속지 말라",
+      "source_text_hash": "ad918aab8c6edbae4c9c6ffc4e3940c0a203161a6b6364999823fe0c61285f20",
+      "translation_text_hash": "16449d3209fdd4387c0550c001af372db3b94ca0eb2881318660bdfefdb74006",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 유다 왕 히스기야에게 이같이 고하여 이르기를 너는 너의 의뢰하는 하나님이 예루살렘이 앗수르 왕의 손에 넘어가지 아니하리라 하는 말에 속지 말라"
+      ],
+      "raw_text_hashes": [
+        "16449d3209fdd4387c0550c001af372db3b94ca0eb2881318660bdfefdb74006"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:11",
+      "sequence": 18364,
+      "chapter_label": "ISA 37",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, you have heard what the kings of Assyria have done to all lands, by destroying them utterly. Shall you be delivered?",
+      "ko": "앗수르 왕들이 모든 나라에 어떤 일을 행하였으며 그것을 어떻게 멸절시켰는지 네가 들었으리니 네가 건짐을 얻겠느냐",
+      "source_text_hash": "22c5abb4fe436dc867b15f59515bb8a81a7cc78c33ce01ca5c1554f20cbf2933",
+      "translation_text_hash": "9b4d129425402bba99ce937d1acf12c5f07fd06ff7a4b1a13e7aa02823a40575",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕들이 모든 나라에 어떤 일을 행하였으며 그것을 어떻게 멸절시켰는지 네가 들었으리니 네가 건짐을 얻겠느냐"
+      ],
+      "raw_text_hashes": [
+        "9b4d129425402bba99ce937d1acf12c5f07fd06ff7a4b1a13e7aa02823a40575"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:12",
+      "sequence": 18365,
+      "chapter_label": "ISA 37",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 12
+        }
+      ],
+      "en": "Have the gods of the nations delivered them, which my fathers have destroyed, Gozan, Haran, Rezeph, and the children of Eden who were in Telassar?",
+      "ko": "나의 열조가 멸하신 열방 고산과 하란과 레셉과 및 들라살에 거하는 에덴 자손을 그 나라 신들이 건졌더냐",
+      "source_text_hash": "7bfe0a247a3b888392298e95a4a9430c9c93d1ebe3a44fe7e070d98f3871564c",
+      "translation_text_hash": "5a55e89bad1e463e466666b34f5ae8b3a028ba42e742af09b4e3be7e78ae802e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 열조가 멸하신 열방 고산과 하란과 레셉과 및 들라살에 거하는 에덴 자손을 그 나라 신들이 건졌더냐"
+      ],
+      "raw_text_hashes": [
+        "5a55e89bad1e463e466666b34f5ae8b3a028ba42e742af09b4e3be7e78ae802e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:13",
+      "sequence": 18366,
+      "chapter_label": "ISA 37",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 13
+        }
+      ],
+      "en": "Where is the king of Hamath, and the king of Arpad, and the king of the city of Sepharvaim, of Hena, and Ivvah?’”",
+      "ko": "하맛 왕과 아르밧 왕과 스발와임성의 왕과 헤나 왕과 이와 왕이 어디 있느냐 하라 하였더라",
+      "source_text_hash": "a72a950c5bd2ec584af9401de49fd5af2147746a6ce61512bd1704fdabe1143c",
+      "translation_text_hash": "ffaa277f3c4af8df323c5f642084f2c763608fc81c9a8b9127d43346f2e79fee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하맛 왕과 아르밧 왕과 스발와임성의 왕과 헤나 왕과 이와 왕이 어디 있느냐 하라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "ffaa277f3c4af8df323c5f642084f2c763608fc81c9a8b9127d43346f2e79fee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:14",
+      "sequence": 18367,
+      "chapter_label": "ISA 37",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 14
+        }
+      ],
+      "en": "Hezekiah received the letter from the hand of the messengers and read it. Then Hezekiah went up to the LORD’s house, and spread it before the LORD.",
+      "ko": "히스기야가 사자의 손에서 글을 받아 보고 여호와의 전에 올라가서 그 글을 여호와 앞에 펴놓고",
+      "source_text_hash": "7dec084568e1c833f90de67ae5ce8b4d9cea48b31e69922ba4fd127acb48bceb",
+      "translation_text_hash": "c58d4fa5f90d140d7568f58355e4958f5239f6ae1f38603207b02e04d2ab1070",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 사자의 손에서 글을 받아 보고 여호와의 전에 올라가서 그 글을 여호와 앞에 펴놓고"
+      ],
+      "raw_text_hashes": [
+        "c58d4fa5f90d140d7568f58355e4958f5239f6ae1f38603207b02e04d2ab1070"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:15",
+      "sequence": 18368,
+      "chapter_label": "ISA 37",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 15
+        }
+      ],
+      "en": "Hezekiah prayed to the LORD, saying,",
+      "ko": "여호와께 기도하여 가로되",
+      "source_text_hash": "32e9a0c21e32a1c1a963ce44ff34dc98f3297a93bf25eb825c253fcecbdaac4d",
+      "translation_text_hash": "5bdb096be36cbcb60e998e721194c41eed76522c6e87c225ad0d3b24cbcf7fb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 기도하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "5bdb096be36cbcb60e998e721194c41eed76522c6e87c225ad0d3b24cbcf7fb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:16",
+      "sequence": 18369,
+      "chapter_label": "ISA 37",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 16
+        }
+      ],
+      "en": "“LORD of Armies, the God of Israel, who is enthroned among the cherubim, you are the God, even you alone, of all the kingdoms of the earth. You have made heaven and earth.",
+      "ko": "그룹 사이에 계신 이스라엘 하나님 만군의 여호와여 주는 천하 만국의 유일하신 하나님이시라 주께서 천지를 조성하셨나이다",
+      "source_text_hash": "ac0960ef64dea638d55bb49538396369d9ff24ffb750bd445fd5daeaf6527ed6",
+      "translation_text_hash": "25dcaa56d8e371c90f1b1ff292632d77106326fa8b773be68eaa264062959034",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹 사이에 계신 이스라엘 하나님 만군의 여호와여 주는 천하 만국의 유일하신 하나님이시라 주께서 천지를 조성하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "25dcaa56d8e371c90f1b1ff292632d77106326fa8b773be68eaa264062959034"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:17",
+      "sequence": 18370,
+      "chapter_label": "ISA 37",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 17
+        }
+      ],
+      "en": "Turn your ear, LORD, and hear. Open your eyes, LORD, and behold. Hear all of the words of Sennacherib, who has sent to defy the living God.",
+      "ko": "여호와여 귀를 기울여 들으시옵소서 여호와여 눈을 떠 보시옵소서 산헤립이 사자로 사시는 하나님을 훼방한 모든 말을 들으시옵소서",
+      "source_text_hash": "ac7b08b35a695d663b5e8fa8605a45ddb924df995605a0850f3dabcb833d8ac7",
+      "translation_text_hash": "35a1ecc75f7da82e0d05f75475a41fb99310bf6b02e69b1e4b5815c38567dafc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 귀를 기울여 들으시옵소서 여호와여 눈을 떠 보시옵소서 산헤립이 사자로 사시는 하나님을 훼방한 모든 말을 들으시옵소서"
+      ],
+      "raw_text_hashes": [
+        "35a1ecc75f7da82e0d05f75475a41fb99310bf6b02e69b1e4b5815c38567dafc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:18",
+      "sequence": 18371,
+      "chapter_label": "ISA 37",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 18
+        }
+      ],
+      "en": "Truly, LORD, the kings of Assyria have destroyed all the countries and their land,",
+      "ko": "여호와여 앗수르 왕들이 과연 열국과 그 땅을 황폐케 하였고",
+      "source_text_hash": "04084dab99bb18b381b6e0f363f4f6e7b6883b051addbebf65208308fe68087b",
+      "translation_text_hash": "f1c97f49a30bbaee855f1ae17852d7236fb5d53981311c680dcabdf719ef3abd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 앗수르 왕들이 과연 열국과 그 땅을 황폐케 하였고"
+      ],
+      "raw_text_hashes": [
+        "f1c97f49a30bbaee855f1ae17852d7236fb5d53981311c680dcabdf719ef3abd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:19",
+      "sequence": 18372,
+      "chapter_label": "ISA 37",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 19
+        }
+      ],
+      "en": "and have cast their gods into the fire; for they were no gods, but the work of men’s hands, wood and stone; therefore they have destroyed them.",
+      "ko": "그들의 신들을 불에 던졌사오나 이들은 참 신이 아니라 사람의 손으로 만든 것 뿐이요 나무와 돌이라 그러므로 멸망을 당하였나이다",
+      "source_text_hash": "acbe6b8dc4209073f71fc1dcd18ef79326aa9765a04d2f73123b11ad5917e297",
+      "translation_text_hash": "b4ad092f941fa538f443ed9f5be1f498d69ad98e82c97760030272f0f527f118",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 신들을 불에 던졌사오나 이들은 참 신이 아니라 사람의 손으로 만든 것 뿐이요 나무와 돌이라 그러므로 멸망을 당하였나이다"
+      ],
+      "raw_text_hashes": [
+        "b4ad092f941fa538f443ed9f5be1f498d69ad98e82c97760030272f0f527f118"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:20",
+      "sequence": 18373,
+      "chapter_label": "ISA 37",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 20
+        }
+      ],
+      "en": "Now therefore, LORD our God, save us from his hand, that all the kingdoms of the earth may know that you are the LORD, even you only.”",
+      "ko": "우리 하나님 여호와여 이제 우리를 그의 손에서 구원하사 천하 만국으로 주만 여호와이신 줄을 알게 하옵소서",
+      "source_text_hash": "937b259481fc58a4d4a824b421f2192e0559854daa15fb12f349f20ad448067a",
+      "translation_text_hash": "ff3413b80de1e27a95e946b7babf894a117ce2c301aa74bd446a579d40ac553a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와여 이제 우리를 그의 손에서 구원하사 천하 만국으로 주만 여호와이신 줄을 알게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "ff3413b80de1e27a95e946b7babf894a117ce2c301aa74bd446a579d40ac553a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:21",
+      "sequence": 18374,
+      "chapter_label": "ISA 37",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 21
+        }
+      ],
+      "en": "Then Isaiah the son of Amoz sent to Hezekiah, saying, “The LORD, the God of Israel says, ‘Because you have prayed to me against Sennacherib king of Assyria,",
+      "ko": "아모스의 아들 이사야가 보내어 히스기야에게 이르되 이스라엘의 하나님 여호와께서 말씀하시되 네가 앗수르 왕 산헤립의 일로 내게 기도하였도다 하시고",
+      "source_text_hash": "3f30ad9f822873ffdabe3cc5e95444dbdb7de1c8c855ee784c12c5d4bc827df6",
+      "translation_text_hash": "b63a79f135ae5cd53f7c7c80a5eb239bb2d61bd26182784ff91e57b3519c9ac6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아모스의 아들 이사야가 보내어 히스기야에게 이르되 이스라엘의 하나님 여호와께서 말씀하시되 네가 앗수르 왕 산헤립의 일로 내게 기도하였도다 하시고"
+      ],
+      "raw_text_hashes": [
+        "b63a79f135ae5cd53f7c7c80a5eb239bb2d61bd26182784ff91e57b3519c9ac6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:22",
+      "sequence": 18375,
+      "chapter_label": "ISA 37",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 22
+        }
+      ],
+      "en": "this is the word which the LORD has spoken concerning him: The virgin daughter of Zion has despised you and ridiculed you. The daughter of Jerusalem has shaken her head at you.",
+      "ko": "여호와께서 그에 대하여 이같이 이르시되 처녀 딸 시온이 너를 멸시하며 조소하였고 딸 예루살렘이 너를 향하여 머리를 흔들었느니라",
+      "source_text_hash": "36f6322d0a47a324f21d93f946597773e0ff6a32483304993df25ffbfcb0d289",
+      "translation_text_hash": "5ea7c9f3f7ce05a866633915e013ba1726cfba8ad205b86ab5e66875e853d95e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그에 대하여 이같이 이르시되 처녀 딸 시온이 너를 멸시하며 조소하였고 딸 예루살렘이 너를 향하여 머리를 흔들었느니라"
+      ],
+      "raw_text_hashes": [
+        "5ea7c9f3f7ce05a866633915e013ba1726cfba8ad205b86ab5e66875e853d95e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:23",
+      "sequence": 18376,
+      "chapter_label": "ISA 37",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 23
+        }
+      ],
+      "en": "Whom have you defied and blasphemed? Against whom have you exalted your voice and lifted up your eyes on high? Against the Holy One of Israel.",
+      "ko": "네가 훼방하며 능욕한 것은 누구에게냐 네가 소리를 높이며 눈을 높이 들어 향한 것은 누구에게냐 곧 이스라엘의 거룩한 자에게니라",
+      "source_text_hash": "1dbf708315b0ed5e20b13d5852537d3764e6a3629ee2796e8a85e4e4431f393d",
+      "translation_text_hash": "070ac8727f6f99302aea28370ba5e0d1a3e09117162c0b81bedafa01ef7a9c7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 훼방하며 능욕한 것은 누구에게냐 네가 소리를 높이며 눈을 높이 들어 향한 것은 누구에게냐 곧 이스라엘의 거룩한 자에게니라"
+      ],
+      "raw_text_hashes": [
+        "070ac8727f6f99302aea28370ba5e0d1a3e09117162c0b81bedafa01ef7a9c7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:24",
+      "sequence": 18377,
+      "chapter_label": "ISA 37",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 24
+        }
+      ],
+      "en": "By your servants, you have defied the Lord, and have said, “With the multitude of my chariots I have come up to the height of the mountains, to the innermost parts of Lebanon. I will cut down its tall cedars and its choice cypress trees. I will enter into its farthest height, the forest of its fruitful field.",
+      "ko": "네가 네 종으로 주를 훼방하여 이르기를 내가 나의 허다한 병거를 거느리고 산들의 꼭대기에 올라가며 레바논의 깊은 곳에 이르렀으니 높은 백향목과 아름다운 향나무를 베고 또 그 한계 되는 높은 곳에 들어가며 살진 땅의 수풀에 이를것이며",
+      "source_text_hash": "337d9ae3d25d45ee9c1d7c829b9fb9de17e2dc7c8c0fcb72908f36da1bcc484d",
+      "translation_text_hash": "c5efc30b2a67e1f35e4c1eb4f56a5e8170642dafb2d6af2b8dd2c043391bbe52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 종으로 주를 훼방하여 이르기를 내가 나의 허다한 병거를 거느리고 산들의 꼭대기에 올라가며 레바논의 깊은 곳에 이르렀으니 높은 백향목과 아름다운 향나무를 베고 또 그 한계 되는 높은 곳에 들어가며 살진 땅의 수풀에 이를것이며"
+      ],
+      "raw_text_hashes": [
+        "c5efc30b2a67e1f35e4c1eb4f56a5e8170642dafb2d6af2b8dd2c043391bbe52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:25",
+      "sequence": 18378,
+      "chapter_label": "ISA 37",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 25
+        }
+      ],
+      "en": "I have dug and drunk water, and with the sole of my feet I will dry up all the rivers of Egypt.”",
+      "ko": "내가 우물을 파서 물을 마셨으니 나의 발바닥으로 애굽의 모든 하수를 밟아 말리리라 하였도다",
+      "source_text_hash": "5c3a109b6de61c7899556ffac8b180dd97b5556bb6c45ea764faafac6f5fba56",
+      "translation_text_hash": "051657cb85aba74efea412d05bea84a85dbf60a2fb4217daf66947e67c6b3203",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 우물을 파서 물을 마셨으니 나의 발바닥으로 애굽의 모든 하수를 밟아 말리리라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "051657cb85aba74efea412d05bea84a85dbf60a2fb4217daf66947e67c6b3203"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:26",
+      "sequence": 18379,
+      "chapter_label": "ISA 37",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 26
+        }
+      ],
+      "en": "“‘Have you not heard how I have done it long ago, and formed it in ancient times? Now I have brought it to pass, that it should be yours to destroy fortified cities, turning them into ruinous heaps.",
+      "ko": "네가 어찌 듣지 못하였겠느냐 이 일들은 내가 태초부터 행한바요 상고부터 정한 바로서 이제 내가 이루어 너로 견고한 성을 헐어 돌무더기가 되게 하였노라",
+      "source_text_hash": "a6572e1a5589425495ad757b3aa09d35233480dffca7e9e1ab8730390f538e8f",
+      "translation_text_hash": "93e8be9e41022ec1c756166325ca0e8e6bf28f8dd2749e2486ead605a7a566cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌 듣지 못하였겠느냐 이 일들은 내가 태초부터 행한바요 상고부터 정한 바로서 이제 내가 이루어 너로 견고한 성을 헐어 돌무더기가 되게 하였노라"
+      ],
+      "raw_text_hashes": [
+        "93e8be9e41022ec1c756166325ca0e8e6bf28f8dd2749e2486ead605a7a566cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:27",
+      "sequence": 18380,
+      "chapter_label": "ISA 37",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 27
+        }
+      ],
+      "en": "Therefore their inhabitants had little power. They were dismayed and confounded. They were like the grass of the field, and like the green herb, like the grass on the housetops, and like a field before its crop has grown.",
+      "ko": "그러므로 그 거민들이 힘이 약하여 놀라며 수치를 당하여 들의 풀 같이, 푸른 나물 같이, 지붕의 풀 같이, 자라지 못한 곡초 같았었느니라",
+      "source_text_hash": "cab99776d5214766159dd474e5099e1a38a7dfc4e1a0124240fc295e823cd2f9",
+      "translation_text_hash": "b5847d9de98a24072e80b9d6e3d62d06f949569b77e43f5c86cf6d8ee0cb811f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그 거민들이 힘이 약하여 놀라며 수치를 당하여 들의 풀 같이, 푸른 나물 같이, 지붕의 풀 같이, 자라지 못한 곡초 같았었느니라"
+      ],
+      "raw_text_hashes": [
+        "b5847d9de98a24072e80b9d6e3d62d06f949569b77e43f5c86cf6d8ee0cb811f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:28",
+      "sequence": 18381,
+      "chapter_label": "ISA 37",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 28
+        }
+      ],
+      "en": "But I know your sitting down, your going out, your coming in, and your raging against me.",
+      "ko": "네 거처와 네 출입과 나를 거스려 분노함을 내가 아노라",
+      "source_text_hash": "9e2858945d4f20faa9b7c622e86adc9bfc0d58507531a57c7bc5025a47b42f44",
+      "translation_text_hash": "f3d338abc4684cb8e10b486b7fe0a847626dfc91a2e8e8477bdbade984d30b6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 거처와 네 출입과 나를 거스려 분노함을 내가 아노라"
+      ],
+      "raw_text_hashes": [
+        "f3d338abc4684cb8e10b486b7fe0a847626dfc91a2e8e8477bdbade984d30b6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:29",
+      "sequence": 18382,
+      "chapter_label": "ISA 37",
+      "verse_label": "29",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 29
+        }
+      ],
+      "en": "Because of your raging against me, and because your arrogance has come up into my ears, therefore I will put my hook in your nose and my bridle in your lips, and I will turn you back by the way by which you came.",
+      "ko": "네가 나를 거스려 분노함과 네 오만함이 내 귀에 들렸으므로 내가 갈고리로 네 코를 꿰며 자갈을 네 입에 먹여 너를 오던 길로 돌아가게 하리라 하셨나이다",
+      "source_text_hash": "002a68d9afd2504a51664150817e7cb24b5e5440d1e945061f9ec555b551e254",
+      "translation_text_hash": "f5b820c6a4d1c33449c4ce797de22ed22e6cf2b366ce34834ec8b8241370e98c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 나를 거스려 분노함과 네 오만함이 내 귀에 들렸으므로 내가 갈고리로 네 코를 꿰며 자갈을 네 입에 먹여 너를 오던 길로 돌아가게 하리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "f5b820c6a4d1c33449c4ce797de22ed22e6cf2b366ce34834ec8b8241370e98c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:30",
+      "sequence": 18383,
+      "chapter_label": "ISA 37",
+      "verse_label": "30",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 30
+        }
+      ],
+      "en": "“‘This shall be the sign to you: You will eat this year that which grows of itself, and in the second year that which springs from it; and in the third year sow and reap and plant vineyards, and eat their fruit.",
+      "ko": "왕이여 이것이 왕에게 징조가 되리니 금년에는 스스로 난 것을 먹을 것이요 제 이년에는 또 거기서 난 것을 먹을 것이요 제 삼년에는 심고 거두며 포도나무를 심고 그 열매를 먹을 것이니이다",
+      "source_text_hash": "9a5743f4b8febc6a223800b2c3cc631b2a16c03dd63086ac2ec2aee27e553b51",
+      "translation_text_hash": "d68b259db9f56fa4e17354a18d6a242143fb2fc6532a3119922ddb8d958dd16d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이여 이것이 왕에게 징조가 되리니 금년에는 스스로 난 것을 먹을 것이요 제 이년에는 또 거기서 난 것을 먹을 것이요 제 삼년에는 심고 거두며 포도나무를 심고 그 열매를 먹을 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "d68b259db9f56fa4e17354a18d6a242143fb2fc6532a3119922ddb8d958dd16d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:31",
+      "sequence": 18384,
+      "chapter_label": "ISA 37",
+      "verse_label": "31",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 31
+        }
+      ],
+      "en": "The remnant that is escaped of the house of Judah will again take root downward, and bear fruit upward.",
+      "ko": "유다 족속 중에 피하여 남는 자는 다시 아래로 뿌리를 박고 위로 열매를 맺히리니",
+      "source_text_hash": "b69a0ed9885cb199acdc3d1377a48cb98b09a1da76b27f557fe71f9d0cda58db",
+      "translation_text_hash": "b2892e57fdd0b00a17ca2106b0c81515cf8ad487025870e3291093724f3e7adf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 족속 중에 피하여 남는 자는 다시 아래로 뿌리를 박고 위로 열매를 맺히리니"
+      ],
+      "raw_text_hashes": [
+        "b2892e57fdd0b00a17ca2106b0c81515cf8ad487025870e3291093724f3e7adf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:32",
+      "sequence": 18385,
+      "chapter_label": "ISA 37",
+      "verse_label": "32",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 32
+        }
+      ],
+      "en": "For out of Jerusalem a remnant will go out, and survivors will escape from Mount Zion. The zeal of the LORD of Armies will perform this.’",
+      "ko": "이는 남는 자가 예루살렘에서 나오며 피하는 자가 시온에서 나올 것임이라 만군의 여호와의 열심이 이를 이루시리이다",
+      "source_text_hash": "d326e47bb824d43b1105db6f45a3eaa1106aa2431ee7ab20147a2fac72c7f8b5",
+      "translation_text_hash": "f1ee167c5bfc376d184ccc31e48053ccbfda4b245a1a3b4dce2e48c75a6e6827",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 남는 자가 예루살렘에서 나오며 피하는 자가 시온에서 나올 것임이라 만군의 여호와의 열심이 이를 이루시리이다"
+      ],
+      "raw_text_hashes": [
+        "f1ee167c5bfc376d184ccc31e48053ccbfda4b245a1a3b4dce2e48c75a6e6827"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:33",
+      "sequence": 18386,
+      "chapter_label": "ISA 37",
+      "verse_label": "33",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 33
+        }
+      ],
+      "en": "“Therefore the LORD says concerning the king of Assyria, ‘He will not come to this city, nor shoot an arrow there, neither will he come before it with shield, nor cast up a mound against it.",
+      "ko": "그러므로 여호와께서 앗수르 왕에 대하여 가라사대 그가 이 성에 이르지 못하며 한 살도 이리로 쏘지 못하며 방패를 가지고 성에 가까이 오지도 못하며 흉벽을 쌓고 치지도 못할 것이요",
+      "source_text_hash": "c881c02d05c61fde35fd20737693818be5e8955f42e1900a214e881112c99a7e",
+      "translation_text_hash": "896e09429bfe51660ac709ccd0ee429979c519b7ce506aef818a6a6d485c20e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 앗수르 왕에 대하여 가라사대 그가 이 성에 이르지 못하며 한 살도 이리로 쏘지 못하며 방패를 가지고 성에 가까이 오지도 못하며 흉벽을 쌓고 치지도 못할 것이요"
+      ],
+      "raw_text_hashes": [
+        "896e09429bfe51660ac709ccd0ee429979c519b7ce506aef818a6a6d485c20e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:34",
+      "sequence": 18387,
+      "chapter_label": "ISA 37",
+      "verse_label": "34",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 34
+        }
+      ],
+      "en": "He will return the way that he came, and he won’t come to this city,’ says the LORD.",
+      "ko": "그가 오던 길 곧 그 길로 돌아가고 이 성에 이르지 못하리라 나 여호와의 말이니라",
+      "source_text_hash": "f7d52decd1d578576cff1f7bd5c4d3aef28dd4fed1fc857307d0ab0fe8eb5e78",
+      "translation_text_hash": "3fb091cfc92bc51c19d066f9d7067c5f6014b7eb851d8bd92c42db469eedabe9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 오던 길 곧 그 길로 돌아가고 이 성에 이르지 못하리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "3fb091cfc92bc51c19d066f9d7067c5f6014b7eb851d8bd92c42db469eedabe9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:35",
+      "sequence": 18388,
+      "chapter_label": "ISA 37",
+      "verse_label": "35",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 35
+        }
+      ],
+      "en": "‘For I will defend this city to save it, for my own sake, and for my servant David’s sake.’”",
+      "ko": "대저 내가 나를 위하며 내 종 다윗을 위하여 이 성을 보호하며 구원하리라 하셨나이다",
+      "source_text_hash": "b7e09b87355c57e277a1c1be61ff18bbc71a0cd8ce172304cef78fcbeadf7d34",
+      "translation_text_hash": "ea36079a7051e9b6f865d9b2304627a81451541d55d2ee035b67dc136b7e377f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 내가 나를 위하며 내 종 다윗을 위하여 이 성을 보호하며 구원하리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "ea36079a7051e9b6f865d9b2304627a81451541d55d2ee035b67dc136b7e377f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:36",
+      "sequence": 18389,
+      "chapter_label": "ISA 37",
+      "verse_label": "36",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 36
+        }
+      ],
+      "en": "Then the LORD’s angel went out and struck one hundred and eighty-five thousand men in the camp of the Assyrians. When men arose early in the morning, behold, these were all dead bodies.",
+      "ko": "여호와의 사자가 나가서 앗수르 진중에서 십 팔만 오천인을 쳤으므로 아침에 일찌기 일어나 본즉 시체 뿐이라",
+      "source_text_hash": "6539056249d4ed99e16a4b95cedf6635e100e5433878540c72052b33cbc660bc",
+      "translation_text_hash": "04e15e7dd97b4a81a4ad403d485c6a9528f9ba2ad90b2c415506b027dac9f4ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 나가서 앗수르 진중에서 십 팔만 오천인을 쳤으므로 아침에 일찌기 일어나 본즉 시체 뿐이라"
+      ],
+      "raw_text_hashes": [
+        "04e15e7dd97b4a81a4ad403d485c6a9528f9ba2ad90b2c415506b027dac9f4ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:37",
+      "sequence": 18390,
+      "chapter_label": "ISA 37",
+      "verse_label": "37",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 37
+        }
+      ],
+      "en": "So Sennacherib king of Assyria departed, went away, returned to Nineveh, and stayed there.",
+      "ko": "이에 앗수르 왕 산헤립이 떠나 돌아가서 니느웨에 거하더니",
+      "source_text_hash": "158d3ee8dab783b644c1546a3f472246bb5bd0766eb49b60788ef6651ab395de",
+      "translation_text_hash": "2444df57a1809bfb0f3b3dc4eebe00c719c1300586599a10109ad0a36a26b8a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 앗수르 왕 산헤립이 떠나 돌아가서 니느웨에 거하더니"
+      ],
+      "raw_text_hashes": [
+        "2444df57a1809bfb0f3b3dc4eebe00c719c1300586599a10109ad0a36a26b8a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:37:38",
+      "sequence": 18391,
+      "chapter_label": "ISA 37",
+      "verse_label": "38",
+      "locator": {
+        "book": "ISA",
+        "chapter": 37,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 37,
+          "verse": 38
+        }
+      ],
+      "en": "As he was worshiping in the house of Nisroch his god, Adrammelech and Sharezer his sons struck him with the sword; and they escaped into the land of Ararat. Esar Haddon his son reigned in his place.",
+      "ko": "자기 신 니스록의 묘에서 경배할 때에 그 아들 아드람멜렉과 사레셀이 그를 칼로 죽이고 아라랏 땅으로 도망한고로 그 아들 에살핫돈이 이어 왕이 되니라",
+      "source_text_hash": "6539efaf74ff0480e892121bb9133705a23cc7739b5d7dd785a677e39b1c0337",
+      "translation_text_hash": "5f55735f939291b264c49ffd74d66b717ff8db179ebed90388ed954022674907",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 신 니스록의 묘에서 경배할 때에 그 아들 아드람멜렉과 사레셀이 그를 칼로 죽이고 아라랏 땅으로 도망한고로 그 아들 에살핫돈이 이어 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "5f55735f939291b264c49ffd74d66b717ff8db179ebed90388ed954022674907"
+      ]
+    }
+  ]
+}

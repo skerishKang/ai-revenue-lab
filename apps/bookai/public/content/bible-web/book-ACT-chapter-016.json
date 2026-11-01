@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:016",
+  "unit_ordinal": 1034,
+  "unit_label": "ACT 16",
+  "book_code": "ACT",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:16:1",
+      "sequence": 27482,
+      "chapter_label": "ACT 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "He came to Derbe and Lystra; and behold, a certain disciple was there, named Timothy, the son of a Jewess who believed, but his father was a Greek.",
+      "ko": "바울이 더베와 루스드라에도 이르매 거기 디모데라 하는 제자가 있으니 그 모친은 믿는 유대 여자요 부친은 헬라인이라",
+      "source_text_hash": "cc6a4783342d2c4eed75934fc93cf6045672e26d76e28d8c7fae00362de06d12",
+      "translation_text_hash": "04ce21d71141ea3ca9f7b81629eca2a76a74699ccff8f7f593f2cc7b5d2efcde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 더베와 루스드라에도 이르매 거기 디모데라 하는 제자가 있으니 그 모친은 믿는 유대 여자요 부친은 헬라인이라"
+      ],
+      "raw_text_hashes": [
+        "04ce21d71141ea3ca9f7b81629eca2a76a74699ccff8f7f593f2cc7b5d2efcde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:2",
+      "sequence": 27483,
+      "chapter_label": "ACT 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "The brothers who were at Lystra and Iconium gave a good testimony about him.",
+      "ko": "디모데는 루스드라와 이고니온에 있는 형제들에게 칭찬 받는 자니",
+      "source_text_hash": "cc6a98ca269e29972c19b1d6ea966205eba13c98526039cdf67e57544cf35bf1",
+      "translation_text_hash": "1dbd1fa4cb31ba1f5b1b723303679e0ecd2e375add8887d014322eeafabf2048",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디모데는 루스드라와 이고니온에 있는 형제들에게 칭찬 받는 자니"
+      ],
+      "raw_text_hashes": [
+        "1dbd1fa4cb31ba1f5b1b723303679e0ecd2e375add8887d014322eeafabf2048"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:3",
+      "sequence": 27484,
+      "chapter_label": "ACT 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "Paul wanted to have him go out with him, and he took and circumcised him because of the Jews who were in those parts, for they all knew that his father was a Greek.",
+      "ko": "바울이 그를 데리고 떠나고자 할쌔 그 지경에 있는 유대인을 인하여 그를 데려다가 할례를 행하니 이는 그 사람들이 그의 부친은 헬라인인줄 다 앎이러라",
+      "source_text_hash": "84beb805632cb84ee9388b3f90342ae8d7e83d8191b93a41714227cda4c64955",
+      "translation_text_hash": "66db25e64f5dfb8d5281b90b969061ab65bb141c49d8e2d2a359528659b1cddf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 그를 데리고 떠나고자 할쌔 그 지경에 있는 유대인을 인하여 그를 데려다가 할례를 행하니 이는 그 사람들이 그의 부친은 헬라인인줄 다 앎이러라"
+      ],
+      "raw_text_hashes": [
+        "66db25e64f5dfb8d5281b90b969061ab65bb141c49d8e2d2a359528659b1cddf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:4",
+      "sequence": 27485,
+      "chapter_label": "ACT 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "As they went on their way through the cities, they delivered the decrees to them to keep which had been ordained by the apostles and elders who were at Jerusalem.",
+      "ko": "여러 성으로 다녀 갈 때에 예루살렘에 있는 사도와 장로들의 작정한 규례를 저희에게 주어 지키게 하니",
+      "source_text_hash": "8bd9e8accdac12679b97ef82226e2172aeeec0e6ec2eb3d0ef71b892e00eef99",
+      "translation_text_hash": "3e5138285ec4fb1ed55e51e08ec0eba67646d490920be49ecec8f4ca7ff62692",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 성으로 다녀 갈 때에 예루살렘에 있는 사도와 장로들의 작정한 규례를 저희에게 주어 지키게 하니"
+      ],
+      "raw_text_hashes": [
+        "3e5138285ec4fb1ed55e51e08ec0eba67646d490920be49ecec8f4ca7ff62692"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:5",
+      "sequence": 27486,
+      "chapter_label": "ACT 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "So the assemblies were strengthened in the faith, and increased in number daily.",
+      "ko": "이에 여러 교회가 믿음이 더 굳어지고 수가 날마다 더하니라",
+      "source_text_hash": "fa967ef96a7e70e7aedbb155a01ff7219fb1043c7519ca3f4b8664a653f10634",
+      "translation_text_hash": "152360071fc23f70ece717f48b2c9965979def6a0b4be1c3a24dbfc0fb428bce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여러 교회가 믿음이 더 굳어지고 수가 날마다 더하니라"
+      ],
+      "raw_text_hashes": [
+        "152360071fc23f70ece717f48b2c9965979def6a0b4be1c3a24dbfc0fb428bce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:6",
+      "sequence": 27487,
+      "chapter_label": "ACT 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "When they had gone through the region of Phrygia and Galatia, they were forbidden by the Holy Spirit to speak the word in Asia.",
+      "ko": "성령이 아시아에서 말씀을 전하지 못하게 하시거늘 브루기아와 갈라디아 땅으로 다녀가",
+      "source_text_hash": "00620ef1d1eade44927d9857bd945a4ab7e12e38af3622d23679c14756092327",
+      "translation_text_hash": "0c5bc034d512c373cc3818c56ba2a37c417157bc00f51486c6a0a6f466f73086",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령이 아시아에서 말씀을 전하지 못하게 하시거늘 브루기아와 갈라디아 땅으로 다녀가"
+      ],
+      "raw_text_hashes": [
+        "0c5bc034d512c373cc3818c56ba2a37c417157bc00f51486c6a0a6f466f73086"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:7",
+      "sequence": 27488,
+      "chapter_label": "ACT 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "When they had come opposite Mysia, they tried to go into Bithynia, but the Spirit didn’t allow them.",
+      "ko": "무시아 앞에 이르러 비두니아로 가고자 애쓰되 예수의 영이 허락지 아니하시는지라",
+      "source_text_hash": "4548b0bd4b3e8d596e81a9accefe5d1a66ec81e72e3db0fe525d8487e19913d2",
+      "translation_text_hash": "23956fa1e0e6ac7a1c0d3114df05a7cb5f163b8e4d84da2405634b61c1e26fd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무시아 앞에 이르러 비두니아로 가고자 애쓰되 예수의 영이 허락지 아니하시는지라"
+      ],
+      "raw_text_hashes": [
+        "23956fa1e0e6ac7a1c0d3114df05a7cb5f163b8e4d84da2405634b61c1e26fd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:8",
+      "sequence": 27489,
+      "chapter_label": "ACT 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Passing by Mysia, they came down to Troas.",
+      "ko": "무시아를 지나 드로아로 내려갔는데",
+      "source_text_hash": "1bf738b3254e9b53eea42ce2bd12d730d13d1be0906d9b48a94c52a1987104fd",
+      "translation_text_hash": "37736c7b60ab0d11cc5b585a847d6b20722df0b02a729aa49b91918e7655155d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무시아를 지나 드로아로 내려갔는데"
+      ],
+      "raw_text_hashes": [
+        "37736c7b60ab0d11cc5b585a847d6b20722df0b02a729aa49b91918e7655155d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:9",
+      "sequence": 27490,
+      "chapter_label": "ACT 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "A vision appeared to Paul in the night. There was a man of Macedonia standing, begging him and saying, “Come over into Macedonia and help us.”",
+      "ko": "밤에 환상이 바울에게 보이니 마게도냐 사람 하나가 서서 그에게 청하여 가로되 마게도냐로 건너와서 우리를 도우라 하거늘",
+      "source_text_hash": "ab4c8e1a41b0c508c8627321d1cf3b5b4d16cd37ba90633231e92b8d278d20bc",
+      "translation_text_hash": "4622f8e65c3bf424c556efbe61906c0502e1c83b94bdc7f26b15dcc28872d94b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 환상이 바울에게 보이니 마게도냐 사람 하나가 서서 그에게 청하여 가로되 마게도냐로 건너와서 우리를 도우라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "4622f8e65c3bf424c556efbe61906c0502e1c83b94bdc7f26b15dcc28872d94b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:10",
+      "sequence": 27491,
+      "chapter_label": "ACT 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "When he had seen the vision, immediately we sought to go out to Macedonia, concluding that the Lord had called us to preach the Good News to them.",
+      "ko": "바울이 이 환상을 본 후에 우리가 곧 마게도냐로 떠나기를 힘쓰니 이는 하나님이 저 사람들에게 복음을 전하라고 우리를 부르신 줄로 인정함이러라",
+      "source_text_hash": "7a87517306b84e5f8762767f98cd0e69da723b17c04cae5b499107c245795c62",
+      "translation_text_hash": "135d9297068eedf5205679638ece05ca599fec869f9c753ec8bde0c4bc735671",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 이 환상을 본 후에 우리가 곧 마게도냐로 떠나기를 힘쓰니 이는 하나님이 저 사람들에게 복음을 전하라고 우리를 부르신 줄로 인정함이러라"
+      ],
+      "raw_text_hashes": [
+        "135d9297068eedf5205679638ece05ca599fec869f9c753ec8bde0c4bc735671"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:11",
+      "sequence": 27492,
+      "chapter_label": "ACT 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "Setting sail therefore from Troas, we made a straight course to Samothrace, and the day following to Neapolis;",
+      "ko": "드로아에서 배로 떠나 사모드라게로 직행하여 이튿날 네압볼리로 가고",
+      "source_text_hash": "8eb890f72db16cb6e8ee6213b1d461781f027e0943a47f300063d9a1761f3b13",
+      "translation_text_hash": "87ec32cc22d27b23aebd79414c0071bbe5589107dd12dc88898f9deacdc8b0d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드로아에서 배로 떠나 사모드라게로 직행하여 이튿날 네압볼리로 가고"
+      ],
+      "raw_text_hashes": [
+        "87ec32cc22d27b23aebd79414c0071bbe5589107dd12dc88898f9deacdc8b0d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:12",
+      "sequence": 27493,
+      "chapter_label": "ACT 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "and from there to Philippi, which is a city of Macedonia, the foremost of the district, a Roman colony. We were staying some days in this city.",
+      "ko": "거기서 빌립보에 이르니 이는 마게도냐 지경 첫성이요 또 로마의 식민지라 이 성에서 수일을 유하다가",
+      "source_text_hash": "6955b40f43e4ea2ccb330e18c78cd200cd5a1a3dd778e5d23a006b788823c23e",
+      "translation_text_hash": "ea495bfbc0fc5ffd2afbbdba01a7a2f76446fb7c9a93e91bab7cb0d49467e850",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 빌립보에 이르니 이는 마게도냐 지경 첫성이요 또 로마의 식민지라 이 성에서 수일을 유하다가"
+      ],
+      "raw_text_hashes": [
+        "ea495bfbc0fc5ffd2afbbdba01a7a2f76446fb7c9a93e91bab7cb0d49467e850"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:13",
+      "sequence": 27494,
+      "chapter_label": "ACT 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "On the Sabbath day we went outside of the city by a riverside, where we supposed there was a place of prayer, and we sat down and spoke to the women who had come together.",
+      "ko": "안식일에 우리가 기도처가 있는가 하여 문밖 강 가에 나가 거기 앉아서 모인 여자들에게 말하더니",
+      "source_text_hash": "8339c0b1569c78b940d2af6171129fb62d77ac8de2e138517f43901fb4e231dc",
+      "translation_text_hash": "009f29acaed6c5ba88584fbdfa1a66f3c5153f419f330019361a608d80572a12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일에 우리가 기도처가 있는가 하여 문밖 강 가에 나가 거기 앉아서 모인 여자들에게 말하더니"
+      ],
+      "raw_text_hashes": [
+        "009f29acaed6c5ba88584fbdfa1a66f3c5153f419f330019361a608d80572a12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:14",
+      "sequence": 27495,
+      "chapter_label": "ACT 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "A certain woman named Lydia, a seller of purple, of the city of Thyatira, one who worshiped God, heard us. The Lord opened her heart to listen to the things which were spoken by Paul.",
+      "ko": "두아디라성의 자주 장사로서 하나님을 공경하는 루디아라 하는 한 여자가 들었는데 주께서 그 마음을 열어 바울의 말을 청종하게 하신지라",
+      "source_text_hash": "ae11d0308ae86c9faf848eceff8585e1e78c02bc237628d7a4f512e159e64a22",
+      "translation_text_hash": "cfa03d63cc59e709a1360d21013589b6b90764edf243f2df51caa78ad0997064",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두아디라성의 자주 장사로서 하나님을 공경하는 루디아라 하는 한 여자가 들었는데 주께서 그 마음을 열어 바울의 말을 청종하게 하신지라"
+      ],
+      "raw_text_hashes": [
+        "cfa03d63cc59e709a1360d21013589b6b90764edf243f2df51caa78ad0997064"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:15",
+      "sequence": 27496,
+      "chapter_label": "ACT 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "When she and her household were baptized, she begged us, saying, “If you have judged me to be faithful to the Lord, come into my house and stay.” So she persuaded us.",
+      "ko": "저와 그 집이 다 세례를 받고 우리에게 청하여 가로되 만일 나를 주 믿는 자로 알거든 내 집에 들어와 유하라 하고 강권하여 있게 하니라",
+      "source_text_hash": "82b7325841cedf6c89481638d70dccc78c0277fba433c1c48d99be254c9dbb97",
+      "translation_text_hash": "073f7f8cf2759ebb3a1c6f19b114fa41d9b9b045d11b46c473a519816e576b53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저와 그 집이 다 세례를 받고 우리에게 청하여 가로되 만일 나를 주 믿는 자로 알거든 내 집에 들어와 유하라 하고 강권하여 있게 하니라"
+      ],
+      "raw_text_hashes": [
+        "073f7f8cf2759ebb3a1c6f19b114fa41d9b9b045d11b46c473a519816e576b53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:16",
+      "sequence": 27497,
+      "chapter_label": "ACT 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "As we were going to prayer, a certain girl having a spirit of divination met us, who brought her masters much gain by fortune telling.",
+      "ko": "우리가 기도하는 곳에 가다가 점하는 귀신 들린 여종 하나를 만나니 점으로 그 주인들을 크게 이하게 하는 자라",
+      "source_text_hash": "7166a4d22ae10452efe11ef1f41f333bd435a20d654f1b6d97da6b2ca7885e2b",
+      "translation_text_hash": "4daa5c5cf05b6aaf69676c779192588108007396d6a7e0e3d2bfc73a8d0aa137",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 기도하는 곳에 가다가 점하는 귀신 들린 여종 하나를 만나니 점으로 그 주인들을 크게 이하게 하는 자라"
+      ],
+      "raw_text_hashes": [
+        "4daa5c5cf05b6aaf69676c779192588108007396d6a7e0e3d2bfc73a8d0aa137"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:17",
+      "sequence": 27498,
+      "chapter_label": "ACT 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "Following Paul and us, she cried out, “These men are servants of the Most High God, who proclaim to us a way of salvation!”",
+      "ko": "바울과 우리를 좇아와서 소리질러 가로되 이 사람들은 지극히 높은 하나님의 종으로 구원의 길을 너희에게 전하는 자라 하며",
+      "source_text_hash": "93875863bbc023905fd44ec805bad7d232b402a5c2b838aa2c679a01c839f325",
+      "translation_text_hash": "4a51d9ed02fd356d3491292bf11c0d04f2761adca3eee2817f8e2114c7766da9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울과 우리를 좇아와서 소리질러 가로되 이 사람들은 지극히 높은 하나님의 종으로 구원의 길을 너희에게 전하는 자라 하며"
+      ],
+      "raw_text_hashes": [
+        "4a51d9ed02fd356d3491292bf11c0d04f2761adca3eee2817f8e2114c7766da9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:18",
+      "sequence": 27499,
+      "chapter_label": "ACT 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "She was doing this for many days. But Paul, becoming greatly annoyed, turned and said to the spirit, “I command you in the name of Jesus Christ to come out of her!” It came out that very hour.",
+      "ko": "이같이 여러 날을 하는지라 바울이 심히 괴로와하여 돌이켜 그 귀신에게 이르되 예수 그리스도의 이름으로 내가 네게 명하노니 그에게서 나오라 하니 귀신이 즉시 나오니라",
+      "source_text_hash": "8703cedf07646ff0a356a85b02820fcd74df2f383aca54bdc043fb20fc8d9c39",
+      "translation_text_hash": "196dd3f9f7b1e3380baab6c5926a08eded0256998398935d7bcd04a3e17f829b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 여러 날을 하는지라 바울이 심히 괴로와하여 돌이켜 그 귀신에게 이르되 예수 그리스도의 이름으로 내가 네게 명하노니 그에게서 나오라 하니 귀신이 즉시 나오니라"
+      ],
+      "raw_text_hashes": [
+        "196dd3f9f7b1e3380baab6c5926a08eded0256998398935d7bcd04a3e17f829b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:19",
+      "sequence": 27500,
+      "chapter_label": "ACT 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "But when her masters saw that the hope of their gain was gone, they seized Paul and Silas and dragged them into the marketplace before the rulers.",
+      "ko": "종의 주인들은 자기 이익의 소망이 끊어진 것을 보고 바울과 실라를 잡아 가지고 저자로 관원들에게 끌어 갔다가",
+      "source_text_hash": "2f410baa8d90ceea3d43534354ee30eaea20edfdd6b1488f825e9dac4ddbc71e",
+      "translation_text_hash": "cf86f9086341d5788adf727815f25c3f25191dec4f701c2b2221e28bab2f20b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종의 주인들은 자기 이익의 소망이 끊어진 것을 보고 바울과 실라를 잡아 가지고 저자로 관원들에게 끌어 갔다가"
+      ],
+      "raw_text_hashes": [
+        "cf86f9086341d5788adf727815f25c3f25191dec4f701c2b2221e28bab2f20b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:20",
+      "sequence": 27501,
+      "chapter_label": "ACT 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "When they had brought them to the magistrates, they said, “These men, being Jews, are agitating our city",
+      "ko": "상관들 앞에 데리고 가서 말하되 이 사람들이 유대인인데 우리 성을 심히 요란케 하여",
+      "source_text_hash": "a3fa68009a5102f908e76c96517f778c75b7922f983f33a53fd672ac5a4a9a7f",
+      "translation_text_hash": "749501fe2abb640298e07db2c1975cbe1394c4c50a9e39f640675f64ae924cc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상관들 앞에 데리고 가서 말하되 이 사람들이 유대인인데 우리 성을 심히 요란케 하여"
+      ],
+      "raw_text_hashes": [
+        "749501fe2abb640298e07db2c1975cbe1394c4c50a9e39f640675f64ae924cc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:21",
+      "sequence": 27502,
+      "chapter_label": "ACT 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "and advocate customs which it is not lawful for us to accept or to observe, being Romans.”",
+      "ko": "로마 사람인 우리가 받지도 못하고 행치도 못할 풍속을 전한다 하거늘",
+      "source_text_hash": "9882ee74db659eb5deac751c1a30ca30d17d0d51dc75705be1096ebbb1404dde",
+      "translation_text_hash": "d045d51ce425369411cfd95c06b94b4c80cfb2cb8949a1ee72e7463e5d9bb653",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "로마 사람인 우리가 받지도 못하고 행치도 못할 풍속을 전한다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "d045d51ce425369411cfd95c06b94b4c80cfb2cb8949a1ee72e7463e5d9bb653"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:22",
+      "sequence": 27503,
+      "chapter_label": "ACT 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "The multitude rose up together against them and the magistrates tore their clothes from them, then commanded them to be beaten with rods.",
+      "ko": "무리가 일제히 일어나 송사하니 상관들이 옷을 찢어 벗기고 매로 치라 하여",
+      "source_text_hash": "20015e49477c6f5fe6853be84e0eef0e2a7da29255f13db2bf1936685377d011",
+      "translation_text_hash": "0d2cc9de619a35a25570f022e1ab5b1d9ee3eab0c801b7cef01b57c98b5802e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 일제히 일어나 송사하니 상관들이 옷을 찢어 벗기고 매로 치라 하여"
+      ],
+      "raw_text_hashes": [
+        "0d2cc9de619a35a25570f022e1ab5b1d9ee3eab0c801b7cef01b57c98b5802e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:23",
+      "sequence": 27504,
+      "chapter_label": "ACT 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "When they had laid many stripes on them, they threw them into prison, charging the jailer to keep them safely.",
+      "ko": "많이 친 후에 옥에 가두고 간수에게 분부하여 든든히 지키라 하니",
+      "source_text_hash": "141a963759d06d40b67a6d717f25956ef550553640aa40d640324b26e1345619",
+      "translation_text_hash": "3d8b60a87a036551759a1abb65301ca9d099adf5261ee52d26aaf0b405ebd9db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많이 친 후에 옥에 가두고 간수에게 분부하여 든든히 지키라 하니"
+      ],
+      "raw_text_hashes": [
+        "3d8b60a87a036551759a1abb65301ca9d099adf5261ee52d26aaf0b405ebd9db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:24",
+      "sequence": 27505,
+      "chapter_label": "ACT 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "Having received such a command, he threw them into the inner prison and secured their feet in the stocks.",
+      "ko": "그가 이러한 영을 받아 저희를 깊은 옥에 가두고 그 발을 착고에 든든히 채웠더니",
+      "source_text_hash": "8b2895e354e0e6260fd819b4b1c5ccbc1b162ce107ff8610301096a98efedbbf",
+      "translation_text_hash": "a1a97006088490815338fde989dbd45b9961769ba988cd7cfeae0e746466788f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이러한 영을 받아 저희를 깊은 옥에 가두고 그 발을 착고에 든든히 채웠더니"
+      ],
+      "raw_text_hashes": [
+        "a1a97006088490815338fde989dbd45b9961769ba988cd7cfeae0e746466788f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:25",
+      "sequence": 27506,
+      "chapter_label": "ACT 16",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "But about midnight Paul and Silas were praying and singing hymns to God, and the prisoners were listening to them.",
+      "ko": "밤중쯤 되어 바울과 실라가 기도하고 하나님을 찬미하매 죄수들이 듣더라",
+      "source_text_hash": "734aca651b5ca69e63d53cbbe85c00522d663a236e30426bb3a373710930ba5c",
+      "translation_text_hash": "30a7b636fa582d57bb6b1e4703d679b0f36209520a0e17de11177bde85068a20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤중쯤 되어 바울과 실라가 기도하고 하나님을 찬미하매 죄수들이 듣더라"
+      ],
+      "raw_text_hashes": [
+        "30a7b636fa582d57bb6b1e4703d679b0f36209520a0e17de11177bde85068a20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:26",
+      "sequence": 27507,
+      "chapter_label": "ACT 16",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "Suddenly there was a great earthquake, so that the foundations of the prison were shaken; and immediately all the doors were opened, and everyone’s bonds were loosened.",
+      "ko": "이에 홀연히 큰 지진이 나서 옥터가 움직이고 문이 곧 다 열리며 모든 사람의 매인 것이 다 벗어진지라",
+      "source_text_hash": "6a98f1c4977065957669024307d80d2f499e3591fbaad075afd78de05a49948b",
+      "translation_text_hash": "2c8517648dba98af043763e5b958b3272b6294911974da58928851ff8b4a7beb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 홀연히 큰 지진이 나서 옥터가 움직이고 문이 곧 다 열리며 모든 사람의 매인 것이 다 벗어진지라"
+      ],
+      "raw_text_hashes": [
+        "2c8517648dba98af043763e5b958b3272b6294911974da58928851ff8b4a7beb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:27",
+      "sequence": 27508,
+      "chapter_label": "ACT 16",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "The jailer, being roused out of sleep and seeing the prison doors open, drew his sword and was about to kill himself, supposing that the prisoners had escaped.",
+      "ko": "간수가 자다가 깨어 옥문들이 열린 것을 보고 죄수들이 도망한줄 생각하고 검을 빼어 자결하려 하거늘",
+      "source_text_hash": "e0a2c0e628a4c48c89b383118cbc688f867ca9fcaa99736ab4693ef656e705d9",
+      "translation_text_hash": "81a07960a1e11bc86aeadb57f6f3a6935eb0f78cba14bf8211bf705e441bd1df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간수가 자다가 깨어 옥문들이 열린 것을 보고 죄수들이 도망한줄 생각하고 검을 빼어 자결하려 하거늘"
+      ],
+      "raw_text_hashes": [
+        "81a07960a1e11bc86aeadb57f6f3a6935eb0f78cba14bf8211bf705e441bd1df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:28",
+      "sequence": 27509,
+      "chapter_label": "ACT 16",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 28
+        }
+      ],
+      "en": "But Paul cried with a loud voice, saying, “Don’t harm yourself, for we are all here!”",
+      "ko": "바울이 크게 소리질러 가로되 네 몸을 상하지 말라 우리가 다 여기 있노라 하니",
+      "source_text_hash": "bf9a0472f62fe4475e9770f4d94ed9be9b95d9007125233db2df30c9339288e9",
+      "translation_text_hash": "7d3b6a4caca7a60b99747bb866c4d3dbb943aad9890c36f308c7d9382fb8a5da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 크게 소리질러 가로되 네 몸을 상하지 말라 우리가 다 여기 있노라 하니"
+      ],
+      "raw_text_hashes": [
+        "7d3b6a4caca7a60b99747bb866c4d3dbb943aad9890c36f308c7d9382fb8a5da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:29",
+      "sequence": 27510,
+      "chapter_label": "ACT 16",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 29
+        }
+      ],
+      "en": "He called for lights, sprang in, fell down trembling before Paul and Silas,",
+      "ko": "간수가 등불을 달라고 하며 뛰어 들어가 무서워 떨며 바울과 실라 앞에 부복하고",
+      "source_text_hash": "8411025667bdc78fc9f5455dc1799dfb4722d7d0d0a5ad64e4b4f12d59cbbf85",
+      "translation_text_hash": "cd14261c202fcbc50dac32bd566ea4ac8654b3eef32874284dec4cca3be52869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간수가 등불을 달라고 하며 뛰어 들어가 무서워 떨며 바울과 실라 앞에 부복하고"
+      ],
+      "raw_text_hashes": [
+        "cd14261c202fcbc50dac32bd566ea4ac8654b3eef32874284dec4cca3be52869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:30",
+      "sequence": 27511,
+      "chapter_label": "ACT 16",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 30
+        }
+      ],
+      "en": "brought them out, and said, “Sirs, what must I do to be saved?”",
+      "ko": "저희를 데리고 나가 가로되 선생들아 내가 어떻게 하여야 구원을 얻으리이까 하거늘",
+      "source_text_hash": "eb37fa01382629efde1111a5fa01001447a053df83d32ed6a2bb113fd1a90fbf",
+      "translation_text_hash": "f4e11f888ff6b537d8714aac6637d17139da7d24b766ed95b4440d7599ecd8ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 데리고 나가 가로되 선생들아 내가 어떻게 하여야 구원을 얻으리이까 하거늘"
+      ],
+      "raw_text_hashes": [
+        "f4e11f888ff6b537d8714aac6637d17139da7d24b766ed95b4440d7599ecd8ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:31",
+      "sequence": 27512,
+      "chapter_label": "ACT 16",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 31
+        }
+      ],
+      "en": "They said, “Believe in the Lord Jesus Christ, and you will be saved, you and your household.”",
+      "ko": "가로되 주 예수를 믿으라 그리하면 너와 네 집이 구원을 얻으리라 하고",
+      "source_text_hash": "fbbf6c8f504e933ad56ff357278cd740f1b825ed30a5de56b7ceeb1dde1816fb",
+      "translation_text_hash": "4fca1ece0c674596df68baaeeccb8ab05e2c7f886b643f602d0159170ba336ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 주 예수를 믿으라 그리하면 너와 네 집이 구원을 얻으리라 하고"
+      ],
+      "raw_text_hashes": [
+        "4fca1ece0c674596df68baaeeccb8ab05e2c7f886b643f602d0159170ba336ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:32",
+      "sequence": 27513,
+      "chapter_label": "ACT 16",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 32
+        }
+      ],
+      "en": "They spoke the word of the Lord to him, and to all who were in his house.",
+      "ko": "주의 말씀을 그 사람과 그 집에 있는 모든 사람에게 전하더라",
+      "source_text_hash": "81f5a591b2eb6443aef6734710f126d4f0608dcdd566cd26236c2f3941c49085",
+      "translation_text_hash": "a95f734dd9b1a77cb422e1855063430778d4261f2ea335e7db6f329904e7bcb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀을 그 사람과 그 집에 있는 모든 사람에게 전하더라"
+      ],
+      "raw_text_hashes": [
+        "a95f734dd9b1a77cb422e1855063430778d4261f2ea335e7db6f329904e7bcb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:33",
+      "sequence": 27514,
+      "chapter_label": "ACT 16",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 33
+        }
+      ],
+      "en": "He took them the same hour of the night and washed their stripes, and was immediately baptized, he and all his household.",
+      "ko": "밤 그 시에 간수가 저희를 데려다가 그 맞은 자리를 씻기고 자기와 그 권속이 다 세례를 받은 후",
+      "source_text_hash": "fbcb377b75fb47e313d0a1f869f7f88caef6bbd52a1ef1685deb75979e61338a",
+      "translation_text_hash": "3e7a6b2afd74575d5132826449f222db817cae4846b25665c8569153cb5d90c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤 그 시에 간수가 저희를 데려다가 그 맞은 자리를 씻기고 자기와 그 권속이 다 세례를 받은 후"
+      ],
+      "raw_text_hashes": [
+        "3e7a6b2afd74575d5132826449f222db817cae4846b25665c8569153cb5d90c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:34",
+      "sequence": 27515,
+      "chapter_label": "ACT 16",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 34
+        }
+      ],
+      "en": "He brought them up into his house and set food before them, and rejoiced greatly with all his household, having believed in God.",
+      "ko": "저희를 데리고 자기 집에 올라가서 음식을 차려주고 저와 온 집이 하나님을 믿었으므로 크게 기뻐하니라",
+      "source_text_hash": "e3d2a5963213f174a8bbc800a1aa45e1e8e8cb050a2dd8e31942ee0d45bf5480",
+      "translation_text_hash": "fbdf8cc246a33967c83dfffb0d2f2592fcf5019c267069b6ac2eb04f7b57e93f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 데리고 자기 집에 올라가서 음식을 차려주고 저와 온 집이 하나님을 믿었으므로 크게 기뻐하니라"
+      ],
+      "raw_text_hashes": [
+        "fbdf8cc246a33967c83dfffb0d2f2592fcf5019c267069b6ac2eb04f7b57e93f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:35",
+      "sequence": 27516,
+      "chapter_label": "ACT 16",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 35
+        }
+      ],
+      "en": "But when it was day, the magistrates sent the sergeants, saying, “Let those men go.”",
+      "ko": "날이 새매 상관들이 아전을 보내어 이 사람들을 놓으라 하니",
+      "source_text_hash": "383147b1746766589a6bfae7dd59f9144185274e6b1e4007be1422493fa879b5",
+      "translation_text_hash": "c6c968171b48621c57e88a99b8995d0f0b557189106c7fa83d1f7be5dbae511a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 새매 상관들이 아전을 보내어 이 사람들을 놓으라 하니"
+      ],
+      "raw_text_hashes": [
+        "c6c968171b48621c57e88a99b8995d0f0b557189106c7fa83d1f7be5dbae511a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:36",
+      "sequence": 27517,
+      "chapter_label": "ACT 16",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 36
+        }
+      ],
+      "en": "The jailer reported these words to Paul, saying, “The magistrates have sent to let you go; now therefore come out and go in peace.”",
+      "ko": "간수가 이 말대로 바울에게 고하되 상관들이 사람을 보내어 너희를 놓으라 하였으니 이제는 나가서 평안히 가라 하거늘",
+      "source_text_hash": "bae3baa343861ad11dd8f267cfa915af0cafa4249f8cd9f53c5e01f210c94f6f",
+      "translation_text_hash": "c30a85509cf9605022247aff945d6d834d5ae1a536eef54b82ace29ce95b925c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간수가 이 말대로 바울에게 고하되 상관들이 사람을 보내어 너희를 놓으라 하였으니 이제는 나가서 평안히 가라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "c30a85509cf9605022247aff945d6d834d5ae1a536eef54b82ace29ce95b925c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:37",
+      "sequence": 27518,
+      "chapter_label": "ACT 16",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 37
+        }
+      ],
+      "en": "But Paul said to them, “They have beaten us publicly without a trial, men who are Romans, and have cast us into prison! Do they now release us secretly? No, most certainly, but let them come themselves and bring us out!”",
+      "ko": "바울이 이르되 로마 사람인 우리를 죄도 정치 아니하고 공중 앞에서 때리고 옥에 가두었다가 이제는 가만히 우리를 내어 보내고자 하느냐 아니라 저희가 친히 와서 우리를 데리고 나가야 하리라 한대",
+      "source_text_hash": "122c377288b854f46ebca9231cb7a2ab811e4f6c4be4fa2830de0fe4b360dd3b",
+      "translation_text_hash": "47f841484e7d31d74b12220cc7f311dcdbe891da9392d26b9916d95c0fd6ee1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 이르되 로마 사람인 우리를 죄도 정치 아니하고 공중 앞에서 때리고 옥에 가두었다가 이제는 가만히 우리를 내어 보내고자 하느냐 아니라 저희가 친히 와서 우리를 데리고 나가야 하리라 한대"
+      ],
+      "raw_text_hashes": [
+        "47f841484e7d31d74b12220cc7f311dcdbe891da9392d26b9916d95c0fd6ee1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:38",
+      "sequence": 27519,
+      "chapter_label": "ACT 16",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 38
+        }
+      ],
+      "en": "The sergeants reported these words to the magistrates, and they were afraid when they heard that they were Romans,",
+      "ko": "아전들이 이 말로 상관들에게 고하니 저희가 로마 사람이라 하는 말을 듣고 두려워하여",
+      "source_text_hash": "5dfc896912aeaee03890b7a09fb6265dec3e064f6a76ff77e35a37663f845fbb",
+      "translation_text_hash": "beb42239672f370b7ad852baeafde3e47a56f2fe5e219864e4c2bb2f4d3dd7b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아전들이 이 말로 상관들에게 고하니 저희가 로마 사람이라 하는 말을 듣고 두려워하여"
+      ],
+      "raw_text_hashes": [
+        "beb42239672f370b7ad852baeafde3e47a56f2fe5e219864e4c2bb2f4d3dd7b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:39",
+      "sequence": 27520,
+      "chapter_label": "ACT 16",
+      "verse_label": "39",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 39
+        }
+      ],
+      "en": "and they came and begged them. When they had brought them out, they asked them to depart from the city.",
+      "ko": "와서 권하여 데리고 나가 성에서 떠나기를 청하니",
+      "source_text_hash": "cd3970de2fd73e87991c7c45b02171c96b74000242e099d1dfc55f549e6ff7e1",
+      "translation_text_hash": "9b13bfbf2c3c6804ed8e7c93f660066a6b55a634681a97b0dded3e2fd7db1971",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "와서 권하여 데리고 나가 성에서 떠나기를 청하니"
+      ],
+      "raw_text_hashes": [
+        "9b13bfbf2c3c6804ed8e7c93f660066a6b55a634681a97b0dded3e2fd7db1971"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:16:40",
+      "sequence": 27521,
+      "chapter_label": "ACT 16",
+      "verse_label": "40",
+      "locator": {
+        "book": "ACT",
+        "chapter": 16,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 16,
+          "verse": 40
+        }
+      ],
+      "en": "They went out of the prison and entered into Lydia’s house. When they had seen the brothers, they encouraged them, then departed.",
+      "ko": "두 사람이 옥에서 나가 루디아의 집에 들어가서 형제들을 만나보고 위로하고 가니라",
+      "source_text_hash": "31546f0e9c6d23e0cd3e34cf5a617d02403507486bb0873ab3504f9cea7d3c40",
+      "translation_text_hash": "8357535538e00cabef3a14c5b0f7ecf14d4db89d0e65086fdfcfea8c95b5628a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 옥에서 나가 루디아의 집에 들어가서 형제들을 만나보고 위로하고 가니라"
+      ],
+      "raw_text_hashes": [
+        "8357535538e00cabef3a14c5b0f7ecf14d4db89d0e65086fdfcfea8c95b5628a"
+      ]
+    }
+  ]
+}

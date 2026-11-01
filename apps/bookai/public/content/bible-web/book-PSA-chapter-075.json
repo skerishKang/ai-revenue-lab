@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:075",
+  "unit_ordinal": 553,
+  "unit_label": "PSA 75",
+  "book_code": "PSA",
+  "chapter_number": 75,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:75:1",
+      "sequence": 15073,
+      "chapter_label": "PSA 75",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 75,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 75,
+          "verse": 1
+        }
+      ],
+      "en": "We give thanks to you, God. We give thanks, for your Name is near. Men tell about your wondrous works.",
+      "ko": "하나님이여 우리가 주께 감사하고 감사함은 주의 이름이 가까움이라 사람들이 주의 기사를 전파하나이다",
+      "source_text_hash": "c30d043c9c94b941d4f76e5c3dbc9b74245e15dc450c6d5ced9a58149c367514",
+      "translation_text_hash": "fba080de306aceee9fb690592ce1f4bf767ebfb4a11969b33466880726c428c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 우리가 주께 감사하고 감사함은 주의 이름이 가까움이라 사람들이 주의 기사를 전파하나이다"
+      ],
+      "raw_text_hashes": [
+        "fba080de306aceee9fb690592ce1f4bf767ebfb4a11969b33466880726c428c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:75:2",
+      "sequence": 15074,
+      "chapter_label": "PSA 75",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 75,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 75,
+          "verse": 2
+        }
+      ],
+      "en": "When I choose the appointed time, I will judge blamelessly.",
+      "ko": "주의 말씀이 내가 정한 기약을 당하면 정의로 판단하리니",
+      "source_text_hash": "63f2a2f39b0a452442d2ed8834d9589c1ee0cd2e14bfaba25d13c41f918525a4",
+      "translation_text_hash": "c8804708aaab8b95cd5d41d3357f7a3ff3c811c8db09f21e873c43eefd2f1701",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀이 내가 정한 기약을 당하면 정의로 판단하리니"
+      ],
+      "raw_text_hashes": [
+        "c8804708aaab8b95cd5d41d3357f7a3ff3c811c8db09f21e873c43eefd2f1701"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:75:3",
+      "sequence": 15075,
+      "chapter_label": "PSA 75",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 75,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 75,
+          "verse": 3
+        }
+      ],
+      "en": "The earth and all its inhabitants quake. I firmly hold its pillars. Selah.",
+      "ko": "땅의 기둥은 내가 세웠거니와 땅과 그 모든 거민이 소멸되리라 하시도다(셀라)",
+      "source_text_hash": "6c6f8d289b9abd494ebd5ed21ebcc53ab53384fe654353e5a32526c87e56efc6",
+      "translation_text_hash": "cc9f2116a046f8a8181f1fb8be947ed0f4be478c5072415056be92b977492bf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 기둥은 내가 세웠거니와 땅과 그 모든 거민이 소멸되리라 하시도다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "cc9f2116a046f8a8181f1fb8be947ed0f4be478c5072415056be92b977492bf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:75:4",
+      "sequence": 15076,
+      "chapter_label": "PSA 75",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 75,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 75,
+          "verse": 4
+        }
+      ],
+      "en": "I said to the arrogant, “Don’t boast!” I said to the wicked, “Don’t lift up the horn.",
+      "ko": "내가 오만한 자더러 오만히 행치 말라 하며 행악자더러 뿔을 들지 말라 하였노니",
+      "source_text_hash": "e8e0dc5e6e3ee4d900394830ac42df64be5d1cc030056bad024814b3d314b2fa",
+      "translation_text_hash": "4fdfba4ab9e044e1c83566a3b1b7c347dca21def2dc583da8ed9a48bd3dc4ce0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오만한 자더러 오만히 행치 말라 하며 행악자더러 뿔을 들지 말라 하였노니"
+      ],
+      "raw_text_hashes": [
+        "4fdfba4ab9e044e1c83566a3b1b7c347dca21def2dc583da8ed9a48bd3dc4ce0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:75:5",
+      "sequence": 15077,
+      "chapter_label": "PSA 75",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 75,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 75,
+          "verse": 5
+        }
+      ],
+      "en": "Don’t lift up your horn on high. Don’t speak with a stiff neck.”",
+      "ko": "너희 뿔을 높이 들지 말며 교만한 목으로 말하지 말찌어다",
+      "source_text_hash": "edbbd822f8f5feabb687aa73bb0983d314f1526efb8e58fc8ef881c71a0cb166",
+      "translation_text_hash": "14005611349cf8790b17145532fc39b9ba7543f9854362c7a8e31e8a1f81d7f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 뿔을 높이 들지 말며 교만한 목으로 말하지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "14005611349cf8790b17145532fc39b9ba7543f9854362c7a8e31e8a1f81d7f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:75:6",
+      "sequence": 15078,
+      "chapter_label": "PSA 75",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 75,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 75,
+          "verse": 6
+        }
+      ],
+      "en": "For neither from the east, nor from the west, nor yet from the south, comes exaltation.",
+      "ko": "대저 높이는 일이 동에서나 서에서 말미암지 아니하며 남에서도 말미암지 아니하고",
+      "source_text_hash": "63533f898bd8ab280a5c8f75c49fc54afe3c8e77a99fa7f4fca4ac87c792343e",
+      "translation_text_hash": "177af173aa43e37f88f637ced47ac46bfbaa1bc0b6676ac93fba63e391ac4907",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 높이는 일이 동에서나 서에서 말미암지 아니하며 남에서도 말미암지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "177af173aa43e37f88f637ced47ac46bfbaa1bc0b6676ac93fba63e391ac4907"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:75:7",
+      "sequence": 15079,
+      "chapter_label": "PSA 75",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 75,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 75,
+          "verse": 7
+        }
+      ],
+      "en": "But God is the judge. He puts down one, and lifts up another.",
+      "ko": "오직 재판장이신 하나님이 이를 낮추시고 저를 높이시느니라",
+      "source_text_hash": "90808453232429840e7eea44036b1cce759a12ffcf00edb34f3001d001d1a5c9",
+      "translation_text_hash": "6e8e87300f865f595ee048e3b29507cd5718a752ef1d00c5bbb6879759be6d66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 재판장이신 하나님이 이를 낮추시고 저를 높이시느니라"
+      ],
+      "raw_text_hashes": [
+        "6e8e87300f865f595ee048e3b29507cd5718a752ef1d00c5bbb6879759be6d66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:75:8",
+      "sequence": 15080,
+      "chapter_label": "PSA 75",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 75,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 75,
+          "verse": 8
+        }
+      ],
+      "en": "For in the LORD’s hand there is a cup, full of foaming wine mixed with spices. He pours it out. Indeed the wicked of the earth drink and drink it to its very dregs.",
+      "ko": "여호와의 손에 잔이 있어 술 거품이 일어나는도다 속에 섞은 것이 가득한 그 잔을 하나님이 쏟아 내시나니 실로 그 찌끼까지도 땅의 모든 악인이 기울여 마시리로다",
+      "source_text_hash": "296c8abfd92982f8828c93251990416782d2c51f3e69120e2a456144b8873dd6",
+      "translation_text_hash": "bb6d7d318ac54bd45da6aeaf3e1fd24eaad5fdf8472c473c25270cf430df6b63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 손에 잔이 있어 술 거품이 일어나는도다 속에 섞은 것이 가득한 그 잔을 하나님이 쏟아 내시나니 실로 그 찌끼까지도 땅의 모든 악인이 기울여 마시리로다"
+      ],
+      "raw_text_hashes": [
+        "bb6d7d318ac54bd45da6aeaf3e1fd24eaad5fdf8472c473c25270cf430df6b63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:75:9",
+      "sequence": 15081,
+      "chapter_label": "PSA 75",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 75,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 75,
+          "verse": 9
+        }
+      ],
+      "en": "But I will declare this forever: I will sing praises to the God of Jacob.",
+      "ko": "나는 야곱의 하나님을 영원히 선포하며 찬양하며",
+      "source_text_hash": "e70fd7f829c237b1ff3a02665a87674af0e47cd29d683737c42e6fd5ecfc151c",
+      "translation_text_hash": "c986fb5d27f6de26d817e160437dbfdab6721f8dd50f49ae933de0f8d7509cca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 야곱의 하나님을 영원히 선포하며 찬양하며"
+      ],
+      "raw_text_hashes": [
+        "c986fb5d27f6de26d817e160437dbfdab6721f8dd50f49ae933de0f8d7509cca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:75:10",
+      "sequence": 15082,
+      "chapter_label": "PSA 75",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 75,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 75,
+          "verse": 10
+        }
+      ],
+      "en": "I will cut off all the horns of the wicked, but the horns of the righteous shall be lifted up.",
+      "ko": "또 악인의 뿔을 다 베고 의인의 뿔은 높이 들리로다",
+      "source_text_hash": "760ecf818cb72a24007755f2e95a23003a989981a709bd3ec350970216fff509",
+      "translation_text_hash": "076af8e243e4e3b66525dfc1a7f2d979ea8ab9b7f1e95d8d1e777442e3bd7584",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 악인의 뿔을 다 베고 의인의 뿔은 높이 들리로다"
+      ],
+      "raw_text_hashes": [
+        "076af8e243e4e3b66525dfc1a7f2d979ea8ab9b7f1e95d8d1e777442e3bd7584"
+      ]
+    }
+  ]
+}

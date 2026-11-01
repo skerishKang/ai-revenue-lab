@@ -1,0 +1,205 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:128",
+  "unit_ordinal": 606,
+  "unit_label": "PSA 128",
+  "book_code": "PSA",
+  "chapter_number": 128,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:128:1",
+      "sequence": 16128,
+      "chapter_label": "PSA 128",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 128,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 128,
+          "verse": 1
+        }
+      ],
+      "en": "Blessed is everyone who fears the LORD, who walks in his ways.",
+      "ko": "여호와를 경외하며 그 도에 행하는 자마다 복이 있도다",
+      "source_text_hash": "921f0baef25b27d336543c6c2f6d93aee346594daf18bf79c5c756921985df16",
+      "translation_text_hash": "995ec995146d3394151f3b47f4f1f1d26664a9bce31e1ea86e5ab04a4ce360c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외하며 그 도에 행하는 자마다 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "995ec995146d3394151f3b47f4f1f1d26664a9bce31e1ea86e5ab04a4ce360c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:128:2",
+      "sequence": 16129,
+      "chapter_label": "PSA 128",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 128,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 128,
+          "verse": 2
+        }
+      ],
+      "en": "For you will eat the labor of your hands. You will be happy, and it will be well with you.",
+      "ko": "네가 네 손이 수고한대로 먹을 것이라 네가 복되고 형통하리로다",
+      "source_text_hash": "1594ce62752d90938a06f290811ac60eb969601b52d75f27d390fafadfa67898",
+      "translation_text_hash": "eac2d9e8b18cc048a22d5f0f4c4edb826a2c28c3e01ff2642a34bdc766e20a52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 손이 수고한대로 먹을 것이라 네가 복되고 형통하리로다"
+      ],
+      "raw_text_hashes": [
+        "eac2d9e8b18cc048a22d5f0f4c4edb826a2c28c3e01ff2642a34bdc766e20a52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:128:3",
+      "sequence": 16130,
+      "chapter_label": "PSA 128",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 128,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 128,
+          "verse": 3
+        }
+      ],
+      "en": "Your wife will be as a fruitful vine in the innermost parts of your house, your children like olive shoots around your table.",
+      "ko": "네 집 내실에 있는 네 아내는 결실한 포도나무 같으며 네 상에 둘린 자식은 어린 감람나무 같으리로다",
+      "source_text_hash": "8f73ca1558df872fff72592874e0f5e9dec08d843b6febf2021784b38bb31664",
+      "translation_text_hash": "9801b5b85b55b56779a6319ebe1e9aa1510e3c641076f15301ac414097413d7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 집 내실에 있는 네 아내는 결실한 포도나무 같으며 네 상에 둘린 자식은 어린 감람나무 같으리로다"
+      ],
+      "raw_text_hashes": [
+        "9801b5b85b55b56779a6319ebe1e9aa1510e3c641076f15301ac414097413d7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:128:4",
+      "sequence": 16131,
+      "chapter_label": "PSA 128",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 128,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 128,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, this is how the man who fears the LORD is blessed.",
+      "ko": "여호와를 경외하는 자는 이같이 복을 얻으리로다",
+      "source_text_hash": "1f8fe1d72c3bc98c8c0e0e64822f4409a65e4a7302394e996a9911e9aae194c9",
+      "translation_text_hash": "c03d244a82b55bb52a251c217a6ca4a1e6d796979076775586b15b218b7e40f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외하는 자는 이같이 복을 얻으리로다"
+      ],
+      "raw_text_hashes": [
+        "c03d244a82b55bb52a251c217a6ca4a1e6d796979076775586b15b218b7e40f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:128:5",
+      "sequence": 16132,
+      "chapter_label": "PSA 128",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 128,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 128,
+          "verse": 5
+        }
+      ],
+      "en": "May the LORD bless you out of Zion, and may you see the good of Jerusalem all the days of your life.",
+      "ko": "여호와께서 시온에서 네게 복을 주실찌어다 너는 평생에 예루살렘의 복을 보며",
+      "source_text_hash": "018f707750e6d49ec3e10e3dd2b8ed3b7d00ccc1644c0b2e8fdbf43577cd8b37",
+      "translation_text_hash": "81c3cc9f4b2ddd6345c8ea33b6a5fb012ec05a8798097d9f718d51eb95bdef6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 시온에서 네게 복을 주실찌어다 너는 평생에 예루살렘의 복을 보며"
+      ],
+      "raw_text_hashes": [
+        "81c3cc9f4b2ddd6345c8ea33b6a5fb012ec05a8798097d9f718d51eb95bdef6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:128:6",
+      "sequence": 16133,
+      "chapter_label": "PSA 128",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 128,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 128,
+          "verse": 6
+        }
+      ],
+      "en": "Yes, may you see your children’s children. Peace be upon Israel.",
+      "ko": "네 자식의 자식을 볼찌어다 이스라엘에게 평강이 있을찌로다",
+      "source_text_hash": "efeecda7f0ccc037563b112e100b904d61e5a6391ff79c076f23d73bfeb9d883",
+      "translation_text_hash": "d721e4f0e46f10b204c4c929c50a4506680aa0857c531a3775c85bf86cc83a66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자식의 자식을 볼찌어다 이스라엘에게 평강이 있을찌로다"
+      ],
+      "raw_text_hashes": [
+        "d721e4f0e46f10b204c4c929c50a4506680aa0857c531a3775c85bf86cc83a66"
+      ]
+    }
+  ]
+}

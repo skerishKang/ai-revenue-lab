@@ -1,0 +1,173 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:100",
+  "unit_ordinal": 578,
+  "unit_label": "PSA 100",
+  "book_code": "PSA",
+  "chapter_number": 100,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:100:1",
+      "sequence": 15510,
+      "chapter_label": "PSA 100",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 100,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 100,
+          "verse": 1
+        }
+      ],
+      "en": "Shout for joy to the LORD, all you lands!",
+      "ko": "온 땅이여 여호와께 즐거이 부를찌어다",
+      "source_text_hash": "07355b65fc2c1291a06f81ef2fe5fc353ea2555b4b0349096655294e9f13972d",
+      "translation_text_hash": "e8bfec16f8cbef97ba9aa9016842969652ef76f507cd03bfa802da7a01af63ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅이여 여호와께 즐거이 부를찌어다"
+      ],
+      "raw_text_hashes": [
+        "e8bfec16f8cbef97ba9aa9016842969652ef76f507cd03bfa802da7a01af63ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:100:2",
+      "sequence": 15511,
+      "chapter_label": "PSA 100",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 100,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 100,
+          "verse": 2
+        }
+      ],
+      "en": "Serve the LORD with gladness. Come before his presence with singing.",
+      "ko": "기쁨으로 여호와를 섬기며 노래하면서 그 앞에 나아갈찌어다",
+      "source_text_hash": "1a1319bef51aaeb30e95616d71444eaf4383c0287717bf151ca7605403e84748",
+      "translation_text_hash": "96d69ebb88327ea7ea493bce00e344522c5e3f5ef471d37c7dc4e4b11fa13347",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기쁨으로 여호와를 섬기며 노래하면서 그 앞에 나아갈찌어다"
+      ],
+      "raw_text_hashes": [
+        "96d69ebb88327ea7ea493bce00e344522c5e3f5ef471d37c7dc4e4b11fa13347"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:100:3",
+      "sequence": 15512,
+      "chapter_label": "PSA 100",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 100,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 100,
+          "verse": 3
+        }
+      ],
+      "en": "Know that the LORD, he is God. It is he who has made us, and we are his. We are his people, and the sheep of his pasture.",
+      "ko": "여호와가 우리 하나님이신줄 너희는 알찌어다 그는 우리를 지으신 자시요 우리는 그의 것이니 그의 백성이요 그의 기르시는 양이로다",
+      "source_text_hash": "0798bedf39d30b54d5b251d264908f1025aea0e8e6adb69639641b04a1836530",
+      "translation_text_hash": "c234cf96d1b2df886a9b3b767125557ec3057cd7e540c8f65cf255b6bb1b05e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 우리 하나님이신줄 너희는 알찌어다 그는 우리를 지으신 자시요 우리는 그의 것이니 그의 백성이요 그의 기르시는 양이로다"
+      ],
+      "raw_text_hashes": [
+        "c234cf96d1b2df886a9b3b767125557ec3057cd7e540c8f65cf255b6bb1b05e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:100:4",
+      "sequence": 15513,
+      "chapter_label": "PSA 100",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 100,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 100,
+          "verse": 4
+        }
+      ],
+      "en": "Enter into his gates with thanksgiving, and into his courts with praise. Give thanks to him, and bless his name.",
+      "ko": "감사함으로 그 문에 들어가며 찬송함으로 그 궁정에 들어가서 그에게 감사하며 그 이름을 송축할찌어다",
+      "source_text_hash": "5f1fd3016278d21f274b27a7f43ba93848bef9e937bc9a2010956a7ee5747f59",
+      "translation_text_hash": "1cfe2d37dd832a545c16df6b6c300c4cb530cab2bb239d2181097cca1f62f5c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감사함으로 그 문에 들어가며 찬송함으로 그 궁정에 들어가서 그에게 감사하며 그 이름을 송축할찌어다"
+      ],
+      "raw_text_hashes": [
+        "1cfe2d37dd832a545c16df6b6c300c4cb530cab2bb239d2181097cca1f62f5c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:100:5",
+      "sequence": 15514,
+      "chapter_label": "PSA 100",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 100,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 100,
+          "verse": 5
+        }
+      ],
+      "en": "For the LORD is good. His loving kindness endures forever, his faithfulness to all generations.",
+      "ko": "대저 여호와는 선하시니 그 인자하심이 영원하고 그 성실하심이 대대에 미치리로다",
+      "source_text_hash": "25d300ddd7058a4598d54d08542fce365086736d99598be98eddb2b0b91add42",
+      "translation_text_hash": "da51e79adcceaddaba3c51df09fcd87d76e166ca000b3ae678caafff0fa96dd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와는 선하시니 그 인자하심이 영원하고 그 성실하심이 대대에 미치리로다"
+      ],
+      "raw_text_hashes": [
+        "da51e79adcceaddaba3c51df09fcd87d76e166ca000b3ae678caafff0fa96dd1"
+      ]
+    }
+  ]
+}

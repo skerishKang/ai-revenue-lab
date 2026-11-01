@@ -9,6 +9,10 @@ fail() { echo "P01_COM2_INSTALL=$1" >&2; exit 1; }
 for item in app clients ingress migrations asgi.py worker.py worker_identity.py; do
   [[ -e "$source_engine/$item" ]] || fail SOURCE_MISSING
 done
+# The host loads these packages from the same immutable release as Engine.
+for item in packages/padiem-ai-core/padiem_ai_core packages/padiem-control-plane/padiem_control_plane apps/korean-ai-code-agent/src/kagent; do
+  [[ -f "$source_root/$item/__init__.py" ]] || fail SHARED_PACKAGE_MISSING
+done
 [[ -d "$root" ]] || fail APP_ROOT_MISSING
 install -d -m 0755 "$root/releases" "$root/rollback"
 release=$(mktemp -d "$root/releases/p01.XXXXXXXX")
@@ -16,6 +20,16 @@ chmod 0755 "$release"
 for item in app clients ingress migrations asgi.py worker.py worker_identity.py; do
   cp -aL "$source_engine/$item" "$release/$item"
 done
+for item in packages/padiem-ai-core/padiem_ai_core packages/padiem-control-plane/padiem_control_plane apps/korean-ai-code-agent/src/kagent; do
+  cp -aL "$source_root/$item" "$release/$(basename "$item")"
+done
+# install.sh uses umask 077 and the source may already contain 0600 files.
+# This release is code only; do not change the separate env/data directories.
+if [[ $EUID -eq 0 ]]; then
+  chown -R root:root "$release"
+fi
+find "$release" -type d -exec chmod a+rx,go-w {} +
+find "$release" -type f -exec chmod a+r,go-w {} +
 [[ -f "$release/asgi.py" ]] || fail ASGI_ENTRY_MISSING
 # Snapshot a previous real directory OR symlink target, so rollback is not tied
 # to a checkout that may itself be updated after this installation.

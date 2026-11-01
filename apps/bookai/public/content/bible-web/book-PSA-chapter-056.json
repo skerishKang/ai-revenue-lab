@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:056",
+  "unit_ordinal": 534,
+  "unit_label": "PSA 56",
+  "book_code": "PSA",
+  "chapter_number": 56,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:56:1",
+      "sequence": 14757,
+      "chapter_label": "PSA 56",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 1
+        }
+      ],
+      "en": "Be merciful to me, God, for man wants to swallow me up. All day long, he attacks and oppresses me.",
+      "ko": "하나님이여 나를 긍휼히 여기소서 사람이 나를 삼키려고 종일 치며 압제하나이다",
+      "source_text_hash": "482092a361267d8ce38d04b9cee30a13d29c107a8ec6ea49c2181a7ad88b473a",
+      "translation_text_hash": "da3d28b4ef76d66a0f57c0b6cb293dd624624da7af10f9fa63e59a6aa5ca8848",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나를 긍휼히 여기소서 사람이 나를 삼키려고 종일 치며 압제하나이다"
+      ],
+      "raw_text_hashes": [
+        "da3d28b4ef76d66a0f57c0b6cb293dd624624da7af10f9fa63e59a6aa5ca8848"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:2",
+      "sequence": 14758,
+      "chapter_label": "PSA 56",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 2
+        }
+      ],
+      "en": "My enemies want to swallow me up all day long, for they are many who fight proudly against me.",
+      "ko": "나의 원수가 종일 나를 삼키려 하며 나를 교만히 치는 자 많사오니",
+      "source_text_hash": "3232ab4206df8e2f5aa20d4aae3d7d022f0f283f1fed5986c8af84256ed86ce2",
+      "translation_text_hash": "d81e404e4156121bc4bd2858cbb0c6668b17e35a8250030342a1678c3a93a390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 원수가 종일 나를 삼키려 하며 나를 교만히 치는 자 많사오니"
+      ],
+      "raw_text_hashes": [
+        "d81e404e4156121bc4bd2858cbb0c6668b17e35a8250030342a1678c3a93a390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:3",
+      "sequence": 14759,
+      "chapter_label": "PSA 56",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 3
+        }
+      ],
+      "en": "When I am afraid, I will put my trust in you.",
+      "ko": "내가 두려워하는 날에는 주를 의지하리이다",
+      "source_text_hash": "b356c9da9a017f840dfffb49fc03b47aa464a034bf6670da340de29f16e050e9",
+      "translation_text_hash": "e18a93d6fe9a0dbe185c3eba1d0499b6f2d6b27f7ea3a54efe9b20a0dc355daf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 두려워하는 날에는 주를 의지하리이다"
+      ],
+      "raw_text_hashes": [
+        "e18a93d6fe9a0dbe185c3eba1d0499b6f2d6b27f7ea3a54efe9b20a0dc355daf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:4",
+      "sequence": 14760,
+      "chapter_label": "PSA 56",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 4
+        }
+      ],
+      "en": "In God, I praise his word. In God, I put my trust. I will not be afraid. What can flesh do to me?",
+      "ko": "내가 하나님을 의지하고 그 말씀을 찬송하올찌라 내가 하나님을 의지하였은즉 두려워 아니하리니 혈육 있는 사람이 내게 어찌하리이까",
+      "source_text_hash": "335fd675a584895c65d333f7b188da04570ca5d6517b3ef2297898110e7f73ef",
+      "translation_text_hash": "872b7c36e4506596e43d0d78de689a1f779318ce64366924d0d67ec6f3e7a80c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하나님을 의지하고 그 말씀을 찬송하올찌라 내가 하나님을 의지하였은즉 두려워 아니하리니 혈육 있는 사람이 내게 어찌하리이까"
+      ],
+      "raw_text_hashes": [
+        "872b7c36e4506596e43d0d78de689a1f779318ce64366924d0d67ec6f3e7a80c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:5",
+      "sequence": 14761,
+      "chapter_label": "PSA 56",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 5
+        }
+      ],
+      "en": "All day long they twist my words. All their thoughts are against me for evil.",
+      "ko": "저희가 종일 내 말을 곡해하며 내게 대한 저희 모든 사상은 사악이라",
+      "source_text_hash": "524cc8746afda34167ea6ca37f84356826be89112f3c5e3c1114c85bfafa7303",
+      "translation_text_hash": "c2d2ebe5e9ff7068d1ab62025dc22963d41cf443459674427bbfbc26e7bf79ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 종일 내 말을 곡해하며 내게 대한 저희 모든 사상은 사악이라"
+      ],
+      "raw_text_hashes": [
+        "c2d2ebe5e9ff7068d1ab62025dc22963d41cf443459674427bbfbc26e7bf79ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:6",
+      "sequence": 14762,
+      "chapter_label": "PSA 56",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 6
+        }
+      ],
+      "en": "They conspire and lurk, watching my steps. They are eager to take my life.",
+      "ko": "저희가 내 생명을 엿보던 것과 같이 또 모여 숨어 내 종적을 살피나이다",
+      "source_text_hash": "f6f6e8e469f40301c70ccd2c6e6f9dc4dc8cc2a130b5bc5ce5fd28f8440bcd8f",
+      "translation_text_hash": "b7820d0c4f932aaa71494719cfc63a0ae0d90b4f65e49e60261e3896bdff9be8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 내 생명을 엿보던 것과 같이 또 모여 숨어 내 종적을 살피나이다"
+      ],
+      "raw_text_hashes": [
+        "b7820d0c4f932aaa71494719cfc63a0ae0d90b4f65e49e60261e3896bdff9be8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:7",
+      "sequence": 14763,
+      "chapter_label": "PSA 56",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 7
+        }
+      ],
+      "en": "Shall they escape by iniquity? In anger cast down the peoples, God.",
+      "ko": "저희가 죄악을 짓고야 피하오리이까 하나님이여 분노하사 뭇 백성을 낮추소서",
+      "source_text_hash": "47b416a3bfb2428fd4bb9715b15263e3871e4640914ac857c264c04f5868f8d7",
+      "translation_text_hash": "c6e6b706868da58c65a1c2d09cea3f4efae332427a78de4b4ada89f2d976422f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 죄악을 짓고야 피하오리이까 하나님이여 분노하사 뭇 백성을 낮추소서"
+      ],
+      "raw_text_hashes": [
+        "c6e6b706868da58c65a1c2d09cea3f4efae332427a78de4b4ada89f2d976422f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:8",
+      "sequence": 14764,
+      "chapter_label": "PSA 56",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 8
+        }
+      ],
+      "en": "You count my wanderings. You put my tears into your container. Aren’t they in your book?",
+      "ko": "나의 유리함을 주께서 계수하셨으니 나의 눈물을 주의 병에 담으소서 이것이 주의 책에 기록되지 아니하였나이까",
+      "source_text_hash": "830a152841dd2a40d67059207a2421bf6f4bc68d9610080f66fadba49056e9a5",
+      "translation_text_hash": "9b29572f098066c696b05b578afaa3636d1e0ca8ef4d66e838b69495d03e733f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 유리함을 주께서 계수하셨으니 나의 눈물을 주의 병에 담으소서 이것이 주의 책에 기록되지 아니하였나이까"
+      ],
+      "raw_text_hashes": [
+        "9b29572f098066c696b05b578afaa3636d1e0ca8ef4d66e838b69495d03e733f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:9",
+      "sequence": 14765,
+      "chapter_label": "PSA 56",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 9
+        }
+      ],
+      "en": "Then my enemies shall turn back in the day that I call. I know this: that God is for me.",
+      "ko": "내가 아뢰는 날에 내 원수가 물러가리니 하나님이 나를 도우심인줄 아나이다",
+      "source_text_hash": "0079bf2f1cf75512c732d0aad34e6f8b2242cbf6b86d462cdfaab2fda704be4d",
+      "translation_text_hash": "4d0272f254b40deda139808eb06b02547a05f247d77282fea1c763cf64081fd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아뢰는 날에 내 원수가 물러가리니 하나님이 나를 도우심인줄 아나이다"
+      ],
+      "raw_text_hashes": [
+        "4d0272f254b40deda139808eb06b02547a05f247d77282fea1c763cf64081fd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:10",
+      "sequence": 14766,
+      "chapter_label": "PSA 56",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 10
+        }
+      ],
+      "en": "In God, I will praise his word. In the LORD, I will praise his word.",
+      "ko": "내가 하나님을 의지하여 그 말씀을 찬송하며 여호와를 의지하여 그 말씀을 찬송하리이다",
+      "source_text_hash": "d3e25b0bf848242ac121a499fc7c7fd598dd67169dea6acd58744d2cd46de9e8",
+      "translation_text_hash": "95090eb4f3064265d93d704d3da1c21bb292f35bee4d74229143a4a5d608a12a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하나님을 의지하여 그 말씀을 찬송하며 여호와를 의지하여 그 말씀을 찬송하리이다"
+      ],
+      "raw_text_hashes": [
+        "95090eb4f3064265d93d704d3da1c21bb292f35bee4d74229143a4a5d608a12a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:11",
+      "sequence": 14767,
+      "chapter_label": "PSA 56",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 11
+        }
+      ],
+      "en": "I have put my trust in God. I will not be afraid. What can man do to me?",
+      "ko": "내가 하나님을 의지하였은즉 두려워 아니하리니 사람이 내게 어찌하리이까",
+      "source_text_hash": "8e1e15c00d46974407d118abfdfa28fa627da6cf0cff5a3ea1351f6046d41399",
+      "translation_text_hash": "f63117fa1111e05238bf6645da4d0c712b14b2af8bb53704de9bc554193f6dce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하나님을 의지하였은즉 두려워 아니하리니 사람이 내게 어찌하리이까"
+      ],
+      "raw_text_hashes": [
+        "f63117fa1111e05238bf6645da4d0c712b14b2af8bb53704de9bc554193f6dce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:12",
+      "sequence": 14768,
+      "chapter_label": "PSA 56",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 12
+        }
+      ],
+      "en": "Your vows are on me, God. I will give thank offerings to you.",
+      "ko": "하나님이여 내가 주께 서원함이 있사온즉 내가 감사제를 주께 드리리니",
+      "source_text_hash": "218eb825e61319651721f2a8048addba16241178c79deccaa17c321f352a34ca",
+      "translation_text_hash": "1a0d87ec1eb319710674e2873255cd70201b63b37756de02fac14759772a9047",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 내가 주께 서원함이 있사온즉 내가 감사제를 주께 드리리니"
+      ],
+      "raw_text_hashes": [
+        "1a0d87ec1eb319710674e2873255cd70201b63b37756de02fac14759772a9047"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:56:13",
+      "sequence": 14769,
+      "chapter_label": "PSA 56",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 56,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 56,
+          "verse": 13
+        }
+      ],
+      "en": "For you have delivered my soul from death, and prevented my feet from falling, that I may walk before God in the light of the living.",
+      "ko": "주께서 내 생명을 사망에서 건지셨음이라 주께서 나로 하나님 앞, 생명의 빛에 다니게 하시려고 실족지 않게 하지 아니하셨나이까",
+      "source_text_hash": "15f3454685729201f8848adde7e5d2531faf8e6f555409aea22db90f310a9b48",
+      "translation_text_hash": "93234bad0206ea9a5888fa9becad1f1ecc71d0f6de5bb446f1f1e2facfe6e4d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 생명을 사망에서 건지셨음이라 주께서 나로 하나님 앞, 생명의 빛에 다니게 하시려고 실족지 않게 하지 아니하셨나이까"
+      ],
+      "raw_text_hashes": [
+        "93234bad0206ea9a5888fa9becad1f1ecc71d0f6de5bb446f1f1e2facfe6e4d3"
+      ]
+    }
+  ]
+}

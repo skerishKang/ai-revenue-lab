@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1JN:chapter:003",
+  "unit_ordinal": 1162,
+  "unit_label": "1JN 3",
+  "book_code": "1JN",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1JN:3:1",
+      "sequence": 30577,
+      "chapter_label": "1JN 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "See how great a love the Father has given to us, that we should be called children of God! For this cause the world doesn’t know us, because it didn’t know him.",
+      "ko": "보라 아버지께서 어떠한 사랑을 우리에게 주사 하나님의 자녀라 일컬음을 얻게 하셨는고, 우리가 그러하도다 그러므로 세상이 우리를 알지 못함은 그를 알지 못함이니라",
+      "source_text_hash": "fa945d6f6e69429f668d60680f8cddea97580dd981cde4dcedb67e67fa94189a",
+      "translation_text_hash": "300aa43387f1e1be19f45e9624f3ab9b103f20d4ea041b8f7b2f3d0758dce30e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 아버지께서 어떠한 사랑을 우리에게 주사 하나님의 자녀라 일컬음을 얻게 하셨는고, 우리가 그러하도다 그러므로 세상이 우리를 알지 못함은 그를 알지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "300aa43387f1e1be19f45e9624f3ab9b103f20d4ea041b8f7b2f3d0758dce30e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:2",
+      "sequence": 30578,
+      "chapter_label": "1JN 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Beloved, now we are children of God. It is not yet revealed what we will be; but we know that when he is revealed, we will be like him, for we will see him just as he is.",
+      "ko": "사랑하는 자들아 우리가 지금은 하나님의 자녀라 장래에 어떻게 될 것은 아직 나타나지 아니하였으나 그가 나타내심이 되면 우리가 그와 같을 줄을 아는 것은 그의 계신 그대로 볼 것을 인함이니",
+      "source_text_hash": "d5a06876831d948ee6be3eeb2fe12e60c7d07cfff38d29b66b1204acf46bfc93",
+      "translation_text_hash": "1d4fa16dd0df7a6ea3d0a3bde88ec3e730e4e8cb7fcefaa45f17bf4410f7fc59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 우리가 지금은 하나님의 자녀라 장래에 어떻게 될 것은 아직 나타나지 아니하였으나 그가 나타내심이 되면 우리가 그와 같을 줄을 아는 것은 그의 계신 그대로 볼 것을 인함이니"
+      ],
+      "raw_text_hashes": [
+        "1d4fa16dd0df7a6ea3d0a3bde88ec3e730e4e8cb7fcefaa45f17bf4410f7fc59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:3",
+      "sequence": 30579,
+      "chapter_label": "1JN 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Everyone who has this hope set on him purifies himself, even as he is pure.",
+      "ko": "주를 향하여 이 소망을 가진 자마다 그의 깨끗하심과 같이 자기를 깨끗하게 하느니라",
+      "source_text_hash": "69736d5e83186d0e9448411e0cfb961def64bc472fa41716b77a089cf6bf7ae7",
+      "translation_text_hash": "1a23b38890abd518637b0d675439ecbad8f1b275487313fc8be3b22211329ec3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 향하여 이 소망을 가진 자마다 그의 깨끗하심과 같이 자기를 깨끗하게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "1a23b38890abd518637b0d675439ecbad8f1b275487313fc8be3b22211329ec3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:4",
+      "sequence": 30580,
+      "chapter_label": "1JN 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Everyone who sins also commits lawlessness. Sin is lawlessness.",
+      "ko": "죄를 짓는 자마다 불법을 행하나니 죄는 불법이라",
+      "source_text_hash": "cc7c2690d0815bdafe59ec76aa3757d708e1ad93735c60d2f5658b458470049b",
+      "translation_text_hash": "61bde07213e99b07c3f114ece8fab515b9e9912b33a57aba4e8bda811abdf9da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄를 짓는 자마다 불법을 행하나니 죄는 불법이라"
+      ],
+      "raw_text_hashes": [
+        "61bde07213e99b07c3f114ece8fab515b9e9912b33a57aba4e8bda811abdf9da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:5",
+      "sequence": 30581,
+      "chapter_label": "1JN 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "You know that he was revealed to take away our sins, and no sin is in him.",
+      "ko": "그가 우리 죄를 없이 하려고 나타내신바 된 것을 너희가 아나니 그에게는 죄가 없느니라",
+      "source_text_hash": "e745ed32aff9a2f3afab9e7d8547d0fc2e6b4ba786235cc5b36a4db14e870293",
+      "translation_text_hash": "47ff58d6c5848ded7e5d5882126e3f026a1283927c62e051528042ef4dd0c40f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 우리 죄를 없이 하려고 나타내신바 된 것을 너희가 아나니 그에게는 죄가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "47ff58d6c5848ded7e5d5882126e3f026a1283927c62e051528042ef4dd0c40f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:6",
+      "sequence": 30582,
+      "chapter_label": "1JN 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Whoever remains in him doesn’t sin. Whoever sins hasn’t seen him and doesn’t know him.",
+      "ko": "그 안에 거하는 자마다 범죄하지 아니하나니 범죄하는 자마다 그를 보지도 못하였고 그를 알지도 못하였느니라",
+      "source_text_hash": "6bba9cf17c08c346d18647701d17c0ed4524b139ac64e3fecd743498fed9b68b",
+      "translation_text_hash": "d03f1f037cc0177aaffbb345c8eacef2c53a7df3276f6b6d25746d6ee1d09ba0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 안에 거하는 자마다 범죄하지 아니하나니 범죄하는 자마다 그를 보지도 못하였고 그를 알지도 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "d03f1f037cc0177aaffbb345c8eacef2c53a7df3276f6b6d25746d6ee1d09ba0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:7",
+      "sequence": 30583,
+      "chapter_label": "1JN 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Little children, let no one lead you astray. He who does righteousness is righteous, even as he is righteous.",
+      "ko": "자녀들아 아무도 너희를 미혹하지 못하게 하라 의를 행하는 자는 그의 의로우심과 같이 의롭고",
+      "source_text_hash": "0ded4718f4cd5f4d0cdeb1cb09b70f08e2f843e2116628be2933d3358ef769f8",
+      "translation_text_hash": "bb698d9edf7df0d57b1d2666aaa5fa17e315a77a864513288f0ebae80f795b3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀들아 아무도 너희를 미혹하지 못하게 하라 의를 행하는 자는 그의 의로우심과 같이 의롭고"
+      ],
+      "raw_text_hashes": [
+        "bb698d9edf7df0d57b1d2666aaa5fa17e315a77a864513288f0ebae80f795b3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:8",
+      "sequence": 30584,
+      "chapter_label": "1JN 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "He who sins is of the devil, for the devil has been sinning from the beginning. To this end the Son of God was revealed: that he might destroy the works of the devil.",
+      "ko": "죄를 짓는 자는 마귀에게 속하나니 마귀는 처음부터 범죄함이니라 하나님의 아들이 나타나신 것은 마귀의 일을 멸하려 하심이니라",
+      "source_text_hash": "ef406ed420cadda3cc2af64cc08891c80f5874284a6de589091d32c3de499bbe",
+      "translation_text_hash": "2534ac4974b39cf7df0d18ac350818da5140aca4a1480aaf5eeb7de6430245c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄를 짓는 자는 마귀에게 속하나니 마귀는 처음부터 범죄함이니라 하나님의 아들이 나타나신 것은 마귀의 일을 멸하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "2534ac4974b39cf7df0d18ac350818da5140aca4a1480aaf5eeb7de6430245c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:9",
+      "sequence": 30585,
+      "chapter_label": "1JN 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Whoever is born of God doesn’t commit sin, because his seed remains in him, and he can’t sin, because he is born of God.",
+      "ko": "하나님께로서 난 자마다 죄를 짓지 아니하나니 이는 하나님의 씨가 그의 속에 거함이요 저도 범죄치 못하는 것은 하나님께로서 났음이라",
+      "source_text_hash": "fb5158c43ddbc5144ca1ab96ca5c09b347ffd6805975d55394ef15501a28a65b",
+      "translation_text_hash": "6110cdfd1aad6591409c85d3d0bb94378a0d4af424c4723d87a4aac1bb875cc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께로서 난 자마다 죄를 짓지 아니하나니 이는 하나님의 씨가 그의 속에 거함이요 저도 범죄치 못하는 것은 하나님께로서 났음이라"
+      ],
+      "raw_text_hashes": [
+        "6110cdfd1aad6591409c85d3d0bb94378a0d4af424c4723d87a4aac1bb875cc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:10",
+      "sequence": 30586,
+      "chapter_label": "1JN 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "In this the children of God are revealed, and the children of the devil. Whoever doesn’t do righteousness is not of God, neither is he who doesn’t love his brother.",
+      "ko": "이러므로 하나님의 자녀들과 마귀의 자녀들이 나타나나니 무릇 의를 행치 아니하는 자나 또는 그 형제를 사랑치 아니하는 자는 하나님께 속하지 아니하니라",
+      "source_text_hash": "12c0747541dffe09eaa731e655baf8726819c6ea3c47c2c08a73b574bed21689",
+      "translation_text_hash": "ee171a4f94fd2889b9fe0ebf546fe3c41b7e789cf45f27b133f02f7ce84e0d9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 하나님의 자녀들과 마귀의 자녀들이 나타나나니 무릇 의를 행치 아니하는 자나 또는 그 형제를 사랑치 아니하는 자는 하나님께 속하지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "ee171a4f94fd2889b9fe0ebf546fe3c41b7e789cf45f27b133f02f7ce84e0d9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:11",
+      "sequence": 30587,
+      "chapter_label": "1JN 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "For this is the message which you heard from the beginning, that we should love one another—",
+      "ko": "우리가 서로 사랑할찌니 이는 너희가 처음부터 들은 소식이라",
+      "source_text_hash": "133b012c7c4ecbb6bf49c889ebdfef4e2b3282eea9487ad547db59e71768e49d",
+      "translation_text_hash": "8c428b66deb6371093b5d5156e7ddf95b36cb585737968b1b2f696c0ce7cde49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 서로 사랑할찌니 이는 너희가 처음부터 들은 소식이라"
+      ],
+      "raw_text_hashes": [
+        "8c428b66deb6371093b5d5156e7ddf95b36cb585737968b1b2f696c0ce7cde49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:12",
+      "sequence": 30588,
+      "chapter_label": "1JN 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "unlike Cain, who was of the evil one and killed his brother. Why did he kill him? Because his deeds were evil, and his brother’s righteous.",
+      "ko": "가인 같이 하지 말라 저는 악한 자에게 속하여 그 아우를 죽였으니 어찐 연고로 죽였느뇨 자기의 행위는 악하고 그 아우의 행위는 의로움이니라",
+      "source_text_hash": "7fb3c57482ac5bdf281623668dd9298dfac0e412716d3c0b97dd2993f7909a46",
+      "translation_text_hash": "14b32291d077f1de8bb1ad42e55be1122c8559fa6a02c4e098ad817fad2b6789",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가인 같이 하지 말라 저는 악한 자에게 속하여 그 아우를 죽였으니 어찐 연고로 죽였느뇨 자기의 행위는 악하고 그 아우의 행위는 의로움이니라"
+      ],
+      "raw_text_hashes": [
+        "14b32291d077f1de8bb1ad42e55be1122c8559fa6a02c4e098ad817fad2b6789"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:13",
+      "sequence": 30589,
+      "chapter_label": "1JN 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Don’t be surprised, my brothers, if the world hates you.",
+      "ko": "형제들아 세상이 너희를 미워하거든 이상히 여기지 말라",
+      "source_text_hash": "557c2fd23d359a5f0899e2f1382f7da36ca9f717ca4116d2cc97572ee4a30830",
+      "translation_text_hash": "1ca822aa06d59118c1750694646ab0b16f67e0ced700ef451a10c03da1266724",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 세상이 너희를 미워하거든 이상히 여기지 말라"
+      ],
+      "raw_text_hashes": [
+        "1ca822aa06d59118c1750694646ab0b16f67e0ced700ef451a10c03da1266724"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:14",
+      "sequence": 30590,
+      "chapter_label": "1JN 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "We know that we have passed out of death into life, because we love the brothers. He who doesn’t love his brother remains in death.",
+      "ko": "우리가 형제를 사랑함으로 사망에서 옮겨 생명으로 들어간 줄을 알거니와 사랑치 아니하는 자는 사망에 거하느니라",
+      "source_text_hash": "b6b137e91a80f71923f62068a8f8e08d647f4b50af4c47cc1cd8d5a393ecee2e",
+      "translation_text_hash": "60337c2d437de067541fe839ef90f7990f6115fb4a56c38499215752db33f75b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 형제를 사랑함으로 사망에서 옮겨 생명으로 들어간 줄을 알거니와 사랑치 아니하는 자는 사망에 거하느니라"
+      ],
+      "raw_text_hashes": [
+        "60337c2d437de067541fe839ef90f7990f6115fb4a56c38499215752db33f75b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:15",
+      "sequence": 30591,
+      "chapter_label": "1JN 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Whoever hates his brother is a murderer, and you know that no murderer has eternal life remaining in him.",
+      "ko": "그 형제를 미워하는 자마다 살인하는 자니 살인하는 자마다 영생이 그 속에 거하지 아니하는 것을 너희가 아는 바라",
+      "source_text_hash": "259309100c38e2b55cc65d154fa5503776141ad518187a64c9aee0e012fd104c",
+      "translation_text_hash": "d35c0a7e760d88a8e10cdaa3e27588789098cd6f094e76a43fec4793eb5b9537",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형제를 미워하는 자마다 살인하는 자니 살인하는 자마다 영생이 그 속에 거하지 아니하는 것을 너희가 아는 바라"
+      ],
+      "raw_text_hashes": [
+        "d35c0a7e760d88a8e10cdaa3e27588789098cd6f094e76a43fec4793eb5b9537"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:16",
+      "sequence": 30592,
+      "chapter_label": "1JN 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "By this we know love, because he laid down his life for us. And we ought to lay down our lives for the brothers.",
+      "ko": "그가 우리를 위하여 목숨을 버리셨으니 우리가 이로써 사랑을 알고 우리도 형제들을 위하여 목숨을 버리는 것이 마땅하니라",
+      "source_text_hash": "3b38c52f5b9f3604b24ba718ec08ec32746c33f90e95599b56f77fabafff74ed",
+      "translation_text_hash": "40fdc43675d90c6f982eb2d9bf5ea7fd9acd9c906fa9bfb9a26aad7447e4d133",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 우리를 위하여 목숨을 버리셨으니 우리가 이로써 사랑을 알고 우리도 형제들을 위하여 목숨을 버리는 것이 마땅하니라"
+      ],
+      "raw_text_hashes": [
+        "40fdc43675d90c6f982eb2d9bf5ea7fd9acd9c906fa9bfb9a26aad7447e4d133"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:17",
+      "sequence": 30593,
+      "chapter_label": "1JN 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "But whoever has the world’s goods and sees his brother in need, then closes his heart of compassion against him, how does God’s love remain in him?",
+      "ko": "누가 이 세상 재물을 가지고 형제의 궁핍함을 보고도 도와줄 마음을 막으면 하나님의 사랑이 어찌 그 속에 거할까보냐",
+      "source_text_hash": "caaf749e1169d3454e16cf570d9be524f110a2eea55fa792e62c8e88b8baf7c4",
+      "translation_text_hash": "1b5ccf2bad2df0cf56e5ce5e012e8ac5e68c3414907faafb8e5c27126e6c710a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 이 세상 재물을 가지고 형제의 궁핍함을 보고도 도와줄 마음을 막으면 하나님의 사랑이 어찌 그 속에 거할까보냐"
+      ],
+      "raw_text_hashes": [
+        "1b5ccf2bad2df0cf56e5ce5e012e8ac5e68c3414907faafb8e5c27126e6c710a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:18",
+      "sequence": 30594,
+      "chapter_label": "1JN 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "My little children, let’s not love in word only, or with the tongue only, but in deed and truth.",
+      "ko": "자녀들아 우리가 말과 혀로만 사랑하지 말고 오직 행함과 진실함으로 하자",
+      "source_text_hash": "9a65e9ccea0781e447b92df3f1d03c0749c37efa253ee4db2e76ee09722cd88e",
+      "translation_text_hash": "2e264d2404698d652189c838860a1d669a383eb7a6ecec15f5721881eb7e5524",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀들아 우리가 말과 혀로만 사랑하지 말고 오직 행함과 진실함으로 하자"
+      ],
+      "raw_text_hashes": [
+        "2e264d2404698d652189c838860a1d669a383eb7a6ecec15f5721881eb7e5524"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:19",
+      "sequence": 30595,
+      "chapter_label": "1JN 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "And by this we know that we are of the truth and persuade our hearts before him,",
+      "ko": "이로써 우리가 진리에 속한 줄을 알고 또 우리 마음을 주 앞에서 굳세게 하리로다",
+      "source_text_hash": "77dc4808d1cad70a559a23a0e369013b05beea5cf8700f54a3590146b067c500",
+      "translation_text_hash": "d39f81f12040fca2fb90119cfe10c25c23717edff8ffe9ae737a6969e0f8ed86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로써 우리가 진리에 속한 줄을 알고 또 우리 마음을 주 앞에서 굳세게 하리로다"
+      ],
+      "raw_text_hashes": [
+        "d39f81f12040fca2fb90119cfe10c25c23717edff8ffe9ae737a6969e0f8ed86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:20",
+      "sequence": 30596,
+      "chapter_label": "1JN 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "because if our heart condemns us, God is greater than our heart, and knows all things.",
+      "ko": "우리 마음이 혹 우리를 책망할 일이 있거든 하물며 우리 마음보다 크시고 모든 것을 아시는 하나님일까 보냐",
+      "source_text_hash": "38b69b5e28bbcb1d6b8b5e83e5eafddb567a48e6152320e6f05ba6288d4819a2",
+      "translation_text_hash": "63b23b486c54a0b00a33636abb1ca885a702bead4b65a00b12f6e1b8c70d57b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 마음이 혹 우리를 책망할 일이 있거든 하물며 우리 마음보다 크시고 모든 것을 아시는 하나님일까 보냐"
+      ],
+      "raw_text_hashes": [
+        "63b23b486c54a0b00a33636abb1ca885a702bead4b65a00b12f6e1b8c70d57b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:21",
+      "sequence": 30597,
+      "chapter_label": "1JN 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "Beloved, if our hearts don’t condemn us, we have boldness toward God;",
+      "ko": "사랑하는 자들아 만일 우리 마음이 우리를 책망할 것이 없으면 하나님 앞에서 담대함을 얻고",
+      "source_text_hash": "b95135e14a376219dd0d0a4569a317b9bbfe6458c79c8e640683b40c3c9bd997",
+      "translation_text_hash": "a69de6206b422d928217ee274cdf8f7e70ce2516f41609126920e75858837bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 만일 우리 마음이 우리를 책망할 것이 없으면 하나님 앞에서 담대함을 얻고"
+      ],
+      "raw_text_hashes": [
+        "a69de6206b422d928217ee274cdf8f7e70ce2516f41609126920e75858837bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:22",
+      "sequence": 30598,
+      "chapter_label": "1JN 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "so whatever we ask, we receive from him, because we keep his commandments and do the things that are pleasing in his sight.",
+      "ko": "무엇이든지 구하는 바를 그에게 받나니 이는 우리가 그의 계명들을 지키고 그 앞에서 기뻐하시는 것을 행함이라",
+      "source_text_hash": "51a7a72c7dedb1a46172f52000d0d7925de3b4e023c0b85456b329623fcde875",
+      "translation_text_hash": "f806fa8494690c93b6e669843a4b584f8053bef0441ae6e4a5a8d6f28ec37e28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무엇이든지 구하는 바를 그에게 받나니 이는 우리가 그의 계명들을 지키고 그 앞에서 기뻐하시는 것을 행함이라"
+      ],
+      "raw_text_hashes": [
+        "f806fa8494690c93b6e669843a4b584f8053bef0441ae6e4a5a8d6f28ec37e28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:23",
+      "sequence": 30599,
+      "chapter_label": "1JN 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "This is his commandment, that we should believe in the name of his Son, Jesus Christ, and love one another, even as he commanded.",
+      "ko": "그의 계명은 이것이니 곧 그 아들 예수 그리스도의 이름을 믿고 그가 우리에게 주신 계명대로 서로 사랑할 것이니라",
+      "source_text_hash": "db6f4e7acd0b804f3a006079e62314f77383e6873dfe76f7f4532c3888dd4e48",
+      "translation_text_hash": "76ff93a04b6c721949ceccc65958b84d7f379905830f96a536b104c3c33c2c21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 계명은 이것이니 곧 그 아들 예수 그리스도의 이름을 믿고 그가 우리에게 주신 계명대로 서로 사랑할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "76ff93a04b6c721949ceccc65958b84d7f379905830f96a536b104c3c33c2c21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:3:24",
+      "sequence": 30600,
+      "chapter_label": "1JN 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "1JN",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "He who keeps his commandments remains in him, and he in him. By this we know that he remains in us, by the Spirit which he gave us.",
+      "ko": "그의 계명들을 지키는 자는 주 안에 거하고 주는 저 안에 거하시나니 우리에게 주신 성령으로 말미암아 그가 우리 안에 거하시는 줄을 우리가 아느니라",
+      "source_text_hash": "00998918ee5d4b3eb7e53fdaeefbcff96d40307179622e41cb3351d3142fbafa",
+      "translation_text_hash": "d7b4f91e01b36fbc75837d32c66e43b0587155becacdbb1e332b0f9d10b7e9c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 계명들을 지키는 자는 주 안에 거하고 주는 저 안에 거하시나니 우리에게 주신 성령으로 말미암아 그가 우리 안에 거하시는 줄을 우리가 아느니라"
+      ],
+      "raw_text_hashes": [
+        "d7b4f91e01b36fbc75837d32c66e43b0587155becacdbb1e332b0f9d10b7e9c2"
+      ]
+    }
+  ]
+}

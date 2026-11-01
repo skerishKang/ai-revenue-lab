@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:003",
+  "unit_ordinal": 682,
+  "unit_label": "ISA 3",
+  "book_code": "ISA",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:3:1",
+      "sequence": 17709,
+      "chapter_label": "ISA 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "For, behold, the Lord, GOD of Armies, takes away from Jerusalem and from Judah supply and support, the whole supply of bread, and the whole supply of water;",
+      "ko": "보라 주 만군의 여호와께서 예루살렘과 유다의 의뢰하며 의지하는 것을 제하여 버리시되 곧 그 의뢰하는 모든 양식과 그 의뢰하는 모든 물과",
+      "source_text_hash": "7126e50c2aeaa54713c51c34a5770b836c1743b6818fef14ce3ab5eb65e3fc70",
+      "translation_text_hash": "ff5de62f4ff0b209e0a849e5c4a238001e6f2e0cbb65d4b1b7b3fba29fd2eb45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 주 만군의 여호와께서 예루살렘과 유다의 의뢰하며 의지하는 것을 제하여 버리시되 곧 그 의뢰하는 모든 양식과 그 의뢰하는 모든 물과"
+      ],
+      "raw_text_hashes": [
+        "ff5de62f4ff0b209e0a849e5c4a238001e6f2e0cbb65d4b1b7b3fba29fd2eb45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:2",
+      "sequence": 17710,
+      "chapter_label": "ISA 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "the mighty man, the man of war, the judge, the prophet, the diviner, the elder,",
+      "ko": "용사와 전사와 재판관과 선지자와 복술자와 장로와",
+      "source_text_hash": "4b02da68bdea1b501737b797f4a99dab976307aa93badcd3786312e770cc84ee",
+      "translation_text_hash": "0540d76f7a2cf7cd25877cb9eeaf0640ac4389114f00b399c13f46600698f93f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용사와 전사와 재판관과 선지자와 복술자와 장로와"
+      ],
+      "raw_text_hashes": [
+        "0540d76f7a2cf7cd25877cb9eeaf0640ac4389114f00b399c13f46600698f93f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:3",
+      "sequence": 17711,
+      "chapter_label": "ISA 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "the captain of fifty, the honorable man, the counselor, the skilled craftsman, and the clever enchanter.",
+      "ko": "오십부장과 귀인과 모사와 공교한 장인과 능란한 요술자를 그리 하실 것이며",
+      "source_text_hash": "8440190e985a20a52c6fb3df765347fa3dea9078d6b79344f4002e322eb7ac1b",
+      "translation_text_hash": "82942412bc96a7be2dd690665372b994c8b232a3a67fef78e52c9a1de44b5b3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오십부장과 귀인과 모사와 공교한 장인과 능란한 요술자를 그리 하실 것이며"
+      ],
+      "raw_text_hashes": [
+        "82942412bc96a7be2dd690665372b994c8b232a3a67fef78e52c9a1de44b5b3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:4",
+      "sequence": 17712,
+      "chapter_label": "ISA 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "I will give boys to be their princes, and children shall rule over them.",
+      "ko": "그가 또 아이들로 그들의 방백을 삼으시며 적자들로 그들을 다스리게 하시리니",
+      "source_text_hash": "d6a27edee47b0edb26ed607235830640034d3b8af49352df5a04bf2840608e26",
+      "translation_text_hash": "3c689fc78b6e972b530220dbad765a83241853fc950a0f198ba21319926fb74a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 아이들로 그들의 방백을 삼으시며 적자들로 그들을 다스리게 하시리니"
+      ],
+      "raw_text_hashes": [
+        "3c689fc78b6e972b530220dbad765a83241853fc950a0f198ba21319926fb74a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:5",
+      "sequence": 17713,
+      "chapter_label": "ISA 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "The people will be oppressed, everyone by another, and everyone by his neighbor. The child will behave himself proudly against the old man, and the wicked against the honorable.",
+      "ko": "백성이 서로 학대하며 각기 이웃을 잔해하며 아이가 노인에게, 비천한 자가 존귀한 자에게 교만할 것이며",
+      "source_text_hash": "4f5f6e8257bb1e5c8e6676a223d82cf4c8dba5adeebb915b8d00299ea955f956",
+      "translation_text_hash": "02fd58309391bfcc820146c8fa7454fbd72271c19999364e27ee86740a10b48d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 서로 학대하며 각기 이웃을 잔해하며 아이가 노인에게, 비천한 자가 존귀한 자에게 교만할 것이며"
+      ],
+      "raw_text_hashes": [
+        "02fd58309391bfcc820146c8fa7454fbd72271c19999364e27ee86740a10b48d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:6",
+      "sequence": 17714,
+      "chapter_label": "ISA 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Indeed a man shall take hold of his brother in the house of his father, saying, “You have clothing, you be our ruler, and let this ruin be under your hand.”",
+      "ko": "혹시 사람이 그 아비의 집에서 그 형제를 붙잡고 말하기를 너는 의복이 오히려 있으니 우리 관장이 되어 이 멸망을 네 수하에 두라 할 것이면",
+      "source_text_hash": "8164ef4c7c34bdab33605d60699a5fc68a146e1094a278e9d3b57fd350b03c7f",
+      "translation_text_hash": "00fffbba28ca0472811824c7baf54227026b0782041ea5b23640da8efb2aafa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 사람이 그 아비의 집에서 그 형제를 붙잡고 말하기를 너는 의복이 오히려 있으니 우리 관장이 되어 이 멸망을 네 수하에 두라 할 것이면"
+      ],
+      "raw_text_hashes": [
+        "00fffbba28ca0472811824c7baf54227026b0782041ea5b23640da8efb2aafa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:7",
+      "sequence": 17715,
+      "chapter_label": "ISA 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "In that day he will cry out, saying, “I will not be a healer; for in my house is neither bread nor clothing. You shall not make me ruler of the people.”",
+      "ko": "그 날에 그가 소리를 높여 이르기를 나는 고치는 자가 되지 않겠노라 내 집에는 양식도 없고 의복도 없으니 너희는 나로 백성의 관장을 삼지말라 하리라",
+      "source_text_hash": "7dec0d8dd4531803bfd39967a1e5f131cdf7a7386ed3695e7b31bdd9ca577911",
+      "translation_text_hash": "2769d1c58f1c99764f488e59f805ede63d47878dcc87d966be35b06df8b15c6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 그가 소리를 높여 이르기를 나는 고치는 자가 되지 않겠노라 내 집에는 양식도 없고 의복도 없으니 너희는 나로 백성의 관장을 삼지말라 하리라"
+      ],
+      "raw_text_hashes": [
+        "2769d1c58f1c99764f488e59f805ede63d47878dcc87d966be35b06df8b15c6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:8",
+      "sequence": 17716,
+      "chapter_label": "ISA 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "For Jerusalem is ruined, and Judah is fallen; because their tongue and their doings are against the LORD, to provoke the eyes of his glory.",
+      "ko": "예루살렘이 멸망하였고 유다가 엎드러졌음은 그들의 언어와 행위가 여호와를 거스려서 그 영광의 눈을 촉범하였음이라",
+      "source_text_hash": "4e5139448207ad0942b37c52849cf33b77f072ff3bbf68ad8bb00fa28abf1f02",
+      "translation_text_hash": "cb568ef569d55df2cce7eccf4cc7f4a9147ceb9f81d4074887d6969179a40ddc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘이 멸망하였고 유다가 엎드러졌음은 그들의 언어와 행위가 여호와를 거스려서 그 영광의 눈을 촉범하였음이라"
+      ],
+      "raw_text_hashes": [
+        "cb568ef569d55df2cce7eccf4cc7f4a9147ceb9f81d4074887d6969179a40ddc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:9",
+      "sequence": 17717,
+      "chapter_label": "ISA 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "The look of their faces testify against them. They parade their sin like Sodom. They don’t hide it. Woe to their soul! For they have brought disaster upon themselves.",
+      "ko": "그들의 안색이 스스로 증거하며 그 죄를 발표하고 숨기지 아니함이 소돔과 같으니 그들의 영혼에 화가 있을찐저 그들이 재앙을 자취하였도다",
+      "source_text_hash": "c0dc982acae5e45142e060709a0b867a3b271d5e7a83135a4e7449fd568fb229",
+      "translation_text_hash": "119c3e0a574e11fe4b6306d8e960835bbdafbaa122cc2137eab3371319290fde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 안색이 스스로 증거하며 그 죄를 발표하고 숨기지 아니함이 소돔과 같으니 그들의 영혼에 화가 있을찐저 그들이 재앙을 자취하였도다"
+      ],
+      "raw_text_hashes": [
+        "119c3e0a574e11fe4b6306d8e960835bbdafbaa122cc2137eab3371319290fde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:10",
+      "sequence": 17718,
+      "chapter_label": "ISA 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Tell the righteous that it will be well with them, for they will eat the fruit of their deeds.",
+      "ko": "너희는 의인에게 복이 있으리라 말하라 그들은 그 행위의 열매를 먹을 것임이요",
+      "source_text_hash": "0a1407a242f1a7098eb0004cb7c57398c0a6c171d5962842df9e9cb111560ae3",
+      "translation_text_hash": "8718fa2a3ef9465455665c5ff58ba1ac152fb789b36c7e59cae7979448129d19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 의인에게 복이 있으리라 말하라 그들은 그 행위의 열매를 먹을 것임이요"
+      ],
+      "raw_text_hashes": [
+        "8718fa2a3ef9465455665c5ff58ba1ac152fb789b36c7e59cae7979448129d19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:11",
+      "sequence": 17719,
+      "chapter_label": "ISA 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Woe to the wicked! Disaster is upon them, for the deeds of their hands will be paid back to them.",
+      "ko": "악인에게는 화가 있으리니 화가 있을 것은 그 손으로 행한대로 보응을 받을 것임이니라",
+      "source_text_hash": "00724d906211192101c0faeb4795d6971ad0a4672d62828d9e14378a690ae05b",
+      "translation_text_hash": "eebc0c6351343f6601f3f0d5c8162cc2c61f9b2a21427a5771396c76bb613b55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인에게는 화가 있으리니 화가 있을 것은 그 손으로 행한대로 보응을 받을 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "eebc0c6351343f6601f3f0d5c8162cc2c61f9b2a21427a5771396c76bb613b55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:12",
+      "sequence": 17720,
+      "chapter_label": "ISA 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "As for my people, children are their oppressors, and women rule over them. My people, those who lead you cause you to err, and destroy the way of your paths.",
+      "ko": "내 백성을 학대하는 자는 아이요 관할하는 자는 부녀라 나의 백성이여 너의 인도자가 너를 유혹하여 너의 다닐 길을 훼파하느니라",
+      "source_text_hash": "198a7421d82e4ff796a885adc1b0af2b909cef6cf0023582161e294074c9699c",
+      "translation_text_hash": "c6781fc4cc24514bfdb525b9e3ac3eda80a4e9abe8cfc1aa913300e7326ba33b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성을 학대하는 자는 아이요 관할하는 자는 부녀라 나의 백성이여 너의 인도자가 너를 유혹하여 너의 다닐 길을 훼파하느니라"
+      ],
+      "raw_text_hashes": [
+        "c6781fc4cc24514bfdb525b9e3ac3eda80a4e9abe8cfc1aa913300e7326ba33b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:13",
+      "sequence": 17721,
+      "chapter_label": "ISA 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD stands up to contend, and stands to judge the peoples.",
+      "ko": "여호와께서 변론하러 일어나시며 백성들을 심판하려고 서시도다",
+      "source_text_hash": "ac239dd788497ff0e7434310972690778157961a43ba6e4a4267388082b30e78",
+      "translation_text_hash": "df46ae16df6a90c66feb2e9e3436ede6008a1f00b6d305683af486b766784231",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 변론하러 일어나시며 백성들을 심판하려고 서시도다"
+      ],
+      "raw_text_hashes": [
+        "df46ae16df6a90c66feb2e9e3436ede6008a1f00b6d305683af486b766784231"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:14",
+      "sequence": 17722,
+      "chapter_label": "ISA 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD will enter into judgment with the elders of his people and their leaders: “It is you who have eaten up the vineyard. The plunder of the poor is in your houses.",
+      "ko": "여호와께서 그 백성의 장로들과 방백들을 국문하시되 포도원을 삼킨 자는 너희며 가난한 자에게서 탈취한 물건은 너희 집에 있도다",
+      "source_text_hash": "e20ac1cb35c47cc13c5c88553a87a9b229eaf2a4ec35cdd76b35477348506c06",
+      "translation_text_hash": "2233fca467798341479a615d557c8a3835ec753869bba02766a13931e1dfb4f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 백성의 장로들과 방백들을 국문하시되 포도원을 삼킨 자는 너희며 가난한 자에게서 탈취한 물건은 너희 집에 있도다"
+      ],
+      "raw_text_hashes": [
+        "2233fca467798341479a615d557c8a3835ec753869bba02766a13931e1dfb4f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:15",
+      "sequence": 17723,
+      "chapter_label": "ISA 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "What do you mean that you crush my people, and grind the face of the poor?” says the Lord, GOD of Armies.",
+      "ko": "어찌하여 너희가 내 백성을 짓밟으며 가난한 자의 얼굴에 맷돌질하느뇨 주 만군의 여호와 내가 말하였느니라 하시리로다",
+      "source_text_hash": "20596ff50f27ca053f7b6839a1fe6c576ac259049cb8d8c08fe49ec4d7df9ae9",
+      "translation_text_hash": "1529c677b9e61439405c35b0b4032d97423f1ba4b052c8351bd8a9d597b55e83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 너희가 내 백성을 짓밟으며 가난한 자의 얼굴에 맷돌질하느뇨 주 만군의 여호와 내가 말하였느니라 하시리로다"
+      ],
+      "raw_text_hashes": [
+        "1529c677b9e61439405c35b0b4032d97423f1ba4b052c8351bd8a9d597b55e83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:16",
+      "sequence": 17724,
+      "chapter_label": "ISA 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Moreover the LORD said, “Because the daughters of Zion are arrogant, and walk with outstretched necks and flirting eyes, walking daintily as they go, jingling ornaments on their feet;",
+      "ko": "여호와께서 또 말씀하시되 시온의 딸들이 교만하여 늘인 목, 정을 통하는 눈으로 다니며 아기죽거려 행하며 발로는 쟁쟁한 소리를 낸다 하시도다",
+      "source_text_hash": "43d6e32a6fe004e3c0ffc4afb4902eaa09663ecfdfc33efb33ee82d5d9e55692",
+      "translation_text_hash": "bab11e9fe0e700825802a613ac8a3584b2681b9905ba72e3e60a4e6c690c614e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 말씀하시되 시온의 딸들이 교만하여 늘인 목, 정을 통하는 눈으로 다니며 아기죽거려 행하며 발로는 쟁쟁한 소리를 낸다 하시도다"
+      ],
+      "raw_text_hashes": [
+        "bab11e9fe0e700825802a613ac8a3584b2681b9905ba72e3e60a4e6c690c614e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:17",
+      "sequence": 17725,
+      "chapter_label": "ISA 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "therefore the Lord brings sores on the crown of the head of the women of Zion, and the LORD will make their scalps bald.”",
+      "ko": "그러므로 주께서 시온의 딸들의 정수리에 딱지가 생기게 하시며 여호와께서 그들의 하체로 드러나게 하시리라",
+      "source_text_hash": "fd4d9332b611456fa99daa896773997db4bc3e6a2b798926c6242c539a73a55f",
+      "translation_text_hash": "553afde0ca3926ce28cb9a3ffa623524c8ff315ce816567a3b78a0580f845641",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주께서 시온의 딸들의 정수리에 딱지가 생기게 하시며 여호와께서 그들의 하체로 드러나게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "553afde0ca3926ce28cb9a3ffa623524c8ff315ce816567a3b78a0580f845641"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:18",
+      "sequence": 17726,
+      "chapter_label": "ISA 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "In that day the Lord will take away the beauty of their anklets, the headbands, the crescent necklaces,",
+      "ko": "주께서 그 날에 그들의 장식한 발목 고리와 머리의 망사와 반달 장식과",
+      "source_text_hash": "84e4b4ee179199a6405f7c9f4f5a26f0d16dae414ab992a7f9337f929d6d913f",
+      "translation_text_hash": "2ce8ab343d0978497780b211c46e240fb56f5f4b3b214a05f4b3239e2145b30f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 그 날에 그들의 장식한 발목 고리와 머리의 망사와 반달 장식과"
+      ],
+      "raw_text_hashes": [
+        "2ce8ab343d0978497780b211c46e240fb56f5f4b3b214a05f4b3239e2145b30f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:19",
+      "sequence": 17727,
+      "chapter_label": "ISA 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "the earrings, the bracelets, the veils,",
+      "ko": "귀 고리와 팔목 고리와 면박과",
+      "source_text_hash": "e9446ee260c2c7827e2dd3347b0d693322fd7b0103a496eb515ce492a4738384",
+      "translation_text_hash": "316851da881177531a976681c2a1ca2cdcd151c9e0167e95fafe1728237db7c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀 고리와 팔목 고리와 면박과"
+      ],
+      "raw_text_hashes": [
+        "316851da881177531a976681c2a1ca2cdcd151c9e0167e95fafe1728237db7c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:20",
+      "sequence": 17728,
+      "chapter_label": "ISA 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "the headdresses, the ankle chains, the sashes, the perfume containers, the charms,",
+      "ko": "화관과 발목 사슬과 띠와 향합과 호신부와",
+      "source_text_hash": "3135b7d9f15a9921f5f0142ac0919281cfd602a4cff58661c11520bd4542f137",
+      "translation_text_hash": "c12b42935933992cdce9ea7fdf7358ff5207462eba009e05b6f8d8fb0954da90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화관과 발목 사슬과 띠와 향합과 호신부와"
+      ],
+      "raw_text_hashes": [
+        "c12b42935933992cdce9ea7fdf7358ff5207462eba009e05b6f8d8fb0954da90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:21",
+      "sequence": 17729,
+      "chapter_label": "ISA 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "the signet rings, the nose rings,",
+      "ko": "지환과 코 고리와",
+      "source_text_hash": "c9c07ffc22051deb2175bfbb013b329a355b3a4d2cf7c9a409803f22516c2a0c",
+      "translation_text_hash": "61337f10257bf1197aa5647bbef910fb52a578d07c1a20dda857472121179555",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지환과 코 고리와"
+      ],
+      "raw_text_hashes": [
+        "61337f10257bf1197aa5647bbef910fb52a578d07c1a20dda857472121179555"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:22",
+      "sequence": 17730,
+      "chapter_label": "ISA 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "the fine robes, the capes, the cloaks, the purses,",
+      "ko": "예복과 겉옷과 목도리와 손주머니와",
+      "source_text_hash": "b45b8f68718ac3b2c0f8f120c7331d6dab3a4592799ed91ff15526a5c958e211",
+      "translation_text_hash": "5cab1132ca478369c0637943b875edda3f45eb2e6ab9e4ea2e3feddee09cd279",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예복과 겉옷과 목도리와 손주머니와"
+      ],
+      "raw_text_hashes": [
+        "5cab1132ca478369c0637943b875edda3f45eb2e6ab9e4ea2e3feddee09cd279"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:23",
+      "sequence": 17731,
+      "chapter_label": "ISA 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "the hand mirrors, the fine linen garments, the tiaras, and the shawls.",
+      "ko": "손 거울과 세마포 옷과 머리 수건과 너울을 제하시리니",
+      "source_text_hash": "8d4f30c98e31760ffbd017406a2ffbae7a44af1c6b8eadf78dd966435f5b29d8",
+      "translation_text_hash": "13a7b756e993609986332d6abd3b9d726c30c658dd814af450bd6434894711e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손 거울과 세마포 옷과 머리 수건과 너울을 제하시리니"
+      ],
+      "raw_text_hashes": [
+        "13a7b756e993609986332d6abd3b9d726c30c658dd814af450bd6434894711e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:24",
+      "sequence": 17732,
+      "chapter_label": "ISA 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "It shall happen that instead of sweet spices, there shall be rottenness; instead of a belt, a rope; instead of well set hair, baldness; instead of a robe, a wearing of sackcloth; and branding instead of beauty.",
+      "ko": "그 때에 썩은 냄새가 향을 대신하고 노끈이 띠를 대신하고 대머리가 숱한 머리털을 대신하고 굵은 베옷이 화려한 옷을 대신하고 자자한 흔적이 고운 얼굴을 대신할 것이며",
+      "source_text_hash": "966129e0afe50839b242419d7ccbfae4af0614cdc0cccbae99a2706e60c94d5a",
+      "translation_text_hash": "417edce8c9d77a38e64d5b0010670d3545584c063aa6f950f78bb5c73b571f68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 썩은 냄새가 향을 대신하고 노끈이 띠를 대신하고 대머리가 숱한 머리털을 대신하고 굵은 베옷이 화려한 옷을 대신하고 자자한 흔적이 고운 얼굴을 대신할 것이며"
+      ],
+      "raw_text_hashes": [
+        "417edce8c9d77a38e64d5b0010670d3545584c063aa6f950f78bb5c73b571f68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:25",
+      "sequence": 17733,
+      "chapter_label": "ISA 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "Your men shall fall by the sword, and your mighty in the war.",
+      "ko": "너희 장정은 칼에, 너희 용사는 전란에 망할 것이며",
+      "source_text_hash": "46d3da1e6ebec5ec63da663a43342168808beb3d1de715484dd60cb50d197d9a",
+      "translation_text_hash": "dcad668a3e4ce0936f64919ce04723a7f70cabdd1b34e8279876097047fc4018",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 장정은 칼에, 너희 용사는 전란에 망할 것이며"
+      ],
+      "raw_text_hashes": [
+        "dcad668a3e4ce0936f64919ce04723a7f70cabdd1b34e8279876097047fc4018"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:3:26",
+      "sequence": 17734,
+      "chapter_label": "ISA 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "Her gates shall lament and mourn. She shall be desolate and sit on the ground.",
+      "ko": "그 성문은 슬퍼하며 곡할 것이요 시온은 황무하여 땅에 앉으리라",
+      "source_text_hash": "eb60c6c73705fe8ad2902b87cc183f8a5a9c9a2848f5d650c74431bf27677647",
+      "translation_text_hash": "f7557f8af1a120a5aae4ddad34bac0b4311bdb1d727e2328b36a8a8da4095a80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성문은 슬퍼하며 곡할 것이요 시온은 황무하여 땅에 앉으리라"
+      ],
+      "raw_text_hashes": [
+        "f7557f8af1a120a5aae4ddad34bac0b4311bdb1d727e2328b36a8a8da4095a80"
+      ]
+    }
+  ]
+}

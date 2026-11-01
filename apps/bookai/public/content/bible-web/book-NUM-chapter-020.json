@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:020",
+  "unit_ordinal": 137,
+  "unit_label": "NUM 20",
+  "book_code": "NUM",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:20:1",
+      "sequence": 4313,
+      "chapter_label": "NUM 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "The children of Israel, even the whole congregation, came into the wilderness of Zin in the first month. The people stayed in Kadesh. Miriam died there, and was buried there.",
+      "ko": "정월에 이스라엘 자손 곧 온 회중이 신 광야에 이르러서 백성이 가데스에 거하더니 미리암이 거기서 죽으매 거기 장사하니라",
+      "source_text_hash": "aa9a3987a748dbd07669244261df41f78d36c1167f7428eb7ee0ba6a430e64a7",
+      "translation_text_hash": "c4ade2879412b94d6d12cdd7e53e6e700eaea3d8fe6d27e810d9071f53417eed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월에 이스라엘 자손 곧 온 회중이 신 광야에 이르러서 백성이 가데스에 거하더니 미리암이 거기서 죽으매 거기 장사하니라"
+      ],
+      "raw_text_hashes": [
+        "c4ade2879412b94d6d12cdd7e53e6e700eaea3d8fe6d27e810d9071f53417eed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:2",
+      "sequence": 4314,
+      "chapter_label": "NUM 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "There was no water for the congregation; and they assembled themselves together against Moses and against Aaron.",
+      "ko": "회중이 물이 없으므로 모여서 모세와 아론을 공박하니라",
+      "source_text_hash": "d06b291697800883de89ae53255bdb13f583dcb67b5fa391bfedc6b0a3758239",
+      "translation_text_hash": "3ac28166abe23175b92099ebc94560d0f75a947cc66a3ef9beb83fad36efe617",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회중이 물이 없으므로 모여서 모세와 아론을 공박하니라"
+      ],
+      "raw_text_hashes": [
+        "3ac28166abe23175b92099ebc94560d0f75a947cc66a3ef9beb83fad36efe617"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:3",
+      "sequence": 4315,
+      "chapter_label": "NUM 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "The people quarreled with Moses, and spoke, saying, “We wish that we had died when our brothers died before the LORD!",
+      "ko": "백성이 모세와 다투어 말하여 가로되 우리 형제들이 여호와 앞에서 죽을 때에 우리도 죽었더면 좋을뻔 하였도다",
+      "source_text_hash": "8a2ae32d23cdb29eb47e80ffcb1f8ba5830c4c106c90a802284ea3f0f7388b1a",
+      "translation_text_hash": "560d8dc3c41f99260a6d28bcc9676f8af3f0cb1ca35f570a76ac95435addd119",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 모세와 다투어 말하여 가로되 우리 형제들이 여호와 앞에서 죽을 때에 우리도 죽었더면 좋을뻔 하였도다"
+      ],
+      "raw_text_hashes": [
+        "560d8dc3c41f99260a6d28bcc9676f8af3f0cb1ca35f570a76ac95435addd119"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:4",
+      "sequence": 4316,
+      "chapter_label": "NUM 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "Why have you brought the LORD’s assembly into this wilderness, that we should die there, we and our animals?",
+      "ko": "너희가 어찌하여 여호와의 총회를 이 광야로 인도하여 올려서 우리와 우리 짐승으로 다 여기서 죽게 하느냐",
+      "source_text_hash": "6047e6f4d3b94a42caeaeab5d07d5818dcf0c9db2cb50d2e53a8dff07dcc89eb",
+      "translation_text_hash": "7540eb7459427f3b5078b351e407b4f49b70a610977d74ed7ae63b5503e475b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 어찌하여 여호와의 총회를 이 광야로 인도하여 올려서 우리와 우리 짐승으로 다 여기서 죽게 하느냐"
+      ],
+      "raw_text_hashes": [
+        "7540eb7459427f3b5078b351e407b4f49b70a610977d74ed7ae63b5503e475b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:5",
+      "sequence": 4317,
+      "chapter_label": "NUM 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "Why have you made us to come up out of Egypt, to bring us in to this evil place? It is no place of seed, or of figs, or of vines, or of pomegranates; neither is there any water to drink.”",
+      "ko": "너희가 어찌하여 우리를 애굽에서 나오게 하여 이 악한 곳으로 인도하였느냐 이곳에는 파종할 곳이 없고 무화과도 없고 포도도 없고 석류도 없고 마실 물도 없도다",
+      "source_text_hash": "571ab9d08b1437129d2a9453212865bc23f9a9e3e70a89cdff65c649d3253b3c",
+      "translation_text_hash": "1b3e708c27117ea8e8e2ba68226ab6508376fe6a32c2e00d9b354b29c80dfcf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 어찌하여 우리를 애굽에서 나오게 하여 이 악한 곳으로 인도하였느냐 이곳에는 파종할 곳이 없고 무화과도 없고 포도도 없고 석류도 없고 마실 물도 없도다"
+      ],
+      "raw_text_hashes": [
+        "1b3e708c27117ea8e8e2ba68226ab6508376fe6a32c2e00d9b354b29c80dfcf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:6",
+      "sequence": 4318,
+      "chapter_label": "NUM 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "Moses and Aaron went from the presence of the assembly to the door of the Tent of Meeting, and fell on their faces. The LORD’s glory appeared to them.",
+      "ko": "모세와 아론이 총회 앞을 떠나 회막 문에 이르러 엎드리매 여호와의 영광이 그들에게 나타나며",
+      "source_text_hash": "26f9b4f564479f8abd5351e3d2dccf032ad67f6def417dace017fdd29a0145b0",
+      "translation_text_hash": "72ba04caf89e3316e89f4397743f350dd7aea89afcd8c554eff7ebfe908a16e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 총회 앞을 떠나 회막 문에 이르러 엎드리매 여호와의 영광이 그들에게 나타나며"
+      ],
+      "raw_text_hashes": [
+        "72ba04caf89e3316e89f4397743f350dd7aea89afcd8c554eff7ebfe908a16e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:7",
+      "sequence": 4319,
+      "chapter_label": "NUM 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:8",
+      "sequence": 4320,
+      "chapter_label": "NUM 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "“Take the rod, and assemble the congregation, you, and Aaron your brother, and speak to the rock before their eyes, that it pour out its water. You shall bring water to them out of the rock; so you shall give the congregation and their livestock drink.”",
+      "ko": "지팡이를 가지고 네 형 아론과 함께 회중을 모으고 그들의 목전에서 너희는 반석에게 명하여 물을 내라 하라 네가 그 반석으로 물을 내게 하여 회중과 그들의 짐승에게 마시울찌니라",
+      "source_text_hash": "5c204418c1e4b0121765e9763db2dd62000b677c663c5ff2930d237995facdb5",
+      "translation_text_hash": "8d4bc091cbc9a151e061c50d99ddb72d298cbf84db0cc5624409709e8609d571",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지팡이를 가지고 네 형 아론과 함께 회중을 모으고 그들의 목전에서 너희는 반석에게 명하여 물을 내라 하라 네가 그 반석으로 물을 내게 하여 회중과 그들의 짐승에게 마시울찌니라"
+      ],
+      "raw_text_hashes": [
+        "8d4bc091cbc9a151e061c50d99ddb72d298cbf84db0cc5624409709e8609d571"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:9",
+      "sequence": 4321,
+      "chapter_label": "NUM 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "Moses took the rod from before the LORD, as he commanded him.",
+      "ko": "모세가 그 명대로 여호와의 앞에서 지팡이를 취하니라",
+      "source_text_hash": "b23e006f26bf23268ab90805f2d9d4e5d077cb312a79679d795de56beb40eb03",
+      "translation_text_hash": "144b00236b12b1359d15bed288eb522ecd94db3d254c25fa9f5caaf51096dfd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 명대로 여호와의 앞에서 지팡이를 취하니라"
+      ],
+      "raw_text_hashes": [
+        "144b00236b12b1359d15bed288eb522ecd94db3d254c25fa9f5caaf51096dfd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:10",
+      "sequence": 4322,
+      "chapter_label": "NUM 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "Moses and Aaron gathered the assembly together before the rock, and he said to them, “Hear now, you rebels! Shall we bring water out of this rock for you?”",
+      "ko": "모세와 아론이 총회를 그 반석 앞에 모으고 모세가 그들에게 이르되 패역한 너희여 들으라 우리가 너희를 위하여 이 반석에서 물을 내랴 하고",
+      "source_text_hash": "864338a80c06bd897974510b4ca0837554a940334ce541a331c14cb24271dd05",
+      "translation_text_hash": "328bf9fea542b95c7b077fd2e24e2410f4c058997ca357a60d126ebc0ceb416c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 총회를 그 반석 앞에 모으고 모세가 그들에게 이르되 패역한 너희여 들으라 우리가 너희를 위하여 이 반석에서 물을 내랴 하고"
+      ],
+      "raw_text_hashes": [
+        "328bf9fea542b95c7b077fd2e24e2410f4c058997ca357a60d126ebc0ceb416c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:11",
+      "sequence": 4323,
+      "chapter_label": "NUM 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "Moses lifted up his hand, and struck the rock with his rod twice, and water came out abundantly. The congregation and their livestock drank.",
+      "ko": "그 손을 들어 그 지팡이로 반석을 두번 치매 물이 많이 솟아나오므로 회중과 그들의 짐승이 마시니라",
+      "source_text_hash": "9b9ea0b5f04f84ba4a1ea9011ee16bb65b9eba5ad8b2b9b392b7345b62290c64",
+      "translation_text_hash": "930231d3509b376e8be17984b3f3c9de7e1e8d52a9d315f3593fa2fa9c84d553",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 손을 들어 그 지팡이로 반석을 두번 치매 물이 많이 솟아나오므로 회중과 그들의 짐승이 마시니라"
+      ],
+      "raw_text_hashes": [
+        "930231d3509b376e8be17984b3f3c9de7e1e8d52a9d315f3593fa2fa9c84d553"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:12",
+      "sequence": 4324,
+      "chapter_label": "NUM 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD said to Moses and Aaron, “Because you didn’t believe in me, to sanctify me in the eyes of the children of Israel, therefore you shall not bring this assembly into the land which I have given them.”",
+      "ko": "여호와께서 모세와 아론에게 이르시되 너희가 나를 믿지 아니하고 이스라엘 자손의 목전에 나의 거룩함을 나타내지 아니한고로 너희는 이 총회를 내가 그들에게 준 땅으로 인도하여 들이지 못하리라 하시니라",
+      "source_text_hash": "a3295559f8185b1293d9f1112f8f907e26f07c0cc9d56af03aaa26110a5eb8c3",
+      "translation_text_hash": "8312fe33ec8f41395956931371be2e2b8abd3bee6722b30d353431d084e5677c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 이르시되 너희가 나를 믿지 아니하고 이스라엘 자손의 목전에 나의 거룩함을 나타내지 아니한고로 너희는 이 총회를 내가 그들에게 준 땅으로 인도하여 들이지 못하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "8312fe33ec8f41395956931371be2e2b8abd3bee6722b30d353431d084e5677c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:13",
+      "sequence": 4325,
+      "chapter_label": "NUM 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "These are the waters of Meribah; because the children of Israel strove with the LORD, and he was sanctified in them.",
+      "ko": "이스라엘 자손이 여호와와 다투었으므로 이를 므리바 물이라 하니라 여호와께서 그들 중에서 그 거룩함을 나타내셨더라",
+      "source_text_hash": "82a6f189afb4ed2b593932dc7394d306d0d70ac965ce3a21e551f24cef6dfb3c",
+      "translation_text_hash": "4ecc1ce49bc257e7531c8ed03232443f1220172d033ea5e4eb0ad57f9f525c4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와와 다투었으므로 이를 므리바 물이라 하니라 여호와께서 그들 중에서 그 거룩함을 나타내셨더라"
+      ],
+      "raw_text_hashes": [
+        "4ecc1ce49bc257e7531c8ed03232443f1220172d033ea5e4eb0ad57f9f525c4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:14",
+      "sequence": 4326,
+      "chapter_label": "NUM 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "Moses sent messengers from Kadesh to the king of Edom, saying: “Your brother Israel says: You know all the travail that has happened to us;",
+      "ko": "모세가 가데스에서 에돔 왕에게 사자를 보내며 이르되 당신의 형제 이스라엘의 말에 우리의 당한 모든 고난을 당신도 아시거니와",
+      "source_text_hash": "6a84e69c9f054d00e74055283e76bb72040553b3bbef1cc95c59d3ff9ad95307",
+      "translation_text_hash": "91d89287f084acdc4a943a219a8671b4a45dbf1881128dc881c2fc6f09b42b08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가데스에서 에돔 왕에게 사자를 보내며 이르되 당신의 형제 이스라엘의 말에 우리의 당한 모든 고난을 당신도 아시거니와"
+      ],
+      "raw_text_hashes": [
+        "91d89287f084acdc4a943a219a8671b4a45dbf1881128dc881c2fc6f09b42b08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:15",
+      "sequence": 4327,
+      "chapter_label": "NUM 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "how our fathers went down into Egypt, and we lived in Egypt a long time. The Egyptians mistreated us and our fathers.",
+      "ko": "우리 열조가 애굽으로 내려갔으므로 우리가 애굽에 오래 거하였더니 애굽인이 우리 열조와 우리를 학대하였으므로",
+      "source_text_hash": "3a9a11189dce44a5d2e47b16d4974d26a439b891d41bf07ab02dae2c52f77d3f",
+      "translation_text_hash": "e1755cf537944bbe52e1848d94810b952aedd4b51eefa91375ebf3d7fa862849",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 열조가 애굽으로 내려갔으므로 우리가 애굽에 오래 거하였더니 애굽인이 우리 열조와 우리를 학대하였으므로"
+      ],
+      "raw_text_hashes": [
+        "e1755cf537944bbe52e1848d94810b952aedd4b51eefa91375ebf3d7fa862849"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:16",
+      "sequence": 4328,
+      "chapter_label": "NUM 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "When we cried to the LORD, he heard our voice, sent an angel, and brought us out of Egypt. Behold, we are in Kadesh, a city in the edge of your border.",
+      "ko": "우리가 여호와께 부르짖었더니 우리 소리를 들으시고 천사를 보내사 우리를 애굽에서 인도하여 내셨나이다 이제 우리가 당신의 변방 모퉁이 한 성읍 가데스에 있사오니",
+      "source_text_hash": "c74fcb7231141a5bcd77af26678390a2a23e96f4d447f1b07f19c953b21623b0",
+      "translation_text_hash": "d21634b2c1fa50f311fcffab509c934b1ac2e2e88663c0db88235ef1ade3b67a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 여호와께 부르짖었더니 우리 소리를 들으시고 천사를 보내사 우리를 애굽에서 인도하여 내셨나이다 이제 우리가 당신의 변방 모퉁이 한 성읍 가데스에 있사오니"
+      ],
+      "raw_text_hashes": [
+        "d21634b2c1fa50f311fcffab509c934b1ac2e2e88663c0db88235ef1ade3b67a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:17",
+      "sequence": 4329,
+      "chapter_label": "NUM 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "“Please let us pass through your land. We will not pass through field or through vineyard, neither will we drink from the water of the wells. We will go along the king’s highway. We will not turn away to the right hand nor to the left, until we have passed your border.”",
+      "ko": "청컨대 우리로 당신의 땅을 통과하게 하소서 우리가 밭으로나 포도원으로나 통과하지 아니하고 우물 물도 공히 마시지 아니하고 우리가 왕의 대로로만 통과하고 당신의 지경에서 나가기까지 좌편으로나 우편으로나 치우치지 아니하리이다 한다 하라 하였더니",
+      "source_text_hash": "32020a9d53139ed3a4775b0864869654842f13a029cde6ab8070f418270f9da4",
+      "translation_text_hash": "41af942b0a7da3b966b91709a6a2d79da58dc037f152595c94b5f55c21315055",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청컨대 우리로 당신의 땅을 통과하게 하소서 우리가 밭으로나 포도원으로나 통과하지 아니하고 우물 물도 공히 마시지 아니하고 우리가 왕의 대로로만 통과하고 당신의 지경에서 나가기까지 좌편으로나 우편으로나 치우치지 아니하리이다 한다 하라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "41af942b0a7da3b966b91709a6a2d79da58dc037f152595c94b5f55c21315055"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:18",
+      "sequence": 4330,
+      "chapter_label": "NUM 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "Edom said to him, “You shall not pass through me, lest I come out with the sword against you.”",
+      "ko": "에돔 왕이 대답하되 너는 우리 가운데로 통과하지 못하리라 내가 나가서 칼로 너를 맞을까 염려하라",
+      "source_text_hash": "2fe7c153cbce66afb3f15bc82e75793d283b9be5bc8c73e1a6d49cb6f8730740",
+      "translation_text_hash": "4b3eaa1ca9b77072dfd6c4481d5e203f3b6dec66be66d5bd29a4fc5ebd48788c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에돔 왕이 대답하되 너는 우리 가운데로 통과하지 못하리라 내가 나가서 칼로 너를 맞을까 염려하라"
+      ],
+      "raw_text_hashes": [
+        "4b3eaa1ca9b77072dfd6c4481d5e203f3b6dec66be66d5bd29a4fc5ebd48788c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:19",
+      "sequence": 4331,
+      "chapter_label": "NUM 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "The children of Israel said to him, “We will go up by the highway; and if we drink your water, I and my livestock, then I will give its price. Only let me, without doing anything else, pass through on my feet.”",
+      "ko": "이스라엘 자손이 이르되 우리가 대로로 통과하겠고 우리나 우리 짐승이 당신의 물을 마시면 그 값을 줄 것이라 우리가 도보로 통과할뿐인즉 아무 일도 없으리이다 하나",
+      "source_text_hash": "d072388a81862918f931c46663c191ccf977bedbf8e193479b59f73f3a696489",
+      "translation_text_hash": "cf5e822718ca1adb6cc95dfbad07378ca3b19571165f7bdf3422c7d6f73b2e4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 이르되 우리가 대로로 통과하겠고 우리나 우리 짐승이 당신의 물을 마시면 그 값을 줄 것이라 우리가 도보로 통과할뿐인즉 아무 일도 없으리이다 하나"
+      ],
+      "raw_text_hashes": [
+        "cf5e822718ca1adb6cc95dfbad07378ca3b19571165f7bdf3422c7d6f73b2e4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:20",
+      "sequence": 4332,
+      "chapter_label": "NUM 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "He said, “You shall not pass through.” Edom came out against him with many people, and with a strong hand.",
+      "ko": "그는 가로되 너는 지나가지 못하리라 하고 에돔 왕이 많은 백성을 거느리고 나와서 강한 손으로 막으니",
+      "source_text_hash": "845693efa4ec34da7db2d0a12d4e90680cb68da21214e398b837426ec25ae914",
+      "translation_text_hash": "769b1b36775d3925bee197de8db9350198aba36aea1038af939d8cf4efe8ba8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 가로되 너는 지나가지 못하리라 하고 에돔 왕이 많은 백성을 거느리고 나와서 강한 손으로 막으니"
+      ],
+      "raw_text_hashes": [
+        "769b1b36775d3925bee197de8db9350198aba36aea1038af939d8cf4efe8ba8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:21",
+      "sequence": 4333,
+      "chapter_label": "NUM 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "Thus Edom refused to give Israel passage through his border, so Israel turned away from him.",
+      "ko": "에돔 왕이 이같이 이스라엘의 그 경내로 통과함을 용납지 아니하므로 이스라엘이 그들에게서 돌이키니라",
+      "source_text_hash": "6413f5c22c283b430908de270dfbd1081b1563e5cbf4f06fdc936f11eeb1a923",
+      "translation_text_hash": "197af1489a8f0b5765d9b481b7d37592522adb4756a01f876e3bf98182bea645",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에돔 왕이 이같이 이스라엘의 그 경내로 통과함을 용납지 아니하므로 이스라엘이 그들에게서 돌이키니라"
+      ],
+      "raw_text_hashes": [
+        "197af1489a8f0b5765d9b481b7d37592522adb4756a01f876e3bf98182bea645"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:22",
+      "sequence": 4334,
+      "chapter_label": "NUM 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "They traveled from Kadesh, and the children of Israel, even the whole congregation, came to Mount Hor.",
+      "ko": "이스라엘 자손 곧 온 회중이 가데스에서 진행하여 호르산에 이르렀더니",
+      "source_text_hash": "9ae8b0cb2636bfe9a57a7a2bf48728905763f86187e710370aa0731e61ab8ba2",
+      "translation_text_hash": "d749ea71d2a04bc0028b7ac34d55195f060599626737f241c6c4833884d9588c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손 곧 온 회중이 가데스에서 진행하여 호르산에 이르렀더니"
+      ],
+      "raw_text_hashes": [
+        "d749ea71d2a04bc0028b7ac34d55195f060599626737f241c6c4833884d9588c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:23",
+      "sequence": 4335,
+      "chapter_label": "NUM 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD spoke to Moses and Aaron in Mount Hor, by the border of the land of Edom, saying,",
+      "ko": "여호와께서 에돔 땅 변경 호르산에서 모세와 아론에게 말씀하시니라 가라사대",
+      "source_text_hash": "c0787d352b06228b717e232897276a8bc0606941b23528e6986eb7dd8621b2fb",
+      "translation_text_hash": "d20d927dc6c99816f814314dd29fae01f147c7b6e5064437c34ea7e8ff0fb778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 에돔 땅 변경 호르산에서 모세와 아론에게 말씀하시니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d20d927dc6c99816f814314dd29fae01f147c7b6e5064437c34ea7e8ff0fb778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:24",
+      "sequence": 4336,
+      "chapter_label": "NUM 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "“Aaron shall be gathered to his people; for he shall not enter into the land which I have given to the children of Israel, because you rebelled against my word at the waters of Meribah.",
+      "ko": "아론은 그 열조에게로 돌아가고 내가 이스라엘 자손에게 준 땅에는 들어가지 못하리니 이는 너희가 므리바 물에서 내 말을 거역한 연고니라",
+      "source_text_hash": "c4a27eddf9a91f7f0bf49b7d83066dfec3f275747dfaf275cc3f9e4180fc7173",
+      "translation_text_hash": "4774c24c25992e3c5694e03515088b3f04f017d014caf0517b6be06cb714a129",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론은 그 열조에게로 돌아가고 내가 이스라엘 자손에게 준 땅에는 들어가지 못하리니 이는 너희가 므리바 물에서 내 말을 거역한 연고니라"
+      ],
+      "raw_text_hashes": [
+        "4774c24c25992e3c5694e03515088b3f04f017d014caf0517b6be06cb714a129"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:25",
+      "sequence": 4337,
+      "chapter_label": "NUM 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "Take Aaron and Eleazar his son, and bring them up to Mount Hor;",
+      "ko": "너는 아론과 그 아들 엘르아살을 데리고 호르산에 올라",
+      "source_text_hash": "2ee306828a2e16261362f30c4eb5c1ff409d463311a6487c046e7e2e4a9f3d50",
+      "translation_text_hash": "4d862c0bb4a7d7db5bd29c133fdb9fc0d5466574aed4b13490b01eaa6b09595d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 아론과 그 아들 엘르아살을 데리고 호르산에 올라"
+      ],
+      "raw_text_hashes": [
+        "4d862c0bb4a7d7db5bd29c133fdb9fc0d5466574aed4b13490b01eaa6b09595d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:26",
+      "sequence": 4338,
+      "chapter_label": "NUM 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "and strip Aaron of his garments, and put them on Eleazar his son. Aaron shall be gathered, and shall die there.”",
+      "ko": "아론의 옷을 벗겨 그 아들 엘르아살에게 입히라 아론은 거기서 죽어 그 열조에게로 돌아가리라",
+      "source_text_hash": "af410337b8610b0aed74bfb3ae59a6a91813a8e1d7d364702deead369f06f79c",
+      "translation_text_hash": "78be0a9e43a221a0cab94cefbd42d08e15422cc7e6c92868ee17c80cc7957b5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 옷을 벗겨 그 아들 엘르아살에게 입히라 아론은 거기서 죽어 그 열조에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "78be0a9e43a221a0cab94cefbd42d08e15422cc7e6c92868ee17c80cc7957b5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:27",
+      "sequence": 4339,
+      "chapter_label": "NUM 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "Moses did as the LORD commanded. They went up onto Mount Hor in the sight of all the congregation.",
+      "ko": "모세가 여호와의 명을 좇아 그들과 함께 회중의 목전에서 호르산에 오르니라",
+      "source_text_hash": "18c23f9f753dd06a8537c43ae776fad4af8db7a90e726c541edb11e2db0517c1",
+      "translation_text_hash": "d2ad8610ea1ecae6f7fa380c8ebd9701bdf43ebb6e97b2f6af8908235ea3c45f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와의 명을 좇아 그들과 함께 회중의 목전에서 호르산에 오르니라"
+      ],
+      "raw_text_hashes": [
+        "d2ad8610ea1ecae6f7fa380c8ebd9701bdf43ebb6e97b2f6af8908235ea3c45f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:28",
+      "sequence": 4340,
+      "chapter_label": "NUM 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "Moses stripped Aaron of his garments, and put them on Eleazar his son. Aaron died there on the top of the mountain, and Moses and Eleazar came down from the mountain.",
+      "ko": "모세가 아론의 옷을 벗겨 그 아들 엘르아살에게 입히매 아론이 그 산꼭대기에서 죽으니라 모세와 엘르아살이 산에서 내려오니",
+      "source_text_hash": "be7de47ab91119c7ed237251a685ddc8189fe5f025da73477485c9b8e5829381",
+      "translation_text_hash": "7849b827402dc484322f325cbcfa0088e72a4c37210a13480cf03497bbada97e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 아론의 옷을 벗겨 그 아들 엘르아살에게 입히매 아론이 그 산꼭대기에서 죽으니라 모세와 엘르아살이 산에서 내려오니"
+      ],
+      "raw_text_hashes": [
+        "7849b827402dc484322f325cbcfa0088e72a4c37210a13480cf03497bbada97e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:20:29",
+      "sequence": 4341,
+      "chapter_label": "NUM 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "When all the congregation saw that Aaron was dead, they wept for Aaron thirty days, even all the house of Israel.",
+      "ko": "온 회중 곧 이스라엘 온 족속이 아론의 죽은 것을 보고 위하여 삼십일을 애곡하였더라",
+      "source_text_hash": "b284544df9acd7e477487a7cc1859f58253e3ca49c814195c9c9368eb650ab1a",
+      "translation_text_hash": "5274c448e4e5466b10af67b8cc126d2b9040fbeba6f125661961ae2951707472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 회중 곧 이스라엘 온 족속이 아론의 죽은 것을 보고 위하여 삼십일을 애곡하였더라"
+      ],
+      "raw_text_hashes": [
+        "5274c448e4e5466b10af67b8cc126d2b9040fbeba6f125661961ae2951707472"
+      ]
+    }
+  ]
+}

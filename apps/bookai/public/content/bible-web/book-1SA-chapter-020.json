@@ -1,0 +1,1357 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:020",
+  "unit_ordinal": 256,
+  "unit_label": "1SA 20",
+  "book_code": "1SA",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:20:1",
+      "sequence": 7732,
+      "chapter_label": "1SA 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "David fled from Naioth in Ramah, and came and said to Jonathan, “What have I done? What is my iniquity? What is my sin before your father, that he seeks my life?”",
+      "ko": "다윗이 라마 나욧에서 도망하여 와서 요나단에게 이르되 내가 무엇을 하였으며 내 죄악이 무엇이며 네 부친 앞에서 나의 죄가 무엇이관대 그가 내 생명을 찾느뇨",
+      "source_text_hash": "00a05fbfb9a8e0a663be20b2909a757a1fe946643bd0e26387b090cccd3c1c64",
+      "translation_text_hash": "467974f93a16a59d23ef660df71b2b01095737e86ca212012a0ca98ad6c1500e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 라마 나욧에서 도망하여 와서 요나단에게 이르되 내가 무엇을 하였으며 내 죄악이 무엇이며 네 부친 앞에서 나의 죄가 무엇이관대 그가 내 생명을 찾느뇨"
+      ],
+      "raw_text_hashes": [
+        "467974f93a16a59d23ef660df71b2b01095737e86ca212012a0ca98ad6c1500e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:2",
+      "sequence": 7733,
+      "chapter_label": "1SA 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "He said to him, “Far from it; you will not die. Behold, my father does nothing either great or small, but that he discloses it to me. Why would my father hide this thing from me? It is not so.”",
+      "ko": "요나단이 그에게 이르되 결단코 아니라 네가 죽지 아니하리라 내 부친이 대소사를 내게 알게 아니하고는 행함이 없나니 내 부친이 어찌하여 이 일은 내게 숨기리요 그렇지 아니하니라",
+      "source_text_hash": "42dd63c122835093ffdd7b5d2b173dcab3e26f008ae3e8bed7067e68d1859e24",
+      "translation_text_hash": "93dac55d69af69f0e5052d22ca6d9ea2addc83f47c3dd1e39e4215b277a75520",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 그에게 이르되 결단코 아니라 네가 죽지 아니하리라 내 부친이 대소사를 내게 알게 아니하고는 행함이 없나니 내 부친이 어찌하여 이 일은 내게 숨기리요 그렇지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "93dac55d69af69f0e5052d22ca6d9ea2addc83f47c3dd1e39e4215b277a75520"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:3",
+      "sequence": 7734,
+      "chapter_label": "1SA 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "David swore moreover, and said, “Your father knows well that I have found favor in your eyes; and he says, ‘Don’t let Jonathan know this, lest he be grieved;’ but truly as the LORD lives, and as your soul lives, there is but a step between me and death.”",
+      "ko": "다윗이 또 맹세하여 가로되 내가 네게 은혜 받은 줄을 네 부친이 밝히 알고 스스로 이르기를 요나단이 슬퍼할까 두려운즉 그로 이를 알게 하지 아니하리라 함이니라 그러나 진실로 여호와의 사심과 네 생명으로 맹세하노니 나와 사망의 사이는 한 걸음 뿐이니라",
+      "source_text_hash": "82a9e4b65260ad8216a00c34c8b2292e9be16888ed2ae6c809e34c9ebdc63b9c",
+      "translation_text_hash": "5a6c74743e28f392279a76da57067412b52e0a13143fc7e2c00d1317c08a3596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 또 맹세하여 가로되 내가 네게 은혜 받은 줄을 네 부친이 밝히 알고 스스로 이르기를 요나단이 슬퍼할까 두려운즉 그로 이를 알게 하지 아니하리라 함이니라 그러나 진실로 여호와의 사심과 네 생명으로 맹세하노니 나와 사망의 사이는 한 걸음 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "5a6c74743e28f392279a76da57067412b52e0a13143fc7e2c00d1317c08a3596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:4",
+      "sequence": 7735,
+      "chapter_label": "1SA 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "Then Jonathan said to David, “Whatever your soul desires, I will even do it for you.”",
+      "ko": "요나단이 다윗에게 이르되 네 마음의 소원이 무엇이든지 내가 너를 위하여 그것을 이루리라",
+      "source_text_hash": "51b9d302d3b14a0f11509af14e4ffaa4dec6dabe5ff35925a87798b36e1028d6",
+      "translation_text_hash": "a469505292d0d3ffd19f0a2d1065b2f5b31d2e70d7bb152430c5492ff6d5210b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 다윗에게 이르되 네 마음의 소원이 무엇이든지 내가 너를 위하여 그것을 이루리라"
+      ],
+      "raw_text_hashes": [
+        "a469505292d0d3ffd19f0a2d1065b2f5b31d2e70d7bb152430c5492ff6d5210b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:5",
+      "sequence": 7736,
+      "chapter_label": "1SA 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "David said to Jonathan, “Behold, tomorrow is the new moon, and I should not fail to dine with the king; but let me go, that I may hide myself in the field to the third day at evening.",
+      "ko": "다윗이 요나단에게 이르되 내일은 월삭인즉 내가 마땅히 왕을 모시고 앉아 식사를 하여야 할것이나 나를 보내어 제 삼일 저녁까지 들에 숨게 하고",
+      "source_text_hash": "ee69d86ec0441ba2b98435bb0be3801c4c16805fac289ef97e1155c62a937f45",
+      "translation_text_hash": "fef515fdfe214d9d67571e49b3485ddd01fc201b73247f57592d68b64468aec2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 요나단에게 이르되 내일은 월삭인즉 내가 마땅히 왕을 모시고 앉아 식사를 하여야 할것이나 나를 보내어 제 삼일 저녁까지 들에 숨게 하고"
+      ],
+      "raw_text_hashes": [
+        "fef515fdfe214d9d67571e49b3485ddd01fc201b73247f57592d68b64468aec2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:6",
+      "sequence": 7737,
+      "chapter_label": "1SA 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "If your father misses me at all, then say, ‘David earnestly asked leave of me that he might run to Bethlehem, his city; for it is the yearly sacrifice there for all the family.’",
+      "ko": "네 부친이 만일 나를 자세히 묻거든 그 때에 너는 말하기를 다윗이 자기 성 베들레헴으로 급히 가기를 내게 허하라 간청하였사오니 이는 온 가족을 위하여 거기서 매년제를 드릴 때가 됨이니이다 하라",
+      "source_text_hash": "ff93f78778a94d2a80a625cd0af4c31040c34da26eaee08c0e8202a81ea67a0b",
+      "translation_text_hash": "3d3a15935511b78ebb818654fa2129d62099dbd9e3de29b58f3973d4740ba8f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 부친이 만일 나를 자세히 묻거든 그 때에 너는 말하기를 다윗이 자기 성 베들레헴으로 급히 가기를 내게 허하라 간청하였사오니 이는 온 가족을 위하여 거기서 매년제를 드릴 때가 됨이니이다 하라"
+      ],
+      "raw_text_hashes": [
+        "3d3a15935511b78ebb818654fa2129d62099dbd9e3de29b58f3973d4740ba8f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:7",
+      "sequence": 7738,
+      "chapter_label": "1SA 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "If he says, ‘It is well,’ your servant shall have peace; but if he is angry, then know that evil is determined by him.",
+      "ko": "그의 말이 좋다 하면 네 종이 평안하려니와 그가 만일 노하면 나를 해하려고 결심한 줄을 알찌니",
+      "source_text_hash": "1656b5b19488e9ba6fe04d45d76269c888a0c5c52abb6d4eeed55167f46e23b5",
+      "translation_text_hash": "3027f4038c278f6598e4c68efb2c9914fe406c3d48b0e0565cac93f83ff08e8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 말이 좋다 하면 네 종이 평안하려니와 그가 만일 노하면 나를 해하려고 결심한 줄을 알찌니"
+      ],
+      "raw_text_hashes": [
+        "3027f4038c278f6598e4c68efb2c9914fe406c3d48b0e0565cac93f83ff08e8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:8",
+      "sequence": 7739,
+      "chapter_label": "1SA 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore deal kindly with your servant, for you have brought your servant into a covenant of the LORD with you; but if there is iniquity in me, kill me yourself, for why should you bring me to your father?”",
+      "ko": "그런즉 원컨대 네 종에게 인자히 행하라 네가 네 종으로 여호와 앞에서 너와 맹약케 하였음이니라 그러나 내게 죄악이 있거든 네가 친히 나를 죽이라 나를 네 부친에게로 데려갈 것이 무엇이뇨",
+      "source_text_hash": "9f1af9925d05fa87a38f5f716a65fd65945260e6e805c902513ae9e06f498e00",
+      "translation_text_hash": "a6da090c216c40f259a838c224d1da8a0dbc88d2c9b66f46a3d0b5c00622ef47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 원컨대 네 종에게 인자히 행하라 네가 네 종으로 여호와 앞에서 너와 맹약케 하였음이니라 그러나 내게 죄악이 있거든 네가 친히 나를 죽이라 나를 네 부친에게로 데려갈 것이 무엇이뇨"
+      ],
+      "raw_text_hashes": [
+        "a6da090c216c40f259a838c224d1da8a0dbc88d2c9b66f46a3d0b5c00622ef47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:9",
+      "sequence": 7740,
+      "chapter_label": "1SA 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "Jonathan said, “Far be it from you; for if I should at all know that evil were determined by my father to come on you, then wouldn’t I tell you that?”",
+      "ko": "요나단이 가로되 이 일이 결코 네게 있지 아니하리라 내 부친이 너를 해하려 결심한 줄 알면 내가 네게 이르지 아니하겠느냐",
+      "source_text_hash": "f968564c5f4b27c2aba0e28ccc185ae6082eda1312b164985a229f2fd41ad1b8",
+      "translation_text_hash": "1be12a5c148214fe1513a95569d92d6c19f8ed2f5068202da41d35803ef71a89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 가로되 이 일이 결코 네게 있지 아니하리라 내 부친이 너를 해하려 결심한 줄 알면 내가 네게 이르지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "1be12a5c148214fe1513a95569d92d6c19f8ed2f5068202da41d35803ef71a89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:10",
+      "sequence": 7741,
+      "chapter_label": "1SA 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "Then David said to Jonathan, “Who will tell me if your father answers you roughly?”",
+      "ko": "다윗이 요나단에게 이르되 네 부친이 혹 엄하게 네게 대답하면 누가 그것을 내게 고하겠느냐",
+      "source_text_hash": "ca1d6a02598f7af2ed7a4ecfa51d1a2fb3379e1afc57387201d353dbd8e3e5f0",
+      "translation_text_hash": "a8db053c9fe49d14d9abbcbb0a213ee27051535b2b375354c986c57103df0c84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 요나단에게 이르되 네 부친이 혹 엄하게 네게 대답하면 누가 그것을 내게 고하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "a8db053c9fe49d14d9abbcbb0a213ee27051535b2b375354c986c57103df0c84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:11",
+      "sequence": 7742,
+      "chapter_label": "1SA 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "Jonathan said to David, “Come! Let’s go out into the field.” They both went out into the field.",
+      "ko": "요나단이 다윗에게 이르되 오라 우리가 들로 가자 하고 두 사람이 들로 가니라",
+      "source_text_hash": "be239c4353181d07483ced4b9bdfa9956cc458b29a1de6ad6b23a0e8c9a52995",
+      "translation_text_hash": "014bc38142733c832d6077f0c4274f61afdc99db485a674f1d537d109d1a2f0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 다윗에게 이르되 오라 우리가 들로 가자 하고 두 사람이 들로 가니라"
+      ],
+      "raw_text_hashes": [
+        "014bc38142733c832d6077f0c4274f61afdc99db485a674f1d537d109d1a2f0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:12",
+      "sequence": 7743,
+      "chapter_label": "1SA 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "Jonathan said to David, “By the LORD, the God of Israel, when I have sounded out my father about this time tomorrow, or the third day, behold, if there is good toward David, won’t I then send to you and disclose it to you?",
+      "ko": "요나단이 다윗에게 이르되 이스라엘의 하나님 여호와께서 증거하시거니와 내가 내일이나 모레 이맘때에 내 부친을 살펴서 너 다윗에게 대한 의향이 선하면 내가 보내어 네게 알게 하지 않겠느냐",
+      "source_text_hash": "284226be3aa7858e224384fc6e57a454e33c221086f245b2324480b56dda5a9d",
+      "translation_text_hash": "fda5a3df0d9627996ea5665cd8fe036e1222f47b6f11033d3964881e8937e8f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 다윗에게 이르되 이스라엘의 하나님 여호와께서 증거하시거니와 내가 내일이나 모레 이맘때에 내 부친을 살펴서 너 다윗에게 대한 의향이 선하면 내가 보내어 네게 알게 하지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "fda5a3df0d9627996ea5665cd8fe036e1222f47b6f11033d3964881e8937e8f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:13",
+      "sequence": 7744,
+      "chapter_label": "1SA 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD do so to Jonathan and more also, should it please my father to do you evil, if I don’t disclose it to you and send you away, that you may go in peace. May the LORD be with you as he has been with my father.",
+      "ko": "그러나 만일 내 부친이 너를 해하려 하거늘 내가 이 일을 네게 알게 하여 너를 보내어 평안히 가게 하지 아니하면 여호와께서 나 요나단에게 벌을 내리시고 또 내리시기를 원하노라 여호와께서 내 부친과 함께 하신것 같이 너와 함께 하시기를 원하노니",
+      "source_text_hash": "e4a331b92768542ea02aa2c0fd70215cda9a9f1fddbf7aa1b9eb9fd1fe121f10",
+      "translation_text_hash": "a510f81fd2458ac8c66d274d11b69dc6c128374032aad0fa792266137b04b524",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 만일 내 부친이 너를 해하려 하거늘 내가 이 일을 네게 알게 하여 너를 보내어 평안히 가게 하지 아니하면 여호와께서 나 요나단에게 벌을 내리시고 또 내리시기를 원하노라 여호와께서 내 부친과 함께 하신것 같이 너와 함께 하시기를 원하노니"
+      ],
+      "raw_text_hashes": [
+        "a510f81fd2458ac8c66d274d11b69dc6c128374032aad0fa792266137b04b524"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:14",
+      "sequence": 7745,
+      "chapter_label": "1SA 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "You shall not only show me the loving kindness of the LORD while I still live, that I not die;",
+      "ko": "너는 나의 사는 날 동안에 여호와의 인자를 내게 베풀어서 나로 죽지 않게 할뿐 아니라",
+      "source_text_hash": "c6e2a1af165e5bb36ea1acbb208fb4e5d84dc2009d27e45a791ffa9a7174a47c",
+      "translation_text_hash": "8e645aaa13e0123d5a5bf1810cf8a340db42f851d333b3b2b9488c5376947623",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 나의 사는 날 동안에 여호와의 인자를 내게 베풀어서 나로 죽지 않게 할뿐 아니라"
+      ],
+      "raw_text_hashes": [
+        "8e645aaa13e0123d5a5bf1810cf8a340db42f851d333b3b2b9488c5376947623"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:15",
+      "sequence": 7746,
+      "chapter_label": "1SA 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "but you shall also not cut off your kindness from my house forever, no, not when the LORD has cut off every one of the enemies of David from the surface of the earth.”",
+      "ko": "여호와께서 너 다윗의 대적들을 지면에서 다 끊어버리신 때에도 너는 네 인자를 내 집에서 영영히 끊어 버리지 말라 하고",
+      "source_text_hash": "9b1ace9eca49f1e7f9b14c3ffcb52d88723d4efe79a130e4515368d179e27d07",
+      "translation_text_hash": "9d3f84d2d4313e5e0dc3b4f6c8655687698d738c5d60729dbf29050e9baeb512",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너 다윗의 대적들을 지면에서 다 끊어버리신 때에도 너는 네 인자를 내 집에서 영영히 끊어 버리지 말라 하고"
+      ],
+      "raw_text_hashes": [
+        "9d3f84d2d4313e5e0dc3b4f6c8655687698d738c5d60729dbf29050e9baeb512"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:16",
+      "sequence": 7747,
+      "chapter_label": "1SA 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "So Jonathan made a covenant with David’s house, saying, “The LORD will require it at the hand of David’s enemies.”",
+      "ko": "이에 요나단이 다윗의 집과 언약하기를 여호와께서는 다윗의 대적들을 치실찌어다 하니라",
+      "source_text_hash": "31a0756892eaf8933a13100171f27e2b0038186d39566a0b7506c0bfc2551722",
+      "translation_text_hash": "6a50378f102807e389f3136b34619fe8bb3cd5a70f2127e57d8e362b80fc0f67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 요나단이 다윗의 집과 언약하기를 여호와께서는 다윗의 대적들을 치실찌어다 하니라"
+      ],
+      "raw_text_hashes": [
+        "6a50378f102807e389f3136b34619fe8bb3cd5a70f2127e57d8e362b80fc0f67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:17",
+      "sequence": 7748,
+      "chapter_label": "1SA 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "Jonathan caused David to swear again, for the love that he had for him; for he loved him as he loved his own soul.",
+      "ko": "요나단이 다윗을 사랑하므로 그로 다시 맹세케 하였으니 이는 자기 생명을 사랑함 같이 그를 사랑함이었더라",
+      "source_text_hash": "da6123dfa5ff9bf27fe7fe91584318e59063f06ae8bccf9967534206bfcf2f89",
+      "translation_text_hash": "c9725550edd5581d3636fdf0ce2b95851e4c7a9c385d94a3901099a713b9c090",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 다윗을 사랑하므로 그로 다시 맹세케 하였으니 이는 자기 생명을 사랑함 같이 그를 사랑함이었더라"
+      ],
+      "raw_text_hashes": [
+        "c9725550edd5581d3636fdf0ce2b95851e4c7a9c385d94a3901099a713b9c090"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:18",
+      "sequence": 7749,
+      "chapter_label": "1SA 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "Then Jonathan said to him, “Tomorrow is the new moon, and you will be missed, because your seat will be empty.",
+      "ko": "요나단이 다윗에게 이르되 내일은 월삭인즉 네 자리가 비므로 네가 없음을 자세히 물으실 것이라",
+      "source_text_hash": "1bb240ad1857b70890f50853531f25e9dc102e968d3660afef66249474dddccd",
+      "translation_text_hash": "729b34673005915c79d984b73e502a901c91620c2aeac8b8a4a01de9563fd1da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 다윗에게 이르되 내일은 월삭인즉 네 자리가 비므로 네가 없음을 자세히 물으실 것이라"
+      ],
+      "raw_text_hashes": [
+        "729b34673005915c79d984b73e502a901c91620c2aeac8b8a4a01de9563fd1da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:19",
+      "sequence": 7750,
+      "chapter_label": "1SA 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "When you have stayed three days, go down quickly and come to the place where you hid yourself when this started, and remain by the stone Ezel.",
+      "ko": "너는 사흘을 있다가 빨리 내려가서 그 일이 있던 날에 숨었던 곳에 이르러 에셀 바위 곁에 있으라",
+      "source_text_hash": "907a20a5f8b9baf839a9a66879d429c2a08c760a5d05ade14efc218e68fec76e",
+      "translation_text_hash": "a8b4aaacfae46864ac5ab464dee8136d8c244edfa00e914bdd748dd5715193c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 사흘을 있다가 빨리 내려가서 그 일이 있던 날에 숨었던 곳에 이르러 에셀 바위 곁에 있으라"
+      ],
+      "raw_text_hashes": [
+        "a8b4aaacfae46864ac5ab464dee8136d8c244edfa00e914bdd748dd5715193c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:20",
+      "sequence": 7751,
+      "chapter_label": "1SA 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "I will shoot three arrows on its side, as though I shot at a mark.",
+      "ko": "내가 과녁을 쏘려 함 같이 살 셋을 그 곁에 쏘고",
+      "source_text_hash": "7114a023466b95d7e6100d4c2bf7711a8a13ecd0a8494f63308c64b5a6348114",
+      "translation_text_hash": "162f4d4a611e5c215e469cdefd4769e3d4c982ce3a5eb3350825e82708354d2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 과녁을 쏘려 함 같이 살 셋을 그 곁에 쏘고"
+      ],
+      "raw_text_hashes": [
+        "162f4d4a611e5c215e469cdefd4769e3d4c982ce3a5eb3350825e82708354d2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:21",
+      "sequence": 7752,
+      "chapter_label": "1SA 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "Behold, I will send the boy, saying, ‘Go, find the arrows!’ If I tell the boy, ‘Behold, the arrows are on this side of you. Take them;’ then come, for there is peace to you and no danger, as the LORD lives.",
+      "ko": "아이를 보내어 가서 살을 찾으라 하며 내가 짐짓 아이에게 이르기를 보라 살이 네 이편에 있으니 가져오라 하거든 너는 돌아올찌니 여호와께서 사시거니와 네가 평안 무사할 것이요",
+      "source_text_hash": "ce6d1b8b525a82f2a1fb09aa3145a1e6b3a88b50bea8e2cd774386b47807efe7",
+      "translation_text_hash": "1ae28954d85b479fb005658789700548ea885ec2f6075fbc08baa30e34e6a015",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이를 보내어 가서 살을 찾으라 하며 내가 짐짓 아이에게 이르기를 보라 살이 네 이편에 있으니 가져오라 하거든 너는 돌아올찌니 여호와께서 사시거니와 네가 평안 무사할 것이요"
+      ],
+      "raw_text_hashes": [
+        "1ae28954d85b479fb005658789700548ea885ec2f6075fbc08baa30e34e6a015"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:22",
+      "sequence": 7753,
+      "chapter_label": "1SA 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "But if I say this to the boy, ‘Behold, the arrows are beyond you,’ then go your way, for the LORD has sent you away.",
+      "ko": "만일 아이에게 이르기를 보라 살이 네 앞편에 있다 하거든 네 길을 가라 여호와께서 너를 보내셨음이니라",
+      "source_text_hash": "b4f1eecc4a28809cdaa755a0331bd564d07f689b9ef52c5fbfcae659ee482e5b",
+      "translation_text_hash": "795a10d49e2721cd417adf233c45365d07a1f82b8d9b7aaaa875c495d34267bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 아이에게 이르기를 보라 살이 네 앞편에 있다 하거든 네 길을 가라 여호와께서 너를 보내셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "795a10d49e2721cd417adf233c45365d07a1f82b8d9b7aaaa875c495d34267bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:23",
+      "sequence": 7754,
+      "chapter_label": "1SA 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "Concerning the matter which you and I have spoken of, behold, the LORD is between you and me forever.”",
+      "ko": "너와 내가 말한 일에 대하여는 여호와께서 너와 나 사이에 영영토록 계시느니라",
+      "source_text_hash": "8b82c0eedf1eb57fc5e0c05fbc722827dc275990a5e2521d71f6b6a7b8270b3a",
+      "translation_text_hash": "8bea1bd21c92e55a013172b5af9e705f383437788710b336ba22cf3029466fa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 내가 말한 일에 대하여는 여호와께서 너와 나 사이에 영영토록 계시느니라"
+      ],
+      "raw_text_hashes": [
+        "8bea1bd21c92e55a013172b5af9e705f383437788710b336ba22cf3029466fa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:24",
+      "sequence": 7755,
+      "chapter_label": "1SA 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "So David hid himself in the field. When the new moon had come, the king sat himself down to eat food.",
+      "ko": "다윗이 들에 숨으니라 월삭이 되매 왕이 앉아 음식을 먹을 때에",
+      "source_text_hash": "d9911592d81d8ace9e60d0bbc0b490991a09f42ac07b864f2e11016ba61a1496",
+      "translation_text_hash": "e0491f167a2919e594c661adc7ec894c85076bf0a73507e7a554ac7bc764c1d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 들에 숨으니라 월삭이 되매 왕이 앉아 음식을 먹을 때에"
+      ],
+      "raw_text_hashes": [
+        "e0491f167a2919e594c661adc7ec894c85076bf0a73507e7a554ac7bc764c1d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:25",
+      "sequence": 7756,
+      "chapter_label": "1SA 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "The king sat on his seat, as at other times, even on the seat by the wall; and Jonathan stood up, and Abner sat by Saul’s side, but David’s place was empty.",
+      "ko": "왕은 평시와 같이 벽 곁 자기 자리에 앉았고 요나단은 섰고 아브넬은 사울의 곁에 앉았고 다윗의 자리는 비었으나",
+      "source_text_hash": "11ee6e940d8d05025f108c421d0bf94d0e110422df017aff6bc622159c415e6a",
+      "translation_text_hash": "9dba28bb22df40c16b2d21f4283be228e038b97f7d2e58e4e73bf71c903fa186",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 평시와 같이 벽 곁 자기 자리에 앉았고 요나단은 섰고 아브넬은 사울의 곁에 앉았고 다윗의 자리는 비었으나"
+      ],
+      "raw_text_hashes": [
+        "9dba28bb22df40c16b2d21f4283be228e038b97f7d2e58e4e73bf71c903fa186"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:26",
+      "sequence": 7757,
+      "chapter_label": "1SA 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "Nevertheless Saul didn’t say anything that day, for he thought, “Something has happened to him. He is not clean. Surely he is not clean.”",
+      "ko": "그러나 그 날에는 사울이 아무 말도 아니하였으니 이는 생각하기를 그에게 무슨 사고가 있어서 부정한가보다 정녕히 부정한가보다 하였음이더니",
+      "source_text_hash": "bb258f466a43ff3f503b706f40da78a9d548cb0e7091b20405d14b7856006e9e",
+      "translation_text_hash": "13458d3fe87368386aaf0147ce9d67bc7290d5621a9855a68ce62cc4cfbf6b3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 날에는 사울이 아무 말도 아니하였으니 이는 생각하기를 그에게 무슨 사고가 있어서 부정한가보다 정녕히 부정한가보다 하였음이더니"
+      ],
+      "raw_text_hashes": [
+        "13458d3fe87368386aaf0147ce9d67bc7290d5621a9855a68ce62cc4cfbf6b3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:27",
+      "sequence": 7758,
+      "chapter_label": "1SA 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "On the next day after the new moon, the second day, David’s place was empty. Saul said to Jonathan his son, “Why didn’t the son of Jesse come to eat, either yesterday, or today?”",
+      "ko": "이튿날 곧 달의 제 이일에도 다윗의 자리가 오히려 비었으므로 사울이 그 아들 요나단에게 묻되 이새의 아들이 어찌하여 어제와 오늘 식사에 나오지 아니하느뇨",
+      "source_text_hash": "0e0787ebd968e5ba268c296f77104ffb12f82f53b2e4e2dae6481d4ef85618fb",
+      "translation_text_hash": "1af1abb61e73c58a5a734031a651c4eb453a0fd49aa4ae76cc4312f4a6abc599",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 곧 달의 제 이일에도 다윗의 자리가 오히려 비었으므로 사울이 그 아들 요나단에게 묻되 이새의 아들이 어찌하여 어제와 오늘 식사에 나오지 아니하느뇨"
+      ],
+      "raw_text_hashes": [
+        "1af1abb61e73c58a5a734031a651c4eb453a0fd49aa4ae76cc4312f4a6abc599"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:28",
+      "sequence": 7759,
+      "chapter_label": "1SA 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "Jonathan answered Saul, “David earnestly asked permission of me to go to Bethlehem.",
+      "ko": "요나단이 사울에게 대답하되 다윗이 내게 베들레헴으로 가기를 간청하여",
+      "source_text_hash": "2925ba036c70ee863a41de1a1f59375c9695bc9e2aa6a7e375b4966fcd8d8210",
+      "translation_text_hash": "3c1b0225d7243be8a4b48a081ef5564da5a4ffd2bd8208cb0bf9bfe4a7d94bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 사울에게 대답하되 다윗이 내게 베들레헴으로 가기를 간청하여"
+      ],
+      "raw_text_hashes": [
+        "3c1b0225d7243be8a4b48a081ef5564da5a4ffd2bd8208cb0bf9bfe4a7d94bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:29",
+      "sequence": 7760,
+      "chapter_label": "1SA 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "He said, ‘Please let me go, for our family has a sacrifice in the city. My brother has commanded me to be there. Now, if I have found favor in your eyes, please let me go away and see my brothers.’ Therefore he has not come to the king’s table.”",
+      "ko": "가로되 청컨대 나로 가게 하라 우리 가족이 그 성에서 제사할 일이 있으므로 나의 형이 내게 오기를 명하였으니 내가 네게 사랑을 받거든 나로 가서 내 형들을 보게 하라 하였으므로 그가 왕의 식사 자리에 오지 아니하였나이다",
+      "source_text_hash": "1919b44601aa100b8787bb32509ad6c97b696ace932ae02efa6624af6598b214",
+      "translation_text_hash": "f56e0e4b15b19ade61b6db13c7eb55c7cef921ca1247ea3e84fc2f6725ec9e88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 청컨대 나로 가게 하라 우리 가족이 그 성에서 제사할 일이 있으므로 나의 형이 내게 오기를 명하였으니 내가 네게 사랑을 받거든 나로 가서 내 형들을 보게 하라 하였으므로 그가 왕의 식사 자리에 오지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "f56e0e4b15b19ade61b6db13c7eb55c7cef921ca1247ea3e84fc2f6725ec9e88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:30",
+      "sequence": 7761,
+      "chapter_label": "1SA 20",
+      "verse_label": "30",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 30
+        }
+      ],
+      "en": "Then Saul’s anger burned against Jonathan, and he said to him, “You son of a perverse rebellious woman, don’t I know that you have chosen the son of Jesse to your own shame, and to the shame of your mother’s nakedness?",
+      "ko": "사울이 요나단에게 노를 발하고 그에게 이르되 패역부도의 계집의 소생아 네가 이새의 아들을 택한 것이 네 수치와 네 어미의 벌거벗은 수치 됨을 내가 어찌 알지 못하랴",
+      "source_text_hash": "f395a8402315a74f2ef3124601648c7e21574d19a39259d540de328498318230",
+      "translation_text_hash": "f4de010e50ea04c17b2aab719ce65e8a1ed17957557bf923cc7287e3cdcfaeb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 요나단에게 노를 발하고 그에게 이르되 패역부도의 계집의 소생아 네가 이새의 아들을 택한 것이 네 수치와 네 어미의 벌거벗은 수치 됨을 내가 어찌 알지 못하랴"
+      ],
+      "raw_text_hashes": [
+        "f4de010e50ea04c17b2aab719ce65e8a1ed17957557bf923cc7287e3cdcfaeb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:31",
+      "sequence": 7762,
+      "chapter_label": "1SA 20",
+      "verse_label": "31",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 31
+        }
+      ],
+      "en": "For as long as the son of Jesse lives on the earth, you will not be established, nor will your kingdom. Therefore now send and bring him to me, for he shall surely die!”",
+      "ko": "이새의 아들이 땅에 사는 동안은 너와 네 나라가 든든히 서지 못하리라 그런즉 이제 보내어 그를 내게로 끌어오라 그는 죽어야 할 자니라",
+      "source_text_hash": "2417b8ca8f22db05c69cbb21d9893825b5cdbdca5c291676ded4429621a48a89",
+      "translation_text_hash": "b7a6cdcded4a68e1a29be59be9ca01d1cf3d6448e79e17d811edb2d2698afd9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이새의 아들이 땅에 사는 동안은 너와 네 나라가 든든히 서지 못하리라 그런즉 이제 보내어 그를 내게로 끌어오라 그는 죽어야 할 자니라"
+      ],
+      "raw_text_hashes": [
+        "b7a6cdcded4a68e1a29be59be9ca01d1cf3d6448e79e17d811edb2d2698afd9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:32",
+      "sequence": 7763,
+      "chapter_label": "1SA 20",
+      "verse_label": "32",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 32
+        }
+      ],
+      "en": "Jonathan answered Saul his father, and said to him, “Why should he be put to death? What has he done?”",
+      "ko": "요나단이 그 부친 사울에게 대답하여 가로되 그가 죽을 일이 무엇이니이까 무엇을 행하였나이까",
+      "source_text_hash": "0215a307daeeca69724d0da9fafccf6e71c9544eca3961b9786b998ab104e5e8",
+      "translation_text_hash": "55fa49277e9bdf15393e8ca09e2f751e35942a1b4ffd8abed3b597245d8a0dcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 그 부친 사울에게 대답하여 가로되 그가 죽을 일이 무엇이니이까 무엇을 행하였나이까"
+      ],
+      "raw_text_hashes": [
+        "55fa49277e9bdf15393e8ca09e2f751e35942a1b4ffd8abed3b597245d8a0dcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:33",
+      "sequence": 7764,
+      "chapter_label": "1SA 20",
+      "verse_label": "33",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 33
+        }
+      ],
+      "en": "Saul cast his spear at him to strike him. By this Jonathan knew that his father was determined to put David to death.",
+      "ko": "사울이 요나단에게 단창을 던져 치려 한지라 요나단이 그 부친이 다윗을 죽이기로 결심한줄 알고",
+      "source_text_hash": "e6c78fa7299fe7d7e95679a7475b6df45e1db99b6595864339c167f40d5d65db",
+      "translation_text_hash": "305f0228874e269315c14c18ac5bed318b30a8ae8907901aa352170d24812ba4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 요나단에게 단창을 던져 치려 한지라 요나단이 그 부친이 다윗을 죽이기로 결심한줄 알고"
+      ],
+      "raw_text_hashes": [
+        "305f0228874e269315c14c18ac5bed318b30a8ae8907901aa352170d24812ba4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:34",
+      "sequence": 7765,
+      "chapter_label": "1SA 20",
+      "verse_label": "34",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 34
+        }
+      ],
+      "en": "So Jonathan arose from the table in fierce anger, and ate no food the second day of the month; for he was grieved for David, because his father had treated him shamefully.",
+      "ko": "심히 노하여 식사 자리에서 떠나고 달의 제 이일에는 먹지 아니하였으니 이는 그 부친이 다윗을 욕되게 하였으므로 다윗을 위하여 슬퍼함이었더라",
+      "source_text_hash": "35a1d7ca838e55b5abc87d267f4f74398a79e7e0847d521bc9c49d27ce5a14d5",
+      "translation_text_hash": "8eb0b4744179a39915d8721395d4e127f9e3c75e72f49657efa274cc6d02abca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심히 노하여 식사 자리에서 떠나고 달의 제 이일에는 먹지 아니하였으니 이는 그 부친이 다윗을 욕되게 하였으므로 다윗을 위하여 슬퍼함이었더라"
+      ],
+      "raw_text_hashes": [
+        "8eb0b4744179a39915d8721395d4e127f9e3c75e72f49657efa274cc6d02abca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:35",
+      "sequence": 7766,
+      "chapter_label": "1SA 20",
+      "verse_label": "35",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 35
+        }
+      ],
+      "en": "In the morning, Jonathan went out into the field at the time appointed with David, and a little boy with him.",
+      "ko": "아침에 요나단이 작은 아이를 데리고 다윗과 정한 시간에 들로 나가서",
+      "source_text_hash": "dc4dd6e7aef04ae50bab5830854d13073b0d27f9f184682b63d821bc8da88568",
+      "translation_text_hash": "5783a16f1d166ff59b4d6596af642165d65d08efdaf0647248b9da7fea861c4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 요나단이 작은 아이를 데리고 다윗과 정한 시간에 들로 나가서"
+      ],
+      "raw_text_hashes": [
+        "5783a16f1d166ff59b4d6596af642165d65d08efdaf0647248b9da7fea861c4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:36",
+      "sequence": 7767,
+      "chapter_label": "1SA 20",
+      "verse_label": "36",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 36
+        }
+      ],
+      "en": "He said to his boy, “Run, find now the arrows which I shoot.” As the boy ran, he shot an arrow beyond him.",
+      "ko": "아이에게 이르되 달려가서 나의 쏘는 살을 찾으라 하고 아이가 달려갈 때에 요나단이 살을 그의 위로 지나치게 쏘니라",
+      "source_text_hash": "e3d8196a15ebf644dcade1dac9dd2a0da2905ce72ade937fc34661bfd1102e3a",
+      "translation_text_hash": "24d59613546a4c86c4680c305154dde12e4b7bc0eedb8c3211955c513886c74e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이에게 이르되 달려가서 나의 쏘는 살을 찾으라 하고 아이가 달려갈 때에 요나단이 살을 그의 위로 지나치게 쏘니라"
+      ],
+      "raw_text_hashes": [
+        "24d59613546a4c86c4680c305154dde12e4b7bc0eedb8c3211955c513886c74e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:37",
+      "sequence": 7768,
+      "chapter_label": "1SA 20",
+      "verse_label": "37",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 37
+        }
+      ],
+      "en": "When the boy had come to the place of the arrow which Jonathan had shot, Jonathan cried after the boy, and said, “Isn’t the arrow beyond you?”",
+      "ko": "아이가 요나단의 쏜 살 있는 곳에 이를 즈음에 요나단이 아이 뒤에서 외쳐 가로되 살이 네 앞편에 있지 아니하냐 하고",
+      "source_text_hash": "9cbce5a38566b1db65e6f2fdac20e598bfdac3572ee5fda9ea80920bea4da122",
+      "translation_text_hash": "52e052684d7db2b22b05e47c81e6af8b6cb762e6efdb0574088f165fc0981e20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이가 요나단의 쏜 살 있는 곳에 이를 즈음에 요나단이 아이 뒤에서 외쳐 가로되 살이 네 앞편에 있지 아니하냐 하고"
+      ],
+      "raw_text_hashes": [
+        "52e052684d7db2b22b05e47c81e6af8b6cb762e6efdb0574088f165fc0981e20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:38",
+      "sequence": 7769,
+      "chapter_label": "1SA 20",
+      "verse_label": "38",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 38
+        }
+      ],
+      "en": "Jonathan cried after the boy, “Go fast! Hurry! Don’t delay!” Jonathan’s boy gathered up the arrows, and came to his master.",
+      "ko": "요나단이 아이 뒤에서 또 외치되 지체 말고 빨리 달음질하라 하매 요나단의 아이가 살을 주워가지고 주인에게로 돌아왔으나",
+      "source_text_hash": "3748960b3d08251987e5354bdae070719dadc753306d0f92ae9b68650e9b3cb9",
+      "translation_text_hash": "119ccd63d514950a032fb09d947815f9c7fe7b71ee9f34ee00ba04846056d3c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 아이 뒤에서 또 외치되 지체 말고 빨리 달음질하라 하매 요나단의 아이가 살을 주워가지고 주인에게로 돌아왔으나"
+      ],
+      "raw_text_hashes": [
+        "119ccd63d514950a032fb09d947815f9c7fe7b71ee9f34ee00ba04846056d3c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:39",
+      "sequence": 7770,
+      "chapter_label": "1SA 20",
+      "verse_label": "39",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 39
+        }
+      ],
+      "en": "But the boy didn’t know anything. Only Jonathan and David knew the matter.",
+      "ko": "그 아이는 아무런지 알지 못하고 요나단과 다윗만 그 일을 알았더라",
+      "source_text_hash": "8a4a6a2abe531cf3541c69e48770e435c4a432fc1c03ead941f97a5e67b3641d",
+      "translation_text_hash": "407780104b3ed3456568bd32315e0f158b570773ffeee30964e17fd23e857512",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아이는 아무런지 알지 못하고 요나단과 다윗만 그 일을 알았더라"
+      ],
+      "raw_text_hashes": [
+        "407780104b3ed3456568bd32315e0f158b570773ffeee30964e17fd23e857512"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:40",
+      "sequence": 7771,
+      "chapter_label": "1SA 20",
+      "verse_label": "40",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 40
+        }
+      ],
+      "en": "Jonathan gave his weapons to his boy, and said to him, “Go, carry them to the city.”",
+      "ko": "요나단이 그 병기를 아이에게 주며 이르되 이것을 가지고 성으로 가라",
+      "source_text_hash": "cdbf12dfd9578ba59d48b9b6fdec8ff23690b4de6c22920dc648fbf154584e08",
+      "translation_text_hash": "d71268c7465eca50e5ee444bc9c9dbb7e869617fd8741351244a6a03f45b2290",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 그 병기를 아이에게 주며 이르되 이것을 가지고 성으로 가라"
+      ],
+      "raw_text_hashes": [
+        "d71268c7465eca50e5ee444bc9c9dbb7e869617fd8741351244a6a03f45b2290"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:41",
+      "sequence": 7772,
+      "chapter_label": "1SA 20",
+      "verse_label": "41",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 41
+        }
+      ],
+      "en": "As soon as the boy was gone, David arose out of the south, and fell on his face to the ground, and bowed himself three times. They kissed one another and wept with one another, and David wept the most.",
+      "ko": "아이가 가매 다윗이 곧 바위 남편에서 일어나서 땅에 엎드려 세번 절한 후에 피차 입맞추고 같이 울되 다윗이 더욱 심하더니",
+      "source_text_hash": "69ab35a057e26d1e773eb1eeed67e096379a7a109548bed935b69e33c7c86775",
+      "translation_text_hash": "f437bdd627e537f2d931d1f97c76d5db7a0e10d2bbdec6ed8ad96f9529e22dde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이가 가매 다윗이 곧 바위 남편에서 일어나서 땅에 엎드려 세번 절한 후에 피차 입맞추고 같이 울되 다윗이 더욱 심하더니"
+      ],
+      "raw_text_hashes": [
+        "f437bdd627e537f2d931d1f97c76d5db7a0e10d2bbdec6ed8ad96f9529e22dde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:20:42",
+      "sequence": 7773,
+      "chapter_label": "1SA 20",
+      "verse_label": "42",
+      "locator": {
+        "book": "1SA",
+        "chapter": 20,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 20,
+          "verse": 42
+        }
+      ],
+      "en": "Jonathan said to David, “Go in peace, because we have both sworn in the LORD’s name, saying, ‘The LORD is between me and you, and between my offspring and your offspring, forever.’” He arose and departed; and Jonathan went into the city.",
+      "ko": "요나단이 다윗에게 이르되 평안히 가라 우리 두 사람이 여호와의 이름으로 맹세하여 이르기를 여호와께서 영원히 나와 너 사이에 계시고 내 자손과 네 자손 사이에 계시리라 하였느니라 다윗은 일어나 떠나고 요나단은 성으로 들어오니라",
+      "source_text_hash": "165c0eaa396aa5df2e898104359b2d658ebf920dc4c7eef5d582efb83bd75cf6",
+      "translation_text_hash": "f129a6c7806a00d0b5870ad21c7d2526144bb03ac9b4220b2f89592ed9b2cb7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 다윗에게 이르되 평안히 가라 우리 두 사람이 여호와의 이름으로 맹세하여 이르기를 여호와께서 영원히 나와 너 사이에 계시고 내 자손과 네 자손 사이에 계시리라 하였느니라 다윗은 일어나 떠나고 요나단은 성으로 들어오니라"
+      ],
+      "raw_text_hashes": [
+        "f129a6c7806a00d0b5870ad21c7d2526144bb03ac9b4220b2f89592ed9b2cb7f"
+      ]
+    }
+  ]
+}

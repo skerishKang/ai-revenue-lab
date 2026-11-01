@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:005",
+  "unit_ordinal": 807,
+  "unit_label": "EZK 5",
+  "book_code": "EZK",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:5:1",
+      "sequence": 20548,
+      "chapter_label": "EZK 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "“You, son of man, take a sharp sword. You shall take it as a barber’s razor to yourself, and shall cause it to pass over your head and over your beard. Then take balances to weigh and divide the hair.",
+      "ko": "인자야 너는 날카로운 칼을 취하여 삭도를 삼아 네 머리털과 수염을 깎아서 저울에 달아 나누었다가",
+      "source_text_hash": "4372cba89eeda5c5f4dd9ff396b7ddc07bd7252131f784054b02c33d076af3c6",
+      "translation_text_hash": "1b304c259413a9be0a65a8e05b9b6c89b222a3a2d57e071af50b504b49753ce3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 날카로운 칼을 취하여 삭도를 삼아 네 머리털과 수염을 깎아서 저울에 달아 나누었다가"
+      ],
+      "raw_text_hashes": [
+        "1b304c259413a9be0a65a8e05b9b6c89b222a3a2d57e071af50b504b49753ce3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:2",
+      "sequence": 20549,
+      "chapter_label": "EZK 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "A third part you shall burn in the fire in the middle of the city, when the days of the siege are fulfilled. You shall take a third part, and strike with the sword around it. A third part you shall scatter to the wind, and I will draw out a sword after them.",
+      "ko": "그 성읍을 에워싸는 날이 차거든 너는 터럭 삼분지 일은 성읍 안에서 불사르고 삼분지 일은 가지고 성읍 사방에서 칼로 치고 또 삼분지 일은 바람에 흩으라 내가 그 뒤를 따라 칼을 빼리라",
+      "source_text_hash": "9670a0a944bccf73368c409132e6b69ffd88b95d03a5db2e56f52f2feffcd74b",
+      "translation_text_hash": "1dda8e25458be0df5af2b610c01cdeebd391dcb647c7033ced9d093ee69a7635",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍을 에워싸는 날이 차거든 너는 터럭 삼분지 일은 성읍 안에서 불사르고 삼분지 일은 가지고 성읍 사방에서 칼로 치고 또 삼분지 일은 바람에 흩으라 내가 그 뒤를 따라 칼을 빼리라"
+      ],
+      "raw_text_hashes": [
+        "1dda8e25458be0df5af2b610c01cdeebd391dcb647c7033ced9d093ee69a7635"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:3",
+      "sequence": 20550,
+      "chapter_label": "EZK 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "You shall take a small number of these and bind them in the folds of your robe.",
+      "ko": "너는 터럭 중에서 조금을 가져 네 옷자락에 싸고",
+      "source_text_hash": "bbb7b9f3adb61fe5d15716792fd64ff4f1d59d00b34a3af0314c345e8668290d",
+      "translation_text_hash": "9fd16f40b712d22abaac70fd5de3dacc0265691718fb08bdd2e0db0cdfa3df24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 터럭 중에서 조금을 가져 네 옷자락에 싸고"
+      ],
+      "raw_text_hashes": [
+        "9fd16f40b712d22abaac70fd5de3dacc0265691718fb08bdd2e0db0cdfa3df24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:4",
+      "sequence": 20551,
+      "chapter_label": "EZK 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "Of these again you shall take, and cast them into the middle of the fire, and burn them in the fire. From it a fire will come out into all the house of Israel.",
+      "ko": "또 그 가운데서 얼마를 가져 불에 던져 사르라 그 속에서 불이 이스라엘 온 족속에게로 나오리라",
+      "source_text_hash": "a772f352ed2adb08aeae513a5eee6a9e793f779c23ab6c178d9e9f2881381660",
+      "translation_text_hash": "c31dbff472badd53e014c41da93415eafb5fd5b176c890d2b85b961a3af03e1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 가운데서 얼마를 가져 불에 던져 사르라 그 속에서 불이 이스라엘 온 족속에게로 나오리라"
+      ],
+      "raw_text_hashes": [
+        "c31dbff472badd53e014c41da93415eafb5fd5b176c890d2b85b961a3af03e1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:5",
+      "sequence": 20552,
+      "chapter_label": "EZK 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "“The Lord GOD says: ‘This is Jerusalem. I have set her in the middle of the nations, and countries are around her.",
+      "ko": "주 여호와께서 가라사대 이것이 곧 예루살렘이라 내가 그를 이방인 가운데 두어 열방으로 둘러 있게 하였거늘",
+      "source_text_hash": "bba9eb0498db39e0d56848a98f6187c3683da1ba5d7062f74c6aa4226e2a02bb",
+      "translation_text_hash": "b15db6e58517fd5a6ea6e8f6ac3f4942b167401467d835610beff0641b864c01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 가라사대 이것이 곧 예루살렘이라 내가 그를 이방인 가운데 두어 열방으로 둘러 있게 하였거늘"
+      ],
+      "raw_text_hashes": [
+        "b15db6e58517fd5a6ea6e8f6ac3f4942b167401467d835610beff0641b864c01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:6",
+      "sequence": 20553,
+      "chapter_label": "EZK 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "She has rebelled against my ordinances in doing wickedness more than the nations, and against my statutes more than the countries that are around her; for they have rejected my ordinances, and as for my statutes, they have not walked in them.’",
+      "ko": "그가 내 규례를 거스려서 이방인보다 악을 더 행하며 내 율례도 그리함이 그 둘러 있는 열방보다 더하니 이는 그들이 내 규례를 버리고 내 율례를 행치 아니하였음이니라",
+      "source_text_hash": "e14cc79275ba8af31b7fe5b82f42a08f7e5ed4e2784224b25b03c2b10bf34c05",
+      "translation_text_hash": "5289249e09f1d881edf7a8b36a001221e402ded9279023bc0204eed3b5b54e72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내 규례를 거스려서 이방인보다 악을 더 행하며 내 율례도 그리함이 그 둘러 있는 열방보다 더하니 이는 그들이 내 규례를 버리고 내 율례를 행치 아니하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "5289249e09f1d881edf7a8b36a001221e402ded9279023bc0204eed3b5b54e72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:7",
+      "sequence": 20554,
+      "chapter_label": "EZK 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "“Therefore the Lord GOD says: ‘Because you are more turbulent than the nations that are around you, and have not walked in my statutes, neither have kept my ordinances, neither have followed the ordinances of the nations that are around you;",
+      "ko": "그러므로 나 주 여호와가 말하노라 너희 요란함이 너희를 둘러 있는 이방인 보다 더하여 내 율례를 행치 아니하며 내 규례를 지키지 아니하고 너희를 둘러 있는 이방인의 규례대로도 행치 아니하였느니라",
+      "source_text_hash": "c37a79d06da16159bc2f1a3dbc72dfc14d82a80d70dfca9256f19d80cae77a8b",
+      "translation_text_hash": "b7bebd9ba6ad207ee62db7763fd1d77f97863e2b595534e089b73e6f843138ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 너희 요란함이 너희를 둘러 있는 이방인 보다 더하여 내 율례를 행치 아니하며 내 규례를 지키지 아니하고 너희를 둘러 있는 이방인의 규례대로도 행치 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b7bebd9ba6ad207ee62db7763fd1d77f97863e2b595534e089b73e6f843138ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:8",
+      "sequence": 20555,
+      "chapter_label": "EZK 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "therefore the Lord GOD says: ‘Behold, I, even I, am against you; and I will execute judgments among you in the sight of the nations.",
+      "ko": "그러므로 나 주 여호와가 말하노라 나 곧 내가 너를 치며 이방인의 목전에서 너의 중에 벌을 내리되",
+      "source_text_hash": "3021b8b88c06b65754d704da28bdc045429c625bd51af359dca7d7395e7aca34",
+      "translation_text_hash": "b89508ff30abe7f6e80a883f5a1fd7c94925621487395ed3f54295554c12b917",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 나 곧 내가 너를 치며 이방인의 목전에서 너의 중에 벌을 내리되"
+      ],
+      "raw_text_hashes": [
+        "b89508ff30abe7f6e80a883f5a1fd7c94925621487395ed3f54295554c12b917"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:9",
+      "sequence": 20556,
+      "chapter_label": "EZK 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "I will do in you that which I have not done, and which I will not do anything like it any more, because of all your abominations.",
+      "ko": "네 모든 가증한 일로 인하여 내가 전무 후무하게 네게 내릴찌라",
+      "source_text_hash": "f2574f24acfae4f32f5ab94d8cf5cb3b0a9590f8495355045136f3d208166467",
+      "translation_text_hash": "7d9bf046da8380077f36a14c17f89873671cb98deee0091cd0e7902f46831268",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 모든 가증한 일로 인하여 내가 전무 후무하게 네게 내릴찌라"
+      ],
+      "raw_text_hashes": [
+        "7d9bf046da8380077f36a14c17f89873671cb98deee0091cd0e7902f46831268"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:10",
+      "sequence": 20557,
+      "chapter_label": "EZK 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore the fathers will eat the sons within you, and the sons will eat their fathers. I will execute judgments on you; and I will scatter the whole remnant of you to all the winds.",
+      "ko": "그리한즉 너의 중에서 아비가 아들을 먹고 아들이 그 아비를 먹으리라 내가 벌을 네게 내리고 너의 중에 남은 자를 다 사방에 흩으리라",
+      "source_text_hash": "b7a720582cb739eba2ec57dddad95438b1b89850291982352b899fa464bdb725",
+      "translation_text_hash": "b5291764b8964ada1cab8804f8a368c91e1e252c64fa9d9129b58afef315688d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리한즉 너의 중에서 아비가 아들을 먹고 아들이 그 아비를 먹으리라 내가 벌을 네게 내리고 너의 중에 남은 자를 다 사방에 흩으리라"
+      ],
+      "raw_text_hashes": [
+        "b5291764b8964ada1cab8804f8a368c91e1e252c64fa9d9129b58afef315688d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:11",
+      "sequence": 20558,
+      "chapter_label": "EZK 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore as I live,’ says the Lord GOD, ‘surely, because you have defiled my sanctuary with all your detestable things, and with all your abominations, therefore I will also diminish you. My eye won’t spare, and I will have no pity.",
+      "ko": "그러므로 나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 네가 모든 미운 물건과 모든 가증한 일로 내 성소를 더럽혔은즉 나도 너를 아껴 보지 아니하며 긍휼을 베풀지 아니하고 미약하게 하리니",
+      "source_text_hash": "39633b765a2961b7399178295e63ee49ea090f9b20547d38d37f6cf4c357308a",
+      "translation_text_hash": "10fb22f4dc5a2d83183bb9821df6a4406159c333503f73e51dbd105b9dce218d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 네가 모든 미운 물건과 모든 가증한 일로 내 성소를 더럽혔은즉 나도 너를 아껴 보지 아니하며 긍휼을 베풀지 아니하고 미약하게 하리니"
+      ],
+      "raw_text_hashes": [
+        "10fb22f4dc5a2d83183bb9821df6a4406159c333503f73e51dbd105b9dce218d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:12",
+      "sequence": 20559,
+      "chapter_label": "EZK 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "A third part of you will die with the pestilence, and they will be consumed with famine within you. A third part will fall by the sword around you. A third part I will scatter to all the winds, and will draw out a sword after them.",
+      "ko": "너의 가운데서 삼분지 일은 온역으로 죽으며 기근으로 멸망할 것이요 삼분지 일은 너의 사방에서 칼에 엎드러질 것이며 삼분지 일은 내가 사방에 흩고 또 그 뒤를 따라 칼을 빼리라",
+      "source_text_hash": "a0a7b4ef1820571d96fa3e244666b9fe58243a8d67f6288daf3c51c766dfb3d4",
+      "translation_text_hash": "dac1be3ac7349d4a7c224d9c829d4095368b11953d4b74e0b3d21d37697ba08f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 가운데서 삼분지 일은 온역으로 죽으며 기근으로 멸망할 것이요 삼분지 일은 너의 사방에서 칼에 엎드러질 것이며 삼분지 일은 내가 사방에 흩고 또 그 뒤를 따라 칼을 빼리라"
+      ],
+      "raw_text_hashes": [
+        "dac1be3ac7349d4a7c224d9c829d4095368b11953d4b74e0b3d21d37697ba08f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:13",
+      "sequence": 20560,
+      "chapter_label": "EZK 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "“‘Thus my anger will be accomplished, and I will cause my wrath toward them to rest, and I will be comforted. They will know that I, the LORD, have spoken in my zeal, when I have accomplished my wrath on them.",
+      "ko": "이와 같이 내 노가 다한즉 그들에게 향한 분이 풀려서 내 마음이 시원하리라 내 분이 그들에게 다한즉 나 여호와가 열심으로 말한줄을 그들이 알리라",
+      "source_text_hash": "7d09ce9faba8006fa207b21824e4dca497da3cb3b6b85b88418b21636ee224de",
+      "translation_text_hash": "8d055435696a3d2a1f61674dc3446bc3bc4411022bc438c14a8e7ca244343f7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 내 노가 다한즉 그들에게 향한 분이 풀려서 내 마음이 시원하리라 내 분이 그들에게 다한즉 나 여호와가 열심으로 말한줄을 그들이 알리라"
+      ],
+      "raw_text_hashes": [
+        "8d055435696a3d2a1f61674dc3446bc3bc4411022bc438c14a8e7ca244343f7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:14",
+      "sequence": 20561,
+      "chapter_label": "EZK 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "“‘Moreover I will make you a desolation and a reproach among the nations that are around you, in the sight of all that pass by.",
+      "ko": "내가 또 너로 황무케 하고 너를 둘러 있는 이방인 중에서 모든 지나가는 자의 목전에 능욕거리가 되게 하리니",
+      "source_text_hash": "019bf47d25ffe19b3ff77f45b22204a9bd023a759afeac046f1cdd340ad97eac",
+      "translation_text_hash": "28d208f879a686216888b1903fa6214c2dcdf80e696bf9d8570b274fdd6973af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 너로 황무케 하고 너를 둘러 있는 이방인 중에서 모든 지나가는 자의 목전에 능욕거리가 되게 하리니"
+      ],
+      "raw_text_hashes": [
+        "28d208f879a686216888b1903fa6214c2dcdf80e696bf9d8570b274fdd6973af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:15",
+      "sequence": 20562,
+      "chapter_label": "EZK 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "So it will be a reproach and a taunt, an instruction and an astonishment, to the nations that are around you, when I execute judgments on you in anger and in wrath, and in wrathful rebukes—I, the LORD, have spoken it—",
+      "ko": "내 노와 분과 중한 책망으로 네게 벌을 내린즉 너를 둘러 있는 이방인에게 네가 수욕과 조롱을 당하고 경계와 괴이한 것이 되리라 나 여호와의 말이니라",
+      "source_text_hash": "01312347b6ca612ef13354953c6dd4cb54e9466f447838f4e99790f9bd36d22f",
+      "translation_text_hash": "9741de9a7b11727d576270717712e584be6240f46dd0ed945ba5128a49f77cb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 노와 분과 중한 책망으로 네게 벌을 내린즉 너를 둘러 있는 이방인에게 네가 수욕과 조롱을 당하고 경계와 괴이한 것이 되리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "9741de9a7b11727d576270717712e584be6240f46dd0ed945ba5128a49f77cb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:16",
+      "sequence": 20563,
+      "chapter_label": "EZK 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "when I send on them the evil arrows of famine that are for destruction, which I will send to destroy you. I will increase the famine on you and will break your staff of bread.",
+      "ko": "내가 멸망케 하는 기근의 독한 살로 너희를 멸하러 보내되 기근을 더하여 너희의 의뢰하는 양식을 끊을 것이라",
+      "source_text_hash": "f16a4793b84ee8b1408a17b933ceff880c7112af6e1c6d3f7f25b3b368b9ddad",
+      "translation_text_hash": "93064c0165ad96ffe04931920ff3ae693d8ebea65fe50b1c2648474d63e22c48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 멸망케 하는 기근의 독한 살로 너희를 멸하러 보내되 기근을 더하여 너희의 의뢰하는 양식을 끊을 것이라"
+      ],
+      "raw_text_hashes": [
+        "93064c0165ad96ffe04931920ff3ae693d8ebea65fe50b1c2648474d63e22c48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:5:17",
+      "sequence": 20564,
+      "chapter_label": "EZK 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "I will send on you famine and evil animals, and they will bereave you. Pestilence and blood will pass through you. I will bring the sword on you. I, the LORD, have spoken it.’”",
+      "ko": "내가 기근과 악한 짐승을 너희에게 보내어 외롭게 하고 너희 가운데 온역과 살륙으로 행하게 하고 또 칼이 너희에게 임하게 하리라 나 여호와의 말이니라",
+      "source_text_hash": "967d2413e7cacc5110d379aed57a80ba92e9130481c4db305d2191c7d92ffce4",
+      "translation_text_hash": "8108c9f387863d2165ca95b08bc46402e109ead198067fbd3e9db04849bb3ab2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 기근과 악한 짐승을 너희에게 보내어 외롭게 하고 너희 가운데 온역과 살륙으로 행하게 하고 또 칼이 너희에게 임하게 하리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "8108c9f387863d2165ca95b08bc46402e109ead198067fbd3e9db04849bb3ab2"
+      ]
+    }
+  ]
+}

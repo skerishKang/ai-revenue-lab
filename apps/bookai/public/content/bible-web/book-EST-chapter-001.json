@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EST:chapter:001",
+  "unit_ordinal": 427,
+  "unit_label": "EST 1",
+  "book_code": "EST",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EST:1:1",
+      "sequence": 12704,
+      "chapter_label": "EST 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Now in the days of Ahasuerus (this is Ahasuerus who reigned from India even to Ethiopia, over one hundred twenty-seven provinces),",
+      "ko": "이 일은 아하수에로왕 때에 된 것이니 아하수에로는 인도로 구스까지 일백 이십 칠도를 치리하는 왕이라",
+      "source_text_hash": "d874cf19d60a50fe33285a16e45616a36879a86cc1dfff51f0403ffae17a439c",
+      "translation_text_hash": "6bd782a0ed627f1eec5b90438c3cbd48ea8575c975554a3083caba4d1d340b7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일은 아하수에로왕 때에 된 것이니 아하수에로는 인도로 구스까지 일백 이십 칠도를 치리하는 왕이라"
+      ],
+      "raw_text_hashes": [
+        "6bd782a0ed627f1eec5b90438c3cbd48ea8575c975554a3083caba4d1d340b7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:2",
+      "sequence": 12705,
+      "chapter_label": "EST 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "in those days, when the King Ahasuerus sat on the throne of his kingdom, which was in Susa the palace,",
+      "ko": "당시에 아하수에로왕이 수산 궁에서 즉위하고",
+      "source_text_hash": "e35053086b2f929525fc6258cdaa1fcacda508191de849d596bbf8c0617136ee",
+      "translation_text_hash": "8b44957bbfb8f29979f3d29b2741d07b8fe26e4fd624168faada440ae870db5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당시에 아하수에로왕이 수산 궁에서 즉위하고"
+      ],
+      "raw_text_hashes": [
+        "8b44957bbfb8f29979f3d29b2741d07b8fe26e4fd624168faada440ae870db5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:3",
+      "sequence": 12706,
+      "chapter_label": "EST 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "in the third year of his reign, he made a feast for all his princes and his servants; the army of Persia and Media, the nobles and princes of the provinces being before him.",
+      "ko": "위에 있은지 삼년에 그 모든 방백과 신복을 위하여 잔치를 베푸니 바사와 메대의 장수와 각 도의 귀족과 방백들이 다 왕 앞에 있는지라",
+      "source_text_hash": "c00888f4bd1953ff36f8a435a9542366ad97d872514a09d27519932e5b871a32",
+      "translation_text_hash": "6fe0404ad3feff252fbdb0bd22451aa250234e1cda40483561f298e34ecb0672",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위에 있은지 삼년에 그 모든 방백과 신복을 위하여 잔치를 베푸니 바사와 메대의 장수와 각 도의 귀족과 방백들이 다 왕 앞에 있는지라"
+      ],
+      "raw_text_hashes": [
+        "6fe0404ad3feff252fbdb0bd22451aa250234e1cda40483561f298e34ecb0672"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:4",
+      "sequence": 12707,
+      "chapter_label": "EST 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "He displayed the riches of his glorious kingdom and the honor of his excellent majesty many days, even one hundred eighty days.",
+      "ko": "왕이 여러 날 곧 일백 팔십일 동안에 그 영화로운 나라의 부함과 위엄의 혁혁함을 나타내니라",
+      "source_text_hash": "5e66ea946a41890fab7bbce1e8f2595d7d8f2e850655112756970dae65382fcb",
+      "translation_text_hash": "d9a56989f83fcbbc2ae3282c544056c34ac2740e624daa98f05f26d47d7c1016",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 여러 날 곧 일백 팔십일 동안에 그 영화로운 나라의 부함과 위엄의 혁혁함을 나타내니라"
+      ],
+      "raw_text_hashes": [
+        "d9a56989f83fcbbc2ae3282c544056c34ac2740e624daa98f05f26d47d7c1016"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:5",
+      "sequence": 12708,
+      "chapter_label": "EST 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "When these days were fulfilled, the king made a seven day feast for all the people who were present in Susa the palace, both great and small, in the court of the garden of the king’s palace.",
+      "ko": "이 날이 다하매 왕이 또 도성 수산 대소 인민을 위하여 왕궁 후원 뜰에서 칠일 동안 잔치를 베풀쌔",
+      "source_text_hash": "42c8b265d15e150f840c50de085227c62b1064af8da9930a9176775e00cd0cac",
+      "translation_text_hash": "ae61af38ee3554144a69037062d445772baf095020acbe03bd5e47ef94b8736c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날이 다하매 왕이 또 도성 수산 대소 인민을 위하여 왕궁 후원 뜰에서 칠일 동안 잔치를 베풀쌔"
+      ],
+      "raw_text_hashes": [
+        "ae61af38ee3554144a69037062d445772baf095020acbe03bd5e47ef94b8736c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:6",
+      "sequence": 12709,
+      "chapter_label": "EST 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "There were hangings of white and blue material, fastened with cords of fine linen and purple to silver rings and marble pillars. The couches were of gold and silver, on a pavement of red, white, yellow, and black marble.",
+      "ko": "백색, 녹색, 청색 휘장을 자색 가는 베줄로 대리석 기둥 은고리에 매고 금과 은으로 만든 걸상을 화반석, 백석, 운모석, 흑석을 깐 땅에 진설하고",
+      "source_text_hash": "bd9f8fced2fea4503de31f75181dc8cbbb9419c2f52112b11369fd4026474156",
+      "translation_text_hash": "e158eaf884089781be68926bb4aa0ac632b55a7f03553d7abf99e396021d68c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백색, 녹색, 청색 휘장을 자색 가는 베줄로 대리석 기둥 은고리에 매고 금과 은으로 만든 걸상을 화반석, 백석, 운모석, 흑석을 깐 땅에 진설하고"
+      ],
+      "raw_text_hashes": [
+        "e158eaf884089781be68926bb4aa0ac632b55a7f03553d7abf99e396021d68c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:7",
+      "sequence": 12710,
+      "chapter_label": "EST 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "They gave them drinks in golden vessels of various kinds, including royal wine in abundance, according to the bounty of the king.",
+      "ko": "금잔으로 마시게 하니 잔의 식양이 각기 다르고 왕의 풍부한대로 어주가 한이 없으며",
+      "source_text_hash": "1d31c9507358e96ef87cd1dc1735f28932e8300536162275cd2dca7c09b60dd6",
+      "translation_text_hash": "22ff11c38a0cb3145e643a9ee821b50517d3c2b4d41d4f4fdad5ce1343ae496c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금잔으로 마시게 하니 잔의 식양이 각기 다르고 왕의 풍부한대로 어주가 한이 없으며"
+      ],
+      "raw_text_hashes": [
+        "22ff11c38a0cb3145e643a9ee821b50517d3c2b4d41d4f4fdad5ce1343ae496c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:8",
+      "sequence": 12711,
+      "chapter_label": "EST 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "In accordance with the law, the drinking was not compulsory; for so the king had instructed all the officials of his house, that they should do according to every man’s pleasure.",
+      "ko": "마시는 것도 규모가 있어 사람으로 억지로 하지 않게 하니 이는 왕이 모든 궁내 관리에게 명하여 각 사람으로 마음대로 하게 함이더라",
+      "source_text_hash": "53cf7321e90aa6fe8ccf4ff91e46543adca49c99421cbf5fb67cb29ab6e9e746",
+      "translation_text_hash": "7ebbe50e78ef82f10fe11c6fed47069d7532bc1a6813b6d613c50e6e9b8bdf51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마시는 것도 규모가 있어 사람으로 억지로 하지 않게 하니 이는 왕이 모든 궁내 관리에게 명하여 각 사람으로 마음대로 하게 함이더라"
+      ],
+      "raw_text_hashes": [
+        "7ebbe50e78ef82f10fe11c6fed47069d7532bc1a6813b6d613c50e6e9b8bdf51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:9",
+      "sequence": 12712,
+      "chapter_label": "EST 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Also Vashti the queen made a feast for the women in the royal house which belonged to King Ahasuerus.",
+      "ko": "왕후 와스디도 아하수에로 왕궁에서 부녀들을 위하여 잔치를 베푸니라",
+      "source_text_hash": "ab185d29745cce68070da518e5e402b3b3a96c97cb3f9216bdba3b814e86e8dc",
+      "translation_text_hash": "38c3c9d8c5fc4b731c00909adf9f2836f69d21701058f699851a63969f600899",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕후 와스디도 아하수에로 왕궁에서 부녀들을 위하여 잔치를 베푸니라"
+      ],
+      "raw_text_hashes": [
+        "38c3c9d8c5fc4b731c00909adf9f2836f69d21701058f699851a63969f600899"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:10",
+      "sequence": 12713,
+      "chapter_label": "EST 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "On the seventh day, when the heart of the king was merry with wine, he commanded Mehuman, Biztha, Harbona, Bigtha, and Abagtha, Zethar, and Carcass, the seven eunuchs who served in the presence of Ahasuerus the king,",
+      "ko": "제 칠일에 왕이 주흥이 일어나서 어전 내시 므후만과 비스다와 하르보나와 빅다와 아박다와 세달과 가르가스 일곱 사람을 명하여",
+      "source_text_hash": "083abad0d6c49d81f222ebf8a337525d83287b8defd4737f6e286d688e28b1ac",
+      "translation_text_hash": "64ec7a33e4d088c788194babcf850ec5e314e63411aa1fd98b3475da8b39ec39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠일에 왕이 주흥이 일어나서 어전 내시 므후만과 비스다와 하르보나와 빅다와 아박다와 세달과 가르가스 일곱 사람을 명하여"
+      ],
+      "raw_text_hashes": [
+        "64ec7a33e4d088c788194babcf850ec5e314e63411aa1fd98b3475da8b39ec39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:11",
+      "sequence": 12714,
+      "chapter_label": "EST 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "to bring Vashti the queen before the king wearing the royal crown, to show the people and the princes her beauty; for she was beautiful.",
+      "ko": "왕후 와스디를 청하여 왕후의 면류관을 정제하고 왕의 앞으로 나아오게 하여 그 아리따움을 뭇 백성과 방백들에게 보이게 하라 하니 이는 왕후의 용모가 보기에 좋음이라",
+      "source_text_hash": "aeda00b20d38d546f3e67c597b28673ffb73456b20cfafc52e90170ed987526a",
+      "translation_text_hash": "535f7ad53665446261934dec74e8cdbec8a86343210f551dbae941ae93bf1688",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕후 와스디를 청하여 왕후의 면류관을 정제하고 왕의 앞으로 나아오게 하여 그 아리따움을 뭇 백성과 방백들에게 보이게 하라 하니 이는 왕후의 용모가 보기에 좋음이라"
+      ],
+      "raw_text_hashes": [
+        "535f7ad53665446261934dec74e8cdbec8a86343210f551dbae941ae93bf1688"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:12",
+      "sequence": 12715,
+      "chapter_label": "EST 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "But the queen Vashti refused to come at the king’s commandment by the eunuchs. Therefore the king was very angry, and his anger burned in him.",
+      "ko": "그러나 왕후 와스디가 내시의 전하는 왕명을 좇아 오기를 싫어하니 왕이 진노하여 중심이 불 붙는듯하더라",
+      "source_text_hash": "9410744c0cbfbea36c105fa88678eaf871a572823828e07a5f12850ff99ac6aa",
+      "translation_text_hash": "527f668c59e4b57f537d51a63edbced7c824ef63630f40c38684681da8b74703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 왕후 와스디가 내시의 전하는 왕명을 좇아 오기를 싫어하니 왕이 진노하여 중심이 불 붙는듯하더라"
+      ],
+      "raw_text_hashes": [
+        "527f668c59e4b57f537d51a63edbced7c824ef63630f40c38684681da8b74703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:13",
+      "sequence": 12716,
+      "chapter_label": "EST 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Then the king said to the wise men, who knew the times (for it was the king’s custom to consult those who knew law and judgment;",
+      "ko": "왕이 사례를 아는 박사들에게 묻되 (왕이 규례와 법률을 아는 자에게 묻는 전례가 있는데",
+      "source_text_hash": "8527aa522ad74613bb6acfe9e618389018eaac70797c51c77942a2af57f73930",
+      "translation_text_hash": "33be138a5386676135d5546ea180c3de606e0b7de937ea2d3931eced65b66bb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 사례를 아는 박사들에게 묻되 (왕이 규례와 법률을 아는 자에게 묻는 전례가 있는데"
+      ],
+      "raw_text_hashes": [
+        "33be138a5386676135d5546ea180c3de606e0b7de937ea2d3931eced65b66bb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:14",
+      "sequence": 12717,
+      "chapter_label": "EST 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "and next to him were Carshena, Shethar, Admatha, Tarshish, Meres, Marsena, and Memucan, the seven princes of Persia and Media, who saw the king’s face, and sat first in the kingdom),",
+      "ko": "때에 왕에게 가까이 하여 왕의 기색을 살피며 나라 첫자리에 앉은 자는 바사와 메대의 일곱 방백 곧 가르스나와 세달과 아드마다와 다시스와 메레스와 마르스나와 므무간이라)",
+      "source_text_hash": "d63a5ce3b61d6317d303e04524f6f765d3e9c7bc038016e31938745474a2b92c",
+      "translation_text_hash": "219c3b7deb3b7ac74629df9dfaef37e348f89385c3e070757a37be44933f06c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 왕에게 가까이 하여 왕의 기색을 살피며 나라 첫자리에 앉은 자는 바사와 메대의 일곱 방백 곧 가르스나와 세달과 아드마다와 다시스와 메레스와 마르스나와 므무간이라)"
+      ],
+      "raw_text_hashes": [
+        "219c3b7deb3b7ac74629df9dfaef37e348f89385c3e070757a37be44933f06c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:15",
+      "sequence": 12718,
+      "chapter_label": "EST 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "“What shall we do to Queen Vashti according to law, because she has not done the bidding of the King Ahasuerus by the eunuchs?”",
+      "ko": "왕후 와스디가 내시의 전하는 아하수에로 왕명을 좇지 아니하니 규례대로 하면 어떻게 처치할꼬",
+      "source_text_hash": "f932bde7d9ed6e62017ed0ebd4dd95de8b5edc9cb35640a6f241bf78bcded31c",
+      "translation_text_hash": "01ef32afc8bc8876dd39159131001e0828c484a334dc7d3c02bc6bdfb259c953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕후 와스디가 내시의 전하는 아하수에로 왕명을 좇지 아니하니 규례대로 하면 어떻게 처치할꼬"
+      ],
+      "raw_text_hashes": [
+        "01ef32afc8bc8876dd39159131001e0828c484a334dc7d3c02bc6bdfb259c953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:16",
+      "sequence": 12719,
+      "chapter_label": "EST 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Memucan answered before the king and the princes, “Vashti the queen has not done wrong to just the king, but also to all the princes, and to all the people who are in all the provinces of the King Ahasuerus.",
+      "ko": "므무간이 왕과 방백 앞에서 대답하여 가로되 왕후 와스디가 왕에게만 잘못 할뿐 아니라 아하수에로왕의 각 도 방백과 뭇 백성에게도 잘못하였나이다",
+      "source_text_hash": "c1aa0c55c8da52a7314f339ec5bba350cad00ad2345e312377e58dca6b35e39e",
+      "translation_text_hash": "4b3426d008b34669fd23996a1659452fc2d45536aed6c4d6923009112486642e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므무간이 왕과 방백 앞에서 대답하여 가로되 왕후 와스디가 왕에게만 잘못 할뿐 아니라 아하수에로왕의 각 도 방백과 뭇 백성에게도 잘못하였나이다"
+      ],
+      "raw_text_hashes": [
+        "4b3426d008b34669fd23996a1659452fc2d45536aed6c4d6923009112486642e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:17",
+      "sequence": 12720,
+      "chapter_label": "EST 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "For this deed of the queen will become known to all women, causing them to show contempt for their husbands when it is reported, ‘King Ahasuerus commanded Vashti the queen to be brought in before him, but she didn’t come.’",
+      "ko": "아하수에로왕이 명하여 왕후 와스디를 청하여도 오지 아니하였다 하는 왕후의 행위의 소문이 모든 부녀에게 전파되면 저희도 그 남편을 멸시할 것인즉",
+      "source_text_hash": "126e3297e59a6c00ee3987a45a3e617a766ae4a9bf65f74a9be5523072ee4f6a",
+      "translation_text_hash": "5a40beb9eb290c627fa21586023ac5c9986d7a29d996159f8cf034b193d3246a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하수에로왕이 명하여 왕후 와스디를 청하여도 오지 아니하였다 하는 왕후의 행위의 소문이 모든 부녀에게 전파되면 저희도 그 남편을 멸시할 것인즉"
+      ],
+      "raw_text_hashes": [
+        "5a40beb9eb290c627fa21586023ac5c9986d7a29d996159f8cf034b193d3246a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:18",
+      "sequence": 12721,
+      "chapter_label": "EST 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "Today, the princesses of Persia and Media who have heard of the queen’s deed will tell all the king’s princes. This will cause much contempt and wrath.",
+      "ko": "오늘이라도 바사와 메대의 귀부인들이 왕후의 행위를 듣고 왕의 모든 방백에게 그렇게 말하리니 멸시와 분노가 많이 일어나리이다",
+      "source_text_hash": "33611b0ede641a35b154b5c0aafbd996c10a60d4ae39e76ff90b9229fdb652d6",
+      "translation_text_hash": "9719ce51042f6a2c5ae5e8d4e79585aacec2612dc44cb07973a5a8d58a5f3939",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘이라도 바사와 메대의 귀부인들이 왕후의 행위를 듣고 왕의 모든 방백에게 그렇게 말하리니 멸시와 분노가 많이 일어나리이다"
+      ],
+      "raw_text_hashes": [
+        "9719ce51042f6a2c5ae5e8d4e79585aacec2612dc44cb07973a5a8d58a5f3939"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:19",
+      "sequence": 12722,
+      "chapter_label": "EST 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "“If it pleases the king, let a royal commandment go from him, and let it be written among the laws of the Persians and the Medes, so that it cannot be altered, that Vashti may never again come before King Ahasuerus; and let the king give her royal estate to another who is better than she.",
+      "ko": "왕이 만일 선히 여기실찐대 와스디로 다시는 왕 앞에 오지 못하게 하는 조서를 내리되 바사와 메대의 법률 중에 기록하여 변역함이 없게 하고 그 왕후의 위를 저보다 나은 사람에게 주소서",
+      "source_text_hash": "c1afd3ebc0a9114da66f75ac6e675d1e851fe51e2aeee26bd2b38566bc1a1221",
+      "translation_text_hash": "86c7532007a76323b1a8545a2d5bfa27614af177bdef750195c139abcabd4789",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 만일 선히 여기실찐대 와스디로 다시는 왕 앞에 오지 못하게 하는 조서를 내리되 바사와 메대의 법률 중에 기록하여 변역함이 없게 하고 그 왕후의 위를 저보다 나은 사람에게 주소서"
+      ],
+      "raw_text_hashes": [
+        "86c7532007a76323b1a8545a2d5bfa27614af177bdef750195c139abcabd4789"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:20",
+      "sequence": 12723,
+      "chapter_label": "EST 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "When the king’s decree which he shall make is published throughout all his kingdom (for it is great), all the wives will give their husbands honor, both great and small.”",
+      "ko": "왕의 조서가 이 광대한 전국에 반포되면 귀천을 무론하고 모든 부녀가 그 남편을 존경하리이다",
+      "source_text_hash": "d7d2fa9bcd9ba96095dd4b671c54fd0ab414afa777d02c52b259aef609b6ea3e",
+      "translation_text_hash": "e35f523da8fcf23c6488d6c6131fbc386e490a8f2cfd99cd502da4241ca640ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 조서가 이 광대한 전국에 반포되면 귀천을 무론하고 모든 부녀가 그 남편을 존경하리이다"
+      ],
+      "raw_text_hashes": [
+        "e35f523da8fcf23c6488d6c6131fbc386e490a8f2cfd99cd502da4241ca640ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:21",
+      "sequence": 12724,
+      "chapter_label": "EST 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "This advice pleased the king and the princes, and the king did according to the word of Memucan:",
+      "ko": "왕과 방백들이 그 말을 선히 여긴지라 왕이 므무간의 말대로 행하여",
+      "source_text_hash": "f2fb01ad4d0cb241c57e4575ee19984edb85c98b98021fe5db41001015e9742e",
+      "translation_text_hash": "b5c6e562c6e6d593df7d83ab0222af866a4f3403546c0c44bf1a11b056c92c22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕과 방백들이 그 말을 선히 여긴지라 왕이 므무간의 말대로 행하여"
+      ],
+      "raw_text_hashes": [
+        "b5c6e562c6e6d593df7d83ab0222af866a4f3403546c0c44bf1a11b056c92c22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:1:22",
+      "sequence": 12725,
+      "chapter_label": "EST 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "EST",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "for he sent letters into all the king’s provinces, into every province according to its writing, and to every people in their language, that every man should rule his own house, speaking in the language of his own people.",
+      "ko": "각 도 각 백성의 문자와 방언대로 모든 도에 조서를 내려 이르기를 남편으로 그 집을 주관하게 하고 자기 민족의 방언대로 말하게 하라 하였더라",
+      "source_text_hash": "68fde80a25559895104a68bc677e4e2334c2a876cc8ac3969052693a71468643",
+      "translation_text_hash": "ebcf273b5429fe24357113b8c59c3b36d794d2f6bf8ae899d0ca218e8ecfc1ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 도 각 백성의 문자와 방언대로 모든 도에 조서를 내려 이르기를 남편으로 그 집을 주관하게 하고 자기 민족의 방언대로 말하게 하라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "ebcf273b5429fe24357113b8c59c3b36d794d2f6bf8ae899d0ca218e8ecfc1ac"
+      ]
+    }
+  ]
+}

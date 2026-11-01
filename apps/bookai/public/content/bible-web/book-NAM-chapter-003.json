@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NAM:chapter:003",
+  "unit_ordinal": 903,
+  "unit_label": "NAM 3",
+  "book_code": "NAM",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NAM:3:1",
+      "sequence": 22714,
+      "chapter_label": "NAM 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Woe to the bloody city! It is all full of lies and robbery—no end to the prey.",
+      "ko": "화 있을찐저 피 성이여 그 속에서는 궤휼과 강포가 가득하며 늑탈이 떠나지 아니하는도다",
+      "source_text_hash": "127595bdbad517097285335cbe04aa39a98c0a8ae8fb96d86a4db2f94ebdeb4f",
+      "translation_text_hash": "de33e5ad83c4772617a22a54ea36f2d54a8b05570c0b31312350740581a76ce7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 피 성이여 그 속에서는 궤휼과 강포가 가득하며 늑탈이 떠나지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "de33e5ad83c4772617a22a54ea36f2d54a8b05570c0b31312350740581a76ce7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:2",
+      "sequence": 22715,
+      "chapter_label": "NAM 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "The noise of the whip, the noise of the rattling of wheels, prancing horses, and bounding chariots,",
+      "ko": "휙휙하는 채찍 소리, 굉굉하는 병거바퀴 소리, 뛰는 말, 달리는 병거,",
+      "source_text_hash": "59281ab274d45bf13f1e35990b13499460ae9e876f278a97daba2c6ee2a95217",
+      "translation_text_hash": "9cad5533c44a5c590b5201bf8e7d1312253fbc4ae5215defb7dce8cabeab0e48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "휙휙하는 채찍 소리, 굉굉하는 병거바퀴 소리, 뛰는 말, 달리는 병거,"
+      ],
+      "raw_text_hashes": [
+        "9cad5533c44a5c590b5201bf8e7d1312253fbc4ae5215defb7dce8cabeab0e48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:3",
+      "sequence": 22716,
+      "chapter_label": "NAM 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "the horseman charging, and the flashing sword, the glittering spear, and a multitude of slain, and a great heap of corpses, and there is no end of the bodies. They stumble on their bodies",
+      "ko": "충돌하는 기병, 번쩍이는 칼, 번개 같은 창, 살륙 당한 떼, 큰 무더기 주검, 무수한 시체여 사람이 그 시체에 걸려 넘어지니",
+      "source_text_hash": "cd938d747e49ba8e93609b8134c6956a079d95b38898faf9fa103566d7abd8a5",
+      "translation_text_hash": "d92c1b897c02319b8bed8ff79c9c4f3f60e8dadbb4215c61c4538afa71324706",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "충돌하는 기병, 번쩍이는 칼, 번개 같은 창, 살륙 당한 떼, 큰 무더기 주검, 무수한 시체여 사람이 그 시체에 걸려 넘어지니"
+      ],
+      "raw_text_hashes": [
+        "d92c1b897c02319b8bed8ff79c9c4f3f60e8dadbb4215c61c4538afa71324706"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:4",
+      "sequence": 22717,
+      "chapter_label": "NAM 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "because of the multitude of the prostitution of the alluring prostitute, the mistress of witchcraft, who sells nations through her prostitution, and families through her witchcraft.",
+      "ko": "이는 마술의 주인된 아리따운 기생이 음행을 많이 함을 인함이라 그가 그 음행으로 열국을 미혹하고 그 마술로 여러 족속을 미혹하느니라",
+      "source_text_hash": "8e862b2f8614a5ef1f7f7bc0b9b7184f8c8bda062b16ce28433cf0ab0771b695",
+      "translation_text_hash": "ee9ceb8e679701b5f7777dc7da58ee0f37998e4dabf790dc706b94e0205c6581",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 마술의 주인된 아리따운 기생이 음행을 많이 함을 인함이라 그가 그 음행으로 열국을 미혹하고 그 마술로 여러 족속을 미혹하느니라"
+      ],
+      "raw_text_hashes": [
+        "ee9ceb8e679701b5f7777dc7da58ee0f37998e4dabf790dc706b94e0205c6581"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:5",
+      "sequence": 22718,
+      "chapter_label": "NAM 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "“Behold, I am against you,” says the LORD of Armies, “and I will lift your skirts over your face. I will show the nations your nakedness, and the kingdoms your shame.",
+      "ko": "만군의 여호와의 말씀에 내가 네 대적이 되어서 네 치마를 걷어쳐 네 얼굴에 이르게 하고 네 벌거벗은 것을 열국에 보이며 네 부끄러운 곳을 열방에 보일 것이요",
+      "source_text_hash": "60b1b7f6019ac3a95018adc84ee10316e3ca7811f0fd585693c595c29044b426",
+      "translation_text_hash": "cb1a7df7da19e9015929607fa7aca7f22c95a0371774412f1e3a07d6da4e4533",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와의 말씀에 내가 네 대적이 되어서 네 치마를 걷어쳐 네 얼굴에 이르게 하고 네 벌거벗은 것을 열국에 보이며 네 부끄러운 곳을 열방에 보일 것이요"
+      ],
+      "raw_text_hashes": [
+        "cb1a7df7da19e9015929607fa7aca7f22c95a0371774412f1e3a07d6da4e4533"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:6",
+      "sequence": 22719,
+      "chapter_label": "NAM 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "I will throw abominable filth on you and make you vile, and will make you a spectacle.",
+      "ko": "내가 또 가증하고 더러운 것을 네 위에 던져 능욕하여 너로 구경거리가 되게 하리니",
+      "source_text_hash": "a635078c4dd88fbfa3ab303d9575f9040f47e4ccdf542af0442495add6960dc9",
+      "translation_text_hash": "d3d84eb4a33dccf1e13bfc7626d28cd293c459bd39401d2db564f38c328dd28a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 가증하고 더러운 것을 네 위에 던져 능욕하여 너로 구경거리가 되게 하리니"
+      ],
+      "raw_text_hashes": [
+        "d3d84eb4a33dccf1e13bfc7626d28cd293c459bd39401d2db564f38c328dd28a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:7",
+      "sequence": 22720,
+      "chapter_label": "NAM 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "It will happen that all those who look at you will flee from you, and say, ‘Nineveh is laid waste! Who will mourn for her?’ Where will I seek comforters for you?”",
+      "ko": "그 때에 너를 보는 자가 다 네게서 도망하며 이르기를 니느웨가 황무하였도다 누가 위하여 애곡하며 내가 어디서 너를 위로할 자를 구하리요 하리라 하시도다",
+      "source_text_hash": "a232ceb687b57dc7205f5e480c1160ae475381dc81ad5e198bb1afd5e2179ede",
+      "translation_text_hash": "85e68f539f59382227e502944fca33bd68ae4896cc5b68df31203c8183a1ca62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 너를 보는 자가 다 네게서 도망하며 이르기를 니느웨가 황무하였도다 누가 위하여 애곡하며 내가 어디서 너를 위로할 자를 구하리요 하리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "85e68f539f59382227e502944fca33bd68ae4896cc5b68df31203c8183a1ca62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:8",
+      "sequence": 22721,
+      "chapter_label": "NAM 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Are you better than No-Amon, who was situated among the rivers, who had the waters around her, whose rampart was the sea, and her wall was of the sea?",
+      "ko": "네가 어찌 노아몬보다 낫겠느냐 그는 강들 사이에 있으므로 물이 둘렸으니 바다가 성루가 되었고 바다가 성벽이 되었으며",
+      "source_text_hash": "b3f933e8bb42bf1e78ea74c38952455883ca0915912baec57a98f8b2777064d3",
+      "translation_text_hash": "bec22459a1fac56ac4b2d7b72046e6750560c67b4f0a07b6f1950ff6b0259ce0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌 노아몬보다 낫겠느냐 그는 강들 사이에 있으므로 물이 둘렸으니 바다가 성루가 되었고 바다가 성벽이 되었으며"
+      ],
+      "raw_text_hashes": [
+        "bec22459a1fac56ac4b2d7b72046e6750560c67b4f0a07b6f1950ff6b0259ce0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:9",
+      "sequence": 22722,
+      "chapter_label": "NAM 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Cush and Egypt were her boundless strength. Put and Libya were her helpers.",
+      "ko": "구스와 애굽이 그 힘이 되어 한이 없었고 붓과 루빔이 그의 돕는 자가 되었으나",
+      "source_text_hash": "e75c429b103b3ce9b6a2c7b7cd28a109957324c94dca7282633899131c33dffb",
+      "translation_text_hash": "f7bdd323675befca8907e6fc818a92e91cc75db70ad258f48f10ea2cee14ac38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구스와 애굽이 그 힘이 되어 한이 없었고 붓과 루빔이 그의 돕는 자가 되었으나"
+      ],
+      "raw_text_hashes": [
+        "f7bdd323675befca8907e6fc818a92e91cc75db70ad258f48f10ea2cee14ac38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:10",
+      "sequence": 22723,
+      "chapter_label": "NAM 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Yet was she carried away. She went into captivity. Her young children also were dashed in pieces at the head of all the streets, and they cast lots for her honorable men, and all her great men were bound in chains.",
+      "ko": "그가 포로가 되어 사로잡혀 갔고 그 어린 아이들은 길 모퉁이 모퉁이에 메어침을 당하여 부서졌으며 그 존귀한 자들은 제비 뽑혀 나뉘었고 그 모든 대인은 사슬에 결박되었나니",
+      "source_text_hash": "763af1ca90c8034ea8df1e1d9025dd8121f75615f5b8a30648fbf4f63453d1ae",
+      "translation_text_hash": "bfa8a903559249e284cf3a05efedee627f733040fdf4595161615378ba4038a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 포로가 되어 사로잡혀 갔고 그 어린 아이들은 길 모퉁이 모퉁이에 메어침을 당하여 부서졌으며 그 존귀한 자들은 제비 뽑혀 나뉘었고 그 모든 대인은 사슬에 결박되었나니"
+      ],
+      "raw_text_hashes": [
+        "bfa8a903559249e284cf3a05efedee627f733040fdf4595161615378ba4038a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:11",
+      "sequence": 22724,
+      "chapter_label": "NAM 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "You also will be drunken. You will be hidden. You also will seek a stronghold because of the enemy.",
+      "ko": "너도 취한바 되어 숨으리라 너도 대적을 인하여 피난처를 찾아보리라",
+      "source_text_hash": "a6dd12e01f4896bc611b55f908838d7e18bf07c20ca6bacd45ffe1c7e81387df",
+      "translation_text_hash": "67d16c97755bc7382a5195d74ce78aa29f167c17a8b4ff6c8fba633cccf22886",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너도 취한바 되어 숨으리라 너도 대적을 인하여 피난처를 찾아보리라"
+      ],
+      "raw_text_hashes": [
+        "67d16c97755bc7382a5195d74ce78aa29f167c17a8b4ff6c8fba633cccf22886"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:12",
+      "sequence": 22725,
+      "chapter_label": "NAM 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "All your fortresses will be like fig trees with the first-ripe figs. If they are shaken, they fall into the mouth of the eater.",
+      "ko": "너의 모든 산성은 무화과나무의 처음 익은 열매가 흔들기만 하면 먹는 자의 입에 떨어짐과 같으리라",
+      "source_text_hash": "5607bc9c23df560ae4aae51c7883080b65be44886a1eba7652b58a71ed2cb3b4",
+      "translation_text_hash": "e633bcaa163053145977af10bc110b3fc572c06d0608d0dbc51c47d94d91c135",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 모든 산성은 무화과나무의 처음 익은 열매가 흔들기만 하면 먹는 자의 입에 떨어짐과 같으리라"
+      ],
+      "raw_text_hashes": [
+        "e633bcaa163053145977af10bc110b3fc572c06d0608d0dbc51c47d94d91c135"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:13",
+      "sequence": 22726,
+      "chapter_label": "NAM 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Behold, your troops among you are women. The gates of your land are set wide open to your enemies. The fire has devoured your bars.",
+      "ko": "너의 중 장정들은 여인 같고 너의 땅의 성문들은 너의 대적 앞에 넓게 열리고 빗장들은 불에 타도다",
+      "source_text_hash": "ff802088bf1a687904bb41827a41613461a130681c420e18114ed1378462efd6",
+      "translation_text_hash": "d1303e8bd8961d05741fea579767994fdb6e9988e6c6c7cb7bc1f35186db4355",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 중 장정들은 여인 같고 너의 땅의 성문들은 너의 대적 앞에 넓게 열리고 빗장들은 불에 타도다"
+      ],
+      "raw_text_hashes": [
+        "d1303e8bd8961d05741fea579767994fdb6e9988e6c6c7cb7bc1f35186db4355"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:14",
+      "sequence": 22727,
+      "chapter_label": "NAM 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "Draw water for the siege. Strengthen your fortresses. Go into the clay, and tread the mortar. Make the brick kiln strong.",
+      "ko": "너는 물을 길어 에워싸일 것을 예비하며 너의 산성들을 견고케 하며 진흙에 들어가서 흙을 밟아 벽돌 가마를 수리하라",
+      "source_text_hash": "39b968a16217579b2d6429a2823bd89f74c6c2bc9dc53d5ed8f5354bf03f1efc",
+      "translation_text_hash": "8a7708bc141b53ab4f33c5623160723b47bcca4d0a9a34d9fd0e63d1352fadf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 물을 길어 에워싸일 것을 예비하며 너의 산성들을 견고케 하며 진흙에 들어가서 흙을 밟아 벽돌 가마를 수리하라"
+      ],
+      "raw_text_hashes": [
+        "8a7708bc141b53ab4f33c5623160723b47bcca4d0a9a34d9fd0e63d1352fadf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:15",
+      "sequence": 22728,
+      "chapter_label": "NAM 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "There the fire will devour you. The sword will cut you off. It will devour you like the grasshopper. Multiply like grasshoppers. Multiply like the locust.",
+      "ko": "거기서 불이 너를 삼키며 칼이 너를 베기를 늣의 먹는 것 같이 하리라 네가 늣 같이 스스로 많게 할찌어다 네가 메뚜기 같이 스스로 많게 할찌어다",
+      "source_text_hash": "df420865897f1a8efa6ad1418c3eb4f8c2834b58f9611b8eb944600ce0d86cb4",
+      "translation_text_hash": "fe76619d89971c9c27ba641bca197a9dd48258cc74d5810cbd22a7d73316e9f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 불이 너를 삼키며 칼이 너를 베기를 늣의 먹는 것 같이 하리라 네가 늣 같이 스스로 많게 할찌어다 네가 메뚜기 같이 스스로 많게 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "fe76619d89971c9c27ba641bca197a9dd48258cc74d5810cbd22a7d73316e9f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:16",
+      "sequence": 22729,
+      "chapter_label": "NAM 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "You have increased your merchants more than the stars of the skies. The grasshopper strips and flees away.",
+      "ko": "네가 네 상고를 하늘의 별보다 많게 하였으나 황충이 날개를 펴서 날아감과 같고",
+      "source_text_hash": "bde071906917ecf953c5bf16791b848b7b7ab9195909bc12e36ac22bb7a15dd8",
+      "translation_text_hash": "96cdf490cdbc3b7cec58873bf90438708da90d394b5fbcdc659d11824b1212d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 상고를 하늘의 별보다 많게 하였으나 황충이 날개를 펴서 날아감과 같고"
+      ],
+      "raw_text_hashes": [
+        "96cdf490cdbc3b7cec58873bf90438708da90d394b5fbcdc659d11824b1212d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:17",
+      "sequence": 22730,
+      "chapter_label": "NAM 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "Your guards are like the locusts, and your officials like the swarms of locusts, which settle on the walls on a cold day, but when the sun appears, they flee away, and their place is not known where they are.",
+      "ko": "너의 방백은 메뚜기 같고 너의 대장은 큰 메뚜기 떼가 추운 날에는 울타리에 깃들였다가 해가 뜨면 날아감과 같으니 그 있는 곳을 알 수 없도다",
+      "source_text_hash": "85dd696e347538f463637a9b7592528890fe3223979f19196d0fe46207bd29b2",
+      "translation_text_hash": "85924e40601760c87b470b7da06bed1a5b60262cd4030d8b3e9b339dcead78cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 방백은 메뚜기 같고 너의 대장은 큰 메뚜기 떼가 추운 날에는 울타리에 깃들였다가 해가 뜨면 날아감과 같으니 그 있는 곳을 알 수 없도다"
+      ],
+      "raw_text_hashes": [
+        "85924e40601760c87b470b7da06bed1a5b60262cd4030d8b3e9b339dcead78cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:18",
+      "sequence": 22731,
+      "chapter_label": "NAM 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Your shepherds slumber, king of Assyria. Your nobles lie down. Your people are scattered on the mountains, and there is no one to gather them.",
+      "ko": "앗수르 왕이여 네 목자가 자고 네 귀족은 누워 쉬며 네 백성은 산들에 흩어지나 그들을 모을 사람이 없도다",
+      "source_text_hash": "8b572b4e363c74e1a9edf26f017f4e8ee540e3e8478bfe5ccdb524823aac64eb",
+      "translation_text_hash": "c4465e8f073fc395d393bab5c30edce015bef12b75765c4bf415b01e2149e49a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕이여 네 목자가 자고 네 귀족은 누워 쉬며 네 백성은 산들에 흩어지나 그들을 모을 사람이 없도다"
+      ],
+      "raw_text_hashes": [
+        "c4465e8f073fc395d393bab5c30edce015bef12b75765c4bf415b01e2149e49a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:3:19",
+      "sequence": 22732,
+      "chapter_label": "NAM 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "NAM",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "There is no healing your wound, for your injury is fatal. All who hear the report of you clap their hands over you, for who hasn’t felt your endless cruelty?",
+      "ko": "너의 다친 것은 고칠 수 없고 네 상처는 중하도다 네 소식을 듣는 자가 다 너를 인하여 손뼉을 치나니 이는 네 악행을 늘 받지 않은 자가 없음이 아니냐",
+      "source_text_hash": "5073414aab7e7689b4f790d9f6a6530425702c79863c58986be5a9bfc91f1916",
+      "translation_text_hash": "dff0027f726bff488a85bbb578cf4557fcf1fae7486de84107a816a0ff4ded96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 다친 것은 고칠 수 없고 네 상처는 중하도다 네 소식을 듣는 자가 다 너를 인하여 손뼉을 치나니 이는 네 악행을 늘 받지 않은 자가 없음이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "dff0027f726bff488a85bbb578cf4557fcf1fae7486de84107a816a0ff4ded96"
+      ]
+    }
+  ]
+}

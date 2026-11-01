@@ -1,0 +1,22 @@
+
+/* ===== StoryMemory v3.2.9 — Library Reading State ===== */
+.library-order-control{position:absolute;right:28px;top:116px;z-index:38;display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid rgba(255,255,255,.13);background:rgba(20,17,14,.48);backdrop-filter:blur(12px);border-radius:999px;font-family:Arial,sans-serif;letter-spacing:.08em}
+.library-order-control small{font-size:8px;color:rgba(255,255,255,.48);white-space:nowrap}
+.library-order-toggle{border:0;background:transparent;color:rgba(255,255,255,.76);font-size:9px;letter-spacing:.08em;cursor:pointer;padding:4px 8px;border-radius:999px}
+.library-order-toggle:hover,.library-order-toggle:focus-visible{background:rgba(255,255,255,.08);outline:none}
+.library-order-toggle b{color:#f1d294;font-weight:600}
+.library-reading-summary{font-size:8px;color:rgba(255,255,255,.54);white-space:nowrap}
+.book-rig .book-reading-state{position:absolute;right:-9px;top:-20px;z-index:14;min-width:58px;padding:5px 6px 6px;border-radius:7px;border:1px solid rgba(255,255,255,.14);background:rgba(18,15,12,.78);box-shadow:0 7px 22px rgba(0,0,0,.18);font-family:Arial,sans-serif;pointer-events:none;opacity:.78;transform:translateZ(4px)}
+.book-rig.selected .book-reading-state{opacity:1;right:-14px;top:-23px}
+.book-reading-state .brs-top{display:flex;align-items:center;justify-content:space-between;gap:5px}
+.book-reading-state b{font-size:9px;color:#f4e4c6;font-weight:600;letter-spacing:.04em}
+.book-reading-state small{font-size:6px;color:rgba(255,255,255,.5);letter-spacing:.09em}
+.book-reading-state i{display:block;height:1px;background:rgba(255,255,255,.14);margin-top:4px;overflow:hidden}
+.book-reading-state i em{display:block;height:100%;background:currentColor;color:#d9bb80}
+.book-reading-state[data-state="new"]{opacity:.34}
+.book-reading-state[data-state="complete"] b{color:#dbe3c8}
+.book-reading-state[data-state="complete"] i em{color:#b8c88c}
+.book-reading-state[data-state="reading"] i em{color:#dfbd82}
+.marker[data-reading-state="reading"]::after,.marker[data-reading-state="complete"]::after{content:"";position:absolute;width:3px;height:3px;border-radius:50%;background:#d5b774;transform:translate(-1px,-6px)}
+.marker[data-reading-state="complete"]::after{background:#aebd84}
+@media(max-width:760px){.library-order-control{right:12px;top:104px;transform:scale(.9);transform-origin:right top}.library-reading-summary{display:none}.book-rig .book-reading-state{display:none}}

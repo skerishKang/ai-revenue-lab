@@ -122,11 +122,11 @@ main() {
   run_deploy "$requested"
 }
 
-# Which services a changed path belongs to. `packages/` is shared, and Chat is
-# the only COM2 service that imports it.
+# Which services a changed path belongs to. Shared P01 dependencies are also
+# checked against its live release by p01_matches_target below.
 service_for_path() {
   case "$1" in
-    apps/padiem-chat/*|packages/*|deploy/host-com2/chat/*) echo chat ;;
+    apps/padiem-chat/*|apps/padiem-council-apps/static/*|packages/*|deploy/host-com2/chat/*) echo chat ;;
     apps/padiem-ai-engine/*|deploy/host-com2/p01/*) echo p01 ;;
     apps/korean-ai-platform/*|deploy/host-com2/b14/*) echo b14 ;;
   esac
@@ -204,7 +204,7 @@ p01_matches_target() {
   actual=$(readlink -f -- "$p01_root/app") || return 1
   [[ -d $actual ]] || return 1
   temp=$(mktemp -d) || return 1
-  if ! "$git_bin" -C "$ops_checkout" archive "$resolved" apps/padiem-ai-engine | tar -x -C "$temp"; then
+  if ! "$git_bin" -C "$ops_checkout" archive "$resolved" apps/padiem-ai-engine packages/padiem-ai-core/padiem_ai_core packages/padiem-control-plane/padiem_control_plane apps/korean-ai-code-agent/src/kagent | tar -x -C "$temp"; then
     rm -rf -- "$temp"
     return 1
   fi
@@ -215,6 +215,15 @@ p01_matches_target() {
       break
     fi
   done
+  if (( result == 0 )); then
+    for item in packages/padiem-ai-core/padiem_ai_core packages/padiem-control-plane/padiem_control_plane apps/korean-ai-code-agent/src/kagent; do
+      if ! diff -qr --exclude=__pycache__ --exclude='*.pyc' \
+          "$temp/$item" "$actual/$(basename "$item")" >/dev/null 2>&1; then
+        result=1
+        break
+      fi
+    done
+  fi
   rm -rf -- "$temp"
   return "$result"
 }

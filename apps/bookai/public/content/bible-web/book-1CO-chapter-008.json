@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:008",
+  "unit_ordinal": 1070,
+  "unit_label": "1CO 8",
+  "book_code": "1CO",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:8:1",
+      "sequence": 28525,
+      "chapter_label": "1CO 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Now concerning things sacrificed to idols: We know that we all have knowledge. Knowledge puffs up, but love builds up.",
+      "ko": "우상의 제물에 대하여는 우리가 다 지식이 있는 줄을 아나 지식은 교만하게 하며 사랑은 덕을 세우나니",
+      "source_text_hash": "814041701e44f92a94795205c3a3a6917133f16fa97bddbf6ff936d80c3e6b3d",
+      "translation_text_hash": "f051a31e8bf85d3b3981f55b29bb594e2f21144febbdf5045a0328575b223206",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우상의 제물에 대하여는 우리가 다 지식이 있는 줄을 아나 지식은 교만하게 하며 사랑은 덕을 세우나니"
+      ],
+      "raw_text_hashes": [
+        "f051a31e8bf85d3b3981f55b29bb594e2f21144febbdf5045a0328575b223206"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:2",
+      "sequence": 28526,
+      "chapter_label": "1CO 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "But if anyone thinks that he knows anything, he doesn’t yet know as he ought to know.",
+      "ko": "만일 누구든지 무엇을 아는 줄로 생각하면 아직도 마땅히 알 것을 알지 못하는 것이요",
+      "source_text_hash": "df834181deb8dd65691cad33c76278394d83df3eb831148d4d8f3fad8d5f919a",
+      "translation_text_hash": "045ac65d26d0f3ab15f5c2a5521ccee1cf853ccc0d32fa5e379bff797b9a6be9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 무엇을 아는 줄로 생각하면 아직도 마땅히 알 것을 알지 못하는 것이요"
+      ],
+      "raw_text_hashes": [
+        "045ac65d26d0f3ab15f5c2a5521ccee1cf853ccc0d32fa5e379bff797b9a6be9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:3",
+      "sequence": 28527,
+      "chapter_label": "1CO 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "But anyone who loves God is known by him.",
+      "ko": "또 누구든지 하나님을 사랑하면 이 사람은 하나님의 아시는바 되었느니라",
+      "source_text_hash": "bc4b5d4ce6f40a5b1eb9e61f36b39b0ac0f88fa424c3418fb89e1b5cdd3b7d7e",
+      "translation_text_hash": "6e25a45fd92d552be23b2f70b30dd67b9b2b5aa7d02b72681ba6f2e3077c9833",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 누구든지 하나님을 사랑하면 이 사람은 하나님의 아시는바 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "6e25a45fd92d552be23b2f70b30dd67b9b2b5aa7d02b72681ba6f2e3077c9833"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:4",
+      "sequence": 28528,
+      "chapter_label": "1CO 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Therefore concerning the eating of things sacrificed to idols, we know that no idol is anything in the world, and that there is no other God but one.",
+      "ko": "그러므로 우상의 제물 먹는 일에 대하여는 우리가 우상은 세상에 아무 것도 아니며 또한 하나님은 한분 밖에 없는줄 아노라",
+      "source_text_hash": "5d9bb9d2b7a3b62ca87bc1dc40b517f8894341fd48011fd1b349e67ff7ca87f7",
+      "translation_text_hash": "ed3cdf23bf30e8b171c17a2ff1a381f99253535d7ce130ec2efd08c931dbf8bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우상의 제물 먹는 일에 대하여는 우리가 우상은 세상에 아무 것도 아니며 또한 하나님은 한분 밖에 없는줄 아노라"
+      ],
+      "raw_text_hashes": [
+        "ed3cdf23bf30e8b171c17a2ff1a381f99253535d7ce130ec2efd08c931dbf8bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:5",
+      "sequence": 28529,
+      "chapter_label": "1CO 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "For though there are things that are called “gods”, whether in the heavens or on earth—as there are many “gods” and many “lords”—",
+      "ko": "비록 하늘에나 땅에나 신이라 칭하는 자가 있어 많은 신과 많은 주가 있으나",
+      "source_text_hash": "91117e818f7e6f687e4df3d64ad1932824c24f2163612da6f145b5e1bb197b57",
+      "translation_text_hash": "cafdbb34374f1933d418347af2b84925087b821df1d9b65a1777e87e4f42a0e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비록 하늘에나 땅에나 신이라 칭하는 자가 있어 많은 신과 많은 주가 있으나"
+      ],
+      "raw_text_hashes": [
+        "cafdbb34374f1933d418347af2b84925087b821df1d9b65a1777e87e4f42a0e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:6",
+      "sequence": 28530,
+      "chapter_label": "1CO 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "yet to us there is one God, the Father, of whom are all things, and we for him; and one Lord, Jesus Christ, through whom are all things, and we live through him.",
+      "ko": "그러나 우리에게는 한 하나님 곧 아버지가 계시니 만물이 그에게서 났고 우리도 그를 위하며 또한 한 주 예수 그리스도께서 계시니 만물이 그로 말미암고 우리도 그로 말미암았느니라",
+      "source_text_hash": "7bc8982e5c835cd908cffb2af5ea32374106d3988f90e405f28b7791b2251886",
+      "translation_text_hash": "29ae023e9030d382a13548b02cd0142fddab9264cd1954edf2f4a365fb295a34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리에게는 한 하나님 곧 아버지가 계시니 만물이 그에게서 났고 우리도 그를 위하며 또한 한 주 예수 그리스도께서 계시니 만물이 그로 말미암고 우리도 그로 말미암았느니라"
+      ],
+      "raw_text_hashes": [
+        "29ae023e9030d382a13548b02cd0142fddab9264cd1954edf2f4a365fb295a34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:7",
+      "sequence": 28531,
+      "chapter_label": "1CO 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "However, that knowledge isn’t in all men. But some, with consciousness of an idol until now, eat as of a thing sacrificed to an idol, and their conscience, being weak, is defiled.",
+      "ko": "그러나 이 지식은 사람마다 가지지 못하여 어떤이들은 지금까지 우상에 대한 습관이 있어 우상의 제물로 알고 먹는고로 그들의 양심이 약하여지고 더러워지느니라",
+      "source_text_hash": "f5c7cc4196352ae08a9c5ab9ad06f1d18c8cc32361a6a3803ca38e181c1b72f2",
+      "translation_text_hash": "f528dcb0f977c5e15784512e713a180026d54cdf4101f61adf4c902e8241c8f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이 지식은 사람마다 가지지 못하여 어떤이들은 지금까지 우상에 대한 습관이 있어 우상의 제물로 알고 먹는고로 그들의 양심이 약하여지고 더러워지느니라"
+      ],
+      "raw_text_hashes": [
+        "f528dcb0f977c5e15784512e713a180026d54cdf4101f61adf4c902e8241c8f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:8",
+      "sequence": 28532,
+      "chapter_label": "1CO 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "But food will not commend us to God. For neither, if we don’t eat are we the worse, nor if we eat are we the better.",
+      "ko": "식물은 우리를 하나님 앞에 세우지 못하나니 우리가 먹지 아니하여도 부족함이 없고 먹어도 풍성함이 없으리라",
+      "source_text_hash": "13b95e2c1426be44b03cdae9603f96a2e29e1cbbdf6545397bb0b9eda0f8c8f9",
+      "translation_text_hash": "5b75fd0c38caffe160fba949780e7654d489cd7e3e9229fed0ba72d63a8ef2e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "식물은 우리를 하나님 앞에 세우지 못하나니 우리가 먹지 아니하여도 부족함이 없고 먹어도 풍성함이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "5b75fd0c38caffe160fba949780e7654d489cd7e3e9229fed0ba72d63a8ef2e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:9",
+      "sequence": 28533,
+      "chapter_label": "1CO 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "But be careful that by no means does this liberty of yours become a stumbling block to the weak.",
+      "ko": "그런즉 너희 자유함이 약한 자들에게 거치는 것이 되지 않도록 조심하라",
+      "source_text_hash": "acd6a2fc02e7752dd89a57294c03beacc613ba42b312f51e74ab47134ec83728",
+      "translation_text_hash": "b338d0ebd8e9167598f471b91a80b2477872601c8e1e6df406b4e5cc9d33939f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희 자유함이 약한 자들에게 거치는 것이 되지 않도록 조심하라"
+      ],
+      "raw_text_hashes": [
+        "b338d0ebd8e9167598f471b91a80b2477872601c8e1e6df406b4e5cc9d33939f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:10",
+      "sequence": 28534,
+      "chapter_label": "1CO 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "For if a man sees you who have knowledge sitting in an idol’s temple, won’t his conscience, if he is weak, be emboldened to eat things sacrificed to idols?",
+      "ko": "지식 있는 네가 우상의 집에 앉아 먹는 것을 누구든지 보면 그 약한 자들의 양심이 담력을 얻어 어찌 우상의 제물을 먹게 되지 않겠느냐",
+      "source_text_hash": "e7cfd5087ed27d3708096fc006ea6f475750702f67a098624f2cf91d8af325f3",
+      "translation_text_hash": "53ce02f4b65346d7898e66b847382acd9db39cf31ea4a3ed6deb6ff8fb297d9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지식 있는 네가 우상의 집에 앉아 먹는 것을 누구든지 보면 그 약한 자들의 양심이 담력을 얻어 어찌 우상의 제물을 먹게 되지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "53ce02f4b65346d7898e66b847382acd9db39cf31ea4a3ed6deb6ff8fb297d9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:11",
+      "sequence": 28535,
+      "chapter_label": "1CO 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "And through your knowledge, he who is weak perishes, the brother for whose sake Christ died.",
+      "ko": "그러면 네 지식으로 그 약한 자가 멸망하나니 그는 그리스도께서 위하여 죽으신 형제라",
+      "source_text_hash": "d8414b74396f1de26690e5449f3e0222c1941ad7ad3631dc0eae0c9225cccf86",
+      "translation_text_hash": "fd0cce2a2da22b2637e8e290968c1368879473c4aff92234f913094fc2042a3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 네 지식으로 그 약한 자가 멸망하나니 그는 그리스도께서 위하여 죽으신 형제라"
+      ],
+      "raw_text_hashes": [
+        "fd0cce2a2da22b2637e8e290968c1368879473c4aff92234f913094fc2042a3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:12",
+      "sequence": 28536,
+      "chapter_label": "1CO 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Thus, sinning against the brothers, and wounding their conscience when it is weak, you sin against Christ.",
+      "ko": "이같이 너희가 형제에게 죄를 지어 그 약한 양심을 상하게 하는 것이 곧 그리스도에게 죄를 짓는 것이니라",
+      "source_text_hash": "649c115201ac5a69208433a7f3df5ad1c89d53bc1532e5aafea7b11e845e4d6c",
+      "translation_text_hash": "7275dc81f5bb30ddb4496f6eddfb81107ba54c0804484c5026a8d57bb97ac625",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 너희가 형제에게 죄를 지어 그 약한 양심을 상하게 하는 것이 곧 그리스도에게 죄를 짓는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "7275dc81f5bb30ddb4496f6eddfb81107ba54c0804484c5026a8d57bb97ac625"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:8:13",
+      "sequence": 28537,
+      "chapter_label": "1CO 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore, if food causes my brother to stumble, I will eat no meat forever more, that I don’t cause my brother to stumble.",
+      "ko": "그러므로 만일 식물이 내 형제로 실족케 하면 나는 영원히 고기를 먹지 아니하여 내 형제를 실족치 않게 하리라",
+      "source_text_hash": "f4833ba63c20dc485a0f9cf11634a3b2702771208f138ca495ccbd215ae956d8",
+      "translation_text_hash": "96ba71416dd2f89aec220c167efc1e4822efc251ee2aaec02a340f39a741e38d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 만일 식물이 내 형제로 실족케 하면 나는 영원히 고기를 먹지 아니하여 내 형제를 실족치 않게 하리라"
+      ],
+      "raw_text_hashes": [
+        "96ba71416dd2f89aec220c167efc1e4822efc251ee2aaec02a340f39a741e38d"
+      ]
+    }
+  ]
+}

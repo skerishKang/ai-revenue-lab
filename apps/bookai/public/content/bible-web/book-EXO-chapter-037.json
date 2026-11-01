@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:037",
+  "unit_ordinal": 87,
+  "unit_label": "EXO 37",
+  "book_code": "EXO",
+  "chapter_number": 37,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:37:1",
+      "sequence": 2606,
+      "chapter_label": "EXO 37",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 1
+        }
+      ],
+      "en": "Bezalel made the ark of acacia wood. Its length was two and a half cubits, and its width a cubit and a half, and a cubit and a half its height.",
+      "ko": "브살렐이 조각목으로 궤를 만들었으니 장이 이 규빗 반, 광이 일 규빗 반, 고가 일 규빗 반이며",
+      "source_text_hash": "5ad3d5c7bc17a759baaaf31f83ea3683c28bee7a0e7bb789ec3bd881c12f3d91",
+      "translation_text_hash": "1c923a6037a528ec0ef8f8c95dc34e5ff11b7d09081f2558bb251c8aa3d69444",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브살렐이 조각목으로 궤를 만들었으니 장이 이 규빗 반, 광이 일 규빗 반, 고가 일 규빗 반이며"
+      ],
+      "raw_text_hashes": [
+        "1c923a6037a528ec0ef8f8c95dc34e5ff11b7d09081f2558bb251c8aa3d69444"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:2",
+      "sequence": 2607,
+      "chapter_label": "EXO 37",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 2
+        }
+      ],
+      "en": "He overlaid it with pure gold inside and outside, and made a molding of gold for it around it.",
+      "ko": "정금으로 안팎을 싸고 윗가로 돌아가며 금테를 만들었으며",
+      "source_text_hash": "52275dd50671e9cdb0a8aadcdc96cf3522ae974c46dd755d0facd75a7e66de9e",
+      "translation_text_hash": "fa41fdef636503f3fd63fb005ef03c01f47b15e426c97fb2a63f7ca6c8ce37cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정금으로 안팎을 싸고 윗가로 돌아가며 금테를 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "fa41fdef636503f3fd63fb005ef03c01f47b15e426c97fb2a63f7ca6c8ce37cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:3",
+      "sequence": 2608,
+      "chapter_label": "EXO 37",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 3
+        }
+      ],
+      "en": "He cast four rings of gold for it in its four feet—two rings on its one side, and two rings on its other side.",
+      "ko": "금고리 넷을 부어 만들어 네 발에 달았으니 곧 이편에 두 고리요 저편에 두 고리며",
+      "source_text_hash": "fbe42df95f6340ed423a58f537213b8a092cf96203f033575da53b0e4bc71d3c",
+      "translation_text_hash": "3b768f2509c65b1b99bcb11c026b91999226fdfb2bdfc21a502934339e8d08f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금고리 넷을 부어 만들어 네 발에 달았으니 곧 이편에 두 고리요 저편에 두 고리며"
+      ],
+      "raw_text_hashes": [
+        "3b768f2509c65b1b99bcb11c026b91999226fdfb2bdfc21a502934339e8d08f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:4",
+      "sequence": 2609,
+      "chapter_label": "EXO 37",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 4
+        }
+      ],
+      "en": "He made poles of acacia wood and overlaid them with gold.",
+      "ko": "조각목으로 채를 만들어 금으로 싸고",
+      "source_text_hash": "edff2cbf3c70e55ce4783211268bd4dc79b5702b75cacb08774bd8334a9e3276",
+      "translation_text_hash": "3ea8a7a7fe8ffe50673a6fc83b34c50e6fa94bdb15552a0982214212497c8894",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조각목으로 채를 만들어 금으로 싸고"
+      ],
+      "raw_text_hashes": [
+        "3ea8a7a7fe8ffe50673a6fc83b34c50e6fa94bdb15552a0982214212497c8894"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:5",
+      "sequence": 2610,
+      "chapter_label": "EXO 37",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 5
+        }
+      ],
+      "en": "He put the poles into the rings on the sides of the ark, to bear the ark.",
+      "ko": "그 채를 궤 양편 고리에 꿰어 궤를 메게 하였으며",
+      "source_text_hash": "aafd6ffb7562bdfbd2014fedd8589b41637b70b797e51182f43b27ed413a4bfd",
+      "translation_text_hash": "f66f2e3c9be626c8c4a3d13ac9544fd296e71e9bc0019e69368a5acd2bc415e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 채를 궤 양편 고리에 꿰어 궤를 메게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "f66f2e3c9be626c8c4a3d13ac9544fd296e71e9bc0019e69368a5acd2bc415e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:6",
+      "sequence": 2611,
+      "chapter_label": "EXO 37",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 6
+        }
+      ],
+      "en": "He made a mercy seat of pure gold. Its length was two and a half cubits, and a cubit and a half its width.",
+      "ko": "정금으로 속죄소를 만들었으니 장이 이 규빗 반, 광이 일 규빗 반이며",
+      "source_text_hash": "f670a5461cd2fedef43026f595927ed1cf009e4a1ac8ba38a6755e741b413f74",
+      "translation_text_hash": "cb6ba001f33f5dfe648bc0eb94ec3e7a5f0d6e9a6b4ab01cb678b180b8f44db1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정금으로 속죄소를 만들었으니 장이 이 규빗 반, 광이 일 규빗 반이며"
+      ],
+      "raw_text_hashes": [
+        "cb6ba001f33f5dfe648bc0eb94ec3e7a5f0d6e9a6b4ab01cb678b180b8f44db1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:7",
+      "sequence": 2612,
+      "chapter_label": "EXO 37",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 7
+        }
+      ],
+      "en": "He made two cherubim of gold. He made them of beaten work, at the two ends of the mercy seat:",
+      "ko": "금으로 그룹 둘을 속죄소 양편에 쳐서 만들었으되",
+      "source_text_hash": "20fecfb75b563923c2705d6dbc75160191f3acd428cc777fbe2717d236f28de1",
+      "translation_text_hash": "4edaf83e723fce893117c13f429ee8344f11d1d752e762d377b50eaabcd477a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금으로 그룹 둘을 속죄소 양편에 쳐서 만들었으되"
+      ],
+      "raw_text_hashes": [
+        "4edaf83e723fce893117c13f429ee8344f11d1d752e762d377b50eaabcd477a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:8",
+      "sequence": 2613,
+      "chapter_label": "EXO 37",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 8
+        }
+      ],
+      "en": "one cherub at the one end, and one cherub at the other end. He made the cherubim of one piece with the mercy seat at its two ends.",
+      "ko": "한 그룹은 이편 끝에, 한 그룹은 저편 끝에 곧 속죄소와 한 덩이로 그 양편에 만들었으니",
+      "source_text_hash": "87a8792a76887202e2da2483429a81ff783784b336b5e5988cfb79537fa0c081",
+      "translation_text_hash": "106c4b9afbdc506ae1f1bf9a5a2876b80ddcc33ebaddccafca947c6459f914e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 그룹은 이편 끝에, 한 그룹은 저편 끝에 곧 속죄소와 한 덩이로 그 양편에 만들었으니"
+      ],
+      "raw_text_hashes": [
+        "106c4b9afbdc506ae1f1bf9a5a2876b80ddcc33ebaddccafca947c6459f914e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:9",
+      "sequence": 2614,
+      "chapter_label": "EXO 37",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 9
+        }
+      ],
+      "en": "The cherubim spread out their wings above, covering the mercy seat with their wings, with their faces toward one another. The faces of the cherubim were toward the mercy seat.",
+      "ko": "그룹들이 그 날개를 높이 펴서 그 날개로 속죄소를 덮으며 그 얼굴을 서로 대하여 속죄소를 향하였더라",
+      "source_text_hash": "08ed60e3a2b9a59cf11446d7f3be5fe05ce5b476dbbaf7861cb341cf7b484e49",
+      "translation_text_hash": "a235c4bae16519c61ddce261d4f0a0d1af9670321f74dd2708e8ba6cb8c20912",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹들이 그 날개를 높이 펴서 그 날개로 속죄소를 덮으며 그 얼굴을 서로 대하여 속죄소를 향하였더라"
+      ],
+      "raw_text_hashes": [
+        "a235c4bae16519c61ddce261d4f0a0d1af9670321f74dd2708e8ba6cb8c20912"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:10",
+      "sequence": 2615,
+      "chapter_label": "EXO 37",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 10
+        }
+      ],
+      "en": "He made the table of acacia wood. Its length was two cubits, and its width was a cubit, and its height was a cubit and a half.",
+      "ko": "그가 또 조각목으로 상을 만들었으니 장이 이 규빗, 광이 일 규빗, 고가 일 규빗 반이며",
+      "source_text_hash": "fb42ba32451f8a0fbac8722c02a62308f721dc498b9eb61cfb0013c0d4257d18",
+      "translation_text_hash": "5df1da35549a2fcc288f277f96ca01fea22836b27846d44c4e52de3790933e7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 조각목으로 상을 만들었으니 장이 이 규빗, 광이 일 규빗, 고가 일 규빗 반이며"
+      ],
+      "raw_text_hashes": [
+        "5df1da35549a2fcc288f277f96ca01fea22836b27846d44c4e52de3790933e7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:11",
+      "sequence": 2616,
+      "chapter_label": "EXO 37",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 11
+        }
+      ],
+      "en": "He overlaid it with pure gold, and made a gold molding around it.",
+      "ko": "정금으로 싸고 윗가로 돌아가며 금테를 둘렀으며",
+      "source_text_hash": "e3c99a42a75ab5a58a5d202505eb9e78d2591adcc2356b7538eba4c4e4e442bf",
+      "translation_text_hash": "89fe308dfa494560edb10b22d5ffe7c6f96f799a4594f1927572a6ab9ea57d56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정금으로 싸고 윗가로 돌아가며 금테를 둘렀으며"
+      ],
+      "raw_text_hashes": [
+        "89fe308dfa494560edb10b22d5ffe7c6f96f799a4594f1927572a6ab9ea57d56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:12",
+      "sequence": 2617,
+      "chapter_label": "EXO 37",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 12
+        }
+      ],
+      "en": "He made a border of a hand’s width around it, and made a golden molding on its border around it.",
+      "ko": "그 사면에 손바닥 넓이만한 턱을 만들고 그 턱 주위에 금으로 테를 만들었고",
+      "source_text_hash": "a419278f2df1fc07e783ef2bf77b60f2260ea39ef7b8d223784cb91d3f5c2205",
+      "translation_text_hash": "acc641029762cd996b94796f4604ae06c21121b8ba84e6300213b5b3c1348f8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사면에 손바닥 넓이만한 턱을 만들고 그 턱 주위에 금으로 테를 만들었고"
+      ],
+      "raw_text_hashes": [
+        "acc641029762cd996b94796f4604ae06c21121b8ba84e6300213b5b3c1348f8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:13",
+      "sequence": 2618,
+      "chapter_label": "EXO 37",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 13
+        }
+      ],
+      "en": "He cast four rings of gold for it, and put the rings in the four corners that were on its four feet.",
+      "ko": "상을 위하여 금고리 넷을 부어 만들어 네 발 위 네 모퉁이에 달았으니",
+      "source_text_hash": "ea977abc877922052368bc7303c2a02492439c46c70105e8c6ad62f798d6a130",
+      "translation_text_hash": "4a9c769d025d88b7eb14b7f77a75c15885c8cd66bca1fdc8dc37b4df6375a8b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상을 위하여 금고리 넷을 부어 만들어 네 발 위 네 모퉁이에 달았으니"
+      ],
+      "raw_text_hashes": [
+        "4a9c769d025d88b7eb14b7f77a75c15885c8cd66bca1fdc8dc37b4df6375a8b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:14",
+      "sequence": 2619,
+      "chapter_label": "EXO 37",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 14
+        }
+      ],
+      "en": "The rings were close by the border, the places for the poles to carry the table.",
+      "ko": "그 고리가 턱 곁에 있어서 상을 메는 채를 꿰게 하였으며",
+      "source_text_hash": "8af7b9efb5dcbe26dc44bc3de21df8ede3b48964d5e197d33e0d5ba40dd66108",
+      "translation_text_hash": "e9661a1f967b8c046bc4bb37196f7860b48512fab5e7d5392567e78ee4c10e57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 고리가 턱 곁에 있어서 상을 메는 채를 꿰게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "e9661a1f967b8c046bc4bb37196f7860b48512fab5e7d5392567e78ee4c10e57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:15",
+      "sequence": 2620,
+      "chapter_label": "EXO 37",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 15
+        }
+      ],
+      "en": "He made the poles of acacia wood, and overlaid them with gold, to carry the table.",
+      "ko": "또 조각목으로 상 멜 채를 만들어 금으로 쌌으며",
+      "source_text_hash": "061a34f191d43d11084cecf2c5326162ef48d99f2693df5c4987efaa24e5b6a5",
+      "translation_text_hash": "b9a26dc990f59d925c17a524a8f1e573ba475749fba59675eddc544976b3561c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 조각목으로 상 멜 채를 만들어 금으로 쌌으며"
+      ],
+      "raw_text_hashes": [
+        "b9a26dc990f59d925c17a524a8f1e573ba475749fba59675eddc544976b3561c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:16",
+      "sequence": 2621,
+      "chapter_label": "EXO 37",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 16
+        }
+      ],
+      "en": "He made the vessels which were on the table, its dishes, its spoons, its bowls, and its pitchers with which to pour out, of pure gold.",
+      "ko": "상 위의 기구 곧 대접과 숟가락과 잔과 붓는 병을 정금으로 만들었더라",
+      "source_text_hash": "6393c3f2f1dbfd4ba044802b8302fdd951d1a88b22d75b1ac28c94a67fa9b26e",
+      "translation_text_hash": "069f462effe7bcebe99e7eb755a78d266433e81369e70704a11822cf96029620",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상 위의 기구 곧 대접과 숟가락과 잔과 붓는 병을 정금으로 만들었더라"
+      ],
+      "raw_text_hashes": [
+        "069f462effe7bcebe99e7eb755a78d266433e81369e70704a11822cf96029620"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:17",
+      "sequence": 2622,
+      "chapter_label": "EXO 37",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 17
+        }
+      ],
+      "en": "He made the lamp stand of pure gold. He made the lamp stand of beaten work. Its base, its shaft, its cups, its buds, and its flowers were of one piece with it.",
+      "ko": "그가 또 정금으로 등대를 만들되 그것을 쳐서 만들었으니 그 밑판과 줄기와 잔과 꽃받침과 꽃이 그것과 한 덩이로 되었고",
+      "source_text_hash": "60d651c30a5ffbf8a2ff5594cd740d39848e35b7a22bcb0ae54ea64bd1a7e480",
+      "translation_text_hash": "3c825e706a8bf6846bb13acfceca6c54d7f9ec5a492896c7cedb36a84d4fda14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 정금으로 등대를 만들되 그것을 쳐서 만들었으니 그 밑판과 줄기와 잔과 꽃받침과 꽃이 그것과 한 덩이로 되었고"
+      ],
+      "raw_text_hashes": [
+        "3c825e706a8bf6846bb13acfceca6c54d7f9ec5a492896c7cedb36a84d4fda14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:18",
+      "sequence": 2623,
+      "chapter_label": "EXO 37",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 18
+        }
+      ],
+      "en": "There were six branches going out of its sides: three branches of the lamp stand out of its one side, and three branches of the lamp stand out of its other side:",
+      "ko": "여섯 가지가 그 곁에서 나왔으니 곧 등대의 세 가지는 저편으로 나왔고 등대의 세 가지는 이편으로 나왔으며",
+      "source_text_hash": "ea27a384176f37439a76454a8f2216e6f39fc3262eb60ee1deedd0859822f490",
+      "translation_text_hash": "f81dd0d8f788a2e16a32663c9a276bb072825d78a08be7796ddd62f7802c1753",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여섯 가지가 그 곁에서 나왔으니 곧 등대의 세 가지는 저편으로 나왔고 등대의 세 가지는 이편으로 나왔으며"
+      ],
+      "raw_text_hashes": [
+        "f81dd0d8f788a2e16a32663c9a276bb072825d78a08be7796ddd62f7802c1753"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:19",
+      "sequence": 2624,
+      "chapter_label": "EXO 37",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 19
+        }
+      ],
+      "en": "three cups made like almond blossoms in one branch, a bud and a flower, and three cups made like almond blossoms in the other branch, a bud and a flower; so for the six branches going out of the lamp stand.",
+      "ko": "이편 가지에 살구꽃 형상의 잔 셋과 꽃받침과 꽃이 있고 저편 가지에 살구꽃 형상의 잔 셋과 꽃받침과 꽃이 있어 등대에서 나온 여섯 가지가 그러하며",
+      "source_text_hash": "a3e832db3a062517783481b6a7d82a84685d4f506a6e93f0c6c7b49f24e7b2b5",
+      "translation_text_hash": "281941f0c9056dc46af2c87c5796dc8d0d1cb3ece9b21bf791905f25ba8e209e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이편 가지에 살구꽃 형상의 잔 셋과 꽃받침과 꽃이 있고 저편 가지에 살구꽃 형상의 잔 셋과 꽃받침과 꽃이 있어 등대에서 나온 여섯 가지가 그러하며"
+      ],
+      "raw_text_hashes": [
+        "281941f0c9056dc46af2c87c5796dc8d0d1cb3ece9b21bf791905f25ba8e209e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:20",
+      "sequence": 2625,
+      "chapter_label": "EXO 37",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 20
+        }
+      ],
+      "en": "In the lamp stand were four cups made like almond blossoms, its buds and its flowers;",
+      "ko": "등대 줄기에는 살구꽃 형상의 잔 넷과 꽃받침과 꽃이 있고",
+      "source_text_hash": "041d06c0982ebd3d3b93c1b56aaf6c3c472bb53f871d4b1da44d4e50170228f8",
+      "translation_text_hash": "907c983d58f6086c956086b678ee4860ea0393872f2fd6c0bbc48ac46a5b51b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "등대 줄기에는 살구꽃 형상의 잔 넷과 꽃받침과 꽃이 있고"
+      ],
+      "raw_text_hashes": [
+        "907c983d58f6086c956086b678ee4860ea0393872f2fd6c0bbc48ac46a5b51b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:21",
+      "sequence": 2626,
+      "chapter_label": "EXO 37",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 21
+        }
+      ],
+      "en": "and a bud under two branches of one piece with it, and a bud under two branches of one piece with it, and a bud under two branches of one piece with it, for the six branches going out of it.",
+      "ko": "등대에서 나온 여섯 가지를 위하여는 꽃받침이 있게 하였으되 두 가지 아래 한 꽃받침이 있어 줄기와 연하였고 또 두 가지 아래 한 꽃받침이 있어 줄기와 연하였고 또 두 가지 아래 한 꽃받침이 있어 줄기와 연하게 하였으니",
+      "source_text_hash": "da7e78b8b1cee512b51b44cc555517df2341ab22bfb821a20ec4d33fa35a9ee7",
+      "translation_text_hash": "910765ff5e81fd27df662b54c51c1b24a2ea9e52f335aa4c54d13486552bf5ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "등대에서 나온 여섯 가지를 위하여는 꽃받침이 있게 하였으되 두 가지 아래 한 꽃받침이 있어 줄기와 연하였고 또 두 가지 아래 한 꽃받침이 있어 줄기와 연하였고 또 두 가지 아래 한 꽃받침이 있어 줄기와 연하게 하였으니"
+      ],
+      "raw_text_hashes": [
+        "910765ff5e81fd27df662b54c51c1b24a2ea9e52f335aa4c54d13486552bf5ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:22",
+      "sequence": 2627,
+      "chapter_label": "EXO 37",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 22
+        }
+      ],
+      "en": "Their buds and their branches were of one piece with it. The whole thing was one beaten work of pure gold.",
+      "ko": "이 꽃받침과 가지들을 줄기와 연하여 전부를 정금으로 쳐서 만들었으며",
+      "source_text_hash": "f4dacb2905ae6da7b834edceaafb98703ea3336c114008005884c833d30b9c8c",
+      "translation_text_hash": "147475fd03237dd34e9b5cf36205b4a64ce3ae98e263c78ab6ec8c3316c4232b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 꽃받침과 가지들을 줄기와 연하여 전부를 정금으로 쳐서 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "147475fd03237dd34e9b5cf36205b4a64ce3ae98e263c78ab6ec8c3316c4232b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:23",
+      "sequence": 2628,
+      "chapter_label": "EXO 37",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 23
+        }
+      ],
+      "en": "He made its seven lamps, and its snuffers, and its snuff dishes, of pure gold.",
+      "ko": "등잔 일곱과 그 불집게와 불똥 그릇을 정금으로 만들었으니",
+      "source_text_hash": "43c80adff72d93e41c10d4fce607d322cb5740fc724a75f52b16d1285fb67da9",
+      "translation_text_hash": "0d5f39783d15f87c4be89f3bcf8e32995c4073d8937ad373d4784111d6f3fba8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "등잔 일곱과 그 불집게와 불똥 그릇을 정금으로 만들었으니"
+      ],
+      "raw_text_hashes": [
+        "0d5f39783d15f87c4be89f3bcf8e32995c4073d8937ad373d4784111d6f3fba8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:24",
+      "sequence": 2629,
+      "chapter_label": "EXO 37",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 24
+        }
+      ],
+      "en": "He made it of a talent of pure gold, with all its vessels.",
+      "ko": "등대와 그 모든 기구는 정금 한 달란트로 만들었더라",
+      "source_text_hash": "1e491d477399b6115fdfababc85011dcfba72ec281162dd5a958ecdeb8828dfe",
+      "translation_text_hash": "be8237e7f33d1d435a0cca758d4d1d2139020f8b14e0f5bf1cda4906e00fabc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "등대와 그 모든 기구는 정금 한 달란트로 만들었더라"
+      ],
+      "raw_text_hashes": [
+        "be8237e7f33d1d435a0cca758d4d1d2139020f8b14e0f5bf1cda4906e00fabc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:25",
+      "sequence": 2630,
+      "chapter_label": "EXO 37",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 25
+        }
+      ],
+      "en": "He made the altar of incense of acacia wood. It was square: its length was a cubit, and its width a cubit. Its height was two cubits. Its horns were of one piece with it.",
+      "ko": "그가 또 조각목으로 분향할 단을 만들었으니 장이 일 규빗이요 광이 일 규빗이라 네모 반듯하고 고는 이 규빗이며 그 뿔들이 단과 연하였으며",
+      "source_text_hash": "1bf5f12482c31b31a64786206644b8cc0766ebb30bfd6a17a8090972f4c4bf51",
+      "translation_text_hash": "c27630198736e51ead9446619158b087c9a67dfb7fc92aa56d97cb5e27b4857b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 조각목으로 분향할 단을 만들었으니 장이 일 규빗이요 광이 일 규빗이라 네모 반듯하고 고는 이 규빗이며 그 뿔들이 단과 연하였으며"
+      ],
+      "raw_text_hashes": [
+        "c27630198736e51ead9446619158b087c9a67dfb7fc92aa56d97cb5e27b4857b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:26",
+      "sequence": 2631,
+      "chapter_label": "EXO 37",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 26
+        }
+      ],
+      "en": "He overlaid it with pure gold: its top, its sides around it, and its horns. He made a gold molding around it.",
+      "ko": "단 상면과 전후 좌우면과 그 뿔을 정금으로 싸고 주위에 금테를 둘렀고",
+      "source_text_hash": "b4d9763f731c19255be007f42d4369f3609854ec4f43c61da7cd8e07327fbd9f",
+      "translation_text_hash": "ecb7d6fde8e187140cdf1c5c76b6fd6b290c1ebdade3a6391959aa7974ce3ffe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 상면과 전후 좌우면과 그 뿔을 정금으로 싸고 주위에 금테를 둘렀고"
+      ],
+      "raw_text_hashes": [
+        "ecb7d6fde8e187140cdf1c5c76b6fd6b290c1ebdade3a6391959aa7974ce3ffe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:27",
+      "sequence": 2632,
+      "chapter_label": "EXO 37",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 27
+        }
+      ],
+      "en": "He made two golden rings for it under its molding crown, on its two ribs, on its two sides, for places for poles with which to carry it.",
+      "ko": "그 테 아래 양편에 금고리 둘을 만들었으되 곧 그 양편에 만들어 단을 메는 채를 꿰게 하였으며",
+      "source_text_hash": "dbec13db8a42192a4e8df14659593ef6119236ebffed15e55b78fd30ac97eb1f",
+      "translation_text_hash": "12a618716fbcc7d63f3b151517e378f93b1b8a1ca4cf8d397fc83ee6a4668261",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 테 아래 양편에 금고리 둘을 만들었으되 곧 그 양편에 만들어 단을 메는 채를 꿰게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "12a618716fbcc7d63f3b151517e378f93b1b8a1ca4cf8d397fc83ee6a4668261"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:28",
+      "sequence": 2633,
+      "chapter_label": "EXO 37",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 28
+        }
+      ],
+      "en": "He made the poles of acacia wood, and overlaid them with gold.",
+      "ko": "조각목으로 그 채를 만들어 금으로 쌌으며",
+      "source_text_hash": "376959370ab76c736bdd1f3a99fa0b38f8e404b53418766f823da2de4e4414ad",
+      "translation_text_hash": "cd24d41607dfcf5d9b29e2cb3cfbd36b244bfb7cd9dd4816ebf61a038d8d5f26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조각목으로 그 채를 만들어 금으로 쌌으며"
+      ],
+      "raw_text_hashes": [
+        "cd24d41607dfcf5d9b29e2cb3cfbd36b244bfb7cd9dd4816ebf61a038d8d5f26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:37:29",
+      "sequence": 2634,
+      "chapter_label": "EXO 37",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 37,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 37,
+          "verse": 29
+        }
+      ],
+      "en": "He made the holy anointing oil and the pure incense of sweet spices, after the art of the perfumer.",
+      "ko": "거룩한 관유와 향품으로 정결한 향을 만들었으되 향을 만드는 법대로 하였더라",
+      "source_text_hash": "fd8e9f028f91423039276301e12797207ab6b5f0e5e969a31e72b49479cd7c61",
+      "translation_text_hash": "0d9e1bcf0ca7905279e29bbd5089e83280f0d3a5aaa6ba2d5ebe44f43fcc9bba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거룩한 관유와 향품으로 정결한 향을 만들었으되 향을 만드는 법대로 하였더라"
+      ],
+      "raw_text_hashes": [
+        "0d9e1bcf0ca7905279e29bbd5089e83280f0d3a5aaa6ba2d5ebe44f43fcc9bba"
+      ]
+    }
+  ]
+}

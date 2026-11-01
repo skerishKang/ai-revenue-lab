@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:014",
+  "unit_ordinal": 876,
+  "unit_label": "HOS 14",
+  "book_code": "HOS",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:14:1",
+      "sequence": 22284,
+      "chapter_label": "HOS 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "Israel, return to the LORD your God; for you have fallen because of your sin.",
+      "ko": "이스라엘아 네 하나님 여호와께로 돌아 오라 네가 불의함을 인하여 엎드러졌느니라",
+      "source_text_hash": "6a516105e459c468bfeb1e4d81b13219d5e19e3a2a2d813d0cbcb92263b9e57b",
+      "translation_text_hash": "bbccd798d46fac0ffba6411f1d96cdfb479d141c1ee994cf497d1eebc0833e4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 네 하나님 여호와께로 돌아 오라 네가 불의함을 인하여 엎드러졌느니라"
+      ],
+      "raw_text_hashes": [
+        "bbccd798d46fac0ffba6411f1d96cdfb479d141c1ee994cf497d1eebc0833e4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:14:2",
+      "sequence": 22285,
+      "chapter_label": "HOS 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "Take words with you, and return to the LORD. Tell him, “Forgive all our sins, and accept that which is good; so we offer bulls as we vowed of our lips.",
+      "ko": "너는 말씀을 가지고 여호와께로 돌아 와서 아뢰기를 모든 불의를 제하시고 선한바를 받으소서 우리가 입술로 수송아지를 대신하여 주께 드리리이다",
+      "source_text_hash": "e463299b407a4f4f980602ad70c8e1b9c3c9ff4d8932188ef5f464535e47da02",
+      "translation_text_hash": "78db903c1873bd02e571eab11dead0f083dafcc073076e12d742472cfc41281c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 말씀을 가지고 여호와께로 돌아 와서 아뢰기를 모든 불의를 제하시고 선한바를 받으소서 우리가 입술로 수송아지를 대신하여 주께 드리리이다"
+      ],
+      "raw_text_hashes": [
+        "78db903c1873bd02e571eab11dead0f083dafcc073076e12d742472cfc41281c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:14:3",
+      "sequence": 22286,
+      "chapter_label": "HOS 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "Assyria can’t save us. We won’t ride on horses; neither will we say any more to the work of our hands, ‘Our gods!’ for in you the fatherless finds mercy.”",
+      "ko": "우리가 앗수르의 구원을 의지하지 아니하며 말을 타지 아니하며 다시는 우리의 손으로 지은 것을 향하여 너희는 우리 신이라 하지 아니하오리니 이는 고아가 주께로 말미암아 긍휼을 얻음이니이다 할찌니라",
+      "source_text_hash": "bf4c224557748d4b26f4c91e19ae57bdb17fa1a6fd73ca7a3608600a18ee9764",
+      "translation_text_hash": "8ccb7f1932a028d2478e2afb915bb5f9cb0aefb15bf6f52f699f4fe7a793ee37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 앗수르의 구원을 의지하지 아니하며 말을 타지 아니하며 다시는 우리의 손으로 지은 것을 향하여 너희는 우리 신이라 하지 아니하오리니 이는 고아가 주께로 말미암아 긍휼을 얻음이니이다 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "8ccb7f1932a028d2478e2afb915bb5f9cb0aefb15bf6f52f699f4fe7a793ee37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:14:4",
+      "sequence": 22287,
+      "chapter_label": "HOS 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "“I will heal their waywardness. I will love them freely; for my anger is turned away from them.",
+      "ko": "내가 저희의 패역을 고치고 즐거이 저희를 사랑하리니 나의 진노가 저에게서 떠났음이니라",
+      "source_text_hash": "4a81077c7e5811f948c1c78b82410c7af4d6ef15440615009b7ef486a59d2fbb",
+      "translation_text_hash": "e47f36fcfa3ad8cca6b76ada2ed566a86898db10c4fd890468ef5c80f361bb40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희의 패역을 고치고 즐거이 저희를 사랑하리니 나의 진노가 저에게서 떠났음이니라"
+      ],
+      "raw_text_hashes": [
+        "e47f36fcfa3ad8cca6b76ada2ed566a86898db10c4fd890468ef5c80f361bb40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:14:5",
+      "sequence": 22288,
+      "chapter_label": "HOS 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "I will be like the dew to Israel. He will blossom like the lily, and send down his roots like Lebanon.",
+      "ko": "내가 이스라엘에게 이슬과 같으리니 저가 백합화 같이 피겠고 레바논 백향목 같이 뿌리가 박힐 것이라",
+      "source_text_hash": "31336ebfdee2dd31be810d180e52fff09b598b512d7ebb55186d98e00e54d51f",
+      "translation_text_hash": "bb3aa9bc9a0ca3f0f09aae2bcbf598a6ac9d54129a7c0179c3d3e4cf2e0900c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘에게 이슬과 같으리니 저가 백합화 같이 피겠고 레바논 백향목 같이 뿌리가 박힐 것이라"
+      ],
+      "raw_text_hashes": [
+        "bb3aa9bc9a0ca3f0f09aae2bcbf598a6ac9d54129a7c0179c3d3e4cf2e0900c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:14:6",
+      "sequence": 22289,
+      "chapter_label": "HOS 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "His branches will spread, and his beauty will be like the olive tree, and his fragrance like Lebanon.",
+      "ko": "그 가지는 퍼지며 그 아름다움은 감람나무와 같고 그 향기는 레바논 백향목 같으리니",
+      "source_text_hash": "5df85b29550efcd74e0378d787c2578d7d217251ce3e48fd1e46c38d6fd243e7",
+      "translation_text_hash": "42db04dd56e3605c19a56c9273e000497a80285a82e477014e30e8fbbab86f4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가지는 퍼지며 그 아름다움은 감람나무와 같고 그 향기는 레바논 백향목 같으리니"
+      ],
+      "raw_text_hashes": [
+        "42db04dd56e3605c19a56c9273e000497a80285a82e477014e30e8fbbab86f4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:14:7",
+      "sequence": 22290,
+      "chapter_label": "HOS 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "Men will dwell in his shade. They will revive like the grain, and blossom like the vine. Their fragrance will be like the wine of Lebanon.",
+      "ko": "그 그늘 아래 거하는 자가 돌아올찌라 저희는 곡식 같이 소성할 것이며 포도나무 같이 꽃이 필 것이며 그 향기는 레바논의 포도주 같이 되리라",
+      "source_text_hash": "00625865a8607b2e59d7f9fbaa558059cfdb08deed60f88005ec5bcb6bf6b34f",
+      "translation_text_hash": "bc0fc11ee53f58f0fcac1b1c64f0032405812594c41fe06aa7645d5e13ac3037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 그늘 아래 거하는 자가 돌아올찌라 저희는 곡식 같이 소성할 것이며 포도나무 같이 꽃이 필 것이며 그 향기는 레바논의 포도주 같이 되리라"
+      ],
+      "raw_text_hashes": [
+        "bc0fc11ee53f58f0fcac1b1c64f0032405812594c41fe06aa7645d5e13ac3037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:14:8",
+      "sequence": 22291,
+      "chapter_label": "HOS 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "Ephraim, what have I to do any more with idols? I answer, and will take care of him. I am like a green cypress tree; from me your fruit is found.”",
+      "ko": "에브라임의 말이 내가 다시 우상과 무슨 상관이 있으리요 할찌라 내가 저를 돌아 보아 대답하기를 나는 푸른 잣나무 같으니 네가 나로 말미암아 열매를 얻으리라 하리라",
+      "source_text_hash": "6b81bfd18ed3d60cc0207bb8cfe633e880bf346a2eb7b2cebbc15ffbb74721ca",
+      "translation_text_hash": "39c67c097a4fe67234cec8e94361297e64f9f743b74c465c2a9c100efd675e56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임의 말이 내가 다시 우상과 무슨 상관이 있으리요 할찌라 내가 저를 돌아 보아 대답하기를 나는 푸른 잣나무 같으니 네가 나로 말미암아 열매를 얻으리라 하리라"
+      ],
+      "raw_text_hashes": [
+        "39c67c097a4fe67234cec8e94361297e64f9f743b74c465c2a9c100efd675e56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:14:9",
+      "sequence": 22292,
+      "chapter_label": "HOS 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "Who is wise, that he may understand these things? Who is prudent, that he may know them? For the ways of the LORD are right, and the righteous walk in them, but the rebellious stumble in them.",
+      "ko": "누가 지혜가 있어 이런 일을 깨달으며 누가 총명이 있어 이런 일을 알겠느냐 여호와의 도는 정직하니 의인이라야 그 도에 행하리라 그러나 죄인은 그 도에 거쳐 넘어지리라",
+      "source_text_hash": "dc26b1c50d90a263fe7573c92040f54b9d8dd03371c45b10adc173ecfcc58a7a",
+      "translation_text_hash": "bcf379cf9a5646eb63256a9d3c6cdb67d6956fd0ac6f3f9af380045e7c884705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 지혜가 있어 이런 일을 깨달으며 누가 총명이 있어 이런 일을 알겠느냐 여호와의 도는 정직하니 의인이라야 그 도에 행하리라 그러나 죄인은 그 도에 거쳐 넘어지리라"
+      ],
+      "raw_text_hashes": [
+        "bcf379cf9a5646eb63256a9d3c6cdb67d6956fd0ac6f3f9af380045e7c884705"
+      ]
+    }
+  ]
+}

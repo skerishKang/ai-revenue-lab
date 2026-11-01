@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1PE:chapter:001",
+  "unit_ordinal": 1152,
+  "unit_label": "1PE 1",
+  "book_code": "1PE",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1PE:1:1",
+      "sequence": 30372,
+      "chapter_label": "1PE 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Peter, an apostle of Jesus Christ, to the chosen ones who are living as foreigners in the Dispersion in Pontus, Galatia, Cappadocia, Asia, and Bithynia,",
+      "ko": "예수 그리스도의 사도 베드로는 본도, 갈라디아, 갑바도기아, 아시아와 비두니아에 흩어진 나그네",
+      "source_text_hash": "43e3996e45ecf688969c9d02ea6fea80656c28af5b22e14206bebe6e6d3a0db5",
+      "translation_text_hash": "50b822de9db5b562755f7a79799d0e8a4291f839efb1cd71b52b7cc65cebe31c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수 그리스도의 사도 베드로는 본도, 갈라디아, 갑바도기아, 아시아와 비두니아에 흩어진 나그네"
+      ],
+      "raw_text_hashes": [
+        "50b822de9db5b562755f7a79799d0e8a4291f839efb1cd71b52b7cc65cebe31c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:2",
+      "sequence": 30373,
+      "chapter_label": "1PE 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "according to the foreknowledge of God the Father, in sanctification of the Spirit, that you may obey Jesus Christ and be sprinkled with his blood: Grace to you and peace be multiplied.",
+      "ko": "곧 하나님 아버지의 미리 아심을 따라 성령의 거룩하게 하심으로 순종함과 예수 그리스도의 피 뿌림을 얻기 위하여 택하심을 입은 자들에게 편지하노니 은혜와 평강이 너희에게 더욱 많을찌어다",
+      "source_text_hash": "755641e7e572376ce8472f65648d06349f75bef9dda8bc48abc71de6df2fa830",
+      "translation_text_hash": "130f901c44447cf306430fac4cb8bb710aa3ad91a97edbe1458a56f5d7b14729",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 하나님 아버지의 미리 아심을 따라 성령의 거룩하게 하심으로 순종함과 예수 그리스도의 피 뿌림을 얻기 위하여 택하심을 입은 자들에게 편지하노니 은혜와 평강이 너희에게 더욱 많을찌어다"
+      ],
+      "raw_text_hashes": [
+        "130f901c44447cf306430fac4cb8bb710aa3ad91a97edbe1458a56f5d7b14729"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:3",
+      "sequence": 30374,
+      "chapter_label": "1PE 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Blessed be the God and Father of our Lord Jesus Christ, who according to his great mercy caused us to be born again to a living hope through the resurrection of Jesus Christ from the dead,",
+      "ko": "찬송하리로다 우리 주 예수 그리스도의 아버지 하나님이 그 많으신 긍휼대로 예수 그리스도의 죽은 자 가운데서 부활하심으로 말미암아 우리를 거듭나게 하사 산 소망이 있게 하시며",
+      "source_text_hash": "97601cbfaa39ace5d3fd600fa2fbb9a4e666d2fdd28a2a4c20bab250a6d68652",
+      "translation_text_hash": "0a4c5a8d10341328b655ef6e484e4320d26f978add696a4cbccbb596808fafba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "찬송하리로다 우리 주 예수 그리스도의 아버지 하나님이 그 많으신 긍휼대로 예수 그리스도의 죽은 자 가운데서 부활하심으로 말미암아 우리를 거듭나게 하사 산 소망이 있게 하시며"
+      ],
+      "raw_text_hashes": [
+        "0a4c5a8d10341328b655ef6e484e4320d26f978add696a4cbccbb596808fafba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:4",
+      "sequence": 30375,
+      "chapter_label": "1PE 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "to an incorruptible and undefiled inheritance that doesn’t fade away, reserved in Heaven for you,",
+      "ko": "썩지 않고 더럽지 않고 쇠하지 아니하는 기업을 잇게 하시나니 곧 너희를 위하여 하늘에 간직하신 것이라",
+      "source_text_hash": "a84e6abf1187deb78692a539cb80c4080d11546fe2567e82d959e31d9ddabcac",
+      "translation_text_hash": "503186f2552b7dd51c4740b7b56d3b7c7d1d4f64d21b57732128a4ca2a154eb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "썩지 않고 더럽지 않고 쇠하지 아니하는 기업을 잇게 하시나니 곧 너희를 위하여 하늘에 간직하신 것이라"
+      ],
+      "raw_text_hashes": [
+        "503186f2552b7dd51c4740b7b56d3b7c7d1d4f64d21b57732128a4ca2a154eb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:5",
+      "sequence": 30376,
+      "chapter_label": "1PE 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "who by the power of God are guarded through faith for a salvation ready to be revealed in the last time.",
+      "ko": "너희가 말세에 나타내기로 예비하신 구원을 얻기 위하여 믿음으로 말미암아 하나님의 능력으로 보호하심을 입었나니",
+      "source_text_hash": "8ca372045bbefd4dcd1b149ca591d99bb885cd792802522c99e8def0022f429f",
+      "translation_text_hash": "6f4fbcf11dcf2705c46312e5abad59208dc7078c04d4516fdf0a190fdf68a6fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 말세에 나타내기로 예비하신 구원을 얻기 위하여 믿음으로 말미암아 하나님의 능력으로 보호하심을 입었나니"
+      ],
+      "raw_text_hashes": [
+        "6f4fbcf11dcf2705c46312e5abad59208dc7078c04d4516fdf0a190fdf68a6fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:6",
+      "sequence": 30377,
+      "chapter_label": "1PE 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "In this you greatly rejoice, though now for a little while, if need be, you have been grieved in various trials,",
+      "ko": "그러므로 너희가 이제 여러가지 시험을 인하여 잠간 근심하게 되지 않을 수 없었으나 오히려 크게 기뻐하도다",
+      "source_text_hash": "5a07a9114859e9d4ce1f5db57f8e26f20f3398766a6ae6d879ad655e325923db",
+      "translation_text_hash": "56ad7fc46861e49cdf245cb905d3613d46ad3974dc389323d1c14fe6a852d5f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 이제 여러가지 시험을 인하여 잠간 근심하게 되지 않을 수 없었으나 오히려 크게 기뻐하도다"
+      ],
+      "raw_text_hashes": [
+        "56ad7fc46861e49cdf245cb905d3613d46ad3974dc389323d1c14fe6a852d5f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:7",
+      "sequence": 30378,
+      "chapter_label": "1PE 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "that the proof of your faith, which is more precious than gold that perishes, even though it is tested by fire, may be found to result in praise, glory, and honor at the revelation of Jesus Christ—",
+      "ko": "너희 믿음의 시련이 불로 연단하여도 없어질 금보다 더 귀하여 예수 그리스도의 나타나실 때에 칭찬과 영광과 존귀를 얻게 하려 함이라",
+      "source_text_hash": "beb0e6169a49cca8c01d020b33f7e4b49cadb09c8f2957af0f871203f36a288c",
+      "translation_text_hash": "8c8c5c2b32b52bcacede8c0a93d0d15f26936f415be466397d81715795dbf28a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 믿음의 시련이 불로 연단하여도 없어질 금보다 더 귀하여 예수 그리스도의 나타나실 때에 칭찬과 영광과 존귀를 얻게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "8c8c5c2b32b52bcacede8c0a93d0d15f26936f415be466397d81715795dbf28a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:8",
+      "sequence": 30379,
+      "chapter_label": "1PE 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "whom, not having known, you love. In him, though now you don’t see him, yet believing, you rejoice greatly with joy that is unspeakable and full of glory,",
+      "ko": "예수를 너희가 보지 못하였으나 사랑하는도다 이제도 보지 못하나 믿고 말할 수 없는 영광스러운 즐거움으로 기뻐하니",
+      "source_text_hash": "215017c8f88fc927873c04363afdac93c5f19ce6ed62a86877c73bad96365722",
+      "translation_text_hash": "0045531e976cc19be9f6655de1fc8799c1bde50f7c97266975a4986a57e7b4a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 너희가 보지 못하였으나 사랑하는도다 이제도 보지 못하나 믿고 말할 수 없는 영광스러운 즐거움으로 기뻐하니"
+      ],
+      "raw_text_hashes": [
+        "0045531e976cc19be9f6655de1fc8799c1bde50f7c97266975a4986a57e7b4a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:9",
+      "sequence": 30380,
+      "chapter_label": "1PE 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "receiving the result of your faith, the salvation of your souls.",
+      "ko": "믿음의 결국 곧 영혼의 구원을 받음이라",
+      "source_text_hash": "a11c1ad337296df518b6b68af0072fdbb508b8364fcc7c0d7ff87b020d0d69fb",
+      "translation_text_hash": "172b6382c8c1ee6d8926feb6306a25f427f6276f45f2683422e01c0fa7f6c687",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음의 결국 곧 영혼의 구원을 받음이라"
+      ],
+      "raw_text_hashes": [
+        "172b6382c8c1ee6d8926feb6306a25f427f6276f45f2683422e01c0fa7f6c687"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:10",
+      "sequence": 30381,
+      "chapter_label": "1PE 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Concerning this salvation, the prophets sought and searched diligently. They prophesied of the grace that would come to you,",
+      "ko": "이 구원에 대하여는 너희에게 임할 은혜를 예언하던 선지자들이 연구하고 부지런히 살펴서",
+      "source_text_hash": "454a7a594b251c8d6923092fba24e1a2dbf13127e647433b32fe7e1099b48d54",
+      "translation_text_hash": "5a8580ec7bc8115562876f523def83506fa9b452703545bbb4f98d61aa4995df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 구원에 대하여는 너희에게 임할 은혜를 예언하던 선지자들이 연구하고 부지런히 살펴서"
+      ],
+      "raw_text_hashes": [
+        "5a8580ec7bc8115562876f523def83506fa9b452703545bbb4f98d61aa4995df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:11",
+      "sequence": 30382,
+      "chapter_label": "1PE 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "searching for who or what kind of time the Spirit of Christ which was in them pointed to when he predicted the sufferings of Christ and the glories that would follow them.",
+      "ko": "자기 속에 계신 그리스도의 영이 그 받으실 고난과 후에 얻으실 영광을 미리 증거하여 어느 시, 어떠한 때를 지시하시는지 상고하니라",
+      "source_text_hash": "be7f3cf4f0f18d8bcce2b2621afe80f7bf099780e8a62d2f46a0e7e2524fcb67",
+      "translation_text_hash": "90322ee27ebcd0a93e22e72cc814236be3c06122bfdb467639601cdb3ce920d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 속에 계신 그리스도의 영이 그 받으실 고난과 후에 얻으실 영광을 미리 증거하여 어느 시, 어떠한 때를 지시하시는지 상고하니라"
+      ],
+      "raw_text_hashes": [
+        "90322ee27ebcd0a93e22e72cc814236be3c06122bfdb467639601cdb3ce920d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:12",
+      "sequence": 30383,
+      "chapter_label": "1PE 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "To them it was revealed that they served not themselves, but you, in these things, which now have been announced to you through those who preached the Good News to you by the Holy Spirit sent out from heaven; which things angels desire to look into.",
+      "ko": "이 섬긴 바가 자기를 위한 것이 아니요 너희를 위한 것임이 계시로 알게 되었으니 이것은 하늘로부터 보내신 성령을 힘입어 복음을 전하는 자들로 이제 너희에게 고한 것이요 천사들도 살펴 보기를 원하는 것이니라",
+      "source_text_hash": "89e866574c45674c0666ebbd9011b0f56e7457cfbac9ebf2472471e608eac4fb",
+      "translation_text_hash": "f5f64016ebc22c37d85cc1877847f4d4e2ca5a5d3469660b5b1c941d2f8f6b3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 섬긴 바가 자기를 위한 것이 아니요 너희를 위한 것임이 계시로 알게 되었으니 이것은 하늘로부터 보내신 성령을 힘입어 복음을 전하는 자들로 이제 너희에게 고한 것이요 천사들도 살펴 보기를 원하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "f5f64016ebc22c37d85cc1877847f4d4e2ca5a5d3469660b5b1c941d2f8f6b3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:13",
+      "sequence": 30384,
+      "chapter_label": "1PE 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore prepare your minds for action. Be sober, and set your hope fully on the grace that will be brought to you at the revelation of Jesus Christ—",
+      "ko": "그러므로 너희 마음의 허리를 동이고 근신하여 예수 그리스도의 나타나실 때에 너희에게 가져올 은혜를 온전히 바랄찌어다",
+      "source_text_hash": "e53c6708b6df78ec533172a6a025030f7dce4aa75f434a992986928e86f403b5",
+      "translation_text_hash": "8f12e38e8813a74a4e51a5c826159759d1d8ef2ec5dc21776c0340e896dadc3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희 마음의 허리를 동이고 근신하여 예수 그리스도의 나타나실 때에 너희에게 가져올 은혜를 온전히 바랄찌어다"
+      ],
+      "raw_text_hashes": [
+        "8f12e38e8813a74a4e51a5c826159759d1d8ef2ec5dc21776c0340e896dadc3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:14",
+      "sequence": 30385,
+      "chapter_label": "1PE 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "as children of obedience, not conforming yourselves according to your former lusts as in your ignorance,",
+      "ko": "너희가 순종하는 자식처럼 이전 알지 못할 때에 좇던 너희 사욕을 본 삼지 말고",
+      "source_text_hash": "fd384a3cec01e400cca48578e479c5f31e4d5f644c1abee6fce11a45e2bf38fd",
+      "translation_text_hash": "f4085565a5045716037e2bab7064acd9f7191eb68d7c358c3e345ad17dcb1947",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 순종하는 자식처럼 이전 알지 못할 때에 좇던 너희 사욕을 본 삼지 말고"
+      ],
+      "raw_text_hashes": [
+        "f4085565a5045716037e2bab7064acd9f7191eb68d7c358c3e345ad17dcb1947"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:15",
+      "sequence": 30386,
+      "chapter_label": "1PE 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "but just as he who called you is holy, you yourselves also be holy in all of your behavior,",
+      "ko": "오직 너희를 부르신 거룩한 자처럼 너희도 모든 행실에 거룩한 자가 되라",
+      "source_text_hash": "63158668d2b92129015e59fade57c15a6ca34d58b2cb975d1dfccbf47a63238f",
+      "translation_text_hash": "03937e871d5d46cd308faaeede6ad9d9050305f27800212042d5c1dfa63a0f80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희를 부르신 거룩한 자처럼 너희도 모든 행실에 거룩한 자가 되라"
+      ],
+      "raw_text_hashes": [
+        "03937e871d5d46cd308faaeede6ad9d9050305f27800212042d5c1dfa63a0f80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:16",
+      "sequence": 30387,
+      "chapter_label": "1PE 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "because it is written, “You shall be holy, for I am holy.”",
+      "ko": "기록하였으되 내가 거룩하니 너희도 거룩할찌어다 하셨느니라",
+      "source_text_hash": "9286b1c011f38a2323d873b4eca7338419f4311ece8772b06839bbc37d94c5f2",
+      "translation_text_hash": "af102caa96d015b57dc8b3a91a89a9f1e3e17dc8d44dbda0b934960680bf226d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록하였으되 내가 거룩하니 너희도 거룩할찌어다 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "af102caa96d015b57dc8b3a91a89a9f1e3e17dc8d44dbda0b934960680bf226d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:17",
+      "sequence": 30388,
+      "chapter_label": "1PE 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "If you call on him as Father, who without respect of persons judges according to each man’s work, pass the time of your living as foreigners here in reverent fear,",
+      "ko": "외모로 보시지 않고 각 사람의 행위대로 판단하시는 자를 너희가 아버지라 부른즉 너희의 나그네로 있을 때를 두려움으로 지내라",
+      "source_text_hash": "75290f5c9b60073aad2e9146e2cad8eda99e280e5897a98b39f9a2f26c41a62b",
+      "translation_text_hash": "ca1eb4ab1f75c29d7e7bf3e419bf415bbc5a771d7996a8e36b9a03c920c2e5b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외모로 보시지 않고 각 사람의 행위대로 판단하시는 자를 너희가 아버지라 부른즉 너희의 나그네로 있을 때를 두려움으로 지내라"
+      ],
+      "raw_text_hashes": [
+        "ca1eb4ab1f75c29d7e7bf3e419bf415bbc5a771d7996a8e36b9a03c920c2e5b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:18",
+      "sequence": 30389,
+      "chapter_label": "1PE 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "knowing that you were redeemed, not with corruptible things like silver or gold, from the useless way of life handed down from your fathers,",
+      "ko": "너희가 알거니와 너희 조상의 유전한 망령된 행실에서 구속된 것은 은이나 금 같이 없어질 것으로 한 것이 아니요",
+      "source_text_hash": "106409599665c35a445c787f67d1b0110322a34c9c2ed8830236f58fbe9fd9bb",
+      "translation_text_hash": "f9141bf748570f726ad45d2e4fd430542a5c6cab35918821d37a0a66108ef90f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 알거니와 너희 조상의 유전한 망령된 행실에서 구속된 것은 은이나 금 같이 없어질 것으로 한 것이 아니요"
+      ],
+      "raw_text_hashes": [
+        "f9141bf748570f726ad45d2e4fd430542a5c6cab35918821d37a0a66108ef90f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:19",
+      "sequence": 30390,
+      "chapter_label": "1PE 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "but with precious blood, as of a lamb without blemish or spot, the blood of Christ,",
+      "ko": "오직 흠 없고 점 없는 어린양 같은 그리스도의 보배로운 피로 한 것이니라",
+      "source_text_hash": "a950dc612a98c80658e73ea6ca23bf39f2143ee427e2ff4f41e3934ad5a012ec",
+      "translation_text_hash": "dc1160edf2e29e3f23b2cefbb3735e554b56f5a49abecce99fe3b4b2ac25f457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 흠 없고 점 없는 어린양 같은 그리스도의 보배로운 피로 한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "dc1160edf2e29e3f23b2cefbb3735e554b56f5a49abecce99fe3b4b2ac25f457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:20",
+      "sequence": 30391,
+      "chapter_label": "1PE 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "who was foreknown indeed before the foundation of the world, but was revealed in this last age for your sake,",
+      "ko": "그는 창세전부터 미리 알리신바 된 자나 이 말세에 너희를 위하여 나타내신바 되었으니",
+      "source_text_hash": "4ae50ef156ada06b9885961cef3cd82ddfccce8eadb2ee145cba7d7eefd78d70",
+      "translation_text_hash": "24263c6594815662db105a8d6e09b8d6ecfaba9738df4b2f5763e2487d596269",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 창세전부터 미리 알리신바 된 자나 이 말세에 너희를 위하여 나타내신바 되었으니"
+      ],
+      "raw_text_hashes": [
+        "24263c6594815662db105a8d6e09b8d6ecfaba9738df4b2f5763e2487d596269"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:21",
+      "sequence": 30392,
+      "chapter_label": "1PE 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "who through him are believers in God, who raised him from the dead and gave him glory, so that your faith and hope might be in God.",
+      "ko": "너희는 저를 죽은 자 가운데서 살리시고 영광을 주신 하나님을 그리스도로 말미암아 믿는 자니 너희 믿음과 소망이 하나님께 있게 하셨느니라",
+      "source_text_hash": "9e591af6b2e3402bc68bff3ee2481ae78be0d48f02e8832921c7883f7e7fa88e",
+      "translation_text_hash": "2cad297586d8bbbb8fc602d9b50e1bb2b7773a632fb3537fb1ddc734797c8c5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 저를 죽은 자 가운데서 살리시고 영광을 주신 하나님을 그리스도로 말미암아 믿는 자니 너희 믿음과 소망이 하나님께 있게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "2cad297586d8bbbb8fc602d9b50e1bb2b7773a632fb3537fb1ddc734797c8c5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:22",
+      "sequence": 30393,
+      "chapter_label": "1PE 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "Seeing you have purified your souls in your obedience to the truth through the Spirit in sincere brotherly affection, love one another from the heart fervently,",
+      "ko": "너희가 진리를 순종함으로 너희 영혼을 깨끗하게 하여 거짓이 없이 형제를 사랑하기에 이르렀으니 마음으로 뜨겁게 피차 사랑하라",
+      "source_text_hash": "1a73bfee63b0ca7aa375792b92a848abaa2a140d9f0bbb099168d04344de954b",
+      "translation_text_hash": "82269747e5934e9d20e43346ec8ca0cef8d1672ccde8f4ce75554c9b27376bf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 진리를 순종함으로 너희 영혼을 깨끗하게 하여 거짓이 없이 형제를 사랑하기에 이르렀으니 마음으로 뜨겁게 피차 사랑하라"
+      ],
+      "raw_text_hashes": [
+        "82269747e5934e9d20e43346ec8ca0cef8d1672ccde8f4ce75554c9b27376bf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:23",
+      "sequence": 30394,
+      "chapter_label": "1PE 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "having been born again, not of corruptible seed, but of incorruptible, through the word of God, which lives and remains forever.",
+      "ko": "너희가 거듭난 것이 썩어질 씨로 된 것이 아니요 썩지 아니할 씨로 된 것이니 하나님의 살아 있고 항상 있는 말씀으로 되었느니라",
+      "source_text_hash": "d6737868c5ca9329027f943e4b0cc668899628a3991455d746a2d2d79ee5de18",
+      "translation_text_hash": "66a8c04d57dd166bdf95e8bdc209833670869826ab27c337ff12c77cfffc3ea7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 거듭난 것이 썩어질 씨로 된 것이 아니요 썩지 아니할 씨로 된 것이니 하나님의 살아 있고 항상 있는 말씀으로 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "66a8c04d57dd166bdf95e8bdc209833670869826ab27c337ff12c77cfffc3ea7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:24",
+      "sequence": 30395,
+      "chapter_label": "1PE 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "For, “All flesh is like grass, and all of man’s glory like the flower in the grass. The grass withers, and its flower falls;",
+      "ko": "그러므로 모든 육체는 풀과 같고 그 모든 영광이 풀의 꽃과 같으니 풀은 마르고 꽃은 떨어지되",
+      "source_text_hash": "2d371ff30b06a1b4fe90bc537dfc956bb6212926cb8c9689f9e872544e795ef2",
+      "translation_text_hash": "3b3ae028ac6a16f8663e1a96f676eae102cb5733d5e02b00033155ff7e6c33fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 모든 육체는 풀과 같고 그 모든 영광이 풀의 꽃과 같으니 풀은 마르고 꽃은 떨어지되"
+      ],
+      "raw_text_hashes": [
+        "3b3ae028ac6a16f8663e1a96f676eae102cb5733d5e02b00033155ff7e6c33fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:1:25",
+      "sequence": 30396,
+      "chapter_label": "1PE 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "1PE",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "but the Lord’s word endures forever.” This is the word of Good News which was preached to you.",
+      "ko": "오직 주의 말씀은 세세토록 있도다 하였으니 너희에게 전한 복음이 곧 이 말씀이니라",
+      "source_text_hash": "fba9fe8a9b8cd236796446bf5476174e072956bec1d35a43f54145f22c325d09",
+      "translation_text_hash": "2577254556da4ba891486d6a0cee9a044ff91dc771cc8d01e5e8c1f8f959b450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 주의 말씀은 세세토록 있도다 하였으니 너희에게 전한 복음이 곧 이 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "2577254556da4ba891486d6a0cee9a044ff91dc771cc8d01e5e8c1f8f959b450"
+      ]
+    }
+  ]
+}

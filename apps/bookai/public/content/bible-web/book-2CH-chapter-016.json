@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:016",
+  "unit_ordinal": 383,
+  "unit_label": "2CH 16",
+  "book_code": "2CH",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:16:1",
+      "sequence": 11511,
+      "chapter_label": "2CH 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "In the thirty-sixth year of Asa’s reign, Baasha king of Israel went up against Judah, and built Ramah, that he might not allow anyone to go out or come in to Asa king of Judah.",
+      "ko": "아사왕 삼십 륙년에 이스라엘 왕 바아사가 유다를 치러 올라와서 라마를 건축하여 사람을 유다 왕 아사에게 왕래하지 못하게 하려 한지라",
+      "source_text_hash": "6adb540f9745d40a6be2d399f34951a5d31aec9e7874d1919c8d9528f0e84c4f",
+      "translation_text_hash": "a86490aea7f4b0c14488015b4ff0e61207aefc52487833272603dc1841ede58c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사왕 삼십 륙년에 이스라엘 왕 바아사가 유다를 치러 올라와서 라마를 건축하여 사람을 유다 왕 아사에게 왕래하지 못하게 하려 한지라"
+      ],
+      "raw_text_hashes": [
+        "a86490aea7f4b0c14488015b4ff0e61207aefc52487833272603dc1841ede58c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:2",
+      "sequence": 11512,
+      "chapter_label": "2CH 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "Then Asa brought out silver and gold out of the treasures of the LORD’s house and of the king’s house, and sent to Ben Hadad king of Syria, who lived at Damascus, saying,",
+      "ko": "아사가 여호와의 전 곳간과 왕궁 곳간의 은금을 취하여 다메섹에 거한 아람 왕 벤하닷에게 보내며 가로되",
+      "source_text_hash": "a3a06090183391bebc1e2deecdc32ea3b3bc6fa54fa205af0161545cadc250fe",
+      "translation_text_hash": "6bb16cbaa80da873e5e4690beabd5f7d16cc1675eba99f754b9f8a6f996d9808",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사가 여호와의 전 곳간과 왕궁 곳간의 은금을 취하여 다메섹에 거한 아람 왕 벤하닷에게 보내며 가로되"
+      ],
+      "raw_text_hashes": [
+        "6bb16cbaa80da873e5e4690beabd5f7d16cc1675eba99f754b9f8a6f996d9808"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:3",
+      "sequence": 11513,
+      "chapter_label": "2CH 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "“Let there be a treaty between me and you, as there was between my father and your father. Behold, I have sent you silver and gold. Go, break your treaty with Baasha king of Israel, that he may depart from me.”",
+      "ko": "내 부친과 당신의 부친 사이에와 같이 나와 당신 사이에 약조하자 내가 당신에게 은금을 보내노니 와서 이스라엘 왕 바아사와 세운 약조를 깨뜨려서 저로 나를 떠나게 하라 하매",
+      "source_text_hash": "72c93168c714f5bd0f2f04790efc78dc9f4895e6617c61c8e2db17416d37b421",
+      "translation_text_hash": "34ab0d5012dce7f7ce113a1e466b6bc94fc1ef0aa1de061e28d0aad30de76111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 부친과 당신의 부친 사이에와 같이 나와 당신 사이에 약조하자 내가 당신에게 은금을 보내노니 와서 이스라엘 왕 바아사와 세운 약조를 깨뜨려서 저로 나를 떠나게 하라 하매"
+      ],
+      "raw_text_hashes": [
+        "34ab0d5012dce7f7ce113a1e466b6bc94fc1ef0aa1de061e28d0aad30de76111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:4",
+      "sequence": 11514,
+      "chapter_label": "2CH 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "Ben Hadad listened to King Asa, and sent the captains of his armies against the cities of Israel; and they struck Ijon, Dan, Abel Maim, and all the storage cities of Naphtali.",
+      "ko": "벤하닷이 아사왕의 말을 듣고 그 군대 장관들을 보내어 이스라엘 두어 성읍을 치되 이욘과 단과 아벨마임과 납달리의 모든 국고성을 쳤더니",
+      "source_text_hash": "d1f3a83f91deb036d43ba8819307b34a8aa199efcbd3418527d3121694be177b",
+      "translation_text_hash": "0424d8d8c0eb4a833729edc6a818045a515484bfa6debdc2301d222472df3181",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벤하닷이 아사왕의 말을 듣고 그 군대 장관들을 보내어 이스라엘 두어 성읍을 치되 이욘과 단과 아벨마임과 납달리의 모든 국고성을 쳤더니"
+      ],
+      "raw_text_hashes": [
+        "0424d8d8c0eb4a833729edc6a818045a515484bfa6debdc2301d222472df3181"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:5",
+      "sequence": 11515,
+      "chapter_label": "2CH 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "When Baasha heard of it, he stopped building Ramah, and let his work cease.",
+      "ko": "바아사가 듣고 라마 건축하는 일을 파하여 그 공역을 그친지라",
+      "source_text_hash": "0b5134d99d290e1b7c4ceba5e1b48c2cf6b4c2b80d6a587e793e53112d43e2d3",
+      "translation_text_hash": "f6f58ff3a1a55292eb7c39fdb0c56a87fff8642b3441d0a6ecf707bddf661718",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바아사가 듣고 라마 건축하는 일을 파하여 그 공역을 그친지라"
+      ],
+      "raw_text_hashes": [
+        "f6f58ff3a1a55292eb7c39fdb0c56a87fff8642b3441d0a6ecf707bddf661718"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:6",
+      "sequence": 11516,
+      "chapter_label": "2CH 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "Then Asa the king took all Judah, and they carried away the stones and timber of Ramah, with which Baasha had built; and he built Geba and Mizpah with them.",
+      "ko": "아사왕이 온 유다 무리를 거느리고 바아사가 라마를 건축하던 돌과 재목을 수운하여다가 게바와 미스바를 건축하였더라",
+      "source_text_hash": "576082df721a4151658fc8fc7b429c3873b328e4a2d5177769a1df7ad3f23c09",
+      "translation_text_hash": "bedc2c0927867362ce75dc009ab9636b516af0e307a30d55085be102cf27cbf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사왕이 온 유다 무리를 거느리고 바아사가 라마를 건축하던 돌과 재목을 수운하여다가 게바와 미스바를 건축하였더라"
+      ],
+      "raw_text_hashes": [
+        "bedc2c0927867362ce75dc009ab9636b516af0e307a30d55085be102cf27cbf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:7",
+      "sequence": 11517,
+      "chapter_label": "2CH 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "At that time Hanani the seer came to Asa king of Judah, and said to him, “Because you have relied on the king of Syria, and have not relied on the LORD your God, therefore the army of the king of Syria has escaped out of your hand.",
+      "ko": "때에 선견자 하나니가 유다 왕 아사에게 나아와서 이르되 왕이 아람 왕을 의지하고 왕의 하나님 여호와를 의지하지 아니한고로 아람 왕의 군대가 왕의 손에서 벗어났나이다",
+      "source_text_hash": "1ce3f94e39c4fb2ca652c37942ad5e9a0a603705e3595f593f9563e6a3aba501",
+      "translation_text_hash": "aa3dae5cef9e8151761407c6fe79a56a9e6525bdfd0d97ec7c64aa31f2d8fd28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 선견자 하나니가 유다 왕 아사에게 나아와서 이르되 왕이 아람 왕을 의지하고 왕의 하나님 여호와를 의지하지 아니한고로 아람 왕의 군대가 왕의 손에서 벗어났나이다"
+      ],
+      "raw_text_hashes": [
+        "aa3dae5cef9e8151761407c6fe79a56a9e6525bdfd0d97ec7c64aa31f2d8fd28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:8",
+      "sequence": 11518,
+      "chapter_label": "2CH 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Weren’t the Ethiopians and the Lubim a huge army, with chariots and exceedingly many horsemen? Yet, because you relied on the LORD, he delivered them into your hand.",
+      "ko": "구스 사람과 룹 사람의 군대가 크지 아니하며 말과 병거가 심히 많지 아니하더이까 그러나 왕이 여호와를 의지한고로 여호와께서 왕의 손에 붙이셨나이다",
+      "source_text_hash": "71dbd0d38348315a78618eccef5fefb7ca41491af57046c27c030ab8f5bac6c9",
+      "translation_text_hash": "bdc048c3a99a23e5ed6f3d772c2bd9250af462219b86dd0f7cb7dac3eeebec31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구스 사람과 룹 사람의 군대가 크지 아니하며 말과 병거가 심히 많지 아니하더이까 그러나 왕이 여호와를 의지한고로 여호와께서 왕의 손에 붙이셨나이다"
+      ],
+      "raw_text_hashes": [
+        "bdc048c3a99a23e5ed6f3d772c2bd9250af462219b86dd0f7cb7dac3eeebec31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:9",
+      "sequence": 11519,
+      "chapter_label": "2CH 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "For the LORD’s eyes run back and forth throughout the whole earth, to show himself strong in the behalf of them whose heart is perfect toward him. You have done foolishly in this; for from now on you will have wars.”",
+      "ko": "여호와의 눈은 온 땅을 두루 감찰하사 전심으로 자기에게 향하는 자를 위하여 능력을 베푸시나니 이 일은 왕이 망령되이 행하였은즉 이 후부터는 왕에게 전쟁이 있으리이다 하매",
+      "source_text_hash": "de177e1a2e86ef1238d1b304cfc6cae78111685709f81077c9c85d63f7b1e9a0",
+      "translation_text_hash": "7e3576c40f38562ac137a007d4bb0c080f45753895ed40eddb14f939a855b2f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 눈은 온 땅을 두루 감찰하사 전심으로 자기에게 향하는 자를 위하여 능력을 베푸시나니 이 일은 왕이 망령되이 행하였은즉 이 후부터는 왕에게 전쟁이 있으리이다 하매"
+      ],
+      "raw_text_hashes": [
+        "7e3576c40f38562ac137a007d4bb0c080f45753895ed40eddb14f939a855b2f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:10",
+      "sequence": 11520,
+      "chapter_label": "2CH 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "Then Asa was angry with the seer, and put him in the prison; for he was in a rage with him because of this thing. Asa oppressed some of the people at the same time.",
+      "ko": "아사가 노하여 선견자를 옥에 가두었으니 이는 그 말에 크게 노하였음이며 그 때에 아사가 또 몇 백성을 학대하였더라",
+      "source_text_hash": "2025737e97f2f2f4a6968e976b886f2d1c46fa60e08b1ce58c20a5c088d503fb",
+      "translation_text_hash": "da4bfb0c67cbc0e74ca704e5ae6f5efca81dbb606f92e72708eac26435276857",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사가 노하여 선견자를 옥에 가두었으니 이는 그 말에 크게 노하였음이며 그 때에 아사가 또 몇 백성을 학대하였더라"
+      ],
+      "raw_text_hashes": [
+        "da4bfb0c67cbc0e74ca704e5ae6f5efca81dbb606f92e72708eac26435276857"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:11",
+      "sequence": 11521,
+      "chapter_label": "2CH 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, the acts of Asa, first and last, behold, they are written in the book of the kings of Judah and Israel.",
+      "ko": "아사의 시종 행적은 유다와 이스라엘 열왕기에 기록되니라",
+      "source_text_hash": "00fcb52ebad673e29a5b80cfed9b607ba488b4ffc0cb590c7c3fbb40034d4b12",
+      "translation_text_hash": "d134d7efc8ce6902178a7645a91fd62d194504453db67a3d51a6e2fd77d0d8f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사의 시종 행적은 유다와 이스라엘 열왕기에 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "d134d7efc8ce6902178a7645a91fd62d194504453db67a3d51a6e2fd77d0d8f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:12",
+      "sequence": 11522,
+      "chapter_label": "2CH 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "In the thirty-ninth year of his reign, Asa was diseased in his feet. His disease was exceedingly great; yet in his disease he didn’t seek the LORD, but just the physicians.",
+      "ko": "아사가 왕이 된지 삼십 구년에 그 발이 병들어 심히 중하나 병이 있을 때에 저가 여호와께 구하지 아니하고 의원들에게 구하였더라",
+      "source_text_hash": "810fbe066aa03a857f837ef8f763cac5559c1323c98cc545f5769df68d2a671a",
+      "translation_text_hash": "12ca87ed3c2ebc9b851f0bd7892b8c63486662c8cf0fea0ca816e076119f736f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사가 왕이 된지 삼십 구년에 그 발이 병들어 심히 중하나 병이 있을 때에 저가 여호와께 구하지 아니하고 의원들에게 구하였더라"
+      ],
+      "raw_text_hashes": [
+        "12ca87ed3c2ebc9b851f0bd7892b8c63486662c8cf0fea0ca816e076119f736f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:13",
+      "sequence": 11523,
+      "chapter_label": "2CH 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "Asa slept with his fathers, and died in the forty-first year of his reign.",
+      "ko": "아사가 위에 있은지 사십 일년에 죽어 그 열조와 함께 자매",
+      "source_text_hash": "fe17f3105ada63d3fc582dadaa872eb9ecddebd82a99059d4264e4a5e8861b4b",
+      "translation_text_hash": "5b812a152749f8b1d03f6493347701beb5a07e5921e891d48506de36a0dd68a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사가 위에 있은지 사십 일년에 죽어 그 열조와 함께 자매"
+      ],
+      "raw_text_hashes": [
+        "5b812a152749f8b1d03f6493347701beb5a07e5921e891d48506de36a0dd68a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:16:14",
+      "sequence": 11524,
+      "chapter_label": "2CH 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "They buried him in his own tomb, which he had dug out for himself in David’s city, and laid him in the bed which was filled with sweet odors and various kinds of spices prepared by the perfumers’ art; and they made a very great fire for him.",
+      "ko": "다윗성에 자기를 위하여 파 두었던 묘실에 무리가 장사하되 그 시체를 법대로 만든 각양 향재료를 가득히 채운 상에 두고 또 위하여 많이 분향하였더라",
+      "source_text_hash": "1763b9f5f49e8e4324929aee100bb2ea21c735c33fa478f2924c83b401776724",
+      "translation_text_hash": "9a88b27a12cbd73dd9cc3cdc8f7ff0c33f392958733d8e505d2a27d6f11287cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗성에 자기를 위하여 파 두었던 묘실에 무리가 장사하되 그 시체를 법대로 만든 각양 향재료를 가득히 채운 상에 두고 또 위하여 많이 분향하였더라"
+      ],
+      "raw_text_hashes": [
+        "9a88b27a12cbd73dd9cc3cdc8f7ff0c33f392958733d8e505d2a27d6f11287cd"
+      ]
+    }
+  ]
+}

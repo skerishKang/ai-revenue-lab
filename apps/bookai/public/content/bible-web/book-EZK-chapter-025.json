@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:025",
+  "unit_ordinal": 827,
+  "unit_label": "EZK 25",
+  "book_code": "EZK",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:25:1",
+      "sequence": 21085,
+      "chapter_label": "EZK 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:2",
+      "sequence": 21086,
+      "chapter_label": "EZK 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, set your face toward the children of Ammon, and prophesy against them.",
+      "ko": "인자야 암몬 족속을 향하여 그들을 쳐서 예언하라 너는 암몬 족속에게 이르기를 너희는 주 여호와의 말씀을 들을찌어다 주 여호와의 말씀에 내 성소를 더럽힐 때에 네가 그것을 대하여, 이스라엘 땅이 황무할 때에 네가 그것을 대하여, 유다 족속이 사로잡힐 때에 네가 그들을 대하여 이르기를 아하 좋다 하였도다",
+      "source_text_hash": "ced693e21edaaf460f939ee8f45d3be3ced6a0ec727453098c12a79d5e859dcc",
+      "translation_text_hash": "546beb215590fd768f76735ee7698f3bb2d6fabfcdd23e82435e26b1743bf0db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 암몬 족속을 향하여 그들을 쳐서 예언하라 너는 암몬 족속에게 이르기를 너희는 주 여호와의 말씀을 들을찌어다 주 여호와의 말씀에 내 성소를 더럽힐 때에 네가 그것을 대하여, 이스라엘 땅이 황무할 때에 네가 그것을 대하여, 유다 족속이 사로잡힐 때에 네가 그들을 대하여 이르기를 아하 좋다 하였도다"
+      ],
+      "raw_text_hashes": [
+        "546beb215590fd768f76735ee7698f3bb2d6fabfcdd23e82435e26b1743bf0db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:3",
+      "sequence": 21087,
+      "chapter_label": "EZK 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "Tell the children of Ammon, ‘Hear the word of the Lord GOD! The Lord GOD says, “Because you said, ‘Aha!’ against my sanctuary when it was profaned, and against the land of Israel when it was made desolate, and against the house of Judah when they went into captivity,",
+      "ko": "(2절에 포함되어 있음)",
+      "source_text_hash": "a21f2fd09ef5415d1634f36c0ae5f86fac2077a54158aede2f133266468b363a",
+      "translation_text_hash": "07656b50f41822f5bb5b5526a53474ff98b41282acf1da78f2ac89ececd1d0fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(2절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "07656b50f41822f5bb5b5526a53474ff98b41282acf1da78f2ac89ececd1d0fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:4",
+      "sequence": 21088,
+      "chapter_label": "EZK 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "therefore, behold, I will deliver you to the children of the east for a possession. They will set their encampments in you and make their dwellings in you. They will eat your fruit and they will drink your milk.",
+      "ko": "그러므로 내가 너를 동방 사람에게 기업으로 붙이리니 그들이 네 가운데 진을 치며 네 가운데 그 거처를 베풀며 네 실과를 먹으며 네 젖을 마실찌라",
+      "source_text_hash": "22dff6e3329ae9f3a7be7b43c4cadec338018a998c70ee5ce95e32d58ca33cba",
+      "translation_text_hash": "c20dfba33bad3d35ee6567041a3b50b619acbf31ae3627e4cb579fdacc01d88a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 너를 동방 사람에게 기업으로 붙이리니 그들이 네 가운데 진을 치며 네 가운데 그 거처를 베풀며 네 실과를 먹으며 네 젖을 마실찌라"
+      ],
+      "raw_text_hashes": [
+        "c20dfba33bad3d35ee6567041a3b50b619acbf31ae3627e4cb579fdacc01d88a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:5",
+      "sequence": 21089,
+      "chapter_label": "EZK 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "I will make Rabbah a stable for camels and the children of Ammon a resting place for flocks. Then you will know that I am the LORD.”",
+      "ko": "내가 랍바로 약대의 우리를 만들며 암몬 족속의 땅으로 양무리의 눕는 곳을 삼은즉 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "040ad61e0a525453793123dc745f59db0c33fc7319167df2bd2b75b0725f384c",
+      "translation_text_hash": "cbca7318acce6eb4da8e52e591f04e586dd9222db6d1aa96bf4913fb492d2283",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 랍바로 약대의 우리를 만들며 암몬 족속의 땅으로 양무리의 눕는 곳을 삼은즉 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "cbca7318acce6eb4da8e52e591f04e586dd9222db6d1aa96bf4913fb492d2283"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:6",
+      "sequence": 21090,
+      "chapter_label": "EZK 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "For the Lord GOD says: “Because you have clapped your hands, stamped with the feet, and rejoiced with all the contempt of your soul against the land of Israel,",
+      "ko": "나 주 여호와가 말하노라 네가 이스라엘 땅을 대하여 손뼉을 치며 발을 구르며 마음을 다하여 멸시하며 즐거워하였나니",
+      "source_text_hash": "fb6fcbfd1a7cbcf70e5a2c4c55787a91b2239f11ad41b1fbc38825e1e032ad23",
+      "translation_text_hash": "bc022d7b7ea395d160ced8ec137026ebb732971ec36e631252fec62c2a7b4e54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 네가 이스라엘 땅을 대하여 손뼉을 치며 발을 구르며 마음을 다하여 멸시하며 즐거워하였나니"
+      ],
+      "raw_text_hashes": [
+        "bc022d7b7ea395d160ced8ec137026ebb732971ec36e631252fec62c2a7b4e54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:7",
+      "sequence": 21091,
+      "chapter_label": "EZK 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "therefore, behold, I have stretched out my hand on you, and will deliver you for a plunder to the nations. I will cut you off from the peoples, and I will cause you to perish out of the countries. I will destroy you. Then you will know that I am the LORD.”",
+      "ko": "그런즉 내가 손을 네 위에 펴서 너를 다른 민족에게 붙여 노략을 당하게 하며 너를 만민 중에 끊어 버리며 너를 열국 중에서 패망케 하여 멸하리니 네가 나를 여호와인줄 알리라 하셨다 하라",
+      "source_text_hash": "8d06a6f3d2eeba410a2ba6e85c0aa9c141683e52f4f57323df352e469f0e3a00",
+      "translation_text_hash": "c051bf20c3d3c129cd1ae4800c3628cc08e1d2c08279e5493bc009bfb6d43700",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내가 손을 네 위에 펴서 너를 다른 민족에게 붙여 노략을 당하게 하며 너를 만민 중에 끊어 버리며 너를 열국 중에서 패망케 하여 멸하리니 네가 나를 여호와인줄 알리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "c051bf20c3d3c129cd1ae4800c3628cc08e1d2c08279e5493bc009bfb6d43700"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:8",
+      "sequence": 21092,
+      "chapter_label": "EZK 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "“‘The Lord GOD says: “Because Moab and Seir say, ‘Behold, the house of Judah is like all the nations,’",
+      "ko": "나 주 여호와가 말하노라 모압과 세일이 이르기를 유다 족속은 모든 이방과 일반이라 하도다",
+      "source_text_hash": "87f963645c8458c2614e92922e17313eea49bcf31789bc881c64bb432841abe3",
+      "translation_text_hash": "a4a8e8ef1b239a51899d1854dce8d3ad88a65e22c5eabd9f0f2ab749d2405489",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 모압과 세일이 이르기를 유다 족속은 모든 이방과 일반이라 하도다"
+      ],
+      "raw_text_hashes": [
+        "a4a8e8ef1b239a51899d1854dce8d3ad88a65e22c5eabd9f0f2ab749d2405489"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:9",
+      "sequence": 21093,
+      "chapter_label": "EZK 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "therefore, behold, I will open the side of Moab from the cities, from his cities which are on its frontiers, the glory of the country, Beth Jeshimoth, Baal Meon, and Kiriathaim,",
+      "ko": "그러므로 내가 모압의 한편 곧 그 나라 변경에 있는 영화로운 성읍들 벧여시못과 바알므온과 기랴다임을 열고",
+      "source_text_hash": "ac82302418bad5e8c12fef8fbcbfc1c377cf62531709f0b591b4f64d1b383d8f",
+      "translation_text_hash": "4c6a39b1c031ed39938b5c5f36c9e8f69fd48e2b09be15e74ef768c2151570df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 모압의 한편 곧 그 나라 변경에 있는 영화로운 성읍들 벧여시못과 바알므온과 기랴다임을 열고"
+      ],
+      "raw_text_hashes": [
+        "4c6a39b1c031ed39938b5c5f36c9e8f69fd48e2b09be15e74ef768c2151570df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:10",
+      "sequence": 21094,
+      "chapter_label": "EZK 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "to the children of the east, to go against the children of Ammon; and I will give them for a possession, that the children of Ammon may not be remembered among the nations.",
+      "ko": "암몬 족속 일반으로 동방 사람에게 붙여 기업을 삼게 할것이라 암몬 족속으로 다시는 이방 가운데서 기억되지 아니하게 하려니와",
+      "source_text_hash": "60a919da921549584e3511504c2bf66cf3e52c308f504aa310d4f4730715ef46",
+      "translation_text_hash": "b5ec893e68e2cfd2e3d9ff70de57c7efac083c5175952f3a9a67f432b1111dc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 족속 일반으로 동방 사람에게 붙여 기업을 삼게 할것이라 암몬 족속으로 다시는 이방 가운데서 기억되지 아니하게 하려니와"
+      ],
+      "raw_text_hashes": [
+        "b5ec893e68e2cfd2e3d9ff70de57c7efac083c5175952f3a9a67f432b1111dc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:11",
+      "sequence": 21095,
+      "chapter_label": "EZK 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "I will execute judgments on Moab. Then they will know that I am the LORD.”",
+      "ko": "내가 모압에 벌을 내리리니 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "64b20a35142bbbcf81221c49500d692a692502a55933faf2e6c5b21095b9555f",
+      "translation_text_hash": "1b19fd3f4e3f1ac2fda851eb8d1fbc3a2f45d163a6211d3f04e9613e09fe4047",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 모압에 벌을 내리리니 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "1b19fd3f4e3f1ac2fda851eb8d1fbc3a2f45d163a6211d3f04e9613e09fe4047"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:12",
+      "sequence": 21096,
+      "chapter_label": "EZK 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "“‘The Lord GOD says: “Because Edom has dealt against the house of Judah by taking vengeance, and has greatly offended, and taken revenge on them,”",
+      "ko": "나 주 여호와가 말하노라 에돔이 유다 족속을 쳐서 원수를 갚았고 원수를 갚음으로 심히 범죄하였도다",
+      "source_text_hash": "45319695abe13a88920c345b5f6b846db9b248d0bf57a5f415f46294ee1156eb",
+      "translation_text_hash": "e0873287dc94af2c312cf6475b5f561e0faef8c152a47dd5a7b11c71c7367ce5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 에돔이 유다 족속을 쳐서 원수를 갚았고 원수를 갚음으로 심히 범죄하였도다"
+      ],
+      "raw_text_hashes": [
+        "e0873287dc94af2c312cf6475b5f561e0faef8c152a47dd5a7b11c71c7367ce5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:13",
+      "sequence": 21097,
+      "chapter_label": "EZK 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "therefore the Lord GOD says, “I will stretch out my hand on Edom, and will cut off man and animal from it; and I will make it desolate from Teman. They will fall by the sword even to Dedan.",
+      "ko": "그러므로 나 주 여호와가 말하노라 내가 내 손을 에돔 위에 펴서 사람과 짐승을 그 가운데서 끊어 데만에서부터 황무하게 하리니 드단까지 칼에 엎드러지리라",
+      "source_text_hash": "f11dd5922f71e44b559627c083de8c57c212eca17ce625323e4ace59540fe1d1",
+      "translation_text_hash": "fcd56dfc0536502555a0abbbbd39ff721a1e1bcde4c3c70f300f46d79fce908f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 내가 내 손을 에돔 위에 펴서 사람과 짐승을 그 가운데서 끊어 데만에서부터 황무하게 하리니 드단까지 칼에 엎드러지리라"
+      ],
+      "raw_text_hashes": [
+        "fcd56dfc0536502555a0abbbbd39ff721a1e1bcde4c3c70f300f46d79fce908f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:14",
+      "sequence": 21098,
+      "chapter_label": "EZK 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "I will lay my vengeance on Edom by the hand of my people Israel. They will do in Edom according to my anger and according to my wrath. Then they will know my vengeance,” says the Lord GOD.",
+      "ko": "내가 내 백성 이스라엘의 손을 빙자하여 내 원수를 에돔에게 갚으리니 그들이 내 노와 분을 따라 에돔에 행한즉 내가 원수를 갚음인줄을 에돔이 알리라 나 주 여호와의 말이니라",
+      "source_text_hash": "ae541698da8f487fb3e8ff047da2579161c65d7d91e9481c69259eec461729bd",
+      "translation_text_hash": "d4e49b88ee8ba7a7f47fdd3abfe594d8888597d6d48d45329f09916aacc32e48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 백성 이스라엘의 손을 빙자하여 내 원수를 에돔에게 갚으리니 그들이 내 노와 분을 따라 에돔에 행한즉 내가 원수를 갚음인줄을 에돔이 알리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "d4e49b88ee8ba7a7f47fdd3abfe594d8888597d6d48d45329f09916aacc32e48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:15",
+      "sequence": 21099,
+      "chapter_label": "EZK 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "“‘The Lord GOD says: “Because the Philistines have taken revenge, and have taken vengeance with contempt of soul to destroy with perpetual hostility,”",
+      "ko": "나 주 여호와가 말하노라 블레셋 사람이 옛날부터 미워하여 멸시하는 마음으로 원수를 갚아 진멸코자 하였도다",
+      "source_text_hash": "8f37ddede44504e47caaf54fe2c53d7c3a14b04f270c3b1ca9b47553e9449b22",
+      "translation_text_hash": "fd92242ec637f927a9b81b16918dcbcdcb7804f3e38d1c630b9a88ebd4674eac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 블레셋 사람이 옛날부터 미워하여 멸시하는 마음으로 원수를 갚아 진멸코자 하였도다"
+      ],
+      "raw_text_hashes": [
+        "fd92242ec637f927a9b81b16918dcbcdcb7804f3e38d1c630b9a88ebd4674eac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:16",
+      "sequence": 21100,
+      "chapter_label": "EZK 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "therefore the Lord GOD says, “Behold, I will stretch out my hand on the Philistines, and I will cut off the Cherethites, and destroy the remnant of the sea coast.",
+      "ko": "그러므로 나 주 여호와가 말하노라 내가 블레셋 사람 위에 손을 펴서 그렛 사람을 끊으며 해변에 남은 자를 진멸하되",
+      "source_text_hash": "b5c1bc6faaaa3b3e2348387eac643496098bc60178447315cbcd69f8f39aa7a4",
+      "translation_text_hash": "8d3a64c9d2c66031f8e2ce076756472cd7d9c0da5b12f15ad993417e051e0336",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 내가 블레셋 사람 위에 손을 펴서 그렛 사람을 끊으며 해변에 남은 자를 진멸하되"
+      ],
+      "raw_text_hashes": [
+        "8d3a64c9d2c66031f8e2ce076756472cd7d9c0da5b12f15ad993417e051e0336"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:25:17",
+      "sequence": 21101,
+      "chapter_label": "EZK 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "I will execute great vengeance on them with wrathful rebukes. Then they will know that I am the LORD, when I lay my vengeance on them.”’”",
+      "ko": "분노의 책벌로 내 원수를 그들에게 크게 갚으리라 내가 그들에게 원수를 갚은즉 그들이 나를 여호와인줄 알리라 하시니라",
+      "source_text_hash": "776d648c1dca19bdc465018b63d923042cfb93dad846f3f4d1362252b10770d7",
+      "translation_text_hash": "0de4d3317ded8cab484e6553450941e06085f477094bcc5fae3b4cb2e16c7e48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "분노의 책벌로 내 원수를 그들에게 크게 갚으리라 내가 그들에게 원수를 갚은즉 그들이 나를 여호와인줄 알리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "0de4d3317ded8cab484e6553450941e06085f477094bcc5fae3b4cb2e16c7e48"
+      ]
+    }
+  ]
+}

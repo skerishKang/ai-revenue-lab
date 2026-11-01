@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1JN:chapter:004",
+  "unit_ordinal": 1163,
+  "unit_label": "1JN 4",
+  "book_code": "1JN",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1JN:4:1",
+      "sequence": 30601,
+      "chapter_label": "1JN 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Beloved, don’t believe every spirit, but test the spirits, whether they are of God, because many false prophets have gone out into the world.",
+      "ko": "사랑하는 자들아 영을 다 믿지 말고 오직 영들이 하나님께 속하였나 시험하라 많은 거짓 선지자가 세상에 나왔음이니라",
+      "source_text_hash": "0f0c754b2f197659f14561ae11d80427be89341c5aad231ebe3a7cc57889b69e",
+      "translation_text_hash": "b8672f6ed4dce01cd37a41ee0fb3fe1b6b6e1667f2f59db20ee83855462a728c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 영을 다 믿지 말고 오직 영들이 하나님께 속하였나 시험하라 많은 거짓 선지자가 세상에 나왔음이니라"
+      ],
+      "raw_text_hashes": [
+        "b8672f6ed4dce01cd37a41ee0fb3fe1b6b6e1667f2f59db20ee83855462a728c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:2",
+      "sequence": 30602,
+      "chapter_label": "1JN 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "By this you know the Spirit of God: every spirit who confesses that Jesus Christ has come in the flesh is of God,",
+      "ko": "하나님의 영은 이것으로 알찌니 곧 예수 그리스도께서 육체로 오신 것을 시인하는 영마다 하나님께 속한 것이요",
+      "source_text_hash": "86804e175990aec21b7b9284b1d66af622a5b66148005c0e81a39ee77256b73a",
+      "translation_text_hash": "9c565df227be9a6feaa69654e070f06f13a4aefcb3f2e24a45b28d5170286490",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 영은 이것으로 알찌니 곧 예수 그리스도께서 육체로 오신 것을 시인하는 영마다 하나님께 속한 것이요"
+      ],
+      "raw_text_hashes": [
+        "9c565df227be9a6feaa69654e070f06f13a4aefcb3f2e24a45b28d5170286490"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:3",
+      "sequence": 30603,
+      "chapter_label": "1JN 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "and every spirit who doesn’t confess that Jesus Christ has come in the flesh is not of God; and this is the spirit of the Antichrist, of whom you have heard that it comes. Now it is in the world already.",
+      "ko": "예수를 시인하지 아니하는 영마다 하나님께 속한 것이 아니니 이것이 곧 적그리스도의 영이니라 오리라 한 말을 너희가 들었거니와 이제 벌써 세상에 있느니라",
+      "source_text_hash": "8858515413b2600f1965139ac4be73cc481068a72ea6ec6ba70d16fce01cab90",
+      "translation_text_hash": "21fffb58750f433a077b7f1cd8c1f2a1f7a249c0d3ba08fde64ee56eb21122cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 시인하지 아니하는 영마다 하나님께 속한 것이 아니니 이것이 곧 적그리스도의 영이니라 오리라 한 말을 너희가 들었거니와 이제 벌써 세상에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "21fffb58750f433a077b7f1cd8c1f2a1f7a249c0d3ba08fde64ee56eb21122cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:4",
+      "sequence": 30604,
+      "chapter_label": "1JN 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "You are of God, little children, and have overcome them, because greater is he who is in you than he who is in the world.",
+      "ko": "자녀들아 너희는 하나님께 속하였고 또 저희를 이기었나니 이는 너희 안에 계신 이가 세상에 있는 이보다 크심이라",
+      "source_text_hash": "c5be4f20c9fda063c000a20a0ce452e9a5377bc5c3b85364775ee02383b71192",
+      "translation_text_hash": "5acde7d7156166f1e53be970c6e2c9bdf1183a8fe6f73dec0eb1f47c413380d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀들아 너희는 하나님께 속하였고 또 저희를 이기었나니 이는 너희 안에 계신 이가 세상에 있는 이보다 크심이라"
+      ],
+      "raw_text_hashes": [
+        "5acde7d7156166f1e53be970c6e2c9bdf1183a8fe6f73dec0eb1f47c413380d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:5",
+      "sequence": 30605,
+      "chapter_label": "1JN 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "They are of the world. Therefore they speak of the world, and the world hears them.",
+      "ko": "저희는 세상에 속한고로 세상에 속한 말을 하매 세상이 저희 말을 듣느니라",
+      "source_text_hash": "a8d7cdca611cbf1f7f50ec398eea0b9728c24f732a7beeaed136fd05f921af15",
+      "translation_text_hash": "825a1e0e5a927157a93ecb4071675832bb247afbf38067e7e041e3fb007ab013",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 세상에 속한고로 세상에 속한 말을 하매 세상이 저희 말을 듣느니라"
+      ],
+      "raw_text_hashes": [
+        "825a1e0e5a927157a93ecb4071675832bb247afbf38067e7e041e3fb007ab013"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:6",
+      "sequence": 30606,
+      "chapter_label": "1JN 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "We are of God. He who knows God listens to us. He who is not of God doesn’t listen to us. By this we know the spirit of truth, and the spirit of error.",
+      "ko": "우리는 하나님께 속하였으니 하나님을 아는 자는 우리의 말을 듣고 하나님께 속하지 아니한 자는 우리의 말을 듣지 아니하나니 진리의 영과 미혹의 영을 이로써 아느니라",
+      "source_text_hash": "2987d98296d609097d840232692810e623f4671d79171907c1db53846143044f",
+      "translation_text_hash": "a57636b56aa41624ab078b46405533a4490294161417f99566e9a65d2bbc727a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 하나님께 속하였으니 하나님을 아는 자는 우리의 말을 듣고 하나님께 속하지 아니한 자는 우리의 말을 듣지 아니하나니 진리의 영과 미혹의 영을 이로써 아느니라"
+      ],
+      "raw_text_hashes": [
+        "a57636b56aa41624ab078b46405533a4490294161417f99566e9a65d2bbc727a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:7",
+      "sequence": 30607,
+      "chapter_label": "1JN 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Beloved, let’s love one another, for love is of God; and everyone who loves has been born of God and knows God.",
+      "ko": "사랑하는 자들아 우리가 서로 사랑하자 사랑은 하나님께 속한것이니 사랑하는 자마다 하나님께로 나서 하나님을 알고",
+      "source_text_hash": "b8f2fc0b547c37bc03b8cf41f061b2a506c85ff7fac3cc4c7ff58709c1aa4180",
+      "translation_text_hash": "4dbb737da4942bfffe25cde9eb4f8f036db82d64a20d47fc261bb3be607f3463",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 우리가 서로 사랑하자 사랑은 하나님께 속한것이니 사랑하는 자마다 하나님께로 나서 하나님을 알고"
+      ],
+      "raw_text_hashes": [
+        "4dbb737da4942bfffe25cde9eb4f8f036db82d64a20d47fc261bb3be607f3463"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:8",
+      "sequence": 30608,
+      "chapter_label": "1JN 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "He who doesn’t love doesn’t know God, for God is love.",
+      "ko": "사랑하지 아니하는 자는 하나님을 알지 못하나니 이는 하나님은 사랑이심이라",
+      "source_text_hash": "54349aa686285bc85d86d652aab2f6d0dbb2609054b7ca659f72c3bc0a586f66",
+      "translation_text_hash": "3ffba8b0475cdf0b94abd1f5ac1316a0635fefb16bcf49429687fb60a02d3c21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하지 아니하는 자는 하나님을 알지 못하나니 이는 하나님은 사랑이심이라"
+      ],
+      "raw_text_hashes": [
+        "3ffba8b0475cdf0b94abd1f5ac1316a0635fefb16bcf49429687fb60a02d3c21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:9",
+      "sequence": 30609,
+      "chapter_label": "1JN 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "By this God’s love was revealed in us, that God has sent his only born Son into the world that we might live through him.",
+      "ko": "하나님의 사랑이 우리에게 이렇게 나타난바 되었으니 하나님이 자기의 독생자를 세상에 보내심은 저로 말미암아 우리를 살리려 하심이니라",
+      "source_text_hash": "a468bd95e6b065b5cc05c5b53c9a1bee6fd5fef6e6f7f8728d96f9ee949dc809",
+      "translation_text_hash": "f4fc748ebecca9f4714a598ec36dca16aaec7500a62ec19aea289459d0cc3ab0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사랑이 우리에게 이렇게 나타난바 되었으니 하나님이 자기의 독생자를 세상에 보내심은 저로 말미암아 우리를 살리려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "f4fc748ebecca9f4714a598ec36dca16aaec7500a62ec19aea289459d0cc3ab0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:10",
+      "sequence": 30610,
+      "chapter_label": "1JN 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "In this is love, not that we loved God, but that he loved us, and sent his Son as the atoning sacrifice for our sins.",
+      "ko": "사랑은 여기 있으니 우리가 하나님을 사랑한 것이 아니요 오직 하나님이 우리를 사랑하사 우리 죄를 위하여 화목제로 그 아들을 보내셨음이니라",
+      "source_text_hash": "92008c5c864e72211f4f4588e9b81ff19c334f3788780a8505cee7f466b5dbde",
+      "translation_text_hash": "d16bf5c14b9c84c12b7839a09a822b9ffc95404da640d94cf1fa478230fa1491",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑은 여기 있으니 우리가 하나님을 사랑한 것이 아니요 오직 하나님이 우리를 사랑하사 우리 죄를 위하여 화목제로 그 아들을 보내셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "d16bf5c14b9c84c12b7839a09a822b9ffc95404da640d94cf1fa478230fa1491"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:11",
+      "sequence": 30611,
+      "chapter_label": "1JN 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Beloved, if God loved us in this way, we also ought to love one another.",
+      "ko": "사랑하는 자들아 하나님이 이같이 우리를 사랑하셨은즉 우리도 서로 사랑하는 것이 마땅하도다",
+      "source_text_hash": "5de48e6143fdd9651989f9d3931395244eb91399c3c9e2b4fd8e6658defd42c8",
+      "translation_text_hash": "2a4a779434013e61a163bb74a62d7a1dd82fccb7cbb65d81e719c67f78a67500",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 하나님이 이같이 우리를 사랑하셨은즉 우리도 서로 사랑하는 것이 마땅하도다"
+      ],
+      "raw_text_hashes": [
+        "2a4a779434013e61a163bb74a62d7a1dd82fccb7cbb65d81e719c67f78a67500"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:12",
+      "sequence": 30612,
+      "chapter_label": "1JN 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "No one has seen God at any time. If we love one another, God remains in us, and his love has been perfected in us.",
+      "ko": "어느 때나 하나님을 본 사람이 없으되 만일 우리가 서로 사랑하면 하나님이 우리 안에 거하시고 그의 사랑이 우리 안에 온전히 이루느니라",
+      "source_text_hash": "b15b02bfb208f25cd30572c6a1cf9994017be47f5cafb476cabc3e1043036958",
+      "translation_text_hash": "47db95b3f46630a0975800a07eecbe5b65421c1724056098aba7a466dbed3019",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 때나 하나님을 본 사람이 없으되 만일 우리가 서로 사랑하면 하나님이 우리 안에 거하시고 그의 사랑이 우리 안에 온전히 이루느니라"
+      ],
+      "raw_text_hashes": [
+        "47db95b3f46630a0975800a07eecbe5b65421c1724056098aba7a466dbed3019"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:13",
+      "sequence": 30613,
+      "chapter_label": "1JN 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "By this we know that we remain in him and he in us, because he has given us of his Spirit.",
+      "ko": "그의 성령을 우리에게 주시므로 우리가 그 안에 거하고 그가 우리 안에 거하시는 줄을 아느니라",
+      "source_text_hash": "bfad2b952f3cdce6fdf0d365855c15dde3953e03b85981bd2cfc520bd9b41d05",
+      "translation_text_hash": "4aa0678aec9bcf3845db1919c8c4e33b6924f3a097a7b74616ae2334809796b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 성령을 우리에게 주시므로 우리가 그 안에 거하고 그가 우리 안에 거하시는 줄을 아느니라"
+      ],
+      "raw_text_hashes": [
+        "4aa0678aec9bcf3845db1919c8c4e33b6924f3a097a7b74616ae2334809796b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:14",
+      "sequence": 30614,
+      "chapter_label": "1JN 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "We have seen and testify that the Father has sent the Son as the Savior of the world.",
+      "ko": "아버지가 아들을 세상의 구주로 보내신 것을 우리가 보았고 또 증거하노니",
+      "source_text_hash": "745c9110696f9a869e3a72c05c6619a8b9d79d433982107aabab022d0dda1819",
+      "translation_text_hash": "a8b4ce9a27371a32b60d44396d1ca5c1e9d4cde6cc2318e02f3a69c1c429c056",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지가 아들을 세상의 구주로 보내신 것을 우리가 보았고 또 증거하노니"
+      ],
+      "raw_text_hashes": [
+        "a8b4ce9a27371a32b60d44396d1ca5c1e9d4cde6cc2318e02f3a69c1c429c056"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:15",
+      "sequence": 30615,
+      "chapter_label": "1JN 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Whoever confesses that Jesus is the Son of God, God remains in him, and he in God.",
+      "ko": "누구든지 예수를 하나님의 아들이라 시인하면 하나님이 저 안에 거하시고 저도 하나님 안에 거하느니라",
+      "source_text_hash": "744593a5a06a94fa6cee609221876b3f335bdbf7b72509d20e044375b8262d51",
+      "translation_text_hash": "4b2e22a16aec415ba3117ee6f13a3b9318b99e6c585181d770b7b8892a2fdf6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 예수를 하나님의 아들이라 시인하면 하나님이 저 안에 거하시고 저도 하나님 안에 거하느니라"
+      ],
+      "raw_text_hashes": [
+        "4b2e22a16aec415ba3117ee6f13a3b9318b99e6c585181d770b7b8892a2fdf6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:16",
+      "sequence": 30616,
+      "chapter_label": "1JN 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "We know and have believed the love which God has for us. God is love, and he who remains in love remains in God, and God remains in him.",
+      "ko": "하나님이 우리를 사랑하시는 사랑을 우리가 알고 믿었노니 하나님은 사랑이시라 사랑 안에 거하는 자는 하나님 안에 거하고 하나님도 그 안에 거하시느니라",
+      "source_text_hash": "6bcbbbd9723536577349cf9e79ecc9209dfddfdff6548e7c8d45b8bd64e35bf3",
+      "translation_text_hash": "d4bcdc92a41408e08dc74d971ff93db72bc70d9da87e40503484ba86b50e85d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 우리를 사랑하시는 사랑을 우리가 알고 믿었노니 하나님은 사랑이시라 사랑 안에 거하는 자는 하나님 안에 거하고 하나님도 그 안에 거하시느니라"
+      ],
+      "raw_text_hashes": [
+        "d4bcdc92a41408e08dc74d971ff93db72bc70d9da87e40503484ba86b50e85d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:17",
+      "sequence": 30617,
+      "chapter_label": "1JN 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "In this, love has been made perfect among us, that we may have boldness in the day of judgment, because as he is, even so we are in this world.",
+      "ko": "이로써 사랑이 우리에게 온전히 이룬 것은 우리로 심판날에 담대함을 가지게 하려 함이니 주의 어떠하심과 같이 우리도 세상에서 그러하니라",
+      "source_text_hash": "45efa925b85e6460216194a30b0d6366ed37ed97986cfbace2550137c717f0d0",
+      "translation_text_hash": "ae2537bf9bf70c3449c2bc5a36bae8b8bf6da35f912107a80d27a8a3cabbdfab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로써 사랑이 우리에게 온전히 이룬 것은 우리로 심판날에 담대함을 가지게 하려 함이니 주의 어떠하심과 같이 우리도 세상에서 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "ae2537bf9bf70c3449c2bc5a36bae8b8bf6da35f912107a80d27a8a3cabbdfab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:18",
+      "sequence": 30618,
+      "chapter_label": "1JN 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "There is no fear in love; but perfect love casts out fear, because fear has punishment. He who fears is not made perfect in love.",
+      "ko": "사랑 안에 두려움이 없고 온전한 사랑이 두려움을 내어 쫓나니 두려움에는 형벌이 있음이라 두려워하는 자는 사랑 안에서 온전히 이루지 못하였느니라",
+      "source_text_hash": "4e429a371dab419705af45ea6194655edbe644f2b5c180330dd804455f6273d2",
+      "translation_text_hash": "ffb0a8b8bb2ef4bc7e66751e00477a41b555780b82090bdf4f93296ac1b6575b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑 안에 두려움이 없고 온전한 사랑이 두려움을 내어 쫓나니 두려움에는 형벌이 있음이라 두려워하는 자는 사랑 안에서 온전히 이루지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ffb0a8b8bb2ef4bc7e66751e00477a41b555780b82090bdf4f93296ac1b6575b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:19",
+      "sequence": 30619,
+      "chapter_label": "1JN 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "We love him, because he first loved us.",
+      "ko": "우리가 사랑함은 그가 먼저 우리를 사랑하셨음이라",
+      "source_text_hash": "a497c9b3b355708ba94ea13c37940b8010ec4507f253cf38ce468f0d74988922",
+      "translation_text_hash": "08266582ab7e55d9eefa4973101a9a6bab2c660ff2cb77ae758e8a884e727433",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 사랑함은 그가 먼저 우리를 사랑하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "08266582ab7e55d9eefa4973101a9a6bab2c660ff2cb77ae758e8a884e727433"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:20",
+      "sequence": 30620,
+      "chapter_label": "1JN 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "If a man says, “I love God,” and hates his brother, he is a liar; for he who doesn’t love his brother whom he has seen, how can he love God whom he has not seen?",
+      "ko": "누구든지 하나님을 사랑하노라 하고 그 형제를 미워하면 이는 거짓말 하는 자니 보는바 그 형제를 사랑치 아니하는 자가 보지 못하는바 하나님을 사랑할 수가 없느니라",
+      "source_text_hash": "40d1c85453b0e4b346a4ad2677df2bc3017315177ca6cbcbb3731350834e1611",
+      "translation_text_hash": "8bf054116a9d25b4448f3b92e5ae558a1304f51d5de311d72c3888e27b40c2c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 하나님을 사랑하노라 하고 그 형제를 미워하면 이는 거짓말 하는 자니 보는바 그 형제를 사랑치 아니하는 자가 보지 못하는바 하나님을 사랑할 수가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "8bf054116a9d25b4448f3b92e5ae558a1304f51d5de311d72c3888e27b40c2c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1JN:4:21",
+      "sequence": 30621,
+      "chapter_label": "1JN 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "1JN",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1JN",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "This commandment we have from him, that he who loves God should also love his brother.",
+      "ko": "우리가 이 계명을 주께 받았나니 하나님을 사랑하는 자는 또한 그 형제를 사랑할찌니라",
+      "source_text_hash": "b9e72a334f6dd648b5978af73917810606492240edcd35b0a6ac82e16183dfb7",
+      "translation_text_hash": "481ba3efdd2431e0cac075a5d906b1198fd286ffb79461c29e97b34639d1e023",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이 계명을 주께 받았나니 하나님을 사랑하는 자는 또한 그 형제를 사랑할찌니라"
+      ],
+      "raw_text_hashes": [
+        "481ba3efdd2431e0cac075a5d906b1198fd286ffb79461c29e97b34639d1e023"
+      ]
+    }
+  ]
+}

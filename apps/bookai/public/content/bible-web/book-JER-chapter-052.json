@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:052",
+  "unit_ordinal": 797,
+  "unit_label": "JER 52",
+  "book_code": "JER",
+  "chapter_number": 52,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:52:1",
+      "sequence": 20278,
+      "chapter_label": "JER 52",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 1
+        }
+      ],
+      "en": "Zedekiah was twenty-one years old when he began to reign. He reigned eleven years in Jerusalem. His mother’s name was Hamutal the daughter of Jeremiah of Libnah.",
+      "ko": "시드기야가 위에 나아갈 때에 나이 이십 일세라 예루살렘에서 십 일년을 치리하니라 그 모친의 이름은 하무달이라 립나인 예레미야의 딸이더라",
+      "source_text_hash": "f8bffcabcaa7d7e827b44fc62abbd4279c47e9e844d6b6dd00bdd626a6a51a5e",
+      "translation_text_hash": "0d614706b5e80738117a7b759a05fdd15302b70c18451c6fbf76163a51e46420",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야가 위에 나아갈 때에 나이 이십 일세라 예루살렘에서 십 일년을 치리하니라 그 모친의 이름은 하무달이라 립나인 예레미야의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "0d614706b5e80738117a7b759a05fdd15302b70c18451c6fbf76163a51e46420"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:2",
+      "sequence": 20279,
+      "chapter_label": "JER 52",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 2
+        }
+      ],
+      "en": "He did that which was evil in the LORD’s sight, according to all that Jehoiakim had done.",
+      "ko": "시드기야가 여호야김의 모든 행위를 본받아 여호와 보시기에 악을 행한지라",
+      "source_text_hash": "31d2e3e754bf1729ede2a1d817b2d4ca23c4726142200670341690f8f5b2a2fa",
+      "translation_text_hash": "8e3c9b2068dd437eb41326f47b7d78ee9267418e04229edbf34a447ec68e7006",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야가 여호야김의 모든 행위를 본받아 여호와 보시기에 악을 행한지라"
+      ],
+      "raw_text_hashes": [
+        "8e3c9b2068dd437eb41326f47b7d78ee9267418e04229edbf34a447ec68e7006"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:3",
+      "sequence": 20280,
+      "chapter_label": "JER 52",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 3
+        }
+      ],
+      "en": "For through the LORD’s anger this happened in Jerusalem and Judah, until he had cast them out from his presence. Zedekiah rebelled against the king of Babylon.",
+      "ko": "여호와께서 예루살렘과 유다를 진노하심이 그들을 그 앞에서 쫓아내시기까지에 이르렀더라 시드기야가 바벨론 왕을 배반하매",
+      "source_text_hash": "2c9acfe787d42cf861c655ec14365801a7d18ebe8b1e24614597276152193400",
+      "translation_text_hash": "c41c7b221117845deadd03136d324ce124dfad9e3d32357e3bbb6707e093132c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 예루살렘과 유다를 진노하심이 그들을 그 앞에서 쫓아내시기까지에 이르렀더라 시드기야가 바벨론 왕을 배반하매"
+      ],
+      "raw_text_hashes": [
+        "c41c7b221117845deadd03136d324ce124dfad9e3d32357e3bbb6707e093132c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:4",
+      "sequence": 20281,
+      "chapter_label": "JER 52",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 4
+        }
+      ],
+      "en": "In the ninth year of his reign, in the tenth month, in the tenth day of the month, Nebuchadnezzar king of Babylon came, he and all his army, against Jerusalem, and encamped against it; and they built forts against it round about.",
+      "ko": "시드기야 구년 시월 십일에 바벨론 왕 느부갓네살이 그 모든 군대를 거느리고 예루살렘을 치러 올라와서 그 성을 대하여 진을 치고 사면으로 흉벽을 쌓으매",
+      "source_text_hash": "9c9b82480340947ba57422881f9123c98e67e3cfc9f286110393c093371cce64",
+      "translation_text_hash": "5595a2d633691b5908d3f9da3463690ee78a389cf0e85f84cac65d40c47ea9f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야 구년 시월 십일에 바벨론 왕 느부갓네살이 그 모든 군대를 거느리고 예루살렘을 치러 올라와서 그 성을 대하여 진을 치고 사면으로 흉벽을 쌓으매"
+      ],
+      "raw_text_hashes": [
+        "5595a2d633691b5908d3f9da3463690ee78a389cf0e85f84cac65d40c47ea9f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:5",
+      "sequence": 20282,
+      "chapter_label": "JER 52",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 5
+        }
+      ],
+      "en": "So the city was besieged to the eleventh year of King Zedekiah.",
+      "ko": "성이 시드기야왕 십 일년까지 에워싸였더니",
+      "source_text_hash": "96c5df4b76f1952bf0a94692400242f256cdca92dc44dd185203fb5e7bb4dd99",
+      "translation_text_hash": "b1c3f7175f416fc47ddd215027dcec7f3f8225b19188044df8280cfcde19e652",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성이 시드기야왕 십 일년까지 에워싸였더니"
+      ],
+      "raw_text_hashes": [
+        "b1c3f7175f416fc47ddd215027dcec7f3f8225b19188044df8280cfcde19e652"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:6",
+      "sequence": 20283,
+      "chapter_label": "JER 52",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 6
+        }
+      ],
+      "en": "In the fourth month, in the ninth day of the month, the famine was severe in the city, so that there was no bread for the people of the land.",
+      "ko": "그 사월 구일에 성중에 기근이 심하여 그 땅 백성의 식물이 진하였더라",
+      "source_text_hash": "4323e52a2f97141968f4d030786d0e5b584a1c4d7667f1cce56bd2d07f2f1ad1",
+      "translation_text_hash": "806074cec786084a40c20cc67cc740bf29be9c7d009b3a6f74151a1b4953393f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사월 구일에 성중에 기근이 심하여 그 땅 백성의 식물이 진하였더라"
+      ],
+      "raw_text_hashes": [
+        "806074cec786084a40c20cc67cc740bf29be9c7d009b3a6f74151a1b4953393f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:7",
+      "sequence": 20284,
+      "chapter_label": "JER 52",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 7
+        }
+      ],
+      "en": "Then a breach was made in the city, and all the men of war fled, and went out of the city by night by the way of the gate between the two walls, which was by the king’s garden. Now the Chaldeans were against the city all around. The men of war went toward the Arabah,",
+      "ko": "갈대아인이 그 성읍을 에워쌌더니 성벽을 깨뜨리매 모든 군사가 밤중에 두 성벽 사이 왕의 동산 곁문 길로 도망하여 아라바 길로 가더니",
+      "source_text_hash": "ab6f208c3aac28c0dc5d94cfd85ebaf113a3da20f57f459bd24b8f882dd17cd6",
+      "translation_text_hash": "101eacf0b758ff98d641127aa3f05c64ca4c1c34d85f88df2d29c08e2c89d132",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아인이 그 성읍을 에워쌌더니 성벽을 깨뜨리매 모든 군사가 밤중에 두 성벽 사이 왕의 동산 곁문 길로 도망하여 아라바 길로 가더니"
+      ],
+      "raw_text_hashes": [
+        "101eacf0b758ff98d641127aa3f05c64ca4c1c34d85f88df2d29c08e2c89d132"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:8",
+      "sequence": 20285,
+      "chapter_label": "JER 52",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 8
+        }
+      ],
+      "en": "but the army of the Chaldeans pursued the king, and overtook Zedekiah in the plains of Jericho; and all his army was scattered from him.",
+      "ko": "갈대아인의 군대가 시드기야왕을 쫓아가서 여리고 평지에서 미치매 왕의 모든 군대가 그를 떠나 흩어진지라",
+      "source_text_hash": "d1cfe389a8250f5b48cdcaf91339c46fa5c6f9b61775848a0194cdf22be71b4e",
+      "translation_text_hash": "09726fe1ed7377d5cf145b59ac923d030d602e167bf2df5285a6c89d57c39f50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아인의 군대가 시드기야왕을 쫓아가서 여리고 평지에서 미치매 왕의 모든 군대가 그를 떠나 흩어진지라"
+      ],
+      "raw_text_hashes": [
+        "09726fe1ed7377d5cf145b59ac923d030d602e167bf2df5285a6c89d57c39f50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:9",
+      "sequence": 20286,
+      "chapter_label": "JER 52",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 9
+        }
+      ],
+      "en": "Then they took the king, and carried him up to the king of Babylon to Riblah in the land of Hamath; and he pronounced judgment on him.",
+      "ko": "그들이 왕을 잡아가지고 하맛 땅 립나에 있는 바벨론 왕에게로 끌고 가매 그를 신문하니라",
+      "source_text_hash": "68d1db21f2172a0850ee6786edb29d3d69353aa8a85048b067cfbd2159b4ed61",
+      "translation_text_hash": "1b0edfd6252a5764ee1a20b22ad3650d2b72ec917b66f41a2eb4274889c0a800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 왕을 잡아가지고 하맛 땅 립나에 있는 바벨론 왕에게로 끌고 가매 그를 신문하니라"
+      ],
+      "raw_text_hashes": [
+        "1b0edfd6252a5764ee1a20b22ad3650d2b72ec917b66f41a2eb4274889c0a800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:10",
+      "sequence": 20287,
+      "chapter_label": "JER 52",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 10
+        }
+      ],
+      "en": "The king of Babylon killed the sons of Zedekiah before his eyes. He also killed all the princes of Judah in Riblah.",
+      "ko": "바벨론 왕이 시드기야의 아들들을 그의 목전에서 죽이고 또 립나에서 유다의 모든 방백을 죽이며",
+      "source_text_hash": "66bb59befd5271b1819c5bc9ea48368bfddc481aa4312a9320a54b88de8c31cf",
+      "translation_text_hash": "26694532d5796d50798c3d58b6429a6177124b2747322a4e2359482e0aa8a4e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕이 시드기야의 아들들을 그의 목전에서 죽이고 또 립나에서 유다의 모든 방백을 죽이며"
+      ],
+      "raw_text_hashes": [
+        "26694532d5796d50798c3d58b6429a6177124b2747322a4e2359482e0aa8a4e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:11",
+      "sequence": 20288,
+      "chapter_label": "JER 52",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 11
+        }
+      ],
+      "en": "He put out the eyes of Zedekiah; and the king of Babylon bound him in fetters, and carried him to Babylon, and put him in prison until the day of his death.",
+      "ko": "시드기야의 두 눈을 빼고 사슬로 결박하여 바벨론으로 끌어다가 그 죽는 날까지 옥에 두었더라",
+      "source_text_hash": "3f6b1cc8c88c1cba4716d52c9a7de5887828f57e04bf7a6e0c58cd8124f921cf",
+      "translation_text_hash": "9c7f55ecf9019bbf6c365304d583acb641da2b25b88bf7036528e7b0529c1288",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야의 두 눈을 빼고 사슬로 결박하여 바벨론으로 끌어다가 그 죽는 날까지 옥에 두었더라"
+      ],
+      "raw_text_hashes": [
+        "9c7f55ecf9019bbf6c365304d583acb641da2b25b88bf7036528e7b0529c1288"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:12",
+      "sequence": 20289,
+      "chapter_label": "JER 52",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 12
+        }
+      ],
+      "en": "Now in the fifth month, in the tenth day of the month, which was the nineteenth year of King Nebuchadnezzar, king of Babylon, Nebuzaradan the captain of the guard, who stood before the king of Babylon, came into Jerusalem.",
+      "ko": "바벨론 왕 느부갓네살의 십 구년 오월 십일에 바벨론 왕의 어전 시위대 장관 느부사라단이 예루살렘에 이르러",
+      "source_text_hash": "10d8bd29c9ad204e05867407a96d4805f14d8a1b4746c873f230da43fd49de7b",
+      "translation_text_hash": "7775998f56ffa013c3f256e128392123efdb2bf6ac65dc322d34894bb33cfdff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕 느부갓네살의 십 구년 오월 십일에 바벨론 왕의 어전 시위대 장관 느부사라단이 예루살렘에 이르러"
+      ],
+      "raw_text_hashes": [
+        "7775998f56ffa013c3f256e128392123efdb2bf6ac65dc322d34894bb33cfdff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:13",
+      "sequence": 20290,
+      "chapter_label": "JER 52",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 13
+        }
+      ],
+      "en": "He burned the LORD’s house, and the king’s house; and all the houses of Jerusalem, even every great house, he burned with fire.",
+      "ko": "여호와의 전과 왕궁을 불사르고 예루살렘의 모든 집을 귀인의 집까지 불살랐으며",
+      "source_text_hash": "cc31a7ebc404f51edfe854f24014c15fec8a857cf051f04e897b664ef89f683d",
+      "translation_text_hash": "40d920a31b890ffc21528534eccdbdc76cb11cbaf654968b1101595f4344efb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 전과 왕궁을 불사르고 예루살렘의 모든 집을 귀인의 집까지 불살랐으며"
+      ],
+      "raw_text_hashes": [
+        "40d920a31b890ffc21528534eccdbdc76cb11cbaf654968b1101595f4344efb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:14",
+      "sequence": 20291,
+      "chapter_label": "JER 52",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 14
+        }
+      ],
+      "en": "All the army of the Chaldeans, who were with the captain of the guard, broke down all the walls of Jerusalem all around.",
+      "ko": "시위대 장관을 좇는 갈대아인의 온 군대가 예루살렘 사면 성벽을 헐었으며",
+      "source_text_hash": "e0cf324c599db51eb1edeaba56d25d1d8b3dcaaf574b555a611e5d987523eb09",
+      "translation_text_hash": "47f68993661fd5225e6492e5c79e437dea63197dc9183e195b9dc7c3b809c665",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대 장관을 좇는 갈대아인의 온 군대가 예루살렘 사면 성벽을 헐었으며"
+      ],
+      "raw_text_hashes": [
+        "47f68993661fd5225e6492e5c79e437dea63197dc9183e195b9dc7c3b809c665"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:15",
+      "sequence": 20292,
+      "chapter_label": "JER 52",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 15
+        }
+      ],
+      "en": "Then Nebuzaradan the captain of the guard carried away captive of the poorest of the people, and the rest of the people who were left in the city, and those who fell away, who defected to the king of Babylon, and the rest of the multitude.",
+      "ko": "시위대 장관 느부사라단이 백성 중 빈한한 자와 성중에 남아 있는 백성과 바벨론 왕에게 항복한 자와 무리의 남은 자를 사로잡아 옮겨가고",
+      "source_text_hash": "f450c87fd41dc808a25a28bbba90dd112277658f81bb0e85bf054483d4165f64",
+      "translation_text_hash": "ee47f4089174b54bef1e6b5d4e34bf0544810698c2917d27a71021fd922f184a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대 장관 느부사라단이 백성 중 빈한한 자와 성중에 남아 있는 백성과 바벨론 왕에게 항복한 자와 무리의 남은 자를 사로잡아 옮겨가고"
+      ],
+      "raw_text_hashes": [
+        "ee47f4089174b54bef1e6b5d4e34bf0544810698c2917d27a71021fd922f184a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:16",
+      "sequence": 20293,
+      "chapter_label": "JER 52",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 16
+        }
+      ],
+      "en": "But Nebuzaradan the captain of the guard left of the poorest of the land to be vineyard keepers and farmers.",
+      "ko": "빈천한 국민을 남겨두어 포도원을 다스리는 자와 농부가 되게 하였더라",
+      "source_text_hash": "b5c8fc78f9aa5e9b2cb549e64d22941a5cdf662688a6af1d7ca6da9f96a3da56",
+      "translation_text_hash": "33b0d0bf1650e05619e5823d431915751ce3b0f9f4f7d200d6ff91a0c41da2d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빈천한 국민을 남겨두어 포도원을 다스리는 자와 농부가 되게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "33b0d0bf1650e05619e5823d431915751ce3b0f9f4f7d200d6ff91a0c41da2d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:17",
+      "sequence": 20294,
+      "chapter_label": "JER 52",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 17
+        }
+      ],
+      "en": "The Chaldeans broke the pillars of bronze that were in the LORD’s house and the bases and the bronze sea that were in the LORD’s house in pieces, and carried all of their bronze to Babylon.",
+      "ko": "갈대아인이 또 여호와의 전의 두 놋기둥과 받침들과 여호와의 전의 놋바다를 깨뜨려 그 놋을 바벨론으로 가져갔고",
+      "source_text_hash": "8e3155daf5bfe896157cb3aacc60b3762deba186c19d71e72446a64341dd383b",
+      "translation_text_hash": "1f0435f365481adfec41cd88d8ad4c93e9bb314a4ad4f0d716f34c0abafbad35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아인이 또 여호와의 전의 두 놋기둥과 받침들과 여호와의 전의 놋바다를 깨뜨려 그 놋을 바벨론으로 가져갔고"
+      ],
+      "raw_text_hashes": [
+        "1f0435f365481adfec41cd88d8ad4c93e9bb314a4ad4f0d716f34c0abafbad35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:18",
+      "sequence": 20295,
+      "chapter_label": "JER 52",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 18
+        }
+      ],
+      "en": "They also took away the pots, the shovels, the snuffers, the basins, the spoons, and all the vessels of bronze with which they ministered.",
+      "ko": "또 가마들과 부삽들과 불집게들과 주발들과 숟가락들과 섬길 때에 쓰는 모든 놋그릇을 다 가져갔으며",
+      "source_text_hash": "5418918918fc4ed5649fcafb40de39aced00d318d382155de1a43ec463f723d1",
+      "translation_text_hash": "025bfeb13b447ace41cf72418abd723ad9030e7797be5d9e2c31a05e28d44a1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가마들과 부삽들과 불집게들과 주발들과 숟가락들과 섬길 때에 쓰는 모든 놋그릇을 다 가져갔으며"
+      ],
+      "raw_text_hashes": [
+        "025bfeb13b447ace41cf72418abd723ad9030e7797be5d9e2c31a05e28d44a1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:19",
+      "sequence": 20296,
+      "chapter_label": "JER 52",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 19
+        }
+      ],
+      "en": "The captain of the guard took away the cups, the fire pans, the basins, the pots, the lamp stands, the spoons, and the bowls; that which was of gold, as gold, and that which was of silver, as silver.",
+      "ko": "시위대 장관이 또 잔들과 화로들과 주발들과 솥들과 촛대들과 숟가락들과 바리들 곧 금물의 금과 은물의 은을 가져갔는데",
+      "source_text_hash": "f3c5ff4b12b4c96dbb26f22840e7b30ddc051ccfcc105281b8708f6b55a9719f",
+      "translation_text_hash": "43ed783aac15ccb16eae9a3c1e66c8d626848f80d4ca05950ad9c586ef0f40b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대 장관이 또 잔들과 화로들과 주발들과 솥들과 촛대들과 숟가락들과 바리들 곧 금물의 금과 은물의 은을 가져갔는데"
+      ],
+      "raw_text_hashes": [
+        "43ed783aac15ccb16eae9a3c1e66c8d626848f80d4ca05950ad9c586ef0f40b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:20",
+      "sequence": 20297,
+      "chapter_label": "JER 52",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 20
+        }
+      ],
+      "en": "They took the two pillars, the one sea, and the twelve bronze bulls that were under the bases, which King Solomon had made for the LORD’s house. The bronze of all these vessels was without weight.",
+      "ko": "솔로몬왕이 여호와의 전을 위하여 만든 두 기둥과 한 바다와 그 받침 아래 있는 열 두 놋소 곧 이 모든 기구의 놋 중수를 헤아릴 수 없었더라",
+      "source_text_hash": "ee752b4c6b0394b1ac4fc5d1d31df82d8d417f8abc8e3671efcdf0ca499e3c52",
+      "translation_text_hash": "aa120ac70d7871a821fb1a0d9b6a678c8e74ebd579d7fa6be0c6a215741ebd80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕이 여호와의 전을 위하여 만든 두 기둥과 한 바다와 그 받침 아래 있는 열 두 놋소 곧 이 모든 기구의 놋 중수를 헤아릴 수 없었더라"
+      ],
+      "raw_text_hashes": [
+        "aa120ac70d7871a821fb1a0d9b6a678c8e74ebd579d7fa6be0c6a215741ebd80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:21",
+      "sequence": 20298,
+      "chapter_label": "JER 52",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 21
+        }
+      ],
+      "en": "As for the pillars, the height of the one pillar was eighteen cubits; and a line of twelve cubits encircled it; and its thickness was four fingers. It was hollow.",
+      "ko": "그 기둥은 한 기둥의 고가 십 팔 규빗이요 그 주위는 십 이 규빗이며 그 속이 비었고 그 두께는 사지놓이며",
+      "source_text_hash": "2c0f48898dbb029c73e26c00db86a50ab9e1db27334b5d7600019fb2eb12d734",
+      "translation_text_hash": "051a336dc8c983bd005cb33840a21ec7f01ade7e0caff5cf990454307c8c885a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기둥은 한 기둥의 고가 십 팔 규빗이요 그 주위는 십 이 규빗이며 그 속이 비었고 그 두께는 사지놓이며"
+      ],
+      "raw_text_hashes": [
+        "051a336dc8c983bd005cb33840a21ec7f01ade7e0caff5cf990454307c8c885a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:22",
+      "sequence": 20299,
+      "chapter_label": "JER 52",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 22
+        }
+      ],
+      "en": "A capital of bronze was on it; and the height of the one capital was five cubits, with network and pomegranates on the capital all around, all of bronze. The second pillar also had the same, with pomegranates.",
+      "ko": "기둥 위에 놋머리가 있어 그 고가 다섯 규빗이요 머리 사면으로 돌아가며 꾸민 그물과 석류가 다 놋이며 또 다른 기둥에도 이런 모든 것과 석류가 있었으며",
+      "source_text_hash": "5fe88a7da0077c5535c6280d098a6d0d465ba7b7228f2b39cfa7ec5a61d67b7e",
+      "translation_text_hash": "f576c5213fe17493adae284b4d76e2d0835967ab2aac9f6a7d2e271ac038ffc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기둥 위에 놋머리가 있어 그 고가 다섯 규빗이요 머리 사면으로 돌아가며 꾸민 그물과 석류가 다 놋이며 또 다른 기둥에도 이런 모든 것과 석류가 있었으며"
+      ],
+      "raw_text_hashes": [
+        "f576c5213fe17493adae284b4d76e2d0835967ab2aac9f6a7d2e271ac038ffc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:23",
+      "sequence": 20300,
+      "chapter_label": "JER 52",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 23
+        }
+      ],
+      "en": "There were ninety-six pomegranates on the sides; all the pomegranates were one hundred on the network all around.",
+      "ko": "그 사면에 있는 석류는 구십 륙이요 그 기둥에 둘린 그물 위에 있는 석류는 도합이 일백이었더라",
+      "source_text_hash": "1b293e551b88b2cbd9ea37cea937a04f22e9117f99568b4759b65174396c02fa",
+      "translation_text_hash": "e2f088619838d91629ee0b3b2cb48940a1d6ba4c41b536aacc12a24d8d3fee87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사면에 있는 석류는 구십 륙이요 그 기둥에 둘린 그물 위에 있는 석류는 도합이 일백이었더라"
+      ],
+      "raw_text_hashes": [
+        "e2f088619838d91629ee0b3b2cb48940a1d6ba4c41b536aacc12a24d8d3fee87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:24",
+      "sequence": 20301,
+      "chapter_label": "JER 52",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 24
+        }
+      ],
+      "en": "The captain of the guard took Seraiah the chief priest, and Zephaniah the second priest, and the three keepers of the threshold,",
+      "ko": "시위대장관이 대제사장 스라야와 부제사장 스바냐와 전 문지기 세 사람을 잡고",
+      "source_text_hash": "af7048fcda55423eeaed98c1fda110d56fca979740ba69ce9d7d158936e644b1",
+      "translation_text_hash": "bafef2bd0f6b5ebba893d9b7529b65625efd5517f26f4949f89bd061bb1ab082",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대장관이 대제사장 스라야와 부제사장 스바냐와 전 문지기 세 사람을 잡고"
+      ],
+      "raw_text_hashes": [
+        "bafef2bd0f6b5ebba893d9b7529b65625efd5517f26f4949f89bd061bb1ab082"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:25",
+      "sequence": 20302,
+      "chapter_label": "JER 52",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 25
+        }
+      ],
+      "en": "and out of the city he took an officer who was set over the men of war; and seven men of those who saw the king’s face, who were found in the city; and the scribe of the captain of the army, who mustered the people of the land; and sixty men of the people of the land, who were found in the middle of the city.",
+      "ko": "또 성중에서 사람을 잡았으니 곧 군사를 거느린 장관 하나와 또 성중에서 만난바 왕의 시종 칠인과 국민을 초모하는 군대장관의 서기관 하나와 성중에서 만난바 국민 육십명이라",
+      "source_text_hash": "b8caafa2a7e8296d519dd668b8df7f5d8834d0cece9345a91283bf0e905b1d7a",
+      "translation_text_hash": "89ffb7fa3beba22174ca282c7e26549f964478805ea46bf12c27f9c5e9eb7e61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 성중에서 사람을 잡았으니 곧 군사를 거느린 장관 하나와 또 성중에서 만난바 왕의 시종 칠인과 국민을 초모하는 군대장관의 서기관 하나와 성중에서 만난바 국민 육십명이라"
+      ],
+      "raw_text_hashes": [
+        "89ffb7fa3beba22174ca282c7e26549f964478805ea46bf12c27f9c5e9eb7e61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:26",
+      "sequence": 20303,
+      "chapter_label": "JER 52",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 26
+        }
+      ],
+      "en": "Nebuzaradan the captain of the guard took them, and brought them to the king of Babylon to Riblah.",
+      "ko": "시위대 장관 느부사라단이 그들을 잡아가지고 립나 바벨론 왕에게 나아가매",
+      "source_text_hash": "82d6a4a90ff2958c8ee7a296db5ac1d11a322ef7ff07a95d006a053e66ffd8dd",
+      "translation_text_hash": "49ead49f973c17b25325a0e0fc823247e9496e56a8f4ed55d118bbce67a2f2e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대 장관 느부사라단이 그들을 잡아가지고 립나 바벨론 왕에게 나아가매"
+      ],
+      "raw_text_hashes": [
+        "49ead49f973c17b25325a0e0fc823247e9496e56a8f4ed55d118bbce67a2f2e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:27",
+      "sequence": 20304,
+      "chapter_label": "JER 52",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 27
+        }
+      ],
+      "en": "The king of Babylon struck them, and put them to death at Riblah in the land of Hamath. So Judah was carried away captive out of his land.",
+      "ko": "바벨론 왕이 하맛 땅 립나에서 다 쳐 죽였더라 이와 같이 유다가 사로잡혀 본토에서 떠났더라",
+      "source_text_hash": "8fa6eaede366593ed35979556a2886d80109dea65783ab57d518955eb73a2a50",
+      "translation_text_hash": "69aa1e7cfd998afd40424112500000dfe68945b70c3a52b29d78b4d2819d39f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕이 하맛 땅 립나에서 다 쳐 죽였더라 이와 같이 유다가 사로잡혀 본토에서 떠났더라"
+      ],
+      "raw_text_hashes": [
+        "69aa1e7cfd998afd40424112500000dfe68945b70c3a52b29d78b4d2819d39f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:28",
+      "sequence": 20305,
+      "chapter_label": "JER 52",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 28
+        }
+      ],
+      "en": "This is the number of the people whom Nebuchadnezzar carried away captive: in the seventh year, three thousand twenty-three Jews;",
+      "ko": "느부갓네살의 사로잡아 옮긴 백성이 이러하니라 제 칠년에 유다인이 삼천 이십 삼이요",
+      "source_text_hash": "d3c9503a3640bf5a6053efcb884285fbea8b3184fdfdfc1d03e77ad93c65f01a",
+      "translation_text_hash": "2dfee1e758db07c1d10885e25f18476530eda5a024f64c8be511b793ca4f1fdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살의 사로잡아 옮긴 백성이 이러하니라 제 칠년에 유다인이 삼천 이십 삼이요"
+      ],
+      "raw_text_hashes": [
+        "2dfee1e758db07c1d10885e25f18476530eda5a024f64c8be511b793ca4f1fdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:29",
+      "sequence": 20306,
+      "chapter_label": "JER 52",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 29
+        }
+      ],
+      "en": "in the eighteenth year of Nebuchadnezzar, he carried away captive from Jerusalem eight hundred thirty-two persons;",
+      "ko": "느부갓네살의 십 팔년에 예루살렘에서 사로잡아 옮긴 자가 팔백 삼십 이인이요",
+      "source_text_hash": "86b6c7046178cddbd80c6faf08e7d561f460a1cd309afe77921e8613e535d77a",
+      "translation_text_hash": "4d49fbe682def8117c5ee91db63158c8675c56d51f8a19584aeb495b54523bc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살의 십 팔년에 예루살렘에서 사로잡아 옮긴 자가 팔백 삼십 이인이요"
+      ],
+      "raw_text_hashes": [
+        "4d49fbe682def8117c5ee91db63158c8675c56d51f8a19584aeb495b54523bc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:30",
+      "sequence": 20307,
+      "chapter_label": "JER 52",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 30
+        }
+      ],
+      "en": "in the twenty-third year of Nebuchadnezzar, Nebuzaradan the captain of the guard carried away captive of the Jews seven hundred forty-five people. All the people numbered four thousand six hundred.",
+      "ko": "느부갓네살의 이십 삼년에 시위대장관 느부사라단이 사로잡아 옮긴 유다인이 칠백 사십 오인이니 그 총수가 사천 육백인이었더라",
+      "source_text_hash": "a9eb4e0f4992efa037a95161f86a96f2cad0beeaabdcd176b0553f33e78cb013",
+      "translation_text_hash": "c353e271ad51679a0c7063b8bee010d9d542273b1e6ec95cf5ed3470e5329108",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느부갓네살의 이십 삼년에 시위대장관 느부사라단이 사로잡아 옮긴 유다인이 칠백 사십 오인이니 그 총수가 사천 육백인이었더라"
+      ],
+      "raw_text_hashes": [
+        "c353e271ad51679a0c7063b8bee010d9d542273b1e6ec95cf5ed3470e5329108"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:31",
+      "sequence": 20308,
+      "chapter_label": "JER 52",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 31
+        }
+      ],
+      "en": "In the thirty-seventh year of the captivity of Jehoiachin king of Judah, in the twelfth month, in the twenty-fifth day of the month, Evilmerodach king of Babylon, in the first year of his reign, lifted up the head of Jehoiachin king of Judah, and released him from prison.",
+      "ko": "유다 왕 여호야긴이 사로잡혀간지 삼십 칠년 곧 바벨론 왕 에윌므로닥의 즉위 원년 십이월 이십 오일에 그가 유다 왕 여호야긴을 옥에서 내어놓아 그 머리를 들게 하고",
+      "source_text_hash": "58f5f40495816483fa5369ff604b54d4b48f012bbb5bd8558fcdf95fea384e61",
+      "translation_text_hash": "05cb4fde41b50240b620ac6c3a7d3af41a43540d82d314cf3f0c1f7fed0a7245",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 여호야긴이 사로잡혀간지 삼십 칠년 곧 바벨론 왕 에윌므로닥의 즉위 원년 십이월 이십 오일에 그가 유다 왕 여호야긴을 옥에서 내어놓아 그 머리를 들게 하고"
+      ],
+      "raw_text_hashes": [
+        "05cb4fde41b50240b620ac6c3a7d3af41a43540d82d314cf3f0c1f7fed0a7245"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:32",
+      "sequence": 20309,
+      "chapter_label": "JER 52",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 32
+        }
+      ],
+      "en": "He spoke kindly to him, and set his throne above the throne of the kings who were with him in Babylon,",
+      "ko": "그에게 선히 말하고 그의 위를 그와 함께 바벨론에 있는 왕들의 위보다 높이고",
+      "source_text_hash": "98d5a7067c35f23f227fb08de5d1c5b42ae8b0b5facdbdb245de930c8d3060c2",
+      "translation_text_hash": "983ce467ed2299197f5b343b79eaee2e8fd91c6ad2064e956c1a1829328e13b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 선히 말하고 그의 위를 그와 함께 바벨론에 있는 왕들의 위보다 높이고"
+      ],
+      "raw_text_hashes": [
+        "983ce467ed2299197f5b343b79eaee2e8fd91c6ad2064e956c1a1829328e13b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:33",
+      "sequence": 20310,
+      "chapter_label": "JER 52",
+      "verse_label": "33",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 33
+        }
+      ],
+      "en": "and changed his prison garments. Jehoiachin ate bread before him continually all the days of his life.",
+      "ko": "그 죄수의 의복을 바꾸게 하고 그 일평생에 항상 왕의 앞에서 먹게 하였으며",
+      "source_text_hash": "def57f9083b0d6880a3c9b2e47c49b0c7729c59128eee4f99ecb2ec8e05e9b96",
+      "translation_text_hash": "7069a351f4a8f9b3892cd9cdf88a471724d05052b0ea781a8b979e1e9b9b353b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 죄수의 의복을 바꾸게 하고 그 일평생에 항상 왕의 앞에서 먹게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "7069a351f4a8f9b3892cd9cdf88a471724d05052b0ea781a8b979e1e9b9b353b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:52:34",
+      "sequence": 20311,
+      "chapter_label": "JER 52",
+      "verse_label": "34",
+      "locator": {
+        "book": "JER",
+        "chapter": 52,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 52,
+          "verse": 34
+        }
+      ],
+      "en": "For his allowance, there was a continual allowance given him by the king of Babylon, every day a portion until the day of his death, all the days of his life.",
+      "ko": "그의 쓸 것은 날마다 바벨론 왕에게서 받는 정수가 있어서 죽는 날까지 곧 종신토록 끊이지 아니하였더라",
+      "source_text_hash": "054492549831eba3d57e1be5d61c404f278857245e17efa51f2f8b389524f2e8",
+      "translation_text_hash": "ba6f2698bd413c87b6e1fe420d3a7906c6957cff00be4fb3abaa8d529cb724e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 쓸 것은 날마다 바벨론 왕에게서 받는 정수가 있어서 죽는 날까지 곧 종신토록 끊이지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "ba6f2698bd413c87b6e1fe420d3a7906c6957cff00be4fb3abaa8d529cb724e0"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JAS:chapter:003",
+  "unit_ordinal": 1149,
+  "unit_label": "JAS 3",
+  "book_code": "JAS",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JAS:3:1",
+      "sequence": 30317,
+      "chapter_label": "JAS 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Let not many of you be teachers, my brothers, knowing that we will receive heavier judgment.",
+      "ko": "내 형제들아 너희는 선생 된 우리가 더 큰 심판 받을 줄을 알고 많이 선생이 되지 말라",
+      "source_text_hash": "80775d443d0c565d15db7f6144ee0de498aae33a349dbf187b73ae68bc0258f5",
+      "translation_text_hash": "0e28514300df795d1ddcaddb84d7fd16b301250f2d8ae9b7a467b77df50c2d31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형제들아 너희는 선생 된 우리가 더 큰 심판 받을 줄을 알고 많이 선생이 되지 말라"
+      ],
+      "raw_text_hashes": [
+        "0e28514300df795d1ddcaddb84d7fd16b301250f2d8ae9b7a467b77df50c2d31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:2",
+      "sequence": 30318,
+      "chapter_label": "JAS 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "For we all stumble in many things. Anyone who doesn’t stumble in word is a perfect person, able to bridle the whole body also.",
+      "ko": "우리가 다 실수가 많으니 만일 말에 실수가 없는 자면 곧 온전한 사람이라 능히 온 몸도 굴레 씌우리라",
+      "source_text_hash": "36a83a5c0fccd8f130d9ab4d2d90f19143998fed922bcec86a096d2cb8a1e8c3",
+      "translation_text_hash": "4c3f6bc92e55791a26d85548023fc760c5e895ce1adc1bd7f2b7f0713019784e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 다 실수가 많으니 만일 말에 실수가 없는 자면 곧 온전한 사람이라 능히 온 몸도 굴레 씌우리라"
+      ],
+      "raw_text_hashes": [
+        "4c3f6bc92e55791a26d85548023fc760c5e895ce1adc1bd7f2b7f0713019784e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:3",
+      "sequence": 30319,
+      "chapter_label": "JAS 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Indeed, we put bits into the horses’ mouths so that they may obey us, and we guide their whole body.",
+      "ko": "우리가 말을 순종케 하려고 그 입에 재갈 먹여 온 몸을 어거하며",
+      "source_text_hash": "70de68f79f718df8fcac58d89735d6dc28e3c9c841cab0bd954bea6e79476c0e",
+      "translation_text_hash": "d20b86d09fce30bf2190cb76822cbd954623419e283433869243c6444925f530",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 말을 순종케 하려고 그 입에 재갈 먹여 온 몸을 어거하며"
+      ],
+      "raw_text_hashes": [
+        "d20b86d09fce30bf2190cb76822cbd954623419e283433869243c6444925f530"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:4",
+      "sequence": 30320,
+      "chapter_label": "JAS 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, the ships also, though they are so big and are driven by fierce winds, are yet guided by a very small rudder, wherever the pilot desires.",
+      "ko": "또 배를 보라 그렇게 크고 광풍에 밀려가는 것들을 지극히 작은 키로 사공의 뜻대로 운전하나니",
+      "source_text_hash": "069baa1a1702f6f07a1bbb0973d4bbe24e2e2d3d8780b8eb5c1dc090461ce92a",
+      "translation_text_hash": "4d60856cd4dacc165277f032caff8b74a1a2e2fa3071e54edc4510ea5e698a71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 배를 보라 그렇게 크고 광풍에 밀려가는 것들을 지극히 작은 키로 사공의 뜻대로 운전하나니"
+      ],
+      "raw_text_hashes": [
+        "4d60856cd4dacc165277f032caff8b74a1a2e2fa3071e54edc4510ea5e698a71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:5",
+      "sequence": 30321,
+      "chapter_label": "JAS 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "So the tongue is also a little member, and boasts great things. See how a small fire can spread to a large forest!",
+      "ko": "이와 같이 혀도 작은 지체로되 큰 것을 자랑하도다 보라 어떻게 작은 불이 어떻게 많은 나무를 태우는가",
+      "source_text_hash": "6d883b342f3c72aa2c649744718833e501f2304842c57624e698d937333e3e61",
+      "translation_text_hash": "f0ee98a538bdcd6a354b7b577b6c7029be1f514051af00769595e625df9606dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 혀도 작은 지체로되 큰 것을 자랑하도다 보라 어떻게 작은 불이 어떻게 많은 나무를 태우는가"
+      ],
+      "raw_text_hashes": [
+        "f0ee98a538bdcd6a354b7b577b6c7029be1f514051af00769595e625df9606dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:6",
+      "sequence": 30322,
+      "chapter_label": "JAS 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "And the tongue is a fire. The world of iniquity among our members is the tongue, which defiles the whole body, and sets on fire the course of nature, and is set on fire by Gehenna.",
+      "ko": "혀는 곧 불이요 불의의 세계라 혀는 우리 지체 중에서 온 몸을 더럽히고 생의 바퀴를 불사르나니 그 사르는 것이 지옥불에서 나느니라",
+      "source_text_hash": "b2a5831047aaec2394cb2f7476bb17323c0f6be71a62e38db78c4424494970bd",
+      "translation_text_hash": "fede6f3c62297540986f5db66fb3efc20e68ee3ff7e6fb76fa167b777e5011b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혀는 곧 불이요 불의의 세계라 혀는 우리 지체 중에서 온 몸을 더럽히고 생의 바퀴를 불사르나니 그 사르는 것이 지옥불에서 나느니라"
+      ],
+      "raw_text_hashes": [
+        "fede6f3c62297540986f5db66fb3efc20e68ee3ff7e6fb76fa167b777e5011b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:7",
+      "sequence": 30323,
+      "chapter_label": "JAS 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "For every kind of animal, bird, creeping thing, and sea creature is tamed, and has been tamed by mankind;",
+      "ko": "여러 종류의 짐승과 새며 벌레와 해물은 다 길들므로 사람에게 길들었거니와",
+      "source_text_hash": "5c79f227e207aecd735652d1aa56ae44ced02a0b0465308377ebedbe3c0260b3",
+      "translation_text_hash": "9df1f3441fcfcf7c07a43fd8e5c6c33cc4e596a91e690c2c0476fcbba1f196da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 종류의 짐승과 새며 벌레와 해물은 다 길들므로 사람에게 길들었거니와"
+      ],
+      "raw_text_hashes": [
+        "9df1f3441fcfcf7c07a43fd8e5c6c33cc4e596a91e690c2c0476fcbba1f196da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:8",
+      "sequence": 30324,
+      "chapter_label": "JAS 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "but nobody can tame the tongue. It is a restless evil, full of deadly poison.",
+      "ko": "혀는 능히 길들일 사람이 없나니 쉬지 아니하는 악이요 죽이는 독이 가득한 것이라",
+      "source_text_hash": "5bee8a4bca5b15aab4a764088e5b20fbbf086a508746b5c6c38877797ac71dac",
+      "translation_text_hash": "2f84a6bc1e71004fec48df2dfe992ab8e3029ce39a8d9c36aa538ebbaf2c8c37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혀는 능히 길들일 사람이 없나니 쉬지 아니하는 악이요 죽이는 독이 가득한 것이라"
+      ],
+      "raw_text_hashes": [
+        "2f84a6bc1e71004fec48df2dfe992ab8e3029ce39a8d9c36aa538ebbaf2c8c37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:9",
+      "sequence": 30325,
+      "chapter_label": "JAS 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "With it we bless our God and Father, and with it we curse men who are made in the image of God.",
+      "ko": "이것으로 우리가 주 아버지를 찬송하고 또 이것으로 하나님의 형상대로 지음을 받은 사람을 저주하나니",
+      "source_text_hash": "c8c462ee3d1e2984218cb3edf9aae7a79263350389d188b7efc99c1d32d4cf47",
+      "translation_text_hash": "6f33a5ffa9b4b3c8e0287bc8e0e8dd554a62c803f81b0f4639cbe366b72dc2e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것으로 우리가 주 아버지를 찬송하고 또 이것으로 하나님의 형상대로 지음을 받은 사람을 저주하나니"
+      ],
+      "raw_text_hashes": [
+        "6f33a5ffa9b4b3c8e0287bc8e0e8dd554a62c803f81b0f4639cbe366b72dc2e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:10",
+      "sequence": 30326,
+      "chapter_label": "JAS 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Out of the same mouth comes blessing and cursing. My brothers, these things ought not to be so.",
+      "ko": "한 입으로 찬송과 저주가 나는도다 내 형제들아 이것이 마땅치 아니하니라",
+      "source_text_hash": "96a4f85a9cbdcbddb6911d9617d9b3a8862e837a793960435ccc0111298c077a",
+      "translation_text_hash": "015d7b67c0e6a06ca6965c1754df2c939e5fd01ea0c51af9bf7ad041fa3342a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 입으로 찬송과 저주가 나는도다 내 형제들아 이것이 마땅치 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "015d7b67c0e6a06ca6965c1754df2c939e5fd01ea0c51af9bf7ad041fa3342a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:11",
+      "sequence": 30327,
+      "chapter_label": "JAS 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Does a spring send out from the same opening fresh and bitter water?",
+      "ko": "샘이 한 구멍으로 어찌 단 물과 쓴 물을 내겠느뇨",
+      "source_text_hash": "07527efb6cd9b0cf80b83d8464ba0973fe19b07d6a5156477327dd84a8865346",
+      "translation_text_hash": "c919f23d868295c7e8c9732f6cd731b926e2f9c8b5f5978523eafd97fde60532",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "샘이 한 구멍으로 어찌 단 물과 쓴 물을 내겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "c919f23d868295c7e8c9732f6cd731b926e2f9c8b5f5978523eafd97fde60532"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:12",
+      "sequence": 30328,
+      "chapter_label": "JAS 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Can a fig tree, my brothers, yield olives, or a vine figs? Thus no spring yields both salt water and fresh water.",
+      "ko": "내 형제들아 어찌 무화과나무가 감람 열매를, 포도나무가 무화과를 맺겠느뇨 이와 같이 짠 물이 단 물을 내지 못하느니라",
+      "source_text_hash": "6891d77dc9585802438f80886ad214112b89001666d43874389e3d68ff55166f",
+      "translation_text_hash": "def50cab0992e096c026f4f9bb15dc41f50cea9216660b48fd04cadf8b81d5f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형제들아 어찌 무화과나무가 감람 열매를, 포도나무가 무화과를 맺겠느뇨 이와 같이 짠 물이 단 물을 내지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "def50cab0992e096c026f4f9bb15dc41f50cea9216660b48fd04cadf8b81d5f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:13",
+      "sequence": 30329,
+      "chapter_label": "JAS 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Who is wise and understanding among you? Let him show by his good conduct that his deeds are done in gentleness of wisdom.",
+      "ko": "너희 중에 지혜와 총명이 있는 자가 누구뇨 그는 선행으로 말미암아 지혜의 온유함으로 그 행함을 보일찌니라",
+      "source_text_hash": "bd6922b1fc78aeebf886f3d3c1e627dc6ff53b5a375b67c0d0961ae944455999",
+      "translation_text_hash": "e5ee21bbed4e022fcd63d9e5db6bafb41ad61065e73d19af8a08dfa2c49bbb13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 지혜와 총명이 있는 자가 누구뇨 그는 선행으로 말미암아 지혜의 온유함으로 그 행함을 보일찌니라"
+      ],
+      "raw_text_hashes": [
+        "e5ee21bbed4e022fcd63d9e5db6bafb41ad61065e73d19af8a08dfa2c49bbb13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:14",
+      "sequence": 30330,
+      "chapter_label": "JAS 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "But if you have bitter jealousy and selfish ambition in your heart, don’t boast and don’t lie against the truth.",
+      "ko": "그러나 너희 마음 속에 독한 시기와 다툼이 있으면 자랑하지 말라 진리를 거스려 거짓하지 말라",
+      "source_text_hash": "e4ed06f91a0346b120f230e6fa4b4920d71b95f2438649af2d2432603fc46dbe",
+      "translation_text_hash": "e80a77e3d4886a5daeb95cae5597c774b7fdddc331ed25b5a378a2745c9d8da3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희 마음 속에 독한 시기와 다툼이 있으면 자랑하지 말라 진리를 거스려 거짓하지 말라"
+      ],
+      "raw_text_hashes": [
+        "e80a77e3d4886a5daeb95cae5597c774b7fdddc331ed25b5a378a2745c9d8da3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:15",
+      "sequence": 30331,
+      "chapter_label": "JAS 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "This wisdom is not that which comes down from above, but is earthly, sensual, and demonic.",
+      "ko": "이러한 지혜는 위로부터 내려온 것이 아니요 세상적이요 정욕적이요 마귀적이니",
+      "source_text_hash": "f1d038cdea045a3d3ce8883a978161d472300270e548d80140de96ac1114fee2",
+      "translation_text_hash": "9d3ae1721b67f8f50c57812ceed0dc0b105cc4d7f03816661b67d15c8eb752ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러한 지혜는 위로부터 내려온 것이 아니요 세상적이요 정욕적이요 마귀적이니"
+      ],
+      "raw_text_hashes": [
+        "9d3ae1721b67f8f50c57812ceed0dc0b105cc4d7f03816661b67d15c8eb752ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:16",
+      "sequence": 30332,
+      "chapter_label": "JAS 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "For where jealousy and selfish ambition are, there is confusion and every evil deed.",
+      "ko": "시기와 다툼이 있는 곳에는 요란과 모든 악한 일이 있음이니라",
+      "source_text_hash": "baf7a40fae37797904a06332bf6f8192333878a34e3c5b14a62eb1f23c66f0c9",
+      "translation_text_hash": "0b3b676655c78b3c873f5476d40c372d5f405cb5f50dc556d384c9982763aab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시기와 다툼이 있는 곳에는 요란과 모든 악한 일이 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "0b3b676655c78b3c873f5476d40c372d5f405cb5f50dc556d384c9982763aab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:17",
+      "sequence": 30333,
+      "chapter_label": "JAS 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "But the wisdom that is from above is first pure, then peaceful, gentle, reasonable, full of mercy and good fruits, without partiality, and without hypocrisy.",
+      "ko": "오직 위로부터 난 지혜는 첫째 성결하고 다음에 화평하고 관용하고 양순하며 긍휼과 선한 열매가 가득하고 편벽과 거짓이 없나니",
+      "source_text_hash": "dbf294cc263bed961dbb44ba75ac1ef318793625ec4d6590d1f3006b74528a71",
+      "translation_text_hash": "de0eb78970fc4d0315f3272291a36182f49e12d5f184cf1292098790d9b2d905",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 위로부터 난 지혜는 첫째 성결하고 다음에 화평하고 관용하고 양순하며 긍휼과 선한 열매가 가득하고 편벽과 거짓이 없나니"
+      ],
+      "raw_text_hashes": [
+        "de0eb78970fc4d0315f3272291a36182f49e12d5f184cf1292098790d9b2d905"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:3:18",
+      "sequence": 30334,
+      "chapter_label": "JAS 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "JAS",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Now the fruit of righteousness is sown in peace by those who make peace.",
+      "ko": "화평케 하는 자들은 화평으로 심어 의의 열매를 거두느니라",
+      "source_text_hash": "b8bfa561ba94314d94a08413e418dc3597eb6b6638b07476955836d0a5262adb",
+      "translation_text_hash": "2a06755ad354bfd2fab5bf529bf9d68825b115fb8f95ca2085c2deb7bee8fb23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화평케 하는 자들은 화평으로 심어 의의 열매를 거두느니라"
+      ],
+      "raw_text_hashes": [
+        "2a06755ad354bfd2fab5bf529bf9d68825b115fb8f95ca2085c2deb7bee8fb23"
+      ]
+    }
+  ]
+}

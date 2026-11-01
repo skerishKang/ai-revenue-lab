@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZR:chapter:003",
+  "unit_ordinal": 406,
+  "unit_label": "EZR 3",
+  "book_code": "EZR",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZR:3:1",
+      "sequence": 12099,
+      "chapter_label": "EZR 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "When the seventh month had come, and the children of Israel were in the cities, the people gathered themselves together as one man to Jerusalem.",
+      "ko": "이스라엘 자손이 그 본성에 거하였더니 칠월에 이르러 일제히 예루살렘에 모인지라",
+      "source_text_hash": "a1a92d2533ddf51468ee51e9ec22e4525b4f39f6a01bedf63b8dd75bc65dcc55",
+      "translation_text_hash": "da3ccc4d2d787b5946d68b37201a6e850cb8063e499032167490d75a864e0148",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 그 본성에 거하였더니 칠월에 이르러 일제히 예루살렘에 모인지라"
+      ],
+      "raw_text_hashes": [
+        "da3ccc4d2d787b5946d68b37201a6e850cb8063e499032167490d75a864e0148"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:2",
+      "sequence": 12100,
+      "chapter_label": "EZR 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Then Jeshua the son of Jozadak stood up with his brothers the priests and Zerubbabel the son of Shealtiel and his relatives, and built the altar of the God of Israel, to offer burnt offerings on it, as it is written in the law of Moses the man of God.",
+      "ko": "요사닥의 아들 예수아와 그 형제 제사장들과 스알디엘의 아들 스룹바벨과 그 형제들이 다 일어나 이스라엘 하나님의 단을 만들고 하나님의 사람 모세의 율법에 기록한대로 번제를 그 위에 드리려 할쌔",
+      "source_text_hash": "3b7c3cf8a71fa4bd6072ffef027e38d419be6bbef77c1a7226b18abcede05c88",
+      "translation_text_hash": "72be30403a63cf275bc2c684719a948d2fb990cb3f3642041da0a781098f9348",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요사닥의 아들 예수아와 그 형제 제사장들과 스알디엘의 아들 스룹바벨과 그 형제들이 다 일어나 이스라엘 하나님의 단을 만들고 하나님의 사람 모세의 율법에 기록한대로 번제를 그 위에 드리려 할쌔"
+      ],
+      "raw_text_hashes": [
+        "72be30403a63cf275bc2c684719a948d2fb990cb3f3642041da0a781098f9348"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:3",
+      "sequence": 12101,
+      "chapter_label": "EZR 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "In spite of their fear because of the peoples of the surrounding lands, they set the altar on its base; and they offered burnt offerings on it to the LORD, even burnt offerings morning and evening.",
+      "ko": "무리가 열국 백성을 두려워하여 단을 그 터에 세우고 그 위에 조석으로 여호와께 번제를 드리며",
+      "source_text_hash": "1ec00b6c0c1041665c0d79e5b7624a30c6e52c4e1f1c5aa849f55d7fdc96afed",
+      "translation_text_hash": "5adc046cb891f95868b8a249a0565811a2e98b1b025025b0f825ab320a8d7c97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 열국 백성을 두려워하여 단을 그 터에 세우고 그 위에 조석으로 여호와께 번제를 드리며"
+      ],
+      "raw_text_hashes": [
+        "5adc046cb891f95868b8a249a0565811a2e98b1b025025b0f825ab320a8d7c97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:4",
+      "sequence": 12102,
+      "chapter_label": "EZR 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "They kept the feast of booths, as it is written, and offered the daily burnt offerings by number, according to the ordinance, as the duty of every day required;",
+      "ko": "기록된 규례대로 초막절을 지켜 번제를 매일 정수대로 날마다 드리고",
+      "source_text_hash": "a297b2965f4b17fec659447945cfb98f655807775d98298431acc755a9c82c19",
+      "translation_text_hash": "76f1cef76846b470d90db85e715fb9dd8ade799cba0e5d32a5dc092d1b41aea2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된 규례대로 초막절을 지켜 번제를 매일 정수대로 날마다 드리고"
+      ],
+      "raw_text_hashes": [
+        "76f1cef76846b470d90db85e715fb9dd8ade799cba0e5d32a5dc092d1b41aea2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:5",
+      "sequence": 12103,
+      "chapter_label": "EZR 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "and afterward the continual burnt offering, the offerings of the new moons, of all the set feasts of the LORD that were consecrated, and of everyone who willingly offered a free will offering to the LORD.",
+      "ko": "그 후에는 항상 드리는 번제와 초하루와 여호와의 모든 거룩한 절기의 번제와 사람이 여호와께 즐거이 드리는 예물을 드리되",
+      "source_text_hash": "76e4d92e7e977144e27678a1635d09478b9ec8798d741a6d793f0f7f67350fd9",
+      "translation_text_hash": "fd03f4f6cc200fb5567c667b670125035aa9a61e9c3c29ff089473544825b520",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에는 항상 드리는 번제와 초하루와 여호와의 모든 거룩한 절기의 번제와 사람이 여호와께 즐거이 드리는 예물을 드리되"
+      ],
+      "raw_text_hashes": [
+        "fd03f4f6cc200fb5567c667b670125035aa9a61e9c3c29ff089473544825b520"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:6",
+      "sequence": 12104,
+      "chapter_label": "EZR 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "From the first day of the seventh month, they began to offer burnt offerings to the LORD; but the foundation of the LORD’s temple was not yet laid.",
+      "ko": "칠월 초하루부터 비로소 여호와께 번제를 드렸으나 그 때에 여호와의 전 지대는 오히려 놓지 못한지라",
+      "source_text_hash": "e496625024097584cf1787c12acddbbe4bf98bc436f47a17c41d2c304ccd96cb",
+      "translation_text_hash": "d02ca461b748a243abec9815dccbd0299773cf5ceebc48fc7ee1137830e8f272",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠월 초하루부터 비로소 여호와께 번제를 드렸으나 그 때에 여호와의 전 지대는 오히려 놓지 못한지라"
+      ],
+      "raw_text_hashes": [
+        "d02ca461b748a243abec9815dccbd0299773cf5ceebc48fc7ee1137830e8f272"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:7",
+      "sequence": 12105,
+      "chapter_label": "EZR 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "They also gave money to the masons and to the carpenters. They also gave food, drink, and oil to the people of Sidon and Tyre to bring cedar trees from Lebanon to the sea, to Joppa, according to the grant that they had from Cyrus King of Persia.",
+      "ko": "이에 석수와 목수에게 돈을 주고 또 시돈 사람과 두로 사람에게 먹을 것과 마실 것과 기름을 주고 바사 왕 고레스의 조서대로 백향목을 레바논에서 욥바 해변까지 수운하게 하였더라",
+      "source_text_hash": "732ce216bc5e6d077b31d1ec67b7691b461b1402db44aea4b1d9c9b620f58f2f",
+      "translation_text_hash": "5e726f0f5dac29f39811d2867f65de14ca8aa06cf0f6b9dd2d9d5f1dc28280fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 석수와 목수에게 돈을 주고 또 시돈 사람과 두로 사람에게 먹을 것과 마실 것과 기름을 주고 바사 왕 고레스의 조서대로 백향목을 레바논에서 욥바 해변까지 수운하게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "5e726f0f5dac29f39811d2867f65de14ca8aa06cf0f6b9dd2d9d5f1dc28280fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:8",
+      "sequence": 12106,
+      "chapter_label": "EZR 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Now in the second year of their coming to God’s house at Jerusalem, in the second month, Zerubbabel the son of Shealtiel, Jeshua the son of Jozadak, and the rest of their brothers the priests and the Levites, and all those who had come out of the captivity to Jerusalem, began the work and appointed the Levites, from twenty years old and upward, to have the oversight of the work of the LORD’s house.",
+      "ko": "예루살렘 하나님의 전에 이른지 이년 이월에 스알디엘의 아들 스룹바벨과 요사닥의 아들 예수아와 다른 형제 제사장들과 레위 사람들과 무릇 사로잡혔다가 예루살렘에 돌아 온 자들이 역사를 시작하고 이십 세 이상의 레위 사람들을 세워 여호와의 전 역사를 감독하게 하매",
+      "source_text_hash": "a1c66a904e8657d037072c45008700af880109f01a2eeb92f6786d12e569ed1a",
+      "translation_text_hash": "f96a255e873ece266b2cf11998cdf861566f8b848a3a44cf2a2a80cec2cd959e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 하나님의 전에 이른지 이년 이월에 스알디엘의 아들 스룹바벨과 요사닥의 아들 예수아와 다른 형제 제사장들과 레위 사람들과 무릇 사로잡혔다가 예루살렘에 돌아 온 자들이 역사를 시작하고 이십 세 이상의 레위 사람들을 세워 여호와의 전 역사를 감독하게 하매"
+      ],
+      "raw_text_hashes": [
+        "f96a255e873ece266b2cf11998cdf861566f8b848a3a44cf2a2a80cec2cd959e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:9",
+      "sequence": 12107,
+      "chapter_label": "EZR 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Then Jeshua stood with his sons and his brothers, Kadmiel and his sons, the sons of Judah, together to have the oversight of the workmen in God’s house: the sons of Henadad, with their sons and their brothers the Levites.",
+      "ko": "이에 예수아와 그 아들들과 그 형제들과 갓미엘과 그 아들들과 유다 자손과 헤나닷 자손과 그 형제 레위 사람들이 일제히 일어나 하나님의 전 공장을 감독하니라",
+      "source_text_hash": "7fc5062bcf2c205776885c28cb8a044de46ec72213b8a76573787fb10d4dafa5",
+      "translation_text_hash": "487cac26c3ec9405342550d8557e0b3b1a570f1ed4b5ae341301d91aed9062d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수아와 그 아들들과 그 형제들과 갓미엘과 그 아들들과 유다 자손과 헤나닷 자손과 그 형제 레위 사람들이 일제히 일어나 하나님의 전 공장을 감독하니라"
+      ],
+      "raw_text_hashes": [
+        "487cac26c3ec9405342550d8557e0b3b1a570f1ed4b5ae341301d91aed9062d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:10",
+      "sequence": 12108,
+      "chapter_label": "EZR 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "When the builders laid the foundation of the LORD’s temple, they set the priests in their vestments with trumpets, with the Levites the sons of Asaph with cymbals, to praise the LORD, according to the directions of David king of Israel.",
+      "ko": "건축자가 여호와의 전 지대를 놓을 때에 제사장들은 예복을 입고 나팔을 들고 아삽 자손 레위 사람들은 제금을 들고 서서 이스라엘 왕 다윗의 규례대로 여호와를 찬송하되",
+      "source_text_hash": "b1d5cfe7df5f63f1a415981af063c60c376892ee82958844a381e082b8ad7641",
+      "translation_text_hash": "32cc3d557fce37afdd192455ceec3d2ae9428a8bea20f62054c83a71a01d1b85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "건축자가 여호와의 전 지대를 놓을 때에 제사장들은 예복을 입고 나팔을 들고 아삽 자손 레위 사람들은 제금을 들고 서서 이스라엘 왕 다윗의 규례대로 여호와를 찬송하되"
+      ],
+      "raw_text_hashes": [
+        "32cc3d557fce37afdd192455ceec3d2ae9428a8bea20f62054c83a71a01d1b85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:11",
+      "sequence": 12109,
+      "chapter_label": "EZR 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "They sang to one another in praising and giving thanks to the LORD, “For he is good, for his loving kindness endures forever toward Israel.” All the people shouted with a great shout, when they praised the LORD, because the foundation of the LORD’s house had been laid.",
+      "ko": "서로 찬송가를 화답하며 여호와께 감사하여 가로되 주는 지선하시므로 그 인자하심이 이스라엘에게 영원하시도다 하니 모든 백성이 여호와의 전 지대가 놓임을 보고 여호와를 찬송하며 큰 소리로 즐거이 부르며",
+      "source_text_hash": "3e1bdb557d9a044b48f2cadfd82244636d1cbbd77676fe33beab227034ba060a",
+      "translation_text_hash": "70ba4dcbec98374e845fe264e6469b190d34d38d6bf95b12e4c170cea96dcd0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 찬송가를 화답하며 여호와께 감사하여 가로되 주는 지선하시므로 그 인자하심이 이스라엘에게 영원하시도다 하니 모든 백성이 여호와의 전 지대가 놓임을 보고 여호와를 찬송하며 큰 소리로 즐거이 부르며"
+      ],
+      "raw_text_hashes": [
+        "70ba4dcbec98374e845fe264e6469b190d34d38d6bf95b12e4c170cea96dcd0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:12",
+      "sequence": 12110,
+      "chapter_label": "EZR 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "But many of the priests and Levites and heads of fathers’ households, the old men who had seen the first house, when the foundation of this house was laid before their eyes, wept with a loud voice. Many also shouted aloud for joy,",
+      "ko": "제사장들과 레위 사람들과 족장들 중에 여러 노인은 첫 성전을 보았던고로 이제 이 전 지대 놓임을 보고 대성 통곡하며 여러 사람은 기뻐하여 즐거이 부르니",
+      "source_text_hash": "21b46a0ff7122c47ea4e3ee97433126adeff1f5f14f4623269b4ae2aea54e8a6",
+      "translation_text_hash": "627e6b4c15ebe3fc6926f4ee7ed65f203bfaacf4e84a116cf34819026bfd25c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들과 레위 사람들과 족장들 중에 여러 노인은 첫 성전을 보았던고로 이제 이 전 지대 놓임을 보고 대성 통곡하며 여러 사람은 기뻐하여 즐거이 부르니"
+      ],
+      "raw_text_hashes": [
+        "627e6b4c15ebe3fc6926f4ee7ed65f203bfaacf4e84a116cf34819026bfd25c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:3:13",
+      "sequence": 12111,
+      "chapter_label": "EZR 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZR",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "so that the people could not discern the noise of the shout of joy from the noise of the weeping of the people; for the people shouted with a loud shout, and the noise was heard far away.",
+      "ko": "백성의 크게 외치는 소리가 멀리 들리므로 즐거이 부르는 소리와 통곡하는 소리를 백성들이 분변치 못하였느니라",
+      "source_text_hash": "d1c86d842488e0460093067a1f22c7da2d281da8e3c79894546dadd75c2fbfa2",
+      "translation_text_hash": "0dc7b471f215537b269d3fe6018b14754df2e383ee6e01c4cd156eccf7abab7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성의 크게 외치는 소리가 멀리 들리므로 즐거이 부르는 소리와 통곡하는 소리를 백성들이 분변치 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "0dc7b471f215537b269d3fe6018b14754df2e383ee6e01c4cd156eccf7abab7c"
+      ]
+    }
+  ]
+}

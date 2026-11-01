@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:013",
+  "unit_ordinal": 692,
+  "unit_label": "ISA 13",
+  "book_code": "ISA",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:13:1",
+      "sequence": 17908,
+      "chapter_label": "ISA 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "The burden of Babylon, which Isaiah the son of Amoz saw.",
+      "ko": "아모스의 아들 이사야가 바벨론에 대하여 받은 경고라",
+      "source_text_hash": "f04fb2d100126c43fe74c9a4f251337735ef699a54bcfca08c0bde9a8fc108f1",
+      "translation_text_hash": "342fa91f782a7c520095f11d1a21ccb4f207a0437b3f9f6fa5aeb7b768b2b208",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아모스의 아들 이사야가 바벨론에 대하여 받은 경고라"
+      ],
+      "raw_text_hashes": [
+        "342fa91f782a7c520095f11d1a21ccb4f207a0437b3f9f6fa5aeb7b768b2b208"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:2",
+      "sequence": 17909,
+      "chapter_label": "ISA 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "Set up a banner on the bare mountain! Lift up your voice to them! Wave your hand, that they may go into the gates of the nobles.",
+      "ko": "너희는 자산 위에 기호를 세우고 소리를 높여 그들을 부르며 손을 흔들어 그들로 존귀한 자의 문에 들어가게 하라",
+      "source_text_hash": "785b0ec0536542293df04f7e7793d69cca6ab1c6943713c37c45dd755e18418c",
+      "translation_text_hash": "7c070991bbad77880ef36a5af61b91a2b9404bff14b85f25d4ee0992ad448d3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 자산 위에 기호를 세우고 소리를 높여 그들을 부르며 손을 흔들어 그들로 존귀한 자의 문에 들어가게 하라"
+      ],
+      "raw_text_hashes": [
+        "7c070991bbad77880ef36a5af61b91a2b9404bff14b85f25d4ee0992ad448d3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:3",
+      "sequence": 17910,
+      "chapter_label": "ISA 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "I have commanded my consecrated ones; yes, I have called my mighty men for my anger, even my proudly exulting ones.",
+      "ko": "내가 나의 거룩히 구별한 자에게 명하고 나의 위엄을 기뻐하는 용사들을 불러 나의 노를 풀게 하였느니라",
+      "source_text_hash": "fb64a447f8b08ad617fa1462e070c878f45a50cc13bdabc403e2888e92866099",
+      "translation_text_hash": "7c10c07906c97a212f94d413c7e277ab4e3fe37b124f2a223826a508c1021778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 거룩히 구별한 자에게 명하고 나의 위엄을 기뻐하는 용사들을 불러 나의 노를 풀게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "7c10c07906c97a212f94d413c7e277ab4e3fe37b124f2a223826a508c1021778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:4",
+      "sequence": 17911,
+      "chapter_label": "ISA 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "The noise of a multitude is in the mountains, as of a great people; the noise of an uproar of the kingdoms of the nations gathered together! The LORD of Armies is mustering the army for the battle.",
+      "ko": "산에서 무리의 소리가 남이여 많은 백성의 소리 같으니 곧 열국 민족이 함께 모여 떠드는 소리라 만군의 여호와께서 싸움을 위하여 군대를 검열하심이로다",
+      "source_text_hash": "7235a16b36b0a9bcd25409b2a623049d511f68e5395783aa880515b4b4e81778",
+      "translation_text_hash": "533db35426c5e0a79dca55e32e6f554de233bde3a41638d7c864cb89a4f9eb07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산에서 무리의 소리가 남이여 많은 백성의 소리 같으니 곧 열국 민족이 함께 모여 떠드는 소리라 만군의 여호와께서 싸움을 위하여 군대를 검열하심이로다"
+      ],
+      "raw_text_hashes": [
+        "533db35426c5e0a79dca55e32e6f554de233bde3a41638d7c864cb89a4f9eb07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:5",
+      "sequence": 17912,
+      "chapter_label": "ISA 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "They come from a far country, from the uttermost part of heaven, even the LORD, and the weapons of his indignation, to destroy the whole land.",
+      "ko": "무리가 먼 나라에서, 하늘 가에서 왔음이여 곧 여호와와 그 진노의 병기라 온 땅을 멸하려 함이로다",
+      "source_text_hash": "5d3ab7d138f8a18e48504e6e7be72db23382b593b3cbd3dbd7080fa9c09245c7",
+      "translation_text_hash": "a59b6afa81ee1a99793f22cde701076859f9aa2839b173f0165e50232641f705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 먼 나라에서, 하늘 가에서 왔음이여 곧 여호와와 그 진노의 병기라 온 땅을 멸하려 함이로다"
+      ],
+      "raw_text_hashes": [
+        "a59b6afa81ee1a99793f22cde701076859f9aa2839b173f0165e50232641f705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:6",
+      "sequence": 17913,
+      "chapter_label": "ISA 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "Wail, for the LORD’s day is at hand! It will come as destruction from the Almighty.",
+      "ko": "너희는 애곡할찌어다 여호와의 날이 가까왔으니 전능자에게서 멸망이 임할 것임이로다",
+      "source_text_hash": "d3d77291359645e5a8889b46d6b0325fd9570fb54ede80a2441272c0456001bb",
+      "translation_text_hash": "22305b7bf4561646c466a5d75b3529df54be4dc42b4c495c87e3ba868d52fe9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 애곡할찌어다 여호와의 날이 가까왔으니 전능자에게서 멸망이 임할 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "22305b7bf4561646c466a5d75b3529df54be4dc42b4c495c87e3ba868d52fe9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:7",
+      "sequence": 17914,
+      "chapter_label": "ISA 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore all hands will be feeble, and everyone’s heart will melt.",
+      "ko": "그러므로 모든 손이 피곤하며 각사람의 마음이 녹을 것이라",
+      "source_text_hash": "0ce6d8da87e2c334e16b53f59eb0b8555b2082c4476307c668ff5bd21d0ebcf6",
+      "translation_text_hash": "da77fa7ba1ca418db179fd4f612f6068776ab33ab8cb015f2844ba78d88907d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 모든 손이 피곤하며 각사람의 마음이 녹을 것이라"
+      ],
+      "raw_text_hashes": [
+        "da77fa7ba1ca418db179fd4f612f6068776ab33ab8cb015f2844ba78d88907d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:8",
+      "sequence": 17915,
+      "chapter_label": "ISA 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "They will be dismayed. Pangs and sorrows will seize them. They will be in pain like a woman in labor. They will look in amazement one at another. Their faces will be faces of flame.",
+      "ko": "그들이 놀라며 괴로움과 슬픔에 잡혀서 임산한 여자 같이 고통하며 서로 보고 놀라며 얼굴은 불꽃 같으리로다",
+      "source_text_hash": "0dc61c934cd891f250cf0b65d85ea41a18dabae556aaf2bda7b6f6be4321a5df",
+      "translation_text_hash": "1f266b1266c6f407798998c44a70b7b39adf97df427b687eef99b477e41c65ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 놀라며 괴로움과 슬픔에 잡혀서 임산한 여자 같이 고통하며 서로 보고 놀라며 얼굴은 불꽃 같으리로다"
+      ],
+      "raw_text_hashes": [
+        "1f266b1266c6f407798998c44a70b7b39adf97df427b687eef99b477e41c65ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:9",
+      "sequence": 17916,
+      "chapter_label": "ISA 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "Behold, the day of the LORD comes, cruel, with wrath and fierce anger; to make the land a desolation, and to destroy its sinners out of it.",
+      "ko": "여호와의 날 곧 잔혹히 분냄과 맹렬히 노하는 날이 임하여 땅을 황무케 하며 그 중에서 죄인을 멸하리니",
+      "source_text_hash": "8b2b82ef3fbd3db3766bc3f90efadb540902dcf4b337692078cb52171dd01e7d",
+      "translation_text_hash": "af4f3adc21ad827127adf0acf215598070f1b9c403bfe24773dd2563546f2d7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 날 곧 잔혹히 분냄과 맹렬히 노하는 날이 임하여 땅을 황무케 하며 그 중에서 죄인을 멸하리니"
+      ],
+      "raw_text_hashes": [
+        "af4f3adc21ad827127adf0acf215598070f1b9c403bfe24773dd2563546f2d7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:10",
+      "sequence": 17917,
+      "chapter_label": "ISA 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "For the stars of the sky and its constellations will not give their light. The sun will be darkened in its going out, and the moon will not cause its light to shine.",
+      "ko": "하늘의 별들과 별 떨기가 그 빛을 내지 아니하며 해가 돋아도 어두우며 달이 그 빛을 비취지 아니할 것이로다",
+      "source_text_hash": "c916cfd86aa047e0cf8a7dabd40932cad9e553936e46b66b84d48b88cf36db9f",
+      "translation_text_hash": "03c4b1c4cfa6c2a18772f7ae06b31d8ec62ef18ac6ace37d12b3cf064f400b45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘의 별들과 별 떨기가 그 빛을 내지 아니하며 해가 돋아도 어두우며 달이 그 빛을 비취지 아니할 것이로다"
+      ],
+      "raw_text_hashes": [
+        "03c4b1c4cfa6c2a18772f7ae06b31d8ec62ef18ac6ace37d12b3cf064f400b45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:11",
+      "sequence": 17918,
+      "chapter_label": "ISA 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "I will punish the world for their evil, and the wicked for their iniquity. I will cause the arrogance of the proud to cease, and will humble the arrogance of the terrible.",
+      "ko": "내가 세상의 악과 악인의 죄를 벌하며 교만한 자의 오만을 끊으며 강포한 자의 거만을 낮출 것이며",
+      "source_text_hash": "c2e47f9f67ad5712f37540ee872ea7b26fe41f9a2500512c2ce4d669d3e67d82",
+      "translation_text_hash": "9e83c54575e7b983a5b346b4f5e1e1bf91b621789dfd50e8d7083697eeb011e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 세상의 악과 악인의 죄를 벌하며 교만한 자의 오만을 끊으며 강포한 자의 거만을 낮출 것이며"
+      ],
+      "raw_text_hashes": [
+        "9e83c54575e7b983a5b346b4f5e1e1bf91b621789dfd50e8d7083697eeb011e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:12",
+      "sequence": 17919,
+      "chapter_label": "ISA 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "I will make people more rare than fine gold, even a person than the pure gold of Ophir.",
+      "ko": "내가 사람을 정금보다 희소케 하며 오빌의 순금보다 희귀케 하리로다",
+      "source_text_hash": "f893622c8f6dc3fd6cb134a71447622a90867b5cf3ee3ca16668aab1be2db1a4",
+      "translation_text_hash": "b69acfd86859edf399e7e6e3a083f59ed3816b4a547f6970034d6d9cea70ddc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사람을 정금보다 희소케 하며 오빌의 순금보다 희귀케 하리로다"
+      ],
+      "raw_text_hashes": [
+        "b69acfd86859edf399e7e6e3a083f59ed3816b4a547f6970034d6d9cea70ddc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:13",
+      "sequence": 17920,
+      "chapter_label": "ISA 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore I will make the heavens tremble, and the earth will be shaken out of its place in the LORD of Armies’ wrath, and in the day of his fierce anger.",
+      "ko": "나 만군의 여호와가 분하여 맹렬히 노하는 날에 하늘을 진동시키며 땅을 흔들어 그 자리에서 떠나게 하리니",
+      "source_text_hash": "d16dee8c7aa5b6653823247ed981afb160f3017940745cc72103903ff69d3ea8",
+      "translation_text_hash": "b8ef76f74c4701a85d1922f604e7ca3df8e9822855acd285b464b04bdb0e4069",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와가 분하여 맹렬히 노하는 날에 하늘을 진동시키며 땅을 흔들어 그 자리에서 떠나게 하리니"
+      ],
+      "raw_text_hashes": [
+        "b8ef76f74c4701a85d1922f604e7ca3df8e9822855acd285b464b04bdb0e4069"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:14",
+      "sequence": 17921,
+      "chapter_label": "ISA 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "It will happen that like a hunted gazelle and like sheep that no one gathers, they will each turn to their own people, and will each flee to their own land.",
+      "ko": "그들이 쫓긴 노루나 모으는 자 없는 양 같이 각기 동족에게로 돌아가며 본향으로 도망할 것이나",
+      "source_text_hash": "bd9c8fbcce8254dff279fb62706640d14229ffcf14d4d938001f0ad12fe3a0a3",
+      "translation_text_hash": "bbec3a88a783972f47d79e260956f2f01e79596d27b8c78395cfb9f88e3961f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 쫓긴 노루나 모으는 자 없는 양 같이 각기 동족에게로 돌아가며 본향으로 도망할 것이나"
+      ],
+      "raw_text_hashes": [
+        "bbec3a88a783972f47d79e260956f2f01e79596d27b8c78395cfb9f88e3961f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:15",
+      "sequence": 17922,
+      "chapter_label": "ISA 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Everyone who is found will be thrust through. Everyone who is captured will fall by the sword.",
+      "ko": "만나는 자는 창에 찔리겠고 잡히는 자는 칼에 엎드러지겠고",
+      "source_text_hash": "4fa48ce8dcba3318a7ddfa63a2af34a4ca2e488449bf527d7bf36d6f12238acb",
+      "translation_text_hash": "48ae1bd4b26dc77940b66db89d4339a246f961c921f560e48dc5884c28bfa842",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만나는 자는 창에 찔리겠고 잡히는 자는 칼에 엎드러지겠고"
+      ],
+      "raw_text_hashes": [
+        "48ae1bd4b26dc77940b66db89d4339a246f961c921f560e48dc5884c28bfa842"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:16",
+      "sequence": 17923,
+      "chapter_label": "ISA 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "Their infants also will be dashed in pieces before their eyes. Their houses will be ransacked, and their wives raped.",
+      "ko": "그들의 어린 아이들은 그 목전에 메어침을 입겠고 그 집은 노략을 당하겠고 그 아내는 욕을 당하리라",
+      "source_text_hash": "2d1b2dd3c096162f64d5b36a7c7b668f07c0bdd4458792be44025ddb4a8f39fc",
+      "translation_text_hash": "79e929e5fe6e8ead3e8bd6d8fcd67f2ebce17a897c4168811b37a8e64439ec34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 어린 아이들은 그 목전에 메어침을 입겠고 그 집은 노략을 당하겠고 그 아내는 욕을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "79e929e5fe6e8ead3e8bd6d8fcd67f2ebce17a897c4168811b37a8e64439ec34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:17",
+      "sequence": 17924,
+      "chapter_label": "ISA 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Behold, I will stir up the Medes against them, who will not value silver, and as for gold, they will not delight in it.",
+      "ko": "보라 은을 돌아보지 아니하며 금을 기뻐하지 아니하는 메대 사람을 내가 격동시켜 그들을 치게 하리니",
+      "source_text_hash": "ec1ca431271009d37bc6e34ae41e17520989fd5d7bd0335ff54ff252988bd0f9",
+      "translation_text_hash": "1f20cd5a1eb1d5fe8c63388b46ac2d7aaef9c742950564f7ff1f54476637b227",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 은을 돌아보지 아니하며 금을 기뻐하지 아니하는 메대 사람을 내가 격동시켜 그들을 치게 하리니"
+      ],
+      "raw_text_hashes": [
+        "1f20cd5a1eb1d5fe8c63388b46ac2d7aaef9c742950564f7ff1f54476637b227"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:18",
+      "sequence": 17925,
+      "chapter_label": "ISA 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "Their bows will dash the young men in pieces; and they shall have no pity on the fruit of the womb. Their eyes will not spare children.",
+      "ko": "메대 사람이 활로 청년을 쏘아 죽이며 태의 열매를 긍휼히 여기지 아니하며 아이를 가석히 보지 아니하리라",
+      "source_text_hash": "b6324a6efd08e164f18d5852217518f3a455f5711967e63b75132fb25a1069ce",
+      "translation_text_hash": "e3f71b73b4af9161085a86307bca29a547bb844701421af4a1d549dd945bb4c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "메대 사람이 활로 청년을 쏘아 죽이며 태의 열매를 긍휼히 여기지 아니하며 아이를 가석히 보지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "e3f71b73b4af9161085a86307bca29a547bb844701421af4a1d549dd945bb4c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:19",
+      "sequence": 17926,
+      "chapter_label": "ISA 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "Babylon, the glory of kingdoms, the beauty of the Chaldeans’ pride, will be like when God overthrew Sodom and Gomorrah.",
+      "ko": "열국의 영광이요 갈대아 사람의 자랑하는 노리개가 된 바벨론이 하나님께 멸망 당한 소돔과 고모라 같이 되리니",
+      "source_text_hash": "8755d6c6616bed58446fcca52ea0a87543eb57172ca9fe1009f550cb5fa563f6",
+      "translation_text_hash": "7f5bfdee89dd363b4994c5769794e5e69b0150f41a0e08eee48d3eb0727738a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국의 영광이요 갈대아 사람의 자랑하는 노리개가 된 바벨론이 하나님께 멸망 당한 소돔과 고모라 같이 되리니"
+      ],
+      "raw_text_hashes": [
+        "7f5bfdee89dd363b4994c5769794e5e69b0150f41a0e08eee48d3eb0727738a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:20",
+      "sequence": 17927,
+      "chapter_label": "ISA 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "It will never be inhabited, neither will it be lived in from generation to generation. The Arabian will not pitch a tent there, neither will shepherds make their flocks lie down there.",
+      "ko": "그 곳에 처할 자가 없겠고 거할 사람이 대대에 없을 것이며 아라비아 사람도 거기 장막을 치지 아니하며 목자들도 그곳에 그 양떼를 쉬게 하지 아니할 것이요",
+      "source_text_hash": "b3f61e41fbb1542c2fcefba36c5e75a6237a0437b1bbe631f4941fa4649743cb",
+      "translation_text_hash": "a3fde363f2b04edcb96318f52156c17de99550d28dd759f7b654a471cfba2497",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 곳에 처할 자가 없겠고 거할 사람이 대대에 없을 것이며 아라비아 사람도 거기 장막을 치지 아니하며 목자들도 그곳에 그 양떼를 쉬게 하지 아니할 것이요"
+      ],
+      "raw_text_hashes": [
+        "a3fde363f2b04edcb96318f52156c17de99550d28dd759f7b654a471cfba2497"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:21",
+      "sequence": 17928,
+      "chapter_label": "ISA 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "But wild animals of the desert will lie there, and their houses will be full of jackals. Ostriches will dwell there, and wild goats will frolic there.",
+      "ko": "오직 들짐승들이 거기 엎드리고 부르짖는 짐승이 그 가옥에 충만하며 타조가 거기 깃들이며 들 양이 거기서 뛸 것이요",
+      "source_text_hash": "c27c86ef43e2508f85ef990be9440a5db3fdfdb470da687b4457aba8365d0e7b",
+      "translation_text_hash": "34e2486b71cadc1f37b48ccbaf72cbb23c15e02056705b2b9d28c97f1261f088",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 들짐승들이 거기 엎드리고 부르짖는 짐승이 그 가옥에 충만하며 타조가 거기 깃들이며 들 양이 거기서 뛸 것이요"
+      ],
+      "raw_text_hashes": [
+        "34e2486b71cadc1f37b48ccbaf72cbb23c15e02056705b2b9d28c97f1261f088"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:13:22",
+      "sequence": 17929,
+      "chapter_label": "ISA 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "Hyenas will cry in their fortresses, and jackals in the pleasant palaces. Her time is near to come, and her days will not be prolonged.",
+      "ko": "그 궁성에는 시랑이 부르짖을 것이요 화려한 전에는 들 개가 울 것이라 그의 때가 가까우며 그의 날이 오래지 아니하리라",
+      "source_text_hash": "622d4f8fc0e560ec8dfc9cc85cf6659d77921b42fa4832fc6a68e734d28e6397",
+      "translation_text_hash": "cd669707022da030c2f6af594a610f70ae127aa4b8eb9d24535593a6052f23ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 궁성에는 시랑이 부르짖을 것이요 화려한 전에는 들 개가 울 것이라 그의 때가 가까우며 그의 날이 오래지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "cd669707022da030c2f6af594a610f70ae127aa4b8eb9d24535593a6052f23ba"
+      ]
+    }
+  ]
+}

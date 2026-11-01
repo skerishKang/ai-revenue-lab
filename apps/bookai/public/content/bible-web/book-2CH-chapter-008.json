@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:008",
+  "unit_ordinal": 375,
+  "unit_label": "2CH 8",
+  "book_code": "2CH",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:8:1",
+      "sequence": 11348,
+      "chapter_label": "2CH 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "At the end of twenty years, in which Solomon had built the LORD’s house and his own house,",
+      "ko": "솔로몬이 여호와의 전과 자기의 궁궐을 이십년 동안에 건축하기를 마치고",
+      "source_text_hash": "63a1ddc707b5ae23b3a5b5140484d43270386586cc6c1ef0561de20a0b2dd731",
+      "translation_text_hash": "ed8615423f9c04129521022169015dcf18adf0e92ed5610795a5a76f0acda545",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 여호와의 전과 자기의 궁궐을 이십년 동안에 건축하기를 마치고"
+      ],
+      "raw_text_hashes": [
+        "ed8615423f9c04129521022169015dcf18adf0e92ed5610795a5a76f0acda545"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:2",
+      "sequence": 11349,
+      "chapter_label": "2CH 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "Solomon built the cities which Huram had given to Solomon, and caused the children of Israel to dwell there.",
+      "ko": "후람이 자기에게 준 성읍들을 다시 건축하여 이스라엘 자손으로 거기 거하게 하니라",
+      "source_text_hash": "175f104af6d2e7f484d52eb59ac424839a21873c59d4710d34f55b8c53c38777",
+      "translation_text_hash": "694c875704034e1c7b0af7168b66321997e12676bbae0ec2983e3548e6e173b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후람이 자기에게 준 성읍들을 다시 건축하여 이스라엘 자손으로 거기 거하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "694c875704034e1c7b0af7168b66321997e12676bbae0ec2983e3548e6e173b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:3",
+      "sequence": 11350,
+      "chapter_label": "2CH 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Solomon went to Hamath Zobah, and prevailed against it.",
+      "ko": "솔로몬이 가서 하맛소바를 쳐서 취하고",
+      "source_text_hash": "7ff011ef43fe2b5131b64e6af050c29cbd4318dfa9f1067dd5d465a239fccc89",
+      "translation_text_hash": "3ff708461f3fd0ac89eb05d15a32793e86a91c196b1fccc12b95e1c64f72875f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 가서 하맛소바를 쳐서 취하고"
+      ],
+      "raw_text_hashes": [
+        "3ff708461f3fd0ac89eb05d15a32793e86a91c196b1fccc12b95e1c64f72875f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:4",
+      "sequence": 11351,
+      "chapter_label": "2CH 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "He built Tadmor in the wilderness, and all the storage cities, which he built in Hamath.",
+      "ko": "또 광야에서 다드몰을 건축하고 하맛에서 모든 국고성을 건축하고",
+      "source_text_hash": "d0ca489abfca75e38f417faafee78ca5428212b9cffb0afca0cf5183e4e09d77",
+      "translation_text_hash": "7649cf2e13e7142fb006d5b3ae2f49f21b31887806170e011a57e278c0687a57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 광야에서 다드몰을 건축하고 하맛에서 모든 국고성을 건축하고"
+      ],
+      "raw_text_hashes": [
+        "7649cf2e13e7142fb006d5b3ae2f49f21b31887806170e011a57e278c0687a57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:5",
+      "sequence": 11352,
+      "chapter_label": "2CH 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Also he built Beth Horon the upper and Beth Horon the lower, fortified cities with walls, gates, and bars;",
+      "ko": "또 윗 벧호론과 아래 벧호론을 건축하되 성과 문과 문빗장이 있게 하여 견고한 성읍을 삼고",
+      "source_text_hash": "373a71f2abbee82b50323ea3d344d0d1c52323015b051afdda3ce409a07888f9",
+      "translation_text_hash": "faa2225c77251e28f0a16dc2751a3b66de1fef416f6fa4c547f40d1bbd9b1605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 윗 벧호론과 아래 벧호론을 건축하되 성과 문과 문빗장이 있게 하여 견고한 성읍을 삼고"
+      ],
+      "raw_text_hashes": [
+        "faa2225c77251e28f0a16dc2751a3b66de1fef416f6fa4c547f40d1bbd9b1605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:6",
+      "sequence": 11353,
+      "chapter_label": "2CH 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "and Baalath, and all the storage cities that Solomon had, and all the cities for his chariots, the cities for his horsemen, and all that Solomon desired to build for his pleasure in Jerusalem, in Lebanon, and in all the land of his dominion.",
+      "ko": "또 바알랏과 자기에게 있는 모든 국고성과 모든 병거성과 마병의 성들을 건축하고 솔로몬이 또 예루살렘과 레바논과 그 다스리는 온 땅에 건축하고자 하던 것을 다 건축하니라",
+      "source_text_hash": "f1b3ee982828a0f16cbd570d0958bf97d6a15960dcdfbf83c397762c7860672a",
+      "translation_text_hash": "505e8e44f48455675fd5c60ea2df9e812110ee1fbfea3c62f2dfea4478e2f72d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 바알랏과 자기에게 있는 모든 국고성과 모든 병거성과 마병의 성들을 건축하고 솔로몬이 또 예루살렘과 레바논과 그 다스리는 온 땅에 건축하고자 하던 것을 다 건축하니라"
+      ],
+      "raw_text_hashes": [
+        "505e8e44f48455675fd5c60ea2df9e812110ee1fbfea3c62f2dfea4478e2f72d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:7",
+      "sequence": 11354,
+      "chapter_label": "2CH 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "As for all the people who were left of the Hittites, the Amorites, the Perizzites, the Hivites, and the Jebusites, who were not of Israel—",
+      "ko": "무릇 이스라엘이 아닌 헷 족속과 아모리 족속과 브리스 족속과 히위 족속과 여부스 족속의 남아 있는자",
+      "source_text_hash": "c65e15e0609af6cbbd490b7ad05caa1681993a0d01136b77dafeafbebd6c6c9e",
+      "translation_text_hash": "c0ba4263a90c5b75678e56109a27698400cf99b4b83d1ff66598cd53e9ffe1ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이스라엘이 아닌 헷 족속과 아모리 족속과 브리스 족속과 히위 족속과 여부스 족속의 남아 있는자"
+      ],
+      "raw_text_hashes": [
+        "c0ba4263a90c5b75678e56109a27698400cf99b4b83d1ff66598cd53e9ffe1ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:8",
+      "sequence": 11355,
+      "chapter_label": "2CH 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "of their children who were left after them in the land, whom the children of Israel didn’t consume—of them Solomon conscripted forced labor to this day.",
+      "ko": "곧 이스라엘 자손이 다 멸하지 못하였으므로 그 땅에 남아 있는 그 자손들을 솔로몬이 역군을 삼아 오늘날까지 이르렀으되",
+      "source_text_hash": "f5d6b0fda2a129f39bf1289c565a10aa62ed7ed37dc146e55a542b1efbbb6f18",
+      "translation_text_hash": "5b139a60392d682a3c20ab93839e7c749c85b979703d9157ec66b83e7b2c0139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 이스라엘 자손이 다 멸하지 못하였으므로 그 땅에 남아 있는 그 자손들을 솔로몬이 역군을 삼아 오늘날까지 이르렀으되"
+      ],
+      "raw_text_hashes": [
+        "5b139a60392d682a3c20ab93839e7c749c85b979703d9157ec66b83e7b2c0139"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:9",
+      "sequence": 11356,
+      "chapter_label": "2CH 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "But of the children of Israel, Solomon made no servants for his work, but they were men of war, chief of his captains, and rulers of his chariots and of his horsemen.",
+      "ko": "오직 이스라엘 자손은 솔로몬이 노예를 삼아 일을 시키지 아니하였으니 저희는 군사와 장관의 두목과 그 병거와 마병의 장관이 됨이라",
+      "source_text_hash": "4b8eed27e2819681ef37f966467d8926e466124fc3c023fb033f616c8ff6c3b0",
+      "translation_text_hash": "1832402f5cc05e175ad8af84786cf5079b10fc46b9193bfddd51a04ceeab1f0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 이스라엘 자손은 솔로몬이 노예를 삼아 일을 시키지 아니하였으니 저희는 군사와 장관의 두목과 그 병거와 마병의 장관이 됨이라"
+      ],
+      "raw_text_hashes": [
+        "1832402f5cc05e175ad8af84786cf5079b10fc46b9193bfddd51a04ceeab1f0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:10",
+      "sequence": 11357,
+      "chapter_label": "2CH 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "These were the chief officers of King Solomon, even two-hundred fifty, who ruled over the people.",
+      "ko": "솔로몬왕의 공장을 감독하는 자가 이백 오십인이라 저희가 백성을 다스렸더라",
+      "source_text_hash": "dd919c78187ddda0e88383aef2799b187a6da83156ecf37c94b901d9469e7d9c",
+      "translation_text_hash": "1f316d7e62f714181c2d3851291ee91d41cf044ad5ebc059763e6f0a624f5bfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕의 공장을 감독하는 자가 이백 오십인이라 저희가 백성을 다스렸더라"
+      ],
+      "raw_text_hashes": [
+        "1f316d7e62f714181c2d3851291ee91d41cf044ad5ebc059763e6f0a624f5bfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:11",
+      "sequence": 11358,
+      "chapter_label": "2CH 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "Solomon brought up Pharaoh’s daughter out of David’s city to the house that he had built for her; for he said, “My wife shall not dwell in the house of David king of Israel, because the places where the LORD’s ark has come are holy.”",
+      "ko": "솔로몬이 바로의 딸을 데리고 다윗성에서부터 저를 위하여 건축한 궁에 이르러 가로되 내 아내가 이스라엘 왕 다윗의 궁에 거하지 못하리니 이는 여호와의 궤가 이른 곳은 다 거룩함이니라 하였더라",
+      "source_text_hash": "6ed612378c68e0e33899612cc5391f8b087753ac269c6b0dc32cde20d50fdffc",
+      "translation_text_hash": "1dc1b41e1a6e37f1fbc128e9dfb744e9da3ce4f29230d37fc32e4572a27ed613",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 바로의 딸을 데리고 다윗성에서부터 저를 위하여 건축한 궁에 이르러 가로되 내 아내가 이스라엘 왕 다윗의 궁에 거하지 못하리니 이는 여호와의 궤가 이른 곳은 다 거룩함이니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "1dc1b41e1a6e37f1fbc128e9dfb744e9da3ce4f29230d37fc32e4572a27ed613"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:12",
+      "sequence": 11359,
+      "chapter_label": "2CH 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Then Solomon offered burnt offerings to the LORD on the LORD’s altar which he had built before the porch,",
+      "ko": "솔로몬이 낭실 앞에 쌓은 여호와의 단위에 여호와께 번제를 드리되",
+      "source_text_hash": "777b81389a750bfedef0c99f9e2284ea537326869ce477c5177c97b61d5ec060",
+      "translation_text_hash": "8cfb5eb519ee93b98430a074ff3ca2ec7c2967b7ed1c5307a4bc4d363f0a5500",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 낭실 앞에 쌓은 여호와의 단위에 여호와께 번제를 드리되"
+      ],
+      "raw_text_hashes": [
+        "8cfb5eb519ee93b98430a074ff3ca2ec7c2967b7ed1c5307a4bc4d363f0a5500"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:13",
+      "sequence": 11360,
+      "chapter_label": "2CH 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "even as the duty of every day required, offering according to the commandment of Moses on the Sabbaths, on the new moons, and on the set feasts, three times per year, during the feast of unleavened bread, during the feast of weeks, and during the feast of booths.",
+      "ko": "모세의 명을 좇아 매일에 합의한대로 안식일과 월삭과 정한 절기 곧 일년의 세 절기 무교절과 칠칠절과 초막절에 드렸더라",
+      "source_text_hash": "e262897ba4bd7ef85296060fc383aff72b64bf710403802d2067aa58eb835940",
+      "translation_text_hash": "114178bac29fd1de1f9a3f529a7256b4f6c47c005bcd0ac779d733e64742d7d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 명을 좇아 매일에 합의한대로 안식일과 월삭과 정한 절기 곧 일년의 세 절기 무교절과 칠칠절과 초막절에 드렸더라"
+      ],
+      "raw_text_hashes": [
+        "114178bac29fd1de1f9a3f529a7256b4f6c47c005bcd0ac779d733e64742d7d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:14",
+      "sequence": 11361,
+      "chapter_label": "2CH 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "He appointed, according to the ordinance of David his father, the divisions of the priests to their service, and the Levites to their offices, to praise and to minister before the priests, as the duty of every day required, the doorkeepers also by their divisions at every gate, for David the man of God had so commanded.",
+      "ko": "솔로몬이 또 그 부친 다윗의 정규를 좇아 제사장들의 반차를 정하여 섬기게 하고 레위 사람에게도 그 직분을 맡겨 매일에 합의한대로 찬송하며 제사장들 앞에서 수종들게 하며 또 문지기로 그 반차를 좇아 각 문을 지키게 하였으니 이는 하나님의 사람 다윗이 전에 이렇게 명하였음이라",
+      "source_text_hash": "effb35def44089ae7bced06011eeb0dbe8695aeb501dd07c17701cdf4372a8ca",
+      "translation_text_hash": "2a6392c542eabddfde5705b711a08b1553904bb6e378b2f7fdb3984d81385ecb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 또 그 부친 다윗의 정규를 좇아 제사장들의 반차를 정하여 섬기게 하고 레위 사람에게도 그 직분을 맡겨 매일에 합의한대로 찬송하며 제사장들 앞에서 수종들게 하며 또 문지기로 그 반차를 좇아 각 문을 지키게 하였으니 이는 하나님의 사람 다윗이 전에 이렇게 명하였음이라"
+      ],
+      "raw_text_hashes": [
+        "2a6392c542eabddfde5705b711a08b1553904bb6e378b2f7fdb3984d81385ecb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:15",
+      "sequence": 11362,
+      "chapter_label": "2CH 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "They didn’t depart from the commandment of the king to the priests and Levites concerning any matter or concerning the treasures.",
+      "ko": "제사장과 레위 사람이 국고 일에든지 무슨 일에든지 왕의 명한바를 다 어기지 아니하였더라",
+      "source_text_hash": "0a8afba8820e8ee7f9313139508de7deb33dcbfa4dce21eea63b680c14cf3956",
+      "translation_text_hash": "9f25b97491c319dfd0eebf093e8e47a035458a6f8fbf5923a92bc839ad67549d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장과 레위 사람이 국고 일에든지 무슨 일에든지 왕의 명한바를 다 어기지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "9f25b97491c319dfd0eebf093e8e47a035458a6f8fbf5923a92bc839ad67549d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:16",
+      "sequence": 11363,
+      "chapter_label": "2CH 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "Now all the work of Solomon was accomplished from the day of the foundation of the LORD’s house until it was finished. So the LORD’s house was completed.",
+      "ko": "솔로몬이 여호와의 전의 기지를 쌓던 날부터 준공하기까지 범백을 완비하였으므로 여호와의 전이 결점이 없이 필역하니라",
+      "source_text_hash": "2279c8cb8b84756cfe3ea08c64e300f0a38363ee5c9841253dfd5e95178e5297",
+      "translation_text_hash": "148dbc050e466507363f9f72f3d2670dc368cc36e902e261688e667d64f574f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 여호와의 전의 기지를 쌓던 날부터 준공하기까지 범백을 완비하였으므로 여호와의 전이 결점이 없이 필역하니라"
+      ],
+      "raw_text_hashes": [
+        "148dbc050e466507363f9f72f3d2670dc368cc36e902e261688e667d64f574f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:17",
+      "sequence": 11364,
+      "chapter_label": "2CH 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "Then Solomon went to Ezion Geber and to Eloth, on the seashore in the land of Edom.",
+      "ko": "때에 솔로몬이 에돔 땅의 바닷가 에시온게벨과 엘롯에 이르렀더니",
+      "source_text_hash": "ccbfb7d807918017974ee465f047b1981819eaf0a20a2797e0b6aae7b7b0d4d2",
+      "translation_text_hash": "87002b2ab2e81a9e3ed887b2ab2b6d955e8b8e19628f406c0f8a9d05e94303e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 솔로몬이 에돔 땅의 바닷가 에시온게벨과 엘롯에 이르렀더니"
+      ],
+      "raw_text_hashes": [
+        "87002b2ab2e81a9e3ed887b2ab2b6d955e8b8e19628f406c0f8a9d05e94303e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:8:18",
+      "sequence": 11365,
+      "chapter_label": "2CH 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Huram sent him ships and servants who had knowledge of the sea by the hands of his servants; and they came with the servants of Solomon to Ophir, and brought from there four hundred fifty talents of gold, and brought them to King Solomon.",
+      "ko": "후람이 그 신복에게 부탁하여 배와 바닷길을 아는 종들을 보내매 저희가 솔로몬의 종과 함께 오빌에 이르러 거기서 금 사백 오십 달란트를 얻고 솔로몬왕에게로 가져왔더라",
+      "source_text_hash": "762e991c4cb50040af994c97f9fe21176c2345b1d75c346957bc5da61f7276bd",
+      "translation_text_hash": "7a6a990404dc7b270032140192145f38a6a0c8a11b614000eafdd7876439b39b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후람이 그 신복에게 부탁하여 배와 바닷길을 아는 종들을 보내매 저희가 솔로몬의 종과 함께 오빌에 이르러 거기서 금 사백 오십 달란트를 얻고 솔로몬왕에게로 가져왔더라"
+      ],
+      "raw_text_hashes": [
+        "7a6a990404dc7b270032140192145f38a6a0c8a11b614000eafdd7876439b39b"
+      ]
+    }
+  ]
+}

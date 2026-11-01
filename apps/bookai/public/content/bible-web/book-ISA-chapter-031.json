@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:031",
+  "unit_ordinal": 710,
+  "unit_label": "ISA 31",
+  "book_code": "ISA",
+  "chapter_number": 31,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:31:1",
+      "sequence": 18252,
+      "chapter_label": "ISA 31",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 31,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 31,
+          "verse": 1
+        }
+      ],
+      "en": "Woe to those who go down to Egypt for help, and rely on horses, and trust in chariots because they are many, and in horsemen because they are very strong, but they don’t look to the Holy One of Israel, and they don’t seek the LORD!",
+      "ko": "도움을 구하러 애굽으로 내려가는 자들은 화 있을찐저 그들은 말을 의뢰하며 병거의 많음과 마병의 심히 강함을 의지하고 이스라엘의 거룩하신 자를 앙모치 아니하며 여호와를 구하지 아니하거니와",
+      "source_text_hash": "3d2e9fece99076d418a67b03c5b476c027212055d92fb3a56825d21f6273ed84",
+      "translation_text_hash": "7bbd800630ea36302a6604e02d32d2ed6f191aba347cea53d25dc42629f6e146",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도움을 구하러 애굽으로 내려가는 자들은 화 있을찐저 그들은 말을 의뢰하며 병거의 많음과 마병의 심히 강함을 의지하고 이스라엘의 거룩하신 자를 앙모치 아니하며 여호와를 구하지 아니하거니와"
+      ],
+      "raw_text_hashes": [
+        "7bbd800630ea36302a6604e02d32d2ed6f191aba347cea53d25dc42629f6e146"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:31:2",
+      "sequence": 18253,
+      "chapter_label": "ISA 31",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 31,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 31,
+          "verse": 2
+        }
+      ],
+      "en": "Yet he also is wise, and will bring disaster, and will not call back his words, but will arise against the house of the evildoers, and against the help of those who work iniquity.",
+      "ko": "여호와께서도 지혜로우신즉 재앙을 내리실 것이라 그 말을 변치 아니하시고 일어나사 악행하는 자의 집을 치시며 행악을 돕는 자를 치시리니",
+      "source_text_hash": "a391bfda67d3201d847ca7f524a005fd0815715d3c51f72696e82adb255b8588",
+      "translation_text_hash": "f02b2957dc8872be3dd18eea3b7cdcfaed390687dd091dff5dbe3dbb440cd037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서도 지혜로우신즉 재앙을 내리실 것이라 그 말을 변치 아니하시고 일어나사 악행하는 자의 집을 치시며 행악을 돕는 자를 치시리니"
+      ],
+      "raw_text_hashes": [
+        "f02b2957dc8872be3dd18eea3b7cdcfaed390687dd091dff5dbe3dbb440cd037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:31:3",
+      "sequence": 18254,
+      "chapter_label": "ISA 31",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 31,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 31,
+          "verse": 3
+        }
+      ],
+      "en": "Now the Egyptians are men, and not God; and their horses flesh, and not spirit. When the LORD stretches out his hand, both he who helps shall stumble, and he who is helped shall fall, and they all shall be consumed together.",
+      "ko": "애굽은 사람이요 신이 아니며 그 말들은 육체요 영이 아니라 여호와께서 그 손을 드시면 돕는 자도 넘어지며 도움을 받는 자도 엎드러져서 다 함께 멸망하리라",
+      "source_text_hash": "f67e02f73c60256963ed9d5909c7eeec115614dfa7b84ef9787b0a4c5e10f525",
+      "translation_text_hash": "2944c6584fee4e67b39b2fd38e765e3ec0e8600453ac5ccc34db20bebf550299",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽은 사람이요 신이 아니며 그 말들은 육체요 영이 아니라 여호와께서 그 손을 드시면 돕는 자도 넘어지며 도움을 받는 자도 엎드러져서 다 함께 멸망하리라"
+      ],
+      "raw_text_hashes": [
+        "2944c6584fee4e67b39b2fd38e765e3ec0e8600453ac5ccc34db20bebf550299"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:31:4",
+      "sequence": 18255,
+      "chapter_label": "ISA 31",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 31,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 31,
+          "verse": 4
+        }
+      ],
+      "en": "For the LORD says to me, “As the lion and the young lion growling over his prey, if a multitude of shepherds is called together against him, will not be dismayed at their voice, nor abase himself for their noise, so the LORD of Armies will come down to fight on Mount Zion and on its heights.",
+      "ko": "여호와께서 이같이 내게 이르시되 큰 사자나 젊은 사자가 그 식물을 움키고 으르렁거릴 때에 그것을 치려고 여러 목자가 불려 왔다 할찌라도 그것이 그들의 소리로 인하여 놀라지 아니할 것이요 그들의 떠듦을 인하여 굴복지 아니할 것이라 이와 같이 나 만군의 여호와가 강림하여 시온산과 그 영 위에서 싸울 것이며",
+      "source_text_hash": "5759187d1ca94817c3b4be73684270dfcbb975f5654aed343201ebd1745c7951",
+      "translation_text_hash": "7ca0c6b6a2e6b7ed57259285f3087ca82389cb9b60da9d8e02cd8423beb1908b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 내게 이르시되 큰 사자나 젊은 사자가 그 식물을 움키고 으르렁거릴 때에 그것을 치려고 여러 목자가 불려 왔다 할찌라도 그것이 그들의 소리로 인하여 놀라지 아니할 것이요 그들의 떠듦을 인하여 굴복지 아니할 것이라 이와 같이 나 만군의 여호와가 강림하여 시온산과 그 영 위에서 싸울 것이며"
+      ],
+      "raw_text_hashes": [
+        "7ca0c6b6a2e6b7ed57259285f3087ca82389cb9b60da9d8e02cd8423beb1908b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:31:5",
+      "sequence": 18256,
+      "chapter_label": "ISA 31",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 31,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 31,
+          "verse": 5
+        }
+      ],
+      "en": "As birds hovering, so the LORD of Armies will protect Jerusalem. He will protect and deliver it. He will pass over and preserve it.”",
+      "ko": "새가 날개치며 그 새끼를 보호함 같이 나 만군의 여호와가 예루살렘을 보호할 것이라 그것을 호위하며 건지며 넘어와서 구원하리라 하셨나니",
+      "source_text_hash": "0b585ff1a545b7f6e3002e2fcd9e36ee106093f061e005fbe4a452d225d2ef3a",
+      "translation_text_hash": "71d74ae00ed22ba11f6f4bda6604cbd589cb8ac24498d42246a3ec4998a6ca53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새가 날개치며 그 새끼를 보호함 같이 나 만군의 여호와가 예루살렘을 보호할 것이라 그것을 호위하며 건지며 넘어와서 구원하리라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "71d74ae00ed22ba11f6f4bda6604cbd589cb8ac24498d42246a3ec4998a6ca53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:31:6",
+      "sequence": 18257,
+      "chapter_label": "ISA 31",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 31,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 31,
+          "verse": 6
+        }
+      ],
+      "en": "Return to him from whom you have deeply revolted, children of Israel.",
+      "ko": "이스라엘 자손들아 너희는 심히 거역하던 자에게로 돌아오라",
+      "source_text_hash": "480360739e80a8c0a6da01e961490fa72abed91166d686f247b53b5deeb308b0",
+      "translation_text_hash": "75e2ae408a1da9495f73bda60d7ddc01fe182564532221de04cce4bcce6b9a71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들아 너희는 심히 거역하던 자에게로 돌아오라"
+      ],
+      "raw_text_hashes": [
+        "75e2ae408a1da9495f73bda60d7ddc01fe182564532221de04cce4bcce6b9a71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:31:7",
+      "sequence": 18258,
+      "chapter_label": "ISA 31",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 31,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 31,
+          "verse": 7
+        }
+      ],
+      "en": "For in that day everyone shall cast away his idols of silver and his idols of gold—sin which your own hands have made for you.",
+      "ko": "너희가 자기 손으로 만들어 범죄한 은우상, 금우상을 그 날에는 각 사람이 던져버릴 것이며",
+      "source_text_hash": "ec221a923d0f1eda4a0cd0bf66f8c856f928f1871c51bb2f2cbeffee85bb38b2",
+      "translation_text_hash": "fdc20971a366ac61120f5e4ae3f8e1463d354a278b4a46c043d5a2da1aa01422",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 자기 손으로 만들어 범죄한 은우상, 금우상을 그 날에는 각 사람이 던져버릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "fdc20971a366ac61120f5e4ae3f8e1463d354a278b4a46c043d5a2da1aa01422"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:31:8",
+      "sequence": 18259,
+      "chapter_label": "ISA 31",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 31,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 31,
+          "verse": 8
+        }
+      ],
+      "en": "“The Assyrian will fall by the sword, not of man; and the sword, not of mankind, shall devour him. He will flee from the sword, and his young men will become subject to forced labor.",
+      "ko": "앗수르는 칼에 엎더질 것이나 사람의 칼로 말미암음이 아니겠고 칼에 삼키울 것이나 여러 사람의 칼로 말미암음이 아닐 것이며 그는 칼 앞에서 도망할 것이요 그 장정들은 복역하는 자가 될 것이라",
+      "source_text_hash": "fbdf047f5818c16c82b487985f41c69b2678dafc15df95f0eb17225768fa84ee",
+      "translation_text_hash": "e7479c1314394cc96bcad663c546b9a771e37bad458e690479cc31b264aa68e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르는 칼에 엎더질 것이나 사람의 칼로 말미암음이 아니겠고 칼에 삼키울 것이나 여러 사람의 칼로 말미암음이 아닐 것이며 그는 칼 앞에서 도망할 것이요 그 장정들은 복역하는 자가 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "e7479c1314394cc96bcad663c546b9a771e37bad458e690479cc31b264aa68e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:31:9",
+      "sequence": 18260,
+      "chapter_label": "ISA 31",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 31,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 31,
+          "verse": 9
+        }
+      ],
+      "en": "His rock will pass away by reason of terror, and his princes will be afraid of the banner,” says the LORD, whose fire is in Zion, and his furnace in Jerusalem.",
+      "ko": "그의 반석은 두려움을 인하여 물러가겠고 그의 방백들은 기호를 인하여 놀라리라 이는 여호와의 말씀이라 여호와의 불은 시온에 있고 여호와의 풀무는 예루살렘에 있느니라",
+      "source_text_hash": "cadd553c3d90d473940171f6f83955f14342bf5d35355d1b59de896ba186483a",
+      "translation_text_hash": "792ec6d0b7bfc019bd4ab7365c95bd699ada15ea8db348a0819db59aa4cc0049",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 반석은 두려움을 인하여 물러가겠고 그의 방백들은 기호를 인하여 놀라리라 이는 여호와의 말씀이라 여호와의 불은 시온에 있고 여호와의 풀무는 예루살렘에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "792ec6d0b7bfc019bd4ab7365c95bd699ada15ea8db348a0819db59aa4cc0049"
+      ]
+    }
+  ]
+}

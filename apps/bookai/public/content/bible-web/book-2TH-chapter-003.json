@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2TH:chapter:003",
+  "unit_ordinal": 1119,
+  "unit_label": "2TH 3",
+  "book_code": "2TH",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2TH:3:1",
+      "sequence": 29676,
+      "chapter_label": "2TH 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Finally, brothers, pray for us, that the word of the Lord may spread rapidly and be glorified, even as also with you,",
+      "ko": "종말로 형제들아 너희는 우리를 위하여 기도하기를 주의 말씀이 너희 가운데서와 같이 달음질하여 영광스럽게 되고",
+      "source_text_hash": "11c7347be0c9f60fd87745575ba2fb3074c45277b09ebbed48f06d7b4189b6c8",
+      "translation_text_hash": "293a063b2e8cf25201bfd54a586687bffa24df119791431d9f31d3a36c728fd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종말로 형제들아 너희는 우리를 위하여 기도하기를 주의 말씀이 너희 가운데서와 같이 달음질하여 영광스럽게 되고"
+      ],
+      "raw_text_hashes": [
+        "293a063b2e8cf25201bfd54a586687bffa24df119791431d9f31d3a36c728fd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:2",
+      "sequence": 29677,
+      "chapter_label": "2TH 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "and that we may be delivered from unreasonable and evil men; for not all have faith.",
+      "ko": "또한 우리를 무리하고 악한 사람들에게서 건지옵소서 하라 믿음은 모든 사람의 것이 아님이라",
+      "source_text_hash": "2b0fbe561223b2079e90fc920192e9a2c1e1bc75dd647a8661b53fa653a10615",
+      "translation_text_hash": "ac70881484bb70a10b709edeb4aded97c8e7634cb4686093c3ae9e027ef6aaa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 우리를 무리하고 악한 사람들에게서 건지옵소서 하라 믿음은 모든 사람의 것이 아님이라"
+      ],
+      "raw_text_hashes": [
+        "ac70881484bb70a10b709edeb4aded97c8e7634cb4686093c3ae9e027ef6aaa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:3",
+      "sequence": 29678,
+      "chapter_label": "2TH 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "But the Lord is faithful, who will establish you and guard you from the evil one.",
+      "ko": "주는 미쁘사 너희를 굳게 하시고 악한 자에게서 지키시리라",
+      "source_text_hash": "dceb36975a8d9497cbeb0a1c286f8a7905a1787cafd517832d048711a4fcae36",
+      "translation_text_hash": "034bf870e268fb1165a9c04133b97d11c2eb2c71f1291e0bea35595d8f130cde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 미쁘사 너희를 굳게 하시고 악한 자에게서 지키시리라"
+      ],
+      "raw_text_hashes": [
+        "034bf870e268fb1165a9c04133b97d11c2eb2c71f1291e0bea35595d8f130cde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:4",
+      "sequence": 29679,
+      "chapter_label": "2TH 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "We have confidence in the Lord concerning you, that you both do and will do the things we command.",
+      "ko": "너희에게 대하여는 우리의 명한 것을 너희가 행하고 또 행할 줄을 우리가 주 안에서 확신하노니",
+      "source_text_hash": "e845cac622d82ca9446c172523fe5438966e2ab9eb298864caa3a5243b1ee971",
+      "translation_text_hash": "6ce90ea240dfb8a32686e3a8f383169a67905c18c7221d81a9e050d4376559f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게 대하여는 우리의 명한 것을 너희가 행하고 또 행할 줄을 우리가 주 안에서 확신하노니"
+      ],
+      "raw_text_hashes": [
+        "6ce90ea240dfb8a32686e3a8f383169a67905c18c7221d81a9e050d4376559f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:5",
+      "sequence": 29680,
+      "chapter_label": "2TH 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "May the Lord direct your hearts into God’s love and into the perseverance of Christ.",
+      "ko": "주께서 너희 마음을 인도하여 하나님의 사랑과 그리스도의 인내에 들어가게 하시기를 원하노라",
+      "source_text_hash": "ae599a7b3ee94714decfbae85dae30b98cb4fda361c11950533328e04c05fade",
+      "translation_text_hash": "033d333b8afe05fbe443957e5ff6f53976b0ecbd67e5aaaa75c822cb0bf49d50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 너희 마음을 인도하여 하나님의 사랑과 그리스도의 인내에 들어가게 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "033d333b8afe05fbe443957e5ff6f53976b0ecbd67e5aaaa75c822cb0bf49d50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:6",
+      "sequence": 29681,
+      "chapter_label": "2TH 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Now we command you, brothers, in the name of our Lord Jesus Christ, that you withdraw yourselves from every brother who walks in rebellion and not after the tradition which they received from us.",
+      "ko": "형제들아 우리 주 예수 그리스도의 이름으로 너희를 명하노니 규모 없이 행하고 우리에게 받은 유전대로 행하지 아니하는 모든 형제에게서 떠나라",
+      "source_text_hash": "51e38e49024e792c126aa32e2bc0f739674c28bc8a8ed7c052a01f3d1cf6cdde",
+      "translation_text_hash": "f3e577d7158868383ac798bfbe623841f6c08643f11224e47794776ccbb0057c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 우리 주 예수 그리스도의 이름으로 너희를 명하노니 규모 없이 행하고 우리에게 받은 유전대로 행하지 아니하는 모든 형제에게서 떠나라"
+      ],
+      "raw_text_hashes": [
+        "f3e577d7158868383ac798bfbe623841f6c08643f11224e47794776ccbb0057c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:7",
+      "sequence": 29682,
+      "chapter_label": "2TH 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "For you know how you ought to imitate us. For we didn’t behave ourselves rebelliously among you,",
+      "ko": "어떻게 우리를 본받아야 할 것을 너희가 스스로 아나니 우리가 너희 가운데서 규모 없이 행하지 아니하며",
+      "source_text_hash": "dcf247d18df12ec05148e6f49881474cc43c0c4d20d6a763a612a1aa2c214736",
+      "translation_text_hash": "7e0ce6dbb432eac13f9fc53bd6c97c6f74de8912d154cd9617ca77a0a888503d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떻게 우리를 본받아야 할 것을 너희가 스스로 아나니 우리가 너희 가운데서 규모 없이 행하지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "7e0ce6dbb432eac13f9fc53bd6c97c6f74de8912d154cd9617ca77a0a888503d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:8",
+      "sequence": 29683,
+      "chapter_label": "2TH 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "neither did we eat bread from anyone’s hand without paying for it, but in labor and travail worked night and day, that we might not burden any of you.",
+      "ko": "누구에게서든지 양식을 값없이 먹지 않고 오직 수고하고 애써 주야로 일함은 너희 아무에게도 누를 끼치지 아니하려 함이니",
+      "source_text_hash": "ffff7c1e52f455a317ac6bbdc2014a5288d0742da1feeb709e2f5aa047fca2c2",
+      "translation_text_hash": "e1c1244c4297446462230305f0fe579d4e66aaa4cd9cd59f17ccfdc825bf19b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구에게서든지 양식을 값없이 먹지 않고 오직 수고하고 애써 주야로 일함은 너희 아무에게도 누를 끼치지 아니하려 함이니"
+      ],
+      "raw_text_hashes": [
+        "e1c1244c4297446462230305f0fe579d4e66aaa4cd9cd59f17ccfdc825bf19b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:9",
+      "sequence": 29684,
+      "chapter_label": "2TH 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "This was not because we don’t have the right, but to make ourselves an example to you, that you should imitate us.",
+      "ko": "우리에게 권리가 없는 것이 아니요 오직 스스로 너희에게 본을 주어 우리를 본받게 하려 함이니라",
+      "source_text_hash": "2ea56d31bb173f466671a99e223eea07089dcd58ee498015b9e7f1b6aba66694",
+      "translation_text_hash": "ee0ee696f23f853c109cc5e49b4113669c9a064d19cedf870679d86d36324304",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 권리가 없는 것이 아니요 오직 스스로 너희에게 본을 주어 우리를 본받게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "ee0ee696f23f853c109cc5e49b4113669c9a064d19cedf870679d86d36324304"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:10",
+      "sequence": 29685,
+      "chapter_label": "2TH 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "For even when we were with you, we commanded you this: “If anyone is not willing to work, don’t let him eat.”",
+      "ko": "우리가 너희와 함께 있을 때에도 너희에게 명하기를 누구든지 일하기 싫어하거든 먹지도 말게 하라 하였더니",
+      "source_text_hash": "b591f87e307718b0a05054bab9da27d2ec5bd3b2fe6dba4c4d06ab531ec1af28",
+      "translation_text_hash": "1e574a1e6c366ce8bc9469bcd5ca5caaa8935b7e9a4c36bd1a276db49752ad28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 너희와 함께 있을 때에도 너희에게 명하기를 누구든지 일하기 싫어하거든 먹지도 말게 하라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "1e574a1e6c366ce8bc9469bcd5ca5caaa8935b7e9a4c36bd1a276db49752ad28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:11",
+      "sequence": 29686,
+      "chapter_label": "2TH 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "For we hear of some who walk among you in rebellion, who don’t work at all, but are busybodies.",
+      "ko": "우리가 들은즉 너희 가운데 규모 없이 행하여 도무지 일하지 아니하고 일만 만드는 자들이 있다 하니",
+      "source_text_hash": "b1808d06a2bb40cbd1155904d56390d204decdf926adc7ee902be55b6acf10db",
+      "translation_text_hash": "f96c74beaa8c5f5546c58d5ca84d5576f80b8a8f9c6c775a692e2281d114766c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 들은즉 너희 가운데 규모 없이 행하여 도무지 일하지 아니하고 일만 만드는 자들이 있다 하니"
+      ],
+      "raw_text_hashes": [
+        "f96c74beaa8c5f5546c58d5ca84d5576f80b8a8f9c6c775a692e2281d114766c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:12",
+      "sequence": 29687,
+      "chapter_label": "2TH 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Now those who are that way, we command and exhort in the Lord Jesus Christ, that they work with quietness and eat their own bread.",
+      "ko": "이런 자들에게 우리가 명하고 주 예수 그리스도 안에서 권하기를 종용히 일하여 자기 양식을 먹으라 하노라",
+      "source_text_hash": "0b0865d18218fe6079ec20bbb6f15bca71fe9eb8eb0333332a6c911477ce70d5",
+      "translation_text_hash": "cbf6c741bd96f97b7c580a677617c296f358e58c533395884dcc6863449736ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 자들에게 우리가 명하고 주 예수 그리스도 안에서 권하기를 종용히 일하여 자기 양식을 먹으라 하노라"
+      ],
+      "raw_text_hashes": [
+        "cbf6c741bd96f97b7c580a677617c296f358e58c533395884dcc6863449736ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:13",
+      "sequence": 29688,
+      "chapter_label": "2TH 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "But you, brothers, don’t be weary in doing what is right.",
+      "ko": "형제들아 너희는 선을 행하다가 낙심치 말라",
+      "source_text_hash": "8f79bbca0bb20cc604b513871faf2524bb3f27a838f960aa319e053b218e8d59",
+      "translation_text_hash": "93294ba7aef5de9dee86032c57a705af80bbc40e4f738e0f64078df90981e51b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희는 선을 행하다가 낙심치 말라"
+      ],
+      "raw_text_hashes": [
+        "93294ba7aef5de9dee86032c57a705af80bbc40e4f738e0f64078df90981e51b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:14",
+      "sequence": 29689,
+      "chapter_label": "2TH 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "If any man doesn’t obey our word in this letter, note that man and have no company with him, to the end that he may be ashamed.",
+      "ko": "누가 이 편지에 한 우리 말을 순종치 아니하거든 그 사람을 지목하여 사귀지 말고 저로 하여금 부끄럽게 하라",
+      "source_text_hash": "0c75962cb91f40bc07d29f8d215a3bfeba902c6a777d232ec7514dfa8056b9f2",
+      "translation_text_hash": "a14ca1f5c0cbd391fef21db5a973c14a62eae6d1ff478fc7eb31adc745eba54f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 이 편지에 한 우리 말을 순종치 아니하거든 그 사람을 지목하여 사귀지 말고 저로 하여금 부끄럽게 하라"
+      ],
+      "raw_text_hashes": [
+        "a14ca1f5c0cbd391fef21db5a973c14a62eae6d1ff478fc7eb31adc745eba54f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:15",
+      "sequence": 29690,
+      "chapter_label": "2TH 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Don’t count him as an enemy, but admonish him as a brother.",
+      "ko": "그러나 원수와 같이 생각지 말고 형제 같이 권하라",
+      "source_text_hash": "db9029f4b81f2ce51e3229257d34a9296dfec70a0c00016e66cfc30742260f3c",
+      "translation_text_hash": "2394fc95b940f0ac505eec0c27dd4cba8b56aecec29011613c90ef5b2575fea4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 원수와 같이 생각지 말고 형제 같이 권하라"
+      ],
+      "raw_text_hashes": [
+        "2394fc95b940f0ac505eec0c27dd4cba8b56aecec29011613c90ef5b2575fea4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:16",
+      "sequence": 29691,
+      "chapter_label": "2TH 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Now may the Lord of peace himself give you peace at all times in all ways. The Lord be with you all.",
+      "ko": "평강의 주께서 친히 때마다 일마다 너희에게 평강을 주시기를 원하노라 주는 너희 모든 사람과 함께 하실찌어다",
+      "source_text_hash": "5b85cafbe2f58a43ca53ed416b7e71b6f41da2ab7da09290a48e999b37675bcf",
+      "translation_text_hash": "714f009f759c86807f93374ed9985ee005bd4a9ab28b18cbc9c461ad832a3b30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평강의 주께서 친히 때마다 일마다 너희에게 평강을 주시기를 원하노라 주는 너희 모든 사람과 함께 하실찌어다"
+      ],
+      "raw_text_hashes": [
+        "714f009f759c86807f93374ed9985ee005bd4a9ab28b18cbc9c461ad832a3b30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:17",
+      "sequence": 29692,
+      "chapter_label": "2TH 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "I, Paul, write this greeting with my own hand, which is the sign in every letter. This is how I write.",
+      "ko": "나 바울은 친필로 문안하노니 이는 편지마다 표적이기로 이렇게 쓰노라",
+      "source_text_hash": "bf0df0f9f2cdba729b4a3a798ba6a34d62eb709210997ac5436ce462732d5f19",
+      "translation_text_hash": "b15cb1ff4f6379554c7382e5dc84fcd7f406013730656043fe8b9efc399d468c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 바울은 친필로 문안하노니 이는 편지마다 표적이기로 이렇게 쓰노라"
+      ],
+      "raw_text_hashes": [
+        "b15cb1ff4f6379554c7382e5dc84fcd7f406013730656043fe8b9efc399d468c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:3:18",
+      "sequence": 29693,
+      "chapter_label": "2TH 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "2TH",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "The grace of our Lord Jesus Christ be with you all. Amen.",
+      "ko": "우리 주 예수 그리스도의 은혜가 너희 무리에게 있을찌어다",
+      "source_text_hash": "76128832e1fddeeda339fb4424682d629e372e7965425ba19efbf31038b54ab2",
+      "translation_text_hash": "aff694fd6440cd63ced56ac2a0f77f9440ebdee0f95b7886ee1f24c4e4cd223a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도의 은혜가 너희 무리에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "aff694fd6440cd63ced56ac2a0f77f9440ebdee0f95b7886ee1f24c4e4cd223a"
+      ]
+    }
+  ]
+}

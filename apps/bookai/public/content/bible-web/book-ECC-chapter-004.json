@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:004",
+  "unit_ordinal": 663,
+  "unit_label": "ECC 4",
+  "book_code": "ECC",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:4:1",
+      "sequence": 17383,
+      "chapter_label": "ECC 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Then I returned and saw all the oppressions that are done under the sun: and behold, the tears of those who were oppressed, and they had no comforter; and on the side of their oppressors there was power; but they had no comforter.",
+      "ko": "내가 돌이켜 해 아래서 행하는 모든 학대를 보았도다 오호라 학대 받는 자가 눈물을 흘리되 저희에게 위로자가 없도다 저희를 학대하는 자의 손에는 권세가 있으나 저희에게는 위로자가 없도다",
+      "source_text_hash": "2395697d6172965f3d3bbe3008f4d7018589acf624df7702735cda778c99c195",
+      "translation_text_hash": "712c6a00495af784868456576d935334757bd85e6d35cde65edd9f6369d04677",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌이켜 해 아래서 행하는 모든 학대를 보았도다 오호라 학대 받는 자가 눈물을 흘리되 저희에게 위로자가 없도다 저희를 학대하는 자의 손에는 권세가 있으나 저희에게는 위로자가 없도다"
+      ],
+      "raw_text_hashes": [
+        "712c6a00495af784868456576d935334757bd85e6d35cde65edd9f6369d04677"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:2",
+      "sequence": 17384,
+      "chapter_label": "ECC 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Therefore I praised the dead who have been long dead more than the living who are yet alive.",
+      "ko": "그러므로 나는 살아 있는 산 자보다 죽은지 오랜 죽은 자를 복되다 하였으며",
+      "source_text_hash": "8f94b25b3ca4c841c40dbbc21ac403475e284a815b9e6e1309023f4788921128",
+      "translation_text_hash": "bfc3d101d6f291e0926a0aa210f139102a472bba8b9cdebfc6189ec634ad87b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나는 살아 있는 산 자보다 죽은지 오랜 죽은 자를 복되다 하였으며"
+      ],
+      "raw_text_hashes": [
+        "bfc3d101d6f291e0926a0aa210f139102a472bba8b9cdebfc6189ec634ad87b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:3",
+      "sequence": 17385,
+      "chapter_label": "ECC 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Yes, better than them both is him who has not yet been, who has not seen the evil work that is done under the sun.",
+      "ko": "이 둘보다도 출생하지 아니하여 해 아래서 행하는 악을 보지 못한 자가 더욱 낫다 하였노라",
+      "source_text_hash": "5d285610faf3392065070975fe937ec16760422af5d5042e644b8bfd8488304a",
+      "translation_text_hash": "d1bedb932d435ddc9a051e2592ee05eb59f010de332d39ca015884ec01bcb972",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 둘보다도 출생하지 아니하여 해 아래서 행하는 악을 보지 못한 자가 더욱 낫다 하였노라"
+      ],
+      "raw_text_hashes": [
+        "d1bedb932d435ddc9a051e2592ee05eb59f010de332d39ca015884ec01bcb972"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:4",
+      "sequence": 17386,
+      "chapter_label": "ECC 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Then I saw all the labor and achievement that is the envy of a man’s neighbor. This also is vanity and a striving after wind.",
+      "ko": "내가 또 본즉 사람이 모든 수고와 여러 가지 교묘한 일로 인하여 이웃에게 시기를 받으니 이것도 헛되어 바람을 잡으려는 것이로다",
+      "source_text_hash": "f2f9b150d14487223e7154837fd078a85e2573172b56e64f5040387da00a5e97",
+      "translation_text_hash": "8588919ca541fec1424cc06d5135c08610da1e9c80c315269508a0f447c40f83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 본즉 사람이 모든 수고와 여러 가지 교묘한 일로 인하여 이웃에게 시기를 받으니 이것도 헛되어 바람을 잡으려는 것이로다"
+      ],
+      "raw_text_hashes": [
+        "8588919ca541fec1424cc06d5135c08610da1e9c80c315269508a0f447c40f83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:5",
+      "sequence": 17387,
+      "chapter_label": "ECC 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "The fool folds his hands together and ruins himself.",
+      "ko": "우매자는 손을 거두고 자기 살을 먹느니라",
+      "source_text_hash": "dd1ab4e87e445d92f3eb34a4cb9e4af8a992a1a66a6526bd16de0d885ca32e79",
+      "translation_text_hash": "95525a798b32e3753319335f46dcd76fdd88ac56cc9a3ebbb09be500db52a049",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우매자는 손을 거두고 자기 살을 먹느니라"
+      ],
+      "raw_text_hashes": [
+        "95525a798b32e3753319335f46dcd76fdd88ac56cc9a3ebbb09be500db52a049"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:6",
+      "sequence": 17388,
+      "chapter_label": "ECC 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Better is a handful, with quietness, than two handfuls with labor and chasing after wind.",
+      "ko": "한 손에만 가득하고 평온함이 두 손에 가득하고 수고하며 바람을 잡으려는 것보다 나으니라",
+      "source_text_hash": "cee7f4958d5c023c13be853dc76890698b975731f0eb63b41e6505934ca36cb7",
+      "translation_text_hash": "8b234be66bf97fefa5973e433d2153e762ed24d292505850330ac176f0623a5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 손에만 가득하고 평온함이 두 손에 가득하고 수고하며 바람을 잡으려는 것보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "8b234be66bf97fefa5973e433d2153e762ed24d292505850330ac176f0623a5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:7",
+      "sequence": 17389,
+      "chapter_label": "ECC 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Then I returned and saw vanity under the sun.",
+      "ko": "내가 또 돌이켜 해 아래서 헛된 것을 보았도다",
+      "source_text_hash": "444df293940f8e8207d1eb34786cf9964ae334c721a4c70071334b5fa9cdcd79",
+      "translation_text_hash": "649c9f67f5774f005f7cebca5a750484196fbcae464ff6d37da3b245c4a1da24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 돌이켜 해 아래서 헛된 것을 보았도다"
+      ],
+      "raw_text_hashes": [
+        "649c9f67f5774f005f7cebca5a750484196fbcae464ff6d37da3b245c4a1da24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:8",
+      "sequence": 17390,
+      "chapter_label": "ECC 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "There is one who is alone, and he has neither son nor brother. There is no end to all of his labor, neither are his eyes satisfied with wealth. “For whom then do I labor and deprive my soul of enjoyment?” This also is vanity. Yes, it is a miserable business.",
+      "ko": "어떤 사람은 아들도 없고 형제도 없으니 아무도 없이 홀로 있으나 수고하기를 마지아니하며 부를 눈에 족하게 여기지 아니하면서도 이르기를 내가 누구를 위하여 수고하고 내 심령으로 낙을 누리지 못하게 하는고 하나니 이것도 헛되어 무익한 노고로다",
+      "source_text_hash": "f83fc5e58363765830acced3959296b9ac128ffc04667efe98f3701ade200908",
+      "translation_text_hash": "d507008ab2ba67db7d2b6229b083e8214658479cfce7638c1e097574354533f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람은 아들도 없고 형제도 없으니 아무도 없이 홀로 있으나 수고하기를 마지아니하며 부를 눈에 족하게 여기지 아니하면서도 이르기를 내가 누구를 위하여 수고하고 내 심령으로 낙을 누리지 못하게 하는고 하나니 이것도 헛되어 무익한 노고로다"
+      ],
+      "raw_text_hashes": [
+        "d507008ab2ba67db7d2b6229b083e8214658479cfce7638c1e097574354533f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:9",
+      "sequence": 17391,
+      "chapter_label": "ECC 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Two are better than one, because they have a good reward for their labor.",
+      "ko": "두 사람이 한 사람보다 나음은 저희가 수고함으로 좋은 상을 얻을 것임이라",
+      "source_text_hash": "ad5886a50688bc366e0f0d48ac1fb39f8cf1016a73558d80013c663d97b7787c",
+      "translation_text_hash": "53039f6dc0b54fecfea8ddf0c0bc611d43b8313ce0e27802e30a03f798349afc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 한 사람보다 나음은 저희가 수고함으로 좋은 상을 얻을 것임이라"
+      ],
+      "raw_text_hashes": [
+        "53039f6dc0b54fecfea8ddf0c0bc611d43b8313ce0e27802e30a03f798349afc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:10",
+      "sequence": 17392,
+      "chapter_label": "ECC 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "For if they fall, the one will lift up his fellow; but woe to him who is alone when he falls, and doesn’t have another to lift him up.",
+      "ko": "혹시 저희가 넘어지면 하나가 그 동무를 붙들어 일으키려니와 홀로 있어 넘어지고 붙들어 일으킬 자가 없는 자에게는 화가 있으리라",
+      "source_text_hash": "b2b98340ca76e62d9a28c54ce78a14ee25c550627a2ba13a45fcd603f5f5512f",
+      "translation_text_hash": "ba6405316757ab97e54009b0e1dd85111157be5db79c014b60ee941d6e5369e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 저희가 넘어지면 하나가 그 동무를 붙들어 일으키려니와 홀로 있어 넘어지고 붙들어 일으킬 자가 없는 자에게는 화가 있으리라"
+      ],
+      "raw_text_hashes": [
+        "ba6405316757ab97e54009b0e1dd85111157be5db79c014b60ee941d6e5369e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:11",
+      "sequence": 17393,
+      "chapter_label": "ECC 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Again, if two lie together, then they have warmth; but how can one keep warm alone?",
+      "ko": "두 사람이 함께 누우면 따뜻하거니와 한 사람이면 어찌 따뜻하랴",
+      "source_text_hash": "27dd820c46562aa872ab805f461ce0a49a9e5b29b66f7bcfbbb7d3d052c5c146",
+      "translation_text_hash": "55f85d6fb08cf442840c958de7834a3cf5ac9c9b8c4ee114f2ef6aeac9641ef4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 함께 누우면 따뜻하거니와 한 사람이면 어찌 따뜻하랴"
+      ],
+      "raw_text_hashes": [
+        "55f85d6fb08cf442840c958de7834a3cf5ac9c9b8c4ee114f2ef6aeac9641ef4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:12",
+      "sequence": 17394,
+      "chapter_label": "ECC 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "If a man prevails against one who is alone, two shall withstand him; and a threefold cord is not quickly broken.",
+      "ko": "한 사람이면 패하겠거니와 두 사람이면 능히 당하나니 삼겹 줄은 쉽게 끊어지지 아니하느니라",
+      "source_text_hash": "bf043724c46302b07608a6c9e2db3fe5038fc244063527196e707a7dbfcffe0f",
+      "translation_text_hash": "187ec907ef1cd33ecd49088d8fa26fdd93dbc3838d333808f8aae32e5b6008e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이면 패하겠거니와 두 사람이면 능히 당하나니 삼겹 줄은 쉽게 끊어지지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "187ec907ef1cd33ecd49088d8fa26fdd93dbc3838d333808f8aae32e5b6008e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:13",
+      "sequence": 17395,
+      "chapter_label": "ECC 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Better is a poor and wise youth than an old and foolish king who doesn’t know how to receive admonition any more.",
+      "ko": "가난하여도 지혜로운 소년은 늙고 둔하여 간함을 받을줄 모르는 왕보다 나으니",
+      "source_text_hash": "f342c03bc60f3f18416c594cd8f71291fcbfbe715e9771d58d128216e4ae418a",
+      "translation_text_hash": "298734b572dfb0ffbe6bcda74a93dba815049e0ca4f69852e72bd2d3c7416a62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난하여도 지혜로운 소년은 늙고 둔하여 간함을 받을줄 모르는 왕보다 나으니"
+      ],
+      "raw_text_hashes": [
+        "298734b572dfb0ffbe6bcda74a93dba815049e0ca4f69852e72bd2d3c7416a62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:14",
+      "sequence": 17396,
+      "chapter_label": "ECC 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "For out of prison he came out to be king; yes, even in his kingdom he was born poor.",
+      "ko": "저는 그 나라에서 나면서 가난한 자로서 옥에서 나와서 왕이 되었음이니라",
+      "source_text_hash": "ebe0183902d5486094c9a0a0f7ed5e2bdffece314269a35734765955beef98ec",
+      "translation_text_hash": "07bfec97e7841de9871125c2fd247679c4d474b387a0d4c542ad02a3436caa33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 그 나라에서 나면서 가난한 자로서 옥에서 나와서 왕이 되었음이니라"
+      ],
+      "raw_text_hashes": [
+        "07bfec97e7841de9871125c2fd247679c4d474b387a0d4c542ad02a3436caa33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:15",
+      "sequence": 17397,
+      "chapter_label": "ECC 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "I saw all the living who walk under the sun, that they were with the youth, the other, who succeeded him.",
+      "ko": "내가 본즉 해 아래서 다니는 인생들이 왕의 버금으로 대신하여 일어난 소년과 함께 있으매",
+      "source_text_hash": "749377f8173e68e7a5ca72687168df520b55a1d55eaac9fd6f564b0750b5b6d3",
+      "translation_text_hash": "844d4e344f7abe9d91fc9b7359b49932caf7f069453ffe7bc5a5a45bf9405a63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 해 아래서 다니는 인생들이 왕의 버금으로 대신하여 일어난 소년과 함께 있으매"
+      ],
+      "raw_text_hashes": [
+        "844d4e344f7abe9d91fc9b7359b49932caf7f069453ffe7bc5a5a45bf9405a63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:4:16",
+      "sequence": 17398,
+      "chapter_label": "ECC 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "ECC",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "There was no end of all the people, even of all them over whom he was—yet those who come after shall not rejoice in him. Surely this also is vanity and a chasing after wind.",
+      "ko": "저의 치리를 받는 백성들이 무수하였을찌라도 후에 오는 자들은 저를 기뻐하지 아니하리니 이것도 헛되어 바람을 잡으려는 것이로다",
+      "source_text_hash": "dc2243f49b9b0ac5424a7cb7a6a1a9fb1cf2e6c4dcfe59975da945f6508ac7a6",
+      "translation_text_hash": "c0cd0732850ac9ae49b8419a41304bd8063c11a29fe412174edd26dc123c9a5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저의 치리를 받는 백성들이 무수하였을찌라도 후에 오는 자들은 저를 기뻐하지 아니하리니 이것도 헛되어 바람을 잡으려는 것이로다"
+      ],
+      "raw_text_hashes": [
+        "c0cd0732850ac9ae49b8419a41304bd8063c11a29fe412174edd26dc123c9a5b"
+      ]
+    }
+  ]
+}

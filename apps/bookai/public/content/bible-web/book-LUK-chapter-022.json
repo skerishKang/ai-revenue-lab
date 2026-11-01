@@ -1,0 +1,2285 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:022",
+  "unit_ordinal": 995,
+  "unit_label": "LUK 22",
+  "book_code": "LUK",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:22:1",
+      "sequence": 25865,
+      "chapter_label": "LUK 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "Now the feast of unleavened bread, which is called the Passover, was approaching.",
+      "ko": "유월절이라 하는 무교절이 가까우매",
+      "source_text_hash": "e1c262277df7c8561481f39fa3fcf86be772211e9e35b7c9d3b4666039aba442",
+      "translation_text_hash": "11792d130fd1dc33ab71d6ff903f49e337359ad8ef859ce3b079627e820967fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유월절이라 하는 무교절이 가까우매"
+      ],
+      "raw_text_hashes": [
+        "11792d130fd1dc33ab71d6ff903f49e337359ad8ef859ce3b079627e820967fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:2",
+      "sequence": 25866,
+      "chapter_label": "LUK 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "The chief priests and the scribes sought how they might put him to death, for they feared the people.",
+      "ko": "대제사장들과 서기관들이 예수를 무슨 방책으로 죽일꼬 연구하니 이는 저희가 백성을 두려워함이더라",
+      "source_text_hash": "823b333d25bb9fe4ebbf8b74cb7a4bc9d9cc6d2ce4961ba78daeb49680ded9e8",
+      "translation_text_hash": "d82a5d9fb98181f5251d287bbe933e827a422c178adeab3c879260ac42c73e72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 서기관들이 예수를 무슨 방책으로 죽일꼬 연구하니 이는 저희가 백성을 두려워함이더라"
+      ],
+      "raw_text_hashes": [
+        "d82a5d9fb98181f5251d287bbe933e827a422c178adeab3c879260ac42c73e72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:3",
+      "sequence": 25867,
+      "chapter_label": "LUK 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "Satan entered into Judas, who was also called Iscariot, who was counted with the twelve.",
+      "ko": "열 둘 중에 하나인 가룟인이라 부르는 유다에게 사단이 들어가니",
+      "source_text_hash": "c753f4ad605a53fe3492a92de1fad2117e92e44f8e5117ac3c653f18f8dd179a",
+      "translation_text_hash": "c9bd194b5c03466d463ed585170ff66e8f8dabf3781d7ce7171da249abb39885",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 둘 중에 하나인 가룟인이라 부르는 유다에게 사단이 들어가니"
+      ],
+      "raw_text_hashes": [
+        "c9bd194b5c03466d463ed585170ff66e8f8dabf3781d7ce7171da249abb39885"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:4",
+      "sequence": 25868,
+      "chapter_label": "LUK 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "He went away and talked with the chief priests and captains about how he might deliver him to them.",
+      "ko": "이에 유다가 대제사장들과 군관들에게 가서 예수를 넘겨줄 방책을 의논하매",
+      "source_text_hash": "476334ef5458000fa9b778c071827dfb1c33f575350b99c21d21faae42594cb0",
+      "translation_text_hash": "51dc6bb04bf6817660f6f83ef87f66bb84654e5b3e625162df17149b12de4810",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 유다가 대제사장들과 군관들에게 가서 예수를 넘겨줄 방책을 의논하매"
+      ],
+      "raw_text_hashes": [
+        "51dc6bb04bf6817660f6f83ef87f66bb84654e5b3e625162df17149b12de4810"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:5",
+      "sequence": 25869,
+      "chapter_label": "LUK 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "They were glad, and agreed to give him money.",
+      "ko": "저희가 기뻐하여 돈을 주기로 언약하는지라",
+      "source_text_hash": "889816639e5c36f699bcaaeb3b42a141f21a15614637b986832976197ee38429",
+      "translation_text_hash": "8e1a26e6808ba1d694e0f2717a4918a38ce54b3d7adeb78d33b35a1f84429209",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 기뻐하여 돈을 주기로 언약하는지라"
+      ],
+      "raw_text_hashes": [
+        "8e1a26e6808ba1d694e0f2717a4918a38ce54b3d7adeb78d33b35a1f84429209"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:6",
+      "sequence": 25870,
+      "chapter_label": "LUK 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "He consented and sought an opportunity to deliver him to them in the absence of the multitude.",
+      "ko": "유다가 허락하고 예수를 무리가 없을 때에 넘겨줄 기회를 찾더라",
+      "source_text_hash": "2aa38294494387015850eca5353eab1ae5874a9e045fe5fad6de36884f1ee8cf",
+      "translation_text_hash": "61b717c1a1da07a0fb2c506c90bdcf358574ef3878c92d2fed6218317bf793b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 허락하고 예수를 무리가 없을 때에 넘겨줄 기회를 찾더라"
+      ],
+      "raw_text_hashes": [
+        "61b717c1a1da07a0fb2c506c90bdcf358574ef3878c92d2fed6218317bf793b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:7",
+      "sequence": 25871,
+      "chapter_label": "LUK 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "The day of unleavened bread came, on which the Passover must be sacrificed.",
+      "ko": "유월절 양을 잡을 무교절일이 이른지라",
+      "source_text_hash": "ea6e96efe92dfbb47f8b3d7773fea9559df94f35c319f8b8c9e0ac5b1d24d356",
+      "translation_text_hash": "656776528ff06959c0dedba886d5e7fdef59c7813d0a2a59f4ca0c033ce7f1a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유월절 양을 잡을 무교절일이 이른지라"
+      ],
+      "raw_text_hashes": [
+        "656776528ff06959c0dedba886d5e7fdef59c7813d0a2a59f4ca0c033ce7f1a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:8",
+      "sequence": 25872,
+      "chapter_label": "LUK 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "Jesus sent Peter and John, saying, “Go and prepare the Passover for us, that we may eat.”",
+      "ko": "예수께서 베드로와 요한을 보내시며 가라사대 가서 우리를 위하여 유월절을 예비하여 우리로 먹게 하라",
+      "source_text_hash": "2316c7443c757ff2513fff38a373532909d6e435da386ee10eb2f54dd4b12505",
+      "translation_text_hash": "d04028f6a808d9cfb8f9fd44145f70db1fc279fea486d23f64b98330427b92cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 베드로와 요한을 보내시며 가라사대 가서 우리를 위하여 유월절을 예비하여 우리로 먹게 하라"
+      ],
+      "raw_text_hashes": [
+        "d04028f6a808d9cfb8f9fd44145f70db1fc279fea486d23f64b98330427b92cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:9",
+      "sequence": 25873,
+      "chapter_label": "LUK 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "They said to him, “Where do you want us to prepare?”",
+      "ko": "여짜오되 어디서 예비하기를 원하시나이까",
+      "source_text_hash": "fec043a1853be0be8da4edcecc9d6ccb9344b749b66476f3a5a89ca95dd40008",
+      "translation_text_hash": "40b03b027e6cf27234124e48871b00a11494d10d6d17e2a4e2cd5577fa2e25d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여짜오되 어디서 예비하기를 원하시나이까"
+      ],
+      "raw_text_hashes": [
+        "40b03b027e6cf27234124e48871b00a11494d10d6d17e2a4e2cd5577fa2e25d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:10",
+      "sequence": 25874,
+      "chapter_label": "LUK 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "He said to them, “Behold, when you have entered into the city, a man carrying a pitcher of water will meet you. Follow him into the house which he enters.",
+      "ko": "이르시되 보라 너희가 성내로 들어가면 물 한 동이를 가지고 가는 사람을 만나리니 그의 들어가는 집으로 따라 들어가서",
+      "source_text_hash": "702866e166dd76be6120c89540b0307421bb8541db3bb556632c064729fae7c7",
+      "translation_text_hash": "a63ce8be577819f1aa33105b122e36e96bc9e7436c024f704c431c751a444e73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 보라 너희가 성내로 들어가면 물 한 동이를 가지고 가는 사람을 만나리니 그의 들어가는 집으로 따라 들어가서"
+      ],
+      "raw_text_hashes": [
+        "a63ce8be577819f1aa33105b122e36e96bc9e7436c024f704c431c751a444e73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:11",
+      "sequence": 25875,
+      "chapter_label": "LUK 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "Tell the master of the house, ‘The Teacher says to you, “Where is the guest room, where I may eat the Passover with my disciples?”’",
+      "ko": "그 집 주인에게 이르되 선생님이 네게 하는 말씀이 내가 내 제자들과 함께 유월절을 먹을 객실이 어디 있느뇨 하시더라 하라",
+      "source_text_hash": "c60517e841f39ff93b5f0b2612332f6c3b8c2c43aac8659051aecacedac8d0e6",
+      "translation_text_hash": "791b896faf2a8040685d20873e312c55c07351efb1c527aff323d4998782e770",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집 주인에게 이르되 선생님이 네게 하는 말씀이 내가 내 제자들과 함께 유월절을 먹을 객실이 어디 있느뇨 하시더라 하라"
+      ],
+      "raw_text_hashes": [
+        "791b896faf2a8040685d20873e312c55c07351efb1c527aff323d4998782e770"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:12",
+      "sequence": 25876,
+      "chapter_label": "LUK 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "He will show you a large, furnished upper room. Make preparations there.”",
+      "ko": "그리하면 저가 자리를 베푼 큰 다락방을 보이리니 거기서 예비하라 하신대",
+      "source_text_hash": "a9d8275f9a8c72626824ef694cda737be2f840cf24692fd52f117b586bfd9ebe",
+      "translation_text_hash": "4af64883242d372326904b8ff7f95d225fc05b5a32d33087caa8901ac1be0fba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 저가 자리를 베푼 큰 다락방을 보이리니 거기서 예비하라 하신대"
+      ],
+      "raw_text_hashes": [
+        "4af64883242d372326904b8ff7f95d225fc05b5a32d33087caa8901ac1be0fba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:13",
+      "sequence": 25877,
+      "chapter_label": "LUK 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "They went, found things as Jesus had told them, and they prepared the Passover.",
+      "ko": "저희가 나가 그 하시던 말씀대로 만나 유월절을 예비하니라",
+      "source_text_hash": "4ff81731b548ed46e2fa50fd818098fe64d67afc97dfc6bbf12ddf31aee0f9d5",
+      "translation_text_hash": "4139c3721e56c2324c4c3c9c438f38596c6fd4009d2cd2899e39197aa4e497be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나가 그 하시던 말씀대로 만나 유월절을 예비하니라"
+      ],
+      "raw_text_hashes": [
+        "4139c3721e56c2324c4c3c9c438f38596c6fd4009d2cd2899e39197aa4e497be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:14",
+      "sequence": 25878,
+      "chapter_label": "LUK 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "When the hour had come, he sat down with the twelve apostles.",
+      "ko": "때가 이르매 예수께서 사도들과 함께 앉으사",
+      "source_text_hash": "98f48ffe268089b16d71fc64f0bcfc6783d8de8fe4af46bddb411650ac424247",
+      "translation_text_hash": "a5731f75d279bf5a4a432fb4716bf6f438fcf414a3f1c70f95500158783ee08f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 이르매 예수께서 사도들과 함께 앉으사"
+      ],
+      "raw_text_hashes": [
+        "a5731f75d279bf5a4a432fb4716bf6f438fcf414a3f1c70f95500158783ee08f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:15",
+      "sequence": 25879,
+      "chapter_label": "LUK 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "He said to them, “I have earnestly desired to eat this Passover with you before I suffer,",
+      "ko": "이르시되 내가 고난을 받기 전에 너희와 함께 이 유월절 먹기를 원하고 원하였노라",
+      "source_text_hash": "26c3592b32945acd85f7d9b19660d09730b022cec19f4c84cc12c3b39506805c",
+      "translation_text_hash": "02a95adff68c3b65136e9e4fcd47aaa7ae6666ff9f2f4c0e287348a3e76ce8a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 내가 고난을 받기 전에 너희와 함께 이 유월절 먹기를 원하고 원하였노라"
+      ],
+      "raw_text_hashes": [
+        "02a95adff68c3b65136e9e4fcd47aaa7ae6666ff9f2f4c0e287348a3e76ce8a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:16",
+      "sequence": 25880,
+      "chapter_label": "LUK 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "for I tell you, I will no longer by any means eat of it until it is fulfilled in God’s Kingdom.”",
+      "ko": "내가 너희에게 이르노니 이 유월절이 하나님의 나라에서 이루기까지 다시 먹지 아니하리라 하시고",
+      "source_text_hash": "7e5c6d3d000437b04983d0465df82506ebadaa08b952beea91ad4e86f95ce91d",
+      "translation_text_hash": "4fa9193c13de87b15994eb2459b08cec44f5eccab3fcf32298c30620c3444698",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 이 유월절이 하나님의 나라에서 이루기까지 다시 먹지 아니하리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "4fa9193c13de87b15994eb2459b08cec44f5eccab3fcf32298c30620c3444698"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:17",
+      "sequence": 25881,
+      "chapter_label": "LUK 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "He received a cup, and when he had given thanks, he said, “Take this and share it among yourselves,",
+      "ko": "이에 잔을 받으사 사례하시고 가라사대 이것을 갖다가 너희끼리 나누라",
+      "source_text_hash": "db398d66245839983c7da6fb83e05d3d3d8b7a2764e32395ab4e0d3325e9411a",
+      "translation_text_hash": "082000c00643a87117e5c0dd2a8b4f02f0f3eb3af612c38c8e616f8b5198a640",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 잔을 받으사 사례하시고 가라사대 이것을 갖다가 너희끼리 나누라"
+      ],
+      "raw_text_hashes": [
+        "082000c00643a87117e5c0dd2a8b4f02f0f3eb3af612c38c8e616f8b5198a640"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:18",
+      "sequence": 25882,
+      "chapter_label": "LUK 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "for I tell you, I will not drink at all again from the fruit of the vine, until God’s Kingdom comes.”",
+      "ko": "내가 너희에게 이르노니 내가 이제부터 하나님의 나라가 임할 때까지 포도나무에서 난 것을 다시 마시지 아니하리라 하시고",
+      "source_text_hash": "ee1a028a217c9aa57084a3ad28ddb8a07fbcca246a00a06379198bb4c0e23131",
+      "translation_text_hash": "441a4b4bd02548382752eaa0ea96530385f2ab038979cd03e40edcba1106e9e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 내가 이제부터 하나님의 나라가 임할 때까지 포도나무에서 난 것을 다시 마시지 아니하리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "441a4b4bd02548382752eaa0ea96530385f2ab038979cd03e40edcba1106e9e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:19",
+      "sequence": 25883,
+      "chapter_label": "LUK 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "He took bread, and when he had given thanks, he broke and gave it to them, saying, “This is my body which is given for you. Do this in memory of me.”",
+      "ko": "또 떡을 가져 사례하시고 떼어 저희에게 주시며 가라사대 이것은 너희를 위하여 주는 내 몸이라 너희가 이를 행하여 나를 기념하라 하시고",
+      "source_text_hash": "5329942f8ab8877942b5a5991922da430822ab59d482f34d1184202872e67c46",
+      "translation_text_hash": "7f371abec79e9257fa54a9f23a4207c29ac42ad4b0e0f7e4564c67b5e60df9e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 떡을 가져 사례하시고 떼어 저희에게 주시며 가라사대 이것은 너희를 위하여 주는 내 몸이라 너희가 이를 행하여 나를 기념하라 하시고"
+      ],
+      "raw_text_hashes": [
+        "7f371abec79e9257fa54a9f23a4207c29ac42ad4b0e0f7e4564c67b5e60df9e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:20",
+      "sequence": 25884,
+      "chapter_label": "LUK 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "Likewise, he took the cup after supper, saying, “This cup is the new covenant in my blood, which is poured out for you.",
+      "ko": "저녁 먹은 후에 잔도 이와 같이 하여 가라사대 이 잔은 내 피로 세우는 새 언약이니 곧 너희를 위하여 붓는 것이라",
+      "source_text_hash": "af92e89ac09ce26d3626f3498ae87be7b8b005c7d1b0f8adf7bd2f80231603bf",
+      "translation_text_hash": "94b5dd020c86222341d1cca0dbc3e75885c8151dc353eae388b338f1c369c051",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁 먹은 후에 잔도 이와 같이 하여 가라사대 이 잔은 내 피로 세우는 새 언약이니 곧 너희를 위하여 붓는 것이라"
+      ],
+      "raw_text_hashes": [
+        "94b5dd020c86222341d1cca0dbc3e75885c8151dc353eae388b338f1c369c051"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:21",
+      "sequence": 25885,
+      "chapter_label": "LUK 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "But behold, the hand of him who betrays me is with me on the table.",
+      "ko": "그러나 보라 나를 파는 자의 손이 나와 함께 상위에 있도다",
+      "source_text_hash": "7243fef53956c627f3231cb4688c33beee679bc2442b7274a23c6c2a677368dc",
+      "translation_text_hash": "46e6b36ae2b4d4cb06dc0c181985f8aa827ef3eabd3c9afc03829d0fc6fdfb5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 보라 나를 파는 자의 손이 나와 함께 상위에 있도다"
+      ],
+      "raw_text_hashes": [
+        "46e6b36ae2b4d4cb06dc0c181985f8aa827ef3eabd3c9afc03829d0fc6fdfb5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:22",
+      "sequence": 25886,
+      "chapter_label": "LUK 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "The Son of Man indeed goes as it has been determined, but woe to that man through whom he is betrayed!”",
+      "ko": "인자는 이미 작정된 대로 가거니와 그를 파는 그 사람에게는 화가 있으리로다 하시니",
+      "source_text_hash": "6ba1c25d169627e020a5ba49908ece54d4e6d9eec442d26ca0e93c3746ab39c2",
+      "translation_text_hash": "4ae3c0193fd56e75a3f55f75e0462b50be4c9873122e4c932766651132c5241c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자는 이미 작정된 대로 가거니와 그를 파는 그 사람에게는 화가 있으리로다 하시니"
+      ],
+      "raw_text_hashes": [
+        "4ae3c0193fd56e75a3f55f75e0462b50be4c9873122e4c932766651132c5241c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:23",
+      "sequence": 25887,
+      "chapter_label": "LUK 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "They began to question among themselves which of them it was who would do this thing.",
+      "ko": "저희가 서로 묻되 우리 중에서 이 일을 행할 자가 누구일까 하더라",
+      "source_text_hash": "24397b37d2ce49f420067aea84b0c6c84b504c969df2343f977b7248bc42dac9",
+      "translation_text_hash": "14926ec5df1ac18ce6cd79ae1526fc8b203b536ea4aa112c578db727b5b1c703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 서로 묻되 우리 중에서 이 일을 행할 자가 누구일까 하더라"
+      ],
+      "raw_text_hashes": [
+        "14926ec5df1ac18ce6cd79ae1526fc8b203b536ea4aa112c578db727b5b1c703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:24",
+      "sequence": 25888,
+      "chapter_label": "LUK 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "A dispute also arose among them, which of them was considered to be greatest.",
+      "ko": "또 저희 사이에 그중 누가 크냐 하는 다툼이 난지라",
+      "source_text_hash": "33b944d002272674f72e08ab476c3f5074e96bac68a2a5aabf82618c8b217e3e",
+      "translation_text_hash": "3bf9a2fdd6d45f10f5ee0957a7f4e61ba3073b5d26861354278aecf65649aaf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희 사이에 그중 누가 크냐 하는 다툼이 난지라"
+      ],
+      "raw_text_hashes": [
+        "3bf9a2fdd6d45f10f5ee0957a7f4e61ba3073b5d26861354278aecf65649aaf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:25",
+      "sequence": 25889,
+      "chapter_label": "LUK 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "He said to them, “The kings of the nations lord it over them, and those who have authority over them are called ‘benefactors.’",
+      "ko": "예수께서 이르시되 이방인의 임금들은 저희를 주관하며 그 집권자들은 은인이라 칭함을 받으나",
+      "source_text_hash": "a02e0ce16def6d6c7ce2939fc0bccdb5007aa85a5e4d20fba248be3b613b6a3c",
+      "translation_text_hash": "350118c3665015dd408cd486bed44d8576bf63cd95f07484f21eb761489f4ffa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 이방인의 임금들은 저희를 주관하며 그 집권자들은 은인이라 칭함을 받으나"
+      ],
+      "raw_text_hashes": [
+        "350118c3665015dd408cd486bed44d8576bf63cd95f07484f21eb761489f4ffa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:26",
+      "sequence": 25890,
+      "chapter_label": "LUK 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "But not so with you. Rather, the one who is greater among you, let him become as the younger, and one who is governing, as one who serves.",
+      "ko": "너희는 그렇지 않을찌니 너희 중에 큰 자는 젊은 자와 같고 두목은 섬기는 자와 같을찌니라",
+      "source_text_hash": "57b7a2b6bef6331cd0e31d508867dd6ba7f7269d891be469ec337786fd353725",
+      "translation_text_hash": "b2b9c28a108c4a88df09f7a1f4afa490a1e07d03607085deeac13790dee147b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그렇지 않을찌니 너희 중에 큰 자는 젊은 자와 같고 두목은 섬기는 자와 같을찌니라"
+      ],
+      "raw_text_hashes": [
+        "b2b9c28a108c4a88df09f7a1f4afa490a1e07d03607085deeac13790dee147b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:27",
+      "sequence": 25891,
+      "chapter_label": "LUK 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "For who is greater, one who sits at the table, or one who serves? Isn’t it he who sits at the table? But I am among you as one who serves.",
+      "ko": "앉아서 먹는 자가 크냐 섬기는 자가 크냐 앉아 먹는 자가 아니냐 그러나 나는 섬기는 자로 너희 중에 있노라",
+      "source_text_hash": "7c3d5b6c3de05173e487e3f19eddbb992514a8c50f02992e349fd6254f54ba9d",
+      "translation_text_hash": "dc4ffc21216e00b499485eead5aa0a29423cac2e9bd46c20a8430b9ae4184002",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앉아서 먹는 자가 크냐 섬기는 자가 크냐 앉아 먹는 자가 아니냐 그러나 나는 섬기는 자로 너희 중에 있노라"
+      ],
+      "raw_text_hashes": [
+        "dc4ffc21216e00b499485eead5aa0a29423cac2e9bd46c20a8430b9ae4184002"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:28",
+      "sequence": 25892,
+      "chapter_label": "LUK 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "“But you are those who have continued with me in my trials.",
+      "ko": "너희는 나의 모든 시험 중에 항상 나와 함께 한 자들인즉",
+      "source_text_hash": "0d473c7fbd4747238d926cae5a43833c0e06b8d6b974a89758f33167c7ca80b9",
+      "translation_text_hash": "06be97766afdf4141e32fe8b7cfd4cc0cbbd509ece14a36c4785c4012c9785e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나의 모든 시험 중에 항상 나와 함께 한 자들인즉"
+      ],
+      "raw_text_hashes": [
+        "06be97766afdf4141e32fe8b7cfd4cc0cbbd509ece14a36c4785c4012c9785e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:29",
+      "sequence": 25893,
+      "chapter_label": "LUK 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "I confer on you a kingdom, even as my Father conferred on me,",
+      "ko": "내 아버지께서 나라를 내게 맡기신것 같이 나도 너희에게 맡겨",
+      "source_text_hash": "6d392c7ed6603e2523ff863670f50fe6461693eef3198859553c75b0ca9e0752",
+      "translation_text_hash": "4dab96f3b054c886efcce6bba6038b0700b8357459b80b27979f9cdfb7b56c5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아버지께서 나라를 내게 맡기신것 같이 나도 너희에게 맡겨"
+      ],
+      "raw_text_hashes": [
+        "4dab96f3b054c886efcce6bba6038b0700b8357459b80b27979f9cdfb7b56c5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:30",
+      "sequence": 25894,
+      "chapter_label": "LUK 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "that you may eat and drink at my table in my Kingdom. You will sit on thrones, judging the twelve tribes of Israel.”",
+      "ko": "너희로 내 나라에 있어 내 상에서 먹고 마시며 또는 보좌에 앉아 이스라엘 열 두 지파를 다스리게 하려 하노라",
+      "source_text_hash": "add79b5ec063c6089646a191533ae4805ef94cb4866ee4fc06e0ac8abb6ec12f",
+      "translation_text_hash": "0bf0e0819e2fc13d6deccc7a838ee856bec891f203e810153fa31b2fd2c31339",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희로 내 나라에 있어 내 상에서 먹고 마시며 또는 보좌에 앉아 이스라엘 열 두 지파를 다스리게 하려 하노라"
+      ],
+      "raw_text_hashes": [
+        "0bf0e0819e2fc13d6deccc7a838ee856bec891f203e810153fa31b2fd2c31339"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:31",
+      "sequence": 25895,
+      "chapter_label": "LUK 22",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 31
+        }
+      ],
+      "en": "The Lord said, “Simon, Simon, behold, Satan asked to have all of you, that he might sift you as wheat,",
+      "ko": "시몬아, 시몬아, 보라 사단이 밀 까부르듯 하려고 너희를 청구하였으나",
+      "source_text_hash": "94bade553c5443faeee6d80c5aa8e6d1406bf0ea7cb588cc259cd59d302c0548",
+      "translation_text_hash": "48877b7bd3bf210dc751c3e304403c20def025c7c3fda4a61bb7622e20ee06b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬아, 시몬아, 보라 사단이 밀 까부르듯 하려고 너희를 청구하였으나"
+      ],
+      "raw_text_hashes": [
+        "48877b7bd3bf210dc751c3e304403c20def025c7c3fda4a61bb7622e20ee06b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:32",
+      "sequence": 25896,
+      "chapter_label": "LUK 22",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 32
+        }
+      ],
+      "en": "but I prayed for you, that your faith wouldn’t fail. You, when once you have turned again, establish your brothers.”",
+      "ko": "그러나 내가 너를 위하여 네 믿음이 떨어지지 않기를 기도하였노니 너는 돌이킨 후에 네 형제를 굳게 하라",
+      "source_text_hash": "75a22640530f4b88a0ca562a27e1747ae9a69b21561ecd4223f166c937acf71d",
+      "translation_text_hash": "01300c1030aff6641ac456b79d51c37a3664575be4c8a1fb26312e420fefd283",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 너를 위하여 네 믿음이 떨어지지 않기를 기도하였노니 너는 돌이킨 후에 네 형제를 굳게 하라"
+      ],
+      "raw_text_hashes": [
+        "01300c1030aff6641ac456b79d51c37a3664575be4c8a1fb26312e420fefd283"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:33",
+      "sequence": 25897,
+      "chapter_label": "LUK 22",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 33
+        }
+      ],
+      "en": "He said to him, “Lord, I am ready to go with you both to prison and to death!”",
+      "ko": "저가 말하되 주여 내가 주와 함께 옥에도, 죽는데도 가기를 준비하였나이다",
+      "source_text_hash": "1b5a2af6c6c5d1d84f05af4493f54d6c2ad0c9cfae9bcb5011407134d3ed36c7",
+      "translation_text_hash": "cdfe7cb747835c391eb462ebc8698b7e2bd5c6f13d088bb60b9071431042407f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 말하되 주여 내가 주와 함께 옥에도, 죽는데도 가기를 준비하였나이다"
+      ],
+      "raw_text_hashes": [
+        "cdfe7cb747835c391eb462ebc8698b7e2bd5c6f13d088bb60b9071431042407f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:34",
+      "sequence": 25898,
+      "chapter_label": "LUK 22",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 34
+        }
+      ],
+      "en": "He said, “I tell you, Peter, the rooster will by no means crow today until you deny that you know me three times.”",
+      "ko": "가라사대 베드로야 내가 네게 말하노니 오늘 닭 울기 전에 네가 세번 나를 모른다고 부인하리라 하시니라",
+      "source_text_hash": "0e974d8720e0e20f59220cac054f2503fc6fe5c14ea8f9a299552285f98c0eb4",
+      "translation_text_hash": "15e27fb87319b8b0c36bab034ace63484ead0f7f8342b8e6043a01848fd3ff63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 베드로야 내가 네게 말하노니 오늘 닭 울기 전에 네가 세번 나를 모른다고 부인하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "15e27fb87319b8b0c36bab034ace63484ead0f7f8342b8e6043a01848fd3ff63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:35",
+      "sequence": 25899,
+      "chapter_label": "LUK 22",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 35
+        }
+      ],
+      "en": "He said to them, “When I sent you out without purse, bag, and sandals, did you lack anything?”They said, “Nothing.”",
+      "ko": "저희에게 이르시되 내가 너희를 전대와 주머니와 신도 없이 보내었을 때에 부족한 것이 있더냐 가로되 없었나이다",
+      "source_text_hash": "5fb0c079080546e39f9f548f601b1c40e0986dc3ff0ee4382ca3539e9873c504",
+      "translation_text_hash": "d41ebe9384c6efc36fcdb3f53a479a6e0a19cf9b503672ac3636cb256d6402a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 이르시되 내가 너희를 전대와 주머니와 신도 없이 보내었을 때에 부족한 것이 있더냐 가로되 없었나이다"
+      ],
+      "raw_text_hashes": [
+        "d41ebe9384c6efc36fcdb3f53a479a6e0a19cf9b503672ac3636cb256d6402a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:36",
+      "sequence": 25900,
+      "chapter_label": "LUK 22",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 36
+        }
+      ],
+      "en": "Then he said to them, “But now, whoever has a purse, let him take it, and likewise a bag. Whoever has none, let him sell his cloak, and buy a sword.",
+      "ko": "이르시되 이제는 전대 있는 자는 가질 것이요 주머니도 그리하고 검 없는 자는 겉옷을 팔아 살찌어다",
+      "source_text_hash": "9fb27369d67878894d55358a98c37f069b99c1c8a4c67182c0ad27382f0e6cf0",
+      "translation_text_hash": "a69d9e138e7cd2f89bd167fb73c2d019c814d43ca899579524eb484c3d1efb97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 이제는 전대 있는 자는 가질 것이요 주머니도 그리하고 검 없는 자는 겉옷을 팔아 살찌어다"
+      ],
+      "raw_text_hashes": [
+        "a69d9e138e7cd2f89bd167fb73c2d019c814d43ca899579524eb484c3d1efb97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:37",
+      "sequence": 25901,
+      "chapter_label": "LUK 22",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 37
+        }
+      ],
+      "en": "For I tell you that this which is written must still be fulfilled in me: ‘He was counted with transgressors.’For that which concerns me is being fulfilled.”",
+      "ko": "내가 너희에게 말하노니 기록된바 저는 불법자의 동류로 여김을 받았다 한 말이 내게 이루어져야 하리니 내게 관한 일이 이루어 감이니라",
+      "source_text_hash": "26d8b04da95aa2bf87366687d3d8106a69dbb14f49aa2ee930f84f5231110348",
+      "translation_text_hash": "37bb87b2e081ad11e11e3524b075d7021c36b7c01370c58c6d2c0eee4a001cd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 말하노니 기록된바 저는 불법자의 동류로 여김을 받았다 한 말이 내게 이루어져야 하리니 내게 관한 일이 이루어 감이니라"
+      ],
+      "raw_text_hashes": [
+        "37bb87b2e081ad11e11e3524b075d7021c36b7c01370c58c6d2c0eee4a001cd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:38",
+      "sequence": 25902,
+      "chapter_label": "LUK 22",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 38
+        }
+      ],
+      "en": "They said, “Lord, behold, here are two swords.” He said to them, “That is enough.”",
+      "ko": "저희가 여짜오되 주여 보소서 여기 검 둘이 있나이다 대답하시되 족하다 하시니라",
+      "source_text_hash": "3bbd9542dbcb4bf919854640e59adda12b1ba50c546ed66ad9f0f3d3ac32abcd",
+      "translation_text_hash": "36f9616f2272321b3cd101771cb4181eeed73d6806d6a32487e01a5da08362c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 여짜오되 주여 보소서 여기 검 둘이 있나이다 대답하시되 족하다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "36f9616f2272321b3cd101771cb4181eeed73d6806d6a32487e01a5da08362c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:39",
+      "sequence": 25903,
+      "chapter_label": "LUK 22",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 39
+        }
+      ],
+      "en": "He came out and went, as his custom was, to the Mount of Olives. His disciples also followed him.",
+      "ko": "예수께서 나가사 습관을 좇아 감람산에 가시매 제자들도 좇았더니",
+      "source_text_hash": "4aa044790e1004c0d7a806abba1b45fea5bfcb06c142241627ac5a199940494e",
+      "translation_text_hash": "6ead1f0a5abb418bf66a3535e4f85128eb278a63b9d3a2f8b0ea379749fe21cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 나가사 습관을 좇아 감람산에 가시매 제자들도 좇았더니"
+      ],
+      "raw_text_hashes": [
+        "6ead1f0a5abb418bf66a3535e4f85128eb278a63b9d3a2f8b0ea379749fe21cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:40",
+      "sequence": 25904,
+      "chapter_label": "LUK 22",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 40
+        }
+      ],
+      "en": "When he was at the place, he said to them, “Pray that you don’t enter into temptation.”",
+      "ko": "그곳에 이르러 저희에게 이르시되 시험에 들지 않기를 기도하라 하시고",
+      "source_text_hash": "10d7dcceaa139ac680664f04c35482b51a1bfa257ca70e85bf35f08935bc28b5",
+      "translation_text_hash": "ccfadc0699e79d8e182981dee0d506ffb9b14027f1fa37eb66eede3d21070231",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그곳에 이르러 저희에게 이르시되 시험에 들지 않기를 기도하라 하시고"
+      ],
+      "raw_text_hashes": [
+        "ccfadc0699e79d8e182981dee0d506ffb9b14027f1fa37eb66eede3d21070231"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:41",
+      "sequence": 25905,
+      "chapter_label": "LUK 22",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 41
+        }
+      ],
+      "en": "He was withdrawn from them about a stone’s throw, and he knelt down and prayed,",
+      "ko": "저희를 떠나 돌 던질만큼 가서 무릎을 꿇고 기도하여",
+      "source_text_hash": "12a1c0cd0cebdc73783288cfd481cfee15fdbc2e9eac19d25fead455a774be34",
+      "translation_text_hash": "11442e6fb06c76eab9bba5230625abd752ca2b7b13f80b60605c8b929df29895",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 떠나 돌 던질만큼 가서 무릎을 꿇고 기도하여"
+      ],
+      "raw_text_hashes": [
+        "11442e6fb06c76eab9bba5230625abd752ca2b7b13f80b60605c8b929df29895"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:42",
+      "sequence": 25906,
+      "chapter_label": "LUK 22",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 42
+        }
+      ],
+      "en": "saying, “Father, if you are willing, remove this cup from me. Nevertheless, not my will, but yours, be done.”",
+      "ko": "가라사대 아버지여 만일 아버지의 뜻이어든 이 잔을 내게서 옮기시옵소서 그러나 내 원대로 마옵시고 아버지의 원대로 되기를 원하나이다 하시니",
+      "source_text_hash": "8e619a36ffa40ecaa3ae0ff762c4ad6ac2423234a2789aa9291a475f00b0a45a",
+      "translation_text_hash": "830b105a4af6c024baed1c213d03bb34e0ce79334d3e5957a9afb1a37c727f55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 아버지여 만일 아버지의 뜻이어든 이 잔을 내게서 옮기시옵소서 그러나 내 원대로 마옵시고 아버지의 원대로 되기를 원하나이다 하시니"
+      ],
+      "raw_text_hashes": [
+        "830b105a4af6c024baed1c213d03bb34e0ce79334d3e5957a9afb1a37c727f55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:43",
+      "sequence": 25907,
+      "chapter_label": "LUK 22",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 43
+        }
+      ],
+      "en": "An angel from heaven appeared to him, strengthening him.",
+      "ko": "사자가 하늘로부터 예수께 나타나 힘을 돕더라",
+      "source_text_hash": "9409d25ca4af5d4fcc1a331661306859fbd67ffefdf51da8eddcceaace9d04e5",
+      "translation_text_hash": "abe7b5609a252318e87510e2417b91818e88dd1036bfa3fa4d378539f54d02e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 하늘로부터 예수께 나타나 힘을 돕더라"
+      ],
+      "raw_text_hashes": [
+        "abe7b5609a252318e87510e2417b91818e88dd1036bfa3fa4d378539f54d02e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:44",
+      "sequence": 25908,
+      "chapter_label": "LUK 22",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 44
+        }
+      ],
+      "en": "Being in agony, he prayed more earnestly. His sweat became like great drops of blood falling down on the ground.",
+      "ko": "예수께서 힘쓰고 애써 더욱 간절히 기도하시니 땀이 땅에 떨어지는 피방울 같이 되더라",
+      "source_text_hash": "254fa76409cda3cd6204014c90fa896b7120f396e188d6f35e031b28c111341b",
+      "translation_text_hash": "559f1a265280b2550a51e3025ff3e51b302cfd30199dc8aadb779c7a575cf10e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 힘쓰고 애써 더욱 간절히 기도하시니 땀이 땅에 떨어지는 피방울 같이 되더라"
+      ],
+      "raw_text_hashes": [
+        "559f1a265280b2550a51e3025ff3e51b302cfd30199dc8aadb779c7a575cf10e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:45",
+      "sequence": 25909,
+      "chapter_label": "LUK 22",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 45
+        }
+      ],
+      "en": "When he rose up from his prayer, he came to the disciples and found them sleeping because of grief,",
+      "ko": "기도 후에 일어나 제자들에게 가서 슬픔을 인하여 잠든 것을 보시고",
+      "source_text_hash": "f452318079f479b62782f4c39f57a87142ba3bf8a5a39b39925d171624566a62",
+      "translation_text_hash": "9fad54afece5a6f1297cb610115c2b1ac7752e7971733817b906dc7611230eb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기도 후에 일어나 제자들에게 가서 슬픔을 인하여 잠든 것을 보시고"
+      ],
+      "raw_text_hashes": [
+        "9fad54afece5a6f1297cb610115c2b1ac7752e7971733817b906dc7611230eb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:46",
+      "sequence": 25910,
+      "chapter_label": "LUK 22",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 46
+        }
+      ],
+      "en": "and said to them, “Why do you sleep? Rise and pray that you may not enter into temptation.”",
+      "ko": "이르시되 어찌하여 자느냐 시험에 들지 않게 일어나 기도하라 하시니라",
+      "source_text_hash": "50d2cfd8648c09ff370bc4760d5dfe993113d71859b46eb6434963f806552801",
+      "translation_text_hash": "7c2ac3a590ba897ab7b2c8031cb1ff7b29760455784dd7052ccd21daa7a08fa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 어찌하여 자느냐 시험에 들지 않게 일어나 기도하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "7c2ac3a590ba897ab7b2c8031cb1ff7b29760455784dd7052ccd21daa7a08fa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:47",
+      "sequence": 25911,
+      "chapter_label": "LUK 22",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 47
+        }
+      ],
+      "en": "While he was still speaking, a crowd appeared. He who was called Judas, one of the twelve, was leading them. He came near to Jesus to kiss him.",
+      "ko": "말씀하실 때에 한 무리가 오는데 열 둘 중에 하나인 유다라 하는 자가 그들의 앞에 서서 와서",
+      "source_text_hash": "15f464b772b6adfe265d85d2fd67117b7ed6cef8c817c584f3fb9f9cc542ff30",
+      "translation_text_hash": "48bc1f3a1e032afbb3893b98e75feed93d343d6cae23cbed1d84a6eec2300758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말씀하실 때에 한 무리가 오는데 열 둘 중에 하나인 유다라 하는 자가 그들의 앞에 서서 와서"
+      ],
+      "raw_text_hashes": [
+        "48bc1f3a1e032afbb3893b98e75feed93d343d6cae23cbed1d84a6eec2300758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:48",
+      "sequence": 25912,
+      "chapter_label": "LUK 22",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 48
+        }
+      ],
+      "en": "But Jesus said to him, “Judas, do you betray the Son of Man with a kiss?”",
+      "ko": "예수께 입을 맞추려고 가까이 하는지라 예수께서 이르시되 유다야 네가 입맞춤으로 인자를 파느냐 하시니",
+      "source_text_hash": "1c4e237cc6071423c60363339dee1422d4fdc9ada9d87e05c8e7069fbbf8a55f",
+      "translation_text_hash": "71553511ce63f791dc2499c976f0a8c20c44ce60e17f79b5d191db42685e228d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께 입을 맞추려고 가까이 하는지라 예수께서 이르시되 유다야 네가 입맞춤으로 인자를 파느냐 하시니"
+      ],
+      "raw_text_hashes": [
+        "71553511ce63f791dc2499c976f0a8c20c44ce60e17f79b5d191db42685e228d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:49",
+      "sequence": 25913,
+      "chapter_label": "LUK 22",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 49
+        }
+      ],
+      "en": "When those who were around him saw what was about to happen, they said to him, “Lord, shall we strike with the sword?”",
+      "ko": "좌우가 그 될 일을 보고 여짜오되 주여 우리가 검으로 치리이까 하고",
+      "source_text_hash": "0b20bf234ee2b45b53ae69f6f3b22e259fde02980cbeaa9da2bfe790a42506c6",
+      "translation_text_hash": "86e9917c1af5baa8ee84bf5d22646e98ff8279e20f3db9c4d4405545e027dd8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좌우가 그 될 일을 보고 여짜오되 주여 우리가 검으로 치리이까 하고"
+      ],
+      "raw_text_hashes": [
+        "86e9917c1af5baa8ee84bf5d22646e98ff8279e20f3db9c4d4405545e027dd8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:50",
+      "sequence": 25914,
+      "chapter_label": "LUK 22",
+      "verse_label": "50",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 50
+        }
+      ],
+      "en": "A certain one of them struck the servant of the high priest, and cut off his right ear.",
+      "ko": "그 중에 한 사람이 대제사장의 종을 쳐 그 오른편 귀를 떨어뜨린지라",
+      "source_text_hash": "b200be61de0b76c6a80a215c10e0328a910d51831c03396e6062fd920f7aff34",
+      "translation_text_hash": "a9ce74506e7dd5be11b0bce4f72e5bc8dc0c007579e3b4525c713402c6d75809",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 한 사람이 대제사장의 종을 쳐 그 오른편 귀를 떨어뜨린지라"
+      ],
+      "raw_text_hashes": [
+        "a9ce74506e7dd5be11b0bce4f72e5bc8dc0c007579e3b4525c713402c6d75809"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:51",
+      "sequence": 25915,
+      "chapter_label": "LUK 22",
+      "verse_label": "51",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 51
+        }
+      ],
+      "en": "But Jesus answered, “Let me at least do this”—and he touched his ear and healed him.",
+      "ko": "예수께서 일러 가라사대 이것까지 참으라 하시고 그 귀를 만져 낫게 하시더라",
+      "source_text_hash": "323caa6afa0a8912586c19d7c1bcfab5185e02728389a89c1e8858c00b0f8d0f",
+      "translation_text_hash": "01a3af4390132bca8ed6a537d9f1dc0d03e5787d6b49f7fd5bf5870ffc314d72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 일러 가라사대 이것까지 참으라 하시고 그 귀를 만져 낫게 하시더라"
+      ],
+      "raw_text_hashes": [
+        "01a3af4390132bca8ed6a537d9f1dc0d03e5787d6b49f7fd5bf5870ffc314d72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:52",
+      "sequence": 25916,
+      "chapter_label": "LUK 22",
+      "verse_label": "52",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 52
+        }
+      ],
+      "en": "Jesus said to the chief priests, captains of the temple, and elders, who had come against him, “Have you come out as against a robber, with swords and clubs?",
+      "ko": "예수께서 그 잡으러 온 대제사장들과 성전의 군관들과 장로들에게 이르시되 너희가 강도를 잡는 것 같이 검과 몽치를 가지고 나왔느냐",
+      "source_text_hash": "c7cd8a2800ab30df05153136338ad5ccd4f4896b2e22d3de04e68f5f753cacfb",
+      "translation_text_hash": "ff39751c5bb5ad9e6060d62bda549b62ceb5c5f5854c096dcb4b569176210984",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 잡으러 온 대제사장들과 성전의 군관들과 장로들에게 이르시되 너희가 강도를 잡는 것 같이 검과 몽치를 가지고 나왔느냐"
+      ],
+      "raw_text_hashes": [
+        "ff39751c5bb5ad9e6060d62bda549b62ceb5c5f5854c096dcb4b569176210984"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:53",
+      "sequence": 25917,
+      "chapter_label": "LUK 22",
+      "verse_label": "53",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 53
+        }
+      ],
+      "en": "When I was with you in the temple daily, you didn’t stretch out your hands against me. But this is your hour, and the power of darkness.”",
+      "ko": "내가 날마다 너희와 함께 성전에 있을 때에 내게 손을 대지 아니하였도다 그러나 이제는 너희 때요 어두움의 권세로다 하시더라",
+      "source_text_hash": "7556d749085c03cbab48fe290739eeba67492b3fa17de1ce083f3ea29f5b8c54",
+      "translation_text_hash": "0ad7441bdb873da9f59b366c7373b31ffe0e7782743b0f1a2053efb7d48ff6ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 날마다 너희와 함께 성전에 있을 때에 내게 손을 대지 아니하였도다 그러나 이제는 너희 때요 어두움의 권세로다 하시더라"
+      ],
+      "raw_text_hashes": [
+        "0ad7441bdb873da9f59b366c7373b31ffe0e7782743b0f1a2053efb7d48ff6ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:54",
+      "sequence": 25918,
+      "chapter_label": "LUK 22",
+      "verse_label": "54",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 54
+        }
+      ],
+      "en": "They seized him and led him away, and brought him into the high priest’s house. But Peter followed from a distance.",
+      "ko": "예수를 잡아 끌고 대제사장의 집으로 들어갈쌔 베드로가 멀찍이 따라가니라",
+      "source_text_hash": "f55a8245729b6be0b4e12dc664c2f03974e95a8c5da69956941e8b77feb4728b",
+      "translation_text_hash": "954e5328b3f78131df45d600f98bbae680190847f158fcba2baa8e004d4aa6d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 잡아 끌고 대제사장의 집으로 들어갈쌔 베드로가 멀찍이 따라가니라"
+      ],
+      "raw_text_hashes": [
+        "954e5328b3f78131df45d600f98bbae680190847f158fcba2baa8e004d4aa6d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:55",
+      "sequence": 25919,
+      "chapter_label": "LUK 22",
+      "verse_label": "55",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 55
+        }
+      ],
+      "en": "When they had kindled a fire in the middle of the courtyard and had sat down together, Peter sat among them.",
+      "ko": "사람들이 뜰 가운데 불을 피우고 함께 앉았는지라 베드로도 그 가운데 앉았더니",
+      "source_text_hash": "fcc65368f0fa24ba81596f882288b05f31c5fbe12d0192fd46fa2ac0ffaf974b",
+      "translation_text_hash": "0794a908d0c0f630ee1cd0f75f4eb4d39a8bc805050363115b20071b512ec2ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 뜰 가운데 불을 피우고 함께 앉았는지라 베드로도 그 가운데 앉았더니"
+      ],
+      "raw_text_hashes": [
+        "0794a908d0c0f630ee1cd0f75f4eb4d39a8bc805050363115b20071b512ec2ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:56",
+      "sequence": 25920,
+      "chapter_label": "LUK 22",
+      "verse_label": "56",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 56
+        }
+      ],
+      "en": "A certain servant girl saw him as he sat in the light, and looking intently at him, said, “This man also was with him.”",
+      "ko": "한 비자가 베드로의 불빛을 향하여 앉은 것을 보고 주목하여 가로되 이 사람도 그와 함께 있었느니라 하니",
+      "source_text_hash": "f24383e33af73f29a6d4f0185998bbed69c8a051da3d91e90210c181539aceb9",
+      "translation_text_hash": "4169544c9b9bc511181050e6570536382ae3b85b5ee9f1b26fb45bbb72ada5cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 비자가 베드로의 불빛을 향하여 앉은 것을 보고 주목하여 가로되 이 사람도 그와 함께 있었느니라 하니"
+      ],
+      "raw_text_hashes": [
+        "4169544c9b9bc511181050e6570536382ae3b85b5ee9f1b26fb45bbb72ada5cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:57",
+      "sequence": 25921,
+      "chapter_label": "LUK 22",
+      "verse_label": "57",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 57
+        }
+      ],
+      "en": "He denied Jesus, saying, “Woman, I don’t know him.”",
+      "ko": "베드로가 부인하여 가로되 이 여자여 내가 저를 알지 못하노라 하더라",
+      "source_text_hash": "a755281954f0a4965f98c5c7631fe5a8ab73e1f4e4a73c9b510b24d3a3cc8c40",
+      "translation_text_hash": "3ae7a63cdb61f450d84687a7d83e7600d2202be554152ecbf02d437cda2e3513",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 부인하여 가로되 이 여자여 내가 저를 알지 못하노라 하더라"
+      ],
+      "raw_text_hashes": [
+        "3ae7a63cdb61f450d84687a7d83e7600d2202be554152ecbf02d437cda2e3513"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:58",
+      "sequence": 25922,
+      "chapter_label": "LUK 22",
+      "verse_label": "58",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 58
+        }
+      ],
+      "en": "After a little while someone else saw him and said, “You also are one of them!” But Peter answered, “Man, I am not!”",
+      "ko": "조금 후에 다른 사람이 보고 가로되 너도 그 당이라 하거늘 베드로가 가로되 이 사람아 나는 아니로라 하더라",
+      "source_text_hash": "164c594f79b074d468081e493ffcab07569caf5d2e2fc938da6d7013467eadf5",
+      "translation_text_hash": "1c62489ac24a50420b2a2ff5d538def05d245301992979f3a91b033eda5d0ab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조금 후에 다른 사람이 보고 가로되 너도 그 당이라 하거늘 베드로가 가로되 이 사람아 나는 아니로라 하더라"
+      ],
+      "raw_text_hashes": [
+        "1c62489ac24a50420b2a2ff5d538def05d245301992979f3a91b033eda5d0ab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:59",
+      "sequence": 25923,
+      "chapter_label": "LUK 22",
+      "verse_label": "59",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 59
+        }
+      ],
+      "en": "After about one hour passed, another confidently affirmed, saying, “Truly this man also was with him, for he is a Galilean!”",
+      "ko": "한 시쯤 있다가 또 한 사람이 장담하여 가로되 이는 갈릴리 사람이니 참으로 그와 함께 있었느니라",
+      "source_text_hash": "edc120d31e8ca3cc07ea733513da594522060c42e9836148e9aecc32ba8c8eaf",
+      "translation_text_hash": "f1a5d0753f67b272ed27138f47f985d41626671f422b8354229b0546192c1a9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 시쯤 있다가 또 한 사람이 장담하여 가로되 이는 갈릴리 사람이니 참으로 그와 함께 있었느니라"
+      ],
+      "raw_text_hashes": [
+        "f1a5d0753f67b272ed27138f47f985d41626671f422b8354229b0546192c1a9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:60",
+      "sequence": 25924,
+      "chapter_label": "LUK 22",
+      "verse_label": "60",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 60
+        }
+      ],
+      "en": "But Peter said, “Man, I don’t know what you are talking about!” Immediately, while he was still speaking, a rooster crowed.",
+      "ko": "베드로가 가로되 이 사람아 나는 너 하는 말을 알지 못하노라고 방금 말할 때에 닭이 곧 울더라",
+      "source_text_hash": "bd7bb67b715b2bbb0688e345a50e84bc8076e989a0accfee2f9507f8d093f6ed",
+      "translation_text_hash": "dcd537c54928f61073fbfb0118c4d2063bc5959a7e9855368628941efe83280b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 이 사람아 나는 너 하는 말을 알지 못하노라고 방금 말할 때에 닭이 곧 울더라"
+      ],
+      "raw_text_hashes": [
+        "dcd537c54928f61073fbfb0118c4d2063bc5959a7e9855368628941efe83280b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:61",
+      "sequence": 25925,
+      "chapter_label": "LUK 22",
+      "verse_label": "61",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 61
+        }
+      ],
+      "en": "The Lord turned and looked at Peter. Then Peter remembered the Lord’s word, how he said to him, “Before the rooster crows you will deny me three times.”",
+      "ko": "주께서 돌이켜 베드로를 보시니 베드로가 주의 말씀 곧 오늘 닭 울기 전에 네가 세번 나를 부인하리라 하심이 생각나서",
+      "source_text_hash": "61ff061cf4bcd2997a3eafd2fec8433772cc9b236490a5541b222fa8c985a56c",
+      "translation_text_hash": "20a59631b7d18cddcb5c4706331526d867c8cea452814230267fc4ea42c2e273",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 돌이켜 베드로를 보시니 베드로가 주의 말씀 곧 오늘 닭 울기 전에 네가 세번 나를 부인하리라 하심이 생각나서"
+      ],
+      "raw_text_hashes": [
+        "20a59631b7d18cddcb5c4706331526d867c8cea452814230267fc4ea42c2e273"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:62",
+      "sequence": 25926,
+      "chapter_label": "LUK 22",
+      "verse_label": "62",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 62
+        }
+      ],
+      "en": "He went out, and wept bitterly.",
+      "ko": "밖에 나가서 심히 통곡하니라",
+      "source_text_hash": "0e02605c12bb98cd2ba225c246026b9f277dcb8815cc79f39298fc5620ceb9d4",
+      "translation_text_hash": "b6fdffac9cffd744a976de951a1999757a54ebcb0f387742cca37ea59533e9c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밖에 나가서 심히 통곡하니라"
+      ],
+      "raw_text_hashes": [
+        "b6fdffac9cffd744a976de951a1999757a54ebcb0f387742cca37ea59533e9c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:63",
+      "sequence": 25927,
+      "chapter_label": "LUK 22",
+      "verse_label": "63",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 63
+        }
+      ],
+      "en": "The men who held Jesus mocked him and beat him.",
+      "ko": "지키는 사람들이 예수를 희롱하고 때리며",
+      "source_text_hash": "25a834329b1791231b1d771657b3434f50e38d8f3969636d6cde08745f143b4a",
+      "translation_text_hash": "84565c0532fd6a864a21752ea02aa67b25e552ee96a65eee95d9cc934ee3b760",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지키는 사람들이 예수를 희롱하고 때리며"
+      ],
+      "raw_text_hashes": [
+        "84565c0532fd6a864a21752ea02aa67b25e552ee96a65eee95d9cc934ee3b760"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:64",
+      "sequence": 25928,
+      "chapter_label": "LUK 22",
+      "verse_label": "64",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 64
+        }
+      ],
+      "en": "Having blindfolded him, they struck him on the face and asked him, “Prophesy! Who is the one who struck you?”",
+      "ko": "그의 눈을 가리우고 물어 가로되 선지자 노릇 하라 너를 친 자가 누구냐 하고",
+      "source_text_hash": "a420ff97f73ecbda5a772b1091418fffe1fcaf6b12b36d980e0645aed26cc231",
+      "translation_text_hash": "3bfe5136956fcbeb5c2f9739b1dea1b7f89534b319e4220a19150374c2295c55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 눈을 가리우고 물어 가로되 선지자 노릇 하라 너를 친 자가 누구냐 하고"
+      ],
+      "raw_text_hashes": [
+        "3bfe5136956fcbeb5c2f9739b1dea1b7f89534b319e4220a19150374c2295c55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:65",
+      "sequence": 25929,
+      "chapter_label": "LUK 22",
+      "verse_label": "65",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 65
+        }
+      ],
+      "en": "They spoke many other things against him, insulting him.",
+      "ko": "이 외에도 많은 말로 욕하더라",
+      "source_text_hash": "96ae19754cd21fb3afcb5856750c4cd075004586d7c34663e5ea8482ed245416",
+      "translation_text_hash": "8659d026db1c0c5be1f282e738ddbf5b22f64e74736e5ed37457845935b9b440",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 외에도 많은 말로 욕하더라"
+      ],
+      "raw_text_hashes": [
+        "8659d026db1c0c5be1f282e738ddbf5b22f64e74736e5ed37457845935b9b440"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:66",
+      "sequence": 25930,
+      "chapter_label": "LUK 22",
+      "verse_label": "66",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 66
+        }
+      ],
+      "en": "As soon as it was day, the assembly of the elders of the people were gathered together, both chief priests and scribes, and they led him away into their council, saying,",
+      "ko": "날이 새매 백성의 장로들 곧 대제사장들과 서기관들이 모이어 예수를 그 공회로 끌어들여",
+      "source_text_hash": "40e1687b9b5a9902d2cbe764541c4c463226d51eefdeb206b517fe6b5248317e",
+      "translation_text_hash": "b9a398188d7e6715b1875da76b2f5c296bb67d65593e7442c03a535161cca41f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 새매 백성의 장로들 곧 대제사장들과 서기관들이 모이어 예수를 그 공회로 끌어들여"
+      ],
+      "raw_text_hashes": [
+        "b9a398188d7e6715b1875da76b2f5c296bb67d65593e7442c03a535161cca41f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:67",
+      "sequence": 25931,
+      "chapter_label": "LUK 22",
+      "verse_label": "67",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 67
+        }
+      ],
+      "en": "“If you are the Christ, tell us.” But he said to them, “If I tell you, you won’t believe,",
+      "ko": "가로되 네가 그리스도여든 우리에게 말하라 대답하시되 내가 말할찌라도 너희가 믿지 아니할 것이요",
+      "source_text_hash": "dd2a9fea52fb5701c1493c0cfe228848f7a8ce4611bb5078f849d346a3c0b072",
+      "translation_text_hash": "0283961d960d83f1cd535ece9c397057816fbc06c25ec38aac46345a95286cb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 네가 그리스도여든 우리에게 말하라 대답하시되 내가 말할찌라도 너희가 믿지 아니할 것이요"
+      ],
+      "raw_text_hashes": [
+        "0283961d960d83f1cd535ece9c397057816fbc06c25ec38aac46345a95286cb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:68",
+      "sequence": 25932,
+      "chapter_label": "LUK 22",
+      "verse_label": "68",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 68
+        }
+      ],
+      "en": "and if I ask, you will in no way answer me or let me go.",
+      "ko": "내가 물어도 너희가 대답지 아니할 것이니라",
+      "source_text_hash": "26a88a2f1dc6fa87861a0bba8fb07653db962ce839e2ec198ddce63840b2b7d8",
+      "translation_text_hash": "3a28bee32035497a508c31dfdf18bd714a169c05c950e10127d17a02fceb9c7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 물어도 너희가 대답지 아니할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3a28bee32035497a508c31dfdf18bd714a169c05c950e10127d17a02fceb9c7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:69",
+      "sequence": 25933,
+      "chapter_label": "LUK 22",
+      "verse_label": "69",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 69
+        }
+      ],
+      "en": "From now on, the Son of Man will be seated at the right hand of the power of God.”",
+      "ko": "그러나 이제 후로는 인자가 하나님의 권능의 우편에 앉아 있으리라 하시니",
+      "source_text_hash": "0994fd80b8d5cae9f538afda4fe9989895508425ddd72ded8dec896db94bb189",
+      "translation_text_hash": "df934f6352677239d5ea922ad08b39dc830e9edbcc1fec5aee15d9da64668fe9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이제 후로는 인자가 하나님의 권능의 우편에 앉아 있으리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "df934f6352677239d5ea922ad08b39dc830e9edbcc1fec5aee15d9da64668fe9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:70",
+      "sequence": 25934,
+      "chapter_label": "LUK 22",
+      "verse_label": "70",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 70
+        }
+      ],
+      "en": "They all said, “Are you then the Son of God?” He said to them, “You say it, because I am.”",
+      "ko": "다 가로되 그러면 네가 하나님의 아들이냐 대답하시되 너희 말과 같이 내가 그니라",
+      "source_text_hash": "ed021dfefb30124972381a26835fad6919790af76ecd2759ccd5ae7248a744b6",
+      "translation_text_hash": "dc45f340e07a9bcc8a092681fa74fcdb823a6f285852054aac264ea0ebb19739",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 가로되 그러면 네가 하나님의 아들이냐 대답하시되 너희 말과 같이 내가 그니라"
+      ],
+      "raw_text_hashes": [
+        "dc45f340e07a9bcc8a092681fa74fcdb823a6f285852054aac264ea0ebb19739"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:22:71",
+      "sequence": 25935,
+      "chapter_label": "LUK 22",
+      "verse_label": "71",
+      "locator": {
+        "book": "LUK",
+        "chapter": 22,
+        "verse": 71
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 22,
+          "verse": 71
+        }
+      ],
+      "en": "They said, “Why do we need any more witness? For we ourselves have heard from his own mouth!”",
+      "ko": "저희가 가로되 어찌 더 증거를 요구하리요 우리가 친히 그 입에서 들었노라 하더라",
+      "source_text_hash": "999694463143651083ecbac71633dc1293bcd77c640179f8d5355518924b2bde",
+      "translation_text_hash": "6e083b6a8c3ea79600634e5116197666da4db01c75a024bb203ad81c2bb2fd2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 가로되 어찌 더 증거를 요구하리요 우리가 친히 그 입에서 들었노라 하더라"
+      ],
+      "raw_text_hashes": [
+        "6e083b6a8c3ea79600634e5116197666da4db01c75a024bb203ad81c2bb2fd2d"
+      ]
+    }
+  ]
+}

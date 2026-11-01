@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:001",
+  "unit_ordinal": 1019,
+  "unit_label": "ACT 1",
+  "book_code": "ACT",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:1:1",
+      "sequence": 26924,
+      "chapter_label": "ACT 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The first book I wrote, Theophilus, concerned all that Jesus began both to do and to teach,",
+      "ko": "데오빌로여 내가 먼저 쓴 글에는 무릇 예수의 행하시며 가르치시기를 시작하심부터",
+      "source_text_hash": "03d34f4a3a0a814194c617c09a73a8a15d14bb077dfc404938a6a49836197c4e",
+      "translation_text_hash": "1910af2fdc1eda6ce21668866dd6c147ae1b1f723d933b546d6cd59367ee5015",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데오빌로여 내가 먼저 쓴 글에는 무릇 예수의 행하시며 가르치시기를 시작하심부터"
+      ],
+      "raw_text_hashes": [
+        "1910af2fdc1eda6ce21668866dd6c147ae1b1f723d933b546d6cd59367ee5015"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:2",
+      "sequence": 26925,
+      "chapter_label": "ACT 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "until the day in which he was received up, after he had given commandment through the Holy Spirit to the apostles whom he had chosen.",
+      "ko": "그의 택하신 사도들에게 성령으로 명하시고 승천하신 날까지의 일을 기록하였노라",
+      "source_text_hash": "05b450ba2a684a12c064ae8ad12b1b5d0d57e7e1cd664de4265fbcd03d2b1097",
+      "translation_text_hash": "11c5d56171e4dbef0f0b6e87b90e205013cc7ed33fe5046d583b048fc972ffd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 택하신 사도들에게 성령으로 명하시고 승천하신 날까지의 일을 기록하였노라"
+      ],
+      "raw_text_hashes": [
+        "11c5d56171e4dbef0f0b6e87b90e205013cc7ed33fe5046d583b048fc972ffd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:3",
+      "sequence": 26926,
+      "chapter_label": "ACT 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "To these he also showed himself alive after he suffered, by many proofs, appearing to them over a period of forty days and speaking about God’s Kingdom.",
+      "ko": "해 받으신 후에 또한 저희에게 확실한 많은 증거로 친히 사심을 나타내사 사십 일 동안 저희에게 보이시며 하나님 나라의 일을 말씀하시니라",
+      "source_text_hash": "62d9d657b8e94b3cbbe9298dddb2331cbf0596abbda276efe8098c82049a85af",
+      "translation_text_hash": "9148ef3463a297788b6b1ccade831a27cbbb1d9d39e51e281d508dfc81645042",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해 받으신 후에 또한 저희에게 확실한 많은 증거로 친히 사심을 나타내사 사십 일 동안 저희에게 보이시며 하나님 나라의 일을 말씀하시니라"
+      ],
+      "raw_text_hashes": [
+        "9148ef3463a297788b6b1ccade831a27cbbb1d9d39e51e281d508dfc81645042"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:4",
+      "sequence": 26927,
+      "chapter_label": "ACT 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Being assembled together with them, he commanded them, “Don’t depart from Jerusalem, but wait for the promise of the Father, which you heard from me.",
+      "ko": "사도와 같이 모이사 저희에게 분부하여 가라사대 예루살렘을 떠나지 말고 내게 들은바 아버지의 약속하신 것을 기다리라",
+      "source_text_hash": "62c9c127583403fdfba10fddb8841536b482269d446df4c195b5863bfa10cb2e",
+      "translation_text_hash": "691e1e6c62a4fe92d766efe6e2e48bcbcff128b7c8e0f3c9a9fad1b586eab2df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도와 같이 모이사 저희에게 분부하여 가라사대 예루살렘을 떠나지 말고 내게 들은바 아버지의 약속하신 것을 기다리라"
+      ],
+      "raw_text_hashes": [
+        "691e1e6c62a4fe92d766efe6e2e48bcbcff128b7c8e0f3c9a9fad1b586eab2df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:5",
+      "sequence": 26928,
+      "chapter_label": "ACT 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "For John indeed baptized in water, but you will be baptized in the Holy Spirit not many days from now.”",
+      "ko": "요한은 물로 세례를 베풀었으나 너희는 몇 날이 못되어 성령으로 세례를 받으리라 하셨느니라",
+      "source_text_hash": "7ed4b9bd28a5733c37e64bc593c62114993394733aa78897bea9a53232b77e3a",
+      "translation_text_hash": "60b70e69a51fe870dc2e56ac9a662b9be48bec697bffa851ccdf1b7912f0436d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한은 물로 세례를 베풀었으나 너희는 몇 날이 못되어 성령으로 세례를 받으리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "60b70e69a51fe870dc2e56ac9a662b9be48bec697bffa851ccdf1b7912f0436d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:6",
+      "sequence": 26929,
+      "chapter_label": "ACT 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore, when they had come together, they asked him, “Lord, are you now restoring the kingdom to Israel?”",
+      "ko": "저희가 모였을 때에 예수께 묻자와 가로되 주께서 이스라엘 나라를 회복하심이 이 때니이까 하니",
+      "source_text_hash": "2e02486802ab9abc63b5716438a36b8bc61a69d27207e97ba6c853e36257020e",
+      "translation_text_hash": "e9da6be3691f51fa4c56ae3e0752409f8b94337d0b7981aee370340242792786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 모였을 때에 예수께 묻자와 가로되 주께서 이스라엘 나라를 회복하심이 이 때니이까 하니"
+      ],
+      "raw_text_hashes": [
+        "e9da6be3691f51fa4c56ae3e0752409f8b94337d0b7981aee370340242792786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:7",
+      "sequence": 26930,
+      "chapter_label": "ACT 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "He said to them, “It isn’t for you to know times or seasons which the Father has set within his own authority.",
+      "ko": "가라사대 때와 기한은 아버지께서 자기의 권한에 두셨으니 너희의 알바 아니요",
+      "source_text_hash": "eede272517d7eb7844a5a554d73454e649e5910dcbf78bd7850fa052a0433609",
+      "translation_text_hash": "efecd668ae62b875eb86cabd78e02eb6422f5e673ca3a225ad987be12836bcb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 때와 기한은 아버지께서 자기의 권한에 두셨으니 너희의 알바 아니요"
+      ],
+      "raw_text_hashes": [
+        "efecd668ae62b875eb86cabd78e02eb6422f5e673ca3a225ad987be12836bcb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:8",
+      "sequence": 26931,
+      "chapter_label": "ACT 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "But you will receive power when the Holy Spirit has come upon you. You will be witnesses to me in Jerusalem, in all Judea and Samaria, and to the uttermost parts of the earth.”",
+      "ko": "오직 성령이 너희에게 임하시면 너희가 권능을 받고 예루살렘과 온 유대와 사마리아와 땅 끝까지 이르러 내 증인이 되리라 하시니라",
+      "source_text_hash": "83e315fb6f3b388cc123ff3f67c75627f457ee6bd111f63505cdd50cfc139856",
+      "translation_text_hash": "500a024fb78a32ce88d01fe5e2b4eeb06c33a775333ee25c389be4cf10902cfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 성령이 너희에게 임하시면 너희가 권능을 받고 예루살렘과 온 유대와 사마리아와 땅 끝까지 이르러 내 증인이 되리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "500a024fb78a32ce88d01fe5e2b4eeb06c33a775333ee25c389be4cf10902cfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:9",
+      "sequence": 26932,
+      "chapter_label": "ACT 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "When he had said these things, as they were looking, he was taken up, and a cloud received him out of their sight.",
+      "ko": "이 말씀을 마치시고 저희 보는데서 올리워 가시니 구름이 저를 가리워 보이지 않게 하더라",
+      "source_text_hash": "120d43ef91d14bdabb17e1fc522f472c93f091a384e31500e08d0b9593916f17",
+      "translation_text_hash": "be464f03000854cd93a0ba184b94b282213a5dcca09fcc88f5d339132d2fc460",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 마치시고 저희 보는데서 올리워 가시니 구름이 저를 가리워 보이지 않게 하더라"
+      ],
+      "raw_text_hashes": [
+        "be464f03000854cd93a0ba184b94b282213a5dcca09fcc88f5d339132d2fc460"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:10",
+      "sequence": 26933,
+      "chapter_label": "ACT 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "While they were looking steadfastly into the sky as he went, behold, two men stood by them in white clothing,",
+      "ko": "올라가실 때에 제자들이 자세히 하늘을 쳐다 보고 있는데 흰옷 입은 두 사람이 저희 곁에 서서",
+      "source_text_hash": "823eb333554ddc44d5bc251911b24879ae1bbd3ea336445e49172a34b26fc838",
+      "translation_text_hash": "a04ed934961ee082292981db52fb1b0dfdc08908588bd39712e6da0f8c7b57f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "올라가실 때에 제자들이 자세히 하늘을 쳐다 보고 있는데 흰옷 입은 두 사람이 저희 곁에 서서"
+      ],
+      "raw_text_hashes": [
+        "a04ed934961ee082292981db52fb1b0dfdc08908588bd39712e6da0f8c7b57f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:11",
+      "sequence": 26934,
+      "chapter_label": "ACT 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "who also said, “You men of Galilee, why do you stand looking into the sky? This Jesus, who was received up from you into the sky, will come back in the same way as you saw him going into the sky.”",
+      "ko": "가로되 갈릴리 사람들아 어찌하여 서서 하늘을 쳐다 보느냐 너희 가운데서 하늘로 올리우신 이 예수는 하늘로 가심을 본 그대로 오시리라 하였느니라",
+      "source_text_hash": "88e6e69959acb6183b9cee63ffe284b24c05b8c2d4e52ebd333885a1a18e8348",
+      "translation_text_hash": "8615c9620daddbb661af715e11d8b051e6e3c1eff33c5e183a033e3919184b0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 갈릴리 사람들아 어찌하여 서서 하늘을 쳐다 보느냐 너희 가운데서 하늘로 올리우신 이 예수는 하늘로 가심을 본 그대로 오시리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "8615c9620daddbb661af715e11d8b051e6e3c1eff33c5e183a033e3919184b0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:12",
+      "sequence": 26935,
+      "chapter_label": "ACT 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Then they returned to Jerusalem from the mountain called Olivet, which is near Jerusalem, a Sabbath day’s journey away.",
+      "ko": "제자들이 감람원이라 하는 산으로부터 예루살렘에 돌아오니 이 산은 예루살렘에서 가까와 안식일에 가기 알맞은 길이라",
+      "source_text_hash": "ff011b3f51b02b25910194d0b703fe731553d5be6abe96be62934014f2e8c0b4",
+      "translation_text_hash": "6265b4e35905ccf4bbbd8ff7d2f0ce580e98f962b4772af30119be41863a662e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 감람원이라 하는 산으로부터 예루살렘에 돌아오니 이 산은 예루살렘에서 가까와 안식일에 가기 알맞은 길이라"
+      ],
+      "raw_text_hashes": [
+        "6265b4e35905ccf4bbbd8ff7d2f0ce580e98f962b4772af30119be41863a662e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:13",
+      "sequence": 26936,
+      "chapter_label": "ACT 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "When they had come in, they went up into the upper room where they were staying, that is Peter, John, James, Andrew, Philip, Thomas, Bartholomew, Matthew, James the son of Alphaeus, Simon the Zealot, and Judas the son of James.",
+      "ko": "들어가 저희 유하는 다락에 올라가니 베드로, 요한, 야고보, 안드레와 빌립, 도마와 바돌로매, 마태와 및 알패오의 아들 야고보, 셀롯인 시몬, 야고보의 아들 유다가 다 거기 있어",
+      "source_text_hash": "f70fc176c11e317570c46c916fe9d48c6897f53718de38b4bce3bdcadb73b08a",
+      "translation_text_hash": "9fd1c7634ff1e996e6207c9ba99e2518f21d264ea74e14f80d9b90f0fb3e3bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들어가 저희 유하는 다락에 올라가니 베드로, 요한, 야고보, 안드레와 빌립, 도마와 바돌로매, 마태와 및 알패오의 아들 야고보, 셀롯인 시몬, 야고보의 아들 유다가 다 거기 있어"
+      ],
+      "raw_text_hashes": [
+        "9fd1c7634ff1e996e6207c9ba99e2518f21d264ea74e14f80d9b90f0fb3e3bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:14",
+      "sequence": 26937,
+      "chapter_label": "ACT 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "All these with one accord continued steadfastly in prayer and supplication, along with the women and Mary the mother of Jesus, and with his brothers.",
+      "ko": "여자들과 예수의 모친 마리아와 예수의 아우들로 더불어 마음을 같이하여 전혀 기도에 힘쓰니라",
+      "source_text_hash": "dc2d27a3f1467b5d0cc547142f779e68b4667c56ad0f70d267611f1de758ef83",
+      "translation_text_hash": "61fe147b683adc82cdae76c978a2c7eb25f22867642d15951719f3f694b81539",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자들과 예수의 모친 마리아와 예수의 아우들로 더불어 마음을 같이하여 전혀 기도에 힘쓰니라"
+      ],
+      "raw_text_hashes": [
+        "61fe147b683adc82cdae76c978a2c7eb25f22867642d15951719f3f694b81539"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:15",
+      "sequence": 26938,
+      "chapter_label": "ACT 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "In these days, Peter stood up in the middle of the disciples (and the number of names was about one hundred twenty), and said,",
+      "ko": "모인 무리의 수가 한 일백 이십 명이나 되더라 그 때에 베드로가 그 형제 가운데 일어서서 가로되",
+      "source_text_hash": "1c012a93fd788d193eac945586e4207dab6d055e10bdebf2887194c6bc01bcad",
+      "translation_text_hash": "261b87eb78fdd330e72c1bcc4430b5056c561c078aabdd336e035f84c2094baf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모인 무리의 수가 한 일백 이십 명이나 되더라 그 때에 베드로가 그 형제 가운데 일어서서 가로되"
+      ],
+      "raw_text_hashes": [
+        "261b87eb78fdd330e72c1bcc4430b5056c561c078aabdd336e035f84c2094baf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:16",
+      "sequence": 26939,
+      "chapter_label": "ACT 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "“Brothers, it was necessary that this Scripture should be fulfilled, which the Holy Spirit spoke before by the mouth of David concerning Judas, who was guide to those who took Jesus.",
+      "ko": "형제들아 성령이 다윗의 입을 의탁하사 예수 잡는 자들을 지로한 유다를 가리켜 미리 말씀하신 성경이 응하였으니 마땅하도다",
+      "source_text_hash": "e7561924fd2e6ba93c30409fd7ce7de83bf08688437063e58bda42169565b293",
+      "translation_text_hash": "4191153a25067eed398514d4abd88ac9f1fb03b389d326c46bdbdf352f0eae1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 성령이 다윗의 입을 의탁하사 예수 잡는 자들을 지로한 유다를 가리켜 미리 말씀하신 성경이 응하였으니 마땅하도다"
+      ],
+      "raw_text_hashes": [
+        "4191153a25067eed398514d4abd88ac9f1fb03b389d326c46bdbdf352f0eae1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:17",
+      "sequence": 26940,
+      "chapter_label": "ACT 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "For he was counted with us, and received his portion in this ministry.",
+      "ko": "이 사람이 본래 우리 수 가운데 참예하여 이 직무의 한 부분을 맡았던 자라",
+      "source_text_hash": "2e50178de095260d91fa510db6850d3cac938f2e7e81d7b38a86f5c28c4ab4d2",
+      "translation_text_hash": "d02d427cba0369e2a612c57d0454a8610ad34669e48ad1bb18962082c13c83a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람이 본래 우리 수 가운데 참예하여 이 직무의 한 부분을 맡았던 자라"
+      ],
+      "raw_text_hashes": [
+        "d02d427cba0369e2a612c57d0454a8610ad34669e48ad1bb18962082c13c83a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:18",
+      "sequence": 26941,
+      "chapter_label": "ACT 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "Now this man obtained a field with the reward for his wickedness; and falling headlong, his body burst open and all his intestines gushed out.",
+      "ko": "(이 사람이 불의의 삯으로 밭을 사고 후에 몸이 곤두박질하여 배가 터져 창자가 다 흘러나온지라",
+      "source_text_hash": "0a9e6d2686a9497c3b9676f596230068deed3c2508be7012d73855c253abdad0",
+      "translation_text_hash": "ec3662dff13eaa69731f6699e4c315821c5d9033e155b2afe61e8b287028b60c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(이 사람이 불의의 삯으로 밭을 사고 후에 몸이 곤두박질하여 배가 터져 창자가 다 흘러나온지라"
+      ],
+      "raw_text_hashes": [
+        "ec3662dff13eaa69731f6699e4c315821c5d9033e155b2afe61e8b287028b60c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:19",
+      "sequence": 26942,
+      "chapter_label": "ACT 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "It became known to everyone who lived in Jerusalem that in their language that field was called ‘Akeldama,’ that is, ‘The field of blood.’",
+      "ko": "이 일이 예루살렘에 사는 모든 사람에게 알게 되어 본방언에 그 밭을 이르되 아겔다마라 하니 이는 피밭이라는 뜻이라)",
+      "source_text_hash": "97cd50c8942d20b02edffe807f7ef835226fde3ce8be20cb6812db83e75c801d",
+      "translation_text_hash": "4d3bca66795b93377931cc1c71596de3000289c860c0fb9580db69832be901c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 예루살렘에 사는 모든 사람에게 알게 되어 본방언에 그 밭을 이르되 아겔다마라 하니 이는 피밭이라는 뜻이라)"
+      ],
+      "raw_text_hashes": [
+        "4d3bca66795b93377931cc1c71596de3000289c860c0fb9580db69832be901c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:20",
+      "sequence": 26943,
+      "chapter_label": "ACT 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "For it is written in the book of Psalms, ‘Let his habitation be made desolate. Let no one dwell in it;’ and, ‘Let another take his office.’",
+      "ko": "시편에 기록하였으되 그의 거처로 황폐하게 하시며 거기 거하는 자가 없게 하소서 하였고 또 일렀으되 그 직분을 타인이 취하게 하소서 하였도다",
+      "source_text_hash": "d1c3aaed93c83a4949961e28b363078e8d13df9ef0247b20e519005d2ecb6c65",
+      "translation_text_hash": "8d1f9fb1b276ec201787f356e47fe51694369d21d060af654ebd13a0463d2134",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시편에 기록하였으되 그의 거처로 황폐하게 하시며 거기 거하는 자가 없게 하소서 하였고 또 일렀으되 그 직분을 타인이 취하게 하소서 하였도다"
+      ],
+      "raw_text_hashes": [
+        "8d1f9fb1b276ec201787f356e47fe51694369d21d060af654ebd13a0463d2134"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:21",
+      "sequence": 26944,
+      "chapter_label": "ACT 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "“Of the men therefore who have accompanied us all the time that the Lord Jesus went in and out among us,",
+      "ko": "이러하므로 요한의 세례로부터 우리 가운데서 올리워 가신 날까지 주 예수께서 우리 가운데 출입하실 때에",
+      "source_text_hash": "fcd5c6fa5a5b96261759bd13bdf689e233545e58cd6f1e2ce1727afef2f514db",
+      "translation_text_hash": "01758ba5a6765bcccc28bcd6f75e29bac6a4fe70d5555162678d5631c0e1901e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러하므로 요한의 세례로부터 우리 가운데서 올리워 가신 날까지 주 예수께서 우리 가운데 출입하실 때에"
+      ],
+      "raw_text_hashes": [
+        "01758ba5a6765bcccc28bcd6f75e29bac6a4fe70d5555162678d5631c0e1901e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:22",
+      "sequence": 26945,
+      "chapter_label": "ACT 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "beginning from the baptism of John to the day that he was received up from us, of these one must become a witness with us of his resurrection.”",
+      "ko": "항상 우리와 함께 다니던 사람 중에 하나를 세워 우리로 더불어 예수의 부활하심을 증거할 사람이 되게 하여야 하리라 하거늘",
+      "source_text_hash": "7f21ede8948067f880632cd6e6bb554c3d943ae686fc6005575a4e954ce14bda",
+      "translation_text_hash": "7f51ae5ed1848c7943b61d29d4fbd514b24f3025b423a5cf401e03c2a9c93fdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 우리와 함께 다니던 사람 중에 하나를 세워 우리로 더불어 예수의 부활하심을 증거할 사람이 되게 하여야 하리라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "7f51ae5ed1848c7943b61d29d4fbd514b24f3025b423a5cf401e03c2a9c93fdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:23",
+      "sequence": 26946,
+      "chapter_label": "ACT 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "They put forward two: Joseph called Barsabbas, who was also called Justus, and Matthias.",
+      "ko": "저희가 두 사람을 천하니 하나는 바사바라고도 하고 별명은 유스도라고 하는 요셉이요 하나는 맛디아라",
+      "source_text_hash": "5df0488851e210057c86f75c4cb2cb2a37b75205bd8aab142bdf4646cf95878d",
+      "translation_text_hash": "841c8b669603feb015bfd944d8d24ba22e930331ec20cd0d0de59005a3d2665e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 두 사람을 천하니 하나는 바사바라고도 하고 별명은 유스도라고 하는 요셉이요 하나는 맛디아라"
+      ],
+      "raw_text_hashes": [
+        "841c8b669603feb015bfd944d8d24ba22e930331ec20cd0d0de59005a3d2665e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:24",
+      "sequence": 26947,
+      "chapter_label": "ACT 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "They prayed and said, “You, Lord, who know the hearts of all men, show which one of these two you have chosen",
+      "ko": "저희가 기도하여 가로되 뭇사람의 마음을 아시는 주여 이 두 사람 중에 누가 주의 택하신바 되어",
+      "source_text_hash": "bc38f50af521f33a0ffdee1846895f5cf079c3f195ae6a175db84a0551aef247",
+      "translation_text_hash": "42ee0379565f5db29b0ff38fa0b0f1ac96abf49a920678a000a8e21d5e98d269",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 기도하여 가로되 뭇사람의 마음을 아시는 주여 이 두 사람 중에 누가 주의 택하신바 되어"
+      ],
+      "raw_text_hashes": [
+        "42ee0379565f5db29b0ff38fa0b0f1ac96abf49a920678a000a8e21d5e98d269"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:25",
+      "sequence": 26948,
+      "chapter_label": "ACT 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "to take part in this ministry and apostleship from which Judas fell away, that he might go to his own place.”",
+      "ko": "봉사와 및 사도의 직무를 대신할 자를 보이시옵소서 유다는 이를 버리옵고 제 곳으로 갔나이다 하고",
+      "source_text_hash": "16079a906209f3ecfa5e5a7216eb02152fa6733c0b87d3925dc7322c7bd9e70e",
+      "translation_text_hash": "f66982b96eb169d8322ef7adfce816edeab86e734dc6f16264ee80d2d840318f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "봉사와 및 사도의 직무를 대신할 자를 보이시옵소서 유다는 이를 버리옵고 제 곳으로 갔나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "f66982b96eb169d8322ef7adfce816edeab86e734dc6f16264ee80d2d840318f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:1:26",
+      "sequence": 26949,
+      "chapter_label": "ACT 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "They drew lots for them, and the lot fell on Matthias; and he was counted with the eleven apostles.",
+      "ko": "제비 뽑아 맛디아를 얻으니 저가 열 한 사도의 수에 가입하니라",
+      "source_text_hash": "35c7b864a3d8cc493c4ed30e9cdda39512d68dc56f1fad448562f40fd0774974",
+      "translation_text_hash": "61fe09a66ba90301fcd50b95f2b31721f461c1e147b57602331ae279192ea4e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제비 뽑아 맛디아를 얻으니 저가 열 한 사도의 수에 가입하니라"
+      ],
+      "raw_text_hashes": [
+        "61fe09a66ba90301fcd50b95f2b31721f461c1e147b57602331ae279192ea4e7"
+      ]
+    }
+  ]
+}

@@ -75,6 +75,13 @@ MAX_JOB_BODY_BYTES = 4_096
 PDFMD_NEW_WORK_DISABLED = True
 _NO_STORE = {"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"}
 
+
+def _new_work_disabled(request: Request) -> bool:
+    # Only the server-composed COM2 host may lift the migration pause.
+    return PDFMD_NEW_WORK_DISABLED and not (
+        getattr(request.app.state, "pdfmd_com2_ready", False) is True
+    )
+
 #: Core stays locale-free, so the sentence is owned here. It states the absence and
 #: states that nothing was guessed — the page is never silently left blank.
 _PRODUCT_NOTICES = ConversionNotices(
@@ -202,9 +209,10 @@ async def convert_jobs_collection(request: Request):
             jobs = await ledger.list_jobs(uid, limit=limit)
         except Exception:
             return _unavailable()
-        return JSONResponse({"jobs": [job.public_dict() for job in jobs], "limit": limit})
+        return JSONResponse({"jobs": [job.public_dict() for job in jobs], "limit": limit,
+                             "new_work_enabled": not _new_work_disabled(request)})
 
-    if PDFMD_NEW_WORK_DISABLED:
+    if _new_work_disabled(request):
         return _paused()
     try:
         body = await read_bounded_request_body(request, max_bytes=MAX_JOB_BODY_BYTES)
@@ -288,7 +296,7 @@ def _pdf_members(spool):
 async def convert_job_files(request: Request):
     """Upload one PDF, or a ZIP of PDFs, into an existing work ledger."""
 
-    if PDFMD_NEW_WORK_DISABLED:
+    if _new_work_disabled(request):
         return _paused()
     uid, ledger, bucket, job, error = await _resolve_job(request)
     if error is not None:
@@ -414,7 +422,7 @@ async def _resolve_item(request: Request):
 async def convert_item_run(request: Request):
     """Convert one queued item with the adopted engine and store its Markdown."""
 
-    if PDFMD_NEW_WORK_DISABLED:
+    if _new_work_disabled(request):
         return _paused()
     resolved = await _resolve_item(request)
     if resolved[-1] is not None:

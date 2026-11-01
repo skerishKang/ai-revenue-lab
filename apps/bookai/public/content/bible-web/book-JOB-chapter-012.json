@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:012",
+  "unit_ordinal": 448,
+  "unit_label": "JOB 12",
+  "book_code": "JOB",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:12:1",
+      "sequence": 13130,
+      "chapter_label": "JOB 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Then Job answered,",
+      "ko": "욥이 대답하여 가로되",
+      "source_text_hash": "5263caab7b43bc090defa0c0dbc9d551ac80859d1634826a141a04fc1349df96",
+      "translation_text_hash": "6e432eb41091f2b4077fe347703fb37615a4e3a45f9b3ead4a29e1a2b2065a30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "6e432eb41091f2b4077fe347703fb37615a4e3a45f9b3ead4a29e1a2b2065a30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:2",
+      "sequence": 13131,
+      "chapter_label": "JOB 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "“No doubt, but you are the people, and wisdom will die with you.",
+      "ko": "너희만 참으로 사람이로구나 너희가 죽으면 지혜도 죽겠구나",
+      "source_text_hash": "5bc507aa7f94696fa91b8c276c188c19e27508c6d6464130d553f6b9bc7f7fd9",
+      "translation_text_hash": "f395042f6dd942989f181e223bd73bf01b1bd7a7f9dad8a5a05523953bbe6fdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희만 참으로 사람이로구나 너희가 죽으면 지혜도 죽겠구나"
+      ],
+      "raw_text_hashes": [
+        "f395042f6dd942989f181e223bd73bf01b1bd7a7f9dad8a5a05523953bbe6fdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:3",
+      "sequence": 13132,
+      "chapter_label": "JOB 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "But I have understanding as well as you; I am not inferior to you. Yes, who doesn’t know such things as these?",
+      "ko": "나도 너희 같이 총명이 있어 너희만 못하지 아니하니 그같은 일을 누가 알지 못하겠느냐",
+      "source_text_hash": "d1c2b62560110c96f35873585f35b7beef66d33496708dd531b460415bc0643c",
+      "translation_text_hash": "d9ba651fb942344a1f882da3615adb0f81defe897e2cfb4438dc50e06dd215f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 너희 같이 총명이 있어 너희만 못하지 아니하니 그같은 일을 누가 알지 못하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "d9ba651fb942344a1f882da3615adb0f81defe897e2cfb4438dc50e06dd215f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:4",
+      "sequence": 13133,
+      "chapter_label": "JOB 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "I am like one who is a joke to his neighbor, I, who called on God, and he answered. The just, the blameless man is a joke.",
+      "ko": "하나님께 불러 아뢰어 들으심을 입은 내가 이웃에게 웃음 받는 자가 되었으니 의롭고 순전한 자가 조롱거리가 되었구나",
+      "source_text_hash": "18267c4ab7dbc7361bec1f520d7f5919bfaa002d6c785e1ea81c9ec0596af402",
+      "translation_text_hash": "4545603b5f93f5567ddfcf1d223c91689e374edb52c73cdefe3951e735dbaa2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께 불러 아뢰어 들으심을 입은 내가 이웃에게 웃음 받는 자가 되었으니 의롭고 순전한 자가 조롱거리가 되었구나"
+      ],
+      "raw_text_hashes": [
+        "4545603b5f93f5567ddfcf1d223c91689e374edb52c73cdefe3951e735dbaa2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:5",
+      "sequence": 13134,
+      "chapter_label": "JOB 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "In the thought of him who is at ease there is contempt for misfortune. It is ready for them whose foot slips.",
+      "ko": "평안한 자의 마음은 재앙을 멸시하나 재앙이 실족하는 자를 기다리는구나",
+      "source_text_hash": "b7bb0ac55339b1b55ce8f854aaf4ca6254edfea3fe3c6852646346cdb7d1b637",
+      "translation_text_hash": "c6dc406443a41e211462a0c35c7914f8eea7c38d71fa1553e8dc184cb45ebf02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평안한 자의 마음은 재앙을 멸시하나 재앙이 실족하는 자를 기다리는구나"
+      ],
+      "raw_text_hashes": [
+        "c6dc406443a41e211462a0c35c7914f8eea7c38d71fa1553e8dc184cb45ebf02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:6",
+      "sequence": 13135,
+      "chapter_label": "JOB 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "The tents of robbers prosper. Those who provoke God are secure, who carry their god in their hands.",
+      "ko": "강도의 장막은 형통하고 하나님을 진노케 하는 자가 평안하니 하나님이 그 손에 후히 주심이니라",
+      "source_text_hash": "1c6c3602d61d966466f73dad7331f8c091849fe8d508f07d48f8de4d505d00ca",
+      "translation_text_hash": "26d9c6fc4229448ddb7dd1e86781e5ca373f95418041537a925408c1c3bba46c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강도의 장막은 형통하고 하나님을 진노케 하는 자가 평안하니 하나님이 그 손에 후히 주심이니라"
+      ],
+      "raw_text_hashes": [
+        "26d9c6fc4229448ddb7dd1e86781e5ca373f95418041537a925408c1c3bba46c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:7",
+      "sequence": 13136,
+      "chapter_label": "JOB 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "“But ask the animals now, and they will teach you; the birds of the sky, and they will tell you.",
+      "ko": "이제 모든 짐승에게 물어 보라 그것들이 네게 가르치리라 공중의 새에게 물어 보라 그것들이 또한 네게 고하리라",
+      "source_text_hash": "5fab963476fa71df886dd345bfd30639f7975c1c8c16316d472c94729b85a2db",
+      "translation_text_hash": "c28f24b8c158c0b6461af22d82989a8e754c34252320551758293a714b0e8ed0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 모든 짐승에게 물어 보라 그것들이 네게 가르치리라 공중의 새에게 물어 보라 그것들이 또한 네게 고하리라"
+      ],
+      "raw_text_hashes": [
+        "c28f24b8c158c0b6461af22d82989a8e754c34252320551758293a714b0e8ed0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:8",
+      "sequence": 13137,
+      "chapter_label": "JOB 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "Or speak to the earth, and it will teach you. The fish of the sea will declare to you.",
+      "ko": "땅에게 말하라 네게 가르치리라 바다의 고기도 네게 설명하리라",
+      "source_text_hash": "2eeff7ed0ce7a7b18beea1070b11e595abd33cea04442eef1e7fa4b51438141e",
+      "translation_text_hash": "540e3833c370fc90812a77fe71d3784fc32e6becae93c6b4a70fe3942032306a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅에게 말하라 네게 가르치리라 바다의 고기도 네게 설명하리라"
+      ],
+      "raw_text_hashes": [
+        "540e3833c370fc90812a77fe71d3784fc32e6becae93c6b4a70fe3942032306a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:9",
+      "sequence": 13138,
+      "chapter_label": "JOB 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "Who doesn’t know that in all these, the LORD’s hand has done this,",
+      "ko": "이것들 중에 어느 것이 여호와의 손이 이를 행하신줄을 알지 못하랴",
+      "source_text_hash": "713ef3a77a6c17428b4bb8ce7f056a0668ca4dd78117a6402bcbe9688f19e20f",
+      "translation_text_hash": "94774c4e3287595c2310ad8658e82ce8360bc71e9a94b852d720c05cc7677c34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것들 중에 어느 것이 여호와의 손이 이를 행하신줄을 알지 못하랴"
+      ],
+      "raw_text_hashes": [
+        "94774c4e3287595c2310ad8658e82ce8360bc71e9a94b852d720c05cc7677c34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:10",
+      "sequence": 13139,
+      "chapter_label": "JOB 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "in whose hand is the life of every living thing, and the breath of all mankind?",
+      "ko": "생물들의 혼과 인생들의 영이 다 그의 손에 있느니라",
+      "source_text_hash": "fe1d5bf9c8db187d51f6ebbe44b803a795b9f1914299e44e007b520977df9434",
+      "translation_text_hash": "fd8a626f9a9bb74fd408a1b126ae36b6788e23d83d45949c4bf3959a29f80e4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생물들의 혼과 인생들의 영이 다 그의 손에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "fd8a626f9a9bb74fd408a1b126ae36b6788e23d83d45949c4bf3959a29f80e4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:11",
+      "sequence": 13140,
+      "chapter_label": "JOB 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "Doesn’t the ear try words, even as the palate tastes its food?",
+      "ko": "입이 식물의 맛을 변별함 같이 귀가 말을 분변하지 아니하느냐",
+      "source_text_hash": "16ddcaa51f362f347d3264d7e22c1dcf69b0cb479d6c69ff5143d91369a516c5",
+      "translation_text_hash": "70a8b8779860d70ed56c0cc341f258f1ec21cf3ffae6b8f96901435ae1787aa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입이 식물의 맛을 변별함 같이 귀가 말을 분변하지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "70a8b8779860d70ed56c0cc341f258f1ec21cf3ffae6b8f96901435ae1787aa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:12",
+      "sequence": 13141,
+      "chapter_label": "JOB 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "With aged men is wisdom, in length of days understanding.",
+      "ko": "늙은 자에게는 지혜가 있고 장수하는 자에게는 명철이 있느니라",
+      "source_text_hash": "f631bc463796526da4a62e8e630224a89de67da711edee42365004e859ada618",
+      "translation_text_hash": "5a77ad88523dc1b82aa42d8e40ed49ea4405322616bab2b3fe0a1d9d54201c4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늙은 자에게는 지혜가 있고 장수하는 자에게는 명철이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "5a77ad88523dc1b82aa42d8e40ed49ea4405322616bab2b3fe0a1d9d54201c4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:13",
+      "sequence": 13142,
+      "chapter_label": "JOB 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "“With God is wisdom and might. He has counsel and understanding.",
+      "ko": "지혜와 권능이 하나님께 있고 모략과 명철도 그에게 속하였나니",
+      "source_text_hash": "7ca1417668ade68ad4549c30e0a7b93c70e24fb6e3ccab4a34c97dc05abed652",
+      "translation_text_hash": "ee326947ce561f7da28dd4b9c49578208e21a8dc4f7febedfbd1adad5dab38d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜와 권능이 하나님께 있고 모략과 명철도 그에게 속하였나니"
+      ],
+      "raw_text_hashes": [
+        "ee326947ce561f7da28dd4b9c49578208e21a8dc4f7febedfbd1adad5dab38d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:14",
+      "sequence": 13143,
+      "chapter_label": "JOB 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "Behold, he breaks down, and it can’t be built again. He imprisons a man, and there can be no release.",
+      "ko": "그가 헐으신즉 다시 세울 수 없고 사람을 가두신즉 놓이지 못하느니라",
+      "source_text_hash": "511c9cf143f34a2b12985503086f1ad0485bb8146559ba5216f7cf2149a65ebc",
+      "translation_text_hash": "01c0fba68aa78ba0ddb31c9bf7286a6ea118fbe113ebfbd91f57424a397658d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 헐으신즉 다시 세울 수 없고 사람을 가두신즉 놓이지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "01c0fba68aa78ba0ddb31c9bf7286a6ea118fbe113ebfbd91f57424a397658d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:15",
+      "sequence": 13144,
+      "chapter_label": "JOB 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "Behold, he withholds the waters, and they dry up. Again, he sends them out, and they overturn the earth.",
+      "ko": "그가 물을 그치게 하신즉 곧 마르고 물을 내신즉 곧 땅을 뒤집나니",
+      "source_text_hash": "3effa55e959c4c5bd4c8ce99647eb797d8d8a564d7c52f0cd8360bcb8095e42c",
+      "translation_text_hash": "45caa0965aa4d15cbcdc7057fff76ac17dd17f2d99d3c9980e747822695339c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 물을 그치게 하신즉 곧 마르고 물을 내신즉 곧 땅을 뒤집나니"
+      ],
+      "raw_text_hashes": [
+        "45caa0965aa4d15cbcdc7057fff76ac17dd17f2d99d3c9980e747822695339c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:16",
+      "sequence": 13145,
+      "chapter_label": "JOB 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "With him is strength and wisdom. The deceived and the deceiver are his.",
+      "ko": "능력과 지혜가 그에게 있고 속은 자와 속이는 자가 다 그에게 속하였으므로",
+      "source_text_hash": "8987dd033b04dbb140141fa439573de4434d6eb0df8e3ca4e1db0c69d491c8f0",
+      "translation_text_hash": "0cbf32f50e1911562ae7734c0bfcdd2427bebbbd807d2992b044452a89819431",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "능력과 지혜가 그에게 있고 속은 자와 속이는 자가 다 그에게 속하였으므로"
+      ],
+      "raw_text_hashes": [
+        "0cbf32f50e1911562ae7734c0bfcdd2427bebbbd807d2992b044452a89819431"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:17",
+      "sequence": 13146,
+      "chapter_label": "JOB 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "He leads counselors away stripped. He makes judges fools.",
+      "ko": "모사를 벌거벗겨 끌어 가시며 재판장으로 어리석은 자가 되게 하시며",
+      "source_text_hash": "8b33e6650e6af72953f1f89d80e29869e1ffe021393c9f6415bb3154c3ea3079",
+      "translation_text_hash": "0b3bc6c6f1499e6048e78ccb8072dcea31322269f54025c4155ce1e02929d705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모사를 벌거벗겨 끌어 가시며 재판장으로 어리석은 자가 되게 하시며"
+      ],
+      "raw_text_hashes": [
+        "0b3bc6c6f1499e6048e78ccb8072dcea31322269f54025c4155ce1e02929d705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:18",
+      "sequence": 13147,
+      "chapter_label": "JOB 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "He loosens the bond of kings. He binds their waist with a belt.",
+      "ko": "열왕의 맨 것을 풀어 그들의 허리를 동이시며",
+      "source_text_hash": "ef3af4090314bac864315ea2656fc48f9072dd2a219ec0da21c7186a06a044d8",
+      "translation_text_hash": "44d6c50edc9630be4a313e0e4f36b79b58382cd4eb61dd43eecb6dfb5d8677c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열왕의 맨 것을 풀어 그들의 허리를 동이시며"
+      ],
+      "raw_text_hashes": [
+        "44d6c50edc9630be4a313e0e4f36b79b58382cd4eb61dd43eecb6dfb5d8677c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:19",
+      "sequence": 13148,
+      "chapter_label": "JOB 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "He leads priests away stripped, and overthrows the mighty.",
+      "ko": "제사장들을 벌거벗겨 끌어 가시고 권력이 있는 자를 넘어뜨리시며",
+      "source_text_hash": "d2d217204c613b67b9444a5c40fc6edde319e444df503cca64bb100102bb1b13",
+      "translation_text_hash": "2aaf6dc38ed0e7f7a1630e9f2fb2e6cd6e9cdb0a9106ee8e1d74b28fec642e15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들을 벌거벗겨 끌어 가시고 권력이 있는 자를 넘어뜨리시며"
+      ],
+      "raw_text_hashes": [
+        "2aaf6dc38ed0e7f7a1630e9f2fb2e6cd6e9cdb0a9106ee8e1d74b28fec642e15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:20",
+      "sequence": 13149,
+      "chapter_label": "JOB 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "He removes the speech of those who are trusted, and takes away the understanding of the elders.",
+      "ko": "충성된 자의 말을 없이 하시며 늙은 자의 지식을 빼앗으시며",
+      "source_text_hash": "4c2eadfd0ce2ee7f80c0c3823fd3b11fd7a5b5ae2b3f6a6f408b2a6110b39049",
+      "translation_text_hash": "51c89aca2eed3fe255c6cc384951a2850a83f4528553645041bfb8f25a68e931",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "충성된 자의 말을 없이 하시며 늙은 자의 지식을 빼앗으시며"
+      ],
+      "raw_text_hashes": [
+        "51c89aca2eed3fe255c6cc384951a2850a83f4528553645041bfb8f25a68e931"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:21",
+      "sequence": 13150,
+      "chapter_label": "JOB 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "He pours contempt on princes, and loosens the belt of the strong.",
+      "ko": "방백들에게 멸시를 쏟으시며 강한 자의 띠를 푸시며",
+      "source_text_hash": "4e3c219c022d74268f1b38a0b5a77cf847fcfe09e807f4a749648586ae3e48c2",
+      "translation_text_hash": "c9fc005fdfb4ba886d0faed27a3c770ca4aad9ebce4d8d883beba66e40cb86af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들에게 멸시를 쏟으시며 강한 자의 띠를 푸시며"
+      ],
+      "raw_text_hashes": [
+        "c9fc005fdfb4ba886d0faed27a3c770ca4aad9ebce4d8d883beba66e40cb86af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:22",
+      "sequence": 13151,
+      "chapter_label": "JOB 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "He uncovers deep things out of darkness, and brings out to light the shadow of death.",
+      "ko": "어두운 가운데서 은밀한 것을 드러내시며 죽음의 그늘을 광명한데로 나오게 하시며",
+      "source_text_hash": "9cbf45446d06138bf9f5b01d88c660086e99919d5871bfe22f2b321b8e1eb056",
+      "translation_text_hash": "ca2bf7a4797e49d1c74ca2356469a5867a2b0f6200a333aff83f0c547d39ce2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어두운 가운데서 은밀한 것을 드러내시며 죽음의 그늘을 광명한데로 나오게 하시며"
+      ],
+      "raw_text_hashes": [
+        "ca2bf7a4797e49d1c74ca2356469a5867a2b0f6200a333aff83f0c547d39ce2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:23",
+      "sequence": 13152,
+      "chapter_label": "JOB 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "He increases the nations, and he destroys them. He enlarges the nations, and he leads them captive.",
+      "ko": "만국을 커지게도 하시고 다시 멸하기도 하시며 열국으로 광대하게도 하시고 다시 사로잡히게도 하시며",
+      "source_text_hash": "32eb246607708426ac0448519114e68f90813c342bf724c902b3d4888300d9bb",
+      "translation_text_hash": "2f000f5af25e612efda29eec117a257181ce63134273897f64890191f1d2f00f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만국을 커지게도 하시고 다시 멸하기도 하시며 열국으로 광대하게도 하시고 다시 사로잡히게도 하시며"
+      ],
+      "raw_text_hashes": [
+        "2f000f5af25e612efda29eec117a257181ce63134273897f64890191f1d2f00f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:24",
+      "sequence": 13153,
+      "chapter_label": "JOB 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "He takes away understanding from the chiefs of the people of the earth, and causes them to wander in a wilderness where there is no way.",
+      "ko": "만민의 두목들의 총명을 빼앗으시고 그들을 길 없는 거친 들로 유리하게 하시며",
+      "source_text_hash": "2e352d34de7d2bfba5a344e548038bc43d53c11b9e5e8a951a94fc5851c1d0f7",
+      "translation_text_hash": "17f05b6c61ec1b454b5b2644a949a0306f6aea0d47e2c2c6af3c840a3f71efd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만민의 두목들의 총명을 빼앗으시고 그들을 길 없는 거친 들로 유리하게 하시며"
+      ],
+      "raw_text_hashes": [
+        "17f05b6c61ec1b454b5b2644a949a0306f6aea0d47e2c2c6af3c840a3f71efd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:12:25",
+      "sequence": 13154,
+      "chapter_label": "JOB 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "They grope in the dark without light. He makes them stagger like a drunken man.",
+      "ko": "빛 없이 캄캄한데를 더듬게 하시며 취한 사람 같이 비틀거리게 하시느니라",
+      "source_text_hash": "d22fa165966cb7030376db7a311a57170b19bcc0071993551d548a91b668b0ae",
+      "translation_text_hash": "2bf340e9435859c9fcc664f921ab28461c73e0ddcfe10daa9c1fcc12d6a9d877",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빛 없이 캄캄한데를 더듬게 하시며 취한 사람 같이 비틀거리게 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "2bf340e9435859c9fcc664f921ab28461c73e0ddcfe10daa9c1fcc12d6a9d877"
+      ]
+    }
+  ]
+}

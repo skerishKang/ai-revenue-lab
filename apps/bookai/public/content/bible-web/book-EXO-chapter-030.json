@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:030",
+  "unit_ordinal": 80,
+  "unit_label": "EXO 30",
+  "book_code": "EXO",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:30:1",
+      "sequence": 2384,
+      "chapter_label": "EXO 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "“You shall make an altar to burn incense on. You shall make it of acacia wood.",
+      "ko": "너는 분향할 단을 만들찌니 곧 조각목으로 만들되",
+      "source_text_hash": "edb76ecdfaa468367b53ebe2aaf585591f3857553a49cbbf10b768bf3cbb0329",
+      "translation_text_hash": "1c6c04b4220405c4cbea0d19b91ae6b08c52a8ce55d36da1e846ff98cc7ec073",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 분향할 단을 만들찌니 곧 조각목으로 만들되"
+      ],
+      "raw_text_hashes": [
+        "1c6c04b4220405c4cbea0d19b91ae6b08c52a8ce55d36da1e846ff98cc7ec073"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:2",
+      "sequence": 2385,
+      "chapter_label": "EXO 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "Its length shall be a cubit, and its width a cubit. It shall be square, and its height shall be two cubits. Its horns shall be of one piece with it.",
+      "ko": "장이 일 규빗, 광이 일 규빗으로 네모 반듯하게 하고 고는 이 규빗으로 하며 그 뿔을 그것과 연하게 하고",
+      "source_text_hash": "2bcd61dfc1b0a1499d73dc34b6b62bfdb2abed911420a701611abed1a01b37d2",
+      "translation_text_hash": "ac11a1c6960dd3667becbd83505e10ade843cc5838d7df599878750520696585",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장이 일 규빗, 광이 일 규빗으로 네모 반듯하게 하고 고는 이 규빗으로 하며 그 뿔을 그것과 연하게 하고"
+      ],
+      "raw_text_hashes": [
+        "ac11a1c6960dd3667becbd83505e10ade843cc5838d7df599878750520696585"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:3",
+      "sequence": 2386,
+      "chapter_label": "EXO 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "You shall overlay it with pure gold, its top, its sides around it, and its horns; and you shall make a gold molding around it.",
+      "ko": "단 상면과 전후좌우면과 뿔을 정금으로 싸고 주위에 금테를 두를찌며",
+      "source_text_hash": "36db2485b46cd37c0f95287b1562c0a0306b59b9412e9dba10532d5c62a012d3",
+      "translation_text_hash": "a0fb2c2c39a3fe59335a73dc50bf063a431d2dc42d903140048483603b5687b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 상면과 전후좌우면과 뿔을 정금으로 싸고 주위에 금테를 두를찌며"
+      ],
+      "raw_text_hashes": [
+        "a0fb2c2c39a3fe59335a73dc50bf063a431d2dc42d903140048483603b5687b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:4",
+      "sequence": 2387,
+      "chapter_label": "EXO 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "You shall make two golden rings for it under its molding; on its two ribs, on its two sides you shall make them; and they shall be for places for poles with which to bear it.",
+      "ko": "금테 아래 양편에 금고리 둘을 만들되 곧 그 양편에 만들찌니 이는 단을 메는 채를 꿸 곳이며",
+      "source_text_hash": "3ec9dbbf9afcc09f895259f89d5beeb4ff48ab152d65717ec503e385751e988f",
+      "translation_text_hash": "ea8240fd8111bcd862fb7c5e3572e66b518e7a52db1152f13caf8fc3cac7ff22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금테 아래 양편에 금고리 둘을 만들되 곧 그 양편에 만들찌니 이는 단을 메는 채를 꿸 곳이며"
+      ],
+      "raw_text_hashes": [
+        "ea8240fd8111bcd862fb7c5e3572e66b518e7a52db1152f13caf8fc3cac7ff22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:5",
+      "sequence": 2388,
+      "chapter_label": "EXO 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "You shall make the poles of acacia wood, and overlay them with gold.",
+      "ko": "그 채를 조각목으로 만들고 금으로 싸고",
+      "source_text_hash": "61bb55465960566fec095a205557a9b972b08d6ed3a77b09bc5aa9a4dc46408a",
+      "translation_text_hash": "d155d89bfd655414a6218263e08153af33032bcee87b75d4985c15c3d2eefd8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 채를 조각목으로 만들고 금으로 싸고"
+      ],
+      "raw_text_hashes": [
+        "d155d89bfd655414a6218263e08153af33032bcee87b75d4985c15c3d2eefd8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:6",
+      "sequence": 2389,
+      "chapter_label": "EXO 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "You shall put it before the veil that is by the ark of the covenant, before the mercy seat that is over the covenant, where I will meet with you.",
+      "ko": "그 단을 증거궤 위 속죄소 맞은편 곧 증거궤 앞에 있는 장 밖에 두라 그 속죄소는 내가 너와 만날 곳이며",
+      "source_text_hash": "55eb03c8562f6f3bc938ed829fa72ff9e3d66a40797c7c371b138319bec89e86",
+      "translation_text_hash": "e6a14019ef933f9fe5c0f2d50f286cbf7bbacaa31751d3831b5996aaab0d0dca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 단을 증거궤 위 속죄소 맞은편 곧 증거궤 앞에 있는 장 밖에 두라 그 속죄소는 내가 너와 만날 곳이며"
+      ],
+      "raw_text_hashes": [
+        "e6a14019ef933f9fe5c0f2d50f286cbf7bbacaa31751d3831b5996aaab0d0dca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:7",
+      "sequence": 2390,
+      "chapter_label": "EXO 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "Aaron shall burn incense of sweet spices on it every morning. When he tends the lamps, he shall burn it.",
+      "ko": "아론이 아침마다 그 위에 향기로운 향을 사르되 등불을 정리할 때에 사를찌며",
+      "source_text_hash": "02961dbcbcb11236fa098bb1644d5cd2ad1bc3ac3d11424c8131514d5e61c311",
+      "translation_text_hash": "58cd8f2b1b0f2982b2edc94a3ff5ff18f2ecfc4a40a9df223bc57b632c622c07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 아침마다 그 위에 향기로운 향을 사르되 등불을 정리할 때에 사를찌며"
+      ],
+      "raw_text_hashes": [
+        "58cd8f2b1b0f2982b2edc94a3ff5ff18f2ecfc4a40a9df223bc57b632c622c07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:8",
+      "sequence": 2391,
+      "chapter_label": "EXO 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "When Aaron lights the lamps at evening, he shall burn it, a perpetual incense before the LORD throughout your generations.",
+      "ko": "또 저녁때 등불을 켤 때에 사를찌니 이 향은 너희가 대대로 여호와 앞에 끊지 못할찌며",
+      "source_text_hash": "621525b99d657ff981e1c892984d610f54c8e520059fa86fe515307d944b4322",
+      "translation_text_hash": "1c45883e5998d19e39edb75bae5b98e7d5c90310e7fbc4c69b3befc4c821c41b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저녁때 등불을 켤 때에 사를찌니 이 향은 너희가 대대로 여호와 앞에 끊지 못할찌며"
+      ],
+      "raw_text_hashes": [
+        "1c45883e5998d19e39edb75bae5b98e7d5c90310e7fbc4c69b3befc4c821c41b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:9",
+      "sequence": 2392,
+      "chapter_label": "EXO 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "You shall offer no strange incense on it, nor burnt offering, nor meal offering; and you shall pour no drink offering on it.",
+      "ko": "너희는 그 위에 다른 향을 사르지 말며 번제나 소제를 드리지 말며 전제의 술을 붓지 말며",
+      "source_text_hash": "c5c4d8c730035b510a2c7a266f0c61dd5fa7be12c92f8e8d7e76a93466741f69",
+      "translation_text_hash": "dfa50c0c56daef78c97a78045653e664eaf4f521af31e29f6169cf486456e0c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그 위에 다른 향을 사르지 말며 번제나 소제를 드리지 말며 전제의 술을 붓지 말며"
+      ],
+      "raw_text_hashes": [
+        "dfa50c0c56daef78c97a78045653e664eaf4f521af31e29f6169cf486456e0c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:10",
+      "sequence": 2393,
+      "chapter_label": "EXO 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "Aaron shall make atonement on its horns once in the year; with the blood of the sin offering of atonement once in the year he shall make atonement for it throughout your generations. It is most holy to the LORD.”",
+      "ko": "아론이 일년 일차씩 이 향단 뿔을 위하여 속죄하되 속죄제의 피로 일년 일차씩 대대로 속죄할찌니라 이 단은 여호와께 지극히 거룩하니라",
+      "source_text_hash": "f5b3f65502e7536d7181ffebedaf43ed4e7e26621c169e727f07b32b396432a1",
+      "translation_text_hash": "8809ce33830e6ed2086fccf5baa2e065e4d75e6c7e51d4b5948f1fbfc6d1ca5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 일년 일차씩 이 향단 뿔을 위하여 속죄하되 속죄제의 피로 일년 일차씩 대대로 속죄할찌니라 이 단은 여호와께 지극히 거룩하니라"
+      ],
+      "raw_text_hashes": [
+        "8809ce33830e6ed2086fccf5baa2e065e4d75e6c7e51d4b5948f1fbfc6d1ca5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:11",
+      "sequence": 2394,
+      "chapter_label": "EXO 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:12",
+      "sequence": 2395,
+      "chapter_label": "EXO 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "“When you take a census of the children of Israel, according to those who are counted among them, then each man shall give a ransom for his soul to the LORD when you count them, that there be no plague among them when you count them.",
+      "ko": "네가 이스라엘 자손의 수효를 따라 조사할 때에 조사 받은 각 사람은 그 생명의 속전을 여호와께 드릴찌니 이는 그 계수할 때에 그들 중에 온역이 없게 하려 함이라",
+      "source_text_hash": "22e7455afc7d92f6790cc860b260f631b8085fea0a02a8a176713308bcb12cfd",
+      "translation_text_hash": "6f0e7921f1cbb776237649d895a93c90b40750d633d5d3d708caeab623893fae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이스라엘 자손의 수효를 따라 조사할 때에 조사 받은 각 사람은 그 생명의 속전을 여호와께 드릴찌니 이는 그 계수할 때에 그들 중에 온역이 없게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "6f0e7921f1cbb776237649d895a93c90b40750d633d5d3d708caeab623893fae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:13",
+      "sequence": 2396,
+      "chapter_label": "EXO 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "They shall give this, everyone who passes over to those who are counted, half a shekel according to the shekel of the sanctuary (the shekel is twenty gerahs); half a shekel for an offering to the LORD.",
+      "ko": "무릇 계수 중에 드는 자마다 성소에 세겔대로 반 세겔을 낼찌니 한 세겔은 이십 게라라 그 반 세겔을 여호와께 드릴찌며",
+      "source_text_hash": "7daf622a2b59fbc7446ad4fc0f31cbef4570f34c1e411e6578d8ab4974efd602",
+      "translation_text_hash": "9601b918d1acca6304718fa9635dae36f6b25eeeea627b07499376a6c233cd63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 계수 중에 드는 자마다 성소에 세겔대로 반 세겔을 낼찌니 한 세겔은 이십 게라라 그 반 세겔을 여호와께 드릴찌며"
+      ],
+      "raw_text_hashes": [
+        "9601b918d1acca6304718fa9635dae36f6b25eeeea627b07499376a6c233cd63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:14",
+      "sequence": 2397,
+      "chapter_label": "EXO 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "Everyone who passes over to those who are counted, from twenty years old and upward, shall give the offering to the LORD.",
+      "ko": "무릇 계수 중에 드는 자 곧 이십 세 이상 된 자가 여호와께 드리되",
+      "source_text_hash": "fa9f90386c1fd84cbfdb6794570766f9e96ef0702f6aba59ea0ea1e912754c7d",
+      "translation_text_hash": "e78f0267e002089bd5a019d332a5840153f9a80160fe2554a6eeff9c85677a9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 계수 중에 드는 자 곧 이십 세 이상 된 자가 여호와께 드리되"
+      ],
+      "raw_text_hashes": [
+        "e78f0267e002089bd5a019d332a5840153f9a80160fe2554a6eeff9c85677a9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:15",
+      "sequence": 2398,
+      "chapter_label": "EXO 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "The rich shall not give more, and the poor shall not give less, than the half shekel, when they give the offering of the LORD, to make atonement for your souls.",
+      "ko": "너희의 생명을 속하기 위하여 여호와께 드릴 때에 부자라고 반 세겔에서 더 내지 말고 가난한 자라고 덜 내지 말찌며",
+      "source_text_hash": "b333d6e796f30b85310741487a5b6091a0dd68bd23b65c79f985f4f351817ca3",
+      "translation_text_hash": "24ca2be5a93204f85251b77625488154178d52b46b6c7c7550d4a1af4540e71d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 생명을 속하기 위하여 여호와께 드릴 때에 부자라고 반 세겔에서 더 내지 말고 가난한 자라고 덜 내지 말찌며"
+      ],
+      "raw_text_hashes": [
+        "24ca2be5a93204f85251b77625488154178d52b46b6c7c7550d4a1af4540e71d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:16",
+      "sequence": 2399,
+      "chapter_label": "EXO 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "You shall take the atonement money from the children of Israel, and shall appoint it for the service of the Tent of Meeting; that it may be a memorial for the children of Israel before the LORD, to make atonement for your souls.”",
+      "ko": "너는 이스라엘 자손에게서 속전을 취하여 회막의 봉사에 쓰라 이것이 여호와 앞에서 이스라엘 자손의 기념이 되어서 너희의 생명을 속하리라",
+      "source_text_hash": "2eee8a86d5df9e76d0209744215a033bb235f6e99a948e12147a01828e5cc0bb",
+      "translation_text_hash": "e8541a8937ad0c9fc93f50a9fb4386d2cce0930bb589494ae3929fda115d9b4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 자손에게서 속전을 취하여 회막의 봉사에 쓰라 이것이 여호와 앞에서 이스라엘 자손의 기념이 되어서 너희의 생명을 속하리라"
+      ],
+      "raw_text_hashes": [
+        "e8541a8937ad0c9fc93f50a9fb4386d2cce0930bb589494ae3929fda115d9b4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:17",
+      "sequence": 2400,
+      "chapter_label": "EXO 30",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:18",
+      "sequence": 2401,
+      "chapter_label": "EXO 30",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 18
+        }
+      ],
+      "en": "“You shall also make a basin of bronze, and its base of bronze, in which to wash. You shall put it between the Tent of Meeting and the altar, and you shall put water in it.",
+      "ko": "너는 물두멍을 놋으로 만들고 그 받침도 놋으로 만들어 씻게 하되 그것을 회막과 단 사이에 두고 그 속에 물을 담으라",
+      "source_text_hash": "37a61bbc1f2bd8b7ed0aad74131a9426550cc4d031d2b3c9282004c5fea05eff",
+      "translation_text_hash": "ca9d59f51a2bb3198bd6cd4b760e0b5bd7637f73b293a485e959b0a866fa9e7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 물두멍을 놋으로 만들고 그 받침도 놋으로 만들어 씻게 하되 그것을 회막과 단 사이에 두고 그 속에 물을 담으라"
+      ],
+      "raw_text_hashes": [
+        "ca9d59f51a2bb3198bd6cd4b760e0b5bd7637f73b293a485e959b0a866fa9e7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:19",
+      "sequence": 2402,
+      "chapter_label": "EXO 30",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 19
+        }
+      ],
+      "en": "Aaron and his sons shall wash their hands and their feet in it.",
+      "ko": "아론과 그 아들들이 그 두멍에서 수족을 씻되",
+      "source_text_hash": "5090289d0e4398a69df87045fc405d1be0ac55de74e8d1b68155fa5fcff92df6",
+      "translation_text_hash": "5535bb2e1ac5a3057bb2fd860ed71d26d61b2f31937464a4f41735d4680730cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들이 그 두멍에서 수족을 씻되"
+      ],
+      "raw_text_hashes": [
+        "5535bb2e1ac5a3057bb2fd860ed71d26d61b2f31937464a4f41735d4680730cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:20",
+      "sequence": 2403,
+      "chapter_label": "EXO 30",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 20
+        }
+      ],
+      "en": "When they go into the Tent of Meeting, they shall wash with water, that they don’t die; or when they come near to the altar to minister, to burn an offering made by fire to the LORD.",
+      "ko": "그들이 회막에 들어갈 때에 물로 씻어 죽기를 면할 것이요 단에 가까이 가서 그 직분을 행하여 화제를 여호와 앞에 사를 때에도 그리 할찌니라",
+      "source_text_hash": "4bf57dff705ba2ec6e17ca2f2bab07a2ba9c9e95b77bae0240dfcf247ebb57de",
+      "translation_text_hash": "adf01ff4a73aab5d2d8feecfd51f16e3be2528e1b1439486210d74cf70826655",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 회막에 들어갈 때에 물로 씻어 죽기를 면할 것이요 단에 가까이 가서 그 직분을 행하여 화제를 여호와 앞에 사를 때에도 그리 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "adf01ff4a73aab5d2d8feecfd51f16e3be2528e1b1439486210d74cf70826655"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:21",
+      "sequence": 2404,
+      "chapter_label": "EXO 30",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 21
+        }
+      ],
+      "en": "So they shall wash their hands and their feet, that they not die. This shall be a statute forever to them, even to him and to his descendants throughout their generations.”",
+      "ko": "이와 같이 그들이 그 수족을 씻어 죽기를 면할찌니 이는 그와 그 자손이 대대로 영원히 지킬 규례니라",
+      "source_text_hash": "b5eba1c82430dba25c1ee01b4cc1f4ea95b396e7546822e61b62ec8311442243",
+      "translation_text_hash": "029470d2b45b2e29e00e176140a6b3a6e60ca28f4d1c42e441f6fc959367e845",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 그들이 그 수족을 씻어 죽기를 면할찌니 이는 그와 그 자손이 대대로 영원히 지킬 규례니라"
+      ],
+      "raw_text_hashes": [
+        "029470d2b45b2e29e00e176140a6b3a6e60ca28f4d1c42e441f6fc959367e845"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:22",
+      "sequence": 2405,
+      "chapter_label": "EXO 30",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 22
+        }
+      ],
+      "en": "Moreover the LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 또 일러 가라사대",
+      "source_text_hash": "81ddcc881d78f234eca5b9fb9a99776d3369ba684fd1c2ec3d4c2a6882dc546c",
+      "translation_text_hash": "af8f173cd1eca3be211bdbc0c71803f842bc6bf88bb21669399754791d97df45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 또 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "af8f173cd1eca3be211bdbc0c71803f842bc6bf88bb21669399754791d97df45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:23",
+      "sequence": 2406,
+      "chapter_label": "EXO 30",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 23
+        }
+      ],
+      "en": "“Also take fine spices: of liquid myrrh, five hundred shekels; and of fragrant cinnamon half as much, even two hundred and fifty; and of fragrant cane, two hundred and fifty;",
+      "ko": "너는 상등 향품을 취하되 액체 몰약 오백 세겔과 그 반수의 향기로운 육계 이백 오십 세겔과 향기로운 창포 이백 오십 세겔과",
+      "source_text_hash": "9d9bcc70706c04bc38b9d4c3198c2f735afd88e4cb70095c3027e0b9406599fd",
+      "translation_text_hash": "62de8b0ef49e1900d199be3956e6523a5c2185491315b31d3f3e5106aa296509",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 상등 향품을 취하되 액체 몰약 오백 세겔과 그 반수의 향기로운 육계 이백 오십 세겔과 향기로운 창포 이백 오십 세겔과"
+      ],
+      "raw_text_hashes": [
+        "62de8b0ef49e1900d199be3956e6523a5c2185491315b31d3f3e5106aa296509"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:24",
+      "sequence": 2407,
+      "chapter_label": "EXO 30",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 24
+        }
+      ],
+      "en": "and of cassia five hundred, according to the shekel of the sanctuary; and a hin of olive oil.",
+      "ko": "계피 오백 세겔을 성소의 세겔대로 하고 감람 기름 한 힌을 취하여",
+      "source_text_hash": "c64b0f41e8ad3a8294bb1f03f2a5224ad04f6ad995b957265b583bc2bcfc317d",
+      "translation_text_hash": "17ae60b57b3041cb6383e0ca5ef5b7ea7eaaa965f331b02505557b0d33e2e691",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계피 오백 세겔을 성소의 세겔대로 하고 감람 기름 한 힌을 취하여"
+      ],
+      "raw_text_hashes": [
+        "17ae60b57b3041cb6383e0ca5ef5b7ea7eaaa965f331b02505557b0d33e2e691"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:25",
+      "sequence": 2408,
+      "chapter_label": "EXO 30",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 25
+        }
+      ],
+      "en": "You shall make it into a holy anointing oil, a perfume compounded after the art of the perfumer: it shall be a holy anointing oil.",
+      "ko": "그것으로 거룩한 관유를 만들되 향을 제조하는 법대로 향기름을 만들찌니 그것이 거룩한 관유가 될찌라",
+      "source_text_hash": "d5b9394038294722e3f8418813da2be27d99d63422876e2dd130f15006a4a188",
+      "translation_text_hash": "17e3ec46370e473db101c75eaa021dc2585d6de64e113974c679af354cc135b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것으로 거룩한 관유를 만들되 향을 제조하는 법대로 향기름을 만들찌니 그것이 거룩한 관유가 될찌라"
+      ],
+      "raw_text_hashes": [
+        "17e3ec46370e473db101c75eaa021dc2585d6de64e113974c679af354cc135b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:26",
+      "sequence": 2409,
+      "chapter_label": "EXO 30",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 26
+        }
+      ],
+      "en": "You shall use it to anoint the Tent of Meeting, the ark of the covenant,",
+      "ko": "너는 그것으로 회막과 증거궤에 바르고",
+      "source_text_hash": "1a2e7895500f19aed71657ef708f7bd14f0bb5bf32cb57ca7fc048d75cf7358c",
+      "translation_text_hash": "d24f86c5c887248002e5050f8e635e4d5c543a9170dd99e1b909c991abbc49bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그것으로 회막과 증거궤에 바르고"
+      ],
+      "raw_text_hashes": [
+        "d24f86c5c887248002e5050f8e635e4d5c543a9170dd99e1b909c991abbc49bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:27",
+      "sequence": 2410,
+      "chapter_label": "EXO 30",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 27
+        }
+      ],
+      "en": "the table and all its articles, the lamp stand and its accessories, the altar of incense,",
+      "ko": "상과 그 모든 기구며 등대와 그 기구며 분향단과",
+      "source_text_hash": "082588215a266d2fc766951d451a9dbcfddb07803dc1c52d67300d8142ab6e1f",
+      "translation_text_hash": "60813ea33aafab87a72d4828cf25f8619e157f16eb5fca9a29dbeab03f09845c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상과 그 모든 기구며 등대와 그 기구며 분향단과"
+      ],
+      "raw_text_hashes": [
+        "60813ea33aafab87a72d4828cf25f8619e157f16eb5fca9a29dbeab03f09845c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:28",
+      "sequence": 2411,
+      "chapter_label": "EXO 30",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 28
+        }
+      ],
+      "en": "the altar of burnt offering with all its utensils, and the basin with its base.",
+      "ko": "및 번제단과 그 모든 기구와 물두멍과 그 받침에 발라",
+      "source_text_hash": "055c79b018aef190f62d832770f9e38936198f4b928d82888ea77920013edc6d",
+      "translation_text_hash": "f56232a9c31841f17fbc77ea8c2a062fe1f221ad67f3a21b064451a1f185b051",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "및 번제단과 그 모든 기구와 물두멍과 그 받침에 발라"
+      ],
+      "raw_text_hashes": [
+        "f56232a9c31841f17fbc77ea8c2a062fe1f221ad67f3a21b064451a1f185b051"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:29",
+      "sequence": 2412,
+      "chapter_label": "EXO 30",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 29
+        }
+      ],
+      "en": "You shall sanctify them, that they may be most holy. Whatever touches them shall be holy.",
+      "ko": "그것들을 지성물로 구별하라 무릇 이것에 접촉하는 것이 거룩하리라",
+      "source_text_hash": "2a1849ca023f4c91c4578d906c0f571f2d91deed04b3cf5e4541c2a955a59764",
+      "translation_text_hash": "ae85e098f6cfca33a0f6f8db8775be1944b6790a87fb858aa48c98189f838d27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들을 지성물로 구별하라 무릇 이것에 접촉하는 것이 거룩하리라"
+      ],
+      "raw_text_hashes": [
+        "ae85e098f6cfca33a0f6f8db8775be1944b6790a87fb858aa48c98189f838d27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:30",
+      "sequence": 2413,
+      "chapter_label": "EXO 30",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 30
+        }
+      ],
+      "en": "You shall anoint Aaron and his sons, and sanctify them, that they may minister to me in the priest’s office.",
+      "ko": "너는 아론과 그 아들들에게 기름을 발라 그들을 거룩하게 하고 그들로 내게 제사장 직분을 행하게 하고",
+      "source_text_hash": "f6a85f5d61ceed310478376e1d7bacd46391c76b775532238b5a96317a076da8",
+      "translation_text_hash": "175ccd6b7f483c0b03f870db19081eb0e0a01435d72283e76d9949ff7cb0e98b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 아론과 그 아들들에게 기름을 발라 그들을 거룩하게 하고 그들로 내게 제사장 직분을 행하게 하고"
+      ],
+      "raw_text_hashes": [
+        "175ccd6b7f483c0b03f870db19081eb0e0a01435d72283e76d9949ff7cb0e98b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:31",
+      "sequence": 2414,
+      "chapter_label": "EXO 30",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 31
+        }
+      ],
+      "en": "You shall speak to the children of Israel, saying, ‘This shall be a holy anointing oil to me throughout your generations.",
+      "ko": "이스라엘 자손에게 고하여 이르기를 이것은 너희 대대로 내게 거룩한 관유니",
+      "source_text_hash": "69d2c8cf4fb39fdd67a4c1b96dfb1fd70b7905c2bdfdb61226a58e6fe00fee55",
+      "translation_text_hash": "03992f7418d9262d0922058251ee83cabea3e529ac03a936b9e5dd0079f576aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르기를 이것은 너희 대대로 내게 거룩한 관유니"
+      ],
+      "raw_text_hashes": [
+        "03992f7418d9262d0922058251ee83cabea3e529ac03a936b9e5dd0079f576aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:32",
+      "sequence": 2415,
+      "chapter_label": "EXO 30",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 32
+        }
+      ],
+      "en": "It shall not be poured on man’s flesh, and do not make any like it, according to its composition. It is holy. It shall be holy to you.",
+      "ko": "사람의 몸에 붓지 말며 이 방법대로 이와 같은 것을 만들지 말라 이는 거룩하니 너희는 거룩히 여기라",
+      "source_text_hash": "92a9bd650250ca7c53cb7d82054a0ab8c4ba99bfadced249c18cb9aabadff267",
+      "translation_text_hash": "ae10889309b7c320d53c3e005e31ca000d3e361447b7b4d00e23b4870bd90469",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 몸에 붓지 말며 이 방법대로 이와 같은 것을 만들지 말라 이는 거룩하니 너희는 거룩히 여기라"
+      ],
+      "raw_text_hashes": [
+        "ae10889309b7c320d53c3e005e31ca000d3e361447b7b4d00e23b4870bd90469"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:33",
+      "sequence": 2416,
+      "chapter_label": "EXO 30",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 33
+        }
+      ],
+      "en": "Whoever compounds any like it, or whoever puts any of it on a stranger, he shall be cut off from his people.’”",
+      "ko": "무릇 이와 같은 것을 만드는 자나 무릇 이것을 타인에게 붓는 자는 그 백성 중에서 끊쳐지리라 하라",
+      "source_text_hash": "8aafb44ff3a9b9af6d05fb5716727d3fd5372af1b3386fbe92bcc95f365c5590",
+      "translation_text_hash": "d3e9531ad7d9ca5499355a68662daa797ddcece6bcf9109dd4135ad5b17e4d70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이와 같은 것을 만드는 자나 무릇 이것을 타인에게 붓는 자는 그 백성 중에서 끊쳐지리라 하라"
+      ],
+      "raw_text_hashes": [
+        "d3e9531ad7d9ca5499355a68662daa797ddcece6bcf9109dd4135ad5b17e4d70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:34",
+      "sequence": 2417,
+      "chapter_label": "EXO 30",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 34
+        }
+      ],
+      "en": "The LORD said to Moses, “Take to yourself sweet spices, gum resin, onycha, and galbanum: sweet spices with pure frankincense. There shall be an equal weight of each.",
+      "ko": "여호와께서 모세에게 이르시되 너는 소합향과 나감향과 풍자향의 향품을 취하고 그 향품을 유향에 섞되 각기 동일한 중수로 하고",
+      "source_text_hash": "2510979e731a0f29c94b7cfe44b78d4ef65e176817da7cc43e3908faff236257",
+      "translation_text_hash": "a40f45f8aaed08d1fbc8321a20772e3d9b9eb55f3538c4ad18a85f72b0809338",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 소합향과 나감향과 풍자향의 향품을 취하고 그 향품을 유향에 섞되 각기 동일한 중수로 하고"
+      ],
+      "raw_text_hashes": [
+        "a40f45f8aaed08d1fbc8321a20772e3d9b9eb55f3538c4ad18a85f72b0809338"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:35",
+      "sequence": 2418,
+      "chapter_label": "EXO 30",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 35
+        }
+      ],
+      "en": "You shall make incense of it, a perfume after the art of the perfumer, seasoned with salt, pure and holy.",
+      "ko": "그것으로 향을 만들되 향 만드는 법대로 만들고 그것에 소금을 쳐서 성결하게 하고",
+      "source_text_hash": "47f1a9ac92b83a763b2da8ea5951ec0d0bfd45f8e0ed47b81f3ce9fbf7584db0",
+      "translation_text_hash": "2738d047a67fb969e13cab0abb43df4ce3d3058e8f9313d61384dc977fa770ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것으로 향을 만들되 향 만드는 법대로 만들고 그것에 소금을 쳐서 성결하게 하고"
+      ],
+      "raw_text_hashes": [
+        "2738d047a67fb969e13cab0abb43df4ce3d3058e8f9313d61384dc977fa770ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:36",
+      "sequence": 2419,
+      "chapter_label": "EXO 30",
+      "verse_label": "36",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 36
+        }
+      ],
+      "en": "You shall beat some of it very small, and put some of it before the covenant in the Tent of Meeting, where I will meet with you. It shall be to you most holy.",
+      "ko": "그 향 얼마를 곱게 찧어 내가 너와 만날 회막 안 증거궤 앞에 두라 이 향은 너희에게 지극히 거룩하니라",
+      "source_text_hash": "dea4eec466f6af3c4dcc0aa55af0e659f7171843ff153f9d2f825fa384d0d6fd",
+      "translation_text_hash": "3ab0fda487a818ca9799c1272d701f721549d3b8647592fec0b6ef2af98a6e64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 향 얼마를 곱게 찧어 내가 너와 만날 회막 안 증거궤 앞에 두라 이 향은 너희에게 지극히 거룩하니라"
+      ],
+      "raw_text_hashes": [
+        "3ab0fda487a818ca9799c1272d701f721549d3b8647592fec0b6ef2af98a6e64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:37",
+      "sequence": 2420,
+      "chapter_label": "EXO 30",
+      "verse_label": "37",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 37
+        }
+      ],
+      "en": "You shall not make this incense, according to its composition, for yourselves: it shall be to you holy for the LORD.",
+      "ko": "네가 만들 향은 여호와를 위하여 거룩한 것이니 그 방법대로 너희를 위하여 만들지 말라",
+      "source_text_hash": "1b7c33923b842829bcd33cd579371b1f6fbba92024acc811e153dbe3423729bc",
+      "translation_text_hash": "d0ccd75083e390ae627aed3f7f32cd695e57e91645a6f145ae17cc2d0fdf00ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만들 향은 여호와를 위하여 거룩한 것이니 그 방법대로 너희를 위하여 만들지 말라"
+      ],
+      "raw_text_hashes": [
+        "d0ccd75083e390ae627aed3f7f32cd695e57e91645a6f145ae17cc2d0fdf00ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:30:38",
+      "sequence": 2421,
+      "chapter_label": "EXO 30",
+      "verse_label": "38",
+      "locator": {
+        "book": "EXO",
+        "chapter": 30,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 30,
+          "verse": 38
+        }
+      ],
+      "en": "Whoever shall make any like that, to smell of it, he shall be cut off from his people.”",
+      "ko": "무릇 맡으려고 이같은 것을 만드는 자는 그 백성 중에서 끊쳐지리라",
+      "source_text_hash": "ad1c32ab29baabb899d781319fd548880ae560afa285d223c4fdb72281380573",
+      "translation_text_hash": "d723a5e2bc7285a5cedbc7912a3ff8f2f907fb05b1154cdb62898137cdbaefef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 맡으려고 이같은 것을 만드는 자는 그 백성 중에서 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "d723a5e2bc7285a5cedbc7912a3ff8f2f907fb05b1154cdb62898137cdbaefef"
+      ]
+    }
+  ]
+}

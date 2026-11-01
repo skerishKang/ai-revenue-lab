@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:034",
+  "unit_ordinal": 84,
+  "unit_label": "EXO 34",
+  "book_code": "EXO",
+  "chapter_number": 34,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:34:1",
+      "sequence": 2498,
+      "chapter_label": "EXO 34",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Moses, “Chisel two stone tablets like the first. I will write on the tablets the words that were on the first tablets, which you broke.",
+      "ko": "여호와께서 모세에게 이르시되 너는 돌판 둘을 처음것과 같이 깎아 만들라 네가 깨뜨린바 처음 판에 있던 말을 내가 그 판에 쓰리니",
+      "source_text_hash": "75b3059798bb19bb93c37d20f918b5fbd8c518ef26f6476d780168bd1de36728",
+      "translation_text_hash": "ff37761cb4373c92cac4543d5171262a2cce5cb14ec44ea4dd1365c5bd6363a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 돌판 둘을 처음것과 같이 깎아 만들라 네가 깨뜨린바 처음 판에 있던 말을 내가 그 판에 쓰리니"
+      ],
+      "raw_text_hashes": [
+        "ff37761cb4373c92cac4543d5171262a2cce5cb14ec44ea4dd1365c5bd6363a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:2",
+      "sequence": 2499,
+      "chapter_label": "EXO 34",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 2
+        }
+      ],
+      "en": "Be ready by the morning, and come up in the morning to Mount Sinai, and present yourself there to me on the top of the mountain.",
+      "ko": "아침 전에 예비하고 아침에 시내산에 올라와 산꼭대기에서 내게 보이되",
+      "source_text_hash": "8dc1632aa1ec9cc3d02fa1efe58713f41dc5794df9d9f36543392e33261490c0",
+      "translation_text_hash": "0efdfc0867a00358df6800675c7551f8a5e4bffd724fc120f6edb37cf6902621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침 전에 예비하고 아침에 시내산에 올라와 산꼭대기에서 내게 보이되"
+      ],
+      "raw_text_hashes": [
+        "0efdfc0867a00358df6800675c7551f8a5e4bffd724fc120f6edb37cf6902621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:3",
+      "sequence": 2500,
+      "chapter_label": "EXO 34",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 3
+        }
+      ],
+      "en": "No one shall come up with you or be seen anywhere on the mountain. Do not let the flocks or herds graze in front of that mountain.”",
+      "ko": "아무도 너와 함께 오르지 말며 온 산에 인적을 금하고 양과 소도 산 앞에서 먹지 못하게 하라",
+      "source_text_hash": "36531d2575fce4c795d578eac3b06bd7e3c32e913a8990ef02fb7f273b928395",
+      "translation_text_hash": "f107cdd45066423291192350de2176eb12858291b94972c88649e35a427f156d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무도 너와 함께 오르지 말며 온 산에 인적을 금하고 양과 소도 산 앞에서 먹지 못하게 하라"
+      ],
+      "raw_text_hashes": [
+        "f107cdd45066423291192350de2176eb12858291b94972c88649e35a427f156d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:4",
+      "sequence": 2501,
+      "chapter_label": "EXO 34",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 4
+        }
+      ],
+      "en": "He chiseled two tablets of stone like the first; then Moses rose up early in the morning, and went up to Mount Sinai, as the LORD had commanded him, and took in his hand two stone tablets.",
+      "ko": "모세가 돌판 둘을 처음것과 같이 깎아 만들고 아침에 일찌기 일어나 그 두 돌판을 손에 들고 여호와의 명대로 시내산에 올라가니",
+      "source_text_hash": "7ba6d456760efa7c3af21f8161da7b750aeea62d38cad85ff91d478af2256f83",
+      "translation_text_hash": "ef96d6d4fc37274a3f2854114c1c0ac6f6dcbf0219b07f01652b31ca034223af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 돌판 둘을 처음것과 같이 깎아 만들고 아침에 일찌기 일어나 그 두 돌판을 손에 들고 여호와의 명대로 시내산에 올라가니"
+      ],
+      "raw_text_hashes": [
+        "ef96d6d4fc37274a3f2854114c1c0ac6f6dcbf0219b07f01652b31ca034223af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:5",
+      "sequence": 2502,
+      "chapter_label": "EXO 34",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD descended in the cloud, and stood with him there, and proclaimed the LORD’s name.",
+      "ko": "여호와께서 구름 가운데 강림하사 그와 함께 거기 서서 여호와의 이름을 반포하실쌔",
+      "source_text_hash": "96e93d3f4d6cbbfef35910aa37c1137cfb611291e4ad2ff6699310aae470f96b",
+      "translation_text_hash": "3e0edb185e0f8168e4cd8678b16c1d8de03e24e61bda1eb96829b5dbc4d6a9ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 구름 가운데 강림하사 그와 함께 거기 서서 여호와의 이름을 반포하실쌔"
+      ],
+      "raw_text_hashes": [
+        "3e0edb185e0f8168e4cd8678b16c1d8de03e24e61bda1eb96829b5dbc4d6a9ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:6",
+      "sequence": 2503,
+      "chapter_label": "EXO 34",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD passed by before him, and proclaimed, “The LORD! The LORD, a merciful and gracious God, slow to anger, and abundant in loving kindness and truth,",
+      "ko": "여호와께서 그의 앞으로 지나시며 반포하시되 여호와로라 여호와로라 자비롭고 은혜롭고 노하기를 더디하고 인자와 진실이 많은 하나님이로라",
+      "source_text_hash": "8c7ebad371c13a6fecd4c9aff7f75e876518c1db35a9c97778a3887051c90513",
+      "translation_text_hash": "5810fc203d69b8696146019ccd7a4047bfc0ad3048e7eeed47a20b233063bb6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그의 앞으로 지나시며 반포하시되 여호와로라 여호와로라 자비롭고 은혜롭고 노하기를 더디하고 인자와 진실이 많은 하나님이로라"
+      ],
+      "raw_text_hashes": [
+        "5810fc203d69b8696146019ccd7a4047bfc0ad3048e7eeed47a20b233063bb6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:7",
+      "sequence": 2504,
+      "chapter_label": "EXO 34",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 7
+        }
+      ],
+      "en": "keeping loving kindness for thousands, forgiving iniquity and disobedience and sin; and who will by no means clear the guilty, visiting the iniquity of the fathers on the children, and on the children’s children, on the third and on the fourth generation.”",
+      "ko": "인자를 천대까지 베풀며 악과 과실과 죄를 용서하나 형벌 받을 자는 결단코 면죄하지 않고 아비의 악을 자여손 삼 사대까지 보응하리라",
+      "source_text_hash": "3a71c7e1ae7cd65a7a91308c92f544c40792a91171a3482b2b9e98b0cc9d0795",
+      "translation_text_hash": "ba0947d64128bee03f0d438fd309e5bcc6779ea63e00984c49a53487c9c1dcd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자를 천대까지 베풀며 악과 과실과 죄를 용서하나 형벌 받을 자는 결단코 면죄하지 않고 아비의 악을 자여손 삼 사대까지 보응하리라"
+      ],
+      "raw_text_hashes": [
+        "ba0947d64128bee03f0d438fd309e5bcc6779ea63e00984c49a53487c9c1dcd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:8",
+      "sequence": 2505,
+      "chapter_label": "EXO 34",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 8
+        }
+      ],
+      "en": "Moses hurried and bowed his head toward the earth, and worshiped.",
+      "ko": "모세가 급히 땅에 엎드리어 경배하며",
+      "source_text_hash": "61e45d80306439bcaedc3497dc5fbce34794f30181b9a5aef6eabbe4d523ad53",
+      "translation_text_hash": "7e12aad540c1e82426a647b0ff7f0670a26e5ee0c426432bc734b37d7a5795b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 급히 땅에 엎드리어 경배하며"
+      ],
+      "raw_text_hashes": [
+        "7e12aad540c1e82426a647b0ff7f0670a26e5ee0c426432bc734b37d7a5795b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:9",
+      "sequence": 2506,
+      "chapter_label": "EXO 34",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 9
+        }
+      ],
+      "en": "He said, “If now I have found favor in your sight, Lord, please let the Lord go among us, even though this is a stiff-necked people; pardon our iniquity and our sin, and take us for your inheritance.”",
+      "ko": "가로되 주여 내가 주께 은총을 입었거든 원컨대 주는 우리 중에서 행하옵소서 이는 목이 곧은 백성이니이다 우리의 악과 죄를 사하시고 우리로 주의 기업을 삼으소서",
+      "source_text_hash": "3bdbed4b7a18de9640ec7146b27ea4a5ee0b8be058f501c792cecfac65f48886",
+      "translation_text_hash": "9295d6de258d750ec55127ad467b85aafac3e34e6d0401799eba63c1d8c3f523",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 주여 내가 주께 은총을 입었거든 원컨대 주는 우리 중에서 행하옵소서 이는 목이 곧은 백성이니이다 우리의 악과 죄를 사하시고 우리로 주의 기업을 삼으소서"
+      ],
+      "raw_text_hashes": [
+        "9295d6de258d750ec55127ad467b85aafac3e34e6d0401799eba63c1d8c3f523"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:10",
+      "sequence": 2507,
+      "chapter_label": "EXO 34",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 10
+        }
+      ],
+      "en": "He said, “Behold, I make a covenant: before all your people I will do marvels, such as have not been worked in all the earth, nor in any nation; and all the people among whom you are shall see the work of the LORD; for it is an awesome thing that I do with you.",
+      "ko": "여호와께서 가라사대 보라 내가 언약을 세우나니 곧 내가 아직 온 땅 아무 국민에게도 행치 아니한 이적을 너희 전체 백성 앞에 행할 것이라 너의 머무는 나라 백성이 다 여호와의 소위를 보리니 내가 너를 위하여 행할 일이 두려운 것임이니라",
+      "source_text_hash": "37005d44477360196600460313a57e6798397ae7c7a1707253a1a7669406ad26",
+      "translation_text_hash": "6f42d207237b935723c067edfb32c8239d87c5bf20808338209982d2e8d711e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 보라 내가 언약을 세우나니 곧 내가 아직 온 땅 아무 국민에게도 행치 아니한 이적을 너희 전체 백성 앞에 행할 것이라 너의 머무는 나라 백성이 다 여호와의 소위를 보리니 내가 너를 위하여 행할 일이 두려운 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "6f42d207237b935723c067edfb32c8239d87c5bf20808338209982d2e8d711e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:11",
+      "sequence": 2508,
+      "chapter_label": "EXO 34",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 11
+        }
+      ],
+      "en": "Observe that which I command you today. Behold, I will drive out before you the Amorite, the Canaanite, the Hittite, the Perizzite, the Hivite, and the Jebusite.",
+      "ko": "너는 내가 오늘 네게 명하는 것을 삼가 지키라 보라 내가 네 앞에서 아모리 사람과 가나안 사람과 헷 사람과 브리스 사람과 히위 사람과 여부스 사람을 쫓아내리니",
+      "source_text_hash": "98f1fb06deb12c0b3945c3292e908545658e7744fa53eaccb45d46a4ef336999",
+      "translation_text_hash": "e0aaa5e811566e6e2a20be852752bc44d112e4a3942d381685ccbd478389438a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 내가 오늘 네게 명하는 것을 삼가 지키라 보라 내가 네 앞에서 아모리 사람과 가나안 사람과 헷 사람과 브리스 사람과 히위 사람과 여부스 사람을 쫓아내리니"
+      ],
+      "raw_text_hashes": [
+        "e0aaa5e811566e6e2a20be852752bc44d112e4a3942d381685ccbd478389438a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:12",
+      "sequence": 2509,
+      "chapter_label": "EXO 34",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 12
+        }
+      ],
+      "en": "Be careful, lest you make a covenant with the inhabitants of the land where you are going, lest it be for a snare among you;",
+      "ko": "너는 스스로 삼가 네가 들어가는 땅의 거민과 언약을 세우지 말라 그들이 너희 중에 올무가 될까 하노라",
+      "source_text_hash": "069a530961873301e475b3bbb6e22027760c2e6f19c946bbd284f8a63693f679",
+      "translation_text_hash": "4f6b78bb53b77488dc47d25237c33a370b547b0331bb36f1b4f03a02de72d01d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 스스로 삼가 네가 들어가는 땅의 거민과 언약을 세우지 말라 그들이 너희 중에 올무가 될까 하노라"
+      ],
+      "raw_text_hashes": [
+        "4f6b78bb53b77488dc47d25237c33a370b547b0331bb36f1b4f03a02de72d01d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:13",
+      "sequence": 2510,
+      "chapter_label": "EXO 34",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 13
+        }
+      ],
+      "en": "but you shall break down their altars, and dash in pieces their pillars, and you shall cut down their Asherah poles;",
+      "ko": "너희는 도리어 그들의 단들을 헐고 그들의 주상을 깨뜨리고 그들의 아세라 상을 찍을찌어다",
+      "source_text_hash": "24115ddddcce2d8343bac41e733ea2c7f37840105571cdcbc08b2929a8039aeb",
+      "translation_text_hash": "199bb8c5f277a03633f38c3597b79e96466ff7c071d71d366ca47f557aa62741",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 도리어 그들의 단들을 헐고 그들의 주상을 깨뜨리고 그들의 아세라 상을 찍을찌어다"
+      ],
+      "raw_text_hashes": [
+        "199bb8c5f277a03633f38c3597b79e96466ff7c071d71d366ca47f557aa62741"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:14",
+      "sequence": 2511,
+      "chapter_label": "EXO 34",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 14
+        }
+      ],
+      "en": "for you shall worship no other god; for the LORD, whose name is Jealous, is a jealous God.",
+      "ko": "너는 다른 신에게 절하지 말라 여호와는 질투라 이름하는 질투의 하나님임이니라",
+      "source_text_hash": "21edd8af9ccc95d6c56b26ecdff80b399ca22e8e5cd5e3408a725584fa724068",
+      "translation_text_hash": "c392ac75aef28e8ebf732bdaa9cd3dc391c43b5cf470e4460aff86d4be523347",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 다른 신에게 절하지 말라 여호와는 질투라 이름하는 질투의 하나님임이니라"
+      ],
+      "raw_text_hashes": [
+        "c392ac75aef28e8ebf732bdaa9cd3dc391c43b5cf470e4460aff86d4be523347"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:15",
+      "sequence": 2512,
+      "chapter_label": "EXO 34",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 15
+        }
+      ],
+      "en": "“Don’t make a covenant with the inhabitants of the land, lest they play the prostitute after their gods, and sacrifice to their gods, and one call you and you eat of his sacrifice;",
+      "ko": "너는 삼가 그 땅의 거민과 언약을 세우지 말찌니 이는 그들이 모든 신을 음란히 섬기며 그 신들에게 희생을 드리고 너를 청하면 네가 그 희생을 먹을까 함이며",
+      "source_text_hash": "843de5f7873167aa41f390bc2d56614c3cf37fb48790537f0df37af00523ac8a",
+      "translation_text_hash": "04199925558fd0987026fb6d0ce2e1ad767cda7e58d77b8e6aa852269569e0b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 삼가 그 땅의 거민과 언약을 세우지 말찌니 이는 그들이 모든 신을 음란히 섬기며 그 신들에게 희생을 드리고 너를 청하면 네가 그 희생을 먹을까 함이며"
+      ],
+      "raw_text_hashes": [
+        "04199925558fd0987026fb6d0ce2e1ad767cda7e58d77b8e6aa852269569e0b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:16",
+      "sequence": 2513,
+      "chapter_label": "EXO 34",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 16
+        }
+      ],
+      "en": "and you take of their daughters to your sons, and their daughters play the prostitute after their gods, and make your sons play the prostitute after their gods.",
+      "ko": "또 네가 그들의 딸들로 네 아들들의 아내를 삼음으로 그들의 딸들이 그 신들을 음란히 섬기며 네 아들로 그들의 신들을 음란히 섬기게 할까 함이니라",
+      "source_text_hash": "4c740282a72db96e2799ad7f17e38e8ded07de68c08810048e44fcc20ef65dad",
+      "translation_text_hash": "21ead5148f02cd4b1e8dc40d2dcbfaa5cdb08a8b4a710b4a1d865dd584a3d293",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네가 그들의 딸들로 네 아들들의 아내를 삼음으로 그들의 딸들이 그 신들을 음란히 섬기며 네 아들로 그들의 신들을 음란히 섬기게 할까 함이니라"
+      ],
+      "raw_text_hashes": [
+        "21ead5148f02cd4b1e8dc40d2dcbfaa5cdb08a8b4a710b4a1d865dd584a3d293"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:17",
+      "sequence": 2514,
+      "chapter_label": "EXO 34",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 17
+        }
+      ],
+      "en": "“You shall make no cast idols for yourselves.",
+      "ko": "너는 신상들을 부어 만들지 말찌니라",
+      "source_text_hash": "073f4a2d7fd015a4accbcbfe21e42f2c89e823f0859a48bfc572aa175b5f9653",
+      "translation_text_hash": "43e328911f9f41a891d7e151dce16256aae8631108a6595944b4ea92eeb16d2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 신상들을 부어 만들지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "43e328911f9f41a891d7e151dce16256aae8631108a6595944b4ea92eeb16d2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:18",
+      "sequence": 2515,
+      "chapter_label": "EXO 34",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 18
+        }
+      ],
+      "en": "“You shall keep the feast of unleavened bread. Seven days you shall eat unleavened bread, as I commanded you, at the time appointed in the month Abib; for in the month Abib you came out of Egypt.",
+      "ko": "너는 무교절을 지키되 내가 네게 명한대로 아빕월 그 기한에 칠일 동안 무교병을 먹으라 이는 네가 아빕월에 애굽에서 나왔음이니라",
+      "source_text_hash": "d071200b785c49aea3e765187bcf536c9f61283c616809004c46a71c914c903f",
+      "translation_text_hash": "9c915c19fafbdc698e988bc1f36acaa20f45ac4b65b3af8e14b9b3347b75a92b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 무교절을 지키되 내가 네게 명한대로 아빕월 그 기한에 칠일 동안 무교병을 먹으라 이는 네가 아빕월에 애굽에서 나왔음이니라"
+      ],
+      "raw_text_hashes": [
+        "9c915c19fafbdc698e988bc1f36acaa20f45ac4b65b3af8e14b9b3347b75a92b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:19",
+      "sequence": 2516,
+      "chapter_label": "EXO 34",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 19
+        }
+      ],
+      "en": "“All that opens the womb is mine; and all your livestock that is male, the firstborn of cow and sheep.",
+      "ko": "무릇 초태생은 다 내 것이며 무릇 네 가축의 수컷 처음 난 우양도 다 그러하며",
+      "source_text_hash": "65d8d36cbeb756bfbbaffb5664544f335edee7379dba474b60a19add56d1ccb4",
+      "translation_text_hash": "e29af51424f186ba3ac562b21bfeb02f7b8f18113b906377e4673b13013328c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 초태생은 다 내 것이며 무릇 네 가축의 수컷 처음 난 우양도 다 그러하며"
+      ],
+      "raw_text_hashes": [
+        "e29af51424f186ba3ac562b21bfeb02f7b8f18113b906377e4673b13013328c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:20",
+      "sequence": 2517,
+      "chapter_label": "EXO 34",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 20
+        }
+      ],
+      "en": "You shall redeem the firstborn of a donkey with a lamb. If you will not redeem it, then you shall break its neck. You shall redeem all the firstborn of your sons. No one shall appear before me empty.",
+      "ko": "나귀의 첫 새끼는 어린 양으로 대속할 것이요 그렇게 아니하려면 그 목을 꺾을 것이며 네 아들 중 장자는 다 대속할찌며 빈 손으로 내 얼굴을 보지 말찌니라",
+      "source_text_hash": "8589933e450a659cc9fdef3a981f4792a2b76117fed1c5c4d1b3527ffd0b55f6",
+      "translation_text_hash": "388cf689653e48b82eeae37320f6238f302397c9189af96e9d5e73b79441b560",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀의 첫 새끼는 어린 양으로 대속할 것이요 그렇게 아니하려면 그 목을 꺾을 것이며 네 아들 중 장자는 다 대속할찌며 빈 손으로 내 얼굴을 보지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "388cf689653e48b82eeae37320f6238f302397c9189af96e9d5e73b79441b560"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:21",
+      "sequence": 2518,
+      "chapter_label": "EXO 34",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 21
+        }
+      ],
+      "en": "“Six days you shall work, but on the seventh day you shall rest: in plowing time and in harvest you shall rest.",
+      "ko": "너는 엿새 동안 일하고 제 칠일에는 쉴찌니 밭 갈 때에나 거둘 때에도 쉴찌며",
+      "source_text_hash": "8ac45df1d84f8ba27b855c3bd0306bec8ec7d8752bae1b5cfefa103b20a5c88d",
+      "translation_text_hash": "da0deddb739c3125297ee43653cb0236573df7788e0bf5acadf33f3ed9f08198",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 엿새 동안 일하고 제 칠일에는 쉴찌니 밭 갈 때에나 거둘 때에도 쉴찌며"
+      ],
+      "raw_text_hashes": [
+        "da0deddb739c3125297ee43653cb0236573df7788e0bf5acadf33f3ed9f08198"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:22",
+      "sequence": 2519,
+      "chapter_label": "EXO 34",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 22
+        }
+      ],
+      "en": "“You shall observe the feast of weeks with the first fruits of wheat harvest, and the feast of harvest at the year’s end.",
+      "ko": "칠칠절 곧 맥추의 초실절을 지키고 가을에는 수장절을 지키라",
+      "source_text_hash": "ff4623d7b1a60fa7d91abb7bec65485ea1fff31034093144e108841f28604f95",
+      "translation_text_hash": "87373beaf31a989344db403d89c359cf3f66fe96dba914cb2d7a4a0a6a9caf67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠칠절 곧 맥추의 초실절을 지키고 가을에는 수장절을 지키라"
+      ],
+      "raw_text_hashes": [
+        "87373beaf31a989344db403d89c359cf3f66fe96dba914cb2d7a4a0a6a9caf67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:23",
+      "sequence": 2520,
+      "chapter_label": "EXO 34",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 23
+        }
+      ],
+      "en": "Three times in the year all your males shall appear before the Lord GOD, the God of Israel.",
+      "ko": "너희 모든 남자는 매년 세번씩 주 여호와 이스라엘의 하나님 앞에 보일찌라",
+      "source_text_hash": "58afec078231bdc1723f7ed6a4487145aa551c023010a669309012af9ff469c2",
+      "translation_text_hash": "e645119ef156d004d05881a73d75e173b48a4df73983d9012a368408a25f5d03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 모든 남자는 매년 세번씩 주 여호와 이스라엘의 하나님 앞에 보일찌라"
+      ],
+      "raw_text_hashes": [
+        "e645119ef156d004d05881a73d75e173b48a4df73983d9012a368408a25f5d03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:24",
+      "sequence": 2521,
+      "chapter_label": "EXO 34",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 24
+        }
+      ],
+      "en": "For I will drive out nations before you and enlarge your borders; neither shall any man desire your land when you go up to appear before the LORD, your God, three times in the year.",
+      "ko": "내가 열방을 네 앞에서 쫓아내고 네 지경을 넓히리니 네가 매년 세번씩 여호와 너의 하나님께 보이러 올 때에 아무 사람도 네 땅을 탐내어 엿보지 못하리라",
+      "source_text_hash": "4940aaddf73a6391ea3ffffc518e26121572e692abfb44d5110992da913c6a76",
+      "translation_text_hash": "bb7cdc3cb9615533da0c86c456b8af7d661790159476a27ffd3ed21aac2a26bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 열방을 네 앞에서 쫓아내고 네 지경을 넓히리니 네가 매년 세번씩 여호와 너의 하나님께 보이러 올 때에 아무 사람도 네 땅을 탐내어 엿보지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "bb7cdc3cb9615533da0c86c456b8af7d661790159476a27ffd3ed21aac2a26bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:25",
+      "sequence": 2522,
+      "chapter_label": "EXO 34",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 25
+        }
+      ],
+      "en": "“You shall not offer the blood of my sacrifice with leavened bread. The sacrifice of the feast of the Passover shall not be left to the morning.",
+      "ko": "너는 내 희생의 피를 유교병과 함께 드리지 말며 유월절 희생을 아침까지 두지 말찌며",
+      "source_text_hash": "c34844ca8a0208109a0ee55fae63f4616c6d13fa3be5b13b4350557447465d67",
+      "translation_text_hash": "c35cfe6b61e44a363378552ce5dd5b4fc08e1c9b1d5cf61b754f00e9195537a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 내 희생의 피를 유교병과 함께 드리지 말며 유월절 희생을 아침까지 두지 말찌며"
+      ],
+      "raw_text_hashes": [
+        "c35cfe6b61e44a363378552ce5dd5b4fc08e1c9b1d5cf61b754f00e9195537a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:26",
+      "sequence": 2523,
+      "chapter_label": "EXO 34",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 26
+        }
+      ],
+      "en": "“You shall bring the first of the first fruits of your ground to the house of the LORD your God. “You shall not boil a young goat in its mother’s milk.”",
+      "ko": "너의 토지소산의 처음 익은 것을 가져다가 너의 하나님 여호와의 전에 드릴찌며 너는 염소 새끼를 그 어미의 젖으로 삶지 말찌니라",
+      "source_text_hash": "2d30450cd01cce5cba2197e2a0a1981827819971f2826cb793c3f49000fd78aa",
+      "translation_text_hash": "58371d2f9271e9553fa619327a16b03324d0718cffb03d58564d1de532084642",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 토지소산의 처음 익은 것을 가져다가 너의 하나님 여호와의 전에 드릴찌며 너는 염소 새끼를 그 어미의 젖으로 삶지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "58371d2f9271e9553fa619327a16b03324d0718cffb03d58564d1de532084642"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:27",
+      "sequence": 2524,
+      "chapter_label": "EXO 34",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 27
+        }
+      ],
+      "en": "The LORD said to Moses, “Write these words; for in accordance with these words I have made a covenant with you and with Israel.”",
+      "ko": "여호와께서 모세에게 이르시되 너는 이 말들을 기록하라 내가 이 말들의 뜻대로 너와 이스라엘과 언약을 세웠음이니라 하시니라",
+      "source_text_hash": "e7539882215cff4e70bb811bae499cf6d401e8663ac0b4592c62275109ad662a",
+      "translation_text_hash": "19e36043e921adfc3143f8c35c7e8aaba95992c57c98db4f302a9c0c32e2fd5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 이 말들을 기록하라 내가 이 말들의 뜻대로 너와 이스라엘과 언약을 세웠음이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "19e36043e921adfc3143f8c35c7e8aaba95992c57c98db4f302a9c0c32e2fd5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:28",
+      "sequence": 2525,
+      "chapter_label": "EXO 34",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 28
+        }
+      ],
+      "en": "He was there with the LORD forty days and forty nights; he neither ate bread, nor drank water. He wrote on the tablets the words of the covenant, the ten commandments.",
+      "ko": "모세가 여호와와 함께 사십일 사십야를 거기 있으면서 떡도 먹지 아니하였고 물도 마시지 아니하였으며 여호와께서는 언약의 말씀 곧 십계를 그 판들에 기록하셨더라",
+      "source_text_hash": "b42f3c7a840972537b3680516aea86cf8866716ca382d1eb844b7ffdd09e4b9e",
+      "translation_text_hash": "b9362c2499924275d0e1857ddf33b138ac6bdee4a2e1d76d6499ebaa91115364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와와 함께 사십일 사십야를 거기 있으면서 떡도 먹지 아니하였고 물도 마시지 아니하였으며 여호와께서는 언약의 말씀 곧 십계를 그 판들에 기록하셨더라"
+      ],
+      "raw_text_hashes": [
+        "b9362c2499924275d0e1857ddf33b138ac6bdee4a2e1d76d6499ebaa91115364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:29",
+      "sequence": 2526,
+      "chapter_label": "EXO 34",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 29
+        }
+      ],
+      "en": "When Moses came down from Mount Sinai with the two tablets of the covenant in Moses’ hand, when he came down from the mountain, Moses didn’t know that the skin of his face shone by reason of his speaking with him.",
+      "ko": "모세가 그 증거의 두 판을 자기 손에 들고 시내산에서 내려오니 그 산에서 내려올 때에 모세는 자기가 여호와와 말씀하였음을 인하여 얼굴 꺼풀에 광채가 나나 깨닫지 못하였더라",
+      "source_text_hash": "dd199d555fe5c837e9296ff0fb674e475d17e8e54397f7f61a8374801cc5969d",
+      "translation_text_hash": "d8dcf1a49524d3a5bbb9acc39edf3600e7502e1ad1b4bef80d27689f33eaa42d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 증거의 두 판을 자기 손에 들고 시내산에서 내려오니 그 산에서 내려올 때에 모세는 자기가 여호와와 말씀하였음을 인하여 얼굴 꺼풀에 광채가 나나 깨닫지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "d8dcf1a49524d3a5bbb9acc39edf3600e7502e1ad1b4bef80d27689f33eaa42d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:30",
+      "sequence": 2527,
+      "chapter_label": "EXO 34",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 30
+        }
+      ],
+      "en": "When Aaron and all the children of Israel saw Moses, behold, the skin of his face shone; and they were afraid to come near him.",
+      "ko": "아론과 온 이스라엘 자손이 모세를 볼 때에 모세의 얼굴 꺼풀에 광채 남을 보고 그에게 가까이 하기를 두려워하더니",
+      "source_text_hash": "8e6f3b46503008fc0212ac82bc5ccd7333e54ed9104359841b8db5cd6d99d417",
+      "translation_text_hash": "4c7fb6191a73de219a32518d4cb155ee2470899edf741701ca7c5f2db9b5c279",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 온 이스라엘 자손이 모세를 볼 때에 모세의 얼굴 꺼풀에 광채 남을 보고 그에게 가까이 하기를 두려워하더니"
+      ],
+      "raw_text_hashes": [
+        "4c7fb6191a73de219a32518d4cb155ee2470899edf741701ca7c5f2db9b5c279"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:31",
+      "sequence": 2528,
+      "chapter_label": "EXO 34",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 31
+        }
+      ],
+      "en": "Moses called to them, and Aaron and all the rulers of the congregation returned to him; and Moses spoke to them.",
+      "ko": "모세가 그들을 부르니 아론과 회중의 모든 어른이 모세에게로 오고 모세가 그들과 말하니",
+      "source_text_hash": "1bba94e877ea4927ccae5175e64558745e7b48dfa2e6a7df456d26d02a89a263",
+      "translation_text_hash": "70f10809f30e1cade4b5b577851ec8cee9b92f1843700fb8aacbbeeb043b021d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그들을 부르니 아론과 회중의 모든 어른이 모세에게로 오고 모세가 그들과 말하니"
+      ],
+      "raw_text_hashes": [
+        "70f10809f30e1cade4b5b577851ec8cee9b92f1843700fb8aacbbeeb043b021d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:32",
+      "sequence": 2529,
+      "chapter_label": "EXO 34",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 32
+        }
+      ],
+      "en": "Afterward all the children of Israel came near, and he gave them all the commandments that the LORD had spoken with him on Mount Sinai.",
+      "ko": "그 후에야 온 이스라엘 자손이 가까이 오는지라 모세가 여호와께서 시내산에서 자기에게 이르신 말씀을 다 그들에게 명하고",
+      "source_text_hash": "c838ce4d3440e32cec2b1c5e3e8445c01c8ab4219d913d3ec84052cc9189b581",
+      "translation_text_hash": "fb025956c9bd796ccae97a9560014fcbaa6d63e4241f1f592f9060c0fc24b8ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에야 온 이스라엘 자손이 가까이 오는지라 모세가 여호와께서 시내산에서 자기에게 이르신 말씀을 다 그들에게 명하고"
+      ],
+      "raw_text_hashes": [
+        "fb025956c9bd796ccae97a9560014fcbaa6d63e4241f1f592f9060c0fc24b8ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:33",
+      "sequence": 2530,
+      "chapter_label": "EXO 34",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 33
+        }
+      ],
+      "en": "When Moses was done speaking with them, he put a veil on his face.",
+      "ko": "그들에게 말하기를 마치고 수건으로 자기 얼굴을 가리웠더라",
+      "source_text_hash": "e0f19fc5d8068ab36ed53709a5eb0c3e5492be36f1ebbc670dac288ad97904a8",
+      "translation_text_hash": "5f8f2e326371f4f6b4a66c31284dd982135c5a59a7c89027ddb746dd280ea954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 말하기를 마치고 수건으로 자기 얼굴을 가리웠더라"
+      ],
+      "raw_text_hashes": [
+        "5f8f2e326371f4f6b4a66c31284dd982135c5a59a7c89027ddb746dd280ea954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:34",
+      "sequence": 2531,
+      "chapter_label": "EXO 34",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 34
+        }
+      ],
+      "en": "But when Moses went in before the LORD to speak with him, he took the veil off, until he came out; and he came out, and spoke to the children of Israel that which he was commanded.",
+      "ko": "그러나 모세가 여호와 앞에 들어가서 함께 말씀할 때에는 나오기까지 수건을 벗고 있다가 나와서는 그 명하신 일을 이스라엘 자손에게 고하며",
+      "source_text_hash": "397718ff6ff4a6d418f211ca786efdffd164dbefcc4ea9a514909d7e44b4eb44",
+      "translation_text_hash": "ed37d772b74d8478d2f100fdd9f6c50aaa5cefcfaa4a565e8df3972f944903e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 모세가 여호와 앞에 들어가서 함께 말씀할 때에는 나오기까지 수건을 벗고 있다가 나와서는 그 명하신 일을 이스라엘 자손에게 고하며"
+      ],
+      "raw_text_hashes": [
+        "ed37d772b74d8478d2f100fdd9f6c50aaa5cefcfaa4a565e8df3972f944903e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:34:35",
+      "sequence": 2532,
+      "chapter_label": "EXO 34",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 34,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 34,
+          "verse": 35
+        }
+      ],
+      "en": "The children of Israel saw Moses’ face, that the skin of Moses’ face shone; so Moses put the veil on his face again, until he went in to speak with him.",
+      "ko": "이스라엘 자손이 모세의 얼굴의 광채를 보는 고로 모세가 여호와께 말씀하러 들어가기까지 다시 수건으로 자기 얼굴을 가리웠더라",
+      "source_text_hash": "f2ac60efffb7a9d89049e1c8006164fc47d522a113c0bee78ab28ca8585e5c3d",
+      "translation_text_hash": "e6744607a7745ec26849a0cdf3feac657edbb7f7351035b42e84af6a6b1a7c1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 모세의 얼굴의 광채를 보는 고로 모세가 여호와께 말씀하러 들어가기까지 다시 수건으로 자기 얼굴을 가리웠더라"
+      ],
+      "raw_text_hashes": [
+        "e6744607a7745ec26849a0cdf3feac657edbb7f7351035b42e84af6a6b1a7c1d"
+      ]
+    }
+  ]
+}

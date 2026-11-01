@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:042",
+  "unit_ordinal": 42,
+  "unit_label": "GEN 42",
+  "book_code": "GEN",
+  "chapter_number": 42,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:42:1",
+      "sequence": 1254,
+      "chapter_label": "GEN 42",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 1
+        }
+      ],
+      "en": "Now Jacob saw that there was grain in Egypt, and Jacob said to his sons, “Why do you look at one another?”",
+      "ko": "때에 야곱이 애굽에 곡식이 있음을 보고 아들들에게 이르되 너희는 어찌하여 서로 관망만 하느냐",
+      "source_text_hash": "263156255e0f4fab3c7e2ed3b58f06d64560c7adc8be1dd4a0b49aab164c30d9",
+      "translation_text_hash": "8ffd2d12ce31f4325117c3c56c5436620eeb8893b87d3d98b00c1cd5a9b08801",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 야곱이 애굽에 곡식이 있음을 보고 아들들에게 이르되 너희는 어찌하여 서로 관망만 하느냐"
+      ],
+      "raw_text_hashes": [
+        "8ffd2d12ce31f4325117c3c56c5436620eeb8893b87d3d98b00c1cd5a9b08801"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:2",
+      "sequence": 1255,
+      "chapter_label": "GEN 42",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 2
+        }
+      ],
+      "en": "He said, “Behold, I have heard that there is grain in Egypt. Go down there, and buy for us from there, so that we may live, and not die.”",
+      "ko": "야곱이 또 이르되 내가 들은즉 저 애굽에 곡식이 있다 하니 너희는 그리로 가서 거기서 우리를 위하여 사오라 그리하면 우리가 살고 죽지 아니하리라 하매",
+      "source_text_hash": "a3135548183e0618f3132513c0f214bb99070085f98f6c9278c34af651ade413",
+      "translation_text_hash": "60bc73ebf83dff6d3d2cd2ba373d1cdb1bdab437427df1715a4c5deed0823e99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 또 이르되 내가 들은즉 저 애굽에 곡식이 있다 하니 너희는 그리로 가서 거기서 우리를 위하여 사오라 그리하면 우리가 살고 죽지 아니하리라 하매"
+      ],
+      "raw_text_hashes": [
+        "60bc73ebf83dff6d3d2cd2ba373d1cdb1bdab437427df1715a4c5deed0823e99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:3",
+      "sequence": 1256,
+      "chapter_label": "GEN 42",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 3
+        }
+      ],
+      "en": "Joseph’s ten brothers went down to buy grain from Egypt.",
+      "ko": "요셉의 형 십인이 애굽에서 곡식을 사려고 내려갔으나",
+      "source_text_hash": "c77d5ca048046387860eeb8e991c22b1d41804cbe83a7f1586b3cb4c919fe53f",
+      "translation_text_hash": "2c91b53da1eb3ecacca98c5d368f368419764b3e408137d4bcabdc0c5ace469e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉의 형 십인이 애굽에서 곡식을 사려고 내려갔으나"
+      ],
+      "raw_text_hashes": [
+        "2c91b53da1eb3ecacca98c5d368f368419764b3e408137d4bcabdc0c5ace469e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:4",
+      "sequence": 1257,
+      "chapter_label": "GEN 42",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 4
+        }
+      ],
+      "en": "But Jacob didn’t send Benjamin, Joseph’s brother, with his brothers; for he said, “Lest perhaps harm happen to him.”",
+      "ko": "야곱이 요셉의 아우 베냐민을 그 형들과 함께 보내지 아니하였으니 이는 그의 말이 재난이 그에게 미칠까 두렵다 함이었더라",
+      "source_text_hash": "40371985675d44d2c22a9a17739b1f89af46d5300d992360df6da103e9954a67",
+      "translation_text_hash": "0a1afefd4651e631eafcb74c8a515f4ce895b24e59330fc871aa67bc7463d28a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 요셉의 아우 베냐민을 그 형들과 함께 보내지 아니하였으니 이는 그의 말이 재난이 그에게 미칠까 두렵다 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "0a1afefd4651e631eafcb74c8a515f4ce895b24e59330fc871aa67bc7463d28a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:5",
+      "sequence": 1258,
+      "chapter_label": "GEN 42",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 5
+        }
+      ],
+      "en": "The sons of Israel came to buy among those who came, for the famine was in the land of Canaan.",
+      "ko": "이스라엘의 아들들이 양식 사러간 자 중에 있으니 가나안 땅에 기근이 있음이라",
+      "source_text_hash": "33afa7ad8176abafda8d92bf3a988df5dd59280763d6f35e40245043439860ab",
+      "translation_text_hash": "47f4525a662c1e52fba33d1cd72a7cc6354a4413ff527f403e2e98870e0d09d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 아들들이 양식 사러간 자 중에 있으니 가나안 땅에 기근이 있음이라"
+      ],
+      "raw_text_hashes": [
+        "47f4525a662c1e52fba33d1cd72a7cc6354a4413ff527f403e2e98870e0d09d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:6",
+      "sequence": 1259,
+      "chapter_label": "GEN 42",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 6
+        }
+      ],
+      "en": "Joseph was the governor over the land. It was he who sold to all the people of the land. Joseph’s brothers came, and bowed themselves down to him with their faces to the earth.",
+      "ko": "때에 요셉이 나라의 총리로서 그 땅 모든 백성에게 팔더니 요셉의 형들이 와서 그 앞에서 땅에 엎드려 절하매",
+      "source_text_hash": "5447f55f5d1b7905446c436a404dd055becec0e103b13ee5b1cc2a22c8c4f4d2",
+      "translation_text_hash": "0bcc42824d0a38b0b66588eee35621f27eb7db9b3a627337ed8d380a1e293084",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 요셉이 나라의 총리로서 그 땅 모든 백성에게 팔더니 요셉의 형들이 와서 그 앞에서 땅에 엎드려 절하매"
+      ],
+      "raw_text_hashes": [
+        "0bcc42824d0a38b0b66588eee35621f27eb7db9b3a627337ed8d380a1e293084"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:7",
+      "sequence": 1260,
+      "chapter_label": "GEN 42",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 7
+        }
+      ],
+      "en": "Joseph saw his brothers, and he recognized them, but acted like a stranger to them, and spoke roughly with them. He said to them, “Where did you come from?” They said, “From the land of Canaan, to buy food.”",
+      "ko": "요셉이 보고 형들인줄 아나 모르는체 하고 엄한 소리로 그들에게 말하여 가로되 너희가 어디서 왔느냐 그들이 가로되 곡물을 사려고 가나안에서 왔나이다",
+      "source_text_hash": "2fd39f68ce553b28b10e55ddbd75ec62f04061dab9bcc02cee803dacd051e237",
+      "translation_text_hash": "530ca7297073b5fc54fa530b37d892c77a513178ed2543709f4a4b4ee02e3f86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 보고 형들인줄 아나 모르는체 하고 엄한 소리로 그들에게 말하여 가로되 너희가 어디서 왔느냐 그들이 가로되 곡물을 사려고 가나안에서 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "530ca7297073b5fc54fa530b37d892c77a513178ed2543709f4a4b4ee02e3f86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:8",
+      "sequence": 1261,
+      "chapter_label": "GEN 42",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 8
+        }
+      ],
+      "en": "Joseph recognized his brothers, but they didn’t recognize him.",
+      "ko": "요셉은 그 형들을 아나 그들은 요셉을 알지 못하더라",
+      "source_text_hash": "0d35f3d104e77cdaa4d763a03a9f2dade9de1478f11f4c17d0e47ff52f586e42",
+      "translation_text_hash": "2c79f0b8a7eec6b4ecfb982459e11decc195b09037fe1d170d0675e43a70585f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉은 그 형들을 아나 그들은 요셉을 알지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "2c79f0b8a7eec6b4ecfb982459e11decc195b09037fe1d170d0675e43a70585f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:9",
+      "sequence": 1262,
+      "chapter_label": "GEN 42",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 9
+        }
+      ],
+      "en": "Joseph remembered the dreams which he dreamed about them, and said to them, “You are spies! You have come to see the nakedness of the land.”",
+      "ko": "요셉이 그들에게 대하여 꾼 꿈을 생각하고 그들에게 이르되 너희는 정탐들이라 이 나라의 틈을 엿보려고 왔느니라",
+      "source_text_hash": "9f1092712a7c18e4b95bea50f7f0be2b9132e81883b2bd5558ecfc2a09b1fe78",
+      "translation_text_hash": "a2582bf8892b928325d757a3554afc556d24f7c977acb25f25a6cd3686e12fb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그들에게 대하여 꾼 꿈을 생각하고 그들에게 이르되 너희는 정탐들이라 이 나라의 틈을 엿보려고 왔느니라"
+      ],
+      "raw_text_hashes": [
+        "a2582bf8892b928325d757a3554afc556d24f7c977acb25f25a6cd3686e12fb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:10",
+      "sequence": 1263,
+      "chapter_label": "GEN 42",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 10
+        }
+      ],
+      "en": "They said to him, “No, my lord, but your servants have come to buy food.",
+      "ko": "그들이 그에게 이르되 내 주여 아니니이다 종들은 곡물을 사러 왔나이다",
+      "source_text_hash": "7fcb77d879812443e3a9853e60738ba3dbc735092011669f63ff962d6b0e86a0",
+      "translation_text_hash": "ced9ac67d75be6d83ec706595b6eccac84168d061f2b55f0f6a57a56f5b36d8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그에게 이르되 내 주여 아니니이다 종들은 곡물을 사러 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "ced9ac67d75be6d83ec706595b6eccac84168d061f2b55f0f6a57a56f5b36d8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:11",
+      "sequence": 1264,
+      "chapter_label": "GEN 42",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 11
+        }
+      ],
+      "en": "We are all one man’s sons; we are honest men. Your servants are not spies.”",
+      "ko": "우리는 다 한 사람의 아들로서 독실한 자니 종들은 정탐이 아니니이다",
+      "source_text_hash": "e5f4576b0178ac45a1d90f8716439047488b8024bbdcbba5f36c909c818db18a",
+      "translation_text_hash": "280e87f568594f5ce7e896397ded5e13749cc7a6a62f705b429d7b9b4efae320",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 다 한 사람의 아들로서 독실한 자니 종들은 정탐이 아니니이다"
+      ],
+      "raw_text_hashes": [
+        "280e87f568594f5ce7e896397ded5e13749cc7a6a62f705b429d7b9b4efae320"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:12",
+      "sequence": 1265,
+      "chapter_label": "GEN 42",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 12
+        }
+      ],
+      "en": "He said to them, “No, but you have come to see the nakedness of the land!”",
+      "ko": "요셉이 그들에게 이르되 아니라 너희가 이 나라의 틈을 엿보러 왔느니라",
+      "source_text_hash": "270d8f75824e8ca4d932db423b5b92358def106001f12ecbd3fe35c25d6f6930",
+      "translation_text_hash": "414ca21ea9932bb0753d21085dfffcb266ab4b2e692e44e368f64706cdb76b21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그들에게 이르되 아니라 너희가 이 나라의 틈을 엿보러 왔느니라"
+      ],
+      "raw_text_hashes": [
+        "414ca21ea9932bb0753d21085dfffcb266ab4b2e692e44e368f64706cdb76b21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:13",
+      "sequence": 1266,
+      "chapter_label": "GEN 42",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 13
+        }
+      ],
+      "en": "They said, “We, your servants, are twelve brothers, the sons of one man in the land of Canaan; and behold, the youngest is today with our father, and one is no more.”",
+      "ko": "그들이 가로되 주의 종 우리들은 십 이 형제로서 가나안 땅 한 사람의 아들들이라 말째 아들은 오늘 아버지와 함께 있고 또 하나는 없어졌나이다",
+      "source_text_hash": "7e63565943afb8b2127f53dfcb721715f868ec8d417a8add4f6bb25c8564e0fa",
+      "translation_text_hash": "cf7dfd6c8ccba9c49a26970d0f0a5feba354137ea731ac38de01e40d3e688be5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 주의 종 우리들은 십 이 형제로서 가나안 땅 한 사람의 아들들이라 말째 아들은 오늘 아버지와 함께 있고 또 하나는 없어졌나이다"
+      ],
+      "raw_text_hashes": [
+        "cf7dfd6c8ccba9c49a26970d0f0a5feba354137ea731ac38de01e40d3e688be5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:14",
+      "sequence": 1267,
+      "chapter_label": "GEN 42",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 14
+        }
+      ],
+      "en": "Joseph said to them, “It is like I told you, saying, ‘You are spies!’",
+      "ko": "요셉이 그들에게 이르되 내가 너희에게 이르기를 너희는 정탐들이라 한 말이 이것이니라",
+      "source_text_hash": "b23728731583515244e569d7db0d60598788f4d429f208bfb8f0fa34cffbbc35",
+      "translation_text_hash": "3ba207d0f5fb387b12fd4c3ae42ce98cc23f23204c44e9d4445587feb97cb46e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그들에게 이르되 내가 너희에게 이르기를 너희는 정탐들이라 한 말이 이것이니라"
+      ],
+      "raw_text_hashes": [
+        "3ba207d0f5fb387b12fd4c3ae42ce98cc23f23204c44e9d4445587feb97cb46e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:15",
+      "sequence": 1268,
+      "chapter_label": "GEN 42",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 15
+        }
+      ],
+      "en": "By this you shall be tested. By the life of Pharaoh, you shall not go out from here, unless your youngest brother comes here.",
+      "ko": "너희는 이같이 하여 너희 진실함을 증명할 것이라 바로의 생명으로 맹세하노니 너희 말째 아우가 여기 오지 아니하면 너희가 여기서 나가지 못하리라",
+      "source_text_hash": "98f785e48517c81ecf8f6c2cc4cdfe310095bac1703500a473df904a589b572a",
+      "translation_text_hash": "17a12752e4a6089d4ed34131ccba72dd5cdf9b3236c45560f9fa03ba9837f691",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이같이 하여 너희 진실함을 증명할 것이라 바로의 생명으로 맹세하노니 너희 말째 아우가 여기 오지 아니하면 너희가 여기서 나가지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "17a12752e4a6089d4ed34131ccba72dd5cdf9b3236c45560f9fa03ba9837f691"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:16",
+      "sequence": 1269,
+      "chapter_label": "GEN 42",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 16
+        }
+      ],
+      "en": "Send one of you, and let him get your brother, and you shall be bound, that your words may be tested, whether there is truth in you, or else by the life of Pharaoh surely you are spies.”",
+      "ko": "너희 중 하나를 보내어 너희 아우를 데려오게 하고 너희는 갇히어 있으라 내가 너희의 말을 시험하여 너희 중에 진실이 있는지 보리라 바로의 생명으로 맹세하노니 그리하지 아니하면 너희는 과연 정탐이니라 하고",
+      "source_text_hash": "4ba5a989371c9429cef1670e5d4c0253951d9f67925fbf1381d833e46141c2e7",
+      "translation_text_hash": "b96f17bb81e893da60836a2427fa771208864fe892dfe078781c43352c6ccf6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중 하나를 보내어 너희 아우를 데려오게 하고 너희는 갇히어 있으라 내가 너희의 말을 시험하여 너희 중에 진실이 있는지 보리라 바로의 생명으로 맹세하노니 그리하지 아니하면 너희는 과연 정탐이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "b96f17bb81e893da60836a2427fa771208864fe892dfe078781c43352c6ccf6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:17",
+      "sequence": 1270,
+      "chapter_label": "GEN 42",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 17
+        }
+      ],
+      "en": "He put them all together into custody for three days.",
+      "ko": "그들을 다 함께 삼일을 가두었더라",
+      "source_text_hash": "bd57237c817b38dcac90ab691d3ea0dae0f1dfa5f3596fa787f9bc241e6b73f3",
+      "translation_text_hash": "cce12ad7b102bdf9cd904bac7f891d3ea1e2b48f8bd8ba18df8f1c6ddb0de5f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 다 함께 삼일을 가두었더라"
+      ],
+      "raw_text_hashes": [
+        "cce12ad7b102bdf9cd904bac7f891d3ea1e2b48f8bd8ba18df8f1c6ddb0de5f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:18",
+      "sequence": 1271,
+      "chapter_label": "GEN 42",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 18
+        }
+      ],
+      "en": "Joseph said to them the third day, “Do this, and live, for I fear God.",
+      "ko": "삼일만에 요셉이 그들에게 이르되 나는 하나님을 경외하노니 너희는 이같이 하여 생명을 보전하라",
+      "source_text_hash": "e16a3d21928de76713fc3febd3c8e19fd7759616f1250dc50bf65ef73831f83d",
+      "translation_text_hash": "823cd94eaaf735eecb94a40bf990ff590fc068a56ea39990c4f7806126cbbbbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼일만에 요셉이 그들에게 이르되 나는 하나님을 경외하노니 너희는 이같이 하여 생명을 보전하라"
+      ],
+      "raw_text_hashes": [
+        "823cd94eaaf735eecb94a40bf990ff590fc068a56ea39990c4f7806126cbbbbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:19",
+      "sequence": 1272,
+      "chapter_label": "GEN 42",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 19
+        }
+      ],
+      "en": "If you are honest men, then let one of your brothers be bound in your prison; but you go, carry grain for the famine of your houses.",
+      "ko": "너희가 독실한 자이면 너희 형제중 한 사람만 그 옥에 갇히게 하고 너희는 곡식을 가지고 가서 너희 집들의 주림을 구하고",
+      "source_text_hash": "75ae045013ed321c153be896d600e06642bcbeb7b46fd9344c10a139ed14c793",
+      "translation_text_hash": "5e1d43a2ba8bf74484e979f386179cc3c7c61343304b1beb612dad1f2ba5d4a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 독실한 자이면 너희 형제중 한 사람만 그 옥에 갇히게 하고 너희는 곡식을 가지고 가서 너희 집들의 주림을 구하고"
+      ],
+      "raw_text_hashes": [
+        "5e1d43a2ba8bf74484e979f386179cc3c7c61343304b1beb612dad1f2ba5d4a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:20",
+      "sequence": 1273,
+      "chapter_label": "GEN 42",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 20
+        }
+      ],
+      "en": "Bring your youngest brother to me; so will your words be verified, and you won’t die.” They did so.",
+      "ko": "너희 말째 아우를 내게로 데리고 오라 그리하면 너희 말이 진실함이 되고 너희가 죽지 아니하리라 그들이 그대로 하니라",
+      "source_text_hash": "ceb79739179029e23cdc4404984706dcc02affa3af1450887d0f3aba67763153",
+      "translation_text_hash": "97a01c10b6b39b643437c9b43e0a6c23dd50a030a69e465f2f68957107dc9afc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 말째 아우를 내게로 데리고 오라 그리하면 너희 말이 진실함이 되고 너희가 죽지 아니하리라 그들이 그대로 하니라"
+      ],
+      "raw_text_hashes": [
+        "97a01c10b6b39b643437c9b43e0a6c23dd50a030a69e465f2f68957107dc9afc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:21",
+      "sequence": 1274,
+      "chapter_label": "GEN 42",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 21
+        }
+      ],
+      "en": "They said to one another, “We are certainly guilty concerning our brother, in that we saw the distress of his soul, when he begged us, and we wouldn’t listen. Therefore this distress has come upon us.”",
+      "ko": "그들이 서로 말하되 우리가 아우의 일로 인하여 범죄하였도다 그가 우리에게 애걸할 때에 그 마음의 괴로움을 보고도 듣지 아니하였으므로 이 괴로움이 우리에게 임하도다",
+      "source_text_hash": "612c53ecab4738c7ca78f09c46599621caab7befa7e270e1598c1ae986be42c6",
+      "translation_text_hash": "5bc585f8d06e9d2892e93b700c4c3c73a931dfc0a9800381c1536f02718f2869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 서로 말하되 우리가 아우의 일로 인하여 범죄하였도다 그가 우리에게 애걸할 때에 그 마음의 괴로움을 보고도 듣지 아니하였으므로 이 괴로움이 우리에게 임하도다"
+      ],
+      "raw_text_hashes": [
+        "5bc585f8d06e9d2892e93b700c4c3c73a931dfc0a9800381c1536f02718f2869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:22",
+      "sequence": 1275,
+      "chapter_label": "GEN 42",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 22
+        }
+      ],
+      "en": "Reuben answered them, saying, “Didn’t I tell you, saying, ‘Don’t sin against the child,’ and you wouldn’t listen? Therefore also, behold, his blood is required.”",
+      "ko": "르우벤이 그들에게 대답하여 가로되 내가 너희더러 그 아이에게 득죄하지 말라고 하지 아니하였느냐 그래도 너희가 듣지 아니하였느니라 그러므로 그의 피 값을 내게 되었도다 하니",
+      "source_text_hash": "065cc8566a60b5e13d7310b4d53ea148c5256e79caee517b1922ffa9c29b8df7",
+      "translation_text_hash": "5446e6234b92a8c6adf0e3f65db7b336754a5d2fbcf3315c6936cff598eb5b5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤이 그들에게 대답하여 가로되 내가 너희더러 그 아이에게 득죄하지 말라고 하지 아니하였느냐 그래도 너희가 듣지 아니하였느니라 그러므로 그의 피 값을 내게 되었도다 하니"
+      ],
+      "raw_text_hashes": [
+        "5446e6234b92a8c6adf0e3f65db7b336754a5d2fbcf3315c6936cff598eb5b5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:23",
+      "sequence": 1276,
+      "chapter_label": "GEN 42",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 23
+        }
+      ],
+      "en": "They didn’t know that Joseph understood them; for there was an interpreter between them.",
+      "ko": "피차간에 통변을 세웠으므로 그들은 요셉이 그 말을 알아 들은줄을 알지 못하였더라",
+      "source_text_hash": "207404f87377551dc015ebd2cf008e91b23ec958d901bb96cc644e21eba440e9",
+      "translation_text_hash": "a49442fa8603405c0a58a7a49a83ab15f8a784fc6162d5636ba646292563c97a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피차간에 통변을 세웠으므로 그들은 요셉이 그 말을 알아 들은줄을 알지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "a49442fa8603405c0a58a7a49a83ab15f8a784fc6162d5636ba646292563c97a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:24",
+      "sequence": 1277,
+      "chapter_label": "GEN 42",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 24
+        }
+      ],
+      "en": "He turned himself away from them, and wept. Then he returned to them, and spoke to them, and took Simeon from among them, and bound him before their eyes.",
+      "ko": "요셉이 그들을 떠나 가서 울고 다시 돌아와서 그들과 말하다가 그들 중에서 시므온을 취하여 그들의 목전에서 결박하고",
+      "source_text_hash": "ce2d58122415c5d63f23a8cfe5dc05e58fdd111a93dd43aa57497f87945e3fdb",
+      "translation_text_hash": "bb988efb97da3745a0e26f5698ed8878c5c0c177595fd5ab2a2f298fc1eec793",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그들을 떠나 가서 울고 다시 돌아와서 그들과 말하다가 그들 중에서 시므온을 취하여 그들의 목전에서 결박하고"
+      ],
+      "raw_text_hashes": [
+        "bb988efb97da3745a0e26f5698ed8878c5c0c177595fd5ab2a2f298fc1eec793"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:25",
+      "sequence": 1278,
+      "chapter_label": "GEN 42",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 25
+        }
+      ],
+      "en": "Then Joseph gave a command to fill their bags with grain, and to restore each man’s money into his sack, and to give them food for the way. So it was done to them.",
+      "ko": "명하여 곡물을 그 그릇에 채우게 하고 각인의 돈은 그 자루에 도로 넣게 하고 또 길 양식을 그들에게 주게 하니 그대로 행하였더라",
+      "source_text_hash": "8852b682f7b5ee007840475a0cac73b405aba10b57cf2d2a70cd00c79982169e",
+      "translation_text_hash": "8e6bcf871d21bebd5e43e21fdf717973f9c11ed744da78a629c08d26ec9d0b43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명하여 곡물을 그 그릇에 채우게 하고 각인의 돈은 그 자루에 도로 넣게 하고 또 길 양식을 그들에게 주게 하니 그대로 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "8e6bcf871d21bebd5e43e21fdf717973f9c11ed744da78a629c08d26ec9d0b43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:26",
+      "sequence": 1279,
+      "chapter_label": "GEN 42",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 26
+        }
+      ],
+      "en": "They loaded their donkeys with their grain, and departed from there.",
+      "ko": "그들이 곡식을 나귀에 싣고 그곳을 떠났더니",
+      "source_text_hash": "efd49ef63a2dd979a433c3b5157f0acedd9b1224a56836f055ed42418eb220bf",
+      "translation_text_hash": "099f32800abed3e89dad52848197519f1a66b7e1251713ebbed45f31eae6f8a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 곡식을 나귀에 싣고 그곳을 떠났더니"
+      ],
+      "raw_text_hashes": [
+        "099f32800abed3e89dad52848197519f1a66b7e1251713ebbed45f31eae6f8a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:27",
+      "sequence": 1280,
+      "chapter_label": "GEN 42",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 27
+        }
+      ],
+      "en": "As one of them opened his sack to give his donkey food in the lodging place, he saw his money. Behold, it was in the mouth of his sack.",
+      "ko": "한 사람이 객점에서 나귀에게 먹이를 주려고 자루를 풀고 본즉 그 돈이 자루 아구에 있는지라",
+      "source_text_hash": "80d8c557781212a688b35e05caea71f84fd98d4f9e51637cc73d78417bb7fa38",
+      "translation_text_hash": "7fc32f56e1bc66b3c34f5491d7e04858927b9980ec0c931153139767f1853430",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 객점에서 나귀에게 먹이를 주려고 자루를 풀고 본즉 그 돈이 자루 아구에 있는지라"
+      ],
+      "raw_text_hashes": [
+        "7fc32f56e1bc66b3c34f5491d7e04858927b9980ec0c931153139767f1853430"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:28",
+      "sequence": 1281,
+      "chapter_label": "GEN 42",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 28
+        }
+      ],
+      "en": "He said to his brothers, “My money is restored! Behold, it is in my sack!” Their hearts failed them, and they turned trembling to one another, saying, “What is this that God has done to us?”",
+      "ko": "그가 그 형제에게 고하되 내 돈을 도로 넣었도다 보라 자루 속에 있도다 이에 그들이 혼이 나서 떨며 서로 돌아보며 말하되 하나님이 어찌하여 우리에게 이 일을 행하셨는고 하고",
+      "source_text_hash": "d66349214a080d620ed666f5bac4d7cb73c635f89decd9efdcf52e3cdf3299f6",
+      "translation_text_hash": "927f2fa07185a09ae9f4d4e227ffe877cd5137c24cfc9496e19656f64d4a2c16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 형제에게 고하되 내 돈을 도로 넣었도다 보라 자루 속에 있도다 이에 그들이 혼이 나서 떨며 서로 돌아보며 말하되 하나님이 어찌하여 우리에게 이 일을 행하셨는고 하고"
+      ],
+      "raw_text_hashes": [
+        "927f2fa07185a09ae9f4d4e227ffe877cd5137c24cfc9496e19656f64d4a2c16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:29",
+      "sequence": 1282,
+      "chapter_label": "GEN 42",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 29
+        }
+      ],
+      "en": "They came to Jacob their father, to the land of Canaan, and told him all that had happened to them, saying,",
+      "ko": "그들이 가나안 땅에 돌아와 그 아비 야곱에게 이르러 그 만난 일을 자세히 고하여 가로되",
+      "source_text_hash": "a1ea374ed0153ba20a2bd52d21059ad236bc8acb0bc21e8db4122fcb97ca65c2",
+      "translation_text_hash": "bff25b4f65c486d4841e329b8eea44781ffac4d9b37f269e05e58e77fc145654",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가나안 땅에 돌아와 그 아비 야곱에게 이르러 그 만난 일을 자세히 고하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "bff25b4f65c486d4841e329b8eea44781ffac4d9b37f269e05e58e77fc145654"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:30",
+      "sequence": 1283,
+      "chapter_label": "GEN 42",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 30
+        }
+      ],
+      "en": "“The man, the lord of the land, spoke roughly with us, and took us for spies of the country.",
+      "ko": "그 땅의 주 그 사람이 엄히 우리에게 말씀하고 우리를 그 나라 정탐자로 여기기로",
+      "source_text_hash": "25a0c4ded94bfb444dc3a8c7b63bb93d2fed77e379eddac1ecb34098a1074d57",
+      "translation_text_hash": "4b9029df9463c5928852fec446f495dd697b55ff1bb66daa06909f6772202769",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅의 주 그 사람이 엄히 우리에게 말씀하고 우리를 그 나라 정탐자로 여기기로"
+      ],
+      "raw_text_hashes": [
+        "4b9029df9463c5928852fec446f495dd697b55ff1bb66daa06909f6772202769"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:31",
+      "sequence": 1284,
+      "chapter_label": "GEN 42",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 31
+        }
+      ],
+      "en": "We said to him, ‘We are honest men. We are no spies.",
+      "ko": "우리가 그에게 이르되 우리는 독실한 자요 정탐이 아니니이다",
+      "source_text_hash": "fa9252a125945b6dc804b87a08b72e773826539d59a1f4bbeacd4c19682cac07",
+      "translation_text_hash": "a885e7270d346ceda7388e49ec16acca45b131a5f86f4c416ea932b8057c3ddd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그에게 이르되 우리는 독실한 자요 정탐이 아니니이다"
+      ],
+      "raw_text_hashes": [
+        "a885e7270d346ceda7388e49ec16acca45b131a5f86f4c416ea932b8057c3ddd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:32",
+      "sequence": 1285,
+      "chapter_label": "GEN 42",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 32
+        }
+      ],
+      "en": "We are twelve brothers, sons of our father; one is no more, and the youngest is today with our father in the land of Canaan.’",
+      "ko": "우리는 한 아비의 아들 십 이 형제로서 하나는 없어지고 말째는 오늘 우리 아버지와 함께 가나안 땅에 있나이다 하였더니",
+      "source_text_hash": "afbbbf384002aa66d1a009209352590a74ad9e2131db4c4554411467edf98ecf",
+      "translation_text_hash": "0b0c43dea544a1156179e472cae72d9ccc22ccd3cca78769f30b745ea8a1960f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 한 아비의 아들 십 이 형제로서 하나는 없어지고 말째는 오늘 우리 아버지와 함께 가나안 땅에 있나이다 하였더니"
+      ],
+      "raw_text_hashes": [
+        "0b0c43dea544a1156179e472cae72d9ccc22ccd3cca78769f30b745ea8a1960f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:33",
+      "sequence": 1286,
+      "chapter_label": "GEN 42",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 33
+        }
+      ],
+      "en": "The man, the lord of the land, said to us, ‘By this I will know that you are honest men: leave one of your brothers with me, and take grain for the famine of your houses, and go your way.",
+      "ko": "그 땅의 주 그 사람이 우리에게 이르되 내가 이같이 하여 너희가 독실한 자임을 알리니 너희 형제중 하나를 내게 두고 양식을 가지고 가서 너희 집들의 주림을 구하고",
+      "source_text_hash": "de0ad4a6664e78d4f407dca4de1e6929773fa6752af284fb3f0421668b0be26e",
+      "translation_text_hash": "777e1a24cd1e8d8bd35b161d435fbd7c3a4945945cf7bc3951451053ca66ed1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅의 주 그 사람이 우리에게 이르되 내가 이같이 하여 너희가 독실한 자임을 알리니 너희 형제중 하나를 내게 두고 양식을 가지고 가서 너희 집들의 주림을 구하고"
+      ],
+      "raw_text_hashes": [
+        "777e1a24cd1e8d8bd35b161d435fbd7c3a4945945cf7bc3951451053ca66ed1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:34",
+      "sequence": 1287,
+      "chapter_label": "GEN 42",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 34
+        }
+      ],
+      "en": "Bring your youngest brother to me. Then I will know that you are not spies, but that you are honest men. So I will deliver your brother to you, and you shall trade in the land.’”",
+      "ko": "너희 말째 아우를 내게로 데려 오라 그리하면 너희가 정탐이 아니요 독실한 자임을 내가 알고 너희 형제를 너희에게 돌리리니 너희가 이 나라에서 무역하리라 하더이다 하고",
+      "source_text_hash": "0f48997fa77eb5e8b754f63049323237e386bec92af9cabd9512b8d1df9bc27d",
+      "translation_text_hash": "539072d3ef0e6350348126820e4e1cfea88b23983a56a6a88413f0a15092e84b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 말째 아우를 내게로 데려 오라 그리하면 너희가 정탐이 아니요 독실한 자임을 내가 알고 너희 형제를 너희에게 돌리리니 너희가 이 나라에서 무역하리라 하더이다 하고"
+      ],
+      "raw_text_hashes": [
+        "539072d3ef0e6350348126820e4e1cfea88b23983a56a6a88413f0a15092e84b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:35",
+      "sequence": 1288,
+      "chapter_label": "GEN 42",
+      "verse_label": "35",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 35
+        }
+      ],
+      "en": "As they emptied their sacks, behold, each man’s bundle of money was in his sack. When they and their father saw their bundles of money, they were afraid.",
+      "ko": "각기 자루를 쏟고 본즉 각인의 돈뭉치가 그 자루 속에 있는지라 그들과 그 아비가 돈뭉치를 보고 다 두려워하더니",
+      "source_text_hash": "7a3b5f0fb83ed6c318cd4b63f1690ef6f47e0e2d2ae14e6f7411580511b5d502",
+      "translation_text_hash": "7d06965de80f8fa52d37432ea2163893940c7f4465fadd79f9b329ab142d00d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각기 자루를 쏟고 본즉 각인의 돈뭉치가 그 자루 속에 있는지라 그들과 그 아비가 돈뭉치를 보고 다 두려워하더니"
+      ],
+      "raw_text_hashes": [
+        "7d06965de80f8fa52d37432ea2163893940c7f4465fadd79f9b329ab142d00d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:36",
+      "sequence": 1289,
+      "chapter_label": "GEN 42",
+      "verse_label": "36",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 36
+        }
+      ],
+      "en": "Jacob, their father, said to them, “You have bereaved me of my children! Joseph is no more, Simeon is no more, and you want to take Benjamin away. All these things are against me.”",
+      "ko": "그 아비 야곱이 그들에게 이르되 너희가 나로 나의 자식들을 잃게 하도다 요셉도 없어졌고 시므온도 없어졌거늘 베냐민을 또 빼앗아 가고자 하니 이는 다 나를 해롭게 함이로다",
+      "source_text_hash": "19e3d629a088ed8ee4f7870e20d075dd4cd5f75f5f5de4c745736c56fe88e549",
+      "translation_text_hash": "2c9894bba4731ba71567bcd7b053e376d20474e8684bb29dbaa5d8ae55beb62f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비 야곱이 그들에게 이르되 너희가 나로 나의 자식들을 잃게 하도다 요셉도 없어졌고 시므온도 없어졌거늘 베냐민을 또 빼앗아 가고자 하니 이는 다 나를 해롭게 함이로다"
+      ],
+      "raw_text_hashes": [
+        "2c9894bba4731ba71567bcd7b053e376d20474e8684bb29dbaa5d8ae55beb62f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:37",
+      "sequence": 1290,
+      "chapter_label": "GEN 42",
+      "verse_label": "37",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 37
+        }
+      ],
+      "en": "Reuben spoke to his father, saying, “Kill my two sons, if I don’t bring him to you. Entrust him to my care, and I will bring him to you again.”",
+      "ko": "르우벤이 아비에게 고하여 가로되 내가 그를 아버지께로 데리고 오지 아니하거든 나의 두 아들을 죽이소서 그를 내 손에 맡기소서 내가 그를 아버지께로 데리고 돌아오리이다",
+      "source_text_hash": "27479c434e1354fa5c6b5b7055431f04b19e137d460b54db5bd29c8328807c9d",
+      "translation_text_hash": "47942ef04fa98a9824535518691a453bb28969ce9ce08142dd7bdf7382b4900d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤이 아비에게 고하여 가로되 내가 그를 아버지께로 데리고 오지 아니하거든 나의 두 아들을 죽이소서 그를 내 손에 맡기소서 내가 그를 아버지께로 데리고 돌아오리이다"
+      ],
+      "raw_text_hashes": [
+        "47942ef04fa98a9824535518691a453bb28969ce9ce08142dd7bdf7382b4900d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:42:38",
+      "sequence": 1291,
+      "chapter_label": "GEN 42",
+      "verse_label": "38",
+      "locator": {
+        "book": "GEN",
+        "chapter": 42,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 42,
+          "verse": 38
+        }
+      ],
+      "en": "He said, “My son shall not go down with you; for his brother is dead, and he only is left. If harm happens to him along the way in which you go, then you will bring down my gray hairs with sorrow to Sheol.”",
+      "ko": "야곱이 가로되 내 아들은 너희와 함께 내려가지 못하리니 그의 형은 죽고 그만 남았음이라 만일 너희 행하는 길에서 재난이 그 몸에 미치면 너희가 나의 흰 머리로 슬피 음부로 내려가게 함이 되리라",
+      "source_text_hash": "8182d7be7613bea4b2908af154b0eaee4f77e8735b3173c70bc97789c0e2be08",
+      "translation_text_hash": "75ee9c6fe84e8c7453a24eec56ebbaf4821d42bc4b39e1ecd0cf3403494a02b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 가로되 내 아들은 너희와 함께 내려가지 못하리니 그의 형은 죽고 그만 남았음이라 만일 너희 행하는 길에서 재난이 그 몸에 미치면 너희가 나의 흰 머리로 슬피 음부로 내려가게 함이 되리라"
+      ],
+      "raw_text_hashes": [
+        "75ee9c6fe84e8c7453a24eec56ebbaf4821d42bc4b39e1ecd0cf3403494a02b9"
+      ]
+    }
+  ]
+}

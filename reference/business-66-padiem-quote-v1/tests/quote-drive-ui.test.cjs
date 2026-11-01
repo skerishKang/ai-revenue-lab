@@ -26,7 +26,9 @@ function stubDocument() {
       type: "",
       hidden: false,
       disabled: false,
-      textContent: "",
+      _text: "",
+      get textContent() { return this._text + this.children.map(child => child.textContent).join(""); },
+      set textContent(value) { this._text = String(value); this.children = []; },
       value: "",
       dataset: {},
       appendChild(child) { this.children.push(child); return child; },
@@ -462,7 +464,12 @@ function harness(options) {
     ui.click("save");
     await settle();
     assert.equal(h.state.created.length, 0, "NO_UPLOAD_WITHOUT_PDF");
-    assert.ok(ui.statusText().indexOf("pdf_source_unavailable") !== -1, "PDF 실패 코드 표면화");
+    const status = ui.container.children[0];
+    const note = status.children.find((child) => child.className === "error-code");
+    assert.ok(status._text.includes("PDF를 만들지 못해 저장을 시작하지 않았습니다"), "PDF_ERROR_COPY");
+    assert.ok(!status._text.includes("pdf_source_unavailable"), "PDF_CODE_NOT_IN_SENTENCE");
+    assert.ok(note && note.tagName === "small", "PDF_REFERENCE_SEPARATE");
+    assert.equal(note.textContent, "참고 코드: pdf_source_unavailable", "PDF_REFERENCE_CODE");
   }
 
   /* ── 9. 불러오기: 승인 템플릿 확인 후 편집기 반영 ── */
@@ -785,7 +792,7 @@ function harness(options) {
   {
     const h = harness({ clientId: "" });
     const ui = h.mount();
-    assert.ok(ui.statusText().indexOf("B66_DRIVE_CLIENT_ID") !== -1, "STATUS_NAMES_MISSING_CONFIG");
+    assert.ok(ui.statusText().indexOf("참고 코드: drive_configuration_missing") !== -1, "STATUS_MISSING_CONFIG_CODE");
     assert.ok(ui.statusText().indexOf("PDF 다운로드") !== -1, "STATUS_KEEPS_EXISTING_FEATURE_NOTE");
     assert.equal(ui.statusTone(), "info", "STATUS_TONE_INFO");
     assert.equal(ui.saveDisabled(), true, "SAVE_DISABLED_WHEN_NOT_CONFIGURED");
@@ -800,7 +807,7 @@ function harness(options) {
     assert.equal(ui.saveDisabled(), true, "MALFORMED_CLIENT_SAVE_DISABLED");
     assert.equal(ui.openDisabled(), true, "MALFORMED_CLIENT_OPEN_DISABLED");
     assert.ok(ui.statusText().indexOf("형식이 올바르지 않습니다") !== -1, "MALFORMED_CLIENT_FORMAT_WARNING");
-    assert.ok(ui.statusText().indexOf("B66_DRIVE_CLIENT_ID") !== -1, "MALFORMED_CLIENT_NAMES_VALUE");
+    assert.ok(ui.statusText().indexOf("참고 코드: drive_configuration_invalid") !== -1, "MALFORMED_CLIENT_REFERENCE");
     assert.equal(ui.statusTone(), "info", "MALFORMED_CLIENT_TONE_INFO");
     /* 연결 시도도 시작되지 않는다(팝업·네트워크 없음) */
     ui.click("connect");

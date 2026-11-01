@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:007",
+  "unit_ordinal": 374,
+  "unit_label": "2CH 7",
+  "book_code": "2CH",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:7:1",
+      "sequence": 11326,
+      "chapter_label": "2CH 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Now when Solomon had finished praying, fire came down from heaven and consumed the burnt offering and the sacrifices; and the LORD’s glory filled the house.",
+      "ko": "솔로몬이 기도를 마치매 불이 하늘에서부터 내려와서 그 번제물과 제물들을 사르고 여호와의 영광이 그 전에 가득하니",
+      "source_text_hash": "170220ae14c6713428c6ec4eb58b86308cfa712652512cc001e09fe891cbe538",
+      "translation_text_hash": "29566b34c110cf5691b749a996617e35b6f5be0a286adc5480fbdd4b35322c7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 기도를 마치매 불이 하늘에서부터 내려와서 그 번제물과 제물들을 사르고 여호와의 영광이 그 전에 가득하니"
+      ],
+      "raw_text_hashes": [
+        "29566b34c110cf5691b749a996617e35b6f5be0a286adc5480fbdd4b35322c7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:2",
+      "sequence": 11327,
+      "chapter_label": "2CH 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "The priests could not enter into the LORD’s house, because the LORD’s glory filled the LORD’s house.",
+      "ko": "여호와의 영광이 여호와의 전에 가득하므로 제사장이 그 전에 능히 들어가지 못하였고",
+      "source_text_hash": "b04ea2abac1ea2c7c092dacefaa5cba4a5fd03a2ff534e40b1beab01dc37ec35",
+      "translation_text_hash": "df3b68ee9becb8509e1eedf64f1cabff97847a5ce71adf9a5d560c59ab593892",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 영광이 여호와의 전에 가득하므로 제사장이 그 전에 능히 들어가지 못하였고"
+      ],
+      "raw_text_hashes": [
+        "df3b68ee9becb8509e1eedf64f1cabff97847a5ce71adf9a5d560c59ab593892"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:3",
+      "sequence": 11328,
+      "chapter_label": "2CH 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "All the children of Israel looked on, when the fire came down, and the LORD’s glory was on the house. They bowed themselves with their faces to the ground on the pavement, worshiped, and gave thanks to the LORD, saying, “For he is good, for his loving kindness endures forever!”",
+      "ko": "이스라엘 모든 자손은 불이 내리는 것과 여호와의 영광이 전에 있는 것을 보고 박석 깐 땅에 엎드려 경배하며 여호와께 감사하여 가로되 선하시도다 그 인자하심이 영원하도다 하니라",
+      "source_text_hash": "4f092e3cd820241b5c3ceabf1fcbe8754911eba5e46eba5e550dcbb30d1dce98",
+      "translation_text_hash": "b9911941ba6e552f2fc1e8c0bd9e8da93a3e9034b4c41b33a163c27c65721d70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 자손은 불이 내리는 것과 여호와의 영광이 전에 있는 것을 보고 박석 깐 땅에 엎드려 경배하며 여호와께 감사하여 가로되 선하시도다 그 인자하심이 영원하도다 하니라"
+      ],
+      "raw_text_hashes": [
+        "b9911941ba6e552f2fc1e8c0bd9e8da93a3e9034b4c41b33a163c27c65721d70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:4",
+      "sequence": 11329,
+      "chapter_label": "2CH 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Then the king and all the people offered sacrifices before the LORD.",
+      "ko": "이에 왕과 모든 백성이 여호와 앞에 제사를 드리니",
+      "source_text_hash": "65128069e891b39a1c3746838662a52ed24795c19fa3ea43ee7457b7505be245",
+      "translation_text_hash": "7cac00f1ff4c92c9d86f45b857646103f457da90eb2908f2abc5499abbe6821e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 왕과 모든 백성이 여호와 앞에 제사를 드리니"
+      ],
+      "raw_text_hashes": [
+        "7cac00f1ff4c92c9d86f45b857646103f457da90eb2908f2abc5499abbe6821e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:5",
+      "sequence": 11330,
+      "chapter_label": "2CH 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "King Solomon offered a sacrifice of twenty-two thousand head of cattle and a hundred twenty thousand sheep. So the king and all the people dedicated God’s house.",
+      "ko": "솔로몬왕의 드린 제물이 소가 이만 이천이요 양이 십 이만이라 이와 같이 왕과 모든 백성이 하나님의 전의 낙성식을 행하니라",
+      "source_text_hash": "ba19ab407cb41b8a2043b35f4df77c9747d280c33ba6101baf8c2b5e9bb9cdbb",
+      "translation_text_hash": "5516976c36943b52baded2645071971e934f4b8d8a1c3cf064d8147549063f61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕의 드린 제물이 소가 이만 이천이요 양이 십 이만이라 이와 같이 왕과 모든 백성이 하나님의 전의 낙성식을 행하니라"
+      ],
+      "raw_text_hashes": [
+        "5516976c36943b52baded2645071971e934f4b8d8a1c3cf064d8147549063f61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:6",
+      "sequence": 11331,
+      "chapter_label": "2CH 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "The priests stood, according to their positions; the Levites also with instruments of music of the LORD, which David the king had made to give thanks to the LORD, when David praised by their ministry, saying “For his loving kindness endures forever.” The priests sounded trumpets before them; and all Israel stood.",
+      "ko": "때에 제사장들은 직분대로 모셔 서고 레위 사람도 여호와의 악기를 가지고 섰으니 이 악기는 전에 다윗왕이 레위 사람으로 여호와를 찬송하려고 만들어서 여호와의 인자하심이 영원함을 감사케 하던 것이라 제사장은 무리 앞에서 나팔을 불고 온 이스라엘은 섰더라",
+      "source_text_hash": "e68234c65c69b9a21db7384a307f95a812aeaddea0bfcca58b607dbfdc08250c",
+      "translation_text_hash": "3773068016a2d7faac28eadd3b91c314caa5b21444ccee6321717a0373c0c52b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 제사장들은 직분대로 모셔 서고 레위 사람도 여호와의 악기를 가지고 섰으니 이 악기는 전에 다윗왕이 레위 사람으로 여호와를 찬송하려고 만들어서 여호와의 인자하심이 영원함을 감사케 하던 것이라 제사장은 무리 앞에서 나팔을 불고 온 이스라엘은 섰더라"
+      ],
+      "raw_text_hashes": [
+        "3773068016a2d7faac28eadd3b91c314caa5b21444ccee6321717a0373c0c52b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:7",
+      "sequence": 11332,
+      "chapter_label": "2CH 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Moreover Solomon made the middle of the court that was before the LORD’s house holy; for there he offered the burnt offerings and the fat of the peace offerings, because the bronze altar which Solomon had made was not able to receive the burnt offering, the meal offering, and the fat.",
+      "ko": "솔로몬이 또 여호와의 전 앞뜰 가운데를 거룩히 구별하고 거기서 번제물과 화목제의 기름을 드렸으니 이는 솔로몬의 지은 놋단이 능히 그 번제물과 소제물과 기름을 용납할 수 없음이더라",
+      "source_text_hash": "ed6947fde7c025f585d223276650e3970e584569562a6ccac69ea47ac6f0eb03",
+      "translation_text_hash": "45138431674e94a986ef8d75ae4ecb3f13ba746d206af4ee234a808e628ffba2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 또 여호와의 전 앞뜰 가운데를 거룩히 구별하고 거기서 번제물과 화목제의 기름을 드렸으니 이는 솔로몬의 지은 놋단이 능히 그 번제물과 소제물과 기름을 용납할 수 없음이더라"
+      ],
+      "raw_text_hashes": [
+        "45138431674e94a986ef8d75ae4ecb3f13ba746d206af4ee234a808e628ffba2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:8",
+      "sequence": 11333,
+      "chapter_label": "2CH 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "So Solomon held the feast at that time for seven days, and all Israel with him, a very great assembly, from the entrance of Hamath to the brook of Egypt.",
+      "ko": "그 때에 솔로몬이 칠일 동안 절기를 지켰는데 하맛 어귀에서부터 애굽 하수까지의 온 이스라엘의 심히 큰 회중이 모여 저와 함께 하였더니",
+      "source_text_hash": "0c3000384b67a93856d559a6162fd6d8a3c799add2fb634ec6cae90e1dfbd558",
+      "translation_text_hash": "44a1d3fe6d01fcffb21432db74e57cc812b81919448bf7d1c453f0290a168fab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 솔로몬이 칠일 동안 절기를 지켰는데 하맛 어귀에서부터 애굽 하수까지의 온 이스라엘의 심히 큰 회중이 모여 저와 함께 하였더니"
+      ],
+      "raw_text_hashes": [
+        "44a1d3fe6d01fcffb21432db74e57cc812b81919448bf7d1c453f0290a168fab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:9",
+      "sequence": 11334,
+      "chapter_label": "2CH 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "On the eighth day, they held a solemn assembly; for they kept the dedication of the altar seven days, and the feast seven days.",
+      "ko": "제 팔일에 무리가 한 성회를 여니라 단의 낙성식을 칠일 동안 행한 후 이 절기를 칠일 동안 지키니라",
+      "source_text_hash": "30f4f02d6227a51b96d68dc6e0d445c9df3cfd167e2c3dea5c3da13a7bdd2bb0",
+      "translation_text_hash": "e1a7f6fcf193928cf6a941a6efc0b9cbcf9502572867b1209f8ae3835eb0c0dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 팔일에 무리가 한 성회를 여니라 단의 낙성식을 칠일 동안 행한 후 이 절기를 칠일 동안 지키니라"
+      ],
+      "raw_text_hashes": [
+        "e1a7f6fcf193928cf6a941a6efc0b9cbcf9502572867b1209f8ae3835eb0c0dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:10",
+      "sequence": 11335,
+      "chapter_label": "2CH 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "On the twenty-third day of the seventh month, he sent the people away to their tents, joyful and glad of heart for the goodness that the LORD had shown to David, to Solomon, and to Israel his people.",
+      "ko": "칠월 이십 삼일에 왕이 백성을 그 장막으로 돌려보내매 백성이 여호와께서 다윗과 솔로몬과 그 백성 이스라엘에게 베푸신 은혜를 인하여 기뻐하며 마음에 즐거워하였더라",
+      "source_text_hash": "d1a861f132c9bbefb5c352a63524f56ea1774510152c3bd78a44c3803a79c8ac",
+      "translation_text_hash": "afaa9d966407d98413542acc64a9ed809d8cdfd044470f6e44b5ec14a916734b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠월 이십 삼일에 왕이 백성을 그 장막으로 돌려보내매 백성이 여호와께서 다윗과 솔로몬과 그 백성 이스라엘에게 베푸신 은혜를 인하여 기뻐하며 마음에 즐거워하였더라"
+      ],
+      "raw_text_hashes": [
+        "afaa9d966407d98413542acc64a9ed809d8cdfd044470f6e44b5ec14a916734b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:11",
+      "sequence": 11336,
+      "chapter_label": "2CH 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Thus Solomon finished the LORD’s house and the king’s house; and he successfully completed all that came into Solomon’s heart to make in the LORD’s house and in his own house.",
+      "ko": "솔로몬이 여호와의 전과 왕궁을 필역하고 무릇 그 심중에 여호와의 전과 자기의 궁궐에 어떻게 만들고자 한 것을 다 형통하게 이루니라",
+      "source_text_hash": "1142239f93b3fb3c7a3a04e8c8d7b702bb7016439602ed0a05386c4ea6318c1b",
+      "translation_text_hash": "1b7e860c6a8027e1f009205cce7b393063c1f5d0c27387b61c1d0b7a958f0e9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 여호와의 전과 왕궁을 필역하고 무릇 그 심중에 여호와의 전과 자기의 궁궐에 어떻게 만들고자 한 것을 다 형통하게 이루니라"
+      ],
+      "raw_text_hashes": [
+        "1b7e860c6a8027e1f009205cce7b393063c1f5d0c27387b61c1d0b7a958f0e9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:12",
+      "sequence": 11337,
+      "chapter_label": "2CH 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Then the LORD appeared to Solomon by night, and said to him, “I have heard your prayer, and have chosen this place for myself for a house of sacrifice.",
+      "ko": "밤에 여호와께서 솔로몬에게 나타나사 이르시되 내가 이미 네 기도를 듣고 이곳을 택하여 내게 제사하는 전을 삼았으니",
+      "source_text_hash": "036f6a3c23c67a7897d932f7c2947a9d374b13b28745486eb1381aec8f59a32c",
+      "translation_text_hash": "e230da4702c4c9aca6e76b2030b57f49e298a5db4f815e7eb428a2934e4f21ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 여호와께서 솔로몬에게 나타나사 이르시되 내가 이미 네 기도를 듣고 이곳을 택하여 내게 제사하는 전을 삼았으니"
+      ],
+      "raw_text_hashes": [
+        "e230da4702c4c9aca6e76b2030b57f49e298a5db4f815e7eb428a2934e4f21ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:13",
+      "sequence": 11338,
+      "chapter_label": "2CH 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "“If I shut up the sky so that there is no rain, or if I command the locust to devour the land, or if I send pestilence among my people,",
+      "ko": "혹 내가 하늘을 닫고 비를 내리지 아니하거나 혹 메뚜기로 토산을 먹게 하거나 혹 염병으로 내 백성 가운데 유행하게 할 때에",
+      "source_text_hash": "1c106b72bdd15eea07569f2469b06349a05ea9c781a81a4d9a23c080ea4447fb",
+      "translation_text_hash": "9594533d129d35a2162708d35a2f18b045f6f8c16c52eb5b46e01424bbfca0b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 내가 하늘을 닫고 비를 내리지 아니하거나 혹 메뚜기로 토산을 먹게 하거나 혹 염병으로 내 백성 가운데 유행하게 할 때에"
+      ],
+      "raw_text_hashes": [
+        "9594533d129d35a2162708d35a2f18b045f6f8c16c52eb5b46e01424bbfca0b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:14",
+      "sequence": 11339,
+      "chapter_label": "2CH 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "if my people who are called by my name will humble themselves, pray, seek my face, and turn from their wicked ways, then I will hear from heaven, will forgive their sin, and will heal their land.",
+      "ko": "내 이름으로 일컫는 내 백성이 그 악한 길에서 떠나 스스로 겸비하고 기도하여 내 얼굴을 구하면 내가 하늘에서 듣고 그 죄를 사하고 그 땅을 고칠찌라",
+      "source_text_hash": "dd8ccef31c8eabf237d1a5e9642b2a39112ea1b4fca6ac9b156c07ec0457216f",
+      "translation_text_hash": "1c0af5bcad924bbf2c157a33d175320d0f00a08c3d5d48c663617483dd0c5c1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 이름으로 일컫는 내 백성이 그 악한 길에서 떠나 스스로 겸비하고 기도하여 내 얼굴을 구하면 내가 하늘에서 듣고 그 죄를 사하고 그 땅을 고칠찌라"
+      ],
+      "raw_text_hashes": [
+        "1c0af5bcad924bbf2c157a33d175320d0f00a08c3d5d48c663617483dd0c5c1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:15",
+      "sequence": 11340,
+      "chapter_label": "2CH 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "Now my eyes will be open and my ears attentive to prayer that is made in this place.",
+      "ko": "이곳에서 하는 기도에 내가 눈을 들고 귀를 기울이리니",
+      "source_text_hash": "c63da5074768e8134f5e15ac55b477834f46f9d8bc7c5908179edf32591091a8",
+      "translation_text_hash": "5499543730daf38eb028821958381b9a71f901a96ad9641cb2024cf0ca9d7069",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이곳에서 하는 기도에 내가 눈을 들고 귀를 기울이리니"
+      ],
+      "raw_text_hashes": [
+        "5499543730daf38eb028821958381b9a71f901a96ad9641cb2024cf0ca9d7069"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:16",
+      "sequence": 11341,
+      "chapter_label": "2CH 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "For now I have chosen and made this house holy, that my name may be there forever; and my eyes and my heart will be there perpetually.",
+      "ko": "이는 내가 이미 이 전을 택하고 거룩하게하여 내 이름으로 여기 영영히 있게 하였음이라 내 눈과 내 마음이 항상 여기 있으리라",
+      "source_text_hash": "37ec0ef7005c2e39448e5e4c40a84825a12931e5aab7f6ba31506da4c8193f7e",
+      "translation_text_hash": "bd3e0f9486eabb09dbd3b8dc723290f98469b31fb675b510e9b7f7e86827205c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 이미 이 전을 택하고 거룩하게하여 내 이름으로 여기 영영히 있게 하였음이라 내 눈과 내 마음이 항상 여기 있으리라"
+      ],
+      "raw_text_hashes": [
+        "bd3e0f9486eabb09dbd3b8dc723290f98469b31fb675b510e9b7f7e86827205c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:17",
+      "sequence": 11342,
+      "chapter_label": "2CH 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "“As for you, if you will walk before me as David your father walked, and do according to all that I have commanded you, and will keep my statutes and my ordinances,",
+      "ko": "네가 만일 내 앞에서 행하기를 네 아비 다윗 같이 하여 내가 네게 명한 모든것을 행하여 내 율례와 규례를 지키면",
+      "source_text_hash": "69c2670fb73468a9eab02497e6ff5676b520f2ace44ea2f7d524d7470047692d",
+      "translation_text_hash": "edccbbe926d6d149c2ac5f48a3a194e1e9d8e7172a11705c10ec39358bbcd0f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 내 앞에서 행하기를 네 아비 다윗 같이 하여 내가 네게 명한 모든것을 행하여 내 율례와 규례를 지키면"
+      ],
+      "raw_text_hashes": [
+        "edccbbe926d6d149c2ac5f48a3a194e1e9d8e7172a11705c10ec39358bbcd0f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:18",
+      "sequence": 11343,
+      "chapter_label": "2CH 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "then I will establish the throne of your kingdom, according as I covenanted with David your father, saying, ‘There shall not fail you a man to be ruler in Israel.’",
+      "ko": "내가 네 나라 위를 견고케 하되 전에 내가 네 아비 다윗과 언약하기를 이스라엘을 다스릴 자가 네게서 끊어지지 아니하리라 한대로 하리라",
+      "source_text_hash": "1fc45a4d38ac75c7a860c0568417ab720201c382aaef26e55f2b1001731f712c",
+      "translation_text_hash": "80576ce02fe171051490c98b8bef19a32a8c31d1eed34e02eb60cf7d38c31c63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 나라 위를 견고케 하되 전에 내가 네 아비 다윗과 언약하기를 이스라엘을 다스릴 자가 네게서 끊어지지 아니하리라 한대로 하리라"
+      ],
+      "raw_text_hashes": [
+        "80576ce02fe171051490c98b8bef19a32a8c31d1eed34e02eb60cf7d38c31c63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:19",
+      "sequence": 11344,
+      "chapter_label": "2CH 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "But if you turn away and forsake my statutes and my commandments which I have set before you, and go and serve other gods and worship them,",
+      "ko": "그러나 너희가 만일 돌이켜 내가 너희 앞에 둔 내 율례와 명령을 버리고 가서 다른 신을 섬겨 숭배하면",
+      "source_text_hash": "1f214af21e6e6a0ae2e38ca69351db668eb48483ed6d36f29dc82261dca5772f",
+      "translation_text_hash": "c069686d02b1872c245b18dcad875765fdd0ae118b92aec3b460958d17857a13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희가 만일 돌이켜 내가 너희 앞에 둔 내 율례와 명령을 버리고 가서 다른 신을 섬겨 숭배하면"
+      ],
+      "raw_text_hashes": [
+        "c069686d02b1872c245b18dcad875765fdd0ae118b92aec3b460958d17857a13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:20",
+      "sequence": 11345,
+      "chapter_label": "2CH 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "then I will pluck them up by the roots out of my land which I have given them; and this house, which I have made holy for my name, I will cast out of my sight, and I will make it a proverb and a byword among all peoples.",
+      "ko": "내가 저희에게 준 땅에서 그 뿌리를 뽑아내고 내 이름을 위하여 거룩하게 한 이 전을 내 앞에서 버려 모든 민족 중에 속담거리와 이야기거리가 되게 하리니",
+      "source_text_hash": "d721f91c42af231d4aa7c85bf6acc06fbc9e601128bfdd6fdfaf7dd1057c9d14",
+      "translation_text_hash": "6f07d21fb37770d5f8001dde3f1d9660c256e8bc6347487e4100fb51cb5ecf77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희에게 준 땅에서 그 뿌리를 뽑아내고 내 이름을 위하여 거룩하게 한 이 전을 내 앞에서 버려 모든 민족 중에 속담거리와 이야기거리가 되게 하리니"
+      ],
+      "raw_text_hashes": [
+        "6f07d21fb37770d5f8001dde3f1d9660c256e8bc6347487e4100fb51cb5ecf77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:21",
+      "sequence": 11346,
+      "chapter_label": "2CH 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "This house, which is so high, everyone who passes by it will be astonished and say, ‘Why has the LORD done this to this land and to this house?’",
+      "ko": "이 전이 비록 높을찌라도 무릇 그리로 지나가는 자가 놀라 가로되 여호와께서 무슨 까닭으로 이 땅과 이 전에 이같이 행하셨는고 하면",
+      "source_text_hash": "677321d7976b9377003df067df23e52ad3587e460262bdb2b976d6daa417911c",
+      "translation_text_hash": "b725c8f844889c14316003b3e11d03c418751118fc1f2c71dc9e0c11fd5c4198",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 전이 비록 높을찌라도 무릇 그리로 지나가는 자가 놀라 가로되 여호와께서 무슨 까닭으로 이 땅과 이 전에 이같이 행하셨는고 하면"
+      ],
+      "raw_text_hashes": [
+        "b725c8f844889c14316003b3e11d03c418751118fc1f2c71dc9e0c11fd5c4198"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:7:22",
+      "sequence": 11347,
+      "chapter_label": "2CH 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "They shall answer, ‘Because they abandoned the LORD, the God of their fathers, who brought them out of the land of Egypt, and took other gods, worshiped them, and served them. Therefore he has brought all this evil on them.’”",
+      "ko": "대답하기를 저희가 자기 열조를 애굽 땅에서 인도하여 내신 자기 하나님 여호와를 버리고 다른 신에게 부종하여 그를 숭배하여 섬기므로 여호와께서 이 모든 재앙을 저희에게 내리셨다 하리라 하셨더라",
+      "source_text_hash": "28667bb74a8a3523f679c495c7385b5519f33786bf604a33e232fdc1f722e934",
+      "translation_text_hash": "fb2ef88bfe528acb9e257f0f152862d66639db94325712511a38c3e81126ddd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하기를 저희가 자기 열조를 애굽 땅에서 인도하여 내신 자기 하나님 여호와를 버리고 다른 신에게 부종하여 그를 숭배하여 섬기므로 여호와께서 이 모든 재앙을 저희에게 내리셨다 하리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "fb2ef88bfe528acb9e257f0f152862d66639db94325712511a38c3e81126ddd4"
+      ]
+    }
+  ]
+}

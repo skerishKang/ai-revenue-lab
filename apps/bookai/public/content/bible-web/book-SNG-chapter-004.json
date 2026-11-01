@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:SNG:chapter:004",
+  "unit_ordinal": 675,
+  "unit_label": "SNG 4",
+  "book_code": "SNG",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:SNG:4:1",
+      "sequence": 17584,
+      "chapter_label": "SNG 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Behold, you are beautiful, my love. Behold, you are beautiful. Your eyes are like doves behind your veil. Your hair is as a flock of goats, that descend from Mount Gilead.",
+      "ko": "내 사랑 너는 어여쁘고도 어여쁘다 너울 속에 있는 네 눈이 비둘기 같고 네 머리털은 길르앗산 기슭에 누운 무리 염소 같구나",
+      "source_text_hash": "412a59a627cc761a8e146bd1d7d9996ae73c4a801d58b4b5181063d4752c792c",
+      "translation_text_hash": "98cdaf0b586f678c3e694121507ff26f42d0a9cc1b74ecff20a12573dd4a32e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 사랑 너는 어여쁘고도 어여쁘다 너울 속에 있는 네 눈이 비둘기 같고 네 머리털은 길르앗산 기슭에 누운 무리 염소 같구나"
+      ],
+      "raw_text_hashes": [
+        "98cdaf0b586f678c3e694121507ff26f42d0a9cc1b74ecff20a12573dd4a32e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:2",
+      "sequence": 17585,
+      "chapter_label": "SNG 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Your teeth are like a newly shorn flock, which have come up from the washing, where every one of them has twins. None is bereaved among them.",
+      "ko": "네 이는 목욕장에서 나온 털 깎인 암양 곧 새끼 없는 것은 하나도 없이 각각 쌍태를 낳은 양 같구나",
+      "source_text_hash": "ae6add18e27de2a115f01626a535906333355a59dd2e50004727395157ddb0f2",
+      "translation_text_hash": "e0c4c5e27ebdc30644b47f69e362d6344c21b51324a68c4c3440c2e8ad0c6182",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 이는 목욕장에서 나온 털 깎인 암양 곧 새끼 없는 것은 하나도 없이 각각 쌍태를 낳은 양 같구나"
+      ],
+      "raw_text_hashes": [
+        "e0c4c5e27ebdc30644b47f69e362d6344c21b51324a68c4c3440c2e8ad0c6182"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:3",
+      "sequence": 17586,
+      "chapter_label": "SNG 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Your lips are like scarlet thread. Your mouth is lovely. Your temples are like a piece of a pomegranate behind your veil.",
+      "ko": "네 입술은 홍색 실 같고 네 입은 어여쁘고 너울 속의 네 뺨은 석류 한 쪽 같구나",
+      "source_text_hash": "e039096de6096a42d9808e2b373b6116318c4ebe39893eeff63d58e37aac85b2",
+      "translation_text_hash": "80af728f16132b32e9985ec4130a6e8af89efbb76a5c29b3f8b7957e4e553994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 입술은 홍색 실 같고 네 입은 어여쁘고 너울 속의 네 뺨은 석류 한 쪽 같구나"
+      ],
+      "raw_text_hashes": [
+        "80af728f16132b32e9985ec4130a6e8af89efbb76a5c29b3f8b7957e4e553994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:4",
+      "sequence": 17587,
+      "chapter_label": "SNG 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Your neck is like David’s tower built for an armory, on which a thousand shields hang, all the shields of the mighty men.",
+      "ko": "네 목은 군기를 두려고 건축한 다윗의 망대 곧 일천 방패, 용사의 모든 방패가 달린 망대 같고",
+      "source_text_hash": "97caae2100473d3cc6d28c9198d1a1446bfba4d95762d83aea4bb6d020aad7b7",
+      "translation_text_hash": "468c3b2a786121056ab5773b101fb6d3fa0a4f7040e01f17143aef89b154f4ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 목은 군기를 두려고 건축한 다윗의 망대 곧 일천 방패, 용사의 모든 방패가 달린 망대 같고"
+      ],
+      "raw_text_hashes": [
+        "468c3b2a786121056ab5773b101fb6d3fa0a4f7040e01f17143aef89b154f4ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:5",
+      "sequence": 17588,
+      "chapter_label": "SNG 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Your two breasts are like two fawns that are twins of a roe, which feed among the lilies.",
+      "ko": "네 두 유방은 백합화 가운데서 꼴을 먹는 쌍태 노루 새끼 같구나",
+      "source_text_hash": "e2a809ffb60e6925a10fc214fed51d0ff2197ff7e6ae55d633b409f3252c71fb",
+      "translation_text_hash": "82abd3c16630a0051bb9ead5b0b049b1efeac7fc6cd17af82bbe277ebe93b1a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 두 유방은 백합화 가운데서 꼴을 먹는 쌍태 노루 새끼 같구나"
+      ],
+      "raw_text_hashes": [
+        "82abd3c16630a0051bb9ead5b0b049b1efeac7fc6cd17af82bbe277ebe93b1a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:6",
+      "sequence": 17589,
+      "chapter_label": "SNG 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Until the day is cool, and the shadows flee away, I will go to the mountain of myrrh, to the hill of frankincense.",
+      "ko": "날이 기울고 그림자가 갈 때에 내가 몰약 산과 유향의 작은 산으로 가리라",
+      "source_text_hash": "9a4aa32b0685f44bb4d5c8a23a0ab9432bb94f4ed0afe70b09dbfb6f74df0b85",
+      "translation_text_hash": "19eec03262c8775fea70429453163624532c867cf62481707c38100735a46086",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 기울고 그림자가 갈 때에 내가 몰약 산과 유향의 작은 산으로 가리라"
+      ],
+      "raw_text_hashes": [
+        "19eec03262c8775fea70429453163624532c867cf62481707c38100735a46086"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:7",
+      "sequence": 17590,
+      "chapter_label": "SNG 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "You are all beautiful, my love. There is no spot in you.",
+      "ko": "나의 사랑 너는 순전히 어여뻐서 아무 흠이 없구나",
+      "source_text_hash": "76475051192ce31c42079449c908e23c37c92590f77221bf9ebdbf9556ac7a36",
+      "translation_text_hash": "98039a27dbed65332b45e5a0ac99d4dcf6571594812db8004772f5746379b419",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑 너는 순전히 어여뻐서 아무 흠이 없구나"
+      ],
+      "raw_text_hashes": [
+        "98039a27dbed65332b45e5a0ac99d4dcf6571594812db8004772f5746379b419"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:8",
+      "sequence": 17591,
+      "chapter_label": "SNG 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Come with me from Lebanon, my bride, with me from Lebanon. Look from the top of Amana, from the top of Senir and Hermon, from the lions’ dens, from the mountains of the leopards.",
+      "ko": "나의 신부야 너는 레바논에서부터 나와 함께 하고 레바논에서부터 나와 함께 가자 아마나와 스닐과 헤르몬 꼭대기에서 사자 굴과 표범 산에서 내려다보아라",
+      "source_text_hash": "e0cd2c596af8886bf6891fbeaab13f2d2a48c5c5ecc700fb2e4dd884dff58fec",
+      "translation_text_hash": "27a5f5b075c1b997697897321e9a83b45b5be0cf08a21d63bff7a19d762e9c45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 신부야 너는 레바논에서부터 나와 함께 하고 레바논에서부터 나와 함께 가자 아마나와 스닐과 헤르몬 꼭대기에서 사자 굴과 표범 산에서 내려다보아라"
+      ],
+      "raw_text_hashes": [
+        "27a5f5b075c1b997697897321e9a83b45b5be0cf08a21d63bff7a19d762e9c45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:9",
+      "sequence": 17592,
+      "chapter_label": "SNG 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "You have ravished my heart, my sister, my bride. You have ravished my heart with one of your eyes, with one chain of your neck.",
+      "ko": "나의 누이, 나의 신부야 네가 내 마음을 빼앗았구나 네 눈으로 한 번 보는 것과 네 목의 구슬 한 꿰미로 내 마음을 빼앗았구나",
+      "source_text_hash": "dc3354bbcff5488c38efffb83b872efc478023264139171170923ff28c6a87ee",
+      "translation_text_hash": "845cf0d3137d75abc5174ee337739ea364e2f0757d6878a6f83e96cdbe9d704f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 누이, 나의 신부야 네가 내 마음을 빼앗았구나 네 눈으로 한 번 보는 것과 네 목의 구슬 한 꿰미로 내 마음을 빼앗았구나"
+      ],
+      "raw_text_hashes": [
+        "845cf0d3137d75abc5174ee337739ea364e2f0757d6878a6f83e96cdbe9d704f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:10",
+      "sequence": 17593,
+      "chapter_label": "SNG 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "How beautiful is your love, my sister, my bride! How much better is your love than wine, the fragrance of your perfumes than all kinds of spices!",
+      "ko": "나의 누이, 나의 신부야 네 사랑이 어찌 그리 아름다운지 네 사랑은 포도주에 지나고 네 기름의 향기는 각양 향품보다 승하구나",
+      "source_text_hash": "679a2b4b0ba816413b5f4f7a05ead310751370a6ea499604f593d5827d875e4c",
+      "translation_text_hash": "b8ce72944651ab525b19d5ef62a56384a177116b8c38811a7b0c047fef287442",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 누이, 나의 신부야 네 사랑이 어찌 그리 아름다운지 네 사랑은 포도주에 지나고 네 기름의 향기는 각양 향품보다 승하구나"
+      ],
+      "raw_text_hashes": [
+        "b8ce72944651ab525b19d5ef62a56384a177116b8c38811a7b0c047fef287442"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:11",
+      "sequence": 17594,
+      "chapter_label": "SNG 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Your lips, my bride, drip like the honeycomb. Honey and milk are under your tongue. The smell of your garments is like the smell of Lebanon.",
+      "ko": "내 신부야 네 입술에서는 꿀 방울이 떨어지고 네 혀 밑에는 꿀과 젖이 있고 네 의복의 향기는 레바논의 향기 같구나",
+      "source_text_hash": "879d24655a60d15ff467b5fdafe2d4d81aa1af0a67f4c6621d6d494b63234501",
+      "translation_text_hash": "3444ec516b0ee006ceb83d8046e8cd0c29b5ed8f7cd25b3ec836efcc08954daf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 신부야 네 입술에서는 꿀 방울이 떨어지고 네 혀 밑에는 꿀과 젖이 있고 네 의복의 향기는 레바논의 향기 같구나"
+      ],
+      "raw_text_hashes": [
+        "3444ec516b0ee006ceb83d8046e8cd0c29b5ed8f7cd25b3ec836efcc08954daf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:12",
+      "sequence": 17595,
+      "chapter_label": "SNG 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "My sister, my bride, is a locked up garden; a locked up spring, a sealed fountain.",
+      "ko": "나의 누이, 나의 신부는 잠근 동산이요 덮은 우물이요 봉한 샘이로구나",
+      "source_text_hash": "ecfc7fdefe79ae4f64fe705634e49787bc1b4d07721808a673a75a470602c794",
+      "translation_text_hash": "646af8d41c313e603bb63ac5949fd88b3aefa0f7314b196b571548e0fec67adb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 누이, 나의 신부는 잠근 동산이요 덮은 우물이요 봉한 샘이로구나"
+      ],
+      "raw_text_hashes": [
+        "646af8d41c313e603bb63ac5949fd88b3aefa0f7314b196b571548e0fec67adb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:13",
+      "sequence": 17596,
+      "chapter_label": "SNG 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Your shoots are an orchard of pomegranates, with precious fruits, henna with spikenard plants,",
+      "ko": "네게서 나는 것은 석류나무와 각종 아름다운 과수와 고벨화와 나도초와",
+      "source_text_hash": "205af893658d736e3637559e662b118ad4fb47e89bd34a8b167e7717df570cac",
+      "translation_text_hash": "fc83d8f7d72f5d3302b03d20489ae7cb6c40b2241d8a4f0c8d5d7a0ef7746021",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게서 나는 것은 석류나무와 각종 아름다운 과수와 고벨화와 나도초와"
+      ],
+      "raw_text_hashes": [
+        "fc83d8f7d72f5d3302b03d20489ae7cb6c40b2241d8a4f0c8d5d7a0ef7746021"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:14",
+      "sequence": 17597,
+      "chapter_label": "SNG 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "spikenard and saffron, calamus and cinnamon, with every kind of incense tree; myrrh and aloes, with all the best spices,",
+      "ko": "나도와 번홍화와 창포와 계수와 각종 유향목과 몰약과 침향과 모든 귀한 향품이요",
+      "source_text_hash": "502a944c5612a6cac8c968c44de530be7b2a48787a922cd09dbdf84ef46a80ad",
+      "translation_text_hash": "e42f3dd030ea9861f14cbff0b0e5590d33a85ed77787d51d35dc0c1fa71cab3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도와 번홍화와 창포와 계수와 각종 유향목과 몰약과 침향과 모든 귀한 향품이요"
+      ],
+      "raw_text_hashes": [
+        "e42f3dd030ea9861f14cbff0b0e5590d33a85ed77787d51d35dc0c1fa71cab3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:15",
+      "sequence": 17598,
+      "chapter_label": "SNG 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "a fountain of gardens, a well of living waters, flowing streams from Lebanon. Beloved",
+      "ko": "너는 동산의 샘이요 생수의 우물이요 레바논에서부터 흐르는 시내로구나",
+      "source_text_hash": "b6518ec6d5fe80716d766d593995c78df28b183ec154193bf21fb43169bca858",
+      "translation_text_hash": "93e1ca7dba80a35eea7ab01fc19e5a4c8cb8de024de28155a3fa110ba114903b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 동산의 샘이요 생수의 우물이요 레바논에서부터 흐르는 시내로구나"
+      ],
+      "raw_text_hashes": [
+        "93e1ca7dba80a35eea7ab01fc19e5a4c8cb8de024de28155a3fa110ba114903b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:4:16",
+      "sequence": 17599,
+      "chapter_label": "SNG 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "SNG",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "Awake, north wind, and come, you south! Blow on my garden, that its spices may flow out. Let my beloved come into his garden, and taste his precious fruits.",
+      "ko": "북풍아 일어나라 남풍아 오라 나의 동산에 불어서 향기를 날리라 나의 사랑하는 자가 그 동산에 들어가서 그 아름다운 실과 먹기를 원하노라",
+      "source_text_hash": "d3e9dccdd7d9665d0c4a52bd3aa1234b110461e1e4349eb20e77577cb106363b",
+      "translation_text_hash": "927eadbb787a8769c7c0d7dd7234f0aa2bff2f00dcaeea5afd88644e580167aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북풍아 일어나라 남풍아 오라 나의 동산에 불어서 향기를 날리라 나의 사랑하는 자가 그 동산에 들어가서 그 아름다운 실과 먹기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "927eadbb787a8769c7c0d7dd7234f0aa2bff2f00dcaeea5afd88644e580167aa"
+      ]
+    }
+  ]
+}

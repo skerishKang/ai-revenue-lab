@@ -1,0 +1,1677 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:013",
+  "unit_ordinal": 1031,
+  "unit_label": "ACT 13",
+  "book_code": "ACT",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:13:1",
+      "sequence": 27362,
+      "chapter_label": "ACT 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "Now in the assembly that was at Antioch there were some prophets and teachers: Barnabas, Simeon who was called Niger, Lucius of Cyrene, Manaen the foster brother of Herod the tetrarch, and Saul.",
+      "ko": "안디옥 교회에 선지자들과 교사들이 있으니 곧 바나바와 니게르라 하는 시므온과 구레네 사람 루기오와 분봉왕 헤롯의 젖동생 마나엔과 및 사울이라",
+      "source_text_hash": "c1c3df6020ca4fab4ce2f32c1b3b97f5377a3bfec80b740675ad67abe6b275d2",
+      "translation_text_hash": "3cfa96b5c7f3c8f0840aba867e9a3b1b3a3de2f4e518af40e6eed176ff244288",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안디옥 교회에 선지자들과 교사들이 있으니 곧 바나바와 니게르라 하는 시므온과 구레네 사람 루기오와 분봉왕 헤롯의 젖동생 마나엔과 및 사울이라"
+      ],
+      "raw_text_hashes": [
+        "3cfa96b5c7f3c8f0840aba867e9a3b1b3a3de2f4e518af40e6eed176ff244288"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:2",
+      "sequence": 27363,
+      "chapter_label": "ACT 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "As they served the Lord and fasted, the Holy Spirit said, “Separate Barnabas and Saul for me, for the work to which I have called them.”",
+      "ko": "주를 섬겨 금식할 때에 성령이 가라사대 내가 불러 시키는 일을 위하여 바나바와 사울을 따로 세우라 하시니",
+      "source_text_hash": "8e4d9ddad2d523dd5c4b8cb812e7c2b2ce628256131c5a52d2337f7b010887be",
+      "translation_text_hash": "9b1258e04ea1b19a9f488a3074b47e04ce820902bbc9f20362e05709162dac11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 섬겨 금식할 때에 성령이 가라사대 내가 불러 시키는 일을 위하여 바나바와 사울을 따로 세우라 하시니"
+      ],
+      "raw_text_hashes": [
+        "9b1258e04ea1b19a9f488a3074b47e04ce820902bbc9f20362e05709162dac11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:3",
+      "sequence": 27364,
+      "chapter_label": "ACT 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "Then, when they had fasted and prayed and laid their hands on them, they sent them away.",
+      "ko": "이에 금식하며 기도하고 두 사람에게 안수하여 보내니라",
+      "source_text_hash": "e86620ade3a1194544b9e9ed4759aaa81a97eb28203986e69f9dd31727c50960",
+      "translation_text_hash": "7a64e68f4dc71443e653b1c77970283547cfd3def34529fdc31e3bece97ba19e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 금식하며 기도하고 두 사람에게 안수하여 보내니라"
+      ],
+      "raw_text_hashes": [
+        "7a64e68f4dc71443e653b1c77970283547cfd3def34529fdc31e3bece97ba19e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:4",
+      "sequence": 27365,
+      "chapter_label": "ACT 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "So, being sent out by the Holy Spirit, they went down to Seleucia. From there they sailed to Cyprus.",
+      "ko": "두 사람이 성령의 보내심을 받아 실루기아에 내려가 거기서 배 타고 구브로에 가서",
+      "source_text_hash": "47ecb6545bff42be46597f58c5befec9ac1fb76d71ad4d637057cffbf86155a8",
+      "translation_text_hash": "772f6b4f17fef2f0c5ea61049191e99b86a4ff2ec4389d2e2d8a296cd6991c0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 성령의 보내심을 받아 실루기아에 내려가 거기서 배 타고 구브로에 가서"
+      ],
+      "raw_text_hashes": [
+        "772f6b4f17fef2f0c5ea61049191e99b86a4ff2ec4389d2e2d8a296cd6991c0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:5",
+      "sequence": 27366,
+      "chapter_label": "ACT 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "When they were at Salamis, they proclaimed God’s word in the Jewish synagogues. They also had John as their attendant.",
+      "ko": "살라미에 이르러 하나님의 말씀을 유대인의 여러 회당에서 전할쌔 요한을 수종자로 두었더라",
+      "source_text_hash": "81e32db2afeda249f66c4673558f0ab057bb4fa1a16fb11eb4aaf8149757c7d1",
+      "translation_text_hash": "0bfed70362b3028853fc527af8e269790c178f4237f6cce188755b0075ae1cda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살라미에 이르러 하나님의 말씀을 유대인의 여러 회당에서 전할쌔 요한을 수종자로 두었더라"
+      ],
+      "raw_text_hashes": [
+        "0bfed70362b3028853fc527af8e269790c178f4237f6cce188755b0075ae1cda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:6",
+      "sequence": 27367,
+      "chapter_label": "ACT 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "When they had gone through the island to Paphos, they found a certain sorcerer, a false prophet, a Jew whose name was Bar Jesus,",
+      "ko": "온 섬 가운데로 지나서 바보에 이르러 바예수라 하는 유대인 거짓 선지자 박수를 만나니",
+      "source_text_hash": "39f803561bc20cb684af4fa33d3dab22dfdb5d3d1bf111a82caa10a0face1e2c",
+      "translation_text_hash": "2b5db3bc9ac469058bb2af8fe58bd72aea8444380c8f7bc5389ef421c9361250",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 섬 가운데로 지나서 바보에 이르러 바예수라 하는 유대인 거짓 선지자 박수를 만나니"
+      ],
+      "raw_text_hashes": [
+        "2b5db3bc9ac469058bb2af8fe58bd72aea8444380c8f7bc5389ef421c9361250"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:7",
+      "sequence": 27368,
+      "chapter_label": "ACT 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "who was with the proconsul, Sergius Paulus, a man of understanding. This man summoned Barnabas and Saul, and sought to hear the word of God.",
+      "ko": "그가 총독 서기오 바울과 함께 있으니 서기오 바울은 지혜 있는 사람이라 바나바와 사울을 불러 하나님 말씀을 듣고자 하더라",
+      "source_text_hash": "87efc25b53a6f3a56fc85b79171f60b5a2c432ab00cf6c265e0641c248be86ed",
+      "translation_text_hash": "e951221bf91e07e34a723c1390ab564fdfce33931a293267912fc473e2730248",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 총독 서기오 바울과 함께 있으니 서기오 바울은 지혜 있는 사람이라 바나바와 사울을 불러 하나님 말씀을 듣고자 하더라"
+      ],
+      "raw_text_hashes": [
+        "e951221bf91e07e34a723c1390ab564fdfce33931a293267912fc473e2730248"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:8",
+      "sequence": 27369,
+      "chapter_label": "ACT 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "But Elymas the sorcerer (for so is his name by interpretation) withstood them, seeking to turn the proconsul away from the faith.",
+      "ko": "이 박수 엘루마는(이 이름을 번역하면 박수라) 저희를 대적하여 총독으로 믿지 못하게 힘쓰니",
+      "source_text_hash": "902cde85e5630b0821a3b149949fd5fe764bc7e7a0438071dfdc6eeb3112d2ec",
+      "translation_text_hash": "c1042ea61aa5e80b2f735bb4c8425a6596eea0a2c09f5745da771fd578d723e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 박수 엘루마는(이 이름을 번역하면 박수라) 저희를 대적하여 총독으로 믿지 못하게 힘쓰니"
+      ],
+      "raw_text_hashes": [
+        "c1042ea61aa5e80b2f735bb4c8425a6596eea0a2c09f5745da771fd578d723e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:9",
+      "sequence": 27370,
+      "chapter_label": "ACT 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "But Saul, who is also called Paul, filled with the Holy Spirit, fastened his eyes on him",
+      "ko": "바울이라고 하는 사울이 성령이 충만하여 그를 주목하고",
+      "source_text_hash": "5c23f597adb86e1c58184fc1972bb58f73bed7c958930580021185f42de71e5a",
+      "translation_text_hash": "6700033994a03598033de84fe268c298c78e78d7be81b4dc9d1173499d81cca5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이라고 하는 사울이 성령이 충만하여 그를 주목하고"
+      ],
+      "raw_text_hashes": [
+        "6700033994a03598033de84fe268c298c78e78d7be81b4dc9d1173499d81cca5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:10",
+      "sequence": 27371,
+      "chapter_label": "ACT 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "and said, “You son of the devil, full of all deceit and all cunning, you enemy of all righteousness, will you not cease to pervert the right ways of the Lord?",
+      "ko": "가로되 모든 궤계와 악행이 가득한 자요 마귀의 자식이요 모든 의의 원수여 주의 바른 길을 굽게 하기를 그치지 아니하겠느냐",
+      "source_text_hash": "763f827d8e6dbeb78bb36c73890af9fda11e3d7f7f1a1f86baa31b6673eec45f",
+      "translation_text_hash": "5c9dd3c5a8a619e06421a415e47b0157ce740cb9360e56a8cf9320b14dd7232b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 모든 궤계와 악행이 가득한 자요 마귀의 자식이요 모든 의의 원수여 주의 바른 길을 굽게 하기를 그치지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "5c9dd3c5a8a619e06421a415e47b0157ce740cb9360e56a8cf9320b14dd7232b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:11",
+      "sequence": 27372,
+      "chapter_label": "ACT 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Now, behold, the hand of the Lord is on you, and you will be blind, not seeing the sun for a season!” Immediately a mist and darkness fell on him. He went around seeking someone to lead him by the hand.",
+      "ko": "보라 이제 주의 손이 네 위에 있으니 네가 소경이 되어 얼마 동안 해를 보지 못하리라 하니 즉시 안개와 어두움이 그를 덮어 인도할 사람을 두루 구하는지라",
+      "source_text_hash": "b750c1486d193f527f0f4d0fcc75c4b95613c2691acd50a3519e60db00ba097c",
+      "translation_text_hash": "1da110236b75c39092f18f5bc3f5e481836abab3089f1e43a70700ec7c5f6fe9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 이제 주의 손이 네 위에 있으니 네가 소경이 되어 얼마 동안 해를 보지 못하리라 하니 즉시 안개와 어두움이 그를 덮어 인도할 사람을 두루 구하는지라"
+      ],
+      "raw_text_hashes": [
+        "1da110236b75c39092f18f5bc3f5e481836abab3089f1e43a70700ec7c5f6fe9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:12",
+      "sequence": 27373,
+      "chapter_label": "ACT 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "Then the proconsul, when he saw what was done, believed, being astonished at the teaching of the Lord.",
+      "ko": "이에 총독이 그렇게 된 것을 보고 믿으며 주의 가르치심을 기이히 여기니라",
+      "source_text_hash": "9db7f88775cb7f08cc93fc010ae4be9e677b56f3cced996ca829c20a4bb5b9c8",
+      "translation_text_hash": "70de5c15a9a82fcbc3a2b5575b7629ba60c9846bdabd4d135fb33b11a627084c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 총독이 그렇게 된 것을 보고 믿으며 주의 가르치심을 기이히 여기니라"
+      ],
+      "raw_text_hashes": [
+        "70de5c15a9a82fcbc3a2b5575b7629ba60c9846bdabd4d135fb33b11a627084c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:13",
+      "sequence": 27374,
+      "chapter_label": "ACT 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "Now Paul and his company set sail from Paphos and came to Perga in Pamphylia. John departed from them and returned to Jerusalem.",
+      "ko": "바울과 및 동행하는 사람들이 바보에서 배 타고 밤빌리아에 있는 버가에 이르니 요한은 저희에게서 떠나 예루살렘으로 돌아가고",
+      "source_text_hash": "dd41266c57ed8543c9eea4c5c451e6996365acc69df5da084900c3eb5580beda",
+      "translation_text_hash": "346ee7e4c02ab1850c3ff7b8b1abd58666df16863ee8132051b51867db42705c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울과 및 동행하는 사람들이 바보에서 배 타고 밤빌리아에 있는 버가에 이르니 요한은 저희에게서 떠나 예루살렘으로 돌아가고"
+      ],
+      "raw_text_hashes": [
+        "346ee7e4c02ab1850c3ff7b8b1abd58666df16863ee8132051b51867db42705c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:14",
+      "sequence": 27375,
+      "chapter_label": "ACT 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "But they, passing on from Perga, came to Antioch of Pisidia. They went into the synagogue on the Sabbath day and sat down.",
+      "ko": "저희는 버가로부터 지나 비시디아 안디옥에 이르러 안식일에 회당에 들어가 앉으니라",
+      "source_text_hash": "c56e00f6bac8f4a804142f311dc4150e51d9d0db23e7188e62400b81f391c2f4",
+      "translation_text_hash": "0df2b10d82517d7adc706218ead477e1aba015d99a6d81cf5c92bf5212f26b49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 버가로부터 지나 비시디아 안디옥에 이르러 안식일에 회당에 들어가 앉으니라"
+      ],
+      "raw_text_hashes": [
+        "0df2b10d82517d7adc706218ead477e1aba015d99a6d81cf5c92bf5212f26b49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:15",
+      "sequence": 27376,
+      "chapter_label": "ACT 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "After the reading of the law and the prophets, the rulers of the synagogue sent to them, saying, “Brothers, if you have any word of exhortation for the people, speak.”",
+      "ko": "율법과 선지자의 글을 읽은 후에 회당장들이 사람을 보내어 물어 가로되 형제들아 만일 백성을 권할 말이 있거든 말하라 하니",
+      "source_text_hash": "242ff2d6cd8059f7256ff06236cc6937b2240e7f97f3c54fa6d791c0af9540bc",
+      "translation_text_hash": "aef0a132267e777af6855d1055a1512fca0a1d447ab515eafbfa3536bf6d722a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법과 선지자의 글을 읽은 후에 회당장들이 사람을 보내어 물어 가로되 형제들아 만일 백성을 권할 말이 있거든 말하라 하니"
+      ],
+      "raw_text_hashes": [
+        "aef0a132267e777af6855d1055a1512fca0a1d447ab515eafbfa3536bf6d722a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:16",
+      "sequence": 27377,
+      "chapter_label": "ACT 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "Paul stood up, and gesturing with his hand said, “Men of Israel, and you who fear God, listen.",
+      "ko": "바울이 일어나 손짓하며 말하되 이스라엘 사람들과 및 하나님을 경외하는 사람들아 들으라",
+      "source_text_hash": "b8d46db121e53e2f522e6aa9c4f3cd498ed815f67d7d85e58ebad021f7a57632",
+      "translation_text_hash": "9f8f717910bde4a2eb319a8d0c20550c5079adf259d17c5ce60f55691d0b6501",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 일어나 손짓하며 말하되 이스라엘 사람들과 및 하나님을 경외하는 사람들아 들으라"
+      ],
+      "raw_text_hashes": [
+        "9f8f717910bde4a2eb319a8d0c20550c5079adf259d17c5ce60f55691d0b6501"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:17",
+      "sequence": 27378,
+      "chapter_label": "ACT 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "The God of this people chose our fathers, and exalted the people when they stayed as aliens in the land of Egypt, and with an uplifted arm, he led them out of it.",
+      "ko": "이 이스라엘 백성의 하나님이 우리 조상들을 택하시고 애굽 땅에서 나그네 된 그 백성을 높여 큰 권능으로 인도하여 내사",
+      "source_text_hash": "8da04f0fc66e282e8d77c2e50e0c0b5da45649f15901c2c26fe4c42f4772f4b2",
+      "translation_text_hash": "dc115d0d037c5fedf978665ad1388e9d4fa64e20da9b0decb66b7f8485f53804",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 이스라엘 백성의 하나님이 우리 조상들을 택하시고 애굽 땅에서 나그네 된 그 백성을 높여 큰 권능으로 인도하여 내사"
+      ],
+      "raw_text_hashes": [
+        "dc115d0d037c5fedf978665ad1388e9d4fa64e20da9b0decb66b7f8485f53804"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:18",
+      "sequence": 27379,
+      "chapter_label": "ACT 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "For a period of about forty years he put up with them in the wilderness.",
+      "ko": "광야에서 약 사십 년간 저희 소행을 참으시고",
+      "source_text_hash": "1de10db80ab259afc6097be5789421fc034b620e45db269bc93ecc6ba8eb06ed",
+      "translation_text_hash": "59a886afa2a00443b001ce05b2a5399dd1e06832d2bcc0a6c1cf3592977ba5ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야에서 약 사십 년간 저희 소행을 참으시고"
+      ],
+      "raw_text_hashes": [
+        "59a886afa2a00443b001ce05b2a5399dd1e06832d2bcc0a6c1cf3592977ba5ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:19",
+      "sequence": 27380,
+      "chapter_label": "ACT 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "When he had destroyed seven nations in the land of Canaan, he gave them their land for an inheritance for about four hundred fifty years.",
+      "ko": "가나안 땅 일곱 족속을 멸하사 그 땅을 기업으로 주시고(약 사백 오십 년간)",
+      "source_text_hash": "519138b5ca555e9322cf290a912852cfb5635d4ff639a298518e8e5b2b97c0d5",
+      "translation_text_hash": "b201462d1ba5a64c032021135b53e691887cb36b7e88d1528ebe5ebb4ab513f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가나안 땅 일곱 족속을 멸하사 그 땅을 기업으로 주시고(약 사백 오십 년간)"
+      ],
+      "raw_text_hashes": [
+        "b201462d1ba5a64c032021135b53e691887cb36b7e88d1528ebe5ebb4ab513f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:20",
+      "sequence": 27381,
+      "chapter_label": "ACT 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "After these things, he gave them judges until Samuel the prophet.",
+      "ko": "그 후에 선지자 사무엘 때까지 사사를 주셨더니",
+      "source_text_hash": "adadb00fa06cbbb73319b8ef71c781c045f79440bbbd5a1c9cfd7c172f69f41a",
+      "translation_text_hash": "5eddc9fc5e5e938889d4441358003cec378a03e6ddf809ab8fac3269512d6254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 선지자 사무엘 때까지 사사를 주셨더니"
+      ],
+      "raw_text_hashes": [
+        "5eddc9fc5e5e938889d4441358003cec378a03e6ddf809ab8fac3269512d6254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:21",
+      "sequence": 27382,
+      "chapter_label": "ACT 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "Afterward they asked for a king, and God gave to them Saul the son of Kish, a man of the tribe of Benjamin, for forty years.",
+      "ko": "그 후에 저희가 왕을 구하거늘 하나님이 베냐민 지파 사람 기스의 아들 사울을 사십 년간 주셨다가",
+      "source_text_hash": "212bf6a78e6a975581c7aec19b7801232028812b803af5cbc670e71e6eb7adfb",
+      "translation_text_hash": "863194cc7b097b38681dc2e018fa78c839adb72f02de27bc53af81be7d7f1089",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 저희가 왕을 구하거늘 하나님이 베냐민 지파 사람 기스의 아들 사울을 사십 년간 주셨다가"
+      ],
+      "raw_text_hashes": [
+        "863194cc7b097b38681dc2e018fa78c839adb72f02de27bc53af81be7d7f1089"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:22",
+      "sequence": 27383,
+      "chapter_label": "ACT 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "When he had removed him, he raised up David to be their king, to whom he also testified, ‘I have found David the son of Jesse, a man after my heart, who will do all my will.’",
+      "ko": "폐하시고 다윗을 왕으로 세우시고 증거하여 가라사대 내가 이새의 아들 다윗을 만나니 내 마음에 합한 사람이라 내 뜻을 다 이루게 하리라 하시더니",
+      "source_text_hash": "67c7b631088eb2310e2090f893599dca6fa13eb2c46b438920cd34e1825672ab",
+      "translation_text_hash": "cca206444327936328c0f6cec895a3a87158b3194b9e42abfc51b7828f7c8fb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "폐하시고 다윗을 왕으로 세우시고 증거하여 가라사대 내가 이새의 아들 다윗을 만나니 내 마음에 합한 사람이라 내 뜻을 다 이루게 하리라 하시더니"
+      ],
+      "raw_text_hashes": [
+        "cca206444327936328c0f6cec895a3a87158b3194b9e42abfc51b7828f7c8fb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:23",
+      "sequence": 27384,
+      "chapter_label": "ACT 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "From this man’s offspring, God has brought salvation to Israel according to his promise,",
+      "ko": "하나님이 약속하신대로 이 사람의 씨에서 이스라엘을 위하여 구주를 세우셨으니 곧 예수라",
+      "source_text_hash": "c14c5d284dd34300f7f1390ca59d43c1041748be7e8581b65ab1d59159da50e4",
+      "translation_text_hash": "895a41bf0b3f15b494df10f01c296c4d333fc7e62a17fd75f1c1c48e0eff7669",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 약속하신대로 이 사람의 씨에서 이스라엘을 위하여 구주를 세우셨으니 곧 예수라"
+      ],
+      "raw_text_hashes": [
+        "895a41bf0b3f15b494df10f01c296c4d333fc7e62a17fd75f1c1c48e0eff7669"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:24",
+      "sequence": 27385,
+      "chapter_label": "ACT 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "before his coming, when John had first preached the baptism of repentance to Israel.",
+      "ko": "그 오시는 앞에 요한이 먼저 회개의 세례를 이스라엘 모든 백성에게 전파하니라",
+      "source_text_hash": "6af4309bfb1d1837117ddc282c29ddfe864291426e2729c1822274e2f2d3f47e",
+      "translation_text_hash": "7cb91f9e297dca77248de89f1ba694dbcd38ca4e4d278e982da191ab5d1c07b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 오시는 앞에 요한이 먼저 회개의 세례를 이스라엘 모든 백성에게 전파하니라"
+      ],
+      "raw_text_hashes": [
+        "7cb91f9e297dca77248de89f1ba694dbcd38ca4e4d278e982da191ab5d1c07b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:25",
+      "sequence": 27386,
+      "chapter_label": "ACT 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "As John was fulfilling his course, he said, ‘What do you suppose that I am? I am not he. But behold, one comes after me, the sandals of whose feet I am not worthy to untie.’",
+      "ko": "요한이 그 달려 갈 길을 마칠 때에 말하되 너희가 나를 누구로 생각하느냐 나는 그리스도가 아니라 내 뒤에 오시는 이가 있으니 나는 그 발의 신 풀기도 감당치 못하리라 하였으니",
+      "source_text_hash": "247f71bc297e134f8cfe2580adc3fb757c357668c72621711b984f541d78e60a",
+      "translation_text_hash": "f11a69f2dd0262207020ca63421096813bde4466c8984ce42f9a7194c9fb5473",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 그 달려 갈 길을 마칠 때에 말하되 너희가 나를 누구로 생각하느냐 나는 그리스도가 아니라 내 뒤에 오시는 이가 있으니 나는 그 발의 신 풀기도 감당치 못하리라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "f11a69f2dd0262207020ca63421096813bde4466c8984ce42f9a7194c9fb5473"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:26",
+      "sequence": 27387,
+      "chapter_label": "ACT 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "“Brothers, children of the stock of Abraham, and those among you who fear God, the word of this salvation is sent out to you.",
+      "ko": "형제들 아브라함의 후예와 너희 중 하나님을 경외하는 사람들아 이 구원의 말씀을 우리에게 보내셨거늘",
+      "source_text_hash": "d761ce9beb748fa3811e9f8e60fddbe43f91a29ce6674823ab4edd1ecfe0bb4a",
+      "translation_text_hash": "d8b51055c33abf85bbc656a0fdce1674d5c4f77477108093e4b9f5ac78d25611",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들 아브라함의 후예와 너희 중 하나님을 경외하는 사람들아 이 구원의 말씀을 우리에게 보내셨거늘"
+      ],
+      "raw_text_hashes": [
+        "d8b51055c33abf85bbc656a0fdce1674d5c4f77477108093e4b9f5ac78d25611"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:27",
+      "sequence": 27388,
+      "chapter_label": "ACT 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "For those who dwell in Jerusalem, and their rulers, because they didn’t know him, nor the voices of the prophets which are read every Sabbath, fulfilled them by condemning him.",
+      "ko": "예루살렘에 사는 자들과 저희 관원들이 예수와 및 안식일마다 외우는바 선지자들의 말을 알지 못하므로 예수를 정죄하여 선지자들의 말을 응하게 하였도다",
+      "source_text_hash": "06d5735f38e42cd9cf93ad50f72ac3de313ba4aaf2c3a4070edbd236e75b5f93",
+      "translation_text_hash": "e1155c88037274a58d8e58cc7b78bf79474a6e002095da4cf34cab11ee49c953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 사는 자들과 저희 관원들이 예수와 및 안식일마다 외우는바 선지자들의 말을 알지 못하므로 예수를 정죄하여 선지자들의 말을 응하게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "e1155c88037274a58d8e58cc7b78bf79474a6e002095da4cf34cab11ee49c953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:28",
+      "sequence": 27389,
+      "chapter_label": "ACT 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "Though they found no cause for death, they still asked Pilate to have him killed.",
+      "ko": "죽일 죄를 하나도 찾지 못하였으나 빌라도에게 죽여 달라 하였으니",
+      "source_text_hash": "f056a32567406977cbc4bb5736abf52d96e5a14fadf473c0a065363ed932b9c1",
+      "translation_text_hash": "6fc7746d5caaaa8c8e366b12e202e530201b247c2bf17f4eef66e375bd8e1734",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽일 죄를 하나도 찾지 못하였으나 빌라도에게 죽여 달라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "6fc7746d5caaaa8c8e366b12e202e530201b247c2bf17f4eef66e375bd8e1734"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:29",
+      "sequence": 27390,
+      "chapter_label": "ACT 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "When they had fulfilled all things that were written about him, they took him down from the tree and laid him in a tomb.",
+      "ko": "성경에 저를 가리켜 기록한 말씀을 다 응하게 한 것이라 후에 나무에서 내려다가 무덤에 두었으나",
+      "source_text_hash": "e241fb20d58b907dbda886403948473e62a2bd87ce6669205377b896a5b9a793",
+      "translation_text_hash": "2ff6cccda534aeb1a2a598ced5a545112bcbaaca73a5f1ad447f36c62af83f3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성경에 저를 가리켜 기록한 말씀을 다 응하게 한 것이라 후에 나무에서 내려다가 무덤에 두었으나"
+      ],
+      "raw_text_hashes": [
+        "2ff6cccda534aeb1a2a598ced5a545112bcbaaca73a5f1ad447f36c62af83f3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:30",
+      "sequence": 27391,
+      "chapter_label": "ACT 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "But God raised him from the dead,",
+      "ko": "하나님이 죽은자 가운데서 저를 살리신지라",
+      "source_text_hash": "1faa4489542fda19231655b6f93b99f7fb7538628ef794ba154beaec94f5b92e",
+      "translation_text_hash": "6a9fe713ee39241e5ae8eb6cec2d6f6a98920da1409e322d229c46c69f69ce84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 죽은자 가운데서 저를 살리신지라"
+      ],
+      "raw_text_hashes": [
+        "6a9fe713ee39241e5ae8eb6cec2d6f6a98920da1409e322d229c46c69f69ce84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:31",
+      "sequence": 27392,
+      "chapter_label": "ACT 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "and he was seen for many days by those who came up with him from Galilee to Jerusalem, who are his witnesses to the people.",
+      "ko": "갈릴리로부터 예루살렘에 함께 올라간 사람들에게 여러날 보이셨으니 저희가 이제 백성 앞에 그의 증인이라",
+      "source_text_hash": "62b3e73f3e8bd07914430e15a8d9f41fbf4f419603dc03a1c12a622fea64c099",
+      "translation_text_hash": "cffb8c45728829f0b0b742236f7686896def348fe3b17ac4f790971c7f0cddfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리로부터 예루살렘에 함께 올라간 사람들에게 여러날 보이셨으니 저희가 이제 백성 앞에 그의 증인이라"
+      ],
+      "raw_text_hashes": [
+        "cffb8c45728829f0b0b742236f7686896def348fe3b17ac4f790971c7f0cddfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:32",
+      "sequence": 27393,
+      "chapter_label": "ACT 13",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 32
+        }
+      ],
+      "en": "We bring you good news of the promise made to the fathers,",
+      "ko": "우리도 조상들에게 주신 약속을 너희에게 전파하노니",
+      "source_text_hash": "69f1469a16993e3ec3492fc3dc10dd1b5234ea054cb2e9adafa3efa5cb469342",
+      "translation_text_hash": "9b2a369a358057cec72e70dc0983343ca57ccbca28f15e02b53ab3b5121893e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리도 조상들에게 주신 약속을 너희에게 전파하노니"
+      ],
+      "raw_text_hashes": [
+        "9b2a369a358057cec72e70dc0983343ca57ccbca28f15e02b53ab3b5121893e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:33",
+      "sequence": 27394,
+      "chapter_label": "ACT 13",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 33
+        }
+      ],
+      "en": "that God has fulfilled this to us, their children, in that he raised up Jesus. As it is also written in the second psalm, ‘You are my Son. Today I have become your father.’",
+      "ko": "곧 하나님이 예수를 일으키사 우리 자녀들에게 이 약속을 이루게 하셨다 함이라 시편 둘째 편에 기록한 바와 같이 너는 내 아들이라 오늘 너를 낳았다 하셨고",
+      "source_text_hash": "8ee7748676af7d1bfed8d6ed4249c0c327ee0593193c5f45821559256b534f0e",
+      "translation_text_hash": "18edc78391ef34e51ee6a9b7c81c9c7894efacce150fc8243c184aad110bf3c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 하나님이 예수를 일으키사 우리 자녀들에게 이 약속을 이루게 하셨다 함이라 시편 둘째 편에 기록한 바와 같이 너는 내 아들이라 오늘 너를 낳았다 하셨고"
+      ],
+      "raw_text_hashes": [
+        "18edc78391ef34e51ee6a9b7c81c9c7894efacce150fc8243c184aad110bf3c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:34",
+      "sequence": 27395,
+      "chapter_label": "ACT 13",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 34
+        }
+      ],
+      "en": "“Concerning that he raised him up from the dead, now no more to return to corruption, he has spoken thus: ‘I will give you the holy and sure blessings of David.’",
+      "ko": "또 하나님께서 죽은 자 가운데서 저를 일으키사 다시 썩음을 당하지 않게 하실 것을 가르쳐 가라사대 내가 다윗의 거룩하고 미쁜 은사를 너희에게 주리라 하셨으니",
+      "source_text_hash": "63b8cd794fb8a389c290cbaee38c82931cc5940b709c4ab46fb2af467b2241b3",
+      "translation_text_hash": "a9164784b210907a4209324f0c078bd0e0d4dbef63da81299ba7da8bd11edd27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나님께서 죽은 자 가운데서 저를 일으키사 다시 썩음을 당하지 않게 하실 것을 가르쳐 가라사대 내가 다윗의 거룩하고 미쁜 은사를 너희에게 주리라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "a9164784b210907a4209324f0c078bd0e0d4dbef63da81299ba7da8bd11edd27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:35",
+      "sequence": 27396,
+      "chapter_label": "ACT 13",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 35
+        }
+      ],
+      "en": "Therefore he says also in another psalm, ‘You will not allow your Holy One to see decay.’",
+      "ko": "그러므로 또 다른 편에 일렀으되 주의 거룩한 자로 썩음을 당하지 않게 하시리라 하셨느니라",
+      "source_text_hash": "27a06659532338c970d123040521107d935b84849b2af5b27272c34b5ff9a9c0",
+      "translation_text_hash": "a81c1fd7123031379ac2ca540e2fa13bcac02e41b758ae70c6fa7ed4b5b6d6ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 또 다른 편에 일렀으되 주의 거룩한 자로 썩음을 당하지 않게 하시리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "a81c1fd7123031379ac2ca540e2fa13bcac02e41b758ae70c6fa7ed4b5b6d6ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:36",
+      "sequence": 27397,
+      "chapter_label": "ACT 13",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 36
+        }
+      ],
+      "en": "For David, after he had in his own generation served the counsel of God, fell asleep, was laid with his fathers, and saw decay.",
+      "ko": "다윗은 당시에 하나님의 뜻을 좇아 섬기다가 잠들어 그 조상들과 함께 묻혀 썩음을 당하였으되",
+      "source_text_hash": "772bcf2fa815d4036a7208052bb84fc4e55dd58479140942f2aaee44cebea203",
+      "translation_text_hash": "80cdf5b659dc1d72c914de9eb85c5f1bdf08e1d620eec0182e93a4ee53a02d8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗은 당시에 하나님의 뜻을 좇아 섬기다가 잠들어 그 조상들과 함께 묻혀 썩음을 당하였으되"
+      ],
+      "raw_text_hashes": [
+        "80cdf5b659dc1d72c914de9eb85c5f1bdf08e1d620eec0182e93a4ee53a02d8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:37",
+      "sequence": 27398,
+      "chapter_label": "ACT 13",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 37
+        }
+      ],
+      "en": "But he whom God raised up saw no decay.",
+      "ko": "하나님의 살리신 이는 썩음을 당하지 아니하였나니",
+      "source_text_hash": "4babcd624b0fcf9217af381dfc49e6217e38f81156c3c85e9d79355a423eed4c",
+      "translation_text_hash": "f3a84103171f7752401b8e7d5264fa115da667dbfb86c4e79d6415e8bf6ebf1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 살리신 이는 썩음을 당하지 아니하였나니"
+      ],
+      "raw_text_hashes": [
+        "f3a84103171f7752401b8e7d5264fa115da667dbfb86c4e79d6415e8bf6ebf1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:38",
+      "sequence": 27399,
+      "chapter_label": "ACT 13",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 38
+        }
+      ],
+      "en": "Be it known to you therefore, brothers, that through this man is proclaimed to you remission of sins;",
+      "ko": "그러므로 형제들아 너희가 알 것은 이 사람을 힘입어 죄 사함을 너희에게 전하는 이것이며",
+      "source_text_hash": "e0234936fe0bd67ff51d884b428f6b6614c31283341939240848e1146ff01129",
+      "translation_text_hash": "76f91c07beb0389e2d737ae699fdd9bf516eb4e22a3761f6b7dd5c316216b5c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 형제들아 너희가 알 것은 이 사람을 힘입어 죄 사함을 너희에게 전하는 이것이며"
+      ],
+      "raw_text_hashes": [
+        "76f91c07beb0389e2d737ae699fdd9bf516eb4e22a3761f6b7dd5c316216b5c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:39",
+      "sequence": 27400,
+      "chapter_label": "ACT 13",
+      "verse_label": "39",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 39
+        }
+      ],
+      "en": "and by him everyone who believes is justified from all things, from which you could not be justified by the law of Moses.",
+      "ko": "또 모세의 율법으로 너희가 의롭다 하심을 얻지 못하던 모든 일에도 이 사람을 힘입어 믿는 자마다 의롭다 하심을 얻는 이것이라",
+      "source_text_hash": "9099a40f5f64726a8faa62bf714ff396b17b11509730a86b62999ed7eb4ba3fc",
+      "translation_text_hash": "434fe3c7954ba1bb27e2e118f9534bccf405e6d519b672e060e19bcfdcd48fd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 모세의 율법으로 너희가 의롭다 하심을 얻지 못하던 모든 일에도 이 사람을 힘입어 믿는 자마다 의롭다 하심을 얻는 이것이라"
+      ],
+      "raw_text_hashes": [
+        "434fe3c7954ba1bb27e2e118f9534bccf405e6d519b672e060e19bcfdcd48fd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:40",
+      "sequence": 27401,
+      "chapter_label": "ACT 13",
+      "verse_label": "40",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 40
+        }
+      ],
+      "en": "Beware therefore, lest that come on you which is spoken in the prophets:",
+      "ko": "그런즉 너희는 선지자들로 말씀하신 것이 너희에게 미칠까 삼가라",
+      "source_text_hash": "77558702928f9b6c70cc57fb2e667ed38cf25e81a49d0f0190952364ee8e1faa",
+      "translation_text_hash": "b3127f9de9bde9c2e67eeaa8a612770e591901715e3679833522537cef0baf0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 선지자들로 말씀하신 것이 너희에게 미칠까 삼가라"
+      ],
+      "raw_text_hashes": [
+        "b3127f9de9bde9c2e67eeaa8a612770e591901715e3679833522537cef0baf0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:41",
+      "sequence": 27402,
+      "chapter_label": "ACT 13",
+      "verse_label": "41",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 41
+        }
+      ],
+      "en": "‘Behold, you scoffers! Wonder and perish, for I work a work in your days, a work which you will in no way believe, if one declares it to you.’”",
+      "ko": "일렀으되 보라 멸시하는 사람들아 너희는 놀라고 망하라 내가 너희 때를 당하여 한 일을 행할 것이니 사람이 너희에게 이를찌라도 도무지 믿지 못할 일이라 하였느니라 하니라",
+      "source_text_hash": "5ec89f401834f7b24fc3ae3c5c1698e01e256d2280c5ef09ebaee63bb26fbb7f",
+      "translation_text_hash": "db26765822d95e230d24541786ae01d670974a28aeb186ba2da8c0b54af20004",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일렀으되 보라 멸시하는 사람들아 너희는 놀라고 망하라 내가 너희 때를 당하여 한 일을 행할 것이니 사람이 너희에게 이를찌라도 도무지 믿지 못할 일이라 하였느니라 하니라"
+      ],
+      "raw_text_hashes": [
+        "db26765822d95e230d24541786ae01d670974a28aeb186ba2da8c0b54af20004"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:42",
+      "sequence": 27403,
+      "chapter_label": "ACT 13",
+      "verse_label": "42",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 42
+        }
+      ],
+      "en": "So when the Jews went out of the synagogue, the Gentiles begged that these words might be preached to them the next Sabbath.",
+      "ko": "저희가 나갈쌔 사람들이 청하되 다음 안식일에도 이 말씀을 하라 하더라",
+      "source_text_hash": "fca4d9fdf902a3c38fd2b69f98db087cf4b30fa952cff5fef3546202e448d99d",
+      "translation_text_hash": "6dee64bd6a34db3c7f81471976fd9a9b4d743ef63a898a6705da717e76f73c3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나갈쌔 사람들이 청하되 다음 안식일에도 이 말씀을 하라 하더라"
+      ],
+      "raw_text_hashes": [
+        "6dee64bd6a34db3c7f81471976fd9a9b4d743ef63a898a6705da717e76f73c3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:43",
+      "sequence": 27404,
+      "chapter_label": "ACT 13",
+      "verse_label": "43",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 43
+        }
+      ],
+      "en": "Now when the synagogue broke up, many of the Jews and of the devout proselytes followed Paul and Barnabas; who, speaking to them, urged them to continue in the grace of God.",
+      "ko": "폐회한 후에 유대인과 유대교에 입교한 경건한 사람들이 많이 바울과 바나바를 좇으니 두 사도가 더불어 말하고 항상 하나님의 은혜 가운데 있으라 권하니라",
+      "source_text_hash": "4e1d5c494f20fc8b9257f2b8ccb6b3fd4a6f5fff993c194679d4c362cc89c949",
+      "translation_text_hash": "3a1a6f7d5d31d424b77a73c9c545f6c1e8136513ea6052608dd4cb39462a035d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "폐회한 후에 유대인과 유대교에 입교한 경건한 사람들이 많이 바울과 바나바를 좇으니 두 사도가 더불어 말하고 항상 하나님의 은혜 가운데 있으라 권하니라"
+      ],
+      "raw_text_hashes": [
+        "3a1a6f7d5d31d424b77a73c9c545f6c1e8136513ea6052608dd4cb39462a035d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:44",
+      "sequence": 27405,
+      "chapter_label": "ACT 13",
+      "verse_label": "44",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 44
+        }
+      ],
+      "en": "The next Sabbath, almost the whole city was gathered together to hear the word of God.",
+      "ko": "그 다음 안식일에는 온 성이 거의 다 하나님 말씀을 듣고자 하여 모이니",
+      "source_text_hash": "7730924a40cd5a2d7aca3df898233a7da89430af2aa5d0f71404eebb7aa790c1",
+      "translation_text_hash": "50b8ba1b0ed22beeddb1e2dc217ba44a8fce32a6602a2281aa5b761053d806d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음 안식일에는 온 성이 거의 다 하나님 말씀을 듣고자 하여 모이니"
+      ],
+      "raw_text_hashes": [
+        "50b8ba1b0ed22beeddb1e2dc217ba44a8fce32a6602a2281aa5b761053d806d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:45",
+      "sequence": 27406,
+      "chapter_label": "ACT 13",
+      "verse_label": "45",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 45
+        }
+      ],
+      "en": "But when the Jews saw the multitudes, they were filled with jealousy, and contradicted the things which were spoken by Paul, and blasphemed.",
+      "ko": "유대인들이 그 무리를 보고 시기가 가득하여 바울의 말한 것을 변박하고 비방하거늘",
+      "source_text_hash": "1731b8fb580a6055555e545ae496158317e8d10e1cdaea80e928e7c640c5eeed",
+      "translation_text_hash": "8585ed8462c734865b54944a22f84f912ec1ad16e58796f77f9297d96277044d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 그 무리를 보고 시기가 가득하여 바울의 말한 것을 변박하고 비방하거늘"
+      ],
+      "raw_text_hashes": [
+        "8585ed8462c734865b54944a22f84f912ec1ad16e58796f77f9297d96277044d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:46",
+      "sequence": 27407,
+      "chapter_label": "ACT 13",
+      "verse_label": "46",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 46
+        }
+      ],
+      "en": "Paul and Barnabas spoke out boldly, and said, “It was necessary that God’s word should be spoken to you first. Since indeed you thrust it from yourselves, and judge yourselves unworthy of eternal life, behold, we turn to the Gentiles.",
+      "ko": "바울과 바나바가 담대히 말하여 가로되 하나님의 말씀을 마땅히 먼저 너희에게 전할 것이로되 너희가 버리고 영생 얻음에 합당치 않은 자로 자처하기로 우리가 이방인에게로 향하노라",
+      "source_text_hash": "f73b8857e09c75fda686fcae0bf577a6cc2490b962a733c33e8b849792bdad51",
+      "translation_text_hash": "f6f9aad3d0b813330a039fd9561e533715bfc03eb2297178f4d8fc72657158f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울과 바나바가 담대히 말하여 가로되 하나님의 말씀을 마땅히 먼저 너희에게 전할 것이로되 너희가 버리고 영생 얻음에 합당치 않은 자로 자처하기로 우리가 이방인에게로 향하노라"
+      ],
+      "raw_text_hashes": [
+        "f6f9aad3d0b813330a039fd9561e533715bfc03eb2297178f4d8fc72657158f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:47",
+      "sequence": 27408,
+      "chapter_label": "ACT 13",
+      "verse_label": "47",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 47
+        }
+      ],
+      "en": "For so has the Lord commanded us, saying, ‘I have set you as a light for the Gentiles, that you should bring salvation to the uttermost parts of the earth.’”",
+      "ko": "주께서 이같이 우리를 명하시되 내가 너를 이방의 빛을 삼아 너로 땅 끝까지 구원하게 하리라 하셨느니라 하니",
+      "source_text_hash": "0ab9b2e59a15f6f48075bfce983715ed50ab2e48baf7349d27ef4a937f76a7c7",
+      "translation_text_hash": "a81f4f78c43204cdb57d55a05ab95fbff0457c5d00bd9240b12de3b5fdd10099",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 이같이 우리를 명하시되 내가 너를 이방의 빛을 삼아 너로 땅 끝까지 구원하게 하리라 하셨느니라 하니"
+      ],
+      "raw_text_hashes": [
+        "a81f4f78c43204cdb57d55a05ab95fbff0457c5d00bd9240b12de3b5fdd10099"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:48",
+      "sequence": 27409,
+      "chapter_label": "ACT 13",
+      "verse_label": "48",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 48
+        }
+      ],
+      "en": "As the Gentiles heard this, they were glad and glorified the word of God. As many as were appointed to eternal life believed.",
+      "ko": "이방인들이 듣고 기뻐하여 하나님의 말씀을 찬송하며 영생을 주시기로 작정된 자는 다 믿더라",
+      "source_text_hash": "63b40607b1d15ca73aff38aa8cc82ea98c690d47681a51ad623be912478733ea",
+      "translation_text_hash": "1a2817c28b6aabbf0345898ded17ab3ff878e942f07878eac4249d46a8e19bc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인들이 듣고 기뻐하여 하나님의 말씀을 찬송하며 영생을 주시기로 작정된 자는 다 믿더라"
+      ],
+      "raw_text_hashes": [
+        "1a2817c28b6aabbf0345898ded17ab3ff878e942f07878eac4249d46a8e19bc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:49",
+      "sequence": 27410,
+      "chapter_label": "ACT 13",
+      "verse_label": "49",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 49
+        }
+      ],
+      "en": "The Lord’s word was spread abroad throughout all the region.",
+      "ko": "주의 말씀이 그 지방에 두루 퍼지니라",
+      "source_text_hash": "2ca28dfe801ae57acd37e69a003449c597931634097a52e3732b4a30bc4ea997",
+      "translation_text_hash": "a0d834a1dbbb485a7f723ac1dc40cb75d45e3a0f88464986f34d21a5003e3c8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀이 그 지방에 두루 퍼지니라"
+      ],
+      "raw_text_hashes": [
+        "a0d834a1dbbb485a7f723ac1dc40cb75d45e3a0f88464986f34d21a5003e3c8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:50",
+      "sequence": 27411,
+      "chapter_label": "ACT 13",
+      "verse_label": "50",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 50
+        }
+      ],
+      "en": "But the Jews stirred up the devout and prominent women and the chief men of the city, and stirred up a persecution against Paul and Barnabas, and threw them out of their borders.",
+      "ko": "이에 유대인들이 경건한 귀부인들과 그 성내 유력자들을 선동하여 바울과 바나바를 핍박케 하여 그 지경에서 쫓아내니",
+      "source_text_hash": "cdf2faf70a46cad6d01d2ed3f5b0742a0fb2d979e3bd6b622569b485f77d0db6",
+      "translation_text_hash": "1665c0d21a9df36eef425af770618f27dc9fb0867caee19199fe85b64e796640",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 유대인들이 경건한 귀부인들과 그 성내 유력자들을 선동하여 바울과 바나바를 핍박케 하여 그 지경에서 쫓아내니"
+      ],
+      "raw_text_hashes": [
+        "1665c0d21a9df36eef425af770618f27dc9fb0867caee19199fe85b64e796640"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:51",
+      "sequence": 27412,
+      "chapter_label": "ACT 13",
+      "verse_label": "51",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 51
+        }
+      ],
+      "en": "But they shook off the dust of their feet against them, and came to Iconium.",
+      "ko": "두 사람이 저희를 향하여 발에 티끌을 떨어 버리고 이고니온으로 가거늘",
+      "source_text_hash": "3b17ee715ba6a396970c5090e94a0c1a60ed593304b2b7347814777e887bc583",
+      "translation_text_hash": "b964a92f58db249e1a3f3e49727df9c36f18eed2dbb80aa8bc99183d50e2de18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 저희를 향하여 발에 티끌을 떨어 버리고 이고니온으로 가거늘"
+      ],
+      "raw_text_hashes": [
+        "b964a92f58db249e1a3f3e49727df9c36f18eed2dbb80aa8bc99183d50e2de18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:13:52",
+      "sequence": 27413,
+      "chapter_label": "ACT 13",
+      "verse_label": "52",
+      "locator": {
+        "book": "ACT",
+        "chapter": 13,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 13,
+          "verse": 52
+        }
+      ],
+      "en": "The disciples were filled with joy and with the Holy Spirit.",
+      "ko": "제자들은 기쁨과 성령이 충만하니라",
+      "source_text_hash": "832fe508a141d65223a78addc7721ad1f6d6da0c5e231d3f755b0ac419f85e09",
+      "translation_text_hash": "33cc1679dc3aecb2074cbe792846623b502d634c77a01478a7d983bef9550b1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들은 기쁨과 성령이 충만하니라"
+      ],
+      "raw_text_hashes": [
+        "33cc1679dc3aecb2074cbe792846623b502d634c77a01478a7d983bef9550b1e"
+      ]
+    }
+  ]
+}

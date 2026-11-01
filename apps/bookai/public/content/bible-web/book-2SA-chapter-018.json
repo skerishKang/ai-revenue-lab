@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:018",
+  "unit_ordinal": 285,
+  "unit_label": "2SA 18",
+  "book_code": "2SA",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:18:1",
+      "sequence": 8480,
+      "chapter_label": "2SA 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "David counted the people who were with him, and set captains of thousands and captains of hundreds over them.",
+      "ko": "이에 다윗이 그 함께한 백성을 계수하고 천부장과 백부장을 그 위에 세우고",
+      "source_text_hash": "195b8b12c029d81f7041ebd9310943967c0e6876c5080d9f2f2fae2e4ba55ffb",
+      "translation_text_hash": "33fb5d03a63d81c50c52c9d582a028149421dcb2a8ad9e81e088ef2a39339694",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗이 그 함께한 백성을 계수하고 천부장과 백부장을 그 위에 세우고"
+      ],
+      "raw_text_hashes": [
+        "33fb5d03a63d81c50c52c9d582a028149421dcb2a8ad9e81e088ef2a39339694"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:2",
+      "sequence": 8481,
+      "chapter_label": "2SA 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "David sent the people out, a third part under the hand of Joab, and a third part under the hand of Abishai the son of Zeruiah, Joab’s brother, and a third part under the hand of Ittai the Gittite. The king said to the people, “I will also surely go out with you myself.”",
+      "ko": "그 백성을 내어 보낼쌔 삼분지 일은 요압의 수하에, 삼분지 일은 스루야의 아들 요압의 동생 아비새의 수하에 붙이고 삼분지 일은 가드 사람 잇대의 수하에 붙이고 백성에게 이르되 나도 반드시 너희와 함께 나가리라",
+      "source_text_hash": "3415189044cdfa51213b85d336851947cba67565d5081517088fd57de6050668",
+      "translation_text_hash": "7fc59f8d671527fff608dc4a74d58126dfca8c7f83295bbe2510e27be7f5a1dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 백성을 내어 보낼쌔 삼분지 일은 요압의 수하에, 삼분지 일은 스루야의 아들 요압의 동생 아비새의 수하에 붙이고 삼분지 일은 가드 사람 잇대의 수하에 붙이고 백성에게 이르되 나도 반드시 너희와 함께 나가리라"
+      ],
+      "raw_text_hashes": [
+        "7fc59f8d671527fff608dc4a74d58126dfca8c7f83295bbe2510e27be7f5a1dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:3",
+      "sequence": 8482,
+      "chapter_label": "2SA 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "But the people said, “You shall not go out, for if we flee away, they will not care for us, neither if half of us die, will they care for us. But you are worth ten thousand of us. Therefore now it is better that you are ready to help us out of the city.”",
+      "ko": "백성들이 가로되 왕은 나가지 마소서 우리가 도망할찌라도 저희는 우리에게 주의하지 아니할 터이요 우리가 절반이나 죽을찌라도 우리에게 주의하지 아니할 터이라 왕은 우리 만명보다 중하시오니 왕은 성에 계시다가 우리를 도우심이 좋으니이다",
+      "source_text_hash": "781895666e17464c8dd3aea2fda7fd6fe26e3eaf6d8a8f4e64a0da08146f2be6",
+      "translation_text_hash": "34e4b741e6ed41e24d86e1a1f18ba4fcdd539f5236341e78b2d0ae38a0f35d85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성들이 가로되 왕은 나가지 마소서 우리가 도망할찌라도 저희는 우리에게 주의하지 아니할 터이요 우리가 절반이나 죽을찌라도 우리에게 주의하지 아니할 터이라 왕은 우리 만명보다 중하시오니 왕은 성에 계시다가 우리를 도우심이 좋으니이다"
+      ],
+      "raw_text_hashes": [
+        "34e4b741e6ed41e24d86e1a1f18ba4fcdd539f5236341e78b2d0ae38a0f35d85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:4",
+      "sequence": 8483,
+      "chapter_label": "2SA 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "The king said to them, “I will do what seems best to you.” The king stood beside the gate, and all the people went out by hundreds and by thousands.",
+      "ko": "왕이 저희에게 이르되 너희가 선히 여기는대로 내가 행하리라 하고 문 곁에 서매 모든 백성이 백명씩 천명씩 대를 지어 나가는지라",
+      "source_text_hash": "b2a19f0f593cc15a3f7871a0b946b43506c597f3613c794eeff7dd6f3a50eb59",
+      "translation_text_hash": "3690b6f7d1d239b12e1d86962c506ed0fc53769d2d04bcbd750d1a6b48875cf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 저희에게 이르되 너희가 선히 여기는대로 내가 행하리라 하고 문 곁에 서매 모든 백성이 백명씩 천명씩 대를 지어 나가는지라"
+      ],
+      "raw_text_hashes": [
+        "3690b6f7d1d239b12e1d86962c506ed0fc53769d2d04bcbd750d1a6b48875cf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:5",
+      "sequence": 8484,
+      "chapter_label": "2SA 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "The king commanded Joab and Abishai and Ittai, saying, “Deal gently for my sake with the young man Absalom.” All the people heard when the king commanded all the captains concerning Absalom.",
+      "ko": "왕이 요압과 아비새와 잇대에게 명하여 가로되 나를 위하여 소년 압살롬을 너그러이 대접하라 하니 왕이 압살롬을 위하여 모든 군장에게 명령할 때에 백성들이 다 들으니라",
+      "source_text_hash": "48cca424e0903962fcca711770ddf8db11564dec32c696d9c1547436bb08d645",
+      "translation_text_hash": "6b6d968120765d7832ac6557b4f9ec7768c6c734fa16236f134403495f9a6e3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 요압과 아비새와 잇대에게 명하여 가로되 나를 위하여 소년 압살롬을 너그러이 대접하라 하니 왕이 압살롬을 위하여 모든 군장에게 명령할 때에 백성들이 다 들으니라"
+      ],
+      "raw_text_hashes": [
+        "6b6d968120765d7832ac6557b4f9ec7768c6c734fa16236f134403495f9a6e3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:6",
+      "sequence": 8485,
+      "chapter_label": "2SA 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "So the people went out into the field against Israel; and the battle was in the forest of Ephraim.",
+      "ko": "이에 백성이 이스라엘을 치러 들로 나가서 에브라임 수풀에서 싸우더니",
+      "source_text_hash": "2419821f0a3ecbc26fb423a426522197cb73e1b331038d8c67ba6183d1299fd7",
+      "translation_text_hash": "fd949832a27d14645e1dc9d333457e0727b3f5cd5b1d14b3a4439c04154bfb42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 백성이 이스라엘을 치러 들로 나가서 에브라임 수풀에서 싸우더니"
+      ],
+      "raw_text_hashes": [
+        "fd949832a27d14645e1dc9d333457e0727b3f5cd5b1d14b3a4439c04154bfb42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:7",
+      "sequence": 8486,
+      "chapter_label": "2SA 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "The people of Israel were struck there before David’s servants, and there was a great slaughter there that day of twenty thousand men.",
+      "ko": "거기서 이스라엘 무리가 다윗의 신복들에게 패하매 그 날 그곳에서 살륙이 커서 이만에 이르렀고",
+      "source_text_hash": "b60c58f790460a78961497b671ab7ea552a678b8342748602174fefaaeb2027f",
+      "translation_text_hash": "59c7d4ef6039fc879e5a8bc2cd6bfcc2a0fea106dec249ae0d188cff6426b50f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 이스라엘 무리가 다윗의 신복들에게 패하매 그 날 그곳에서 살륙이 커서 이만에 이르렀고"
+      ],
+      "raw_text_hashes": [
+        "59c7d4ef6039fc879e5a8bc2cd6bfcc2a0fea106dec249ae0d188cff6426b50f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:8",
+      "sequence": 8487,
+      "chapter_label": "2SA 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "For the battle was there spread over the surface of all the country, and the forest devoured more people that day than the sword devoured.",
+      "ko": "그 땅에서 사면으로 퍼져 싸웠으므로 그 날에 수풀에서 죽은 자가 칼에 죽은 자보다 많았더라",
+      "source_text_hash": "9c417faefdafff7723360363cacb3be02d49690aa0551fc040e21f3b04f76418",
+      "translation_text_hash": "a42b5a4164aa39df262c55f455fd1af1f08e1d2c40f27e3be720f7ad82c473b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅에서 사면으로 퍼져 싸웠으므로 그 날에 수풀에서 죽은 자가 칼에 죽은 자보다 많았더라"
+      ],
+      "raw_text_hashes": [
+        "a42b5a4164aa39df262c55f455fd1af1f08e1d2c40f27e3be720f7ad82c473b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:9",
+      "sequence": 8488,
+      "chapter_label": "2SA 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "Absalom happened to meet David’s servants. Absalom was riding on his mule, and the mule went under the thick boughs of a great oak; and his head caught hold of the oak, and he was hanging between the sky and earth; and the mule that was under him went on.",
+      "ko": "압살롬이 다윗의 신복과 마주치니라 압살롬이 노새를 탔는데 그 노새가 큰 상수리나무 번성한 가지 아래로 지날 때에 압살롬의 머리털이 그 상수리나무에 걸리매 저가 공중에 달리고 그 탔던 노새는 그 아래로 빠져나간지라",
+      "source_text_hash": "5917cf56f21c8723d700cf6cb4da60b2ab9398d4b82a27405248e4932662d6ec",
+      "translation_text_hash": "7e113a696de3a35ac760e1e48447e3089184527f4b631c44f7d5aaa9474c9bcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 다윗의 신복과 마주치니라 압살롬이 노새를 탔는데 그 노새가 큰 상수리나무 번성한 가지 아래로 지날 때에 압살롬의 머리털이 그 상수리나무에 걸리매 저가 공중에 달리고 그 탔던 노새는 그 아래로 빠져나간지라"
+      ],
+      "raw_text_hashes": [
+        "7e113a696de3a35ac760e1e48447e3089184527f4b631c44f7d5aaa9474c9bcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:10",
+      "sequence": 8489,
+      "chapter_label": "2SA 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "A certain man saw it, and told Joab, and said, “Behold, I saw Absalom hanging in an oak.”",
+      "ko": "한 사람이 보고 요압에게 고하여 가로되 내가 보니 압살롬이 상수리나무에 달렸더이다",
+      "source_text_hash": "8fa9b89c75cd85b6d72fcc6f870f8278aa0877e0909e10b59fbd814f50aa93c5",
+      "translation_text_hash": "71e195344eca6c25bdab4024a9c15ce2de21d5068664201357dae145918d46e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 보고 요압에게 고하여 가로되 내가 보니 압살롬이 상수리나무에 달렸더이다"
+      ],
+      "raw_text_hashes": [
+        "71e195344eca6c25bdab4024a9c15ce2de21d5068664201357dae145918d46e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:11",
+      "sequence": 8490,
+      "chapter_label": "2SA 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "Joab said to the man who told him, “Behold, you saw it, and why didn’t you strike him there to the ground? I would have given you ten pieces of silver and a sash.”",
+      "ko": "요압이 그 고한 사람에게 이르되 네가 보고 어찌하여 당장에 쳐서 땅에 떨어뜨리지 아니하였느뇨 내가 네게 은 열개와 띠 하나를 주었으리라",
+      "source_text_hash": "a7ec8e96c80185a27ed1592e87aef3ffcd15bc5f7741519444c7718dceeec079",
+      "translation_text_hash": "87504ecff4134ceeb92e460a5066a0f6ee52db45cdc2f54567f43a0087c6ae58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 그 고한 사람에게 이르되 네가 보고 어찌하여 당장에 쳐서 땅에 떨어뜨리지 아니하였느뇨 내가 네게 은 열개와 띠 하나를 주었으리라"
+      ],
+      "raw_text_hashes": [
+        "87504ecff4134ceeb92e460a5066a0f6ee52db45cdc2f54567f43a0087c6ae58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:12",
+      "sequence": 8491,
+      "chapter_label": "2SA 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "The man said to Joab, “Though I should receive a thousand pieces of silver in my hand, I still wouldn’t stretch out my hand against the king’s son; for in our hearing the king commanded you and Abishai and Ittai, saying, ‘Beware that no one touch the young man Absalom.’",
+      "ko": "그 사람이 요압에게 대답하되 내가 내 손에 은 천개를 받는다 할찌라도 나는 왕의 아들에게 손을 대지 아니하겠나이다 우리가 들었거니와 왕이 당신과 아비새와 잇대에게 명하여 이르시기를 삼가 누구든지 소년 압살롬을 해하지 말라 하셨나이다",
+      "source_text_hash": "44930ae04cfe1da6f49aa0c79ef78fd618beea0c4a4545293866d7e0cf1583ad",
+      "translation_text_hash": "8208f2654837d8db8eb19e49bd71f6892a7bba4743f4fb298d1629c01dd5b172",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 요압에게 대답하되 내가 내 손에 은 천개를 받는다 할찌라도 나는 왕의 아들에게 손을 대지 아니하겠나이다 우리가 들었거니와 왕이 당신과 아비새와 잇대에게 명하여 이르시기를 삼가 누구든지 소년 압살롬을 해하지 말라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "8208f2654837d8db8eb19e49bd71f6892a7bba4743f4fb298d1629c01dd5b172"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:13",
+      "sequence": 8492,
+      "chapter_label": "2SA 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "Otherwise, if I had dealt falsely against his life (and there is no matter hidden from the king), then you yourself would have set yourself against me.”",
+      "ko": "아무 일도 왕 앞에는 숨길 수 없나니 내가 만일 거역하여 그 생명을 해하였더면 당신도 나를 대적하였으리이다",
+      "source_text_hash": "5ccd14e08c014b3db7366777476a9e2de6ee99bb592fd65a036ed84db9d7f272",
+      "translation_text_hash": "1ee8b401d79a58b5260e235498408dfdf0826edc31beeae1fd549989455cd969",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무 일도 왕 앞에는 숨길 수 없나니 내가 만일 거역하여 그 생명을 해하였더면 당신도 나를 대적하였으리이다"
+      ],
+      "raw_text_hashes": [
+        "1ee8b401d79a58b5260e235498408dfdf0826edc31beeae1fd549989455cd969"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:14",
+      "sequence": 8493,
+      "chapter_label": "2SA 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "Then Joab said, “I’m not going to wait like this with you.” He took three darts in his hand and thrust them through Absalom’s heart while he was still alive in the middle of the oak.",
+      "ko": "요압이 가로되 나는 너와 같이 지체할 수 없다 하고 손에 작은 창 셋을 가지고 가서 상수리나무 가운데서 아직 살아 있는 압살롬의 심장을 찌르니",
+      "source_text_hash": "228f009a299b24840f8a2033aa4039c2c157cd3f278e88c2be7161c22f5bd9fa",
+      "translation_text_hash": "0d3d09d9df7ccba508ca8e2ffe135400119e0be8dbd074a758bf909a81a990bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 가로되 나는 너와 같이 지체할 수 없다 하고 손에 작은 창 셋을 가지고 가서 상수리나무 가운데서 아직 살아 있는 압살롬의 심장을 찌르니"
+      ],
+      "raw_text_hashes": [
+        "0d3d09d9df7ccba508ca8e2ffe135400119e0be8dbd074a758bf909a81a990bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:15",
+      "sequence": 8494,
+      "chapter_label": "2SA 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "Ten young men who bore Joab’s armor surrounded and struck Absalom, and killed him.",
+      "ko": "요압의 병기를 맡은 소년 열이 압살롬을 에워싸고 쳐 죽이니라",
+      "source_text_hash": "b3560f1b566a70a419c6b8a0922f1da10def2badeb8280c842ab2caa1f417c2a",
+      "translation_text_hash": "1deb0c3156389579d7c654fd661fa083c638961ee5ad0125816aa2d90dd03513",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압의 병기를 맡은 소년 열이 압살롬을 에워싸고 쳐 죽이니라"
+      ],
+      "raw_text_hashes": [
+        "1deb0c3156389579d7c654fd661fa083c638961ee5ad0125816aa2d90dd03513"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:16",
+      "sequence": 8495,
+      "chapter_label": "2SA 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "Joab blew the trumpet, and the people returned from pursuing after Israel; for Joab held the people back.",
+      "ko": "요압이 나팔을 불어 백성들로 그치게 하니 저희가 이스라엘을 따르지 아니하고 돌아오니라",
+      "source_text_hash": "d210c990065016101b6173974cb49e225e64d213530d439afd9503cbfd635110",
+      "translation_text_hash": "94b78e7f4d077428c9da8f8e801202db7d2bddab8a6560f212f38d4c2215af3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 나팔을 불어 백성들로 그치게 하니 저희가 이스라엘을 따르지 아니하고 돌아오니라"
+      ],
+      "raw_text_hashes": [
+        "94b78e7f4d077428c9da8f8e801202db7d2bddab8a6560f212f38d4c2215af3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:17",
+      "sequence": 8496,
+      "chapter_label": "2SA 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "They took Absalom and cast him into a great pit in the forest, and raised over him a very great heap of stones. Then all Israel fled, each to his own tent.",
+      "ko": "무리가 압살롬을 옮겨다가 수풀 가운데 큰 구멍에 던지고 그 위에 심히 큰 돌무더기를 쌓으니라 온 이스라엘 무리가 각기 장막으로 도망하니라",
+      "source_text_hash": "348fe8f24583ae83fe7aedd02e5cad63132a9c6e11ef8ffd4afdda9b7967f0cc",
+      "translation_text_hash": "8b5cc7c56be4dd5182a7e2df93809655d4232292fc24f1a8ad6619dbf82ab981",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 압살롬을 옮겨다가 수풀 가운데 큰 구멍에 던지고 그 위에 심히 큰 돌무더기를 쌓으니라 온 이스라엘 무리가 각기 장막으로 도망하니라"
+      ],
+      "raw_text_hashes": [
+        "8b5cc7c56be4dd5182a7e2df93809655d4232292fc24f1a8ad6619dbf82ab981"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:18",
+      "sequence": 8497,
+      "chapter_label": "2SA 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "Now Absalom in his lifetime had taken and reared up for himself the pillar which is in the king’s valley, for he said, “I have no son to keep my name in memory.” He called the pillar after his own name. It is called Absalom’s monument, to this day.",
+      "ko": "압살롬이 살았을 때에 자기를 위하여 한 비석을 가져 세웠으니 이는 저가 자기 이름을 전할 아들이 없음을 한탄함이라 그러므로 자기 이름으로 그 비석을 이름하였으며 그 비석이 왕의 골짜기에 있고 이제까지 압살롬의 기념비라 일컫더라",
+      "source_text_hash": "5e677b04baa0be357bf52c2ad2f1d98af60550a808288af37a24ada2d4aeef1b",
+      "translation_text_hash": "d867a0b9b9663d90da782b37a2431618f44f1e8748edb614c0cc0e4b2d7f7035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 살았을 때에 자기를 위하여 한 비석을 가져 세웠으니 이는 저가 자기 이름을 전할 아들이 없음을 한탄함이라 그러므로 자기 이름으로 그 비석을 이름하였으며 그 비석이 왕의 골짜기에 있고 이제까지 압살롬의 기념비라 일컫더라"
+      ],
+      "raw_text_hashes": [
+        "d867a0b9b9663d90da782b37a2431618f44f1e8748edb614c0cc0e4b2d7f7035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:19",
+      "sequence": 8498,
+      "chapter_label": "2SA 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "Then Ahimaaz the son of Zadok said, “Let me now run and carry the king news, how the LORD has avenged him of his enemies.”",
+      "ko": "사독의 아들 아히마아스가 가로되 청컨대 나로 빨리 왕에게 가서 여호와께서 왕의 원수 갚아 주신 소식을 전하게 하소서",
+      "source_text_hash": "04b2c954bb1adcc0df9e24f6a5dc8dcf729572f2fd6610674c2fcabe996c39e1",
+      "translation_text_hash": "c0c126dd5a4eee35bc84487dca9a48d8df46079ab581ea6df2dc1592b140ba9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사독의 아들 아히마아스가 가로되 청컨대 나로 빨리 왕에게 가서 여호와께서 왕의 원수 갚아 주신 소식을 전하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "c0c126dd5a4eee35bc84487dca9a48d8df46079ab581ea6df2dc1592b140ba9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:20",
+      "sequence": 8499,
+      "chapter_label": "2SA 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "Joab said to him, “You must not be the bearer of news today, but you must carry news another day. But today you must carry no news, because the king’s son is dead.”",
+      "ko": "요압이 저에게 이르되 너는 오늘 소식을 전하는 자가 되지 말고 다른 날에 전할 것이니라 왕의 아들이 죽었나니 네가 오늘날 소식을 전하지 못하리라 하고",
+      "source_text_hash": "4e9b00483831cf377d8db5d43ebf173f3886a843f17ffbcef818c099193f8e35",
+      "translation_text_hash": "f3bca016a0fedfa802f1cb9a77c7931320fdb19559a664069f7f7719725ed2ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 저에게 이르되 너는 오늘 소식을 전하는 자가 되지 말고 다른 날에 전할 것이니라 왕의 아들이 죽었나니 네가 오늘날 소식을 전하지 못하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "f3bca016a0fedfa802f1cb9a77c7931320fdb19559a664069f7f7719725ed2ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:21",
+      "sequence": 8500,
+      "chapter_label": "2SA 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "Then Joab said to the Cushite, “Go, tell the king what you have seen!” The Cushite bowed himself to Joab, and ran.",
+      "ko": "구스 사람에게 이르되 네가 가서 본 것을 왕께 고하라 하매 구스 사람이 요압에게 절하고 달음질하여 가니",
+      "source_text_hash": "c4eb63d2e1376d87574480b5b28ba9f39d4118c2b5ddc32a56c4caa6a92f1241",
+      "translation_text_hash": "c42425aa7c40387d23382242216a1c9b8b5604c8186429dc81a5f71340648a09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구스 사람에게 이르되 네가 가서 본 것을 왕께 고하라 하매 구스 사람이 요압에게 절하고 달음질하여 가니"
+      ],
+      "raw_text_hashes": [
+        "c42425aa7c40387d23382242216a1c9b8b5604c8186429dc81a5f71340648a09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:22",
+      "sequence": 8501,
+      "chapter_label": "2SA 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "Then Ahimaaz the son of Zadok said yet again to Joab, “But come what may, please let me also run after the Cushite.” Joab said, “Why do you want to run, my son, since you will have no reward for the news?”",
+      "ko": "사독의 아들 아히마아스가 다시 요압에게 이르되 청컨대 아무쪼록 나로 또한 구스 사람의 뒤를 따라 달음질하게 하소서 요압이 가로되 내 아들아 왜 달음질하려 하느냐 이 소식으로 인하여는 상을 받지 못하리라 하되",
+      "source_text_hash": "68b7b4eed35f746498001e75ec27f56a5d6d5b53cbee5966bb0b8374cdfacb1b",
+      "translation_text_hash": "7f639a285601a3073bb238eefcced98b8ed5fefa722ac9afe07ceab40bf4dda1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사독의 아들 아히마아스가 다시 요압에게 이르되 청컨대 아무쪼록 나로 또한 구스 사람의 뒤를 따라 달음질하게 하소서 요압이 가로되 내 아들아 왜 달음질하려 하느냐 이 소식으로 인하여는 상을 받지 못하리라 하되"
+      ],
+      "raw_text_hashes": [
+        "7f639a285601a3073bb238eefcced98b8ed5fefa722ac9afe07ceab40bf4dda1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:23",
+      "sequence": 8502,
+      "chapter_label": "2SA 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "“But come what may,” he said, “I will run.” He said to him, “Run!” Then Ahimaaz ran by the way of the Plain, and outran the Cushite.",
+      "ko": "저가 아무쪼록 달음질하겠노라 하는지라 요압이 가로되 그리하라 하니 아히마아스가 들길로 달음질하여 구스 사람보다 앞서니라",
+      "source_text_hash": "c7f74331d22b765eb2063c1b772b699a9de8a4c9dbd111f6e48194e9b06d7a31",
+      "translation_text_hash": "617ad405d91c08353b2251910eac86ae103e5e39a38ca7fa25446258256fea4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 아무쪼록 달음질하겠노라 하는지라 요압이 가로되 그리하라 하니 아히마아스가 들길로 달음질하여 구스 사람보다 앞서니라"
+      ],
+      "raw_text_hashes": [
+        "617ad405d91c08353b2251910eac86ae103e5e39a38ca7fa25446258256fea4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:24",
+      "sequence": 8503,
+      "chapter_label": "2SA 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "Now David was sitting between the two gates; and the watchman went up to the roof of the gate to the wall, and lifted up his eyes and looked, and, behold, a man running alone.",
+      "ko": "때에 다윗이 두 문 사이에 앉았더라 파숫군이 성문루에 올라가서 눈을 들어 보니 어떤 사람이 홀로 달음질하는지라",
+      "source_text_hash": "4a7703d4e433fee00cf6fdb0471bf7b3c5b9a6f67495ec8636e8f064e92464a3",
+      "translation_text_hash": "6342c6d609ca55a3b7258c043dc61b5a0aa9e7434b083ee3cae7d549bc6699da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 다윗이 두 문 사이에 앉았더라 파숫군이 성문루에 올라가서 눈을 들어 보니 어떤 사람이 홀로 달음질하는지라"
+      ],
+      "raw_text_hashes": [
+        "6342c6d609ca55a3b7258c043dc61b5a0aa9e7434b083ee3cae7d549bc6699da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:25",
+      "sequence": 8504,
+      "chapter_label": "2SA 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "The watchman shouted and told the king. The king said, “If he is alone, there is news in his mouth.” He came closer and closer.",
+      "ko": "파숫군이 외쳐 왕께 고하매 왕이 가로되 저가 만일 혼자면 그 입에 소식이 있으리라 할 때에 저가 차차 가까이 오니라",
+      "source_text_hash": "60ffe4355b46e4a17087de345a345abaff48cc16e1721c621d73f9c5636038e7",
+      "translation_text_hash": "2c22b9e6f0c01d0ab44549c321e51214faeafc23d9bdf1faba552c8dfe41a71f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파숫군이 외쳐 왕께 고하매 왕이 가로되 저가 만일 혼자면 그 입에 소식이 있으리라 할 때에 저가 차차 가까이 오니라"
+      ],
+      "raw_text_hashes": [
+        "2c22b9e6f0c01d0ab44549c321e51214faeafc23d9bdf1faba552c8dfe41a71f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:26",
+      "sequence": 8505,
+      "chapter_label": "2SA 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "The watchman saw another man running; and the watchman called to the gatekeeper and said, “Behold, a man running alone!” The king said, “He also brings news.”",
+      "ko": "파숫군이 본즉 한 사람이 또 달음질하는지라 문지기에게 외쳐 이르되 보라 한 사람이 또 혼자 달음질한다 하니 왕이 가로되 저도 소식을 가져오느니라",
+      "source_text_hash": "c0d5176962951c14659278652e5a2dd40d9d82103e027ee6262d3e338d74927c",
+      "translation_text_hash": "411910d80a7820cca85e3986811b1dce014c9494db254978b2ac92d74652ea42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파숫군이 본즉 한 사람이 또 달음질하는지라 문지기에게 외쳐 이르되 보라 한 사람이 또 혼자 달음질한다 하니 왕이 가로되 저도 소식을 가져오느니라"
+      ],
+      "raw_text_hashes": [
+        "411910d80a7820cca85e3986811b1dce014c9494db254978b2ac92d74652ea42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:27",
+      "sequence": 8506,
+      "chapter_label": "2SA 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "The watchman said, “I think the running of the first one is like the running of Ahimaaz the son of Zadok.” The king said, “He is a good man, and comes with good news.”",
+      "ko": "파숫군이 가로되 나 보기에는 앞선 사람의 달음질이 사독의 아들 아히마아스의 달음질과 같으니이다 왕이 가로되 저는 좋은 사람이니 좋은 소식을 가져 오느니라",
+      "source_text_hash": "35598daf19e9dc22a0c8685fc1b55d534adb3eae07f8c8d0e16b61ae2cd41ac9",
+      "translation_text_hash": "8a9ff96a1f67e618ce25230537814eead4b5c23f15133012167488138c131802",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파숫군이 가로되 나 보기에는 앞선 사람의 달음질이 사독의 아들 아히마아스의 달음질과 같으니이다 왕이 가로되 저는 좋은 사람이니 좋은 소식을 가져 오느니라"
+      ],
+      "raw_text_hashes": [
+        "8a9ff96a1f67e618ce25230537814eead4b5c23f15133012167488138c131802"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:28",
+      "sequence": 8507,
+      "chapter_label": "2SA 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "Ahimaaz called, and said to the king, “All is well.” He bowed himself before the king with his face to the earth, and said, “Blessed is the LORD your God, who has delivered up the men who lifted up their hand against my lord the king!”",
+      "ko": "아히마아스가 외쳐 왕께 말씀하되 평강하옵소서 하고 왕의 앞에서 얼굴을 땅에 대고 절하여 가로되 왕의 하나님 여호와를 찬양하리로소이다 그 손을 들어 내 주 왕을 대적하는 자들을 붙여 주셨나이다",
+      "source_text_hash": "4bb0353c2cec5615822bffac84b093b1a251fa731cfbb0616731d1b686e732a5",
+      "translation_text_hash": "2a9ef5bcb090353e3c0cbccad4c06f51b380a7e1d142cd6b96d75a34906cf1ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히마아스가 외쳐 왕께 말씀하되 평강하옵소서 하고 왕의 앞에서 얼굴을 땅에 대고 절하여 가로되 왕의 하나님 여호와를 찬양하리로소이다 그 손을 들어 내 주 왕을 대적하는 자들을 붙여 주셨나이다"
+      ],
+      "raw_text_hashes": [
+        "2a9ef5bcb090353e3c0cbccad4c06f51b380a7e1d142cd6b96d75a34906cf1ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:29",
+      "sequence": 8508,
+      "chapter_label": "2SA 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "The king said, “Is it well with the young man Absalom?” Ahimaaz answered, “When Joab sent the king’s servant, even me your servant, I saw a great tumult, but I don’t know what it was.”",
+      "ko": "왕이 가로되 소년 압살롬이 잘 있느냐 아히마아스가 대답하되 요압이 왕의 종 나를 보낼 때에 크게 소동하는 것을 보았사오나 무슨 일인지 알지 못하였나이다",
+      "source_text_hash": "04c26064182769aed758eee4bace07dbd7c1a9efd2105a51464ebbfbdeb4e0a0",
+      "translation_text_hash": "51d37c476c8bb80ededbe7327b9d86276771ca9d16ccf5544ffa45ae0e433a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 소년 압살롬이 잘 있느냐 아히마아스가 대답하되 요압이 왕의 종 나를 보낼 때에 크게 소동하는 것을 보았사오나 무슨 일인지 알지 못하였나이다"
+      ],
+      "raw_text_hashes": [
+        "51d37c476c8bb80ededbe7327b9d86276771ca9d16ccf5544ffa45ae0e433a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:30",
+      "sequence": 8509,
+      "chapter_label": "2SA 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "The king said, “Come and stand here.” He came and stood still.",
+      "ko": "왕이 가로되 물러나 곁에 서 있으라 하매 물러나서 섰더라",
+      "source_text_hash": "e44099a1a7534171af4b6b352f9858f0d80fe0890a57f06717d7a5b71a21ec37",
+      "translation_text_hash": "55900fcb268abf39610b728a89361d9e2bf8d1e965011bd8a1941d688346ac75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 물러나 곁에 서 있으라 하매 물러나서 섰더라"
+      ],
+      "raw_text_hashes": [
+        "55900fcb268abf39610b728a89361d9e2bf8d1e965011bd8a1941d688346ac75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:31",
+      "sequence": 8510,
+      "chapter_label": "2SA 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "Behold, the Cushite came. The Cushite said, “Good news for my lord the king, for the LORD has avenged you today of all those who rose up against you.”",
+      "ko": "구스 사람이 이르러 고하되 내 주 왕께 보할 소식이 있나이다 여호와께서 오늘날 왕을 대적하던 모든 원수를 갚으셨나이다",
+      "source_text_hash": "aec0752e6de3c1a9542684fa45a48e5b545145363a2da8cd3e2425ec11e400b9",
+      "translation_text_hash": "681c7536d931ad661c801389ea5b0846becc132c1f5069f34c2df1b079e2643b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구스 사람이 이르러 고하되 내 주 왕께 보할 소식이 있나이다 여호와께서 오늘날 왕을 대적하던 모든 원수를 갚으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "681c7536d931ad661c801389ea5b0846becc132c1f5069f34c2df1b079e2643b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:32",
+      "sequence": 8511,
+      "chapter_label": "2SA 18",
+      "verse_label": "32",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 32
+        }
+      ],
+      "en": "The king said to the Cushite, “Is it well with the young man Absalom?” The Cushite answered, “May the enemies of my lord the king, and all who rise up against you to do you harm, be as that young man is.”",
+      "ko": "왕이 구스 사람에게 묻되 소년 압살롬이 잘 있느냐 구스 사람이 대답하되 내 주 왕의 원수와 일어나서 왕을 대적하는 자들은 다 그 소년과 같이 되기를 원하나이다",
+      "source_text_hash": "0c1876510a5b049bae3b60485851ef0b706766b8e65a2942367093e269558f01",
+      "translation_text_hash": "99ce94ac2c93012af0a49468fbfceb32c9ca6d2e1738fc272484922332c32855",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 구스 사람에게 묻되 소년 압살롬이 잘 있느냐 구스 사람이 대답하되 내 주 왕의 원수와 일어나서 왕을 대적하는 자들은 다 그 소년과 같이 되기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "99ce94ac2c93012af0a49468fbfceb32c9ca6d2e1738fc272484922332c32855"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:18:33",
+      "sequence": 8512,
+      "chapter_label": "2SA 18",
+      "verse_label": "33",
+      "locator": {
+        "book": "2SA",
+        "chapter": 18,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 18,
+          "verse": 33
+        }
+      ],
+      "en": "The king was much moved, and went up to the room over the gate and wept. As he went, he said, “My son Absalom! My son, my son Absalom! I wish I had died instead of you, Absalom, my son, my son!”",
+      "ko": "왕의 마음이 심히 아파 문루로 올라가서 우니라 저가 올라갈 때에 말하기를 내 아들 압살롬아 내 아들 내 아들 압살롬아 내가 너를 대신하여 죽었더면, 압살롬 내 아들아 내 아들아 하였더라",
+      "source_text_hash": "11fda0b6a5122c37e990e48c2969ebda7e678c4dedb1b2e72dc9a59d59f4a8a9",
+      "translation_text_hash": "9b019cd38c8cc2a5a0aa71fa88513a8c2dcc2d9130635bcb516168b5633cedfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 마음이 심히 아파 문루로 올라가서 우니라 저가 올라갈 때에 말하기를 내 아들 압살롬아 내 아들 내 아들 압살롬아 내가 너를 대신하여 죽었더면, 압살롬 내 아들아 내 아들아 하였더라"
+      ],
+      "raw_text_hashes": [
+        "9b019cd38c8cc2a5a0aa71fa88513a8c2dcc2d9130635bcb516168b5633cedfa"
+      ]
+    }
+  ]
+}

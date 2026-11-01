@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:020",
+  "unit_ordinal": 358,
+  "unit_label": "1CH 20",
+  "book_code": "1CH",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:20:1",
+      "sequence": 10928,
+      "chapter_label": "1CH 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "At the time of the return of the year, at the time when kings go out, Joab led out the army and wasted the country of the children of Ammon, and came and besieged Rabbah. But David stayed at Jerusalem. Joab struck Rabbah, and overthrew it.",
+      "ko": "해가 돌아와서 왕들의 출전할 때가 되매 요압이 그 군대를 거느리고 나가서 암몬 자손의 땅을 훼파하고 가서 랍바를 에워싸고 다윗은 예루살렘에 그대로 있더니 요압이 랍바를 쳐서 함락시키매",
+      "source_text_hash": "d891c80eeb3f6a45ee926fd1771b6d32375356eff6a03c48033dccf4d4cf17f3",
+      "translation_text_hash": "d6e4e263b8f184045cb1abda7914b6e7cdc5fb5d98338bf09527ac95dccccf70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해가 돌아와서 왕들의 출전할 때가 되매 요압이 그 군대를 거느리고 나가서 암몬 자손의 땅을 훼파하고 가서 랍바를 에워싸고 다윗은 예루살렘에 그대로 있더니 요압이 랍바를 쳐서 함락시키매"
+      ],
+      "raw_text_hashes": [
+        "d6e4e263b8f184045cb1abda7914b6e7cdc5fb5d98338bf09527ac95dccccf70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:20:2",
+      "sequence": 10929,
+      "chapter_label": "1CH 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "David took the crown of their king from off his head, and found it to weigh a talent of gold, and there were precious stones in it. It was set on David’s head, and he brought very much plunder out of the city.",
+      "ko": "다윗이 그 왕의 머리에서 보석 있는 면류관을 취하여 달아보니 중량이 금 한 달란트라 그 면류관을 자기 머리에 쓰니라 다윗이 또 그 성에서 노략한 물건을 무수히 내어오고",
+      "source_text_hash": "d7eeac6fb3447be0b41223679cd8cbf8041facec26efd9830f1c7d0445e5ec7e",
+      "translation_text_hash": "b108133c04b974e7caf41efcf777889813c4403d1ef74d7dc0d2ad0c1ea8cddc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 왕의 머리에서 보석 있는 면류관을 취하여 달아보니 중량이 금 한 달란트라 그 면류관을 자기 머리에 쓰니라 다윗이 또 그 성에서 노략한 물건을 무수히 내어오고"
+      ],
+      "raw_text_hashes": [
+        "b108133c04b974e7caf41efcf777889813c4403d1ef74d7dc0d2ad0c1ea8cddc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:20:3",
+      "sequence": 10930,
+      "chapter_label": "1CH 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "He brought out the people who were in it, and had them cut with saws, with iron picks, and with axes. David did so to all the cities of the children of Ammon. Then David and all the people returned to Jerusalem.",
+      "ko": "그 가운데 백성을 끌어 내어 톱질과 써레질과 도끼질을 하게 하니라 다윗이 암몬 자손의 모든 성읍을 이같이 하고 모든 백성과 함께 예루살렘으로 돌아오니라",
+      "source_text_hash": "d1ccb10bbf62caafd085bbff1d72e345bec0d2277a5aec731b05ab683fa6e4ce",
+      "translation_text_hash": "4b28bff3e85312836076962e90abcc45c7291e728e5f4015ca8dc1701e9549f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가운데 백성을 끌어 내어 톱질과 써레질과 도끼질을 하게 하니라 다윗이 암몬 자손의 모든 성읍을 이같이 하고 모든 백성과 함께 예루살렘으로 돌아오니라"
+      ],
+      "raw_text_hashes": [
+        "4b28bff3e85312836076962e90abcc45c7291e728e5f4015ca8dc1701e9549f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:20:4",
+      "sequence": 10931,
+      "chapter_label": "1CH 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "After this, war arose at Gezer with the Philistines. Then Sibbecai the Hushathite killed Sippai, of the sons of the giant; and they were subdued.",
+      "ko": "이 후에 블레셋 사람과 게셀에서 전쟁할 때에 후사 사람 십브개가 장대한 자의 아들 중에 십배를 쳐 죽이매 저희가 항복하였더라",
+      "source_text_hash": "4847f2628d3cbafb49ef49cc838b86b2713d6f6f5b289dc37c740018fade2f23",
+      "translation_text_hash": "00c2b0fe9a4ba87572ad879f199c012c2024781067c39f5755b87a8f1e253ef0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 블레셋 사람과 게셀에서 전쟁할 때에 후사 사람 십브개가 장대한 자의 아들 중에 십배를 쳐 죽이매 저희가 항복하였더라"
+      ],
+      "raw_text_hashes": [
+        "00c2b0fe9a4ba87572ad879f199c012c2024781067c39f5755b87a8f1e253ef0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:20:5",
+      "sequence": 10932,
+      "chapter_label": "1CH 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "Again there was war with the Philistines; and Elhanan the son of Jair killed Lahmi the brother of Goliath the Gittite, the staff of whose spear was like a weaver’s beam.",
+      "ko": "다시 블레셋 사람과 전쟁할 때에 야일의 아들 엘하난이 가드 사람 골리앗의 아우 라흐미를 죽였는데 이 사람의 창자루는 베틀채 같았더라",
+      "source_text_hash": "ca6e6760203b523cef9fcd0a32aee500b6250c76160358ecd45492b9d5bc87bb",
+      "translation_text_hash": "a012e8a591bd7d974cfcb105888ea92466a7e34b595649ea7d714237fb47d571",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 블레셋 사람과 전쟁할 때에 야일의 아들 엘하난이 가드 사람 골리앗의 아우 라흐미를 죽였는데 이 사람의 창자루는 베틀채 같았더라"
+      ],
+      "raw_text_hashes": [
+        "a012e8a591bd7d974cfcb105888ea92466a7e34b595649ea7d714237fb47d571"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:20:6",
+      "sequence": 10933,
+      "chapter_label": "1CH 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "There was again war at Gath, where there was a man of great stature, who had twenty-four fingers and toes, six on each hand and six on each foot; and he also was born to the giant.",
+      "ko": "또 가드에서 전쟁할 때에 그곳에 키 큰 자 하나는 매 손과 매 발에 가락이 여섯씩 모두 스물 넷이 있는데 저도 장대한 자의 소생이라",
+      "source_text_hash": "559fd3e55b5ebaec2caced318cfb45f4c181dbf07f968ae03f8290f655564713",
+      "translation_text_hash": "dd1aac713024f5e3bd4804c5c841ca8d0a332cb869c1433a9037bf0e5c387dcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가드에서 전쟁할 때에 그곳에 키 큰 자 하나는 매 손과 매 발에 가락이 여섯씩 모두 스물 넷이 있는데 저도 장대한 자의 소생이라"
+      ],
+      "raw_text_hashes": [
+        "dd1aac713024f5e3bd4804c5c841ca8d0a332cb869c1433a9037bf0e5c387dcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:20:7",
+      "sequence": 10934,
+      "chapter_label": "1CH 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "When he defied Israel, Jonathan the son of Shimea, David’s brother, killed him.",
+      "ko": "저가 이스라엘을 능욕하는고로 다윗의 형 시므아의 아들 요나단이 저를 죽이니라",
+      "source_text_hash": "83c8b0c7d8183fc86a2b07fd5f0b2016bdf2c64f7372318174eafd2db77e2ea0",
+      "translation_text_hash": "c87accf0a4c06867b223e4279a66cb4723cc0f196eae511399ed66fcf496e711",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이스라엘을 능욕하는고로 다윗의 형 시므아의 아들 요나단이 저를 죽이니라"
+      ],
+      "raw_text_hashes": [
+        "c87accf0a4c06867b223e4279a66cb4723cc0f196eae511399ed66fcf496e711"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:20:8",
+      "sequence": 10935,
+      "chapter_label": "1CH 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "These were born to the giant in Gath; and they fell by the hand of David and by the hand of his servants.",
+      "ko": "가드 장대한 자의 소생이라도 다윗의 손과 그 신복의 손에 다 죽었더라",
+      "source_text_hash": "71ab29dd897515146fe78ba10ee69d92cf14ac86c8a8e80815d3d83c5b2157df",
+      "translation_text_hash": "3eaf98940393488432e3eaa3d60f1e51d5cd262f3207f0ca6f50d252ed0b1265",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가드 장대한 자의 소생이라도 다윗의 손과 그 신복의 손에 다 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "3eaf98940393488432e3eaa3d60f1e51d5cd262f3207f0ca6f50d252ed0b1265"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:027",
+  "unit_ordinal": 829,
+  "unit_label": "EZK 27",
+  "book_code": "EZK",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:27:1",
+      "sequence": 21123,
+      "chapter_label": "EZK 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came again to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "53317430a9b7a9fdbe9156a35ae512112bae6b6f909738ce12aa74f8e4a71377",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:2",
+      "sequence": 21124,
+      "chapter_label": "EZK 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "“You, son of man, take up a lamentation over Tyre;",
+      "ko": "인자야 너는 두로를 위하여 애가를 지으라",
+      "source_text_hash": "c5fa35f89755bcd64de67f576835bf6d93b2e62b5f351f959578e6d79d545073",
+      "translation_text_hash": "682d07c759b26e781faa3c0b4dde88db5b292ac5bb8defd9bc9df1e9c73342c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 두로를 위하여 애가를 지으라"
+      ],
+      "raw_text_hashes": [
+        "682d07c759b26e781faa3c0b4dde88db5b292ac5bb8defd9bc9df1e9c73342c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:3",
+      "sequence": 21125,
+      "chapter_label": "EZK 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "and tell Tyre, ‘You who dwell at the entry of the sea, who are the merchant of the peoples to many islands, the Lord GOD says: “You, Tyre, have said, ‘I am perfect in beauty.’",
+      "ko": "너는 두로를 향하여 이르기를 바다 어귀에 거하여 여러 섬 백성과 통상하는 자여 주 여호와의 말씀에 두로야 네가 말하기를 나는 온전히 아름답다 하였도다",
+      "source_text_hash": "b573686e8be950a1efe9dcdf2a6520ba406e2426209c373c3b4ddacb04ec516b",
+      "translation_text_hash": "f0c8abd940359c7246b9ad019cf922c3794d63401655999770b04f1f398ebe0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 두로를 향하여 이르기를 바다 어귀에 거하여 여러 섬 백성과 통상하는 자여 주 여호와의 말씀에 두로야 네가 말하기를 나는 온전히 아름답다 하였도다"
+      ],
+      "raw_text_hashes": [
+        "f0c8abd940359c7246b9ad019cf922c3794d63401655999770b04f1f398ebe0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:4",
+      "sequence": 21126,
+      "chapter_label": "EZK 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "Your borders are in the heart of the seas. Your builders have perfected your beauty.",
+      "ko": "네 지경이 바다 가운데 있음이여 너를 지은 자가 네 아름다움을 온전케 하였도다",
+      "source_text_hash": "41b9de02dbd9d94b9cc5e6fac10252c41a95cb9389d3aca40c4399d43b64cb96",
+      "translation_text_hash": "ab4e1a79366b019fab50efba011260aa4933de5c58d614e889252dd5a2598035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 지경이 바다 가운데 있음이여 너를 지은 자가 네 아름다움을 온전케 하였도다"
+      ],
+      "raw_text_hashes": [
+        "ab4e1a79366b019fab50efba011260aa4933de5c58d614e889252dd5a2598035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:5",
+      "sequence": 21127,
+      "chapter_label": "EZK 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "They have made all your planks of cypress trees from Senir. They have taken a cedar from Lebanon to make a mast for you.",
+      "ko": "스닐의 잣나무로 네 판자를 만들었음이여 너를 위하여 레바논 백향목을 가져 돛대를 만들었도다",
+      "source_text_hash": "aeb9c6961bac764c4fba664822d1480e2bfa201dacf81cddca8ebd449088b5e4",
+      "translation_text_hash": "b16c72d09784c54073e2400b99cb2ab576c690e02ffc2759f562176e7eadbf92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스닐의 잣나무로 네 판자를 만들었음이여 너를 위하여 레바논 백향목을 가져 돛대를 만들었도다"
+      ],
+      "raw_text_hashes": [
+        "b16c72d09784c54073e2400b99cb2ab576c690e02ffc2759f562176e7eadbf92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:6",
+      "sequence": 21128,
+      "chapter_label": "EZK 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "They have made your oars of the oaks of Bashan. They have made your benches of ivory inlaid in cypress wood from the islands of Kittim.",
+      "ko": "바산 상수리나무로 네 노를 만들었었음이여 깃딤섬 황양목에 상아로 꾸며 갑판을 만들었도다",
+      "source_text_hash": "52d8579b7d5a8961d31985e0abfd90c760aee5a0571f7920d75054ba339fd7c4",
+      "translation_text_hash": "66879d290ded2619057fe04f3abf891e8bcce90ec80c3b42bc48f4eed46f5ced",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바산 상수리나무로 네 노를 만들었었음이여 깃딤섬 황양목에 상아로 꾸며 갑판을 만들었도다"
+      ],
+      "raw_text_hashes": [
+        "66879d290ded2619057fe04f3abf891e8bcce90ec80c3b42bc48f4eed46f5ced"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:7",
+      "sequence": 21129,
+      "chapter_label": "EZK 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "Your sail was of fine linen with embroidered work from Egypt, that it might be to you for a banner. Blue and purple from the islands of Elishah was your awning.",
+      "ko": "애굽의 수 놓은 가는 베로 돛을 만들어 기를 삼았음이여 엘리사 섬의 청색 자색 베로 차일을 만들었도다",
+      "source_text_hash": "a5c60f5dd3725d65cd1f942a583157e477dcc3332b615deb5fdf95af24d8bc40",
+      "translation_text_hash": "db23a89a6f38e8a043c8ad7c1541abd8d8ed551c07ee357251fb98a943cc26c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽의 수 놓은 가는 베로 돛을 만들어 기를 삼았음이여 엘리사 섬의 청색 자색 베로 차일을 만들었도다"
+      ],
+      "raw_text_hashes": [
+        "db23a89a6f38e8a043c8ad7c1541abd8d8ed551c07ee357251fb98a943cc26c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:8",
+      "sequence": 21130,
+      "chapter_label": "EZK 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "The inhabitants of Sidon and Arvad were your rowers. Your wise men, Tyre, were in you. They were your pilots.",
+      "ko": "시돈과 아르왓 거민들이 네 사공이 되었음이여 두로야 네 가운데 있는 박사가 네 선장이 되었도다",
+      "source_text_hash": "8fd4991f37c8ae2cfe10dad9f885fe5e7754f2f413ebdea37643c0a98314ff01",
+      "translation_text_hash": "e0646c6fb0699069094f0f4a3987e949d070a3056aa67adce85f3082aeddf20a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시돈과 아르왓 거민들이 네 사공이 되었음이여 두로야 네 가운데 있는 박사가 네 선장이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "e0646c6fb0699069094f0f4a3987e949d070a3056aa67adce85f3082aeddf20a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:9",
+      "sequence": 21131,
+      "chapter_label": "EZK 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "The old men of Gebal and its wise men were your repairers of ship seams in you. All the ships of the sea with their mariners were in you to deal in your merchandise.",
+      "ko": "그발의 노인과 박사들이 네 가운데서 배의 틈을 막는 자가 되었음이여 바다의 모든 배와 그 사공들은 네 가운데서 무역하였도다",
+      "source_text_hash": "064bf71f56f6fcecbdde538d6b7be7dac319da2393996faa2fdcf1e5deb6d0d2",
+      "translation_text_hash": "ff6ea19886cf5833004854136d5b968a4adad90b33188b9a96a73a46b71d08e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그발의 노인과 박사들이 네 가운데서 배의 틈을 막는 자가 되었음이여 바다의 모든 배와 그 사공들은 네 가운데서 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "ff6ea19886cf5833004854136d5b968a4adad90b33188b9a96a73a46b71d08e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:10",
+      "sequence": 21132,
+      "chapter_label": "EZK 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "“‘“Persia, Lud, and Put were in your army, your men of war. They hung the shield and helmet in you. They showed your beauty.",
+      "ko": "바사와 룻과 붓이 네 군대 가운데서 병정이 되었음이여 네 가운데서 방패와 투구를 달아 네 영광을 나타내었도다",
+      "source_text_hash": "2e20c1825eb12a5bc1baddc0cc40b80b9cea0b6ffa29b86fe9ab2227821e742c",
+      "translation_text_hash": "8ba9c38bc233c347fd2b9082a44ea9f91b4c5cfd8b96e4857ca07cd31b97ae54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바사와 룻과 붓이 네 군대 가운데서 병정이 되었음이여 네 가운데서 방패와 투구를 달아 네 영광을 나타내었도다"
+      ],
+      "raw_text_hashes": [
+        "8ba9c38bc233c347fd2b9082a44ea9f91b4c5cfd8b96e4857ca07cd31b97ae54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:11",
+      "sequence": 21133,
+      "chapter_label": "EZK 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "The men of Arvad with your army were on your walls all around, and valiant men were in your towers. They hung their shields on your walls all around. They have perfected your beauty.",
+      "ko": "아르왓 사람과 네 군대는 네 사면 성 위에 있었고 용사들은 네 여러 망대에 있었음이여 네 사면 성 위에 방패를 달아 네 아름다움을 온전케 하였도다",
+      "source_text_hash": "99e7c60e80431ff766fd582134b1bcd9cd97096a6e603e93f3300e3b98892339",
+      "translation_text_hash": "cb3e8e14af687ab5ff51212cd2eda84eea20b99550fbe3d26c1eb9221df8a912",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아르왓 사람과 네 군대는 네 사면 성 위에 있었고 용사들은 네 여러 망대에 있었음이여 네 사면 성 위에 방패를 달아 네 아름다움을 온전케 하였도다"
+      ],
+      "raw_text_hashes": [
+        "cb3e8e14af687ab5ff51212cd2eda84eea20b99550fbe3d26c1eb9221df8a912"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:12",
+      "sequence": 21134,
+      "chapter_label": "EZK 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "“‘“Tarshish was your merchant by reason of the multitude of all kinds of riches. They traded for your wares with silver, iron, tin, and lead.",
+      "ko": "다시스는 각종 보화가 풍부하므로 너와 통상하였음이여 은과 철과 상납과 납을 가지고 네 물품을 무역하였도다",
+      "source_text_hash": "03008bf53b1efa572134a3eeff07ba59bd1c5d3a527264f7edf2aa8f5c4a1f21",
+      "translation_text_hash": "a2be1e2356eb41f2c4f185fa2fae343b3517371152d789158af7eb1bc458079b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시스는 각종 보화가 풍부하므로 너와 통상하였음이여 은과 철과 상납과 납을 가지고 네 물품을 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "a2be1e2356eb41f2c4f185fa2fae343b3517371152d789158af7eb1bc458079b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:13",
+      "sequence": 21135,
+      "chapter_label": "EZK 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "“‘“Javan, Tubal, and Meshech were your traders. They traded the persons of men and vessels of bronze for your merchandise.",
+      "ko": "야완과 두발과 메섹은 네 장사가 되었음이여 사람과 놋그릇을 가지고 네 상품을 무역하였도다",
+      "source_text_hash": "5b3b49b715f3f7cb8e3022bcdb2ad1f7cc81c361d77d9664781ad4404ed5cc09",
+      "translation_text_hash": "04ca07b63719c4adb60a836274820b45d24491ae101f1f1e70be1e3b385d0273",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야완과 두발과 메섹은 네 장사가 되었음이여 사람과 놋그릇을 가지고 네 상품을 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "04ca07b63719c4adb60a836274820b45d24491ae101f1f1e70be1e3b385d0273"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:14",
+      "sequence": 21136,
+      "chapter_label": "EZK 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "“‘“They of the house of Togarmah traded for your wares with horses, war horses, and mules.",
+      "ko": "도갈마 족속은 말과 전마와 노새를 가지고 네 물품을 무역하며",
+      "source_text_hash": "12eba473a4204dd8c44627800855e70fad1e8f632164d5ffc7879b1f99b6f71b",
+      "translation_text_hash": "04c1710b66ece6e2b5b0f959c579942c48b36de43e878ed0e682ec4871a8179e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도갈마 족속은 말과 전마와 노새를 가지고 네 물품을 무역하며"
+      ],
+      "raw_text_hashes": [
+        "04c1710b66ece6e2b5b0f959c579942c48b36de43e878ed0e682ec4871a8179e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:15",
+      "sequence": 21137,
+      "chapter_label": "EZK 27",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 15
+        }
+      ],
+      "en": "“‘“The men of Dedan traded with you. Many islands were the market of your hand. They brought you horns of ivory and ebony in exchange.",
+      "ko": "드단 사람은 네 장사가 되었음이여 여러 섬이 너와 통상하여 상아와 오목을 가져 네 물품을 무역하였도다",
+      "source_text_hash": "11fac2f8cdddfe17b742b5a083b71889efc9204ffd9db303d84f6385f8883a87",
+      "translation_text_hash": "2668092c4e16dbc7d889fd15869068ac69e1a3764386bcc9126322b0f002b92d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드단 사람은 네 장사가 되었음이여 여러 섬이 너와 통상하여 상아와 오목을 가져 네 물품을 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "2668092c4e16dbc7d889fd15869068ac69e1a3764386bcc9126322b0f002b92d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:16",
+      "sequence": 21138,
+      "chapter_label": "EZK 27",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 16
+        }
+      ],
+      "en": "“‘“Syria was your merchant by reason of the multitude of your handiworks. They traded for your wares with emeralds, purple, embroidered work, fine linen, coral, and rubies.",
+      "ko": "너의 제조품이 풍부하므로 아람은 너와 통상하였음이여 남보석과 자색 베와 수 놓은 것과 가는 베와 산호와 홍보석을 가지고 네 물품을 무역하였도다",
+      "source_text_hash": "a928a082c95f26f9f062df0847b61497dc93b933996e27773deb60830167c058",
+      "translation_text_hash": "b0cf83964b1b1360fe5fdbe06a233b29df8e20d757da95915b0c85d826cb22a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 제조품이 풍부하므로 아람은 너와 통상하였음이여 남보석과 자색 베와 수 놓은 것과 가는 베와 산호와 홍보석을 가지고 네 물품을 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "b0cf83964b1b1360fe5fdbe06a233b29df8e20d757da95915b0c85d826cb22a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:17",
+      "sequence": 21139,
+      "chapter_label": "EZK 27",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 17
+        }
+      ],
+      "en": "“‘“Judah and the land of Israel were your traders. They traded wheat of Minnith, confections, honey, oil, and balm for your merchandise.",
+      "ko": "유다와 이스라엘 땅 사람이 네 장사가 되었음이여 민닛 밀과 과자와 꿀과 기름과 유향을 가지고 네 물품을 무역하였도다",
+      "source_text_hash": "c53d2baf4b1502fc5990f4954594913b359f9c62abd21e7af2878975418bef1a",
+      "translation_text_hash": "fc004a97d702d20e6c316a9f3e64da1ff4eafdb226e06fcb9f92aa7c04f81fb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다와 이스라엘 땅 사람이 네 장사가 되었음이여 민닛 밀과 과자와 꿀과 기름과 유향을 가지고 네 물품을 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "fc004a97d702d20e6c316a9f3e64da1ff4eafdb226e06fcb9f92aa7c04f81fb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:18",
+      "sequence": 21140,
+      "chapter_label": "EZK 27",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 18
+        }
+      ],
+      "en": "“‘“Damascus was your merchant for the multitude of your handiworks by reason of the multitude of all kinds of riches, with the wine of Helbon, and white wool.",
+      "ko": "너의 제조품이 많고 각종 보화가 풍부하므로 다메섹이 너와 통상하였음이여 헬본 포도주와 흰 양털을 가지고 너와 무역하였도다",
+      "source_text_hash": "87fba575412f79ca81d755f1d6fa1efaa78aba221f124a42787e0a7829807072",
+      "translation_text_hash": "08423d6d2b4b06d8da3fb293687bf922b803d5a3c8683c40f22946a3d4a19449",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 제조품이 많고 각종 보화가 풍부하므로 다메섹이 너와 통상하였음이여 헬본 포도주와 흰 양털을 가지고 너와 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "08423d6d2b4b06d8da3fb293687bf922b803d5a3c8683c40f22946a3d4a19449"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:19",
+      "sequence": 21141,
+      "chapter_label": "EZK 27",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 19
+        }
+      ],
+      "en": "“‘“Vedan and Javan traded with yarn for your wares; wrought iron, cassia, and calamus were among your merchandise.",
+      "ko": "워단과 야완은 길쌈하는 실로 네 물품을 무역하였음이여 백철과 육계와 창포가 네 상품 중에 있었도다",
+      "source_text_hash": "456fb53964500191cded31c44e301cc2136c3ca8fbb07266f311f872f6a44b60",
+      "translation_text_hash": "b7e54bf3afb7ab1cc2105af6979dd16bb11d2aaec3e7bb6430cf65542566abe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "워단과 야완은 길쌈하는 실로 네 물품을 무역하였음이여 백철과 육계와 창포가 네 상품 중에 있었도다"
+      ],
+      "raw_text_hashes": [
+        "b7e54bf3afb7ab1cc2105af6979dd16bb11d2aaec3e7bb6430cf65542566abe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:20",
+      "sequence": 21142,
+      "chapter_label": "EZK 27",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 20
+        }
+      ],
+      "en": "“‘“Dedan was your merchant in precious saddle blankets for riding.",
+      "ko": "드단은 네 장사가 되었음이여 탈 때 까는 담으로 너와 무역하였도다",
+      "source_text_hash": "c6026c880a9ea286d6c52b3db8a9303c1016b988714e6515341bfcc83b303b37",
+      "translation_text_hash": "47e7e8711b7de94c6ef2a5f1e7f11368422d04e021b7492928babe59dce23273",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드단은 네 장사가 되었음이여 탈 때 까는 담으로 너와 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "47e7e8711b7de94c6ef2a5f1e7f11368422d04e021b7492928babe59dce23273"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:21",
+      "sequence": 21143,
+      "chapter_label": "EZK 27",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 21
+        }
+      ],
+      "en": "“‘“Arabia and all the princes of Kedar were your favorite dealers in lambs, rams, and goats. In these, they were your merchants.",
+      "ko": "아라비아와 게달의 모든 방백은 네 수하에 상고가 되어 어린 양과 수양과 염소들, 그것으로 너와 무역하였도다",
+      "source_text_hash": "d1c14084bcb20252644816165581b4e7839101831f8a9b033d5151e2fe281e04",
+      "translation_text_hash": "0c2a01390ff065ef433e42419f01ba65bed86c45f85753a46ccd63c5a13c7e92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아라비아와 게달의 모든 방백은 네 수하에 상고가 되어 어린 양과 수양과 염소들, 그것으로 너와 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "0c2a01390ff065ef433e42419f01ba65bed86c45f85753a46ccd63c5a13c7e92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:22",
+      "sequence": 21144,
+      "chapter_label": "EZK 27",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 22
+        }
+      ],
+      "en": "“‘“The traders of Sheba and Raamah were your traders. They traded for your wares with the best of all spices, all precious stones, and gold.",
+      "ko": "스바와 라아마의 장사들도 너의 장사들이 됨이여 각종 상등 향재료와 각종 보석과 황금으로 네 물품을 무역하였도다",
+      "source_text_hash": "c750eacd20d241351d3d366b6d8fe1ba6e3adcd6132f069394179eca9cbd9518",
+      "translation_text_hash": "49f70751d98996e2964f04c6bc15027c164ac7d811717b4c8d158cec0d8a4420",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바와 라아마의 장사들도 너의 장사들이 됨이여 각종 상등 향재료와 각종 보석과 황금으로 네 물품을 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "49f70751d98996e2964f04c6bc15027c164ac7d811717b4c8d158cec0d8a4420"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:23",
+      "sequence": 21145,
+      "chapter_label": "EZK 27",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 23
+        }
+      ],
+      "en": "“‘“Haran, Canneh, Eden, the traders of Sheba, Asshur and Chilmad, were your traders.",
+      "ko": "하란과 간네와 에덴과 스바와 앗수르와 길맛의 장사들도 너의 장사들이라",
+      "source_text_hash": "fdae9fc5411ec513b041d6e94773d1374595aec4c4dca9e251b7f8da3b9af64d",
+      "translation_text_hash": "ae96aaa1c81da62faba664730660543db32e74ab2db30db9ac6c2a81560c2ac7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하란과 간네와 에덴과 스바와 앗수르와 길맛의 장사들도 너의 장사들이라"
+      ],
+      "raw_text_hashes": [
+        "ae96aaa1c81da62faba664730660543db32e74ab2db30db9ac6c2a81560c2ac7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:24",
+      "sequence": 21146,
+      "chapter_label": "EZK 27",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 24
+        }
+      ],
+      "en": "These were your traders in choice wares, in wrappings of blue and embroidered work, and in cedar chests of rich clothing bound with cords, among your merchandise.",
+      "ko": "이들이 아름다운 물화 곧 청색 옷과 수 놓은 물품과 빛난 옷을 백향목 상자에 담고 노끈으로 묶어 가지고 너와 통상하여 네 물품을 무역하였도다",
+      "source_text_hash": "302b1eb364af06378a0c8ca4d9ed69d61946427dde592c977f4eb6f45fa26cd2",
+      "translation_text_hash": "d61d5d964bc4a712ac708a98baaca8597994841dc0f77dcb2937135242d9a14c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들이 아름다운 물화 곧 청색 옷과 수 놓은 물품과 빛난 옷을 백향목 상자에 담고 노끈으로 묶어 가지고 너와 통상하여 네 물품을 무역하였도다"
+      ],
+      "raw_text_hashes": [
+        "d61d5d964bc4a712ac708a98baaca8597994841dc0f77dcb2937135242d9a14c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:25",
+      "sequence": 21147,
+      "chapter_label": "EZK 27",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 25
+        }
+      ],
+      "en": "“‘“The ships of Tarshish were your caravans for your merchandise. You were replenished and made very glorious in the heart of the seas.",
+      "ko": "다시스의 배는 떼를 지어 네 물화를 실었음이여 네가 바다 중심에서 풍부하여 영화가 극하였도다",
+      "source_text_hash": "3e49a5dc94aab81080528409394577ef88340138c38b3da6c2a1b10e3bb3e315",
+      "translation_text_hash": "01d5ec6048b3a59b8c5278b1fc92de3112c40d961594880d44e7401e7e741104",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시스의 배는 떼를 지어 네 물화를 실었음이여 네가 바다 중심에서 풍부하여 영화가 극하였도다"
+      ],
+      "raw_text_hashes": [
+        "01d5ec6048b3a59b8c5278b1fc92de3112c40d961594880d44e7401e7e741104"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:26",
+      "sequence": 21148,
+      "chapter_label": "EZK 27",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 26
+        }
+      ],
+      "en": "Your rowers have brought you into great waters. The east wind has broken you in the heart of the seas.",
+      "ko": "네 사공이 너를 인도하여 큰 물에 이름이여 동풍이 바다 중심에서 너를 파하도다",
+      "source_text_hash": "b20ba2a4b4e45523010a65e55d79f6d63821c9c7d88acbcfa97eed99380748c3",
+      "translation_text_hash": "4e78b0460bb4e15110840e0e994908fc57649011009009bc5b9e75c872d8fea3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 사공이 너를 인도하여 큰 물에 이름이여 동풍이 바다 중심에서 너를 파하도다"
+      ],
+      "raw_text_hashes": [
+        "4e78b0460bb4e15110840e0e994908fc57649011009009bc5b9e75c872d8fea3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:27",
+      "sequence": 21149,
+      "chapter_label": "EZK 27",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 27
+        }
+      ],
+      "en": "Your riches, your wares, your merchandise, your mariners, your pilots, your repairers of ship seams, the dealers in your merchandise, and all your men of war who are in you, with all your company which is among you, will fall into the heart of the seas in the day of your ruin.",
+      "ko": "네 재물과 상품과 무역한 물건과 네 사공과 선장과 네 배의 틈을 막는 자와 네 장사와 네 가운데 있는 모든 용사와 네 가운데 있는 모든 무리가 네 패망하는 날에 다 바다 중심에 빠질 것임이여",
+      "source_text_hash": "8b76fdc6b1b6402a6ee483e058cfc89f66d08df3b041796b99d7ce483811c7b8",
+      "translation_text_hash": "07f71ad38dfdbae1ae6bf36c09a11b95eb3fc0633e39654a1900a917618b9a5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 재물과 상품과 무역한 물건과 네 사공과 선장과 네 배의 틈을 막는 자와 네 장사와 네 가운데 있는 모든 용사와 네 가운데 있는 모든 무리가 네 패망하는 날에 다 바다 중심에 빠질 것임이여"
+      ],
+      "raw_text_hashes": [
+        "07f71ad38dfdbae1ae6bf36c09a11b95eb3fc0633e39654a1900a917618b9a5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:28",
+      "sequence": 21150,
+      "chapter_label": "EZK 27",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 28
+        }
+      ],
+      "en": "At the sound of the cry of your pilots, the pasture lands will shake.",
+      "ko": "네 선장의 부르짖는 소리에 물결이 흔들리리로다",
+      "source_text_hash": "ee0b3d56a1b4e75c1492e0f6b0fa0536f056e660122bbbea56bfe01930b83d0c",
+      "translation_text_hash": "ebd9ec15511fca3b1e46d30430a045edd0123ce16d1e66d37f8c396971c7c419",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 선장의 부르짖는 소리에 물결이 흔들리리로다"
+      ],
+      "raw_text_hashes": [
+        "ebd9ec15511fca3b1e46d30430a045edd0123ce16d1e66d37f8c396971c7c419"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:29",
+      "sequence": 21151,
+      "chapter_label": "EZK 27",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 29
+        }
+      ],
+      "en": "All who handle the oars, the mariners and all the pilots of the sea, will come down from their ships. They will stand on the land,",
+      "ko": "무릇 노를 잡은 자와 사공과 바다의 선장들이 다 배에 내려 언덕에 서서",
+      "source_text_hash": "dd769655b2bc7ebbe70affb67daf767d4e7eaea0d43d1a7653d17ef2cbc87247",
+      "translation_text_hash": "9e37bc1b7b757e393d10261f7e542625b1b581ad060ed5eed183def760fbf000",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 노를 잡은 자와 사공과 바다의 선장들이 다 배에 내려 언덕에 서서"
+      ],
+      "raw_text_hashes": [
+        "9e37bc1b7b757e393d10261f7e542625b1b581ad060ed5eed183def760fbf000"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:30",
+      "sequence": 21152,
+      "chapter_label": "EZK 27",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 30
+        }
+      ],
+      "en": "and will cause their voice to be heard over you, and will cry bitterly. They will cast up dust on their heads. They will wallow in the ashes.",
+      "ko": "너를 위하여 크게 소리질러 통곡하고 티끌을 머리에 무릅쓰며 재 가운데 굶이여",
+      "source_text_hash": "c7989268f490d99b4915fb6dcbb842ba571b496b91dabc17776fa944cb0148fe",
+      "translation_text_hash": "4d16a93698a7e377035d0ca331c6d0bef5b4aaa6d995fad2aa8bd19e50bc09e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 위하여 크게 소리질러 통곡하고 티끌을 머리에 무릅쓰며 재 가운데 굶이여"
+      ],
+      "raw_text_hashes": [
+        "4d16a93698a7e377035d0ca331c6d0bef5b4aaa6d995fad2aa8bd19e50bc09e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:31",
+      "sequence": 21153,
+      "chapter_label": "EZK 27",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 31
+        }
+      ],
+      "en": "They will make themselves bald for you, and clothe themselves with sackcloth. They will weep for you in bitterness of soul, with bitter mourning.",
+      "ko": "그들이 다 너를 위하여 머리털을 밀고 굵은 베로 띠를 띠고 마음이 아프게 슬피 통곡하리로다",
+      "source_text_hash": "c25c9d20490e5c24f80e88208ab7110da24c475021add5dbf192335b179666eb",
+      "translation_text_hash": "2eb8f86d3c24662c779189c94be3f5a0ce77a2f948053be3cb714a7681a2cd8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 다 너를 위하여 머리털을 밀고 굵은 베로 띠를 띠고 마음이 아프게 슬피 통곡하리로다"
+      ],
+      "raw_text_hashes": [
+        "2eb8f86d3c24662c779189c94be3f5a0ce77a2f948053be3cb714a7681a2cd8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:32",
+      "sequence": 21154,
+      "chapter_label": "EZK 27",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 32
+        }
+      ],
+      "en": "In their wailing they will take up a lamentation for you, and lament over you, saying, ‘Who is there like Tyre, like her who is brought to silence in the middle of the sea?’",
+      "ko": "그들이 통곡할 때에 너를 위하여 애가를 불러 조상하는 말씀이여 두로 같이 바다 가운데서 적막한 자 누구인고",
+      "source_text_hash": "5c834d162f1e13b33dbb111eec9f37690cd0b71a4281d779e5a01edf2670239b",
+      "translation_text_hash": "e7801f969ba096c98fcd0068a25e3b03017a00ef1629b96fe1d68691d695232d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 통곡할 때에 너를 위하여 애가를 불러 조상하는 말씀이여 두로 같이 바다 가운데서 적막한 자 누구인고"
+      ],
+      "raw_text_hashes": [
+        "e7801f969ba096c98fcd0068a25e3b03017a00ef1629b96fe1d68691d695232d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:33",
+      "sequence": 21155,
+      "chapter_label": "EZK 27",
+      "verse_label": "33",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 33
+        }
+      ],
+      "en": "When your wares came from the seas, you filled many peoples. You enriched the kings of the earth with the multitude of your riches and of your merchandise.",
+      "ko": "네 물품을 바다로 실어 낼 때에 네가 여러 백성을 풍족하게 하였음이여 네 재물과 무역품이 많으므로 세상 열왕을 풍부케 하였었도다",
+      "source_text_hash": "86c683ef2107ed39e6d023d39221d98407d7ec024d843232cc8211882cbb7412",
+      "translation_text_hash": "2c16392c00ddce8b747824f553f80142e98c05984ad922a2bce653782fbb2371",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 물품을 바다로 실어 낼 때에 네가 여러 백성을 풍족하게 하였음이여 네 재물과 무역품이 많으므로 세상 열왕을 풍부케 하였었도다"
+      ],
+      "raw_text_hashes": [
+        "2c16392c00ddce8b747824f553f80142e98c05984ad922a2bce653782fbb2371"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:34",
+      "sequence": 21156,
+      "chapter_label": "EZK 27",
+      "verse_label": "34",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 34
+        }
+      ],
+      "en": "In the time that you were broken by the seas, in the depths of the waters, your merchandise and all your company fell within you.",
+      "ko": "네가 바다 깊은데서 파선한 때에 네 무역품과 네 승객이 다 빠졌음이여",
+      "source_text_hash": "b478ddbdeee646c6fbdad2cfde3003edd0b98e9e16ed559ee574c36bcb50b696",
+      "translation_text_hash": "349b6c194724709db084eb537283c15c38e26bc457f45040cc75abb110cac8fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 바다 깊은데서 파선한 때에 네 무역품과 네 승객이 다 빠졌음이여"
+      ],
+      "raw_text_hashes": [
+        "349b6c194724709db084eb537283c15c38e26bc457f45040cc75abb110cac8fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:35",
+      "sequence": 21157,
+      "chapter_label": "EZK 27",
+      "verse_label": "35",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 35
+        }
+      ],
+      "en": "All the inhabitants of the islands are astonished at you, and their kings are horribly afraid. They are troubled in their face.",
+      "ko": "섬의 거민들이 너를 인하여 놀라고 열왕이 심히 두려워 하여 얼굴에 근심이 나타나도다",
+      "source_text_hash": "d4cfa87ad19261b75690a493ee7d70ee80773d9ae18049f899e81130d0f11cd2",
+      "translation_text_hash": "0da8975b5683d1c573da046d7f9ed808d9318edec5c6178bc2852575fa5b0161",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "섬의 거민들이 너를 인하여 놀라고 열왕이 심히 두려워 하여 얼굴에 근심이 나타나도다"
+      ],
+      "raw_text_hashes": [
+        "0da8975b5683d1c573da046d7f9ed808d9318edec5c6178bc2852575fa5b0161"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:27:36",
+      "sequence": 21158,
+      "chapter_label": "EZK 27",
+      "verse_label": "36",
+      "locator": {
+        "book": "EZK",
+        "chapter": 27,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 27,
+          "verse": 36
+        }
+      ],
+      "en": "The merchants among the peoples hiss at you. You have come to a terrible end, and you will be no more.”’”",
+      "ko": "열국의 상고가 다 너를 비웃음이여 네가 경계거리가 되고 네가 영원히 다시 있지 못하리라 하리로다 하셨다 하라",
+      "source_text_hash": "b7e2922b6fece019ce4c18a5d23b0c7fb3f13005592bd583d2d45b18cd283412",
+      "translation_text_hash": "cfd39aabd356c895ecc1e6d255c4e28e6966e5eceed9f1c721bb62486d97e98d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국의 상고가 다 너를 비웃음이여 네가 경계거리가 되고 네가 영원히 다시 있지 못하리라 하리로다 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "cfd39aabd356c895ecc1e6d255c4e28e6966e5eceed9f1c721bb62486d97e98d"
+      ]
+    }
+  ]
+}

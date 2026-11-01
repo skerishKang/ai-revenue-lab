@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOL:chapter:001",
+  "unit_ordinal": 877,
+  "unit_label": "JOL 1",
+  "book_code": "JOL",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOL:1:1",
+      "sequence": 22293,
+      "chapter_label": "JOL 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word that came to Joel, the son of Pethuel.",
+      "ko": "여호와께서 브두엘의 아들 요엘에게 이르신 말씀이라",
+      "source_text_hash": "227f5f6d1fa0df838dcb87828e3587b3822bb6e11abb29d182431a3c5d606e0f",
+      "translation_text_hash": "6260a17719728c86ff57dc86df8bad5cf162d6c1db0102f25f0505f0dc0e1083",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 브두엘의 아들 요엘에게 이르신 말씀이라"
+      ],
+      "raw_text_hashes": [
+        "6260a17719728c86ff57dc86df8bad5cf162d6c1db0102f25f0505f0dc0e1083"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:2",
+      "sequence": 22294,
+      "chapter_label": "JOL 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Hear this, you elders, and listen, all you inhabitants of the land! Has this ever happened in your days, or in the days of your fathers?",
+      "ko": "늙은 자들아 너희는 이것을 들을찌어다 땅의 모든 거민아 너희는 귀를 기울일찌어다 너희의 날에나 너희 열조의 날에 이런 일이 있었느냐",
+      "source_text_hash": "ed85a4ba9a2fd04e97287c5e9531f97666cbd42a404d3125b24b9d3ae4f2c7ff",
+      "translation_text_hash": "fb8456a8723c41b418812f478fbd95e2518b4d1c5e9551e6d4aea898c5dc7c4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늙은 자들아 너희는 이것을 들을찌어다 땅의 모든 거민아 너희는 귀를 기울일찌어다 너희의 날에나 너희 열조의 날에 이런 일이 있었느냐"
+      ],
+      "raw_text_hashes": [
+        "fb8456a8723c41b418812f478fbd95e2518b4d1c5e9551e6d4aea898c5dc7c4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:3",
+      "sequence": 22295,
+      "chapter_label": "JOL 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Tell your children about it, and have your children tell their children, and their children, another generation.",
+      "ko": "너희는 이 일을 너희 자녀에게 고하고 너희 자녀는 자기 자녀에게 고하고 그 자녀는 후시대에 고할 것이니라",
+      "source_text_hash": "b2f87a55a4c417a8d97a200499e6619ac5eb6d9aa61f8c70794d4e4227cab734",
+      "translation_text_hash": "95a25bdc99283c2bd862f3c3eb184d319e811a12c53f07f54eb19ab136944688",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 일을 너희 자녀에게 고하고 너희 자녀는 자기 자녀에게 고하고 그 자녀는 후시대에 고할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "95a25bdc99283c2bd862f3c3eb184d319e811a12c53f07f54eb19ab136944688"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:4",
+      "sequence": 22296,
+      "chapter_label": "JOL 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "What the swarming locust has left, the great locust has eaten. What the great locust has left, the grasshopper has eaten. What the grasshopper has left, the caterpillar has eaten.",
+      "ko": "팟종이가 남긴 것을 메뚜기가 먹고 메뚜기가 남긴 것을 늣이 먹고 늣이 남긴 것을 황충이 먹었도다",
+      "source_text_hash": "2f19111452b180ee141793ba0b6da5dbb207c568ebdd7ea6cdd6930290a92599",
+      "translation_text_hash": "a06fcc5d80faea79909c689933e265732e7073b44be2074395979c98ce5087dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "팟종이가 남긴 것을 메뚜기가 먹고 메뚜기가 남긴 것을 늣이 먹고 늣이 남긴 것을 황충이 먹었도다"
+      ],
+      "raw_text_hashes": [
+        "a06fcc5d80faea79909c689933e265732e7073b44be2074395979c98ce5087dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:5",
+      "sequence": 22297,
+      "chapter_label": "JOL 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Wake up, you drunkards, and weep! Wail, all you drinkers of wine, because of the sweet wine, for it is cut off from your mouth.",
+      "ko": "무릇 취하는 자들아 너희는 깨어 울찌어다 포도주를 마시는 자들아 너희는 곡할찌어다 이는 단 포도주가 너희 입에서 끊어졌음이니",
+      "source_text_hash": "e0b4e65719dd24f102aba67f7cb02aa0d0dc7a2caa7a74ac06b3e43859b31f60",
+      "translation_text_hash": "ca235a742e0f31c60487fe666d03d91b0d07131bda6d3f94d910904a647d709c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 취하는 자들아 너희는 깨어 울찌어다 포도주를 마시는 자들아 너희는 곡할찌어다 이는 단 포도주가 너희 입에서 끊어졌음이니"
+      ],
+      "raw_text_hashes": [
+        "ca235a742e0f31c60487fe666d03d91b0d07131bda6d3f94d910904a647d709c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:6",
+      "sequence": 22298,
+      "chapter_label": "JOL 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "For a nation has come up on my land, strong, and without number. His teeth are the teeth of a lion, and he has the fangs of a lioness.",
+      "ko": "한 이족이 내 땅에 올라왔음이로다 그들은 강하고 무수하며 그 이는 사자의 이 같고 그 어금니는 암사자의 어금니 같도다",
+      "source_text_hash": "ac7ea12022bc9abc2d669f2af1ac02bda39806fd0b1352aea3638a3188056977",
+      "translation_text_hash": "bf5b369735053dadd6938654dab2ab078484614b904649f28d38c7a145213015",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 이족이 내 땅에 올라왔음이로다 그들은 강하고 무수하며 그 이는 사자의 이 같고 그 어금니는 암사자의 어금니 같도다"
+      ],
+      "raw_text_hashes": [
+        "bf5b369735053dadd6938654dab2ab078484614b904649f28d38c7a145213015"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:7",
+      "sequence": 22299,
+      "chapter_label": "JOL 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "He has laid my vine waste, and stripped my fig tree. He has stripped its bark, and thrown it away. Its branches are made white.",
+      "ko": "그들이 내 포도나무를 멸하며 내 무화과나무를 긁어 말갛게 벗겨서 버리니 그 모든 가지가 하얗게 되었도다",
+      "source_text_hash": "9b56f35c117aa15bdb9fbcda5c5d48400ed8dcfe507dce088b3686ec3b17234b",
+      "translation_text_hash": "ae98ea9c3290c610ee96e2e6d56d337388c68af975ebf2a566b146291ab47c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 내 포도나무를 멸하며 내 무화과나무를 긁어 말갛게 벗겨서 버리니 그 모든 가지가 하얗게 되었도다"
+      ],
+      "raw_text_hashes": [
+        "ae98ea9c3290c610ee96e2e6d56d337388c68af975ebf2a566b146291ab47c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:8",
+      "sequence": 22300,
+      "chapter_label": "JOL 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Mourn like a virgin dressed in sackcloth for the husband of her youth!",
+      "ko": "너희는 애곡하기를 처녀가 어렸을 때에 약혼한 남편을 인하여 굵은 베로 동이고 애곡함 같이 할찌어다",
+      "source_text_hash": "bca66de35e8249e90b0ab6ecadb3f468445c23f4258457cf37c1813065d854c7",
+      "translation_text_hash": "95c8890f491689904e1e2d7dbe7dd5300b4f4afde9715d8595cd190f7dbbaf13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 애곡하기를 처녀가 어렸을 때에 약혼한 남편을 인하여 굵은 베로 동이고 애곡함 같이 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "95c8890f491689904e1e2d7dbe7dd5300b4f4afde9715d8595cd190f7dbbaf13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:9",
+      "sequence": 22301,
+      "chapter_label": "JOL 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "The meal offering and the drink offering are cut off from the LORD’s house. The priests, the LORD’s ministers, mourn.",
+      "ko": "소제와 전제가 여호와의 전에 끊어졌고 여호와께 수종드는 제사장은 슬퍼하도다",
+      "source_text_hash": "36b24a9484eaad87f7c263eeb89cd28b1ecb7aea54174ab857d835fcbc9a5a32",
+      "translation_text_hash": "6fb840f4609b2d77525e086a292023471d2fa26a6833cf6bf70d0e39c64ec5ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소제와 전제가 여호와의 전에 끊어졌고 여호와께 수종드는 제사장은 슬퍼하도다"
+      ],
+      "raw_text_hashes": [
+        "6fb840f4609b2d77525e086a292023471d2fa26a6833cf6bf70d0e39c64ec5ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:10",
+      "sequence": 22302,
+      "chapter_label": "JOL 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "The field is laid waste. The land mourns, for the grain is destroyed, The new wine has dried up, and the oil languishes.",
+      "ko": "밭이 황무하고 토지가 처량하니 곡식이 진하여 새 포도주가 말랐고 기름이 다하였도다",
+      "source_text_hash": "5ddc396ce93a038c04f051bdb5de93efac42996d2f057af74fc37d1a60286f60",
+      "translation_text_hash": "a5064de517a49e104dd4c088f66b38883113542c1f62791a9571e07f3dfc868e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭이 황무하고 토지가 처량하니 곡식이 진하여 새 포도주가 말랐고 기름이 다하였도다"
+      ],
+      "raw_text_hashes": [
+        "a5064de517a49e104dd4c088f66b38883113542c1f62791a9571e07f3dfc868e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:11",
+      "sequence": 22303,
+      "chapter_label": "JOL 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Be confounded, you farmers! Wail, you vineyard keepers, for the wheat and for the barley; for the harvest of the field has perished.",
+      "ko": "농부들아 너희는 부끄러워할찌어다 포도원을 다스리는 자들아 곡할찌어다 이는 밀과 보리의 연고라 밭의 소산이 다 없어졌음이로다",
+      "source_text_hash": "0a03c94d2e5edf6c1a2bc6ba7bd7da665ac696b74438f242fcdcc4e09b856d46",
+      "translation_text_hash": "fd238b2f62dc426db51ba819bcce1d4eace86c89f28eba5e94b5fc7eededef84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "농부들아 너희는 부끄러워할찌어다 포도원을 다스리는 자들아 곡할찌어다 이는 밀과 보리의 연고라 밭의 소산이 다 없어졌음이로다"
+      ],
+      "raw_text_hashes": [
+        "fd238b2f62dc426db51ba819bcce1d4eace86c89f28eba5e94b5fc7eededef84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:12",
+      "sequence": 22304,
+      "chapter_label": "JOL 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "The vine has dried up, and the fig tree withered— the pomegranate tree, the palm tree also, and the apple tree, even all of the trees of the field are withered; for joy has withered away from the sons of men.",
+      "ko": "포도나무가 시들었고 무화과나무가 말랐으며 석류나무와 대추나무와 사과나무와 및 밭의 모든 나무가 다 시들었으니 이러므로 인간의 희락이 말랐도다",
+      "source_text_hash": "74533159f245ecd9c79e34fe64a1a30a9d952468795631db46cac7e3fc8407c8",
+      "translation_text_hash": "b02ca558e4ad068445d9bfcb9aaaee33e15a9d4a1e30ce0e8809169809086b83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도나무가 시들었고 무화과나무가 말랐으며 석류나무와 대추나무와 사과나무와 및 밭의 모든 나무가 다 시들었으니 이러므로 인간의 희락이 말랐도다"
+      ],
+      "raw_text_hashes": [
+        "b02ca558e4ad068445d9bfcb9aaaee33e15a9d4a1e30ce0e8809169809086b83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:13",
+      "sequence": 22305,
+      "chapter_label": "JOL 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Put on sackcloth and mourn, you priests! Wail, you ministers of the altar. Come, lie all night in sackcloth, you ministers of my God, for the meal offering and the drink offering are withheld from your God’s house.",
+      "ko": "제사장들아 너희는 굵은 베로 동이고 슬피 울찌어다 단에 수종드는 자들아 너희는 곡할찌어다 내 하나님께 수종드는 자들아 너희는 와서 굵은 베를 입고 밤이 맟도록 누울찌어다 이는 소제와 전제를 너희 하나님의 전에 드리지 못함이로다",
+      "source_text_hash": "f36316586466f51331e30493482869c499d71b9b25d1926506b462a3c60926a5",
+      "translation_text_hash": "692291e9955414ebfe71d738864cc97c3f0b2dfc3ab974440ed91aaf94306ec6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들아 너희는 굵은 베로 동이고 슬피 울찌어다 단에 수종드는 자들아 너희는 곡할찌어다 내 하나님께 수종드는 자들아 너희는 와서 굵은 베를 입고 밤이 맟도록 누울찌어다 이는 소제와 전제를 너희 하나님의 전에 드리지 못함이로다"
+      ],
+      "raw_text_hashes": [
+        "692291e9955414ebfe71d738864cc97c3f0b2dfc3ab974440ed91aaf94306ec6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:14",
+      "sequence": 22306,
+      "chapter_label": "JOL 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Sanctify a fast. Call a solemn assembly. Gather the elders and all the inhabitants of the land to the house of the LORD, your God, and cry to the LORD.",
+      "ko": "너희는 금식일을 정하고 성회를 선포하여 장로들과 이 땅 모든 거민을 너희 하나님 여호와의 전으로 몰수히 모으고 여호와께 부르짖을찌어다",
+      "source_text_hash": "cf278090f4e3b7bf9ad8f6d910f1f726461e87350104a193f5bf98703b31b94b",
+      "translation_text_hash": "6dfdedcd154f4c500c6b3744c390f7bafcdb2d2035d797a284aa01c480ed389e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 금식일을 정하고 성회를 선포하여 장로들과 이 땅 모든 거민을 너희 하나님 여호와의 전으로 몰수히 모으고 여호와께 부르짖을찌어다"
+      ],
+      "raw_text_hashes": [
+        "6dfdedcd154f4c500c6b3744c390f7bafcdb2d2035d797a284aa01c480ed389e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:15",
+      "sequence": 22307,
+      "chapter_label": "JOL 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "Alas for the day! For the day of the LORD is at hand, and it will come as destruction from the Almighty.",
+      "ko": "오호라 그 날이여 여호와의 날이 가까왔나니 곧 멸망 같이 전능자에게로서 이르리로다",
+      "source_text_hash": "7f126da8de404e32cf0cb4e2c62f425c1e33bfa368385d6c4bcd89325becf29f",
+      "translation_text_hash": "f9156110f85de59047c9a3247b46024606bce02b1a965e98e21ed5fe5535fb8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오호라 그 날이여 여호와의 날이 가까왔나니 곧 멸망 같이 전능자에게로서 이르리로다"
+      ],
+      "raw_text_hashes": [
+        "f9156110f85de59047c9a3247b46024606bce02b1a965e98e21ed5fe5535fb8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:16",
+      "sequence": 22308,
+      "chapter_label": "JOL 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Isn’t the food cut off before our eyes, joy and gladness from the house of our God?",
+      "ko": "식물이 우리 목전에 끊어지지 아니하였느냐 기쁨과 즐거움이 우리 하나님의 전에 끊어지지 아니하였느냐",
+      "source_text_hash": "032f0fd7a1e47957cb68bffa7557350ab25275c8a32ffe33067c9b51387a4ccd",
+      "translation_text_hash": "90b6de2aad7c8d2aac18212574592359ba4e6efbf427648a402ec8dc5aed2274",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "식물이 우리 목전에 끊어지지 아니하였느냐 기쁨과 즐거움이 우리 하나님의 전에 끊어지지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "90b6de2aad7c8d2aac18212574592359ba4e6efbf427648a402ec8dc5aed2274"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:17",
+      "sequence": 22309,
+      "chapter_label": "JOL 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "The seeds rot under their clods. The granaries are laid desolate. The barns are broken down, for the grain has withered.",
+      "ko": "씨가 흙덩이 아래서 썩어졌고 창고가 비었고 곳간이 무너졌으니 이는 곡식이 시들었음이로다",
+      "source_text_hash": "2d272d39b755bad13aa1ab0ddac4b769aa5ca03bc7589a4c94f1e8b293dd2676",
+      "translation_text_hash": "1707821c7463c3185534cd05a6b858fa97fa635a3abab620a50d6c0c15b99ac6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "씨가 흙덩이 아래서 썩어졌고 창고가 비었고 곳간이 무너졌으니 이는 곡식이 시들었음이로다"
+      ],
+      "raw_text_hashes": [
+        "1707821c7463c3185534cd05a6b858fa97fa635a3abab620a50d6c0c15b99ac6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:18",
+      "sequence": 22310,
+      "chapter_label": "JOL 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "How the animals groan! The herds of livestock are perplexed, because they have no pasture. Yes, the flocks of sheep are made desolate.",
+      "ko": "생축이 탄식하고 소떼가 민망해하니 이는 꼴이 없음이라 양떼도 피곤하도다",
+      "source_text_hash": "db0048f6dded5a5d9e77a6772d787989ac65cc73746917114e3aa1529a6df82a",
+      "translation_text_hash": "43b31edc2f170bb170ce2c95174f84a4324c3b4a9d673ef8da7bc42d0fcb3197",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생축이 탄식하고 소떼가 민망해하니 이는 꼴이 없음이라 양떼도 피곤하도다"
+      ],
+      "raw_text_hashes": [
+        "43b31edc2f170bb170ce2c95174f84a4324c3b4a9d673ef8da7bc42d0fcb3197"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:19",
+      "sequence": 22311,
+      "chapter_label": "JOL 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "LORD, I cry to you, for the fire has devoured the pastures of the wilderness, and the flame has burned all the trees of the field.",
+      "ko": "여호와여 내가 주께 부르짖으오니 불이 거친 들의 풀을 살랐고 불꽃이 밭의 모든 나무를 살랐음이니이다",
+      "source_text_hash": "2e9d1e7313811708af62a397625c7fe620feda29126f81d529849acd121a8885",
+      "translation_text_hash": "09065c62b6b6599dd123160b84c9d38de31453e845156729ea0742211e2859f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주께 부르짖으오니 불이 거친 들의 풀을 살랐고 불꽃이 밭의 모든 나무를 살랐음이니이다"
+      ],
+      "raw_text_hashes": [
+        "09065c62b6b6599dd123160b84c9d38de31453e845156729ea0742211e2859f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:1:20",
+      "sequence": 22312,
+      "chapter_label": "JOL 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOL",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "Yes, the animals of the field pant to you, for the water brooks have dried up, and the fire has devoured the pastures of the wilderness.",
+      "ko": "들짐승도 주를 향하여 헐떡거리오니 시내가 다 말랐고 들의 풀이 불에 탔음이니이다",
+      "source_text_hash": "0bde9f93f7ad5009eeb927c65d90053ba9caf89f4c7112e28a1f6c54285ddbef",
+      "translation_text_hash": "6a0d3ec83d282a6dc3a377918109aeba3a5120ed4dbd1eaa447304bb2e9a5fc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들짐승도 주를 향하여 헐떡거리오니 시내가 다 말랐고 들의 풀이 불에 탔음이니이다"
+      ],
+      "raw_text_hashes": [
+        "6a0d3ec83d282a6dc3a377918109aeba3a5120ed4dbd1eaa447304bb2e9a5fc0"
+      ]
+    }
+  ]
+}

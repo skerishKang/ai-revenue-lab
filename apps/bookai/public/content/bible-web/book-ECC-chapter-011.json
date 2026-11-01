@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:011",
+  "unit_ordinal": 670,
+  "unit_label": "ECC 11",
+  "book_code": "ECC",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:11:1",
+      "sequence": 17515,
+      "chapter_label": "ECC 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Cast your bread on the waters; for you shall find it after many days.",
+      "ko": "너는 네 식물을 물 위에 던지라 여러 날 후에 도로 찾으리라",
+      "source_text_hash": "1ce59d3ba6064276380511e924b9e05890ebd4abfbf7eb17ec69e5e79eda9d53",
+      "translation_text_hash": "adf9921927a89c39fbbe076d7d64e03832566c476b1e221a763886c96f0f2a0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 식물을 물 위에 던지라 여러 날 후에 도로 찾으리라"
+      ],
+      "raw_text_hashes": [
+        "adf9921927a89c39fbbe076d7d64e03832566c476b1e221a763886c96f0f2a0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:11:2",
+      "sequence": 17516,
+      "chapter_label": "ECC 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "Give a portion to seven, yes, even to eight; for you don’t know what evil will be on the earth.",
+      "ko": "일곱에게나 여덟에게 나눠줄찌어다 무슨 재앙이 땅에 임할는지 네가 알지 못함이니라",
+      "source_text_hash": "0905fa8d6262830ec51ebda76cd8ca608493b71716bd945a624dcdcdf56cb881",
+      "translation_text_hash": "b75ac1f7b2af775e5f9646ce0bbfe163fdcec243e8276279ef226f079fd7927c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱에게나 여덟에게 나눠줄찌어다 무슨 재앙이 땅에 임할는지 네가 알지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "b75ac1f7b2af775e5f9646ce0bbfe163fdcec243e8276279ef226f079fd7927c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:11:3",
+      "sequence": 17517,
+      "chapter_label": "ECC 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "If the clouds are full of rain, they empty themselves on the earth; and if a tree falls toward the south, or toward the north, in the place where the tree falls, there shall it be.",
+      "ko": "구름에 비가 가득하면 땅에 쏟아지며 나무가 남으로나 북으로나 쓰러지면 그 쓰러진 곳에 그냥 있으리라",
+      "source_text_hash": "64946376ec0b4fde3d486803ba11306ea5def030c97844625c16cc5faf8c9420",
+      "translation_text_hash": "4647203e99fbdd0ba7ec307c9e058d5b72900e00a78c5d03a421a85bad419e83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름에 비가 가득하면 땅에 쏟아지며 나무가 남으로나 북으로나 쓰러지면 그 쓰러진 곳에 그냥 있으리라"
+      ],
+      "raw_text_hashes": [
+        "4647203e99fbdd0ba7ec307c9e058d5b72900e00a78c5d03a421a85bad419e83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:11:4",
+      "sequence": 17518,
+      "chapter_label": "ECC 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "He who observes the wind won’t sow; and he who regards the clouds won’t reap.",
+      "ko": "풍세를 살펴보는 자는 파종하지 아니할 것이요 구름을 바라보는 자는 거두지 아니하리라",
+      "source_text_hash": "ddee4aba900be7998b79d9a70590976eb8ad52721a5f5e9bd9e357867389d348",
+      "translation_text_hash": "34668d556077ffc41242c886c755cdf36594bf520cb64a0e95262102f60c6135",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "풍세를 살펴보는 자는 파종하지 아니할 것이요 구름을 바라보는 자는 거두지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "34668d556077ffc41242c886c755cdf36594bf520cb64a0e95262102f60c6135"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:11:5",
+      "sequence": 17519,
+      "chapter_label": "ECC 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "As you don’t know what is the way of the wind, nor how the bones grow in the womb of her who is with child; even so you don’t know the work of God who does all.",
+      "ko": "바람의 길이 어떠함과 아이 밴 자의 태에서 뼈가 어떻게 자라는 것을 네가 알지 못함 같이 만사를 성취하시는 하나님의 일을 네가 알지 못하느니라",
+      "source_text_hash": "8df0fe8f13f014e7771c99d02dd29bbb2221e8823efa6f632c9208874569fa63",
+      "translation_text_hash": "5ab90931942bcb4248ae3b7ab428c3edf344c37a3c5c74eb3b0e6f77ec32c24f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바람의 길이 어떠함과 아이 밴 자의 태에서 뼈가 어떻게 자라는 것을 네가 알지 못함 같이 만사를 성취하시는 하나님의 일을 네가 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "5ab90931942bcb4248ae3b7ab428c3edf344c37a3c5c74eb3b0e6f77ec32c24f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:11:6",
+      "sequence": 17520,
+      "chapter_label": "ECC 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "In the morning sow your seed, and in the evening don’t withhold your hand; for you don’t know which will prosper, whether this or that, or whether they both will be equally good.",
+      "ko": "너는 아침에 씨를 뿌리고 저녁에도 손을 거두지 말라 이것이 잘 될는지, 저것이 잘 될는지, 혹 둘이 다 잘 될는지 알지 못함이니라",
+      "source_text_hash": "fe862c6b7c71ab3d510b098dd3f0c796b2bd8a324fddea30eb1a402b1f252751",
+      "translation_text_hash": "d2237541c1394ae67b62a2be09495c2799cde051cc3b77f7c4781e48e3d3e2ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 아침에 씨를 뿌리고 저녁에도 손을 거두지 말라 이것이 잘 될는지, 저것이 잘 될는지, 혹 둘이 다 잘 될는지 알지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "d2237541c1394ae67b62a2be09495c2799cde051cc3b77f7c4781e48e3d3e2ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:11:7",
+      "sequence": 17521,
+      "chapter_label": "ECC 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "Truly the light is sweet, and it is a pleasant thing for the eyes to see the sun.",
+      "ko": "빛은 실로 아름다운 것이라 눈으로 해를 보는 것이 즐거운 일이로다",
+      "source_text_hash": "1c2b9ad4eac7bfa6a87fa9cab449e27228510d9a7019f0768f1d57a7a14c880b",
+      "translation_text_hash": "cc39f7bf266bfc31eb9df734b6f587a2bc6f23c59ac8d5e1b663d4919b242388",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빛은 실로 아름다운 것이라 눈으로 해를 보는 것이 즐거운 일이로다"
+      ],
+      "raw_text_hashes": [
+        "cc39f7bf266bfc31eb9df734b6f587a2bc6f23c59ac8d5e1b663d4919b242388"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:11:8",
+      "sequence": 17522,
+      "chapter_label": "ECC 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "Yes, if a man lives many years, let him rejoice in them all; but let him remember the days of darkness, for they shall be many. All that comes is vanity.",
+      "ko": "사람이 여러 해를 살면 항상 즐거워할찌로다 그러나 캄캄한 날이 많으리니 그 날을 생각할찌로다 장래 일은 다 헛되도다",
+      "source_text_hash": "788a8df74997e95042daecf19d68fd24ea9a958a1b55dfeca70a3a5b951d704d",
+      "translation_text_hash": "533971e2f7fde30e640c0534373eb4753813d72eeb811959439573620350d925",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 여러 해를 살면 항상 즐거워할찌로다 그러나 캄캄한 날이 많으리니 그 날을 생각할찌로다 장래 일은 다 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "533971e2f7fde30e640c0534373eb4753813d72eeb811959439573620350d925"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:11:9",
+      "sequence": 17523,
+      "chapter_label": "ECC 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "Rejoice, young man, in your youth, and let your heart cheer you in the days of your youth, and walk in the ways of your heart, and in the sight of your eyes; but know that for all these things God will bring you into judgment.",
+      "ko": "청년이여 네 어린 때를 즐거워하며 네 청년의 날을 마음에 기뻐하여 마음에 원하는 길과 네 눈이 보는대로 좇아 행하라 그러나 하나님이 이 모든 일로 인하여 너를 심판하실 줄 알라",
+      "source_text_hash": "1c3698a9387ddb9118e4e2ee685bf72e29983fc30fe3318eb931ede398123dd2",
+      "translation_text_hash": "0ec12aaf74db93b1132205f60ebf14c90ce39c1dacd48f44bc5ba79812d817d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청년이여 네 어린 때를 즐거워하며 네 청년의 날을 마음에 기뻐하여 마음에 원하는 길과 네 눈이 보는대로 좇아 행하라 그러나 하나님이 이 모든 일로 인하여 너를 심판하실 줄 알라"
+      ],
+      "raw_text_hashes": [
+        "0ec12aaf74db93b1132205f60ebf14c90ce39c1dacd48f44bc5ba79812d817d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:11:10",
+      "sequence": 17524,
+      "chapter_label": "ECC 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore remove sorrow from your heart, and put away evil from your flesh; for youth and the dawn of life are vanity.",
+      "ko": "그런즉 근심으로 네 마음에서 떠나게 하며 악으로 네 몸에서 물러가게 하라 어릴 때와 청년의 때가 다 헛되니라",
+      "source_text_hash": "3cd3bfd73d4eadea89a5293cfdd15efb3b64f1674430f57afd14aef3ddedb7d8",
+      "translation_text_hash": "aedf7ec74099fae94da10826a001e295b7a466aab4e05e73f1b3d4d6e0b715bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 근심으로 네 마음에서 떠나게 하며 악으로 네 몸에서 물러가게 하라 어릴 때와 청년의 때가 다 헛되니라"
+      ],
+      "raw_text_hashes": [
+        "aedf7ec74099fae94da10826a001e295b7a466aab4e05e73f1b3d4d6e0b715bd"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:012",
+  "unit_ordinal": 165,
+  "unit_label": "DEU 12",
+  "book_code": "DEU",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:12:1",
+      "sequence": 5242,
+      "chapter_label": "DEU 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "These are the statutes and the ordinances which you shall observe to do in the land which the LORD, the God of your fathers, has given you to possess all the days that you live on the earth.",
+      "ko": "네 열조의 하나님 여호와께서 네게 주셔서 얻게 하신 땅에서 너희가 평생에 지켜 행할 규례와 법도는 이러하니라",
+      "source_text_hash": "0287f90ff2efabbd197c6571b1a618478db1b63f35846fe2f15fa2a635d163bb",
+      "translation_text_hash": "bd38e7751ac06893edc3c3ae65ba520916e74ebe4973f8d987a7c865ad1b72cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 열조의 하나님 여호와께서 네게 주셔서 얻게 하신 땅에서 너희가 평생에 지켜 행할 규례와 법도는 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "bd38e7751ac06893edc3c3ae65ba520916e74ebe4973f8d987a7c865ad1b72cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:2",
+      "sequence": 5243,
+      "chapter_label": "DEU 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "You shall surely destroy all the places in which the nations that you shall dispossess served their gods: on the high mountains, and on the hills, and under every green tree.",
+      "ko": "너희가 쫓아낼 민족들이 그 신들을 섬기는 곳은 높은 산이든지 작은 산이든지 푸른 나무 아래든지 무론하고 그 모든 곳을 너희가 마땅히 파멸하며",
+      "source_text_hash": "1328c020f196dd3187b0f8fe2ee59ebf254540dfe3e1fad9eee84303f1f79700",
+      "translation_text_hash": "9d2540a676af20698c5581e2f97e882ffc887206cb9e3539edb1859637d18ec8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 쫓아낼 민족들이 그 신들을 섬기는 곳은 높은 산이든지 작은 산이든지 푸른 나무 아래든지 무론하고 그 모든 곳을 너희가 마땅히 파멸하며"
+      ],
+      "raw_text_hashes": [
+        "9d2540a676af20698c5581e2f97e882ffc887206cb9e3539edb1859637d18ec8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:3",
+      "sequence": 5244,
+      "chapter_label": "DEU 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "You shall break down their altars, dash their pillars in pieces, and burn their Asherah poles with fire. You shall cut down the engraved images of their gods. You shall destroy their name out of that place.",
+      "ko": "그 단을 헐며 주상을 깨뜨리며 아세라 상을 불사르고 또 그 조각한 신상들을 찍어서 그 이름을 그곳에서 멸하라",
+      "source_text_hash": "261cfd37d6e09c17ca788ba7a8f3d0cc32b5b68a7efe4ab07782d6bf94d56b06",
+      "translation_text_hash": "da099b96182dd0e388277521cdeef394ba2947769a9a8eacebe48f4e964e2a66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 단을 헐며 주상을 깨뜨리며 아세라 상을 불사르고 또 그 조각한 신상들을 찍어서 그 이름을 그곳에서 멸하라"
+      ],
+      "raw_text_hashes": [
+        "da099b96182dd0e388277521cdeef394ba2947769a9a8eacebe48f4e964e2a66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:4",
+      "sequence": 5245,
+      "chapter_label": "DEU 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "You shall not do so to the LORD your God.",
+      "ko": "너희 하나님 여호와에게는 너희가 그처럼 행하지 말고",
+      "source_text_hash": "1cb26ff0a5add6f1a1ae52bdb5ffdba8d229436f45427d3e29d7e1d2622be4c2",
+      "translation_text_hash": "5cd320cb40219c23405640660564e1950a2a4777d4e5413474dca9f2bc612730",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와에게는 너희가 그처럼 행하지 말고"
+      ],
+      "raw_text_hashes": [
+        "5cd320cb40219c23405640660564e1950a2a4777d4e5413474dca9f2bc612730"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:5",
+      "sequence": 5246,
+      "chapter_label": "DEU 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "But to the place which the LORD your God shall choose out of all your tribes, to put his name there, you shall seek his habitation, and you shall come there.",
+      "ko": "오직 너희 하나님 여호와께서 자기 이름을 두시려고 너희 모든 지파 중에서 택하신 곳인 그 거하실 곳으로 찾아 나아가서",
+      "source_text_hash": "d233e83e04a34dff0a17a9e8437db32937dacdec9a281e1d97074b725786a549",
+      "translation_text_hash": "0d253720b8d15d501376b9b8a044f8e7bad0653714388395f0cc709709e7be41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희 하나님 여호와께서 자기 이름을 두시려고 너희 모든 지파 중에서 택하신 곳인 그 거하실 곳으로 찾아 나아가서"
+      ],
+      "raw_text_hashes": [
+        "0d253720b8d15d501376b9b8a044f8e7bad0653714388395f0cc709709e7be41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:6",
+      "sequence": 5247,
+      "chapter_label": "DEU 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "You shall bring your burnt offerings, your sacrifices, your tithes, the wave offering of your hand, your vows, your free will offerings, and the firstborn of your herd and of your flock there.",
+      "ko": "너희 번제와 너희 희생과 너희의 십일조와 너희 손의 거제와 너희 서원제와 낙헌 예물과 너희 우양의 처음 낳은 것들을 너희는 그리로 가져다가 드리고",
+      "source_text_hash": "3793fb10d10769bf04c72be6f28295de64a0c1d029aabdcf893a1131ce8824d6",
+      "translation_text_hash": "8332e504df41a020a82ec0fc515c8b97ce8c287c9bda5004bf5d2bcd19250096",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 번제와 너희 희생과 너희의 십일조와 너희 손의 거제와 너희 서원제와 낙헌 예물과 너희 우양의 처음 낳은 것들을 너희는 그리로 가져다가 드리고"
+      ],
+      "raw_text_hashes": [
+        "8332e504df41a020a82ec0fc515c8b97ce8c287c9bda5004bf5d2bcd19250096"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:7",
+      "sequence": 5248,
+      "chapter_label": "DEU 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "There you shall eat before the LORD your God, and you shall rejoice in all that you put your hand to, you and your households, in which the LORD your God has blessed you.",
+      "ko": "거기 곧 너희 하나님 여호와 앞에서 먹고 너희 하나님 여호와께서 너희 손으로 수고한 일에 복 주심을 인하여 너희와 너희 가족이 즐거워할찌니라",
+      "source_text_hash": "6cece165d980da76ebb592ee535f0a87a100d8e4b4810386ba1fdc333955ca24",
+      "translation_text_hash": "30ff5d104356c7d54f8afb766181097f58a15e758bc5107be7901503ac305b29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 곧 너희 하나님 여호와 앞에서 먹고 너희 하나님 여호와께서 너희 손으로 수고한 일에 복 주심을 인하여 너희와 너희 가족이 즐거워할찌니라"
+      ],
+      "raw_text_hashes": [
+        "30ff5d104356c7d54f8afb766181097f58a15e758bc5107be7901503ac305b29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:8",
+      "sequence": 5249,
+      "chapter_label": "DEU 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "You shall not do all the things that we do here today, every man whatever is right in his own eyes;",
+      "ko": "우리가 오늘날 여기서는 각기 소견대로 하였거니와 너희가 거기서는 하지 말찌니라",
+      "source_text_hash": "3204a50feb4aba650c6c2cb94d34eb2545f966cf1321b64adb84b362765ee24e",
+      "translation_text_hash": "6835c1cec52b877af9a0f0f47bee122962b532c5add7e564ede651fb17e3e4fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 오늘날 여기서는 각기 소견대로 하였거니와 너희가 거기서는 하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "6835c1cec52b877af9a0f0f47bee122962b532c5add7e564ede651fb17e3e4fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:9",
+      "sequence": 5250,
+      "chapter_label": "DEU 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "for you haven’t yet come to the rest and to the inheritance which the LORD your God gives you.",
+      "ko": "너희가 너희 하나님 여호와의 주시는 안식과 기업에 아직은 이르지 못하였거니와",
+      "source_text_hash": "2e2fc75e6069ee5aaea08711d9a3410414a968ac55a119559cf3bea8626a5f2e",
+      "translation_text_hash": "ab0013414821a03eb0a5ed2a48833a71c3d719467580cebc72a2ec5ea71388e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 너희 하나님 여호와의 주시는 안식과 기업에 아직은 이르지 못하였거니와"
+      ],
+      "raw_text_hashes": [
+        "ab0013414821a03eb0a5ed2a48833a71c3d719467580cebc72a2ec5ea71388e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:10",
+      "sequence": 5251,
+      "chapter_label": "DEU 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "But when you go over the Jordan and dwell in the land which the LORD your God causes you to inherit, and he gives you rest from all your enemies around you, so that you dwell in safety,",
+      "ko": "너희가 요단을 건너 너희 하나님 여호와께서 너희에게 기업으로 주시는 땅에 거하게 될 때 또는 여호와께서 너희로 너희 사방의 모든 대적을 이기게 하시고 너희에게 안식을 주사 너희로 평안히 거하게 하실 때에",
+      "source_text_hash": "4a1d63e105834c2d43352e59852313b04f7602205b9e12e83b540450c2544396",
+      "translation_text_hash": "cb32f43af61c01dbe27734a6940b4e89df209c49a863b7b1f0a0c660fc167143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 요단을 건너 너희 하나님 여호와께서 너희에게 기업으로 주시는 땅에 거하게 될 때 또는 여호와께서 너희로 너희 사방의 모든 대적을 이기게 하시고 너희에게 안식을 주사 너희로 평안히 거하게 하실 때에"
+      ],
+      "raw_text_hashes": [
+        "cb32f43af61c01dbe27734a6940b4e89df209c49a863b7b1f0a0c660fc167143"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:11",
+      "sequence": 5252,
+      "chapter_label": "DEU 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "then it shall happen that to the place which the LORD your God shall choose, to cause his name to dwell there, there you shall bring all that I command you: your burnt offerings, your sacrifices, your tithes, the wave offering of your hand, and all your choice vows which you vow to the LORD.",
+      "ko": "너희는 너희 하나님 여호와께서 자기 이름을 두시려고 한 곳을 택하실 그곳으로 나의 명하는 것을 모두 가지고 갈찌니 곧 너희 번제와 너희 희생과 너희 십일조와 너희 손의 거제와 너희가 여호와께 서원하는 모든 아름다운 서원물을 가져가고",
+      "source_text_hash": "7a97088b39433542dfb250e0a7531c313bc44819ae26a45962add38d2afb33d6",
+      "translation_text_hash": "164c2c44a61477e2ba6da39e9643300856df9b3dafd862f5c376c0a5f621256f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희 하나님 여호와께서 자기 이름을 두시려고 한 곳을 택하실 그곳으로 나의 명하는 것을 모두 가지고 갈찌니 곧 너희 번제와 너희 희생과 너희 십일조와 너희 손의 거제와 너희가 여호와께 서원하는 모든 아름다운 서원물을 가져가고"
+      ],
+      "raw_text_hashes": [
+        "164c2c44a61477e2ba6da39e9643300856df9b3dafd862f5c376c0a5f621256f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:12",
+      "sequence": 5253,
+      "chapter_label": "DEU 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "You shall rejoice before the LORD your God—you, and your sons, your daughters, your male servants, your female servants, and the Levite who is within your gates, because he has no portion nor inheritance with you.",
+      "ko": "너희와 너희 자녀와 노비와 함께 너희 하나님 여호와 앞에서 즐거워할 것이요 네 성중에 거하는 레위인과도 그리할찌니 레위인은 너희 중에 분깃이나 기업이 없음이니라",
+      "source_text_hash": "331ab301cc60dec2203aebf4b2763eff32dfc841445fd6000d652b359e1f37f7",
+      "translation_text_hash": "9e7f1c24fa108c90c86946cc18367df2ef989c1d6bd2cec0ab4054aca93e455c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희와 너희 자녀와 노비와 함께 너희 하나님 여호와 앞에서 즐거워할 것이요 네 성중에 거하는 레위인과도 그리할찌니 레위인은 너희 중에 분깃이나 기업이 없음이니라"
+      ],
+      "raw_text_hashes": [
+        "9e7f1c24fa108c90c86946cc18367df2ef989c1d6bd2cec0ab4054aca93e455c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:13",
+      "sequence": 5254,
+      "chapter_label": "DEU 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "Be careful that you don’t offer your burnt offerings in every place that you see;",
+      "ko": "너는 삼가서 네게 보이는 아무 곳에서든지 번제를 드리지 말고",
+      "source_text_hash": "d91f6ed258d0bdf9ec6a01f46965f662ecc361976151b60c77a6e2f44240cf08",
+      "translation_text_hash": "931365aa4fc6ac56b522fdc6b38bab7a677c1359a99fa0413fd3548462fa16ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 삼가서 네게 보이는 아무 곳에서든지 번제를 드리지 말고"
+      ],
+      "raw_text_hashes": [
+        "931365aa4fc6ac56b522fdc6b38bab7a677c1359a99fa0413fd3548462fa16ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:14",
+      "sequence": 5255,
+      "chapter_label": "DEU 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "but in the place which the LORD chooses in one of your tribes, there you shall offer your burnt offerings, and there you shall do all that I command you.",
+      "ko": "오직 너희의 한 지파 중에 여호와의 택하실 그곳에서 너는 번제를 드리고 또 내가 네게 명하는 모든 것을 거기서 행할찌니라",
+      "source_text_hash": "a753f4dcc30661e1643d332a24a9b85502da8391d199422afdea6a69e371f7d8",
+      "translation_text_hash": "90e67dd3d91a763122a46ea2443f0e9a9a85ae929bece849c3eab1a908f2976a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희의 한 지파 중에 여호와의 택하실 그곳에서 너는 번제를 드리고 또 내가 네게 명하는 모든 것을 거기서 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "90e67dd3d91a763122a46ea2443f0e9a9a85ae929bece849c3eab1a908f2976a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:15",
+      "sequence": 5256,
+      "chapter_label": "DEU 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "Yet you may kill and eat meat within all your gates, after all the desire of your soul, according to the LORD your God’s blessing which he has given you. The unclean and the clean may eat of it, as of the gazelle and the deer.",
+      "ko": "그러나 네 하나님 여호와께서 네게 주신 복을 따라 각 성에서 네 마음에 즐기는 대로 생축을 잡아 그 고기를 먹을 수 있나니 곧 정한 자나 부정한 자를 무론하고 노루나 사슴을 먹음 같이 먹으려니와",
+      "source_text_hash": "91951fb9582e07b9b00d01b122e50030bed8e8e53763755eb5fae627e41c4a2d",
+      "translation_text_hash": "5d6f7527b10487b329c095e11322a4d16601e89c68d32782a3fbc2bab1c2eb2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네 하나님 여호와께서 네게 주신 복을 따라 각 성에서 네 마음에 즐기는 대로 생축을 잡아 그 고기를 먹을 수 있나니 곧 정한 자나 부정한 자를 무론하고 노루나 사슴을 먹음 같이 먹으려니와"
+      ],
+      "raw_text_hashes": [
+        "5d6f7527b10487b329c095e11322a4d16601e89c68d32782a3fbc2bab1c2eb2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:16",
+      "sequence": 5257,
+      "chapter_label": "DEU 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "Only you shall not eat the blood. You shall pour it out on the earth like water.",
+      "ko": "오직 그 피는 먹지 말고 물 같이 땅에 쏟을 것이며",
+      "source_text_hash": "47e674dd8717dcb7ea05e02d06e50a27120ef3862b796693d8b1cb34852afac9",
+      "translation_text_hash": "1147c34d8205f75d581073a4cc862ce415c5c0f472ee7941f2eab700b16e5c01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 피는 먹지 말고 물 같이 땅에 쏟을 것이며"
+      ],
+      "raw_text_hashes": [
+        "1147c34d8205f75d581073a4cc862ce415c5c0f472ee7941f2eab700b16e5c01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:17",
+      "sequence": 5258,
+      "chapter_label": "DEU 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "You may not eat within your gates the tithe of your grain, or of your new wine, or of your oil, or the firstborn of your herd or of your flock, nor any of your vows which you vow, nor your free will offerings, nor the wave offering of your hand;",
+      "ko": "너는 곡식과 포도주와 기름의 십일조와 네 우양의 처음 낳은 것과 너의 서원을 갚는 예물과 너의 낙헌 예물과 네 손의 거제물은 너의 각 성에서 먹지 말고",
+      "source_text_hash": "6de33358c1cb791e963a95802a7252ca6a3444397fa2d743700f7a7daf313484",
+      "translation_text_hash": "f1a2d17736e3507140bc01a972f1e6c9c560568eb7844ce33e2acd66ff3ada2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 곡식과 포도주와 기름의 십일조와 네 우양의 처음 낳은 것과 너의 서원을 갚는 예물과 너의 낙헌 예물과 네 손의 거제물은 너의 각 성에서 먹지 말고"
+      ],
+      "raw_text_hashes": [
+        "f1a2d17736e3507140bc01a972f1e6c9c560568eb7844ce33e2acd66ff3ada2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:18",
+      "sequence": 5259,
+      "chapter_label": "DEU 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "but you shall eat them before the LORD your God in the place which the LORD your God shall choose: you, your son, your daughter, your male servant, your female servant, and the Levite who is within your gates. You shall rejoice before the LORD your God in all that you put your hand to.",
+      "ko": "오직 네 하나님 여호와께서 택하실 곳에서 네 하나님 여호와 앞에서 너는 네 자녀와 노비와 성중에 거하는 레위인과 함께 그것을 먹고 또 네 손으로 수고한 모든 일을 인하여 네 하나님 여호와 앞에서 즐거워하되",
+      "source_text_hash": "57256a70f8e576ad77c4f6d3444cf5eb89fcf45205565a140b59482267d7ec89",
+      "translation_text_hash": "c77cc7a4ff2ba4ee5cf814715842a2e79b7430706a9c01a0e9277c8255b390b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 네 하나님 여호와께서 택하실 곳에서 네 하나님 여호와 앞에서 너는 네 자녀와 노비와 성중에 거하는 레위인과 함께 그것을 먹고 또 네 손으로 수고한 모든 일을 인하여 네 하나님 여호와 앞에서 즐거워하되"
+      ],
+      "raw_text_hashes": [
+        "c77cc7a4ff2ba4ee5cf814715842a2e79b7430706a9c01a0e9277c8255b390b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:19",
+      "sequence": 5260,
+      "chapter_label": "DEU 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "Be careful that you don’t forsake the Levite as long as you live in your land.",
+      "ko": "너는 삼가서 네 땅에 거하는 동안에 레위인을 저버리지 말찌니라",
+      "source_text_hash": "9d7a5241d4e641e7c6b42181d006c7510b509435aedc9426d33db87c4664193f",
+      "translation_text_hash": "9aed2c034698e40ce36c166d84b4e0051e4ad7ed7dcfe09fc1317b6202483aa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 삼가서 네 땅에 거하는 동안에 레위인을 저버리지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "9aed2c034698e40ce36c166d84b4e0051e4ad7ed7dcfe09fc1317b6202483aa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:20",
+      "sequence": 5261,
+      "chapter_label": "DEU 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "When the LORD your God enlarges your border, as he has promised you, and you say, “I want to eat meat,” because your soul desires to eat meat, you may eat meat, after all the desire of your soul.",
+      "ko": "네 하나님 여호와께서 네게 허락하신대로 네 지경을 넓히신 후에 네 마음에 고기를 먹고자 하여 이르기를 내가 고기를 먹으리라 하면 네가 무릇 마음에 좋아하는대로 고기를 먹을 수 있으리니",
+      "source_text_hash": "8398550f0970296ae5e778901d37cb22044a8842ba8bf1e16548fb66dbff320b",
+      "translation_text_hash": "e03707701861ce9fffc2148c3f4d4e419dd55df003fc7cf8d2fc40a5fb229769",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네게 허락하신대로 네 지경을 넓히신 후에 네 마음에 고기를 먹고자 하여 이르기를 내가 고기를 먹으리라 하면 네가 무릇 마음에 좋아하는대로 고기를 먹을 수 있으리니"
+      ],
+      "raw_text_hashes": [
+        "e03707701861ce9fffc2148c3f4d4e419dd55df003fc7cf8d2fc40a5fb229769"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:21",
+      "sequence": 5262,
+      "chapter_label": "DEU 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "If the place which the LORD your God shall choose to put his name is too far from you, then you shall kill of your herd and of your flock, which the LORD has given you, as I have commanded you; and you may eat within your gates, after all the desire of your soul.",
+      "ko": "만일 네 하나님 여호와께서 자기 이름을 두시려고 택하신 곳이 네게서 멀거든 내가 네게 명한대로 너는 여호와의 주신 우양을 잡아 너의 각 성에서 네가 무릇 마음에 좋아하는 것을 먹되",
+      "source_text_hash": "3d7ab8cc635d1d3b69bbf6bcd74561cd74a0ed53768b4d26d21577cf622379c8",
+      "translation_text_hash": "5c24f816a07c7a8c4a7647f2de893ac2639988917bf82f66a8d8019d1fc53c91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 네 하나님 여호와께서 자기 이름을 두시려고 택하신 곳이 네게서 멀거든 내가 네게 명한대로 너는 여호와의 주신 우양을 잡아 너의 각 성에서 네가 무릇 마음에 좋아하는 것을 먹되"
+      ],
+      "raw_text_hashes": [
+        "5c24f816a07c7a8c4a7647f2de893ac2639988917bf82f66a8d8019d1fc53c91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:22",
+      "sequence": 5263,
+      "chapter_label": "DEU 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "Even as the gazelle and as the deer is eaten, so you shall eat of it. The unclean and the clean may eat of it alike.",
+      "ko": "정한 자나 부정한 자를 무론하고 노루나 사슴을 먹음 같이 먹을 수 있거니와",
+      "source_text_hash": "098294d0607f26eb4f9c36f3391fb2104e18bb91d258643c48807f31116fb5b7",
+      "translation_text_hash": "c01a60a327779f5919978156cc1f7104c46b94a7ca3d0e6b43a1d3f19c1c8553",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정한 자나 부정한 자를 무론하고 노루나 사슴을 먹음 같이 먹을 수 있거니와"
+      ],
+      "raw_text_hashes": [
+        "c01a60a327779f5919978156cc1f7104c46b94a7ca3d0e6b43a1d3f19c1c8553"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:23",
+      "sequence": 5264,
+      "chapter_label": "DEU 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "Only be sure that you don’t eat the blood; for the blood is the life. You shall not eat the life with the meat.",
+      "ko": "오직 크게 삼가서 그 피는 먹지 말라 피는 그 생명인즉 네가 그 생명을 고기와 아울러 먹지 못하리니",
+      "source_text_hash": "a63991bda2c7dbfebd6671e2db8e8a5d5bd5e965560d539da3ffca145f27cf70",
+      "translation_text_hash": "9b45a55022db8b68cad4480229daca1dad8761640d957b039438659c4ed28085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 크게 삼가서 그 피는 먹지 말라 피는 그 생명인즉 네가 그 생명을 고기와 아울러 먹지 못하리니"
+      ],
+      "raw_text_hashes": [
+        "9b45a55022db8b68cad4480229daca1dad8761640d957b039438659c4ed28085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:24",
+      "sequence": 5265,
+      "chapter_label": "DEU 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "You shall not eat it. You shall pour it out on the earth like water.",
+      "ko": "너는 그것을 먹지 말고 물 같이 땅에 쏟으라",
+      "source_text_hash": "171ce9830b3ca63431ebe50b921804b08db3951930d4baf74f7ce800cbffe5a9",
+      "translation_text_hash": "6f0d2f6f0f4974d96c240b447f456a080b7029f5298bdbb6a34b33bff5abdf95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그것을 먹지 말고 물 같이 땅에 쏟으라"
+      ],
+      "raw_text_hashes": [
+        "6f0d2f6f0f4974d96c240b447f456a080b7029f5298bdbb6a34b33bff5abdf95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:25",
+      "sequence": 5266,
+      "chapter_label": "DEU 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "You shall not eat it, that it may go well with you and with your children after you, when you do that which is right in the LORD’s eyes.",
+      "ko": "너는 피를 먹지 말라 네가 이같이 여호와께서 의롭게 여기시는 일을 행하면 너와 네 후손이 복을 누리리라",
+      "source_text_hash": "051d88672965c781155d72f681fc17d64d7a0cc470dd876eecf3a023990997ed",
+      "translation_text_hash": "9b5cc3b13db5702c2a993805af7baba1d4d13f98c9285d8adbaeee977db829ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 피를 먹지 말라 네가 이같이 여호와께서 의롭게 여기시는 일을 행하면 너와 네 후손이 복을 누리리라"
+      ],
+      "raw_text_hashes": [
+        "9b5cc3b13db5702c2a993805af7baba1d4d13f98c9285d8adbaeee977db829ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:26",
+      "sequence": 5267,
+      "chapter_label": "DEU 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "Only your holy things which you have, and your vows, you shall take and go to the place which the LORD shall choose.",
+      "ko": "오직 네 성물과 서원물을 여호와께서 택하신 곳으로 가지고 가라",
+      "source_text_hash": "09b095394e5159395be78e1c95d0c883b645ce6256ed673c37d6c91026578329",
+      "translation_text_hash": "a9dfe420734d4821290c3aa12892dae908e16ad71a119dd81911b62925ad5336",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 네 성물과 서원물을 여호와께서 택하신 곳으로 가지고 가라"
+      ],
+      "raw_text_hashes": [
+        "a9dfe420734d4821290c3aa12892dae908e16ad71a119dd81911b62925ad5336"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:27",
+      "sequence": 5268,
+      "chapter_label": "DEU 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "You shall offer your burnt offerings, the meat and the blood, on the LORD your God’s altar. The blood of your sacrifices shall be poured out on the LORD your God’s altar, and you shall eat the meat.",
+      "ko": "네가 번제를 드릴 때에는 그 고기와 피를 네 하나님 여호와의 단에 드릴 것이요 다른 제 희생을 드릴 때에는 그 피를 네 하나님 여호와의 단 위에 붓고 그 고기는 먹을찌니라",
+      "source_text_hash": "5e9415d93a445927feabc7c957eef1e4282470e6c1a6db430e8e48d2e554968c",
+      "translation_text_hash": "1949277b4ad34c11e7ad1161c14052aced81701a0129e5e00a9dc4444196d5d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 번제를 드릴 때에는 그 고기와 피를 네 하나님 여호와의 단에 드릴 것이요 다른 제 희생을 드릴 때에는 그 피를 네 하나님 여호와의 단 위에 붓고 그 고기는 먹을찌니라"
+      ],
+      "raw_text_hashes": [
+        "1949277b4ad34c11e7ad1161c14052aced81701a0129e5e00a9dc4444196d5d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:28",
+      "sequence": 5269,
+      "chapter_label": "DEU 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "Observe and hear all these words which I command you, that it may go well with you and with your children after you forever, when you do that which is good and right in the LORD your God’s eyes.",
+      "ko": "내가 네게 명하는 이 모든 말을 너는 듣고 지키라 네 하나님 여호와의 목전에 선과 의를 행하면 너와 네 후손에게 영영히 복이 있으리라",
+      "source_text_hash": "11e2433e5934474c059a8ade552dfec0c5fc7130a3ac5c1622289a2d79824f21",
+      "translation_text_hash": "7ec1cc1b9aa41375e01639f593c4c8a7e7cd228c41b2c2171d8da47fb827033d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 명하는 이 모든 말을 너는 듣고 지키라 네 하나님 여호와의 목전에 선과 의를 행하면 너와 네 후손에게 영영히 복이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "7ec1cc1b9aa41375e01639f593c4c8a7e7cd228c41b2c2171d8da47fb827033d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:29",
+      "sequence": 5270,
+      "chapter_label": "DEU 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "When the LORD your God cuts off the nations from before you where you go in to dispossess them, and you dispossess them and dwell in their land,",
+      "ko": "네 하나님 여호와께서 네가 들어가서 쫓아 낼 그 민족들을 네 앞에서 멸절하시고 너로 그 땅을 얻어 거기 거하게 하실 때에",
+      "source_text_hash": "98d014ec6301aa676e1ad5f2f5107d2194388a4965e6df03a5d0aa35d7246fc1",
+      "translation_text_hash": "2cedfaee366fff53f1810bfe1c15ac010d13722fcb7aa9ce6bb8c0b702c921e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네가 들어가서 쫓아 낼 그 민족들을 네 앞에서 멸절하시고 너로 그 땅을 얻어 거기 거하게 하실 때에"
+      ],
+      "raw_text_hashes": [
+        "2cedfaee366fff53f1810bfe1c15ac010d13722fcb7aa9ce6bb8c0b702c921e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:30",
+      "sequence": 5271,
+      "chapter_label": "DEU 12",
+      "verse_label": "30",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 30
+        }
+      ],
+      "en": "be careful that you are not ensnared to follow them after they are destroyed from before you, and that you not inquire after their gods, saying, “How do these nations serve their gods? I will do likewise.”",
+      "ko": "너는 스스로 삼가서 네 앞에서 멸망한 그들의 자취를 밟아 올무에 들지 말라 또 그들의 신을 탐구하여 이르기를 이 민족들은 그 신들을 어떻게 위하였는고 나도 그와 같이 하겠다 하지 말라",
+      "source_text_hash": "56d579430a0ddcacf58a6a787b27129c0f702dbce99e53fc029a7035b5a251f8",
+      "translation_text_hash": "65473edd3e535bb168fd883ec668f5f9ba787f4f6af218fa08459ba65af2114d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 스스로 삼가서 네 앞에서 멸망한 그들의 자취를 밟아 올무에 들지 말라 또 그들의 신을 탐구하여 이르기를 이 민족들은 그 신들을 어떻게 위하였는고 나도 그와 같이 하겠다 하지 말라"
+      ],
+      "raw_text_hashes": [
+        "65473edd3e535bb168fd883ec668f5f9ba787f4f6af218fa08459ba65af2114d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:31",
+      "sequence": 5272,
+      "chapter_label": "DEU 12",
+      "verse_label": "31",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 31
+        }
+      ],
+      "en": "You shall not do so to the LORD your God; for every abomination to the LORD, which he hates, they have done to their gods; for they even burn their sons and their daughters in the fire to their gods.",
+      "ko": "네 하나님 여호와께는 네가 그와 같이 행하지 못할 것이라 그들은 여호와의 꺼리시며 가증히 여기시는 일을 그 신들에게 행하여 심지어 그 자녀를 불살라 그 신들에게 드렸느니라",
+      "source_text_hash": "b0cb1bfc63a6e3c6f7721465e0549557096ede074a5a80434a04ddc3d8ab260a",
+      "translation_text_hash": "4f5a227c6e80cbf96d7cef3eb34ee7c1cfd3f3432b20d57d5651adced69394c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께는 네가 그와 같이 행하지 못할 것이라 그들은 여호와의 꺼리시며 가증히 여기시는 일을 그 신들에게 행하여 심지어 그 자녀를 불살라 그 신들에게 드렸느니라"
+      ],
+      "raw_text_hashes": [
+        "4f5a227c6e80cbf96d7cef3eb34ee7c1cfd3f3432b20d57d5651adced69394c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:12:32",
+      "sequence": 5273,
+      "chapter_label": "DEU 12",
+      "verse_label": "32",
+      "locator": {
+        "book": "DEU",
+        "chapter": 12,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 12,
+          "verse": 32
+        }
+      ],
+      "en": "Whatever thing I command you, that you shall observe to do. You shall not add to it, nor take away from it.",
+      "ko": "내가 너희에게 명하는 이 모든 말을 너희는 지켜 행하고 그것에 가감하지 말찌니라",
+      "source_text_hash": "a8566e3fc435c16b0aa4fb31147faac61c62b0b17d8ecd628bb8a4a53bf86120",
+      "translation_text_hash": "9d9679160b7bae7cbdd421771ff19d7f7bd5669714137d84a2acd86b13d88fa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 명하는 이 모든 말을 너희는 지켜 행하고 그것에 가감하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "9d9679160b7bae7cbdd421771ff19d7f7bd5669714137d84a2acd86b13d88fa9"
+      ]
+    }
+  ]
+}

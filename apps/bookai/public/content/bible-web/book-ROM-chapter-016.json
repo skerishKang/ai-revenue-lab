@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:016",
+  "unit_ordinal": 1062,
+  "unit_label": "ROM 16",
+  "book_code": "ROM",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:16:1",
+      "sequence": 28337,
+      "chapter_label": "ROM 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "I commend to you Phoebe, our sister, who is a servant of the assembly that is at Cenchreae,",
+      "ko": "내가 겐그레아 교회의 일군으로 있는 우리 자매 뵈뵈를 너희에게 천거하노니",
+      "source_text_hash": "f6fb0b36c6678bb43d9d4ea6499b0a7d7a19cc43d292cda8388c7b1e705f4822",
+      "translation_text_hash": "a243318a4c36bd05ef7d7e288df573b835b3effa10c70d81a68e879005b230e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 겐그레아 교회의 일군으로 있는 우리 자매 뵈뵈를 너희에게 천거하노니"
+      ],
+      "raw_text_hashes": [
+        "a243318a4c36bd05ef7d7e288df573b835b3effa10c70d81a68e879005b230e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:2",
+      "sequence": 28338,
+      "chapter_label": "ROM 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "that you receive her in the Lord in a way worthy of the saints, and that you assist her in whatever matter she may need from you, for she herself also has been a helper of many, and of my own self.",
+      "ko": "너희가 주 안에서 성도들의 합당한 예절로 그를 영접하고 무엇이든지 그에게 소용되는 바를 도와줄찌니 이는 그가 여러 사람과 나의 보호자가 되었음이니라",
+      "source_text_hash": "a091f0cc4ef6a09cbb4237f29997b69bd61686d64ef973734884b1ea668f7c0f",
+      "translation_text_hash": "f3cd11fe811d147164c312bf5594748d800d9eebc44ce446eb3b1351e168973c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 주 안에서 성도들의 합당한 예절로 그를 영접하고 무엇이든지 그에게 소용되는 바를 도와줄찌니 이는 그가 여러 사람과 나의 보호자가 되었음이니라"
+      ],
+      "raw_text_hashes": [
+        "f3cd11fe811d147164c312bf5594748d800d9eebc44ce446eb3b1351e168973c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:3",
+      "sequence": 28339,
+      "chapter_label": "ROM 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "Greet Prisca and Aquila, my fellow workers in Christ Jesus,",
+      "ko": "너희가 그리스도 예수 안에서 나의 동역자들인 브리스가와 아굴라에게 문안하라",
+      "source_text_hash": "20a7bfa1eb976786b33a830ee92eec47ca7da92c72c388f4a715659c965ee9b5",
+      "translation_text_hash": "86cfceab77f1f52606297f6b3252e8910f6e088e6adb027b7e31483c41ef2c41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그리스도 예수 안에서 나의 동역자들인 브리스가와 아굴라에게 문안하라"
+      ],
+      "raw_text_hashes": [
+        "86cfceab77f1f52606297f6b3252e8910f6e088e6adb027b7e31483c41ef2c41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:4",
+      "sequence": 28340,
+      "chapter_label": "ROM 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "who risked their own necks for my life, to whom not only I give thanks, but also all the assemblies of the Gentiles.",
+      "ko": "저희는 내 목숨을 위하여 자기의 목이라도 내어 놓았나니 나 뿐아니라 이방인의 모든 교회도 저희에게 감사하느니라",
+      "source_text_hash": "c6216bf919ea02809e2e0d5294e339bbdc45e20cdad682d49cb26475227c441c",
+      "translation_text_hash": "981a0c53ef1ebb52f856269b670cd5dd102eafb0a3a21b9189026170128dfa53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 내 목숨을 위하여 자기의 목이라도 내어 놓았나니 나 뿐아니라 이방인의 모든 교회도 저희에게 감사하느니라"
+      ],
+      "raw_text_hashes": [
+        "981a0c53ef1ebb52f856269b670cd5dd102eafb0a3a21b9189026170128dfa53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:5",
+      "sequence": 28341,
+      "chapter_label": "ROM 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "Greet the assembly that is in their house. Greet Epaenetus, my beloved, who is the first fruits of Achaia to Christ.",
+      "ko": "또 저의 교회에게도 문안하라 나의 사랑하는 에배네도에게 문안하라 저는 아시아에서 그리스도께 처음 익은 열매니라",
+      "source_text_hash": "7b2ce98723f9ecdabe3bfff568c34103555dbdff1bca02b2385978961915886e",
+      "translation_text_hash": "59ac7749bf96081c38341e74d01aa24ebf325ed0e34d5c10dd652e1095f01d3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저의 교회에게도 문안하라 나의 사랑하는 에배네도에게 문안하라 저는 아시아에서 그리스도께 처음 익은 열매니라"
+      ],
+      "raw_text_hashes": [
+        "59ac7749bf96081c38341e74d01aa24ebf325ed0e34d5c10dd652e1095f01d3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:6",
+      "sequence": 28342,
+      "chapter_label": "ROM 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "Greet Mary, who labored much for us.",
+      "ko": "너희를 위하여 많이 수고한 마리아에게 문안하라",
+      "source_text_hash": "2a7d8de994302765750767215b3601d936b331766207d1a496ab464241901c6b",
+      "translation_text_hash": "c2d9a4e249820928cb9a95c6d9f408005f016794b8dfead3a149356430f229b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 위하여 많이 수고한 마리아에게 문안하라"
+      ],
+      "raw_text_hashes": [
+        "c2d9a4e249820928cb9a95c6d9f408005f016794b8dfead3a149356430f229b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:7",
+      "sequence": 28343,
+      "chapter_label": "ROM 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "Greet Andronicus and Junia, my relatives and my fellow prisoners, who are notable among the apostles, who were also in Christ before me.",
+      "ko": "내 친척이요 나와 함께 갇혔던 안드로니고와 유니아에게 문안하라 저희는 사도에게 유명히 여김을 받고 또한 나보다 먼저 그리스도 안에 있는 자라",
+      "source_text_hash": "bae7d3c4bddb3df8e575118d6e558300d46f97c67e4ac8845478f030db543f1f",
+      "translation_text_hash": "8ce800be21131b7199a1f5d28599257e52363de92eb5a11941d613b4e53e3415",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 친척이요 나와 함께 갇혔던 안드로니고와 유니아에게 문안하라 저희는 사도에게 유명히 여김을 받고 또한 나보다 먼저 그리스도 안에 있는 자라"
+      ],
+      "raw_text_hashes": [
+        "8ce800be21131b7199a1f5d28599257e52363de92eb5a11941d613b4e53e3415"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:8",
+      "sequence": 28344,
+      "chapter_label": "ROM 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Greet Amplias, my beloved in the Lord.",
+      "ko": "또 주 안에서 내 사랑하는 암블리아에게 문안하라",
+      "source_text_hash": "ccb4df22cecc96332a863de9ad8d5168b0b215349b0530e77b597fe0097574c8",
+      "translation_text_hash": "1eb670f2371ec459dfbee9f45b6404ca0f7a4627d408dbf555a05ec7f36d13bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주 안에서 내 사랑하는 암블리아에게 문안하라"
+      ],
+      "raw_text_hashes": [
+        "1eb670f2371ec459dfbee9f45b6404ca0f7a4627d408dbf555a05ec7f36d13bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:9",
+      "sequence": 28345,
+      "chapter_label": "ROM 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "Greet Urbanus, our fellow worker in Christ, and Stachys, my beloved.",
+      "ko": "그리스도 안에서 우리의 동역자인 우르바노와 나의 사랑하는 스다구에게 문안하라",
+      "source_text_hash": "847a32c1e4913ed0fa0c8ad1178c6056672a81c40ed65d4bf9a76628eb4a9426",
+      "translation_text_hash": "802c40ad86274c0432cf62699453d149d66ca3b56b2678cf9bcb97b164dcbfca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 안에서 우리의 동역자인 우르바노와 나의 사랑하는 스다구에게 문안하라"
+      ],
+      "raw_text_hashes": [
+        "802c40ad86274c0432cf62699453d149d66ca3b56b2678cf9bcb97b164dcbfca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:10",
+      "sequence": 28346,
+      "chapter_label": "ROM 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "Greet Apelles, the approved in Christ. Greet those who are of the household of Aristobulus.",
+      "ko": "그리스도 안에서 인정함을 받은 아벨레에게 문안하라 아리스도불로의 권속에게 문안하라",
+      "source_text_hash": "b4d70247d94e11878491d2232d2dac67c6658d33a87576b970a37c732c6544af",
+      "translation_text_hash": "9cf47c03a2c3f945b64f56cc7dfcd3cb141058d4cf2356554ff57ad240641a64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 안에서 인정함을 받은 아벨레에게 문안하라 아리스도불로의 권속에게 문안하라"
+      ],
+      "raw_text_hashes": [
+        "9cf47c03a2c3f945b64f56cc7dfcd3cb141058d4cf2356554ff57ad240641a64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:11",
+      "sequence": 28347,
+      "chapter_label": "ROM 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "Greet Herodion, my kinsman. Greet them of the household of Narcissus, who are in the Lord.",
+      "ko": "내 친척 헤로디온에게 문안하라 나깃수의 권속중 주 안에 있는 자들에게 문안하라",
+      "source_text_hash": "37aa0113c0c988537b18d3337814c8507ba4ea7181d1fdc3cbf57afa48537708",
+      "translation_text_hash": "c5ca66291b5b854d41f38ed983c349f8df3835c7bcd471c1f224fb245dcb3e79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 친척 헤로디온에게 문안하라 나깃수의 권속중 주 안에 있는 자들에게 문안하라"
+      ],
+      "raw_text_hashes": [
+        "c5ca66291b5b854d41f38ed983c349f8df3835c7bcd471c1f224fb245dcb3e79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:12",
+      "sequence": 28348,
+      "chapter_label": "ROM 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "Greet Tryphaena and Tryphosa, who labor in the Lord. Greet Persis, the beloved, who labored much in the Lord.",
+      "ko": "주 안에서 수고한 드루배나와 드루보사에게 문안하라 주 안에서 많이 수고하고 사랑하는 버시에게 문안하라",
+      "source_text_hash": "d65e1de57c2fc5e68ac9db3bbbfefb8f36567907d0d4ab93a77d07fe087c1ebd",
+      "translation_text_hash": "b11a5a6d2f62cb80c505565b340c02f2b0886cd16b2d5d6d7c068073394d3dc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 안에서 수고한 드루배나와 드루보사에게 문안하라 주 안에서 많이 수고하고 사랑하는 버시에게 문안하라"
+      ],
+      "raw_text_hashes": [
+        "b11a5a6d2f62cb80c505565b340c02f2b0886cd16b2d5d6d7c068073394d3dc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:13",
+      "sequence": 28349,
+      "chapter_label": "ROM 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "Greet Rufus, the chosen in the Lord, and his mother and mine.",
+      "ko": "주 안에서 택하심을 입은 루포와 그 어머니에게 문안하라 그 어머니는 곧 내 어머니니라",
+      "source_text_hash": "19f7488ac047499dc8208e429887c9b2d33894e9f3da6861d2e9ef69cfebbe53",
+      "translation_text_hash": "0ea7c9c326d6a3924ddb2bf56f4ac6335609c6c50d1d2fdd95111545a3297ddd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 안에서 택하심을 입은 루포와 그 어머니에게 문안하라 그 어머니는 곧 내 어머니니라"
+      ],
+      "raw_text_hashes": [
+        "0ea7c9c326d6a3924ddb2bf56f4ac6335609c6c50d1d2fdd95111545a3297ddd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:14",
+      "sequence": 28350,
+      "chapter_label": "ROM 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "Greet Asyncritus, Phlegon, Hermes, Patrobas, Hermas, and the brothers who are with them.",
+      "ko": "아순그리도와 블레곤과 허메와 바드로바와 허마와 저희와 함께 있는 형제들에게 문안하라",
+      "source_text_hash": "8ce0c6e4c2eb58a25cf14489b3063cc58270cd5242fdaa6db06424fec42607eb",
+      "translation_text_hash": "84d88f80525b013bfb65437968ac7384bca5d8c63672e728e715ffc1fe810629",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아순그리도와 블레곤과 허메와 바드로바와 허마와 저희와 함께 있는 형제들에게 문안하라"
+      ],
+      "raw_text_hashes": [
+        "84d88f80525b013bfb65437968ac7384bca5d8c63672e728e715ffc1fe810629"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:15",
+      "sequence": 28351,
+      "chapter_label": "ROM 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "Greet Philologus and Julia, Nereus and his sister, and Olympas, and all the saints who are with them.",
+      "ko": "빌롤로고와 율리아와 또 네레오와 그 자매와 올름바와 저희와 함께 있는 모든 성도에게 문안하라",
+      "source_text_hash": "b41158733f2505840562615e5bcd8a557067cb6f8a7223d977f6ca94bad56941",
+      "translation_text_hash": "6b0d82232aa73b57b80625572a2269fc943bed9f20bedad9a8e30ccdd7aba218",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌롤로고와 율리아와 또 네레오와 그 자매와 올름바와 저희와 함께 있는 모든 성도에게 문안하라"
+      ],
+      "raw_text_hashes": [
+        "6b0d82232aa73b57b80625572a2269fc943bed9f20bedad9a8e30ccdd7aba218"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:16",
+      "sequence": 28352,
+      "chapter_label": "ROM 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "Greet one another with a holy kiss. The assemblies of Christ greet you.",
+      "ko": "너희가 거룩하게 입맞춤으로 서로 문안하라 그리스도의 모든 교회가 다 너희에게 문안하느니라",
+      "source_text_hash": "f736812614b83bf59e1190bcb977b1eaae10b006d624f8538a0b00977fbba70d",
+      "translation_text_hash": "a24d7a6f899905eb1ee84d8fd7416bce4494444c24afa2863100b56cbbaebfd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 거룩하게 입맞춤으로 서로 문안하라 그리스도의 모든 교회가 다 너희에게 문안하느니라"
+      ],
+      "raw_text_hashes": [
+        "a24d7a6f899905eb1ee84d8fd7416bce4494444c24afa2863100b56cbbaebfd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:17",
+      "sequence": 28353,
+      "chapter_label": "ROM 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "Now I beg you, brothers, look out for those who are causing the divisions and occasions of stumbling, contrary to the doctrine which you learned, and turn away from them.",
+      "ko": "형제들아 내가 너희를 권하노니 너희 교훈을 거스려 분쟁을 일으키고 거치게 하는 자들을 살피고 저희에게서 떠나라",
+      "source_text_hash": "1b45414f4fbe2e6ad83844d97874c69d5a63112cb0aae1b649073a7372a0c030",
+      "translation_text_hash": "03086de87ae1e6a869497dd287cde733585cb41d301f273d86e56e5c63caa63c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 너희를 권하노니 너희 교훈을 거스려 분쟁을 일으키고 거치게 하는 자들을 살피고 저희에게서 떠나라"
+      ],
+      "raw_text_hashes": [
+        "03086de87ae1e6a869497dd287cde733585cb41d301f273d86e56e5c63caa63c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:18",
+      "sequence": 28354,
+      "chapter_label": "ROM 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "For those who are such don’t serve our Lord Jesus Christ, but their own belly; and by their smooth and flattering speech they deceive the hearts of the innocent.",
+      "ko": "이같은 자들은 우리 주 그리스도를 섬기지 아니하고 다만 자기의 배만 섬기나니 공교하고 아첨하는 말로 순진한 자들의 마음을 미혹하느니라",
+      "source_text_hash": "88627eb848ee70784a30a77e86943acd539cfd9a5171448a8ce60a66b9e95649",
+      "translation_text_hash": "cc90c5a20e9286c2c2b6e766dd6f448a8a313b8181d07055b30fa789748f11d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같은 자들은 우리 주 그리스도를 섬기지 아니하고 다만 자기의 배만 섬기나니 공교하고 아첨하는 말로 순진한 자들의 마음을 미혹하느니라"
+      ],
+      "raw_text_hashes": [
+        "cc90c5a20e9286c2c2b6e766dd6f448a8a313b8181d07055b30fa789748f11d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:19",
+      "sequence": 28355,
+      "chapter_label": "ROM 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "For your obedience has become known to all. I rejoice therefore over you. But I desire to have you wise in that which is good, but innocent in that which is evil.",
+      "ko": "너희 순종함이 모든 사람에게 들리는지라 그러므로 내가 너희를 인하여 기뻐하노니 너희가 선한데 지혜롭고 악한데 미련하기를 원하노라",
+      "source_text_hash": "32f2daeea5ae9eba7f7b57b5f4baaa48dc4c8cad1181d92a2e2403f8569d6630",
+      "translation_text_hash": "327b6f515b779b56a6f7d58b4aa387393edf37eb366989a40083de5b708b99fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 순종함이 모든 사람에게 들리는지라 그러므로 내가 너희를 인하여 기뻐하노니 너희가 선한데 지혜롭고 악한데 미련하기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "327b6f515b779b56a6f7d58b4aa387393edf37eb366989a40083de5b708b99fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:20",
+      "sequence": 28356,
+      "chapter_label": "ROM 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "And the God of peace will quickly crush Satan under your feet. The grace of our Lord Jesus Christ be with you.",
+      "ko": "평강의 하나님께서 속히 사단을 너희 발 아래서 상하게 하시리라 우리 주 예수의 은혜가 너희에게 있을찌어다",
+      "source_text_hash": "2f3d3a56b22ad9cd749cc180db1b66aac99ccc21a9591a846c9587af606b6147",
+      "translation_text_hash": "f60b7c36f128675520f48d59773609e854c30b8c78f84047e6b51039a322c685",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평강의 하나님께서 속히 사단을 너희 발 아래서 상하게 하시리라 우리 주 예수의 은혜가 너희에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "f60b7c36f128675520f48d59773609e854c30b8c78f84047e6b51039a322c685"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:21",
+      "sequence": 28357,
+      "chapter_label": "ROM 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "Timothy, my fellow worker, greets you, as do Lucius, Jason, and Sosipater, my relatives.",
+      "ko": "나의 동역자 디모데와 나의 친척 누기오와 야손과 소시바더가 너희에게 문안하느니라",
+      "source_text_hash": "1d8b9441925d35de6d879faf71b8a5d48c71cc3c0a40b0be00d1fb745c42756f",
+      "translation_text_hash": "bed45cdf13d9107e915eb5e0f18052bcd7ee6c5684231a1ed86a9676a6c7504e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 동역자 디모데와 나의 친척 누기오와 야손과 소시바더가 너희에게 문안하느니라"
+      ],
+      "raw_text_hashes": [
+        "bed45cdf13d9107e915eb5e0f18052bcd7ee6c5684231a1ed86a9676a6c7504e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:22",
+      "sequence": 28358,
+      "chapter_label": "ROM 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "I, Tertius, who write the letter, greet you in the Lord.",
+      "ko": "이 편지를 대서하는 나 더디오도 주 안에서 너희에게 문안하노라",
+      "source_text_hash": "26ca81642bfdec02d05bd1300571958235a6fdbb55b891bd7128169ba4e7b60a",
+      "translation_text_hash": "42a237db650db38394288fb2af989f6fcb097442c418990bf41c47aef8af3c6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 편지를 대서하는 나 더디오도 주 안에서 너희에게 문안하노라"
+      ],
+      "raw_text_hashes": [
+        "42a237db650db38394288fb2af989f6fcb097442c418990bf41c47aef8af3c6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:23",
+      "sequence": 28359,
+      "chapter_label": "ROM 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "Gaius, my host and host of the whole assembly, greets you. Erastus, the treasurer of the city, greets you, as does Quartus, the brother.",
+      "ko": "나와 온 교회 식주인 가이오도 너희에게 문안하고 이 성의 재무 에라스도와 형제 구아도도 너희에게 문안하느니라",
+      "source_text_hash": "2d632d1d946b29803b03a6a48817f749b76049ef359387ead91167dddd59d132",
+      "translation_text_hash": "c33e91a12cdf4ada7b9aad31833719e16c9bbcaea3db7727c605fc931e3bc80f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 온 교회 식주인 가이오도 너희에게 문안하고 이 성의 재무 에라스도와 형제 구아도도 너희에게 문안하느니라"
+      ],
+      "raw_text_hashes": [
+        "c33e91a12cdf4ada7b9aad31833719e16c9bbcaea3db7727c605fc931e3bc80f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:16:24",
+      "sequence": 28360,
+      "chapter_label": "ROM 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "ROM",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "The grace of our Lord Jesus Christ be with you all! Amen.",
+      "ko": "(없음)",
+      "source_text_hash": "e372c577996a246b5805b7ffa2dcc156601e147777ebbe45d50ec46ceb308e35",
+      "translation_text_hash": "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(없음)"
+      ],
+      "raw_text_hashes": [
+        "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7"
+      ]
+    }
+  ]
+}

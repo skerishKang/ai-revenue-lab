@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:038",
+  "unit_ordinal": 840,
+  "unit_label": "EZK 38",
+  "book_code": "EZK",
+  "chapter_number": 38,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:38:1",
+      "sequence": 21427,
+      "chapter_label": "EZK 38",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:2",
+      "sequence": 21428,
+      "chapter_label": "EZK 38",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, set your face toward Gog, of the land of Magog, the prince of Rosh, Meshech, and Tubal, and prophesy against him,",
+      "ko": "인자야 너는 마곡 땅에 있는 곡 곧 로스와 메섹과 두발 왕에게로 얼굴을 향하고 그를 쳐서 예언하여",
+      "source_text_hash": "c19e76ac57dbbbaf8fab8af097f9d694f0d8f07691008e28dd5d05a10c6dfa72",
+      "translation_text_hash": "907e28662a7a20aeaadeb1cfac9f425cfb7d7ac82e8299c113213281dedc817a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 마곡 땅에 있는 곡 곧 로스와 메섹과 두발 왕에게로 얼굴을 향하고 그를 쳐서 예언하여"
+      ],
+      "raw_text_hashes": [
+        "907e28662a7a20aeaadeb1cfac9f425cfb7d7ac82e8299c113213281dedc817a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:3",
+      "sequence": 21429,
+      "chapter_label": "EZK 38",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 3
+        }
+      ],
+      "en": "and say, ‘The Lord GOD says: “Behold, I am against you, Gog, prince of Rosh, Meshech, and Tubal.",
+      "ko": "이르기를 주 여호와의 말씀에 로스와 메섹과 두발 왕 곡아 내가 너를 대적하여",
+      "source_text_hash": "804f960d1d342efd83a80f12eaf70e919caef8d3cdfb7b046002801ee7f911eb",
+      "translation_text_hash": "9181080a902648fb5fff2d81720753c7f919f851e812614f5668eda71336d885",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 주 여호와의 말씀에 로스와 메섹과 두발 왕 곡아 내가 너를 대적하여"
+      ],
+      "raw_text_hashes": [
+        "9181080a902648fb5fff2d81720753c7f919f851e812614f5668eda71336d885"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:4",
+      "sequence": 21430,
+      "chapter_label": "EZK 38",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 4
+        }
+      ],
+      "en": "I will turn you around, and put hooks into your jaws, and I will bring you out, with all your army, horses and horsemen, all of them clothed in full armor, a great company with buckler and shield, all of them handling swords;",
+      "ko": "너를 돌이켜 갈고리로 네 아가리를 꿰고 너와 말과 기병 곧 네 온 군대를 끌어내되 완전한 갑옷을 입고 큰 방패와 작은 방패를 가지며 칼을 잡은 큰 무리와",
+      "source_text_hash": "c3276366691085abfddedd6d92f689ed97732329740b57263a499b61c884807a",
+      "translation_text_hash": "f3f811dd2f9c911fd25dd9abd51c619de03131502140ec0ca0f736c36998055a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 돌이켜 갈고리로 네 아가리를 꿰고 너와 말과 기병 곧 네 온 군대를 끌어내되 완전한 갑옷을 입고 큰 방패와 작은 방패를 가지며 칼을 잡은 큰 무리와"
+      ],
+      "raw_text_hashes": [
+        "f3f811dd2f9c911fd25dd9abd51c619de03131502140ec0ca0f736c36998055a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:5",
+      "sequence": 21431,
+      "chapter_label": "EZK 38",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 5
+        }
+      ],
+      "en": "Persia, Cush, and Put with them, all of them with shield and helmet;",
+      "ko": "그들과 함께 한바 방패와 투구를 갖춘 바사와 구스와 붓과",
+      "source_text_hash": "dd93b798c472a9a2613d6748173efd511794f08aa0e520c3578bc9daf89211cb",
+      "translation_text_hash": "67ba3b2aabca79d7b4620ea9b6fc70e5f2c1a7c9420b2af1b5d1ef85e5021a16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들과 함께 한바 방패와 투구를 갖춘 바사와 구스와 붓과"
+      ],
+      "raw_text_hashes": [
+        "67ba3b2aabca79d7b4620ea9b6fc70e5f2c1a7c9420b2af1b5d1ef85e5021a16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:6",
+      "sequence": 21432,
+      "chapter_label": "EZK 38",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 6
+        }
+      ],
+      "en": "Gomer, and all his hordes; the house of Togarmah in the uttermost parts of the north, and all his hordes—even many peoples with you.",
+      "ko": "고멜과 그 모든 떼와 극한 북방의 도갈마 족속과 그 모든 떼 곧 많은 백성의 무리를 너와 함께 끌어 내리라",
+      "source_text_hash": "165b7eb8edb37d07ddeba68f161cb048eca6d880a5eeb13b0eb08be483bcef1d",
+      "translation_text_hash": "4771fafec2f6f3d263df371a1983487bc374ae708cefaf5d51922645ab539357",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고멜과 그 모든 떼와 극한 북방의 도갈마 족속과 그 모든 떼 곧 많은 백성의 무리를 너와 함께 끌어 내리라"
+      ],
+      "raw_text_hashes": [
+        "4771fafec2f6f3d263df371a1983487bc374ae708cefaf5d51922645ab539357"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:7",
+      "sequence": 21433,
+      "chapter_label": "EZK 38",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 7
+        }
+      ],
+      "en": "“‘“Be prepared, yes, prepare yourself, you, and all your companies who are assembled to you, and be a guard to them.",
+      "ko": "너는 스스로 예비하되 너와 네게 모인 무리들이 다 스스로 예비하고 너는 그들의 대장이 될찌어다",
+      "source_text_hash": "6f1247cadb08b0768bd6f84c73db19ade577dfaf3e330798eb15efe8d318a749",
+      "translation_text_hash": "6ea2e576cdc6485a4e0660faa27d7328a2973918135f6042ca3ff3419ab0d396",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 스스로 예비하되 너와 네게 모인 무리들이 다 스스로 예비하고 너는 그들의 대장이 될찌어다"
+      ],
+      "raw_text_hashes": [
+        "6ea2e576cdc6485a4e0660faa27d7328a2973918135f6042ca3ff3419ab0d396"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:8",
+      "sequence": 21434,
+      "chapter_label": "EZK 38",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 8
+        }
+      ],
+      "en": "After many days you will be visited. In the latter years you will come into the land that is brought back from the sword, that is gathered out of many peoples, on the mountains of Israel, which have been a continual waste; but it is brought out of the peoples and they will dwell securely, all of them.",
+      "ko": "여러날 후 곧 말년에 네가 명령을 받고 그 땅 곧 오래 황무하였던 이스라엘 산에 이르리니 그 땅 백성은 칼을 벗어나서 열국에서부터 모여 들어 오며 이방에서부터 나와서 다 평안히 거하는 중이라",
+      "source_text_hash": "7b58df0a87c120bcb77335cb9ccef068025a8911fe3cae9278104e7b975c3e76",
+      "translation_text_hash": "26421c9e4b48965f7924a3eec18a9ef8421ae3341177f3b7a1e2f758c51fac76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러날 후 곧 말년에 네가 명령을 받고 그 땅 곧 오래 황무하였던 이스라엘 산에 이르리니 그 땅 백성은 칼을 벗어나서 열국에서부터 모여 들어 오며 이방에서부터 나와서 다 평안히 거하는 중이라"
+      ],
+      "raw_text_hashes": [
+        "26421c9e4b48965f7924a3eec18a9ef8421ae3341177f3b7a1e2f758c51fac76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:9",
+      "sequence": 21435,
+      "chapter_label": "EZK 38",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 9
+        }
+      ],
+      "en": "You will ascend. You will come like a storm. You will be like a cloud to cover the land, you and all your hordes, and many peoples with you.”",
+      "ko": "네가 올라오되 너와 네 모든 떼와 너와 함께한 많은 백성이 광풍 같이 이르고 구름 같이 땅을 덮으리라",
+      "source_text_hash": "f9b9e1232a81bd3dab6794b8530d6a4b4c47806bcd84095b3dcbadcf59cf264b",
+      "translation_text_hash": "38589f2b6233f7c8421ac378d2cf9b12c99ee4cdbd6927a7bb92188b60c0a6f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 올라오되 너와 네 모든 떼와 너와 함께한 많은 백성이 광풍 같이 이르고 구름 같이 땅을 덮으리라"
+      ],
+      "raw_text_hashes": [
+        "38589f2b6233f7c8421ac378d2cf9b12c99ee4cdbd6927a7bb92188b60c0a6f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:10",
+      "sequence": 21436,
+      "chapter_label": "EZK 38",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 10
+        }
+      ],
+      "en": "“‘The Lord GOD says: “It will happen in that day that things will come into your mind, and you will devise an evil plan.",
+      "ko": "나 주 여호와가 말하노라 그 날에 네 마음에서 여러가지 생각이 나서 악한 꾀를 내어",
+      "source_text_hash": "ad9fad79efdd5724f0f3169907e586ad0f29789a188646588b207ca39bc34549",
+      "translation_text_hash": "740a0987ccb1c4aaab49b5ba1adbb2e34552b40b0e0d29f47f8cec19f95397d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 그 날에 네 마음에서 여러가지 생각이 나서 악한 꾀를 내어"
+      ],
+      "raw_text_hashes": [
+        "740a0987ccb1c4aaab49b5ba1adbb2e34552b40b0e0d29f47f8cec19f95397d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:11",
+      "sequence": 21437,
+      "chapter_label": "EZK 38",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 11
+        }
+      ],
+      "en": "You will say, ‘I will go up to the land of unwalled villages. I will go to those who are at rest, who dwell securely, all of them dwelling without walls, and having neither bars nor gates,",
+      "ko": "말하기를 내가 평원의 고을들로 올라가리라 성벽도 없고 문이나 빗장이 없어도 염려없이 다 평안히 거하는 백성에게 나아가서",
+      "source_text_hash": "c03e55d2567a2286f280c54cdfa2110639d56d254f4909946d32480e52fd46c3",
+      "translation_text_hash": "85778a7130a3302f2349fb5393f0190a8004d503480c42fee793c5b7b3f7154d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 내가 평원의 고을들로 올라가리라 성벽도 없고 문이나 빗장이 없어도 염려없이 다 평안히 거하는 백성에게 나아가서"
+      ],
+      "raw_text_hashes": [
+        "85778a7130a3302f2349fb5393f0190a8004d503480c42fee793c5b7b3f7154d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:12",
+      "sequence": 21438,
+      "chapter_label": "EZK 38",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 12
+        }
+      ],
+      "en": "to take the plunder and to take prey; to turn your hand against the waste places that are inhabited, and against the people who are gathered out of the nations, who have gotten livestock and goods, who dwell in the middle of the earth.’",
+      "ko": "물건을 겁탈하며 노략하리라 하고 네 손을 들어서 황무하였다가 지금 사람이 거처하는 땅과 열국 중에서 모여서 짐승과 재물을 얻고 세상 중앙에 거하는 백성을 치고자 할 때에",
+      "source_text_hash": "dfb5810b64ba229c22c608216672af9e5a0baebef17b92950695ed20d6c0889b",
+      "translation_text_hash": "6d5df24c414229a02139d019b68e89b2c3f529b356e47906a49507185b47b9e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물건을 겁탈하며 노략하리라 하고 네 손을 들어서 황무하였다가 지금 사람이 거처하는 땅과 열국 중에서 모여서 짐승과 재물을 얻고 세상 중앙에 거하는 백성을 치고자 할 때에"
+      ],
+      "raw_text_hashes": [
+        "6d5df24c414229a02139d019b68e89b2c3f529b356e47906a49507185b47b9e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:13",
+      "sequence": 21439,
+      "chapter_label": "EZK 38",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 13
+        }
+      ],
+      "en": "Sheba, Dedan, and the merchants of Tarshish, with all its young lions, will ask you, ‘Have you come to take the plunder? Have you assembled your company to take the prey, to carry away silver and gold, to take away livestock and goods, to take great plunder?’”’",
+      "ko": "스바와 드단과 다시스의 상고와 그 부자들이 네게 이르기를 네가 탈취하러 왔느냐 네가 네 무리를 모아 노략하고자 하느냐 은과 금을 빼앗으며 짐승과 재물을 취하며 물건을 크게 약탈하여 가고자 하느냐 하리라 하셨다 하라",
+      "source_text_hash": "c7a28868d9b302b9bdcbedd368f53647e6fe1c9f593714c08c7b8de9b6a978dc",
+      "translation_text_hash": "fc257a6101d03e620ba4eb955d61f8c767adc87444b05624c339a666771344e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바와 드단과 다시스의 상고와 그 부자들이 네게 이르기를 네가 탈취하러 왔느냐 네가 네 무리를 모아 노략하고자 하느냐 은과 금을 빼앗으며 짐승과 재물을 취하며 물건을 크게 약탈하여 가고자 하느냐 하리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "fc257a6101d03e620ba4eb955d61f8c767adc87444b05624c339a666771344e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:14",
+      "sequence": 21440,
+      "chapter_label": "EZK 38",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 14
+        }
+      ],
+      "en": "“Therefore, son of man, prophesy, and tell Gog, ‘The Lord GOD says: “In that day when my people Israel dwells securely, will you not know it?",
+      "ko": "인자야 너는 또 예언하여 곡에게 이르기를 주 여호와의 말씀에 내 백성 이스라엘이 평안히 거하는 날에 네가 어찌 그것을 알지 못하겠느냐",
+      "source_text_hash": "70d22c7878214e01f7514301323f26b9cb9f29e12fc76c6d8ff9a2708dceba4f",
+      "translation_text_hash": "2b5f6640eee8818ee37b1b309c3908481226f76d7d607e999038d014bacc14ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 또 예언하여 곡에게 이르기를 주 여호와의 말씀에 내 백성 이스라엘이 평안히 거하는 날에 네가 어찌 그것을 알지 못하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "2b5f6640eee8818ee37b1b309c3908481226f76d7d607e999038d014bacc14ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:15",
+      "sequence": 21441,
+      "chapter_label": "EZK 38",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 15
+        }
+      ],
+      "en": "You will come from your place out of the uttermost parts of the north, you, and many peoples with you, all of them riding on horses, a great company and a mighty army.",
+      "ko": "네가 네 고토 극한 북방에서 많은 백성 곧 다 말을 탄 큰 떼와 능한 군대와 함께 오되",
+      "source_text_hash": "e5980f13169c9816b45c4213ebeadfc8acd6083220f3aaa3409a804479c5eb89",
+      "translation_text_hash": "51f9c5b1d414949214090d41e8b58f1749398c33e03a85f859d466d407a0c003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 고토 극한 북방에서 많은 백성 곧 다 말을 탄 큰 떼와 능한 군대와 함께 오되"
+      ],
+      "raw_text_hashes": [
+        "51f9c5b1d414949214090d41e8b58f1749398c33e03a85f859d466d407a0c003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:16",
+      "sequence": 21442,
+      "chapter_label": "EZK 38",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 16
+        }
+      ],
+      "en": "You will come up against my people Israel as a cloud to cover the land. It will happen in the latter days that I will bring you against my land, that the nations may know me when I am sanctified in you, Gog, before their eyes.”",
+      "ko": "구름이 땅에 덮임 같이 내 백성 이스라엘을 치러 오리라 곡아 끝날에 내가 너를 이끌어다가 내 땅을 치게 하리니 이는 내가 너로 말미암아 이방 사람의 목전에서 내 거룩함을 나타내어 그들로 다 나를 알게 하려 함이니라",
+      "source_text_hash": "95e97295c809e082c9fc21564794d062e99c3312f7f24490a1ddaaa46d00e39f",
+      "translation_text_hash": "4c9fcd829cedcbcd06e8f2a30df16ac82bac63e632e7173cd6b915fd209472b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름이 땅에 덮임 같이 내 백성 이스라엘을 치러 오리라 곡아 끝날에 내가 너를 이끌어다가 내 땅을 치게 하리니 이는 내가 너로 말미암아 이방 사람의 목전에서 내 거룩함을 나타내어 그들로 다 나를 알게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "4c9fcd829cedcbcd06e8f2a30df16ac82bac63e632e7173cd6b915fd209472b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:17",
+      "sequence": 21443,
+      "chapter_label": "EZK 38",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 17
+        }
+      ],
+      "en": "“‘The Lord GOD says: “Are you he of whom I spoke in old time by my servants the prophets of Israel, who prophesied in those days for years that I would bring you against them?",
+      "ko": "나 주 여호와가 말하노라 내가 옛적에 내 종 이스라엘 선지자들을 빙자하여 말한 사람이 네가 아니냐 그들이 그 때에 여러 해 동안 예언하기를 내가 너를 이끌어다가 그들을 치게 하리라 하였느니라 하셨다 하라",
+      "source_text_hash": "9580413634d917c8fce28f45b89ee111fdf5a8c6a388fb386f4e238a5336a7b8",
+      "translation_text_hash": "26a9de47e15bac256da9dd67f322b6d1ea229b6ee9acab2cd7a8d4a67bfed881",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 옛적에 내 종 이스라엘 선지자들을 빙자하여 말한 사람이 네가 아니냐 그들이 그 때에 여러 해 동안 예언하기를 내가 너를 이끌어다가 그들을 치게 하리라 하였느니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "26a9de47e15bac256da9dd67f322b6d1ea229b6ee9acab2cd7a8d4a67bfed881"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:18",
+      "sequence": 21444,
+      "chapter_label": "EZK 38",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 18
+        }
+      ],
+      "en": "It will happen in that day, when Gog comes against the land of Israel,” says the Lord GOD, “that my wrath will come up into my nostrils.",
+      "ko": "나 주 여호와가 말하노라 그 날에 곡이 이스라엘 땅을 치러 오면 내 노가 내 얼굴에 나타나리라",
+      "source_text_hash": "55a2bb5f6bd4d60e33a11c3f1dc5a66c02905e8be557c08e646551eadc4403a8",
+      "translation_text_hash": "ace5d0bc93f0dbeb2f7ebf7c6b5e2d4cf6de54138fa08bc8e61e0ba4b93829f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 그 날에 곡이 이스라엘 땅을 치러 오면 내 노가 내 얼굴에 나타나리라"
+      ],
+      "raw_text_hashes": [
+        "ace5d0bc93f0dbeb2f7ebf7c6b5e2d4cf6de54138fa08bc8e61e0ba4b93829f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:19",
+      "sequence": 21445,
+      "chapter_label": "EZK 38",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 19
+        }
+      ],
+      "en": "For in my jealousy and in the fire of my wrath I have spoken. Surely in that day there will be a great shaking in the land of Israel,",
+      "ko": "내가 투기와 맹렬한 노로 말하였거니와 그 날에 큰 지진이 이스라엘 땅에 일어나서",
+      "source_text_hash": "5e3820fd20ba2ea4c120553831598a49879be20d5657c75f36d8b598cf67ee14",
+      "translation_text_hash": "8fc994b630b9a01160b9db0ca73f5b33d03c80be4b508c2ee31f01ff94ae5a08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 투기와 맹렬한 노로 말하였거니와 그 날에 큰 지진이 이스라엘 땅에 일어나서"
+      ],
+      "raw_text_hashes": [
+        "8fc994b630b9a01160b9db0ca73f5b33d03c80be4b508c2ee31f01ff94ae5a08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:20",
+      "sequence": 21446,
+      "chapter_label": "EZK 38",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 20
+        }
+      ],
+      "en": "so that the fish of the sea, the birds of the sky, the animals of the field, all creeping things who creep on the earth, and all the men who are on the surface of the earth will shake at my presence. Then the mountains will be thrown down, the steep places will fall, and every wall will fall to the ground.",
+      "ko": "바다의 고기들과 공중의 새들과 들의 짐승들과 땅에 기는 모든 벌레와 지면에 있는 모든 사람이 내 앞에서 떨 것이며 모든 산이 무너지며 절벽이 떨어지며 모든 성벽이 땅에 무너지리라",
+      "source_text_hash": "94500febc216c182695c629ed90e156e369e5f8fe0d00be67ec6935f2111b313",
+      "translation_text_hash": "43ebc819ae86174e4139f05ab0a953aa9d9e21039d002f50fa53ae83b941deb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다의 고기들과 공중의 새들과 들의 짐승들과 땅에 기는 모든 벌레와 지면에 있는 모든 사람이 내 앞에서 떨 것이며 모든 산이 무너지며 절벽이 떨어지며 모든 성벽이 땅에 무너지리라"
+      ],
+      "raw_text_hashes": [
+        "43ebc819ae86174e4139f05ab0a953aa9d9e21039d002f50fa53ae83b941deb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:21",
+      "sequence": 21447,
+      "chapter_label": "EZK 38",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 21
+        }
+      ],
+      "en": "I will call for a sword against him to all my mountains,” says the Lord GOD. “Every man’s sword will be against his brother.",
+      "ko": "나 주 여호와가 말하노라 내가 내 모든 산 중에서 그를 칠 칼을 부르리니 각 사람의 칼이 그 형제를 칠 것이며",
+      "source_text_hash": "7ff245aedbf2b6936212b04d9ee421bf3ac3870f4313f086dd263ec8ef4a8e93",
+      "translation_text_hash": "ef93cf5bb576e2f6d63a7dc31a5f8b21a342206efb26fd5d9c469fd9d84dfa54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 내 모든 산 중에서 그를 칠 칼을 부르리니 각 사람의 칼이 그 형제를 칠 것이며"
+      ],
+      "raw_text_hashes": [
+        "ef93cf5bb576e2f6d63a7dc31a5f8b21a342206efb26fd5d9c469fd9d84dfa54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:22",
+      "sequence": 21448,
+      "chapter_label": "EZK 38",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 22
+        }
+      ],
+      "en": "I will enter into judgment with him with pestilence and with blood. I will rain on him, on his hordes, and on the many peoples who are with him, torrential rains with great hailstones, fire, and sulfur.",
+      "ko": "내가 또 온역과 피로 그를 국문하며 쏟아지는 폭우와 큰 우박덩이와 불과 유황으로 그와 그 모든 떼와 그 함께한 많은 백성에게 비를 내리듯하리라",
+      "source_text_hash": "e63a119a210e3c36fd50c9fb921c1de07a8230cb715e7e366346ad3d0172bf5f",
+      "translation_text_hash": "535cd6903978b69809cee9fa7819e6006f382a4950e9e489ea7d17e8d70ed4b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 온역과 피로 그를 국문하며 쏟아지는 폭우와 큰 우박덩이와 불과 유황으로 그와 그 모든 떼와 그 함께한 많은 백성에게 비를 내리듯하리라"
+      ],
+      "raw_text_hashes": [
+        "535cd6903978b69809cee9fa7819e6006f382a4950e9e489ea7d17e8d70ed4b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:38:23",
+      "sequence": 21449,
+      "chapter_label": "EZK 38",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 38,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 38,
+          "verse": 23
+        }
+      ],
+      "en": "I will magnify myself and sanctify myself, and I will make myself known in the eyes of many nations. Then they will know that I am the LORD.”’",
+      "ko": "이와 같이 내가 여러 나라의 눈에 내 존대함과 내 거룩함을 나타내어 나를 알게 하리니 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "84fa02126a80d4ece676cbe380d4c06ac6a3e4041f2b27b0c0e9afcee433fb73",
+      "translation_text_hash": "246de0e3a128e1e4f2595b713ed510d6be0b16bd858ec9223e0bb845413ff89b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 내가 여러 나라의 눈에 내 존대함과 내 거룩함을 나타내어 나를 알게 하리니 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "246de0e3a128e1e4f2595b713ed510d6be0b16bd858ec9223e0bb845413ff89b"
+      ]
+    }
+  ]
+}

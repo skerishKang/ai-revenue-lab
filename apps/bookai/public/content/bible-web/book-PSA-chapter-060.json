@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:060",
+  "unit_ordinal": 538,
+  "unit_label": "PSA 60",
+  "book_code": "PSA",
+  "chapter_number": 60,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:60:1",
+      "sequence": 14809,
+      "chapter_label": "PSA 60",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 1
+        }
+      ],
+      "en": "God, you have rejected us. You have broken us down. You have been angry. Restore us, again.",
+      "ko": "하나님이여 주께서 우리를 버려 흩으셨고 분노하셨사오나 지금은 우리를 회복시키소서",
+      "source_text_hash": "3ae021c7991fccdc228297a8016460b590a290dee68e6b40c0cd6ee795599fa8",
+      "translation_text_hash": "8325bee3bc157f7aabae540cba7695e4416c7e8354372f039f9b1089b3c81664",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주께서 우리를 버려 흩으셨고 분노하셨사오나 지금은 우리를 회복시키소서"
+      ],
+      "raw_text_hashes": [
+        "8325bee3bc157f7aabae540cba7695e4416c7e8354372f039f9b1089b3c81664"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:2",
+      "sequence": 14810,
+      "chapter_label": "PSA 60",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 2
+        }
+      ],
+      "en": "You have made the land tremble. You have torn it. Mend its fractures, for it quakes.",
+      "ko": "주께서 땅을 진동시키사 갈라지게 하셨사오니 그 틈을 기우소서 땅이 요동함이니이다",
+      "source_text_hash": "4ae00e1491efb980c1f2ee60f4aee58522bbf9fe535bbe0f5edbc6507b3d3532",
+      "translation_text_hash": "696f17fd9a953e1ed4e22ead36f1b3f7ac6779c59971169d549530ccacd72ce2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 땅을 진동시키사 갈라지게 하셨사오니 그 틈을 기우소서 땅이 요동함이니이다"
+      ],
+      "raw_text_hashes": [
+        "696f17fd9a953e1ed4e22ead36f1b3f7ac6779c59971169d549530ccacd72ce2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:3",
+      "sequence": 14811,
+      "chapter_label": "PSA 60",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 3
+        }
+      ],
+      "en": "You have shown your people hard things. You have made us drink the wine that makes us stagger.",
+      "ko": "주께서 주의 백성에게 어려움을 보이시고 비척거리게 하는 포도주로 우리에게 마시우셨나이다",
+      "source_text_hash": "64cd07109920fc74fe569fb764a3002a40cd1392560cdc8bac1ee47eeb563746",
+      "translation_text_hash": "a70c4741ba06a3fded0d4a8af4056f6b1164c00268680f448d348e4c3e85c082",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 백성에게 어려움을 보이시고 비척거리게 하는 포도주로 우리에게 마시우셨나이다"
+      ],
+      "raw_text_hashes": [
+        "a70c4741ba06a3fded0d4a8af4056f6b1164c00268680f448d348e4c3e85c082"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:4",
+      "sequence": 14812,
+      "chapter_label": "PSA 60",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 4
+        }
+      ],
+      "en": "You have given a banner to those who fear you, that it may be displayed because of the truth. Selah.",
+      "ko": "주를 경외하는 자에게 기를 주시고 진리를 위하여 달게 하셨나이다(셀라)",
+      "source_text_hash": "f0beb2de7464be1508d5c83e7d7a961bcc39b926a88b7fcac302cee99223ea99",
+      "translation_text_hash": "a02077e36459aa2f03f98afc8026c6aa44d2c00edb66617de475df433abef3e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 경외하는 자에게 기를 주시고 진리를 위하여 달게 하셨나이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "a02077e36459aa2f03f98afc8026c6aa44d2c00edb66617de475df433abef3e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:5",
+      "sequence": 14813,
+      "chapter_label": "PSA 60",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 5
+        }
+      ],
+      "en": "So that your beloved may be delivered, save with your right hand, and answer us.",
+      "ko": "주의 사랑하시는 자를 건지시기 위하여 우리에게 응답하사 오른손으로 구원하소서",
+      "source_text_hash": "3df3070f94497fd96a28785f21e5f2e4326b9b955afb3f5de5666800cb3ebeeb",
+      "translation_text_hash": "0b77131f53d1e1febeb2e6b9a7777cf57715152317bb7eecaa2e2e40ce1b7664",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 사랑하시는 자를 건지시기 위하여 우리에게 응답하사 오른손으로 구원하소서"
+      ],
+      "raw_text_hashes": [
+        "0b77131f53d1e1febeb2e6b9a7777cf57715152317bb7eecaa2e2e40ce1b7664"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:6",
+      "sequence": 14814,
+      "chapter_label": "PSA 60",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 6
+        }
+      ],
+      "en": "God has spoken from his sanctuary: “I will triumph. I will divide Shechem, and measure out the valley of Succoth.",
+      "ko": "하나님이 그 거룩하심으로 말씀하시되 내가 뛰놀리라 내가 세겜을 나누며 숙곳 골짜기를 척량하리라",
+      "source_text_hash": "a4861557ad0d1bbeb5e1f3266517eeb6925023fb60f8bc114da3cfec7e3093d5",
+      "translation_text_hash": "265e2dbf85e5d36d370b35f15d0146ff5c04afd91923f9d18c47ab150e72eb27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 거룩하심으로 말씀하시되 내가 뛰놀리라 내가 세겜을 나누며 숙곳 골짜기를 척량하리라"
+      ],
+      "raw_text_hashes": [
+        "265e2dbf85e5d36d370b35f15d0146ff5c04afd91923f9d18c47ab150e72eb27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:7",
+      "sequence": 14815,
+      "chapter_label": "PSA 60",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 7
+        }
+      ],
+      "en": "Gilead is mine, and Manasseh is mine. Ephraim also is the defense of my head. Judah is my scepter.",
+      "ko": "길르앗이 내 것이요 므낫세도 내 것이며 에브라임은 내 머리의 보호자요 유다는 나의 홀이며",
+      "source_text_hash": "b802861f1ea288c060bb8fd14ad08a280a0c30e499e15a8bb92119a442a5ed13",
+      "translation_text_hash": "085bc2a9468f46b3ce1b89ed3b5d1c0bca651827d9f688e15840bb0c13531d4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗이 내 것이요 므낫세도 내 것이며 에브라임은 내 머리의 보호자요 유다는 나의 홀이며"
+      ],
+      "raw_text_hashes": [
+        "085bc2a9468f46b3ce1b89ed3b5d1c0bca651827d9f688e15840bb0c13531d4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:8",
+      "sequence": 14816,
+      "chapter_label": "PSA 60",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 8
+        }
+      ],
+      "en": "Moab is my wash basin. I will throw my sandal on Edom. I shout in triumph over Philistia.”",
+      "ko": "모압은 내 목욕통이라 에돔에는 내 신을 던지리라 블레셋아 나를 인하여 외치라 하셨도다",
+      "source_text_hash": "d27324bb397f6c5f63158af1664e562644e4d72c76791d851828ae728b2ee372",
+      "translation_text_hash": "c1853c4c7043c8edcd789ef58b6a34be5b305e9849f8dc6df0318b3628c7f64d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압은 내 목욕통이라 에돔에는 내 신을 던지리라 블레셋아 나를 인하여 외치라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "c1853c4c7043c8edcd789ef58b6a34be5b305e9849f8dc6df0318b3628c7f64d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:9",
+      "sequence": 14817,
+      "chapter_label": "PSA 60",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 9
+        }
+      ],
+      "en": "Who will bring me into the strong city? Who has led me to Edom?",
+      "ko": "누가 나를 이끌어 견고한 성에 들이며 누가 나를 에돔에 인도할꼬",
+      "source_text_hash": "310033e2c9994bc034a54d9189a3b7d717d1f48232b2b4c2b82fc5410a3fa246",
+      "translation_text_hash": "87ac30374af34f823f6c9ba1726407261865e45bae03c4a149871f16db4c2bfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 나를 이끌어 견고한 성에 들이며 누가 나를 에돔에 인도할꼬"
+      ],
+      "raw_text_hashes": [
+        "87ac30374af34f823f6c9ba1726407261865e45bae03c4a149871f16db4c2bfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:10",
+      "sequence": 14818,
+      "chapter_label": "PSA 60",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 10
+        }
+      ],
+      "en": "Haven’t you, God, rejected us? You don’t go out with our armies, God.",
+      "ko": "하나님이여 주께서 우리를 버리지 아니하셨나이까 하나님이여 주께서 우리 군대와 함께 나아가지 아니하시나이다",
+      "source_text_hash": "4f12ae41806f95ed1f2a72422fed3131de412b7c93446ee33dd09560d0fe098d",
+      "translation_text_hash": "4907520bfa84cbbc4fcb5e5852bc36d9fb65ca962e91bc940b743181924e5a3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주께서 우리를 버리지 아니하셨나이까 하나님이여 주께서 우리 군대와 함께 나아가지 아니하시나이다"
+      ],
+      "raw_text_hashes": [
+        "4907520bfa84cbbc4fcb5e5852bc36d9fb65ca962e91bc940b743181924e5a3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:11",
+      "sequence": 14819,
+      "chapter_label": "PSA 60",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 11
+        }
+      ],
+      "en": "Give us help against the adversary, for the help of man is vain.",
+      "ko": "우리를 도와 대적을 치게 하소서 사람의 구원은 헛됨이니이다",
+      "source_text_hash": "e54a1d807597be03f005a7642592e78c3e7af9f2a8d5cab59bcc26e3757ad8b2",
+      "translation_text_hash": "6f9458478b6297d358d757ea9be6165c242810337d320c229ba07a192394e665",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 도와 대적을 치게 하소서 사람의 구원은 헛됨이니이다"
+      ],
+      "raw_text_hashes": [
+        "6f9458478b6297d358d757ea9be6165c242810337d320c229ba07a192394e665"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:60:12",
+      "sequence": 14820,
+      "chapter_label": "PSA 60",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 60,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 60,
+          "verse": 12
+        }
+      ],
+      "en": "Through God we will do valiantly, for it is he who will tread down our adversaries.",
+      "ko": "우리가 하나님을 의지하고 용감히 행하리니 저는 우리의 대적을 밟으실 자심이로다",
+      "source_text_hash": "1b385f72ee256da2aac09e6a6ed1ef5978d836b6733ce473ea7cc7fcba7fabe5",
+      "translation_text_hash": "d8ec68fc37654cf9e80ca5cfae4aab3f55b148772b61a05e5385b012e85c1e58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 하나님을 의지하고 용감히 행하리니 저는 우리의 대적을 밟으실 자심이로다"
+      ],
+      "raw_text_hashes": [
+        "d8ec68fc37654cf9e80ca5cfae4aab3f55b148772b61a05e5385b012e85c1e58"
+      ]
+    }
+  ]
+}

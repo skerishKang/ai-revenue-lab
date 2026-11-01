@@ -209,7 +209,12 @@ export class AuthStateObject extends AuthState {
         const request = { product_id: productId, product_user_id: userId, auth_provider: 'google', provider_subject: subject };
         if (current) request.expected_canonical_subject_id = current.account_id;
         const result = await this.env.IDENTITY_AUTHORITY.resolve_or_create_product_link(request);
-        if (result?.ok !== true || result?.link?.state !== 'active' || result?.link?.product_id !== productId || result?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(result?.link?.canonical_subject_id ?? '')) throw new Error('identity authority failed');
+        if (result?.ok !== true || result?.link?.state !== 'active' || result?.link?.product_id !== productId || result?.link?.product_user_id !== userId || !/^sub_[A-Za-z0-9_-]+$/.test(result?.link?.canonical_subject_id ?? '')) {
+          // Only the authority's closed error code and the product id: no subject, fingerprint or user id.
+          const code = typeof result?.error?.code === 'string' && /^[a-z0-9_]{1,64}$/.test(result.error.code) ? result.error.code : (result?.ok === true ? 'link_shape_mismatch' : 'unknown');
+          console.error(JSON.stringify({ auth_stage: 'identity_authority_rejected', product: productId, code, expected_subject_sent: Boolean(current) }));
+          throw new Error('identity authority failed');
+        }
         return result;
       });
       if (current && current.account_id !== linked.link.canonical_subject_id) throw new Error('identity_conflict');

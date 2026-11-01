@@ -1,0 +1,173 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:043",
+  "unit_ordinal": 521,
+  "unit_label": "PSA 43",
+  "book_code": "PSA",
+  "chapter_number": 43,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:43:1",
+      "sequence": 14568,
+      "chapter_label": "PSA 43",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 43,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 43,
+          "verse": 1
+        }
+      ],
+      "en": "Vindicate me, God, and plead my cause against an ungodly nation. Oh, deliver me from deceitful and wicked men.",
+      "ko": "하나님이여 나를 판단하시되 경건치 아니한 나라에 향하여 내 송사를 변호하시며 간사하고 불의한 자에게서 나를 건지소서",
+      "source_text_hash": "949b2d825ab9246930dd37ccd52babf9b6884aa95ae74728a9d5bc110b09dfeb",
+      "translation_text_hash": "aa97e01d67d57f6709df9dbceeac460dac30ffaa55b7360996b37c06578b5a7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나를 판단하시되 경건치 아니한 나라에 향하여 내 송사를 변호하시며 간사하고 불의한 자에게서 나를 건지소서"
+      ],
+      "raw_text_hashes": [
+        "aa97e01d67d57f6709df9dbceeac460dac30ffaa55b7360996b37c06578b5a7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:43:2",
+      "sequence": 14569,
+      "chapter_label": "PSA 43",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 43,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 43,
+          "verse": 2
+        }
+      ],
+      "en": "For you are the God of my strength. Why have you rejected me? Why do I go mourning because of the oppression of the enemy?",
+      "ko": "주는 나의 힘이 되신 하나님이시어늘 어찌하여 나를 버리셨나이까 내가 어찌하여 원수의 압제로 인하여 슬프게 다니나이까",
+      "source_text_hash": "100a6de48d6c4016b197e475293cf2bd635ec2c1f00b78fad30ec5a3ae8d1cd6",
+      "translation_text_hash": "c8ab931870c64b9c7b6d8f5d03cd11f97346af79ac4ee2aba382632b59f29e8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나의 힘이 되신 하나님이시어늘 어찌하여 나를 버리셨나이까 내가 어찌하여 원수의 압제로 인하여 슬프게 다니나이까"
+      ],
+      "raw_text_hashes": [
+        "c8ab931870c64b9c7b6d8f5d03cd11f97346af79ac4ee2aba382632b59f29e8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:43:3",
+      "sequence": 14570,
+      "chapter_label": "PSA 43",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 43,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 43,
+          "verse": 3
+        }
+      ],
+      "en": "Oh, send out your light and your truth. Let them lead me. Let them bring me to your holy hill, to your tents.",
+      "ko": "주의 빛과 주의 진리를 보내어 나를 인도하사 주의 성산과 장막에 이르게 하소서",
+      "source_text_hash": "9145f9461019f10eb778166197edfc03b6db884ed590ba573eeb29faef70bf4c",
+      "translation_text_hash": "1db552a2af6869000cc5c9cf188f155fa4b04e091d2d77036701d90273603c44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 빛과 주의 진리를 보내어 나를 인도하사 주의 성산과 장막에 이르게 하소서"
+      ],
+      "raw_text_hashes": [
+        "1db552a2af6869000cc5c9cf188f155fa4b04e091d2d77036701d90273603c44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:43:4",
+      "sequence": 14571,
+      "chapter_label": "PSA 43",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 43,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 43,
+          "verse": 4
+        }
+      ],
+      "en": "Then I will go to the altar of God, to God, my exceeding joy. I will praise you on the harp, God, my God.",
+      "ko": "그런즉 내가 하나님의 단에 나아가 나의 극락의 하나님께 이르리이다 하나님이여 나의 하나님이여 내가 수금으로 주를 찬양하리이다",
+      "source_text_hash": "a6f498690b253805bbe607a9e926094b04f844b17ba8b90fe5dccd349f54e6bc",
+      "translation_text_hash": "ee5d896c22bc354ca7025f3e04112c591cea6f9237e37575e64a4626b4dda8c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내가 하나님의 단에 나아가 나의 극락의 하나님께 이르리이다 하나님이여 나의 하나님이여 내가 수금으로 주를 찬양하리이다"
+      ],
+      "raw_text_hashes": [
+        "ee5d896c22bc354ca7025f3e04112c591cea6f9237e37575e64a4626b4dda8c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:43:5",
+      "sequence": 14572,
+      "chapter_label": "PSA 43",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 43,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 43,
+          "verse": 5
+        }
+      ],
+      "en": "Why are you in despair, my soul? Why are you disturbed within me? Hope in God! For I shall still praise him: my Savior, my helper, and my God.",
+      "ko": "내 영혼아 네가 어찌하여 낙망하며 어찌하여 내 속에서 불안하여 하는고 너는 하나님을 바라라 나는 내 얼굴을 도우시는 내 하나님을 오히려 찬송하리로다",
+      "source_text_hash": "ed296fcdf4345eca480b9fce8ea70297457f3af1293380eafe9b36b3a1978ddd",
+      "translation_text_hash": "6965fd58445ef896248ebe7d91c0639bb3a43bf0d637f90b397f28f4dc6e271d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼아 네가 어찌하여 낙망하며 어찌하여 내 속에서 불안하여 하는고 너는 하나님을 바라라 나는 내 얼굴을 도우시는 내 하나님을 오히려 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "6965fd58445ef896248ebe7d91c0639bb3a43bf0d637f90b397f28f4dc6e271d"
+      ]
+    }
+  ]
+}

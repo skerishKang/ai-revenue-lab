@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:012",
+  "unit_ordinal": 350,
+  "unit_label": "1CH 12",
+  "book_code": "1CH",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:12:1",
+      "sequence": 10722,
+      "chapter_label": "1CH 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Now these are those who came to David to Ziklag while he was a fugitive from Saul the son of Kish. They were among the mighty men, his helpers in war.",
+      "ko": "다윗이 기스의 아들 사울을 인하여 시글락에 숨어 있을 때에 그에게 와서 싸움을 돕는 용사 중에 든 자가 있었으니",
+      "source_text_hash": "de31bb667a0f6dc4618d2570a80f668f17affe1807083abd6a68f43d7705fac3",
+      "translation_text_hash": "7a7221534c0b701aadc1fa3f18b984c4feea3df6078229e49079e7a7026edc2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 기스의 아들 사울을 인하여 시글락에 숨어 있을 때에 그에게 와서 싸움을 돕는 용사 중에 든 자가 있었으니"
+      ],
+      "raw_text_hashes": [
+        "7a7221534c0b701aadc1fa3f18b984c4feea3df6078229e49079e7a7026edc2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:2",
+      "sequence": 10723,
+      "chapter_label": "1CH 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "They were armed with bows, and could use both the right hand and the left in slinging stones and in shooting arrows from the bow. They were of Saul’s relatives of the tribe of Benjamin.",
+      "ko": "저희는 활을 가지며 좌우 손을 놀려 물매도 던지며 살도 발하는 자요 베냐민 지파 사울의 동족인데 그 이름은 이러하니라",
+      "source_text_hash": "53c1ff0393e1d42dd983e40c3b9786abe0dac55616bca0ab9244effdff35f01f",
+      "translation_text_hash": "5bf76ab4042656ef66a9ff3bbc6bc9e073f73bf22d28634f8587f8f355dd6ea1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 활을 가지며 좌우 손을 놀려 물매도 던지며 살도 발하는 자요 베냐민 지파 사울의 동족인데 그 이름은 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "5bf76ab4042656ef66a9ff3bbc6bc9e073f73bf22d28634f8587f8f355dd6ea1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:3",
+      "sequence": 10724,
+      "chapter_label": "1CH 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "The chief was Ahiezer, then Joash, the sons of Shemaah the Gibeathite; Jeziel and Pelet, the sons of Azmaveth; Beracah; Jehu the Anathothite;",
+      "ko": "그 두목은 아히에셀이요 다음은 요아스니 기브아 사람 스마아의 두 아들이요 또 아스마웻의 아들 여시엘과 벨렛과 또 브라가와 아나돗 사람 예후와",
+      "source_text_hash": "334a933bb26ad927fb5023358e5d178cd21121a6425b748daf17b802578e12cd",
+      "translation_text_hash": "f3ad6082f6c0a0ebf694846da43dabf6275faae26fb23ee0605ee6f9918a6bc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두목은 아히에셀이요 다음은 요아스니 기브아 사람 스마아의 두 아들이요 또 아스마웻의 아들 여시엘과 벨렛과 또 브라가와 아나돗 사람 예후와"
+      ],
+      "raw_text_hashes": [
+        "f3ad6082f6c0a0ebf694846da43dabf6275faae26fb23ee0605ee6f9918a6bc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:4",
+      "sequence": 10725,
+      "chapter_label": "1CH 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "Ishmaiah the Gibeonite, a mighty man among the thirty and a leader of the thirty; Jeremiah; Jahaziel; Johanan; Jozabad the Gederathite;",
+      "ko": "기브온 사람 곧 삼십인 중에 용사요 삼십인의 두목된 이스마야며 또 예레미야와 야하시엘과 요하난과 그데라 사람 요사밧과",
+      "source_text_hash": "f249b424c4d3d40023dc01ce6abe3f12594d54c17b74f1fefdf781f45cd89ea9",
+      "translation_text_hash": "160802a1509ec11c7da79f3ac345137ac76033a91db56bd209e495b27255b78b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브온 사람 곧 삼십인 중에 용사요 삼십인의 두목된 이스마야며 또 예레미야와 야하시엘과 요하난과 그데라 사람 요사밧과"
+      ],
+      "raw_text_hashes": [
+        "160802a1509ec11c7da79f3ac345137ac76033a91db56bd209e495b27255b78b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:5",
+      "sequence": 10726,
+      "chapter_label": "1CH 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "Eluzai; Jerimoth; Bealiah; Shemariah; Shephatiah the Haruphite;",
+      "ko": "엘루새와 여리못과 브아랴와 스마랴와 하룹 사람 스바댜와",
+      "source_text_hash": "44aa5658d843c54dc4b79a93c43ba664dcd8d34dd4cc232d0c94fbc8d4debe3a",
+      "translation_text_hash": "96c5ac1cc3c59253bad10c395d9299f2b4b4a01d6b326699c1726b35e01b367d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘루새와 여리못과 브아랴와 스마랴와 하룹 사람 스바댜와"
+      ],
+      "raw_text_hashes": [
+        "96c5ac1cc3c59253bad10c395d9299f2b4b4a01d6b326699c1726b35e01b367d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:6",
+      "sequence": 10727,
+      "chapter_label": "1CH 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "Elkanah, Isshiah, Azarel, Joezer, and Jashobeam, the Korahites;",
+      "ko": "고라 사람들 엘가나와 잇시야와 아사렐과 요에셀과 야소브암이며",
+      "source_text_hash": "a802bf0c142c492ca9f785d80aa3c3e4cdb0745be5f16dedccc348f5ad0d6a4a",
+      "translation_text_hash": "e1fe5d8cf5dd71b85aeafc18fd01d60d84de1778e33fb43732c62d940f0122ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고라 사람들 엘가나와 잇시야와 아사렐과 요에셀과 야소브암이며"
+      ],
+      "raw_text_hashes": [
+        "e1fe5d8cf5dd71b85aeafc18fd01d60d84de1778e33fb43732c62d940f0122ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:7",
+      "sequence": 10728,
+      "chapter_label": "1CH 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "and Joelah and Zebadiah, the sons of Jeroham of Gedor.",
+      "ko": "그돌 사람 여로함의 아들 요엘라와 스바댜더라",
+      "source_text_hash": "3d6244069256428d94bb225d2a14f1cb362780bb8d65ffc80a4aab1c671f5201",
+      "translation_text_hash": "eaf8b5cd125d8d93cdcda1f6d5782bac3eeaf4cbbd5de078bf6f16ce40e43f59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그돌 사람 여로함의 아들 요엘라와 스바댜더라"
+      ],
+      "raw_text_hashes": [
+        "eaf8b5cd125d8d93cdcda1f6d5782bac3eeaf4cbbd5de078bf6f16ce40e43f59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:8",
+      "sequence": 10729,
+      "chapter_label": "1CH 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "Some Gadites joined David in the stronghold in the wilderness, mighty men of valor, men trained for war, who could handle shield and spear; whose faces were like the faces of lions, and they were as swift as the gazelles on the mountains:",
+      "ko": "갓 사람 중에서 거친 땅 견고한 곳에 이르러 다윗에게 돌아온 자가 있었으니 다 용사요 싸움에 익숙하여 방패와 창을 능히 쓰는 자라 그 얼굴은 사자 같고 빠르기는 산의 사슴 같으니",
+      "source_text_hash": "f25e06fec6af1688257b15b42df69b3967f6bd21d4ec91d1e20a9dc575f0d224",
+      "translation_text_hash": "382459caf67faf0830ad3c26a5a8e25a36f6155f545747221f4d112d5723841d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 사람 중에서 거친 땅 견고한 곳에 이르러 다윗에게 돌아온 자가 있었으니 다 용사요 싸움에 익숙하여 방패와 창을 능히 쓰는 자라 그 얼굴은 사자 같고 빠르기는 산의 사슴 같으니"
+      ],
+      "raw_text_hashes": [
+        "382459caf67faf0830ad3c26a5a8e25a36f6155f545747221f4d112d5723841d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:9",
+      "sequence": 10730,
+      "chapter_label": "1CH 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "Ezer the chief, Obadiah the second, Eliab the third,",
+      "ko": "그 두목은 에셀이요 둘째는 오바댜요 세째는 엘리압이요",
+      "source_text_hash": "83a5350be39b02904809c90f887d0ca598dab68753e29bbe3876360e0e1d3197",
+      "translation_text_hash": "e5e76114a0c3533d005bbd58cbb61931740215120d58029d45035f253dae2062",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두목은 에셀이요 둘째는 오바댜요 세째는 엘리압이요"
+      ],
+      "raw_text_hashes": [
+        "e5e76114a0c3533d005bbd58cbb61931740215120d58029d45035f253dae2062"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:10",
+      "sequence": 10731,
+      "chapter_label": "1CH 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "Mishmannah the fourth, Jeremiah the fifth,",
+      "ko": "네째는 미스만나요 다섯째는 예레미야요",
+      "source_text_hash": "7b4b678efad50d5d7c967ad7b27d5c7e1db41ddda086d96ffae37a20cfc24987",
+      "translation_text_hash": "31aa2f91e535ef1a550be5b262c66c1db84d37dd53f97a8afa733779884ad2c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째는 미스만나요 다섯째는 예레미야요"
+      ],
+      "raw_text_hashes": [
+        "31aa2f91e535ef1a550be5b262c66c1db84d37dd53f97a8afa733779884ad2c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:11",
+      "sequence": 10732,
+      "chapter_label": "1CH 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "Attai the sixth, Eliel the seventh,",
+      "ko": "여섯째는 앗대요 일곱째는 엘리엘이요",
+      "source_text_hash": "1ef01d5fd15eefba9b2a66174d4d174357770c56907f287c7ec1fbea98127c2e",
+      "translation_text_hash": "aac3f0b13386f2000a97881127c5c88358b5b3c4a57278775e12dc2a8bdf234c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여섯째는 앗대요 일곱째는 엘리엘이요"
+      ],
+      "raw_text_hashes": [
+        "aac3f0b13386f2000a97881127c5c88358b5b3c4a57278775e12dc2a8bdf234c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:12",
+      "sequence": 10733,
+      "chapter_label": "1CH 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Johanan the eighth, Elzabad the ninth,",
+      "ko": "여덟째는 요하난이요 아홉째는 엘사밧이요",
+      "source_text_hash": "962a7a5268798739c59669451583bfd577870b6ac9f994b1179cca030ee34baa",
+      "translation_text_hash": "ef84c376141acd23d086294120329d2afd5aa90ed152b2923868de956e349425",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여덟째는 요하난이요 아홉째는 엘사밧이요"
+      ],
+      "raw_text_hashes": [
+        "ef84c376141acd23d086294120329d2afd5aa90ed152b2923868de956e349425"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:13",
+      "sequence": 10734,
+      "chapter_label": "1CH 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "Jeremiah the tenth, and Machbannai the eleventh.",
+      "ko": "열째는 예레미야요 열 한째는 막반내라",
+      "source_text_hash": "2b9726b384e458e24376a2e3bcaa29c35c8d8c2a6e7e151553cb480a2bf39dc3",
+      "translation_text_hash": "2174f4262a295df8374024540220402aaf17541a89810431d340e163e7b47d21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열째는 예레미야요 열 한째는 막반내라"
+      ],
+      "raw_text_hashes": [
+        "2174f4262a295df8374024540220402aaf17541a89810431d340e163e7b47d21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:14",
+      "sequence": 10735,
+      "chapter_label": "1CH 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "These of the sons of Gad were captains of the army. He who was least was equal to one hundred, and the greatest to one thousand.",
+      "ko": "이 갓 자손이 군대 장관이 되어 그 작은 자는 일백인을 관할하고 그 큰 자는 일천인을 관할하더니",
+      "source_text_hash": "1b247f0372728febcff793e2d2454dc0992d40dc8c1ad968a679336030d51d20",
+      "translation_text_hash": "d63527a2c40b46032984524b08d6e3facb162573979a314e8bdf789359d72fd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 갓 자손이 군대 장관이 되어 그 작은 자는 일백인을 관할하고 그 큰 자는 일천인을 관할하더니"
+      ],
+      "raw_text_hashes": [
+        "d63527a2c40b46032984524b08d6e3facb162573979a314e8bdf789359d72fd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:15",
+      "sequence": 10736,
+      "chapter_label": "1CH 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "These are those who went over the Jordan in the first month, when it had overflowed all its banks; and they put to flight all who lived in the valleys, both toward the east and toward the west.",
+      "ko": "정월에 요단강 물이 모든 언덕에 넘칠 때에 이 무리가 강물을 건너서 골짜기에 있는 모든 자로 동서로 도망하게 하였더라",
+      "source_text_hash": "90a5d961bc47953323f197d5f257e34ded0004cd4c4f58d729b8c8276dfe602d",
+      "translation_text_hash": "a8d4886a3c2aed7343112ff67ef98d3f48a6a919462af29c191e4e626bb2316d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월에 요단강 물이 모든 언덕에 넘칠 때에 이 무리가 강물을 건너서 골짜기에 있는 모든 자로 동서로 도망하게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "a8d4886a3c2aed7343112ff67ef98d3f48a6a919462af29c191e4e626bb2316d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:16",
+      "sequence": 10737,
+      "chapter_label": "1CH 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "Some of the children of Benjamin and Judah came to the stronghold to David.",
+      "ko": "베냐민과 유다 자손 중에서 견고한 곳에 이르러 다윗에게 나오매",
+      "source_text_hash": "bb2b9d0661dcbc606b712509547b97d6a492f5ed81d5c087933a587b7e0db93b",
+      "translation_text_hash": "d65050c73001f163a344e1218474dfc3075dcdf5b6db0ac9ed3292475d0f6777",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민과 유다 자손 중에서 견고한 곳에 이르러 다윗에게 나오매"
+      ],
+      "raw_text_hashes": [
+        "d65050c73001f163a344e1218474dfc3075dcdf5b6db0ac9ed3292475d0f6777"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:17",
+      "sequence": 10738,
+      "chapter_label": "1CH 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "David went out to meet them, and answered them, “If you have come peaceably to me to help me, my heart will be united with you; but if you have come to betray me to my adversaries, since there is no wrong in my hands, may the God of our fathers see this and rebuke it.”",
+      "ko": "다윗이 나가서 맞아 저희에게 일러 가로되 만일 너희가 평화로이 와서 나를 돕고자 하면 내 마음이 너희와 연합하려니와 만일 너희가 나를 속여 내 대적에게 붙이고자 하면 내 손에 불의함이 없으니 우리 열조의 하나님이 감찰하시고 책망하시기를 원하노라 하매",
+      "source_text_hash": "701353032ef90b209c273ddd9f1515156a61ca865cab00ce6294bc20caebe3ec",
+      "translation_text_hash": "41fbec1a691463ce09bce5b5420520a6daad0644aedbfdfdb81289ed5dd6586d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 나가서 맞아 저희에게 일러 가로되 만일 너희가 평화로이 와서 나를 돕고자 하면 내 마음이 너희와 연합하려니와 만일 너희가 나를 속여 내 대적에게 붙이고자 하면 내 손에 불의함이 없으니 우리 열조의 하나님이 감찰하시고 책망하시기를 원하노라 하매"
+      ],
+      "raw_text_hashes": [
+        "41fbec1a691463ce09bce5b5420520a6daad0644aedbfdfdb81289ed5dd6586d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:18",
+      "sequence": 10739,
+      "chapter_label": "1CH 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "Then the Spirit came on Amasai, who was chief of the thirty, and he said, “We are yours, David, and on your side, you son of Jesse. Peace, peace be to you, and peace be to your helpers; for your God helps you.” Then David received them and made them captains of the band.",
+      "ko": "때에 성신이 삼십인의 두목 아마새에게 감동하시니 가로되 다윗이여 우리가 당신에게 속하겠고 이새의 아들이여 우리가 당신과 함께하리니 원컨대 평강하소서 당신도 평강하고 당신을 돕는 자에게도 평강이 있을찌니 이는 당신의 하나님이 당신을 도우심이니이다 한지라 다윗이 드디어 접대하여 세워 군대 장관을 삼았더라",
+      "source_text_hash": "c3ce0a5dd29318a6d28d085ed4c316fca3c21a43c5a5f6b54ab1ae240b84abc7",
+      "translation_text_hash": "2c21d247a0dee545150d17845c07b25f44c1d4c5a56fca1133fe2e5e0f28078f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 성신이 삼십인의 두목 아마새에게 감동하시니 가로되 다윗이여 우리가 당신에게 속하겠고 이새의 아들이여 우리가 당신과 함께하리니 원컨대 평강하소서 당신도 평강하고 당신을 돕는 자에게도 평강이 있을찌니 이는 당신의 하나님이 당신을 도우심이니이다 한지라 다윗이 드디어 접대하여 세워 군대 장관을 삼았더라"
+      ],
+      "raw_text_hashes": [
+        "2c21d247a0dee545150d17845c07b25f44c1d4c5a56fca1133fe2e5e0f28078f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:19",
+      "sequence": 10740,
+      "chapter_label": "1CH 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "Some of Manasseh also joined David when he came with the Philistines against Saul to battle, but they didn’t help them, for the lords of the Philistines sent him away after consultation, saying, “He will desert to his master Saul to the jeopardy of our heads.”",
+      "ko": "다윗이 전에 블레셋 사람과 함께 가서 사울을 치려 할 때에 므낫세 지파에서 두어 사람이 다윗에게 돌아왔으나 다윗등이 블레셋 사람을 돕지 못하였음은 블레셋 사람의 방백이 서로 의논하고 보내며 이르기를 저가 그 주 사울에게로 돌아가리니 우리 머리가 위태할까 하노라 함이라",
+      "source_text_hash": "0e7708e685cd6ffea9d87b3352cd19f99eed5af6fafc63e8301e0ecb4d8dcfd4",
+      "translation_text_hash": "d8b40ef92894c46f7f489d8e2621f305f6bf0e47f6606c0f1266e77e7da13d4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 전에 블레셋 사람과 함께 가서 사울을 치려 할 때에 므낫세 지파에서 두어 사람이 다윗에게 돌아왔으나 다윗등이 블레셋 사람을 돕지 못하였음은 블레셋 사람의 방백이 서로 의논하고 보내며 이르기를 저가 그 주 사울에게로 돌아가리니 우리 머리가 위태할까 하노라 함이라"
+      ],
+      "raw_text_hashes": [
+        "d8b40ef92894c46f7f489d8e2621f305f6bf0e47f6606c0f1266e77e7da13d4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:20",
+      "sequence": 10741,
+      "chapter_label": "1CH 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "As he went to Ziklag, some from Manasseh joined him: Adnah, Jozabad, Jediael, Michael, Jozabad, Elihu, and Zillethai, captains of thousands who were of Manasseh.",
+      "ko": "다윗이 시글락으로 갈 때에 므낫세 지파에서 그에게로 돌아온 자는 아드나와 요사밧과 여디아엘과 미가엘과 요사밧과 엘리후와 실르대니 다 므낫세의 천부장이라",
+      "source_text_hash": "e08fbe8ece68d88f3e05ae10a0c1dbe5792ff7cefb6dc5b787d5bb7a22b05a12",
+      "translation_text_hash": "ff7fd6b18892b8e37d4001303454a93a6e1db1f061f6f80a7bfdf5ded8f9ea69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 시글락으로 갈 때에 므낫세 지파에서 그에게로 돌아온 자는 아드나와 요사밧과 여디아엘과 미가엘과 요사밧과 엘리후와 실르대니 다 므낫세의 천부장이라"
+      ],
+      "raw_text_hashes": [
+        "ff7fd6b18892b8e37d4001303454a93a6e1db1f061f6f80a7bfdf5ded8f9ea69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:21",
+      "sequence": 10742,
+      "chapter_label": "1CH 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "They helped David against the band of raiders, for they were all mighty men of valor and were captains in the army.",
+      "ko": "이 무리가 다윗을 도와 적당을 쳤으니 저희는 다 큰 용사요 군대 장관이 됨이었더라",
+      "source_text_hash": "831afd5a0f7560e138d989e533f1d1c55d62d2d53830b38b82e3828d21ca0dac",
+      "translation_text_hash": "27f64857b831c0eb871d6df1e833d9866542737481ca885de7e8eea861eb31ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 무리가 다윗을 도와 적당을 쳤으니 저희는 다 큰 용사요 군대 장관이 됨이었더라"
+      ],
+      "raw_text_hashes": [
+        "27f64857b831c0eb871d6df1e833d9866542737481ca885de7e8eea861eb31ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:22",
+      "sequence": 10743,
+      "chapter_label": "1CH 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "For from day to day men came to David to help him, until there was a great army, like God’s army.",
+      "ko": "그 때에 사람이 날마다 다윗에게로 돌아와서 돕고자 하매 큰 군대를 이루어 하나님의 군대와 같았더라",
+      "source_text_hash": "2cf42e5174e8f7486cab5e935311146cf320be138aad4ec49c6b792b6ab03c6f",
+      "translation_text_hash": "11545ff51cfe2745e6123170adf9b986c49cd634894da64241ab0ac7b8acef3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 사람이 날마다 다윗에게로 돌아와서 돕고자 하매 큰 군대를 이루어 하나님의 군대와 같았더라"
+      ],
+      "raw_text_hashes": [
+        "11545ff51cfe2745e6123170adf9b986c49cd634894da64241ab0ac7b8acef3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:23",
+      "sequence": 10744,
+      "chapter_label": "1CH 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "These are the numbers of the heads of those who were armed for war, who came to David to Hebron to turn the kingdom of Saul to him, according to the LORD’s word.",
+      "ko": "싸움을 예비한 군대 장관들이 헤브론에 이르러 다윗에게로 나아와서 여호와의 말씀대로 사울의 나라를 저에게 돌리고자 하였으니 그 수효가 이러하였더라",
+      "source_text_hash": "c7fdc1815ebff9a582d98dc10f30d754168a9bf37522c923d8698ad14d511bd4",
+      "translation_text_hash": "f5e01f79e844f3e6c70868d2e5e429a229775e4addb23a6e89e25cd66d880272",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "싸움을 예비한 군대 장관들이 헤브론에 이르러 다윗에게로 나아와서 여호와의 말씀대로 사울의 나라를 저에게 돌리고자 하였으니 그 수효가 이러하였더라"
+      ],
+      "raw_text_hashes": [
+        "f5e01f79e844f3e6c70868d2e5e429a229775e4addb23a6e89e25cd66d880272"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:24",
+      "sequence": 10745,
+      "chapter_label": "1CH 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "The children of Judah who bore shield and spear were six thousand eight hundred, armed for war.",
+      "ko": "유다 자손 중에서 방패와 창을 들고 싸움을 예비한 자가 육천 팔백명이요",
+      "source_text_hash": "47b8e25ef1b97b8a7a9eaf38e5eb0e247c9d37abfebe58b1d076590b1ecd8cb7",
+      "translation_text_hash": "4454160171e1167924085eb93543f7f8b5136d39cb6bb1dd8463358a8905194f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 자손 중에서 방패와 창을 들고 싸움을 예비한 자가 육천 팔백명이요"
+      ],
+      "raw_text_hashes": [
+        "4454160171e1167924085eb93543f7f8b5136d39cb6bb1dd8463358a8905194f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:25",
+      "sequence": 10746,
+      "chapter_label": "1CH 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "Of the children of Simeon, mighty men of valor for the war: seven thousand one hundred.",
+      "ko": "시므온 자손 중에서 싸움하는 큰 용사가 칠천 일백명이요",
+      "source_text_hash": "a7826c2944fa19c7a6fa845747b946f4f50b87192a10a883eee98cf2822900fe",
+      "translation_text_hash": "4ff83d4e2972c80a99be62f2d072fc8af4b6c795a9e88df04ec8f60a26bf60ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온 자손 중에서 싸움하는 큰 용사가 칠천 일백명이요"
+      ],
+      "raw_text_hashes": [
+        "4ff83d4e2972c80a99be62f2d072fc8af4b6c795a9e88df04ec8f60a26bf60ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:26",
+      "sequence": 10747,
+      "chapter_label": "1CH 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "Of the children of Levi: four thousand six hundred.",
+      "ko": "레위 자손 중에서 사천 육백명이요",
+      "source_text_hash": "a031a333f3c17c64b4937855da1b6f430336ce88ac6236150b63969fa0d8fb29",
+      "translation_text_hash": "d2c118ceeef21ea1fd6466e7b4e98266012ed5c6c37e9aaf1fd3be096e2cf189",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 자손 중에서 사천 육백명이요"
+      ],
+      "raw_text_hashes": [
+        "d2c118ceeef21ea1fd6466e7b4e98266012ed5c6c37e9aaf1fd3be096e2cf189"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:27",
+      "sequence": 10748,
+      "chapter_label": "1CH 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "Jehoiada was the leader of the household of Aaron; and with him were three thousand seven hundred,",
+      "ko": "아론의 집 족장 여호야다와 그와 함께한 자가 삼천 칠백명이요",
+      "source_text_hash": "280b66cea31ae6a1fad65ead04027b97bb427b6b702730baa3bb32c8cef780de",
+      "translation_text_hash": "3574b9d5446f6f0d4ef654bf04fa000fba97c88547a71d25e9010c2e68eec599",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 집 족장 여호야다와 그와 함께한 자가 삼천 칠백명이요"
+      ],
+      "raw_text_hashes": [
+        "3574b9d5446f6f0d4ef654bf04fa000fba97c88547a71d25e9010c2e68eec599"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:28",
+      "sequence": 10749,
+      "chapter_label": "1CH 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "and Zadok, a young man mighty of valor, and of his father’s house twenty-two captains.",
+      "ko": "또 젊은 용사 사독과 그 족속의 장관이 이십 이명이요",
+      "source_text_hash": "9f228def6041191822797d93937cb19bfeffcd533b270c5068801793b4330b52",
+      "translation_text_hash": "b442be9f13c06627f896cfd1907471d27a425b1dd0b3f74f45eb5022a1f58b01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 젊은 용사 사독과 그 족속의 장관이 이십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "b442be9f13c06627f896cfd1907471d27a425b1dd0b3f74f45eb5022a1f58b01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:29",
+      "sequence": 10750,
+      "chapter_label": "1CH 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "Of the children of Benjamin, Saul’s relatives: three thousand, for until then, the greatest part of them had kept their allegiance to Saul’s house.",
+      "ko": "베냐민 자손 곧 사울의 동족은 아직도 태반이나 사울의 집을 좇으나 그 중에서 나아온 자가 삼천명이요",
+      "source_text_hash": "b0f4e300dcf9b4f687faf95882c2f6d1942d1cdacfd374bf4c22390c8eaf4c85",
+      "translation_text_hash": "e936f954e3c560b70be62295ff9785e4d1c6e8ab88c390ec3e539ae10547b87b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 자손 곧 사울의 동족은 아직도 태반이나 사울의 집을 좇으나 그 중에서 나아온 자가 삼천명이요"
+      ],
+      "raw_text_hashes": [
+        "e936f954e3c560b70be62295ff9785e4d1c6e8ab88c390ec3e539ae10547b87b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:30",
+      "sequence": 10751,
+      "chapter_label": "1CH 12",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 30
+        }
+      ],
+      "en": "Of the children of Ephraim: twenty thousand eight hundred, mighty men of valor, famous men in their fathers’ houses.",
+      "ko": "에브라임 자손 중에서 본 족속의 유명한 큰 용사가 이만 팔백명이요",
+      "source_text_hash": "c033a1e91b2fb788a03dcacc13dc0055a787d5d023419d0647ac78acdd22ca64",
+      "translation_text_hash": "496f7589b9b17634de9089fb86ae5fde020f7639b46464ec5fab4ab936157d01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 자손 중에서 본 족속의 유명한 큰 용사가 이만 팔백명이요"
+      ],
+      "raw_text_hashes": [
+        "496f7589b9b17634de9089fb86ae5fde020f7639b46464ec5fab4ab936157d01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:31",
+      "sequence": 10752,
+      "chapter_label": "1CH 12",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 31
+        }
+      ],
+      "en": "Of the half-tribe of Manasseh: eighteen thousand, who were mentioned by name, to come and make David king.",
+      "ko": "므낫세 반 지파 중에 녹명된 자로서 와서 다윗을 세워 왕을 삼으려 하는 자가 일만 팔천명이요",
+      "source_text_hash": "453c0de5686b2722ab3c38025249871943d51b939321bd5cad654815afa51d2c",
+      "translation_text_hash": "db1b32b31a07f120f0cb457b1b973c9a184a9cac427f0033b128a921bca12d64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세 반 지파 중에 녹명된 자로서 와서 다윗을 세워 왕을 삼으려 하는 자가 일만 팔천명이요"
+      ],
+      "raw_text_hashes": [
+        "db1b32b31a07f120f0cb457b1b973c9a184a9cac427f0033b128a921bca12d64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:32",
+      "sequence": 10753,
+      "chapter_label": "1CH 12",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 32
+        }
+      ],
+      "en": "Of the children of Issachar, men who had understanding of the times, to know what Israel ought to do, their heads were two hundred; and all their brothers were at their command.",
+      "ko": "잇사갈 자손 중에서 시세를 알고 이스라엘이 마땅히 행할 것을 아는 두목이 이백명이니 저희는 그 모든 형제를 관할하는 자며",
+      "source_text_hash": "6f8a158c86d844213e27713ada136d501aaa954758f41ca1751570abc2d8c835",
+      "translation_text_hash": "6716acf9668c7f29b17127d3442e0df51771553a110bef551f96cd47e2605774",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈 자손 중에서 시세를 알고 이스라엘이 마땅히 행할 것을 아는 두목이 이백명이니 저희는 그 모든 형제를 관할하는 자며"
+      ],
+      "raw_text_hashes": [
+        "6716acf9668c7f29b17127d3442e0df51771553a110bef551f96cd47e2605774"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:33",
+      "sequence": 10754,
+      "chapter_label": "1CH 12",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 33
+        }
+      ],
+      "en": "Of Zebulun, such as were able to go out in the army, who could set the battle in array with all kinds of instruments of war: fifty thousand who could command and were not of double heart.",
+      "ko": "스불론 중에서 모든 군기를 가지고 항오를 정제히 하고 두 마음을 품지 아니하고 능히 진에 나아가서 싸움을 잘하는 자가 오만명이요",
+      "source_text_hash": "46662e81137fca29fe574510015f4fdd0fb74d11456ddea10ef1b96aff9b0e05",
+      "translation_text_hash": "605de90caddeeaafcd012291373ceded188fd9841b696e1c89c0f57195f838cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 중에서 모든 군기를 가지고 항오를 정제히 하고 두 마음을 품지 아니하고 능히 진에 나아가서 싸움을 잘하는 자가 오만명이요"
+      ],
+      "raw_text_hashes": [
+        "605de90caddeeaafcd012291373ceded188fd9841b696e1c89c0f57195f838cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:34",
+      "sequence": 10755,
+      "chapter_label": "1CH 12",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 34
+        }
+      ],
+      "en": "Of Naphtali: one thousand captains, and with them with shield and spear thirty-seven thousand.",
+      "ko": "납달리 중에서 장관 일천명과 방패와 창을 가지고 함께한 자가 삼만 칠천명이요",
+      "source_text_hash": "16aa3e4a89430bd40e4d4c48a5778a18494a9b6da03d6a7e3dcb5bc7ff6992b7",
+      "translation_text_hash": "4b4936c09ae833746e07dc7ccddb8d520bf32c45feb3b338b60f30560d3ae2d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리 중에서 장관 일천명과 방패와 창을 가지고 함께한 자가 삼만 칠천명이요"
+      ],
+      "raw_text_hashes": [
+        "4b4936c09ae833746e07dc7ccddb8d520bf32c45feb3b338b60f30560d3ae2d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:35",
+      "sequence": 10756,
+      "chapter_label": "1CH 12",
+      "verse_label": "35",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 35
+        }
+      ],
+      "en": "Of the Danites who could set the battle in array: twenty-eight thousand six hundred.",
+      "ko": "단 자손 중에서 싸움을 잘하는 자가 이만 팔천 륙백명이요",
+      "source_text_hash": "ae3334e0d02518102a4cbff167e8cf9c4015be0183b39bc97b6e3d57915735d8",
+      "translation_text_hash": "015ff2b8c49e37d6f2d4b678b2e4a69a250ad4a62b773b74ec6f66da8fdb454b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 자손 중에서 싸움을 잘하는 자가 이만 팔천 륙백명이요"
+      ],
+      "raw_text_hashes": [
+        "015ff2b8c49e37d6f2d4b678b2e4a69a250ad4a62b773b74ec6f66da8fdb454b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:36",
+      "sequence": 10757,
+      "chapter_label": "1CH 12",
+      "verse_label": "36",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 36
+        }
+      ],
+      "en": "Of Asher, such as were able to go out in the army, who could set the battle in array: forty thousand.",
+      "ko": "아셀 중에서 능히 진에 나가서 싸움을 잘하는 자가 사만명이요",
+      "source_text_hash": "8d9b558b030b61b19ee35ab66efe41ef45371f81b632f43fd2a5d173a719cadc",
+      "translation_text_hash": "edc691f4c4eee463ee19344bd0be01cd76df41206a93dbde79c40812bc04bc4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 중에서 능히 진에 나가서 싸움을 잘하는 자가 사만명이요"
+      ],
+      "raw_text_hashes": [
+        "edc691f4c4eee463ee19344bd0be01cd76df41206a93dbde79c40812bc04bc4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:37",
+      "sequence": 10758,
+      "chapter_label": "1CH 12",
+      "verse_label": "37",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 37
+        }
+      ],
+      "en": "On the other side of the Jordan, of the Reubenites, the Gadites, and of the half-tribe of Manasseh, with all kinds of instruments of war for the battle: one hundred twenty thousand.",
+      "ko": "요단 저편 르우벤 자손과 갓 자손과 므낫세 반 지파 중에서 모든 군기를 가지고 능히 싸우는 자가 십 이만명이었더라",
+      "source_text_hash": "6e4cd84c381546c6102227c05bc68fb9c9c777afadab607487488a2aa0aef629",
+      "translation_text_hash": "cd0c028c40f78a49c5d044345b48762bd5584130d28705a430fc530ab21a21ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요단 저편 르우벤 자손과 갓 자손과 므낫세 반 지파 중에서 모든 군기를 가지고 능히 싸우는 자가 십 이만명이었더라"
+      ],
+      "raw_text_hashes": [
+        "cd0c028c40f78a49c5d044345b48762bd5584130d28705a430fc530ab21a21ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:38",
+      "sequence": 10759,
+      "chapter_label": "1CH 12",
+      "verse_label": "38",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 38
+        }
+      ],
+      "en": "All these were men of war who could order the battle array, and came with a perfect heart to Hebron to make David king over all Israel; and all the rest also of Israel were of one heart to make David king.",
+      "ko": "이 모든 군사가 항오를 정제히 하고 다 성심으로 헤브론에 이르러 다윗으로 온 이스라엘 왕을 삼고자 하고 또 이스라엘의 남은 자도 다 일심으로 다윗으로 왕을 삼고자 하여",
+      "source_text_hash": "d47421c74a8800f7a73cc9838ce524194cc29cb4d5d67ad18eed64dbaac57ffb",
+      "translation_text_hash": "9cd65e6e6ecc5d22d83f2d895f8a487c4ea09c746bfcaa24c662674d0b23073e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 군사가 항오를 정제히 하고 다 성심으로 헤브론에 이르러 다윗으로 온 이스라엘 왕을 삼고자 하고 또 이스라엘의 남은 자도 다 일심으로 다윗으로 왕을 삼고자 하여"
+      ],
+      "raw_text_hashes": [
+        "9cd65e6e6ecc5d22d83f2d895f8a487c4ea09c746bfcaa24c662674d0b23073e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:39",
+      "sequence": 10760,
+      "chapter_label": "1CH 12",
+      "verse_label": "39",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 39
+        }
+      ],
+      "en": "They were there with David three days, eating and drinking; for their brothers had supplied provisions for them.",
+      "ko": "무리가 거기서 다윗과 함께 사흘을 지내며 먹고 마셨으니 이는 그 형제가 이미 식물을 예비하였음이며",
+      "source_text_hash": "79bd31a0c4c067c04e8849d0d5a42df848cc7a2339079ac0468ca621f2af638f",
+      "translation_text_hash": "08aad17db732f7a04db3881d06582fa953fb05d9fed423fb1c757569b33e6eee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 거기서 다윗과 함께 사흘을 지내며 먹고 마셨으니 이는 그 형제가 이미 식물을 예비하였음이며"
+      ],
+      "raw_text_hashes": [
+        "08aad17db732f7a04db3881d06582fa953fb05d9fed423fb1c757569b33e6eee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:12:40",
+      "sequence": 10761,
+      "chapter_label": "1CH 12",
+      "verse_label": "40",
+      "locator": {
+        "book": "1CH",
+        "chapter": 12,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 12,
+          "verse": 40
+        }
+      ],
+      "en": "Moreover those who were near to them, as far as Issachar, Zebulun, and Naphtali, brought bread on donkeys, on camels, on mules, and on oxen: supplies of flour, cakes of figs, clusters of raisins, wine, oil, cattle, and sheep in abundance; for there was joy in Israel.",
+      "ko": "또 근처에 있는 자로부터 잇사갈과 스불론과 납달리까지도 식물을 나귀와 약대와 노새와 소에 무수히 실어왔으니 곧 과자와 무화과병과 건포도와 포도주와 기름이요 소와 양도 많이 가져왔으니 이스라엘 가운데 희락이 있음이었더라",
+      "source_text_hash": "26d5a5ca17140c5a97c6e2c4bd9076c42b6b234ac7e1eccee8a4a60b55ceaad1",
+      "translation_text_hash": "737578d2837c5e7f48cf102020ca255681f420d00a6ad1938427606f0c8736c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 근처에 있는 자로부터 잇사갈과 스불론과 납달리까지도 식물을 나귀와 약대와 노새와 소에 무수히 실어왔으니 곧 과자와 무화과병과 건포도와 포도주와 기름이요 소와 양도 많이 가져왔으니 이스라엘 가운데 희락이 있음이었더라"
+      ],
+      "raw_text_hashes": [
+        "737578d2837c5e7f48cf102020ca255681f420d00a6ad1938427606f0c8736c3"
+      ]
+    }
+  ]
+}

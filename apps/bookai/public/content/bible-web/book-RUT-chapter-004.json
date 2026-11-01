@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:RUT:chapter:004",
+  "unit_ordinal": 236,
+  "unit_label": "RUT 4",
+  "book_code": "RUT",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:RUT:4:1",
+      "sequence": 7192,
+      "chapter_label": "RUT 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Now Boaz went up to the gate and sat down there. Behold, the near kinsman of whom Boaz spoke came by. Boaz said to him, “Come over here, friend, and sit down!” He came over, and sat down.",
+      "ko": "보아스가 성문에 올라가서 거기 앉았더니 마침 보아스의 말하던 기업 무를 자가 지나는지라 보아스가 그에게 이르되 아무여 이리로 와서 앉으라 그가 와서 앉으매",
+      "source_text_hash": "9218122abda42e2b80aa144ea5306b6ab88376fcb2f933e2bf7b2131627a0109",
+      "translation_text_hash": "6f91d23c1b0078b560c9ae5f2eec1e75ea168758d5c4b7d61082e740a3480929",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스가 성문에 올라가서 거기 앉았더니 마침 보아스의 말하던 기업 무를 자가 지나는지라 보아스가 그에게 이르되 아무여 이리로 와서 앉으라 그가 와서 앉으매"
+      ],
+      "raw_text_hashes": [
+        "6f91d23c1b0078b560c9ae5f2eec1e75ea168758d5c4b7d61082e740a3480929"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:2",
+      "sequence": 7193,
+      "chapter_label": "RUT 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Boaz took ten men of the elders of the city, and said, “Sit down here,” and they sat down.",
+      "ko": "보아스가 성읍 장로 십인을 청하여 가로되 당신들은 여기 앉으라 그들이 앉으매",
+      "source_text_hash": "0be79a612439be8a9bb0b1f1aa2f3d0815c19f7cbe71a52300c1de83c6961383",
+      "translation_text_hash": "557b3ac05f18ebb2cf9b84bfff48a9023970dd036c1bbd968d61ffb3b03af243",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스가 성읍 장로 십인을 청하여 가로되 당신들은 여기 앉으라 그들이 앉으매"
+      ],
+      "raw_text_hashes": [
+        "557b3ac05f18ebb2cf9b84bfff48a9023970dd036c1bbd968d61ffb3b03af243"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:3",
+      "sequence": 7194,
+      "chapter_label": "RUT 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "He said to the near kinsman, “Naomi, who has come back out of the country of Moab, is selling the parcel of land, which was our brother Elimelech’s.",
+      "ko": "보아스가 그 기업 무를 자에게 이르되 모압 지방에서 돌아온 나오미가 우리 형제 엘리멜렉의 소유지를 관할하므로",
+      "source_text_hash": "1f8735178caf4578ab5f0c175915b648cccd1fadedd5a8f5f8864668a155fd05",
+      "translation_text_hash": "f09dafeed098415ff7c840160cf94cb076b2ed68cbb04c544da2b799e7725730",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스가 그 기업 무를 자에게 이르되 모압 지방에서 돌아온 나오미가 우리 형제 엘리멜렉의 소유지를 관할하므로"
+      ],
+      "raw_text_hashes": [
+        "f09dafeed098415ff7c840160cf94cb076b2ed68cbb04c544da2b799e7725730"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:4",
+      "sequence": 7195,
+      "chapter_label": "RUT 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "I thought I should tell you, saying, ‘Buy it before those who sit here, and before the elders of my people.’ If you will redeem it, redeem it; but if you will not redeem it, then tell me, that I may know. For there is no one to redeem it besides you; and I am after you.” He said, “I will redeem it.”",
+      "ko": "내가 여기 앉은 자들과 내 백성의 장로들 앞에서 그것을 사라고 네게 고하여 알게 하려 하였노라 네가 무르려면 무르려니와 네가 무르지 아니하려거든 내게 고하여 알게 하라 네 다음은 나요 그 외에는 무를 자가 없느니라 그가 가로되 내가 무르리라",
+      "source_text_hash": "42ac828f8cf2b01f7ad34ef2b4965579c29d6b6c5f5821221ed6032d215946b8",
+      "translation_text_hash": "1ee35c4d70ed8a9c324fa16d2d98736a814a4c2760385b4445546aab6192cf9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여기 앉은 자들과 내 백성의 장로들 앞에서 그것을 사라고 네게 고하여 알게 하려 하였노라 네가 무르려면 무르려니와 네가 무르지 아니하려거든 내게 고하여 알게 하라 네 다음은 나요 그 외에는 무를 자가 없느니라 그가 가로되 내가 무르리라"
+      ],
+      "raw_text_hashes": [
+        "1ee35c4d70ed8a9c324fa16d2d98736a814a4c2760385b4445546aab6192cf9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:5",
+      "sequence": 7196,
+      "chapter_label": "RUT 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Then Boaz said, “On the day you buy the field from the hand of Naomi, you must buy it also from Ruth the Moabitess, the wife of the dead, to raise up the name of the dead on his inheritance.”",
+      "ko": "보아스가 가로되 네가 나오미의 손에서 그 밭을 사는 날에 곧 죽은 자의 아내 모압 여인 룻에게서 사서 그 죽은 자의 기업을 그 이름으로 잇게 하여야 할찌니라",
+      "source_text_hash": "ad2db2b58f6443a9d11f2498137fa0e37e79ef44245e2d80d14c9ac3527f86cf",
+      "translation_text_hash": "ecbd063bd258ba7b0b7afd5f204213e9bba7733dd653a599720ef228169625f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스가 가로되 네가 나오미의 손에서 그 밭을 사는 날에 곧 죽은 자의 아내 모압 여인 룻에게서 사서 그 죽은 자의 기업을 그 이름으로 잇게 하여야 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "ecbd063bd258ba7b0b7afd5f204213e9bba7733dd653a599720ef228169625f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:6",
+      "sequence": 7197,
+      "chapter_label": "RUT 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "The near kinsman said, “I can’t redeem it for myself, lest I endanger my own inheritance. Take my right of redemption for yourself; for I can’t redeem it.”",
+      "ko": "그 기업 무를 자가 가로되 나는 내 기업에 손해가 있을까 하여 나를 위하여 무르지 못하노니 나의 무를 권리를 네가 취하라 나는 무르지 못하겠노라",
+      "source_text_hash": "613959ce0e34450b470bb3f513ab86ee82583ded91105182bbf42f7ee35df711",
+      "translation_text_hash": "f830a9b9b2e45fb6401591a654f5f58b4e7921fdcc1a10322d2b49b5128e4278",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기업 무를 자가 가로되 나는 내 기업에 손해가 있을까 하여 나를 위하여 무르지 못하노니 나의 무를 권리를 네가 취하라 나는 무르지 못하겠노라"
+      ],
+      "raw_text_hashes": [
+        "f830a9b9b2e45fb6401591a654f5f58b4e7921fdcc1a10322d2b49b5128e4278"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:7",
+      "sequence": 7198,
+      "chapter_label": "RUT 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Now this was the custom in former time in Israel concerning redeeming and concerning exchanging, to confirm all things: a man took off his sandal, and gave it to his neighbor; and this was the way of formalizing transactions in Israel.",
+      "ko": "옛적 이스라엘 중에 모든 것을 무르거나 교환하는 일을 확정하기 위하여 사람이 그 신을 벗어 그 이웃에게 주더니 이것이 이스라엘의 증명하는 전례가 된지라",
+      "source_text_hash": "b54bcbab27858e359c143c403ca8b9682a8f43579248b4a4a865b8a18c82682a",
+      "translation_text_hash": "bdb3bf50aff13f51872d9bece7f92cfb61545282c27b3e78392a8cb830effa97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적 이스라엘 중에 모든 것을 무르거나 교환하는 일을 확정하기 위하여 사람이 그 신을 벗어 그 이웃에게 주더니 이것이 이스라엘의 증명하는 전례가 된지라"
+      ],
+      "raw_text_hashes": [
+        "bdb3bf50aff13f51872d9bece7f92cfb61545282c27b3e78392a8cb830effa97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:8",
+      "sequence": 7199,
+      "chapter_label": "RUT 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "So the near kinsman said to Boaz, “Buy it for yourself,” then he took off his sandal.",
+      "ko": "이에 그 기업 무를 자가 보아스에게 이르되 네가 너를 위하여 사라 하고 그 신을 벗는지라",
+      "source_text_hash": "050585e476bf6d55e7e55fecc95b98287b96a4df85695857bca5238bcac724e0",
+      "translation_text_hash": "7e2c3fbb3d20873faf4277d4d06909c3a5e4df56e576bbe88c2203f577650036",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 기업 무를 자가 보아스에게 이르되 네가 너를 위하여 사라 하고 그 신을 벗는지라"
+      ],
+      "raw_text_hashes": [
+        "7e2c3fbb3d20873faf4277d4d06909c3a5e4df56e576bbe88c2203f577650036"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:9",
+      "sequence": 7200,
+      "chapter_label": "RUT 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Boaz said to the elders and to all the people, “You are witnesses today, that I have bought all that was Elimelech’s, and all that was Chilion’s and Mahlon’s, from the hand of Naomi.",
+      "ko": "보아스가 장로들과 모든 백성에게 이르되 내가 엘리멜렉과 기룐과 말론에게 있던 모든 것을 나오미의 손에서 산 일에 너희가 오늘날 증인이 되었고",
+      "source_text_hash": "87879a6dc3675368130d1553fac1b98025eccd6e7a62627518a876aba7697b90",
+      "translation_text_hash": "0ed3543b0abd898adc374297a2d561eb11774bcaa000274f54f3882ff97418cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스가 장로들과 모든 백성에게 이르되 내가 엘리멜렉과 기룐과 말론에게 있던 모든 것을 나오미의 손에서 산 일에 너희가 오늘날 증인이 되었고"
+      ],
+      "raw_text_hashes": [
+        "0ed3543b0abd898adc374297a2d561eb11774bcaa000274f54f3882ff97418cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:10",
+      "sequence": 7201,
+      "chapter_label": "RUT 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Moreover, Ruth the Moabitess, the wife of Mahlon, I have purchased to be my wife, to raise up the name of the dead on his inheritance, that the name of the dead may not be cut off from among his brothers and from the gate of his place. You are witnesses today.”",
+      "ko": "또 말론의 아내 모압 여인 룻을 사서 나의 아내로 취하고 그 죽은 자의 기업을 그 이름으로 잇게 하여 그 이름이 그 형제 중과 그곳 성문에서 끊어지지 않게 함에 너희가 오늘날 증인이 되었느니라",
+      "source_text_hash": "d0a451e44b943d07f5024f7e817627c4f2db4553ce60cc40cf5e24ff31d50fe8",
+      "translation_text_hash": "5e35b450ab926a8f410ffd7a541eaa9c3729aaf0b8cfe89a77ee7a9f13eb7a24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 말론의 아내 모압 여인 룻을 사서 나의 아내로 취하고 그 죽은 자의 기업을 그 이름으로 잇게 하여 그 이름이 그 형제 중과 그곳 성문에서 끊어지지 않게 함에 너희가 오늘날 증인이 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "5e35b450ab926a8f410ffd7a541eaa9c3729aaf0b8cfe89a77ee7a9f13eb7a24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:11",
+      "sequence": 7202,
+      "chapter_label": "RUT 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "All the people who were in the gate, and the elders, said, “We are witnesses. May the LORD make the woman who has come into your house like Rachel and like Leah, which both built the house of Israel; and treat you worthily in Ephrathah, and be famous in Bethlehem.",
+      "ko": "성문에 있는 모든 백성과 장로들이 가로되 우리가 증인이 되노니 여호와께서 네 집에 들어가는 여인으로 이스라엘 집을 세운 라헬, 레아 두 사람과 같게 하시고 너로 에브랏에서 유력하고 베들레헴에서 유명케 하시기를 원하며",
+      "source_text_hash": "a502ce026c61c28e05e1d23d52d72fef49b09100f7ef9a7eb64da6c158278792",
+      "translation_text_hash": "08516a2c319537499dd24853b2a021e70c5389c54770686bfacab0c421489052",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문에 있는 모든 백성과 장로들이 가로되 우리가 증인이 되노니 여호와께서 네 집에 들어가는 여인으로 이스라엘 집을 세운 라헬, 레아 두 사람과 같게 하시고 너로 에브랏에서 유력하고 베들레헴에서 유명케 하시기를 원하며"
+      ],
+      "raw_text_hashes": [
+        "08516a2c319537499dd24853b2a021e70c5389c54770686bfacab0c421489052"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:12",
+      "sequence": 7203,
+      "chapter_label": "RUT 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Let your house be like the house of Perez, whom Tamar bore to Judah, of the offspring which the LORD will give you by this young woman.”",
+      "ko": "여호와께서 이 소년 여자로 네게 후사를 주사 네 집으로 다말이 유다에게 낳아준 베레스의 집과 같게 하시기를 원하노라",
+      "source_text_hash": "650def254c23ccd27205bdb90cf0e5631076002208a50c75cc607d9529a999b8",
+      "translation_text_hash": "2f8d139e3223c8e1e8f05ed1c8c6b34c8cd82b8c8dd0e08ab780a1b9842a1d1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이 소년 여자로 네게 후사를 주사 네 집으로 다말이 유다에게 낳아준 베레스의 집과 같게 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "2f8d139e3223c8e1e8f05ed1c8c6b34c8cd82b8c8dd0e08ab780a1b9842a1d1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:13",
+      "sequence": 7204,
+      "chapter_label": "RUT 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "So Boaz took Ruth and she became his wife; and he went in to her, and the LORD enabled her to conceive, and she bore a son.",
+      "ko": "이에 보아스가 룻을 취하여 아내를 삼고 그와 동침하였더니 여호와께서 그로 잉태케 하시므로 그가 아들을 낳은지라",
+      "source_text_hash": "a684713816481b94d523ab5df30d05b975dbc7e87b33d13f2bc375f0c7b6c8fb",
+      "translation_text_hash": "d90dcff6509f1cefeba19c34c2bebe1e685f02a5b4164cd06ff07188914ae164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 보아스가 룻을 취하여 아내를 삼고 그와 동침하였더니 여호와께서 그로 잉태케 하시므로 그가 아들을 낳은지라"
+      ],
+      "raw_text_hashes": [
+        "d90dcff6509f1cefeba19c34c2bebe1e685f02a5b4164cd06ff07188914ae164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:14",
+      "sequence": 7205,
+      "chapter_label": "RUT 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "The women said to Naomi, “Blessed be the LORD, who has not left you today without a near kinsman. Let his name be famous in Israel.",
+      "ko": "여인들이 나오미에게 이르되 찬송할찌로다 여호와께서 오늘날 네게 기업 무를 자가 없게 아니하셨도다 이 아이의 이름이 이스라엘 중에 유명하게 되기를 원하노라",
+      "source_text_hash": "9f311f3a5c1b8bbb1764374f31a951a460f3d0cc03b5f42de566f0ae85f74008",
+      "translation_text_hash": "cae621eab159d4bf6134dc107379b50f386d98f2eab02a72b90efa81de105d36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인들이 나오미에게 이르되 찬송할찌로다 여호와께서 오늘날 네게 기업 무를 자가 없게 아니하셨도다 이 아이의 이름이 이스라엘 중에 유명하게 되기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "cae621eab159d4bf6134dc107379b50f386d98f2eab02a72b90efa81de105d36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:15",
+      "sequence": 7206,
+      "chapter_label": "RUT 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "He shall be to you a restorer of life and sustain you in your old age; for your daughter-in-law, who loves you, who is better to you than seven sons, has given birth to him.”",
+      "ko": "이는 네 생명의 회복자며 네 노년의 봉양자라 곧 너를 사랑하며 일곱 아들보다 귀한 자부가 낳은 자로다",
+      "source_text_hash": "28751b0bea4a9774b1d1aa7f4e130892d4a31efe88944f334f738af3ba7de7a7",
+      "translation_text_hash": "2c732f5cc94bc369809ef1027a33c199edee3bdcc488d866975c153cbc3b6f72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 네 생명의 회복자며 네 노년의 봉양자라 곧 너를 사랑하며 일곱 아들보다 귀한 자부가 낳은 자로다"
+      ],
+      "raw_text_hashes": [
+        "2c732f5cc94bc369809ef1027a33c199edee3bdcc488d866975c153cbc3b6f72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:16",
+      "sequence": 7207,
+      "chapter_label": "RUT 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "Naomi took the child, laid him in her bosom, and became nurse to him.",
+      "ko": "나오미가 아기를 취하여 품에 품고 그의 양육자가 되니",
+      "source_text_hash": "35ac262dc72349c4ecc5302004d7b1859c2e6fad711c6917c8fe6704ffa60c73",
+      "translation_text_hash": "570a8e4fee87ca5d531c5f447b79d10a95b732cefcc170e65c90cf507025a24f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나오미가 아기를 취하여 품에 품고 그의 양육자가 되니"
+      ],
+      "raw_text_hashes": [
+        "570a8e4fee87ca5d531c5f447b79d10a95b732cefcc170e65c90cf507025a24f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:17",
+      "sequence": 7208,
+      "chapter_label": "RUT 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "The women, her neighbors, gave him a name, saying, “A son is born to Naomi”. They named him Obed. He is the father of Jesse, the father of David.",
+      "ko": "그 이웃 여인들이 그에게 이름을 주되 나오미가 아들을 낳았다 하여 그 이름을 오벳이라 하였는데 그는 다윗의 아비인 이새의 아비였더라",
+      "source_text_hash": "b373ea81081dd043629c20413f4930852cc57d2015ac549c4e2292dfaa9fa28a",
+      "translation_text_hash": "a980545abcbe492d8f037bdd21adf9d8e9ebe352d62c96bf6a812aedf58666b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이웃 여인들이 그에게 이름을 주되 나오미가 아들을 낳았다 하여 그 이름을 오벳이라 하였는데 그는 다윗의 아비인 이새의 아비였더라"
+      ],
+      "raw_text_hashes": [
+        "a980545abcbe492d8f037bdd21adf9d8e9ebe352d62c96bf6a812aedf58666b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:18",
+      "sequence": 7209,
+      "chapter_label": "RUT 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Now this is the history of the generations of Perez: Perez became the father of Hezron,",
+      "ko": "베레스의 세계는 이러하니라 베레스는 헤스론을 낳았고",
+      "source_text_hash": "88008f934ad38783359541ddf96ba9165d3171c7618f670bc2f0e296141df1ff",
+      "translation_text_hash": "fff1cc5a9c32257346b285f6e23c063f58ee0fe00c092d6532392b362ee0dce7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베레스의 세계는 이러하니라 베레스는 헤스론을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "fff1cc5a9c32257346b285f6e23c063f58ee0fe00c092d6532392b362ee0dce7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:19",
+      "sequence": 7210,
+      "chapter_label": "RUT 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "and Hezron became the father of Ram, and Ram became the father of Amminadab,",
+      "ko": "헤스론은 람을 낳았고 람은 암미나답을 낳았고",
+      "source_text_hash": "998ba57680e16cbb760d96e9796fc9bd89fdc1a67eb4af95bc4024b4b339eb82",
+      "translation_text_hash": "c731da9ad7f60a68a8ff034f042dfb128a169aa9c709016a3235466fd4eb24b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스론은 람을 낳았고 람은 암미나답을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "c731da9ad7f60a68a8ff034f042dfb128a169aa9c709016a3235466fd4eb24b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:20",
+      "sequence": 7211,
+      "chapter_label": "RUT 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "and Amminadab became the father of Nahshon, and Nahshon became the father of Salmon,",
+      "ko": "암미나답은 나손을 낳았고 나손은 살몬을 낳았고",
+      "source_text_hash": "9194951ec023f6d9bfdb68706777f1b199d423f8503089b6e7518086930cbb8d",
+      "translation_text_hash": "0e52afd6417fcfe64b4cb979de11245478dc4edf27dcf53d586208cce29b8dbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암미나답은 나손을 낳았고 나손은 살몬을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "0e52afd6417fcfe64b4cb979de11245478dc4edf27dcf53d586208cce29b8dbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:21",
+      "sequence": 7212,
+      "chapter_label": "RUT 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "and Salmon became the father of Boaz, and Boaz became the father of Obed,",
+      "ko": "살몬은 보아스를 낳았고 보아스는 오벳을 낳았고",
+      "source_text_hash": "16952e62cf0062b5a9310c15ddfcb48cf7052781146801185ae860dc5909685f",
+      "translation_text_hash": "fa1ff5082fb40cdccda7cfff8d9fc0d9172df82114a7a66e33172180682c06bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살몬은 보아스를 낳았고 보아스는 오벳을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "fa1ff5082fb40cdccda7cfff8d9fc0d9172df82114a7a66e33172180682c06bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:RUT:4:22",
+      "sequence": 7213,
+      "chapter_label": "RUT 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "RUT",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "RUT",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "and Obed became the father of Jesse, and Jesse became the father of David.",
+      "ko": "오벳은 이새를 낳았고 이새는 다윗을 낳았더라",
+      "source_text_hash": "7bff12bc9809a460fb2815276bddd3670c8ced7ae4a969075b61a041d29404de",
+      "translation_text_hash": "95d845bf6ceeb1bf7f520ca184f7e3d8a98fc40b2783836559eaa6211a5f480a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오벳은 이새를 낳았고 이새는 다윗을 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "95d845bf6ceeb1bf7f520ca184f7e3d8a98fc40b2783836559eaa6211a5f480a"
+      ]
+    }
+  ]
+}

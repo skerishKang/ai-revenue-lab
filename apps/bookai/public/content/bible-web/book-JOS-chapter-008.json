@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:008",
+  "unit_ordinal": 195,
+  "unit_label": "JOS 8",
+  "book_code": "JOS",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:8:1",
+      "sequence": 6004,
+      "chapter_label": "JOS 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Joshua, “Don’t be afraid, and don’t be dismayed. Take all the warriors with you, and arise, go up to Ai. Behold, I have given into your hand the king of Ai, with his people, his city, and his land.",
+      "ko": "여호와께서 여호수아에게 이르시되 두려워 말라 놀라지 말라 군사를 다 거느리고 일어나 아이로 올라가라 보라 내가 아이 왕과 그 백성과 그 성읍과 그 땅을 다 네 손에 주었노니",
+      "source_text_hash": "66b3a476c26fc7450e24d73c92d01bfe600024cdb1d630fcf28a9c48df28c72a",
+      "translation_text_hash": "9012f5648af33c8e2d58f841c2d81e14e5f8d87403c36f1a428ea26585dcad1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아에게 이르시되 두려워 말라 놀라지 말라 군사를 다 거느리고 일어나 아이로 올라가라 보라 내가 아이 왕과 그 백성과 그 성읍과 그 땅을 다 네 손에 주었노니"
+      ],
+      "raw_text_hashes": [
+        "9012f5648af33c8e2d58f841c2d81e14e5f8d87403c36f1a428ea26585dcad1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:2",
+      "sequence": 6005,
+      "chapter_label": "JOS 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "You shall do to Ai and her king as you did to Jericho and her king, except you shall take its goods and its livestock for yourselves. Set an ambush for the city behind it.”",
+      "ko": "너는 여리고와 그 왕에게 행한것 같이 아이와 그 왕에게 행하되 오직 거기서 탈취할 물건과 가축은 스스로 취하라 너는 성 뒤에 복병할찌니라",
+      "source_text_hash": "df7c9ad7825187440594ba78ec5956ab11f5350196ec43c59c6445178546b2ce",
+      "translation_text_hash": "0804c90423f61839fc03c400dbb92fc7e9f693ffbb9ddbdcac75216ec9653dc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여리고와 그 왕에게 행한것 같이 아이와 그 왕에게 행하되 오직 거기서 탈취할 물건과 가축은 스스로 취하라 너는 성 뒤에 복병할찌니라"
+      ],
+      "raw_text_hashes": [
+        "0804c90423f61839fc03c400dbb92fc7e9f693ffbb9ddbdcac75216ec9653dc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:3",
+      "sequence": 6006,
+      "chapter_label": "JOS 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "So Joshua arose, with all the warriors, to go up to Ai. Joshua chose thirty thousand men, the mighty men of valor, and sent them out by night.",
+      "ko": "이에 여호수아가 일어나서 군사와 함께 아이로 올라가려 하여 용사 삼만명을 뽑아 밤에 보내며",
+      "source_text_hash": "a13b8c51d9553016526a3fd3cff057762e4a722e5be75b0c2633a3d1eb750917",
+      "translation_text_hash": "560e29a127608fedd6fc65bbe38d4bd217e2d9a71b5856e987c6e06afcd95dbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호수아가 일어나서 군사와 함께 아이로 올라가려 하여 용사 삼만명을 뽑아 밤에 보내며"
+      ],
+      "raw_text_hashes": [
+        "560e29a127608fedd6fc65bbe38d4bd217e2d9a71b5856e987c6e06afcd95dbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:4",
+      "sequence": 6007,
+      "chapter_label": "JOS 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "He commanded them, saying, “Behold, you shall lie in ambush against the city, behind the city. Don’t go very far from the city, but all of you be ready.",
+      "ko": "그들에게 명하여 가로되 너희는 성읍 뒤로 가서 성읍을 향하고 매복하되 그 성읍에 너무 멀리 하지 말고 다 스스로 예비하라",
+      "source_text_hash": "791306ad0422e79e683f4f2f5fc9794f0a50f9ca2e57a18016af7c233924300b",
+      "translation_text_hash": "3099b2c284af8cc2be2bcf4317e1aaa10a5a04c2c7f9a9d46cecd01629810628",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 명하여 가로되 너희는 성읍 뒤로 가서 성읍을 향하고 매복하되 그 성읍에 너무 멀리 하지 말고 다 스스로 예비하라"
+      ],
+      "raw_text_hashes": [
+        "3099b2c284af8cc2be2bcf4317e1aaa10a5a04c2c7f9a9d46cecd01629810628"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:5",
+      "sequence": 6008,
+      "chapter_label": "JOS 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "I and all the people who are with me will approach the city. It shall happen, when they come out against us, as at the first, that we will flee before them.",
+      "ko": "나와 나를 좇는 모든 백성은 다 성읍으로 가까이 가리니 그들이 처음과 같이 우리에게로 쳐 올라 올것이라 그리할 때에 우리가 그들 앞에서 도망하면",
+      "source_text_hash": "d9350bab633dcc9d793d07a14cd2bd2217c22b3cb4c991d8141f2ad76e3d8918",
+      "translation_text_hash": "14a6b511fdb6993db51ba7f174433fc7bf6446eb97ef6a65be23fbe24c2dd937",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 나를 좇는 모든 백성은 다 성읍으로 가까이 가리니 그들이 처음과 같이 우리에게로 쳐 올라 올것이라 그리할 때에 우리가 그들 앞에서 도망하면"
+      ],
+      "raw_text_hashes": [
+        "14a6b511fdb6993db51ba7f174433fc7bf6446eb97ef6a65be23fbe24c2dd937"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:6",
+      "sequence": 6009,
+      "chapter_label": "JOS 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "They will come out after us until we have drawn them away from the city; for they will say, ‘They flee before us, like the first time.’ So we will flee before them,",
+      "ko": "그들이 나와서 우리를 따르며 스스로 이르기를 그들이 처음과 같이 우리 앞에서 도망한다 하고 우리의 유인을 받아 그 성읍에서 멀리 떠날것이라 우리가 그 앞에서 도망하거든",
+      "source_text_hash": "8818f5e8138825340c889d709c9cb1c70d3ccd57d7763c2ecd53ce77501f7fae",
+      "translation_text_hash": "86ec146c36e48df972a9f3b281d5a791995e27f44484d7d7467fcbb9b739b787",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 나와서 우리를 따르며 스스로 이르기를 그들이 처음과 같이 우리 앞에서 도망한다 하고 우리의 유인을 받아 그 성읍에서 멀리 떠날것이라 우리가 그 앞에서 도망하거든"
+      ],
+      "raw_text_hashes": [
+        "86ec146c36e48df972a9f3b281d5a791995e27f44484d7d7467fcbb9b739b787"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:7",
+      "sequence": 6010,
+      "chapter_label": "JOS 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "and you shall rise up from the ambush, and take possession of the city; for the LORD your God will deliver it into your hand.",
+      "ko": "너희는 매복한 곳에서 일어나서 그 성읍을 점령하라 너희 하나님 여호와께서 너희 손에 붙이시리라",
+      "source_text_hash": "0f1def80a7067b9536be88d915f24775aac4e581165f4b1d534366506deaff91",
+      "translation_text_hash": "a36fe2d2852132314661d84af4bf57eac834aceec317f0f551f326b959265c02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 매복한 곳에서 일어나서 그 성읍을 점령하라 너희 하나님 여호와께서 너희 손에 붙이시리라"
+      ],
+      "raw_text_hashes": [
+        "a36fe2d2852132314661d84af4bf57eac834aceec317f0f551f326b959265c02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:8",
+      "sequence": 6011,
+      "chapter_label": "JOS 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "It shall be, when you have seized the city, that you shall set the city on fire. You shall do this according to the LORD’s word. Behold, I have commanded you.”",
+      "ko": "너희가 성읍을 취하거든 그것을 불살라 여호와의 말씀대로 행하라 보라 내가 너희에게 명하였느니라 하고",
+      "source_text_hash": "db32594b6af1f472568aacb9f5c6bc8d643761597421c0d88e7e81f14d52f7c4",
+      "translation_text_hash": "b490f741f874882a34bf6f6dc22f1b46c93f3077bebd3f1772f9d91390ba35a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 성읍을 취하거든 그것을 불살라 여호와의 말씀대로 행하라 보라 내가 너희에게 명하였느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "b490f741f874882a34bf6f6dc22f1b46c93f3077bebd3f1772f9d91390ba35a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:9",
+      "sequence": 6012,
+      "chapter_label": "JOS 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "Joshua sent them out; and they went to set up the ambush, and stayed between Bethel and Ai on the west side of Ai; but Joshua stayed among the people that night.",
+      "ko": "그들을 보내매 그들이 복병할 곳으로 가서 아이 서편 벧엘과 아이 사이에 매복하였고 여호수아는 그 밤에 백성 가운데서 잤더라",
+      "source_text_hash": "740c7530db3883feab7f70787f080619e8708a23f217235ef71ac2c8e3b5b56c",
+      "translation_text_hash": "97117162560c1922affb7c749bcb4fe83488cd1c21e1410af5a2ec2cd40a3d7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 보내매 그들이 복병할 곳으로 가서 아이 서편 벧엘과 아이 사이에 매복하였고 여호수아는 그 밤에 백성 가운데서 잤더라"
+      ],
+      "raw_text_hashes": [
+        "97117162560c1922affb7c749bcb4fe83488cd1c21e1410af5a2ec2cd40a3d7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:10",
+      "sequence": 6013,
+      "chapter_label": "JOS 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Joshua rose up early in the morning, mustered the people, and went up, he and the elders of Israel, before the people to Ai.",
+      "ko": "여호수아가 아침에 일찌기 일어나서 백성을 점고하고 이스라엘 장로들로 더불어 백성 앞서 아이로 올라가매",
+      "source_text_hash": "679f1f92006d3159e7dc08b529873c03b289ea010eee70723a6e7d9d0a347fce",
+      "translation_text_hash": "8de79b98feaeed3a61d7007e8e4ce3047337ed31b84ae6f84eb5d00bc16d0c8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 아침에 일찌기 일어나서 백성을 점고하고 이스라엘 장로들로 더불어 백성 앞서 아이로 올라가매"
+      ],
+      "raw_text_hashes": [
+        "8de79b98feaeed3a61d7007e8e4ce3047337ed31b84ae6f84eb5d00bc16d0c8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:11",
+      "sequence": 6014,
+      "chapter_label": "JOS 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "All the people, even the men of war who were with him, went up and came near, and came before the city and encamped on the north side of Ai. Now there was a valley between him and Ai.",
+      "ko": "그를 좇은 군사가 다 올라가서 성읍 앞에 가까이 이르러 아이 북편에 진 치니 그와 아이 사이에는 한 골짜기가 있었더라",
+      "source_text_hash": "826947bee9fe9021f1900a1fd535fd98dff4b8728aaba0611bccd2001c43b601",
+      "translation_text_hash": "5840fcc330b3a075965b6c481756df95adf5782736b34697585257c041a1fb5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 좇은 군사가 다 올라가서 성읍 앞에 가까이 이르러 아이 북편에 진 치니 그와 아이 사이에는 한 골짜기가 있었더라"
+      ],
+      "raw_text_hashes": [
+        "5840fcc330b3a075965b6c481756df95adf5782736b34697585257c041a1fb5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:12",
+      "sequence": 6015,
+      "chapter_label": "JOS 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "He took about five thousand men, and set them in ambush between Bethel and Ai, on the west side of the city.",
+      "ko": "그가 오천명 가량을 택하여 성읍 서편 벧엘과 아이 사이에 또 매복시키니",
+      "source_text_hash": "4411be2edd99b9888cc7d04b6b95c8d7c0bcffcb551671af208c85ad12d86dcf",
+      "translation_text_hash": "22aad5adbca8ebc3bbe46e33295b10cc5063b527903289814d3e02213e86557a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 오천명 가량을 택하여 성읍 서편 벧엘과 아이 사이에 또 매복시키니"
+      ],
+      "raw_text_hashes": [
+        "22aad5adbca8ebc3bbe46e33295b10cc5063b527903289814d3e02213e86557a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:13",
+      "sequence": 6016,
+      "chapter_label": "JOS 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "So they set the people, even all the army who was on the north of the city, and their ambush on the west of the city; and Joshua went that night into the middle of the valley.",
+      "ko": "이와 같이 성읍 북편에는 온 군대가 있고 성읍 서편에는 복병이 있었더라 여호수아가 그 밤에 골짜기 가운데로 들어가니",
+      "source_text_hash": "afa37bf17411bd4c4a68bbfe565236e5ae0e95c8a01b48578c73e0dd852aab9d",
+      "translation_text_hash": "4e7ba3e1ae2c5874031225dcedfec174e7502aa2cfc9a5103b2fa4f5c5646c95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 성읍 북편에는 온 군대가 있고 성읍 서편에는 복병이 있었더라 여호수아가 그 밤에 골짜기 가운데로 들어가니"
+      ],
+      "raw_text_hashes": [
+        "4e7ba3e1ae2c5874031225dcedfec174e7502aa2cfc9a5103b2fa4f5c5646c95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:14",
+      "sequence": 6017,
+      "chapter_label": "JOS 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "When the king of Ai saw it, they hurried and rose up early, and the men of the city went out against Israel to battle, he and all his people, at the time appointed, before the Arabah; but he didn’t know that there was an ambush against him behind the city.",
+      "ko": "아이 왕이 이를 보고 그 성읍 백성과 함께 일찌기 일어나서 급히 나가 아라바 앞에 이르러 정한 때에 이스라엘과 싸우려 하고 성읍 뒤에 복병이 있는 줄은 알지 못하였더라",
+      "source_text_hash": "b5c14cc40336996940c1cb6cd1da40f76914ae44a0e47345e03e573ba294b56b",
+      "translation_text_hash": "7dee645119d3bc4d51c7093b0954fd4d56b757b97c9f3f674c470d560da584e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이 왕이 이를 보고 그 성읍 백성과 함께 일찌기 일어나서 급히 나가 아라바 앞에 이르러 정한 때에 이스라엘과 싸우려 하고 성읍 뒤에 복병이 있는 줄은 알지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "7dee645119d3bc4d51c7093b0954fd4d56b757b97c9f3f674c470d560da584e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:15",
+      "sequence": 6018,
+      "chapter_label": "JOS 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "Joshua and all Israel made as if they were beaten before them, and fled by the way of the wilderness.",
+      "ko": "여호수아와 온 이스라엘이 그들 앞에서 거짓 패하여 광야 길로 도망하매",
+      "source_text_hash": "23b0f5f5e2202a3fcaa65bdfaaf480a53240a546bd96d26c4d92b8b5dc741dc1",
+      "translation_text_hash": "b02eb514658f58938a7403af2fe737bb5eabe1b2052752a97fe3fd4a0b2d9656",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아와 온 이스라엘이 그들 앞에서 거짓 패하여 광야 길로 도망하매"
+      ],
+      "raw_text_hashes": [
+        "b02eb514658f58938a7403af2fe737bb5eabe1b2052752a97fe3fd4a0b2d9656"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:16",
+      "sequence": 6019,
+      "chapter_label": "JOS 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "All the people who were in the city were called together to pursue after them. They pursued Joshua, and were drawn away from the city.",
+      "ko": "그 성 모든 백성이 그들을 따르려고 모여서 여호수아를 따르며 유인함을 입어 성을 멀리 떠나니",
+      "source_text_hash": "4c8907e2ccaa5545e06002c32c758b8bdb235b8066fe0df83a55805304b6ebde",
+      "translation_text_hash": "9598aa8c65020cdb4d7aace5c821d2b003d33b5115152b23633a8f6619611506",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성 모든 백성이 그들을 따르려고 모여서 여호수아를 따르며 유인함을 입어 성을 멀리 떠나니"
+      ],
+      "raw_text_hashes": [
+        "9598aa8c65020cdb4d7aace5c821d2b003d33b5115152b23633a8f6619611506"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:17",
+      "sequence": 6020,
+      "chapter_label": "JOS 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "There was not a man left in Ai or Bethel who didn’t go out after Israel. They left the city open, and pursued Israel.",
+      "ko": "아이와 벧엘에 이스라엘을 따라가지 아니한 자가 하나도 없으며 성문을 열어 놓고 이스라엘을 따랐더라",
+      "source_text_hash": "e9b3cd43f844a8c035beb1b14816465fead7fbbea5f0f625d5a8b7b07ea37300",
+      "translation_text_hash": "b6205e88b48db4a598b7e51b2ff9661f11c2480ed84601f027824f7b866bd5b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이와 벧엘에 이스라엘을 따라가지 아니한 자가 하나도 없으며 성문을 열어 놓고 이스라엘을 따랐더라"
+      ],
+      "raw_text_hashes": [
+        "b6205e88b48db4a598b7e51b2ff9661f11c2480ed84601f027824f7b866bd5b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:18",
+      "sequence": 6021,
+      "chapter_label": "JOS 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD said to Joshua, “Stretch out the javelin that is in your hand toward Ai, for I will give it into your hand.” Joshua stretched out the javelin that was in his hand toward the city.",
+      "ko": "여호와께서 여호수아에게 이르시되 네 손에 잡은 단창을 들어 아이를 가리키라 내가 이 성읍을 네 손에 주리라 여호수아가 그 손에 잡은 단창을 들어 성읍을 가리키니",
+      "source_text_hash": "a655b775353bbe944e927a168a1596a34e3c9f02ec9ffbd5e0f96293cb3b0799",
+      "translation_text_hash": "7ffacccbe5950597e35485b73b73cbdbc2fdbf187546f1e6c62931cfefeb2e59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아에게 이르시되 네 손에 잡은 단창을 들어 아이를 가리키라 내가 이 성읍을 네 손에 주리라 여호수아가 그 손에 잡은 단창을 들어 성읍을 가리키니"
+      ],
+      "raw_text_hashes": [
+        "7ffacccbe5950597e35485b73b73cbdbc2fdbf187546f1e6c62931cfefeb2e59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:19",
+      "sequence": 6022,
+      "chapter_label": "JOS 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "The ambush arose quickly out of their place, and they ran as soon as he had stretched out his hand and entered into the city and took it. They hurried and set the city on fire.",
+      "ko": "그 손을 드는 순간에 복병이 그 처소에서 급히 일어나 성읍에 달려 들어가서 점령하고 곧 성읍에 불을 놓았더라",
+      "source_text_hash": "4f10c122c1124efeca7a2c046a3db3c458eaaec40385590da9f92b5d51b304a9",
+      "translation_text_hash": "ca6be9c9a15c473c6144d5fde377be52309f996072308ff5645ae3b771426681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 손을 드는 순간에 복병이 그 처소에서 급히 일어나 성읍에 달려 들어가서 점령하고 곧 성읍에 불을 놓았더라"
+      ],
+      "raw_text_hashes": [
+        "ca6be9c9a15c473c6144d5fde377be52309f996072308ff5645ae3b771426681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:20",
+      "sequence": 6023,
+      "chapter_label": "JOS 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "When the men of Ai looked behind them, they saw, and behold, the smoke of the city ascended up to heaven, and they had no power to flee this way or that way. The people who fled to the wilderness turned back on the pursuers.",
+      "ko": "아이 사람이 뒤를 돌아 본즉 그 성읍에 연기가 하늘에 닿은 것이 보이니 이 길로도 저 길로도 도망할 수 없이 되었고 광야로 도망하던 이스라엘 백성은 그 따르던 자에게로 돌이켰더라",
+      "source_text_hash": "a74b72b6cb9c25b759f88781ffc6151a49b179d6c2a400baf8dcd3b3bb7c2117",
+      "translation_text_hash": "140911a6eb4650b694fe6b3f5f885bdf0c08741aef424da4dec02ca753e54481",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이 사람이 뒤를 돌아 본즉 그 성읍에 연기가 하늘에 닿은 것이 보이니 이 길로도 저 길로도 도망할 수 없이 되었고 광야로 도망하던 이스라엘 백성은 그 따르던 자에게로 돌이켰더라"
+      ],
+      "raw_text_hashes": [
+        "140911a6eb4650b694fe6b3f5f885bdf0c08741aef424da4dec02ca753e54481"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:21",
+      "sequence": 6024,
+      "chapter_label": "JOS 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "When Joshua and all Israel saw that the ambush had taken the city, and that the smoke of the city ascended, then they turned back and killed the men of Ai.",
+      "ko": "여호수아와 온 이스라엘이 그 복병이 성읍을 점령함과 성읍에 연기가 오름을 보고 다시 돌이켜 아이 사람을 죽이고",
+      "source_text_hash": "27879adce84dcf923328395d157a6168d5fe84a179cb7c9a77eee2eedb71815b",
+      "translation_text_hash": "ad6f150fa770a73df31efae6726e9bff180e87e6a44a7439f73122123d93abfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아와 온 이스라엘이 그 복병이 성읍을 점령함과 성읍에 연기가 오름을 보고 다시 돌이켜 아이 사람을 죽이고"
+      ],
+      "raw_text_hashes": [
+        "ad6f150fa770a73df31efae6726e9bff180e87e6a44a7439f73122123d93abfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:22",
+      "sequence": 6025,
+      "chapter_label": "JOS 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "The others came out of the city against them, so they were in the middle of Israel, some on this side, and some on that side. They struck them, so that they let none of them remain or escape.",
+      "ko": "복병도 성읍에서 나와 그들을 치매 그들이 이스라엘 중간에 든지라 혹은 이편에서 혹은 저편에서 쳐 죽여서 한 사람도 남거나 도망하지 못하게 하였고",
+      "source_text_hash": "f2398c06dbd458fb8fe84f715b005d4ff6f2bcdcee743e40c00af2bdc4af95cf",
+      "translation_text_hash": "1ed994310807cf22b85e316c2ded9230c0402658da272d22ed7fa0a58d83f34b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "복병도 성읍에서 나와 그들을 치매 그들이 이스라엘 중간에 든지라 혹은 이편에서 혹은 저편에서 쳐 죽여서 한 사람도 남거나 도망하지 못하게 하였고"
+      ],
+      "raw_text_hashes": [
+        "1ed994310807cf22b85e316c2ded9230c0402658da272d22ed7fa0a58d83f34b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:23",
+      "sequence": 6026,
+      "chapter_label": "JOS 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "They captured the king of Ai alive, and brought him to Joshua.",
+      "ko": "아이 왕을 사로잡아 여호수아 앞으로 끌어 왔더라",
+      "source_text_hash": "ed9b950a428d9e4d895669d3fcede9ac37613bfda3cef8def4259b491ee12cf8",
+      "translation_text_hash": "36180ba42a2602506475ee8fab14faa5cf56960e2a3d28225267655a9234d3d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이 왕을 사로잡아 여호수아 앞으로 끌어 왔더라"
+      ],
+      "raw_text_hashes": [
+        "36180ba42a2602506475ee8fab14faa5cf56960e2a3d28225267655a9234d3d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:24",
+      "sequence": 6027,
+      "chapter_label": "JOS 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "When Israel had finished killing all the inhabitants of Ai in the field, in the wilderness in which they pursued them, and they had all fallen by the edge of the sword until they were consumed, all Israel returned to Ai and struck it with the edge of the sword.",
+      "ko": "이스라엘이 자기를 광야로 따르던 아이 모든 거민을 들에서 죽이되 그들을 다 칼날에 엎드러지게 하여 진멸하기를 마치고 온 이스라엘이 아이로 돌아와서 칼날로 죽이매",
+      "source_text_hash": "862bb2e91a4a1d1b65d5e2afa2f168b3701aa1338b3b1a2099739ead001f7274",
+      "translation_text_hash": "fa4249588288582504b60d1c7d0ba0df9535cea3bc3fd7fac8ceeca4e6466eb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 자기를 광야로 따르던 아이 모든 거민을 들에서 죽이되 그들을 다 칼날에 엎드러지게 하여 진멸하기를 마치고 온 이스라엘이 아이로 돌아와서 칼날로 죽이매"
+      ],
+      "raw_text_hashes": [
+        "fa4249588288582504b60d1c7d0ba0df9535cea3bc3fd7fac8ceeca4e6466eb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:25",
+      "sequence": 6028,
+      "chapter_label": "JOS 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "All that fell that day, both of men and women, were twelve thousand, even all the people of Ai.",
+      "ko": "그 날에 아이 사람의 전부가 죽었으니 남녀가 일만 이천이라",
+      "source_text_hash": "9ad760cd880f329f734980069dc42dd3757f038b65c3bf936c90fdceaccbcdb3",
+      "translation_text_hash": "5206b5ac7603955fb71b3ebaf7296b15ee1bda0d2225e11d4f8e6417345cf354",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 아이 사람의 전부가 죽었으니 남녀가 일만 이천이라"
+      ],
+      "raw_text_hashes": [
+        "5206b5ac7603955fb71b3ebaf7296b15ee1bda0d2225e11d4f8e6417345cf354"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:26",
+      "sequence": 6029,
+      "chapter_label": "JOS 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "For Joshua didn’t draw back his hand, with which he stretched out the javelin, until he had utterly destroyed all the inhabitants of Ai.",
+      "ko": "아이 거민을 진멸하기까지 여호수아가 단창을 잡아 든 손을 거두지 아니하였고",
+      "source_text_hash": "90ea081c6b9f1ee318c6e98e97381bdc3b111cdb7e254285b35d49a18e65c40c",
+      "translation_text_hash": "0802884fd7f8bdb9e437f168ddded4b2828d31d7246124587cd1ee759f0402f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이 거민을 진멸하기까지 여호수아가 단창을 잡아 든 손을 거두지 아니하였고"
+      ],
+      "raw_text_hashes": [
+        "0802884fd7f8bdb9e437f168ddded4b2828d31d7246124587cd1ee759f0402f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:27",
+      "sequence": 6030,
+      "chapter_label": "JOS 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "Israel took for themselves only the livestock and the goods of that city, according to the LORD’s word which he commanded Joshua.",
+      "ko": "오직 그 성읍의 가축과 노략한 것은 여호와께서 여호수아에게 명하신대로 이스라엘이 탈취하였더라",
+      "source_text_hash": "de20170f847cf21383ad7b9fa28ab8f5a2adfcd3f9165d51d55aceb766a04521",
+      "translation_text_hash": "e296cc917bce3f66007dcb48e7eca78fb205a1c85324f12bb54020bc913a0df2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 성읍의 가축과 노략한 것은 여호와께서 여호수아에게 명하신대로 이스라엘이 탈취하였더라"
+      ],
+      "raw_text_hashes": [
+        "e296cc917bce3f66007dcb48e7eca78fb205a1c85324f12bb54020bc913a0df2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:28",
+      "sequence": 6031,
+      "chapter_label": "JOS 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "So Joshua burned Ai and made it a heap forever, even a desolation, to this day.",
+      "ko": "이에 여호수아가 아이를 불살라 그것으로 영원한 무더기를 만들었더니 오늘까지 황폐하였으며",
+      "source_text_hash": "b9ce8578de025d462f4d4879efa670df9dc29093adb0598dbf2ee6008f2d1e72",
+      "translation_text_hash": "d6a176a1d60fdf098d68b7b8f6dc3cb831e3b05e0f42ae92db225a483101c3df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호수아가 아이를 불살라 그것으로 영원한 무더기를 만들었더니 오늘까지 황폐하였으며"
+      ],
+      "raw_text_hashes": [
+        "d6a176a1d60fdf098d68b7b8f6dc3cb831e3b05e0f42ae92db225a483101c3df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:29",
+      "sequence": 6032,
+      "chapter_label": "JOS 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "He hanged the king of Ai on a tree until the evening. At sundown, Joshua commanded, and they took his body down from the tree and threw it at the entrance of the gate of the city, and raised a great heap of stones on it that remains to this day.",
+      "ko": "그가 또 아이 왕을 저녁때까지 나무에 달았다가 해질 때에 명하여 그 시체를 나무에서 내려 그 성문 어귀에 던지고 그 위에 돌로 큰 무더기를 쌓았더니 그것이 오늘까지 있더라",
+      "source_text_hash": "b4fff473634b37500f97f737dd1d0ddaef261964ddc7bc4c1fb7f1f21c9c77d9",
+      "translation_text_hash": "6bc427a8ab16ff5a205db780b0e1b0d5928560edca8634319bf1dd5d56c01ee0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 아이 왕을 저녁때까지 나무에 달았다가 해질 때에 명하여 그 시체를 나무에서 내려 그 성문 어귀에 던지고 그 위에 돌로 큰 무더기를 쌓았더니 그것이 오늘까지 있더라"
+      ],
+      "raw_text_hashes": [
+        "6bc427a8ab16ff5a205db780b0e1b0d5928560edca8634319bf1dd5d56c01ee0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:30",
+      "sequence": 6033,
+      "chapter_label": "JOS 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "Then Joshua built an altar to the LORD, the God of Israel, on Mount Ebal,",
+      "ko": "때에 여호수아가 이스라엘의 하나님 여호와를 위하여 에발산에 한 단을 쌓았으니",
+      "source_text_hash": "473f10b97d11a33c1f848b130e5c4b6d1a143fcbd65d3a752cb2a40b16db7a09",
+      "translation_text_hash": "589d068aaf277bc6a936b224b5cf0286cf82d46929e65c3b299cd235e8018bbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호수아가 이스라엘의 하나님 여호와를 위하여 에발산에 한 단을 쌓았으니"
+      ],
+      "raw_text_hashes": [
+        "589d068aaf277bc6a936b224b5cf0286cf82d46929e65c3b299cd235e8018bbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:31",
+      "sequence": 6034,
+      "chapter_label": "JOS 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "as Moses the servant of the LORD commanded the children of Israel, as it is written in the book of the law of Moses: an altar of uncut stones, on which no one had lifted up any iron. They offered burnt offerings on it to the LORD and sacrificed peace offerings.",
+      "ko": "이는 여호와의 종 모세가 이스라엘 자손에게 명한 것과 모세의 율법책에 기록된대로 철연장으로 다듬지 아니한 새 돌로 만든 단이라 무리가 여호와께 번제와 화목제를 그 위에 드렸으며",
+      "source_text_hash": "c43c26ff8b6dea2e4c76269119283414cdd1963d0cd1d12989cbed61a84abdab",
+      "translation_text_hash": "5c6d222ee45f8c2c33e90794571fe243caf019957eb857da742903002d6cbf76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와의 종 모세가 이스라엘 자손에게 명한 것과 모세의 율법책에 기록된대로 철연장으로 다듬지 아니한 새 돌로 만든 단이라 무리가 여호와께 번제와 화목제를 그 위에 드렸으며"
+      ],
+      "raw_text_hashes": [
+        "5c6d222ee45f8c2c33e90794571fe243caf019957eb857da742903002d6cbf76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:32",
+      "sequence": 6035,
+      "chapter_label": "JOS 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "He wrote there on the stones a copy of Moses’ law, which he wrote in the presence of the children of Israel.",
+      "ko": "여호수아가 거기서 모세의 기록한 율법을 이스라엘 자손의 목전에서 그 돌에 기록하매",
+      "source_text_hash": "87f3c54df496d272cb0be77144a7cfbc9cbd1759a59f70ce3f1ca2e302e924a1",
+      "translation_text_hash": "1992c0e1bb2d5381a1128bddc2362e69472dae88648ae4bae1a441a6d052eb9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 거기서 모세의 기록한 율법을 이스라엘 자손의 목전에서 그 돌에 기록하매"
+      ],
+      "raw_text_hashes": [
+        "1992c0e1bb2d5381a1128bddc2362e69472dae88648ae4bae1a441a6d052eb9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:33",
+      "sequence": 6036,
+      "chapter_label": "JOS 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "All Israel, with their elders, officers, and judges, stood on both sides of the ark before the Levitical priests, who carried the ark of the LORD’s covenant, the foreigner as well as the native; half of them in front of Mount Gerizim, and half of them in front of Mount Ebal, as Moses the servant of the LORD had commanded at the first, that they should bless the people of Israel.",
+      "ko": "온 이스라엘과 그 장로들과 유사들과 재판장들과 본토인 뿐 아니라 이방인까지 여호와의 언약궤를 멘 레위 사람 제사장들 앞에서 궤의 좌우에 서되 절반은 그리심산 앞에, 절반은 에발산 앞에 섰으니 이는 이왕에 여호와의 종 모세가 이스라엘 백성에게 축복하라고 명한대로 함이라",
+      "source_text_hash": "df120dbbe47405f6a3a994b345af849aa723eae334ff95498432edbf6f1c33ac",
+      "translation_text_hash": "3539c11f8bcb2021deb6d00aa31c2dd14d57eb93d1151fb6b9ae465f5fe9dce5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘과 그 장로들과 유사들과 재판장들과 본토인 뿐 아니라 이방인까지 여호와의 언약궤를 멘 레위 사람 제사장들 앞에서 궤의 좌우에 서되 절반은 그리심산 앞에, 절반은 에발산 앞에 섰으니 이는 이왕에 여호와의 종 모세가 이스라엘 백성에게 축복하라고 명한대로 함이라"
+      ],
+      "raw_text_hashes": [
+        "3539c11f8bcb2021deb6d00aa31c2dd14d57eb93d1151fb6b9ae465f5fe9dce5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:34",
+      "sequence": 6037,
+      "chapter_label": "JOS 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "Afterward he read all the words of the law, the blessing and the curse, according to all that is written in the book of the law.",
+      "ko": "그 후에 여호수아가 무릇 율법책에 기록된대로 축복과 저주하는 율법의 모든 말씀을 낭독하였으니",
+      "source_text_hash": "69543f7a5a2437e908cb549fa43785474fa53e4ab666f7df1b8484c81b691382",
+      "translation_text_hash": "6bba4ba3b971c30097b947fab4bb46b7b72a84b58abb1430c28c7f949ba03177",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 여호수아가 무릇 율법책에 기록된대로 축복과 저주하는 율법의 모든 말씀을 낭독하였으니"
+      ],
+      "raw_text_hashes": [
+        "6bba4ba3b971c30097b947fab4bb46b7b72a84b58abb1430c28c7f949ba03177"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:8:35",
+      "sequence": 6038,
+      "chapter_label": "JOS 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "JOS",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "There was not a word of all that Moses commanded which Joshua didn’t read before all the assembly of Israel, with the women, the little ones, and the foreigners who were among them.",
+      "ko": "모세의 명한 것은 여호수아가 이스라엘 온 회중과 여인과 아이와 그들 중에 동거하는 객들 앞에 낭독하지 아니한 말이 하나도 없었더라",
+      "source_text_hash": "b33d3043b15fb21d9dc432c21b39b4e2a7980ea83d8557fda772dc8f912dad15",
+      "translation_text_hash": "49ffc81e9fdd7a9281e7d5e2a614da4171c1ceb9962ca57b3972149ef8480ae1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 명한 것은 여호수아가 이스라엘 온 회중과 여인과 아이와 그들 중에 동거하는 객들 앞에 낭독하지 아니한 말이 하나도 없었더라"
+      ],
+      "raw_text_hashes": [
+        "49ffc81e9fdd7a9281e7d5e2a614da4171c1ceb9962ca57b3972149ef8480ae1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:013",
+  "unit_ordinal": 449,
+  "unit_label": "JOB 13",
+  "book_code": "JOB",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:13:1",
+      "sequence": 13155,
+      "chapter_label": "JOB 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "“Behold, my eye has seen all this. My ear has heard and understood it.",
+      "ko": "나의 눈이 이것을 다 보았고 나의 귀가 이것을 듣고 통달하였느니라",
+      "source_text_hash": "dd23ff3ee26c96570703c35f11bb29dd50d79bd0aa6a9e0c325ea55316fe1e63",
+      "translation_text_hash": "8756840bb79d9f27494a1dd8869632d6aed8bf95a7e1d2d0e0dfb8822bb55a36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 눈이 이것을 다 보았고 나의 귀가 이것을 듣고 통달하였느니라"
+      ],
+      "raw_text_hashes": [
+        "8756840bb79d9f27494a1dd8869632d6aed8bf95a7e1d2d0e0dfb8822bb55a36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:2",
+      "sequence": 13156,
+      "chapter_label": "JOB 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "What you know, I know also. I am not inferior to you.",
+      "ko": "너희 아는 것을 나도 아노니 너희만 못한 내가 아니니라",
+      "source_text_hash": "216ed3eeb4726124b59c13bec8ca1f1d0ac92d296817ba210e622469b03a5a88",
+      "translation_text_hash": "ec6f019d8f5275a1bb26551678cf77a49f50062973eeb9f52e08757befd60975",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 아는 것을 나도 아노니 너희만 못한 내가 아니니라"
+      ],
+      "raw_text_hashes": [
+        "ec6f019d8f5275a1bb26551678cf77a49f50062973eeb9f52e08757befd60975"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:3",
+      "sequence": 13157,
+      "chapter_label": "JOB 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "“Surely I would speak to the Almighty. I desire to reason with God.",
+      "ko": "참으로 나는 전능자에게 말씀하려 하며 하나님과 변론하려 하노라",
+      "source_text_hash": "bead82a68eac85e7008b1ba48d0801f1dc44b11fd33c5785c30e2764c165ef52",
+      "translation_text_hash": "3e169f8998bacfabf6f06b4d9ab8556b9ea8ddce53476f80855aaa018f83e8a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참으로 나는 전능자에게 말씀하려 하며 하나님과 변론하려 하노라"
+      ],
+      "raw_text_hashes": [
+        "3e169f8998bacfabf6f06b4d9ab8556b9ea8ddce53476f80855aaa018f83e8a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:4",
+      "sequence": 13158,
+      "chapter_label": "JOB 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "But you are forgers of lies. You are all physicians of no value.",
+      "ko": "너희는 거짓말을 지어내는 자요 다 쓸데 없는 의원이니라",
+      "source_text_hash": "777700ddf5a1a0eec24cb3e49e3a4caf236d4567b42617e43423949c28f1f766",
+      "translation_text_hash": "bb1444fc804935c5fc2b93c972e4560352f3ac0ddfde1a7a88ae317c220f8660",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 거짓말을 지어내는 자요 다 쓸데 없는 의원이니라"
+      ],
+      "raw_text_hashes": [
+        "bb1444fc804935c5fc2b93c972e4560352f3ac0ddfde1a7a88ae317c220f8660"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:5",
+      "sequence": 13159,
+      "chapter_label": "JOB 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Oh that you would be completely silent! Then you would be wise.",
+      "ko": "너희가 잠잠하고 잠잠하기를 원하노라 이것이 너희의 지혜일 것이니라",
+      "source_text_hash": "9c4010b8b5270aca0e5cc11eaa246024484b0ea1bb113143c5593715abc5300f",
+      "translation_text_hash": "4ff155bb03ed95603308c542847167d96a5e6df5cba81c851708272a7bbc5e4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 잠잠하고 잠잠하기를 원하노라 이것이 너희의 지혜일 것이니라"
+      ],
+      "raw_text_hashes": [
+        "4ff155bb03ed95603308c542847167d96a5e6df5cba81c851708272a7bbc5e4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:6",
+      "sequence": 13160,
+      "chapter_label": "JOB 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "Hear now my reasoning. Listen to the pleadings of my lips.",
+      "ko": "너희는 나의 변론을 들으며 내 입술의 변명을 들어 보라",
+      "source_text_hash": "bb0c09b95be6aff55b3c28c0d36d857d6a0a523c59befe4b68f0404a0d3da9c1",
+      "translation_text_hash": "90f704217888b11318d7a8ac6d3c3833a97fc9060216d90665fbed456500ecbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나의 변론을 들으며 내 입술의 변명을 들어 보라"
+      ],
+      "raw_text_hashes": [
+        "90f704217888b11318d7a8ac6d3c3833a97fc9060216d90665fbed456500ecbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:7",
+      "sequence": 13161,
+      "chapter_label": "JOB 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Will you speak unrighteously for God, and talk deceitfully for him?",
+      "ko": "너희가 하나님을 위하여 불의를 말하려느냐 그를 위하여 궤휼을 말하려느냐",
+      "source_text_hash": "2e7c4d03120e68def58bf0953c8a3c1441336fc4b5f68ed70c6aaa52bc709b50",
+      "translation_text_hash": "59a53fe20e14b40f1bee9d7d7edd88632d5369774e871cf94d097db532789280",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 하나님을 위하여 불의를 말하려느냐 그를 위하여 궤휼을 말하려느냐"
+      ],
+      "raw_text_hashes": [
+        "59a53fe20e14b40f1bee9d7d7edd88632d5369774e871cf94d097db532789280"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:8",
+      "sequence": 13162,
+      "chapter_label": "JOB 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "Will you show partiality to him? Will you contend for God?",
+      "ko": "너희가 하나님의 낯을 좇으려느냐 그를 위하여 쟁론하려느냐",
+      "source_text_hash": "b007d0ba36a85efaacd055086bff9667386df724e5e670d8b54c0ad498e1e163",
+      "translation_text_hash": "37d43fabc6cd914b87924b935d35dfeb18b2a599f24094928fd26bc05fe5fec8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 하나님의 낯을 좇으려느냐 그를 위하여 쟁론하려느냐"
+      ],
+      "raw_text_hashes": [
+        "37d43fabc6cd914b87924b935d35dfeb18b2a599f24094928fd26bc05fe5fec8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:9",
+      "sequence": 13163,
+      "chapter_label": "JOB 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "Is it good that he should search you out? Or as one deceives a man, will you deceive him?",
+      "ko": "하나님이 너희를 감찰하시면 좋겠느냐 너희가 사람을 속임 같이 그를 속이려느냐",
+      "source_text_hash": "d3fab1fda168e9b82aac92b1e1086378961076efd7fc4245937936166f9453ef",
+      "translation_text_hash": "657deb0eddd94559734616f55312b706ce6cb04b894f56b6829f695d2278210d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 너희를 감찰하시면 좋겠느냐 너희가 사람을 속임 같이 그를 속이려느냐"
+      ],
+      "raw_text_hashes": [
+        "657deb0eddd94559734616f55312b706ce6cb04b894f56b6829f695d2278210d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:10",
+      "sequence": 13164,
+      "chapter_label": "JOB 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "He will surely reprove you if you secretly show partiality.",
+      "ko": "만일 가만히 낯을 좇을찐대 그가 정녕 너희를 책망하시리니",
+      "source_text_hash": "b466d24be582cf4795151aab729bc8f0c25178c9bc49db0815a7cad3747d8d6d",
+      "translation_text_hash": "62a62fdcc79062e5cd7c218a615e0b1286723302a0a7d310107dd9318ea29472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 가만히 낯을 좇을찐대 그가 정녕 너희를 책망하시리니"
+      ],
+      "raw_text_hashes": [
+        "62a62fdcc79062e5cd7c218a615e0b1286723302a0a7d310107dd9318ea29472"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:11",
+      "sequence": 13165,
+      "chapter_label": "JOB 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Won’t his majesty make you afraid and his dread fall on you?",
+      "ko": "그 존귀가 너희를 두렵게 하지 않겠으며 그 위엄이 너희에게 임하지 않겠느냐",
+      "source_text_hash": "4c8a0b7908feb75ab7cc95d558ed75314ae96be75f7ca3494e69b1a6cdf6e090",
+      "translation_text_hash": "725e887c771eb2d8b396047e33d3a7a4b1634f1b17d7e1173e4767706f5ca96b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 존귀가 너희를 두렵게 하지 않겠으며 그 위엄이 너희에게 임하지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "725e887c771eb2d8b396047e33d3a7a4b1634f1b17d7e1173e4767706f5ca96b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:12",
+      "sequence": 13166,
+      "chapter_label": "JOB 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "Your memorable sayings are proverbs of ashes. Your defenses are defenses of clay.",
+      "ko": "너희 격언은 재 같은 속담이요 너희의 방어하는 것은 토성이니라",
+      "source_text_hash": "826b105ea8101150a1e14f631c18625a6cd2ac49db43e4e997b006c33a467096",
+      "translation_text_hash": "7e4a1499ecc57f6bc9fa9b5df00f17b9dae370c2ab400b4c8c55e9bf3833beb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 격언은 재 같은 속담이요 너희의 방어하는 것은 토성이니라"
+      ],
+      "raw_text_hashes": [
+        "7e4a1499ecc57f6bc9fa9b5df00f17b9dae370c2ab400b4c8c55e9bf3833beb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:13",
+      "sequence": 13167,
+      "chapter_label": "JOB 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "“Be silent! Leave me alone, that I may speak. Let come on me what will.",
+      "ko": "너희는 잠잠하고 나를 버려두어 말하게 하라 무슨 일이 임하든지 내가 당하리라",
+      "source_text_hash": "fe833209c2634edad3a89d2bcdb7635bf99fcbe5fc9286addd65c2a6f12a4280",
+      "translation_text_hash": "cf607d1fcbc98b11691faffc196de38854caae3a149d178edf563dc8e8b77c4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 잠잠하고 나를 버려두어 말하게 하라 무슨 일이 임하든지 내가 당하리라"
+      ],
+      "raw_text_hashes": [
+        "cf607d1fcbc98b11691faffc196de38854caae3a149d178edf563dc8e8b77c4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:14",
+      "sequence": 13168,
+      "chapter_label": "JOB 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "Why should I take my flesh in my teeth, and put my life in my hand?",
+      "ko": "내가 어찌하여 내 살을 내 이로 물고 내 생명을 내 손에 두겠느냐",
+      "source_text_hash": "52cc67f6d63cb191bb9668cd0c397a7971b68f98c754045ba46bfaa45c59e427",
+      "translation_text_hash": "573196fae6eacf13003bbc7ad555a6f091377b0944e57ad7a66ada4f24efe7db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 어찌하여 내 살을 내 이로 물고 내 생명을 내 손에 두겠느냐"
+      ],
+      "raw_text_hashes": [
+        "573196fae6eacf13003bbc7ad555a6f091377b0944e57ad7a66ada4f24efe7db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:15",
+      "sequence": 13169,
+      "chapter_label": "JOB 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Behold, he will kill me. I have no hope. Nevertheless, I will maintain my ways before him.",
+      "ko": "그가 나를 죽이시리니 내가 소망이 없노라 그러나 그의 앞에서 내 행위를 변백하리라",
+      "source_text_hash": "2172fe1bf6c8e4054ad625d5baae6cf974aed0fb8b064c39d1cd6ece88584522",
+      "translation_text_hash": "4d3b253ddc8ea9c8063daa3700a1d7ec48e904dee293c10dbaa19a5d3aa24e1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나를 죽이시리니 내가 소망이 없노라 그러나 그의 앞에서 내 행위를 변백하리라"
+      ],
+      "raw_text_hashes": [
+        "4d3b253ddc8ea9c8063daa3700a1d7ec48e904dee293c10dbaa19a5d3aa24e1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:16",
+      "sequence": 13170,
+      "chapter_label": "JOB 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "This also will be my salvation, that a godless man will not come before him.",
+      "ko": "사곡한 자는 그의 앞에 이르지 못하나니 이것이 나의 구원이 되리라",
+      "source_text_hash": "d666ee97f7d4a916c9cecc8f0cc24549184988f8bb3e227f817e0ebedebe5b55",
+      "translation_text_hash": "0676be0263d6df89532a1c863bfdbaf0a08d4407119a88adb21d18cdd82af0f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사곡한 자는 그의 앞에 이르지 못하나니 이것이 나의 구원이 되리라"
+      ],
+      "raw_text_hashes": [
+        "0676be0263d6df89532a1c863bfdbaf0a08d4407119a88adb21d18cdd82af0f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:17",
+      "sequence": 13171,
+      "chapter_label": "JOB 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Listen carefully to my speech. Let my declaration be in your ears.",
+      "ko": "너희는 들으라 내 말을 들으라 나의 설명을 너희 귀에 담을찌니라",
+      "source_text_hash": "930df28fbea71bbf18028e979f9195e4421855c866f4893ea363cd6a85fdf5e0",
+      "translation_text_hash": "6ea1d4df9df308810439d1be92df5b87da797953164a937cf648318706597821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 들으라 내 말을 들으라 나의 설명을 너희 귀에 담을찌니라"
+      ],
+      "raw_text_hashes": [
+        "6ea1d4df9df308810439d1be92df5b87da797953164a937cf648318706597821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:18",
+      "sequence": 13172,
+      "chapter_label": "JOB 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "See now, I have set my cause in order. I know that I am righteous.",
+      "ko": "보라 내가 내 사정을 진술하였거니와 내가 스스로 의로운줄 아노라",
+      "source_text_hash": "7dd8191bfc0b65d54a5563e16fc5005e8c0a8e3b910e53ffade9010b386c3049",
+      "translation_text_hash": "f0d6901e87e7507b162c5d43ce5749098477218155d267f2f4e7ff1a347e9949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 내 사정을 진술하였거니와 내가 스스로 의로운줄 아노라"
+      ],
+      "raw_text_hashes": [
+        "f0d6901e87e7507b162c5d43ce5749098477218155d267f2f4e7ff1a347e9949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:19",
+      "sequence": 13173,
+      "chapter_label": "JOB 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "Who is he who will contend with me? For then I would hold my peace and give up the spirit.",
+      "ko": "나와 변론할 자가 누구이랴 그러면 내가 잠잠하고 기운이 끊어지리라",
+      "source_text_hash": "9dec72b75ad7afee12262d965b90a32f598edd1e5e13688768f3445564fd378c",
+      "translation_text_hash": "1ec1b890f14e74b7d893df79af4492a1454de51bac03563c80149e86fdb19a3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 변론할 자가 누구이랴 그러면 내가 잠잠하고 기운이 끊어지리라"
+      ],
+      "raw_text_hashes": [
+        "1ec1b890f14e74b7d893df79af4492a1454de51bac03563c80149e86fdb19a3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:20",
+      "sequence": 13174,
+      "chapter_label": "JOB 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "“Only don’t do two things to me, then I will not hide myself from your face:",
+      "ko": "오직 내게 이 두 가지 일을 행하지 마옵소서 그리하시면 내가 주의 얼굴을 피하여 숨지 아니하오리니",
+      "source_text_hash": "0aa622de58e5b9d1ffa94288e0343c4d69808e6d879de76bef222968459c39d3",
+      "translation_text_hash": "0d14e466336723725cb9b1e87184bd19d4e8540554c2077da4f47922f1d13460",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 내게 이 두 가지 일을 행하지 마옵소서 그리하시면 내가 주의 얼굴을 피하여 숨지 아니하오리니"
+      ],
+      "raw_text_hashes": [
+        "0d14e466336723725cb9b1e87184bd19d4e8540554c2077da4f47922f1d13460"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:21",
+      "sequence": 13175,
+      "chapter_label": "JOB 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "withdraw your hand far from me, and don’t let your terror make me afraid.",
+      "ko": "곧 주의 손을 내게 대지 마옵시며 주의 위엄으로 나를 두렵게 마옵실 것이니이다",
+      "source_text_hash": "d4f7bf2a75f6ac4d228c12d4166553f2cd0fead12bf89716f88f6bb0214ca9dc",
+      "translation_text_hash": "58c55b13460b25af45737ebe25fc647f665f45b3ef7db2deb6f97cf5771cd0d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 주의 손을 내게 대지 마옵시며 주의 위엄으로 나를 두렵게 마옵실 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "58c55b13460b25af45737ebe25fc647f665f45b3ef7db2deb6f97cf5771cd0d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:22",
+      "sequence": 13176,
+      "chapter_label": "JOB 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "Then call, and I will answer, or let me speak, and you answer me.",
+      "ko": "그리하시고 주는 나를 부르소서 내가 대답하리이다 혹 나로 말씀하게 하옵시고 주는 내게 대답하옵소서",
+      "source_text_hash": "de16e7ef6368563ce67e922220ccd03927804f945d00ab988fa9012623298d20",
+      "translation_text_hash": "6d03a6d5d14085882985733512801b9f16bc2dd959383d184f9ab0d91a1c2c9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하시고 주는 나를 부르소서 내가 대답하리이다 혹 나로 말씀하게 하옵시고 주는 내게 대답하옵소서"
+      ],
+      "raw_text_hashes": [
+        "6d03a6d5d14085882985733512801b9f16bc2dd959383d184f9ab0d91a1c2c9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:23",
+      "sequence": 13177,
+      "chapter_label": "JOB 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "How many are my iniquities and sins? Make me know my disobedience and my sin.",
+      "ko": "나의 불법과 죄가 얼마나 많으니이까 나의 허물과 죄를 내게 알게하옵소서",
+      "source_text_hash": "24beff87188258939c6919e46016c013d930875d23928034daf6edb37db3154e",
+      "translation_text_hash": "3d877e86889c9d3f7ae03f2d664ee347881accce76e9a15d811310fccf8ff549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 불법과 죄가 얼마나 많으니이까 나의 허물과 죄를 내게 알게하옵소서"
+      ],
+      "raw_text_hashes": [
+        "3d877e86889c9d3f7ae03f2d664ee347881accce76e9a15d811310fccf8ff549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:24",
+      "sequence": 13178,
+      "chapter_label": "JOB 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "Why do you hide your face, and consider me your enemy?",
+      "ko": "주께서 어찌하여 얼굴을 가리우시고 나를 주의 대적으로 여기시나이까",
+      "source_text_hash": "47366edf978e9909cc7351b66880d15c113de1e5f8fe01350de3612d9aec9ed5",
+      "translation_text_hash": "7b61741b799bf19e73bad1646bfd3f5e1aeda482240318a4f4b97611560d36d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 어찌하여 얼굴을 가리우시고 나를 주의 대적으로 여기시나이까"
+      ],
+      "raw_text_hashes": [
+        "7b61741b799bf19e73bad1646bfd3f5e1aeda482240318a4f4b97611560d36d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:25",
+      "sequence": 13179,
+      "chapter_label": "JOB 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "Will you harass a driven leaf? Will you pursue the dry stubble?",
+      "ko": "주께서 어찌하여 날리는 낙엽을 놀래시며 마른 검불을 따르시나이까",
+      "source_text_hash": "121ccd668e5b7ef39296feeb9d02a3e25e71b491428e0f783ba0db288c7c695b",
+      "translation_text_hash": "58c91f762211330e956f850e35fd2b10d6f5f47c4928770a0459bc6cdb17eed6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 어찌하여 날리는 낙엽을 놀래시며 마른 검불을 따르시나이까"
+      ],
+      "raw_text_hashes": [
+        "58c91f762211330e956f850e35fd2b10d6f5f47c4928770a0459bc6cdb17eed6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:26",
+      "sequence": 13180,
+      "chapter_label": "JOB 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "For you write bitter things against me, and make me inherit the iniquities of my youth.",
+      "ko": "주께서 나를 대적하사 괴로운 일들을 기록하시며 나로 나의 어렸을 때에 지은 죄를 받게 하시오며",
+      "source_text_hash": "a143871bbc0e150adbe6f4cadfc254e8d0442a24d0c97e3ef955d5f3935dae3c",
+      "translation_text_hash": "5cfb42e6a97ad7322b885e566a9a4d797b8d499a03a555cfab398c550dc230e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나를 대적하사 괴로운 일들을 기록하시며 나로 나의 어렸을 때에 지은 죄를 받게 하시오며"
+      ],
+      "raw_text_hashes": [
+        "5cfb42e6a97ad7322b885e566a9a4d797b8d499a03a555cfab398c550dc230e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:27",
+      "sequence": 13181,
+      "chapter_label": "JOB 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "You also put my feet in the stocks, and mark all my paths. You set a bound to the soles of my feet,",
+      "ko": "내 발을 착고에 채우시며 나의 모든 길을 살피사 내 발자취를 한정하시나이다",
+      "source_text_hash": "c95b8a0fda5a080750cd7c208a52488e9b9fbd4e48aa065b97f16ecf33b3b1fb",
+      "translation_text_hash": "6a4d6c0d0ba55343552614c2cbda54401342e5c39087374e7d0f68ce4a8847c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 발을 착고에 채우시며 나의 모든 길을 살피사 내 발자취를 한정하시나이다"
+      ],
+      "raw_text_hashes": [
+        "6a4d6c0d0ba55343552614c2cbda54401342e5c39087374e7d0f68ce4a8847c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:13:28",
+      "sequence": 13182,
+      "chapter_label": "JOB 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "though I am decaying like a rotten thing, like a garment that is moth-eaten.",
+      "ko": "나는 썩은 물건의 후패함 같으며 좀먹은 의복 같으니이다",
+      "source_text_hash": "a34ef2a90bff3e0f50d695ee38e4cd7ff26c80085b708cca92613fa8892668a3",
+      "translation_text_hash": "0738982b01faf8c374e683f9e5fcf91ad33bfb48efedc608347722cf48740ea7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 썩은 물건의 후패함 같으며 좀먹은 의복 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "0738982b01faf8c374e683f9e5fcf91ad33bfb48efedc608347722cf48740ea7"
+      ]
+    }
+  ]
+}

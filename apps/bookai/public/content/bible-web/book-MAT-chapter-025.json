@@ -1,0 +1,1485 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:025",
+  "unit_ordinal": 954,
+  "unit_label": "MAT 25",
+  "book_code": "MAT",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:25:1",
+      "sequence": 24010,
+      "chapter_label": "MAT 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "“Then the Kingdom of Heaven will be like ten virgins who took their lamps and went out to meet the bridegroom.",
+      "ko": "그 때에 천국은 마치 등을 들고 신랑을 맞으러 나간 열 처녀와 같다 하리니",
+      "source_text_hash": "91a4228f9f637335fd4e0581dcee7eb30bfc2ba319391a0a50b505292065702d",
+      "translation_text_hash": "40725e4a0d403313dadf4743506d4cc148e6fc34b1000d57cfd7d923adb9ca0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 천국은 마치 등을 들고 신랑을 맞으러 나간 열 처녀와 같다 하리니"
+      ],
+      "raw_text_hashes": [
+        "40725e4a0d403313dadf4743506d4cc148e6fc34b1000d57cfd7d923adb9ca0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:2",
+      "sequence": 24011,
+      "chapter_label": "MAT 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "Five of them were foolish, and five were wise.",
+      "ko": "그 중에 다섯은 미련하고 다섯은 슬기 있는지라",
+      "source_text_hash": "b6c9290ed64d9e234ae37d757da63104809dcb699b68067341682b769fd88188",
+      "translation_text_hash": "4c5c54a829d6a5dd3fb31c6816d1dbefa8d8e48e6b5b509364d9e9e1e383414d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 다섯은 미련하고 다섯은 슬기 있는지라"
+      ],
+      "raw_text_hashes": [
+        "4c5c54a829d6a5dd3fb31c6816d1dbefa8d8e48e6b5b509364d9e9e1e383414d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:3",
+      "sequence": 24012,
+      "chapter_label": "MAT 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "Those who were foolish, when they took their lamps, took no oil with them,",
+      "ko": "미련한 자들은 등을 가지되 기름을 가지지 아니하고",
+      "source_text_hash": "d4e55028c96febb67204bde973e71552dac37475f40df0a084da89fae30947f2",
+      "translation_text_hash": "9aa0d1f2f15a8f4c5058c67673556e664b653158b61131232db9a5a1e87db30c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자들은 등을 가지되 기름을 가지지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "9aa0d1f2f15a8f4c5058c67673556e664b653158b61131232db9a5a1e87db30c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:4",
+      "sequence": 24013,
+      "chapter_label": "MAT 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "but the wise took oil in their vessels with their lamps.",
+      "ko": "슬기 있는 자들은 그릇에 기름을 담아 등과 함께 가져갔더니",
+      "source_text_hash": "3ce4a721e23d4d798bce2d399a0db40a4c8ef6a52912dcee29b4c97f6a2088d4",
+      "translation_text_hash": "ad33a5d95ee06eb030e71e76d7ef5dee714a505ed9d21ffd77ebe377dc8bf94e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬기 있는 자들은 그릇에 기름을 담아 등과 함께 가져갔더니"
+      ],
+      "raw_text_hashes": [
+        "ad33a5d95ee06eb030e71e76d7ef5dee714a505ed9d21ffd77ebe377dc8bf94e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:5",
+      "sequence": 24014,
+      "chapter_label": "MAT 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "Now while the bridegroom delayed, they all slumbered and slept.",
+      "ko": "신랑이 더디 오므로 다 졸며 잘쌔",
+      "source_text_hash": "c9f8769044b73cddf2a71731a3496e2663707176401e76c2ce64aea1b217f664",
+      "translation_text_hash": "7e560b40a7d6997a51fb59a2152d32e63578c8ee635df941176de7ce45ef6a53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신랑이 더디 오므로 다 졸며 잘쌔"
+      ],
+      "raw_text_hashes": [
+        "7e560b40a7d6997a51fb59a2152d32e63578c8ee635df941176de7ce45ef6a53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:6",
+      "sequence": 24015,
+      "chapter_label": "MAT 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "But at midnight there was a cry, ‘Behold! The bridegroom is coming! Come out to meet him!’",
+      "ko": "밤중에 소리가 나되 보라 신랑이로다 맞으러 나오라 하매",
+      "source_text_hash": "bbd92bd4c24ad552b19c14dbad3cb7ebef5ea28802df1de3b1d636348a87cb2c",
+      "translation_text_hash": "0cd6da6d7866b4e4ec219b7b0312246ba85870f14ed749bd5bef994930636d95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤중에 소리가 나되 보라 신랑이로다 맞으러 나오라 하매"
+      ],
+      "raw_text_hashes": [
+        "0cd6da6d7866b4e4ec219b7b0312246ba85870f14ed749bd5bef994930636d95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:7",
+      "sequence": 24016,
+      "chapter_label": "MAT 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "Then all those virgins arose, and trimmed their lamps.",
+      "ko": "이에 그 처녀들이 다 일어나 등을 준비할쌔",
+      "source_text_hash": "68eb39f28fe0263152ba7f7e85736bb906b84cdf7a2d65d57da3746847b069fc",
+      "translation_text_hash": "32bce71fb195f82436440246316136bb0a8b2d9a174fb5a50e15ef7b20450c9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 처녀들이 다 일어나 등을 준비할쌔"
+      ],
+      "raw_text_hashes": [
+        "32bce71fb195f82436440246316136bb0a8b2d9a174fb5a50e15ef7b20450c9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:8",
+      "sequence": 24017,
+      "chapter_label": "MAT 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "The foolish said to the wise, ‘Give us some of your oil, for our lamps are going out.’",
+      "ko": "미련한 자들이 슬기 있는 자들에게 이르되 우리 등불이 꺼져가니 너희 기름을 좀 나눠 달라 하거늘",
+      "source_text_hash": "04e709946ba6e1e7e24168375ffe5fc7551ff94ed593b5eb7aeeab678b6f2364",
+      "translation_text_hash": "1cd003a1abb76bf8af1a530e5fe0bd4afa59a1f4e23a63f766960aca3140c778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자들이 슬기 있는 자들에게 이르되 우리 등불이 꺼져가니 너희 기름을 좀 나눠 달라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "1cd003a1abb76bf8af1a530e5fe0bd4afa59a1f4e23a63f766960aca3140c778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:9",
+      "sequence": 24018,
+      "chapter_label": "MAT 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "But the wise answered, saying, ‘What if there isn’t enough for us and you? You go rather to those who sell, and buy for yourselves.’",
+      "ko": "슬기 있는 자들이 대답하여 가로되 우리와 너희의 쓰기에 다 부족할까 하노니 차라리 파는 자들에게 가서 너희 쓸 것을 사라 하니",
+      "source_text_hash": "972334dd4414dd9e8dd8dd967c4efb8c0e376f9f61f5b6104808d40728649ab7",
+      "translation_text_hash": "3ae2c980fe1dd0b1f2e7ae6a3ea4ac36a0579efb9d907e1ee791ed7d876529b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬기 있는 자들이 대답하여 가로되 우리와 너희의 쓰기에 다 부족할까 하노니 차라리 파는 자들에게 가서 너희 쓸 것을 사라 하니"
+      ],
+      "raw_text_hashes": [
+        "3ae2c980fe1dd0b1f2e7ae6a3ea4ac36a0579efb9d907e1ee791ed7d876529b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:10",
+      "sequence": 24019,
+      "chapter_label": "MAT 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "While they went away to buy, the bridegroom came, and those who were ready went in with him to the wedding feast, and the door was shut.",
+      "ko": "저희가 사러 간 동안에 신랑이 오므로 예비하였던 자들은 함께 혼인 잔치에 들어가고 문은 닫힌지라",
+      "source_text_hash": "4f2279cbd5652e0317c2ee4784f00562eec451d74ce1a87182611a726942fbbf",
+      "translation_text_hash": "d9a35a849a7a32c7962cf93cc91e8253f3abb730e7fe2db86679cdde999bd67e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 사러 간 동안에 신랑이 오므로 예비하였던 자들은 함께 혼인 잔치에 들어가고 문은 닫힌지라"
+      ],
+      "raw_text_hashes": [
+        "d9a35a849a7a32c7962cf93cc91e8253f3abb730e7fe2db86679cdde999bd67e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:11",
+      "sequence": 24020,
+      "chapter_label": "MAT 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "Afterward the other virgins also came, saying, ‘Lord, Lord, open to us.’",
+      "ko": "그 후에 남은 처녀들이 와서 가로되 주여 주여 우리에게 열어 주소서",
+      "source_text_hash": "41b05991c0666c30712f5aecff804146d7cb610e4b2e79add62999ef1094f547",
+      "translation_text_hash": "ca686104f47c52372d9f0ab9c7de610d0212c7943b3587e443a00283e12a11cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 남은 처녀들이 와서 가로되 주여 주여 우리에게 열어 주소서"
+      ],
+      "raw_text_hashes": [
+        "ca686104f47c52372d9f0ab9c7de610d0212c7943b3587e443a00283e12a11cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:12",
+      "sequence": 24021,
+      "chapter_label": "MAT 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "But he answered, ‘Most certainly I tell you, I don’t know you.’",
+      "ko": "대답하여 가로되 진실로 너희에게 이르노니 내가 너희를 알지 못하노라 하였느니라",
+      "source_text_hash": "54017caf5ee2e9da13beed332e3d55ca66648020cc8944ee3fc853d8c868773a",
+      "translation_text_hash": "bacfa63400b227ad71d1c57284f117b92ec8d556c15587f612de22cb0df997e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가로되 진실로 너희에게 이르노니 내가 너희를 알지 못하노라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "bacfa63400b227ad71d1c57284f117b92ec8d556c15587f612de22cb0df997e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:13",
+      "sequence": 24022,
+      "chapter_label": "MAT 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "Watch therefore, for you don’t know the day nor the hour in which the Son of Man is coming.",
+      "ko": "그런즉 깨어 있으라 너희는 그 날과 그 시를 알지 못하느니라",
+      "source_text_hash": "4cd23bf9cd4c37646954dec63846b241fc493eb7b6f545458ab4cd378947a411",
+      "translation_text_hash": "4f140d8200151b802d9feae24a164fd8f55ad80365d633578776bfaf04208a12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 깨어 있으라 너희는 그 날과 그 시를 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "4f140d8200151b802d9feae24a164fd8f55ad80365d633578776bfaf04208a12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:14",
+      "sequence": 24023,
+      "chapter_label": "MAT 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "“For it is like a man going into another country, who called his own servants and entrusted his goods to them.",
+      "ko": "또 어떤 사람이 타국에 갈제 그 종들을 불러 자기 소유를 맡김과 같으니",
+      "source_text_hash": "1f6652214d0f50c9e7d2a8fca62a29ba4205c58f4e7ffe2df7bc20b440f2b288",
+      "translation_text_hash": "95ce09aef5ad34ecf7eb32d652ab459dceaf0ecac4d8c5668c4f62fa5fb1af3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어떤 사람이 타국에 갈제 그 종들을 불러 자기 소유를 맡김과 같으니"
+      ],
+      "raw_text_hashes": [
+        "95ce09aef5ad34ecf7eb32d652ab459dceaf0ecac4d8c5668c4f62fa5fb1af3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:15",
+      "sequence": 24024,
+      "chapter_label": "MAT 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "To one he gave five talents,to another two, to another one, to each according to his own ability. Then he went on his journey.",
+      "ko": "각각 그 재능대로 하나에게는 금 다섯 달란트를, 하나에게는 두 달란트를, 하나에게는 한 달란트를 주고 떠났더니",
+      "source_text_hash": "9500a29aea0e1511622b4ba5d644194777a7fa556973ed9cf424a624133937ba",
+      "translation_text_hash": "3c1f4d22b60865799eeb6861d00aa41abcadf08ba8943792603e14bfdcac3093",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각각 그 재능대로 하나에게는 금 다섯 달란트를, 하나에게는 두 달란트를, 하나에게는 한 달란트를 주고 떠났더니"
+      ],
+      "raw_text_hashes": [
+        "3c1f4d22b60865799eeb6861d00aa41abcadf08ba8943792603e14bfdcac3093"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:16",
+      "sequence": 24025,
+      "chapter_label": "MAT 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "Immediately he who received the five talents went and traded with them, and made another five talents.",
+      "ko": "다섯 달란트 받은 자는 바로 가서 그것으로 장사하여 또 다섯 달란트를 남기고",
+      "source_text_hash": "159de4c7c14905bbd9ef106d1465954930add377342806237c74d82d6d29113f",
+      "translation_text_hash": "9d477a8ec6c56a2591676d5c24ab574ed7990ed147c243a056111c92a61a525d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯 달란트 받은 자는 바로 가서 그것으로 장사하여 또 다섯 달란트를 남기고"
+      ],
+      "raw_text_hashes": [
+        "9d477a8ec6c56a2591676d5c24ab574ed7990ed147c243a056111c92a61a525d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:17",
+      "sequence": 24026,
+      "chapter_label": "MAT 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "In the same way, he also who got the two gained another two.",
+      "ko": "두 달란트 받은 자도 그같이 하여 또 두 달란트를 남겼으되",
+      "source_text_hash": "46497e799688be8d76fdde7dcc3fb241765a50b96273afeda70b99c521b34414",
+      "translation_text_hash": "63868d0d67d9e0d889bf651b97f52c05ee4c3d9d58dcf8692ecd210f38860602",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 달란트 받은 자도 그같이 하여 또 두 달란트를 남겼으되"
+      ],
+      "raw_text_hashes": [
+        "63868d0d67d9e0d889bf651b97f52c05ee4c3d9d58dcf8692ecd210f38860602"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:18",
+      "sequence": 24027,
+      "chapter_label": "MAT 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "But he who received the one talent went away and dug in the earth and hid his lord’s money.",
+      "ko": "한 달란트 받은 자는 가서 땅을 파고 그 주인의 돈을 감추어 두었더니",
+      "source_text_hash": "204f74c250697f0b235a595eb4e75bb301cc6232928b0d7877f8f17154434658",
+      "translation_text_hash": "8481c89b50c372dad58fc43a2a627135ee12c48cae5503f27185f09d9433d708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 달란트 받은 자는 가서 땅을 파고 그 주인의 돈을 감추어 두었더니"
+      ],
+      "raw_text_hashes": [
+        "8481c89b50c372dad58fc43a2a627135ee12c48cae5503f27185f09d9433d708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:19",
+      "sequence": 24028,
+      "chapter_label": "MAT 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "“Now after a long time the lord of those servants came, and settled accounts with them.",
+      "ko": "오랜 후에 그 종들의 주인이 돌아와 저희와 회계할쌔",
+      "source_text_hash": "17b7db621e37faa3d091f6ac7fd254582a6abaf7bde628303a095732b0588784",
+      "translation_text_hash": "5e3a5d06da282061a3fe8ce986ab6427a95fc0f23c3a479c2c834ba2a1c2397d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오랜 후에 그 종들의 주인이 돌아와 저희와 회계할쌔"
+      ],
+      "raw_text_hashes": [
+        "5e3a5d06da282061a3fe8ce986ab6427a95fc0f23c3a479c2c834ba2a1c2397d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:20",
+      "sequence": 24029,
+      "chapter_label": "MAT 25",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 20
+        }
+      ],
+      "en": "He who received the five talents came and brought another five talents, saying, ‘Lord, you delivered to me five talents. Behold, I have gained another five talents in addition to them.’",
+      "ko": "다섯 달란트 받았던 자는 다섯 달란트를 더 가지고 와서 가로되 주여 내게 다섯 달란트를 주셨는데 보소서 내가 또 다섯 달란트를 남겼나이다",
+      "source_text_hash": "6d6eb4819de99c1d7c96c75bbad197f99625ff635f9775abf4f6c39770473516",
+      "translation_text_hash": "5b6b39a3618180768605f3d36a1fe2167e2c72d9195696709323064e57278588",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯 달란트 받았던 자는 다섯 달란트를 더 가지고 와서 가로되 주여 내게 다섯 달란트를 주셨는데 보소서 내가 또 다섯 달란트를 남겼나이다"
+      ],
+      "raw_text_hashes": [
+        "5b6b39a3618180768605f3d36a1fe2167e2c72d9195696709323064e57278588"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:21",
+      "sequence": 24030,
+      "chapter_label": "MAT 25",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 21
+        }
+      ],
+      "en": "“His lord said to him, ‘Well done, good and faithful servant. You have been faithful over a few things, I will set you over many things. Enter into the joy of your lord.’",
+      "ko": "그 주인이 이르되 잘 하였도다 착하고 충성된 종아 네가 작은 일에 충성하였으매 내가 많은 것으로 네게 맡기리니 네 주인의 즐거움에 참예할찌어다 하고",
+      "source_text_hash": "520d47d9dbe453112aba76f5f49d991a2bb1a10279a5717b85f4a57fdb9a5560",
+      "translation_text_hash": "a8f0007afeaebf6a752717ed25f07640fa3247cb2fbe3d56de1b03a79d4dfd5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 주인이 이르되 잘 하였도다 착하고 충성된 종아 네가 작은 일에 충성하였으매 내가 많은 것으로 네게 맡기리니 네 주인의 즐거움에 참예할찌어다 하고"
+      ],
+      "raw_text_hashes": [
+        "a8f0007afeaebf6a752717ed25f07640fa3247cb2fbe3d56de1b03a79d4dfd5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:22",
+      "sequence": 24031,
+      "chapter_label": "MAT 25",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 22
+        }
+      ],
+      "en": "“He also who got the two talents came and said, ‘Lord, you delivered to me two talents. Behold, I have gained another two talents in addition to them.’",
+      "ko": "두 달란트 받았던 자도 와서 가로되 주여 내게 두 달란트를 주셨는데 보소서 내가 또 두 달란트를 남겼나이다",
+      "source_text_hash": "f962887bf7728df84fd78f65f9595094e464829f663a55c2f631eedf0db607bf",
+      "translation_text_hash": "d41b6fbd31a5285e420c9636081bd552c55e43964ba8475481c6728412c4ffd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 달란트 받았던 자도 와서 가로되 주여 내게 두 달란트를 주셨는데 보소서 내가 또 두 달란트를 남겼나이다"
+      ],
+      "raw_text_hashes": [
+        "d41b6fbd31a5285e420c9636081bd552c55e43964ba8475481c6728412c4ffd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:23",
+      "sequence": 24032,
+      "chapter_label": "MAT 25",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 23
+        }
+      ],
+      "en": "“His lord said to him, ‘Well done, good and faithful servant. You have been faithful over a few things. I will set you over many things. Enter into the joy of your lord.’",
+      "ko": "그 주인이 이르되 잘 하였도다 착하고 충성된 종아 네가 작은 일에 충성하였으매 내가 많은 것으로 네게 맡기리니 네 주인의 즐거움에 참예할찌어다 하고",
+      "source_text_hash": "863e15b3c98e322b8ba56987982b502c19cc64136a20c76bf146b091a46ef7ff",
+      "translation_text_hash": "a8f0007afeaebf6a752717ed25f07640fa3247cb2fbe3d56de1b03a79d4dfd5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 주인이 이르되 잘 하였도다 착하고 충성된 종아 네가 작은 일에 충성하였으매 내가 많은 것으로 네게 맡기리니 네 주인의 즐거움에 참예할찌어다 하고"
+      ],
+      "raw_text_hashes": [
+        "a8f0007afeaebf6a752717ed25f07640fa3247cb2fbe3d56de1b03a79d4dfd5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:24",
+      "sequence": 24033,
+      "chapter_label": "MAT 25",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 24
+        }
+      ],
+      "en": "“He also who had received the one talent came and said, ‘Lord, I knew you that you are a hard man, reaping where you didn’t sow, and gathering where you didn’t scatter.",
+      "ko": "한 달란트 받았던 자도 와서 가로되 주여 당신은 굳은 사람이라 심지 않은데서 거두고 헤치지 않은데서 모으는 줄을 내가 알았으므로",
+      "source_text_hash": "c5904db1b511f37741b4c64013794a8b343e8a7709fe8399b1214bbdb00bb94d",
+      "translation_text_hash": "0ee16f0423b1a44c240cf8d8ced49aceda4123f170ad6fcfde382955cf56d1c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 달란트 받았던 자도 와서 가로되 주여 당신은 굳은 사람이라 심지 않은데서 거두고 헤치지 않은데서 모으는 줄을 내가 알았으므로"
+      ],
+      "raw_text_hashes": [
+        "0ee16f0423b1a44c240cf8d8ced49aceda4123f170ad6fcfde382955cf56d1c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:25",
+      "sequence": 24034,
+      "chapter_label": "MAT 25",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 25
+        }
+      ],
+      "en": "I was afraid, and went away and hid your talent in the earth. Behold, you have what is yours.’",
+      "ko": "두려워하여 나가서 당신의 달란트를 땅에 감추어 두었었나이다 보소서 당신의 것을 받으셨나이다",
+      "source_text_hash": "0110f3b7fb91f590b2cec280f0647459bc920706cc3cdcb639b3746df63b19ff",
+      "translation_text_hash": "14263bef19c7ffe36f2a073d5e997d1f451d4ceb2f1c7aced3a4c8df9aeaddd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려워하여 나가서 당신의 달란트를 땅에 감추어 두었었나이다 보소서 당신의 것을 받으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "14263bef19c7ffe36f2a073d5e997d1f451d4ceb2f1c7aced3a4c8df9aeaddd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:26",
+      "sequence": 24035,
+      "chapter_label": "MAT 25",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 26
+        }
+      ],
+      "en": "“But his lord answered him, ‘You wicked and slothful servant. You knew that I reap where I didn’t sow, and gather where I didn’t scatter.",
+      "ko": "그 주인이 대답하여 가로되 악하고 게으른 종아 나는 심지 않은데서 거두고 헤치지 않은데서 모으는 줄로 네가 알았느냐",
+      "source_text_hash": "c88eef35c248b6d4b2e2d06e69d11601928265a0907ca7921352a90964b84403",
+      "translation_text_hash": "442458932d8abe203eccc81d0df640840697ff6e00f63b9c22cfd42ec33648fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 주인이 대답하여 가로되 악하고 게으른 종아 나는 심지 않은데서 거두고 헤치지 않은데서 모으는 줄로 네가 알았느냐"
+      ],
+      "raw_text_hashes": [
+        "442458932d8abe203eccc81d0df640840697ff6e00f63b9c22cfd42ec33648fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:27",
+      "sequence": 24036,
+      "chapter_label": "MAT 25",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 27
+        }
+      ],
+      "en": "You ought therefore to have deposited my money with the bankers, and at my coming I should have received back my own with interest.",
+      "ko": "그러면 네가 마땅히 내 돈을 취리하는 자들에게나 두었다가 나로 돌아 와서 내 본전과 변리를 받게 할 것이니라 하고",
+      "source_text_hash": "08a0e5cdd5040b7a0d25b007c8af6fcbe0dc4b015d6c738d1d70f9c4c52e24d1",
+      "translation_text_hash": "b25d523a20faa3f371484737a956ed3b14fb6920f3dc9f7254e69edb528f7349",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 네가 마땅히 내 돈을 취리하는 자들에게나 두었다가 나로 돌아 와서 내 본전과 변리를 받게 할 것이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "b25d523a20faa3f371484737a956ed3b14fb6920f3dc9f7254e69edb528f7349"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:28",
+      "sequence": 24037,
+      "chapter_label": "MAT 25",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 28
+        }
+      ],
+      "en": "Take away therefore the talent from him and give it to him who has the ten talents.",
+      "ko": "그에게서 그 한 달란트를 빼앗아 열 달란트 가진 자에게 주어라",
+      "source_text_hash": "bcff5ac466f1086af727c91e93d803ddafdc54c2d4781e02f48344af6e20ab49",
+      "translation_text_hash": "5f283e95c9202e7b84746131cbd8ae533284448ef75f7b6c7b8f233ef0318a6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게서 그 한 달란트를 빼앗아 열 달란트 가진 자에게 주어라"
+      ],
+      "raw_text_hashes": [
+        "5f283e95c9202e7b84746131cbd8ae533284448ef75f7b6c7b8f233ef0318a6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:29",
+      "sequence": 24038,
+      "chapter_label": "MAT 25",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 29
+        }
+      ],
+      "en": "For to everyone who has will be given, and he will have abundance, but from him who doesn’t have, even that which he has will be taken away.",
+      "ko": "무릇 있는 자는 받아 풍족하게 되고 없는 자는 그 있는 것까지 빼앗기리라",
+      "source_text_hash": "65f1454718a9acce729804baff5c0fffaefe97d3f7e42398d76a00809e23f50e",
+      "translation_text_hash": "5104264537f889006f335bfdbaca166c073800a6e810558c4ddf7410c8e06a93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 있는 자는 받아 풍족하게 되고 없는 자는 그 있는 것까지 빼앗기리라"
+      ],
+      "raw_text_hashes": [
+        "5104264537f889006f335bfdbaca166c073800a6e810558c4ddf7410c8e06a93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:30",
+      "sequence": 24039,
+      "chapter_label": "MAT 25",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 30
+        }
+      ],
+      "en": "Throw out the unprofitable servant into the outer darkness, where there will be weeping and gnashing of teeth.’",
+      "ko": "이 무익한 종을 바깥 어두운데로 내어쫓으라 거기서 슬피 울며 이를 갊이 있으리라 하니라",
+      "source_text_hash": "72ca7811a5560f5616070318d64256a5cf5a49ac7984ff6eff373136dd54c531",
+      "translation_text_hash": "56194351563d6d0f4fafd7265afa0c9759aee0ff8668ff922e81d3b47e874110",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 무익한 종을 바깥 어두운데로 내어쫓으라 거기서 슬피 울며 이를 갊이 있으리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "56194351563d6d0f4fafd7265afa0c9759aee0ff8668ff922e81d3b47e874110"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:31",
+      "sequence": 24040,
+      "chapter_label": "MAT 25",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 31
+        }
+      ],
+      "en": "“But when the Son of Man comes in his glory, and all the holy angels with him, then he will sit on the throne of his glory.",
+      "ko": "인자가 자기 영광으로 모든 천사와 함께 올때에 자기 영광의 보좌에 앉으리니",
+      "source_text_hash": "a3b240101f48e5444390d8f81d72f629148021865f80ff85ed987b64b3fb45da",
+      "translation_text_hash": "7aa68fe3a7f56cc30d4920d7ec41a1000017abde1025916844ed58562996f3c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자가 자기 영광으로 모든 천사와 함께 올때에 자기 영광의 보좌에 앉으리니"
+      ],
+      "raw_text_hashes": [
+        "7aa68fe3a7f56cc30d4920d7ec41a1000017abde1025916844ed58562996f3c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:32",
+      "sequence": 24041,
+      "chapter_label": "MAT 25",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 32
+        }
+      ],
+      "en": "Before him all the nations will be gathered, and he will separate them one from another, as a shepherd separates the sheep from the goats.",
+      "ko": "모든 민족을 그 앞에 모으고 각각 분별하기를 목자가 양과 염소를 분별하는것 같이 하여",
+      "source_text_hash": "acfb96f8653a95128e3921396ab23aa083c57bf56c590e4aee4dc80b0fd3880f",
+      "translation_text_hash": "6db0ba6fbac6475f5cd8bcbe56a1cabe33ae1ca4f0500e147cd1830c94a6f399",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 민족을 그 앞에 모으고 각각 분별하기를 목자가 양과 염소를 분별하는것 같이 하여"
+      ],
+      "raw_text_hashes": [
+        "6db0ba6fbac6475f5cd8bcbe56a1cabe33ae1ca4f0500e147cd1830c94a6f399"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:33",
+      "sequence": 24042,
+      "chapter_label": "MAT 25",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 33
+        }
+      ],
+      "en": "He will set the sheep on his right hand, but the goats on the left.",
+      "ko": "양은 그 오른편에, 염소는 왼편에 두리라",
+      "source_text_hash": "78ee8b464366f250636e456304bed047f05bf837e0e3eafd78fb087e18f80aeb",
+      "translation_text_hash": "3989c0a6eb52af9b52d8c7e49f4d43f6c92f8f636164c09b31713a03c625305a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "양은 그 오른편에, 염소는 왼편에 두리라"
+      ],
+      "raw_text_hashes": [
+        "3989c0a6eb52af9b52d8c7e49f4d43f6c92f8f636164c09b31713a03c625305a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:34",
+      "sequence": 24043,
+      "chapter_label": "MAT 25",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 34
+        }
+      ],
+      "en": "Then the King will tell those on his right hand, ‘Come, blessed of my Father, inherit the Kingdom prepared for you from the foundation of the world;",
+      "ko": "그 때에 임금이 그 오른편에 있는 자들에게 이르시되 내 아버지께 복 받을 자들이여 나아와 창세로부터 너희를 위하여 예비된 나라를 상속하라",
+      "source_text_hash": "c3f3e35ca92dda1db4f5c31d4360231c518e8b383ec9a482448bdbb61cc9d6a5",
+      "translation_text_hash": "1bb929aae055ca70438dcef01cde22c3791e563d685d2bbc6d305d9f29150cca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 임금이 그 오른편에 있는 자들에게 이르시되 내 아버지께 복 받을 자들이여 나아와 창세로부터 너희를 위하여 예비된 나라를 상속하라"
+      ],
+      "raw_text_hashes": [
+        "1bb929aae055ca70438dcef01cde22c3791e563d685d2bbc6d305d9f29150cca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:35",
+      "sequence": 24044,
+      "chapter_label": "MAT 25",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 35
+        }
+      ],
+      "en": "for I was hungry and you gave me food to eat. I was thirsty and you gave me drink. I was a stranger and you took me in.",
+      "ko": "내가 주릴 때에 너희가 먹을 것을 주었고 목마를 때에 마시게 하였고 나그네 되었을 때에 영접하였고",
+      "source_text_hash": "d85da9ed9880ce754dcf5dac9d3bc922fd7f271c764a61ee0d9e623c55f7cbbc",
+      "translation_text_hash": "856847c2cff1490b6914c9886f5fb9c0714a4775b6637db72f59379e5b669b8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주릴 때에 너희가 먹을 것을 주었고 목마를 때에 마시게 하였고 나그네 되었을 때에 영접하였고"
+      ],
+      "raw_text_hashes": [
+        "856847c2cff1490b6914c9886f5fb9c0714a4775b6637db72f59379e5b669b8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:36",
+      "sequence": 24045,
+      "chapter_label": "MAT 25",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 36
+        }
+      ],
+      "en": "I was naked and you clothed me. I was sick and you visited me. I was in prison and you came to me.’",
+      "ko": "벗었을 때에 옷을 입혔고 병들었을 때에 돌아보았고 옥에 갇혔을 때에 와서 보았느니라",
+      "source_text_hash": "c05f99e20d8f563598096a58edb1247f127ca9ce91d2dbf4d33f46fc8497920c",
+      "translation_text_hash": "eb75b38ca9e6b32ba9326b71f077ba86de6110c3357e670015093782e6c6f7b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벗었을 때에 옷을 입혔고 병들었을 때에 돌아보았고 옥에 갇혔을 때에 와서 보았느니라"
+      ],
+      "raw_text_hashes": [
+        "eb75b38ca9e6b32ba9326b71f077ba86de6110c3357e670015093782e6c6f7b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:37",
+      "sequence": 24046,
+      "chapter_label": "MAT 25",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 37
+        }
+      ],
+      "en": "“Then the righteous will answer him, saying, ‘Lord, when did we see you hungry and feed you, or thirsty and give you a drink?",
+      "ko": "이에 의인들이 대답하여 가로되 주여 우리가 어느 때에 주의 주리신 것을 보고 공궤하였으며 목마르신 것을 보고 마시게 하였나이까",
+      "source_text_hash": "1ca69f08c6c4fb918f1e0fba89ef9f73a3d30f894026d8e4e834c19da9fd34bb",
+      "translation_text_hash": "bf774d2b66b1cae487f73e9e1cf4e8fe9d1cb6c85ca96fe93783174e7977211e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 의인들이 대답하여 가로되 주여 우리가 어느 때에 주의 주리신 것을 보고 공궤하였으며 목마르신 것을 보고 마시게 하였나이까"
+      ],
+      "raw_text_hashes": [
+        "bf774d2b66b1cae487f73e9e1cf4e8fe9d1cb6c85ca96fe93783174e7977211e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:38",
+      "sequence": 24047,
+      "chapter_label": "MAT 25",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 38
+        }
+      ],
+      "en": "When did we see you as a stranger and take you in, or naked and clothe you?",
+      "ko": "어느 때에 나그네 되신 것을 보고 영접하였으며 벗으신 것을 보고 옷 입혔나이까",
+      "source_text_hash": "cc73efde7ffeea2ab6dbd76a46d3424d44aad9c71fd75000158f4213e8766e38",
+      "translation_text_hash": "18aea337a11c272a9814e965dc89095b6ab4b1298b25d0a31b51ee7434d91bf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 때에 나그네 되신 것을 보고 영접하였으며 벗으신 것을 보고 옷 입혔나이까"
+      ],
+      "raw_text_hashes": [
+        "18aea337a11c272a9814e965dc89095b6ab4b1298b25d0a31b51ee7434d91bf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:39",
+      "sequence": 24048,
+      "chapter_label": "MAT 25",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 39
+        }
+      ],
+      "en": "When did we see you sick or in prison and come to you?’",
+      "ko": "어느 때에 병드신 것이나 옥에 갇히신 것을 보고 가서 뵈었나이까 하리니",
+      "source_text_hash": "feab8b5bfefbe4fc19fcca6b330790f62e99229b07065f6a022fae312b1471dc",
+      "translation_text_hash": "7b87ca641e78051ab7b0ae2d42d5444836d8bc04be3c61d488b30f873c287766",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 때에 병드신 것이나 옥에 갇히신 것을 보고 가서 뵈었나이까 하리니"
+      ],
+      "raw_text_hashes": [
+        "7b87ca641e78051ab7b0ae2d42d5444836d8bc04be3c61d488b30f873c287766"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:40",
+      "sequence": 24049,
+      "chapter_label": "MAT 25",
+      "verse_label": "40",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 40
+        }
+      ],
+      "en": "“The King will answer them, ‘Most certainly I tell you, because you did it to one of the least of these my brothers,you did it to me.’",
+      "ko": "임금이 대답하여 가라사대 내가 진실로 너희에게 이르노니 너희가 여기 내 형제 중에 지극히 작은 자 하나에게 한 것이 곧 내게 한 것이니라 하시고",
+      "source_text_hash": "39589b26c824c719ffc5a0010d77e777f2012f9acbb76fea0b91f766aa492a85",
+      "translation_text_hash": "7ba234dd5cc3485b9cd3a6ebdb97750750a43f7acb129ff157aa71e6d7b7f4ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "임금이 대답하여 가라사대 내가 진실로 너희에게 이르노니 너희가 여기 내 형제 중에 지극히 작은 자 하나에게 한 것이 곧 내게 한 것이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "7ba234dd5cc3485b9cd3a6ebdb97750750a43f7acb129ff157aa71e6d7b7f4ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:41",
+      "sequence": 24050,
+      "chapter_label": "MAT 25",
+      "verse_label": "41",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 41
+        }
+      ],
+      "en": "Then he will say also to those on the left hand, ‘Depart from me, you cursed, into the eternal fire which is prepared for the devil and his angels;",
+      "ko": "또 왼편에 있는 자들에게 이르시되 저주를 받은 자들아 나를 떠나 마귀와 그 사자들을 위하여 예비된 영영한 불에 들어가라",
+      "source_text_hash": "33f6a5801b4341db22fa5b6f8ec2d6727a6fd9416535f089e0de889dabc50865",
+      "translation_text_hash": "3dccc58eb9e0198946a8ff8fb00b5d60691b89ca6e48bf54e798f8c295cd375a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 왼편에 있는 자들에게 이르시되 저주를 받은 자들아 나를 떠나 마귀와 그 사자들을 위하여 예비된 영영한 불에 들어가라"
+      ],
+      "raw_text_hashes": [
+        "3dccc58eb9e0198946a8ff8fb00b5d60691b89ca6e48bf54e798f8c295cd375a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:42",
+      "sequence": 24051,
+      "chapter_label": "MAT 25",
+      "verse_label": "42",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 42
+        }
+      ],
+      "en": "for I was hungry, and you didn’t give me food to eat; I was thirsty, and you gave me no drink;",
+      "ko": "내가 주릴 때에 너희가 먹을 것을 주지 아니하였고 목마를 때에 마시게 하지 아니하였고",
+      "source_text_hash": "f8f988f00447b7d43a4f3901983dbcd676e0c8febf6ec76a3a766893c5352034",
+      "translation_text_hash": "3500d570d884a1bfebeba80e3435bc33ac2c811ffe58cf393b35c39ad1549b26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주릴 때에 너희가 먹을 것을 주지 아니하였고 목마를 때에 마시게 하지 아니하였고"
+      ],
+      "raw_text_hashes": [
+        "3500d570d884a1bfebeba80e3435bc33ac2c811ffe58cf393b35c39ad1549b26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:43",
+      "sequence": 24052,
+      "chapter_label": "MAT 25",
+      "verse_label": "43",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 43
+        }
+      ],
+      "en": "I was a stranger, and you didn’t take me in; naked, and you didn’t clothe me; sick, and in prison, and you didn’t visit me.’",
+      "ko": "나그네 되었을 때에 영접하지 아니하였고 벗었을 때에 옷 입히지 아니하였고 병들었을 때와 옥에 갇혔을 때에 돌아보지 아니하였느니라 하시니",
+      "source_text_hash": "b72711f57883d1800bd297d110ddbf105e3d544629e4714e696947c800530018",
+      "translation_text_hash": "4a8087a38cc1b2949abf9ce0e64b08b59805edd773e15fc3508154464c51157b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나그네 되었을 때에 영접하지 아니하였고 벗었을 때에 옷 입히지 아니하였고 병들었을 때와 옥에 갇혔을 때에 돌아보지 아니하였느니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "4a8087a38cc1b2949abf9ce0e64b08b59805edd773e15fc3508154464c51157b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:44",
+      "sequence": 24053,
+      "chapter_label": "MAT 25",
+      "verse_label": "44",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 44
+        }
+      ],
+      "en": "“Then they will also answer, saying, ‘Lord, when did we see you hungry, or thirsty, or a stranger, or naked, or sick, or in prison, and didn’t help you?’",
+      "ko": "저희도 대답하여 가로되 주여 우리가 어느 때에 주의 주리신 것이나 목마르신 것이나 나그네 되신 것이나 벗으신 것이나 병드신 것이나 옥에 갇히신 것을 보고 공양치 아니하더이까",
+      "source_text_hash": "c8590914f6462483ab23e0f71dcda15556a1ba894026174b435e9c9de89c9775",
+      "translation_text_hash": "2ffd413ba07390f8819a36b15c236ad3e6f7d797f1d95dcf8b6aa684f8a8fca8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희도 대답하여 가로되 주여 우리가 어느 때에 주의 주리신 것이나 목마르신 것이나 나그네 되신 것이나 벗으신 것이나 병드신 것이나 옥에 갇히신 것을 보고 공양치 아니하더이까"
+      ],
+      "raw_text_hashes": [
+        "2ffd413ba07390f8819a36b15c236ad3e6f7d797f1d95dcf8b6aa684f8a8fca8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:45",
+      "sequence": 24054,
+      "chapter_label": "MAT 25",
+      "verse_label": "45",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 45
+        }
+      ],
+      "en": "“Then he will answer them, saying, ‘Most certainly I tell you, because you didn’t do it to one of the least of these, you didn’t do it to me.’",
+      "ko": "이에 임금이 대답하여 가라사대 내가 진실로 너희에게 이르노니 이 지극히 작은 자 하나에게 하지 아니한 것이 곧 내게 하지 아니한 것이니라 하시리니",
+      "source_text_hash": "a3feaa2287a471c11c596b89dddb8fea9c1bb2c269c8ea8e031529e24166f677",
+      "translation_text_hash": "1a84ae78912ab9992376a42aa60fced7c2873d6def767d37acc6e89674ed19c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 임금이 대답하여 가라사대 내가 진실로 너희에게 이르노니 이 지극히 작은 자 하나에게 하지 아니한 것이 곧 내게 하지 아니한 것이니라 하시리니"
+      ],
+      "raw_text_hashes": [
+        "1a84ae78912ab9992376a42aa60fced7c2873d6def767d37acc6e89674ed19c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:25:46",
+      "sequence": 24055,
+      "chapter_label": "MAT 25",
+      "verse_label": "46",
+      "locator": {
+        "book": "MAT",
+        "chapter": 25,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 25,
+          "verse": 46
+        }
+      ],
+      "en": "These will go away into eternal punishment, but the righteous into eternal life.”",
+      "ko": "저희는 영벌에, 의인들은 영생에 들어가리라 하시니라",
+      "source_text_hash": "6d33a8a8dd7743667e880b3a3a143ea6c64915ee83284da40f6e060976886cd6",
+      "translation_text_hash": "237028a2fb34695f10352e0233482ba76cdd12bdee1368181850058ca6546de5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 영벌에, 의인들은 영생에 들어가리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "237028a2fb34695f10352e0233482ba76cdd12bdee1368181850058ca6546de5"
+      ]
+    }
+  ]
+}

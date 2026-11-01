@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:019",
+  "unit_ordinal": 455,
+  "unit_label": "JOB 19",
+  "book_code": "JOB",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:19:1",
+      "sequence": 13299,
+      "chapter_label": "JOB 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "Then Job answered,",
+      "ko": "욥이 대답하여 가로되",
+      "source_text_hash": "5263caab7b43bc090defa0c0dbc9d551ac80859d1634826a141a04fc1349df96",
+      "translation_text_hash": "6e432eb41091f2b4077fe347703fb37615a4e3a45f9b3ead4a29e1a2b2065a30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "6e432eb41091f2b4077fe347703fb37615a4e3a45f9b3ead4a29e1a2b2065a30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:2",
+      "sequence": 13300,
+      "chapter_label": "JOB 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "“How long will you torment me, and crush me with words?",
+      "ko": "너희가 내 마음을 번뇌케 하며 말로 꺾기를 어느 때까지 하겠느냐",
+      "source_text_hash": "b68b879f34beef3acc0811282f2d03a9b18ffc68c85ecc99edd441b8823f7cf8",
+      "translation_text_hash": "d2d888ed3fcf43d74edfe871b7037b8fd6feddc102529195b74340e377e268b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 내 마음을 번뇌케 하며 말로 꺾기를 어느 때까지 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "d2d888ed3fcf43d74edfe871b7037b8fd6feddc102529195b74340e377e268b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:3",
+      "sequence": 13301,
+      "chapter_label": "JOB 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "You have reproached me ten times. You aren’t ashamed that you attack me.",
+      "ko": "너희가 열 번이나 나를 꾸짖고 나를 학대하고도 부끄러워 아니하는구나",
+      "source_text_hash": "800a1e399a88d547057a63e7b55b806466ec9c419f43cccced572697cf22cc37",
+      "translation_text_hash": "90643993345d62d19dc37115157bbce0392fd95f22a8b804fd0a6917f50ea047",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 열 번이나 나를 꾸짖고 나를 학대하고도 부끄러워 아니하는구나"
+      ],
+      "raw_text_hashes": [
+        "90643993345d62d19dc37115157bbce0392fd95f22a8b804fd0a6917f50ea047"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:4",
+      "sequence": 13302,
+      "chapter_label": "JOB 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "If it is true that I have erred, my error remains with myself.",
+      "ko": "내가 과연 허물이 있었다 할찌라도 그 허물이 내게만 있는 것이니",
+      "source_text_hash": "e3e0d4aaabba69e684c7ab3c323d157cc7caf0e0c43315d3e3760610e17e3259",
+      "translation_text_hash": "8d43adf02d17ea43d7d83287799271ef6418c9d6ebc94d8e276ad4e1d5cd0ba8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 과연 허물이 있었다 할찌라도 그 허물이 내게만 있는 것이니"
+      ],
+      "raw_text_hashes": [
+        "8d43adf02d17ea43d7d83287799271ef6418c9d6ebc94d8e276ad4e1d5cd0ba8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:5",
+      "sequence": 13303,
+      "chapter_label": "JOB 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "If indeed you will magnify yourselves against me, and plead against me my reproach,",
+      "ko": "너희가 참으로 나를 향하여 자긍하며 내게 수치될 행위가 있다고 증명하려면 하려니와",
+      "source_text_hash": "ba38f0d464393de63541ae4451d6bf983dbb9ec129ba379a1d35c996bde4b4ac",
+      "translation_text_hash": "295cec642edbf4e51fcdab1a1cfb94dac367573bcc4d6ce51b287b88dcfd7b1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 참으로 나를 향하여 자긍하며 내게 수치될 행위가 있다고 증명하려면 하려니와"
+      ],
+      "raw_text_hashes": [
+        "295cec642edbf4e51fcdab1a1cfb94dac367573bcc4d6ce51b287b88dcfd7b1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:6",
+      "sequence": 13304,
+      "chapter_label": "JOB 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "know now that God has subverted me, and has surrounded me with his net.",
+      "ko": "하나님이 나를 굴하게 하시고 자기 그물로 나를 에워싸신 줄은 알아야 할찌니라",
+      "source_text_hash": "22dcda33f91c6ed23bb3cfbc7069a0fd159e70615839dd8705e3f484650ee7a4",
+      "translation_text_hash": "297a72200079285607c793620e4fd38c8f5c1f5c92369cba2e15cb2e5a007603",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 나를 굴하게 하시고 자기 그물로 나를 에워싸신 줄은 알아야 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "297a72200079285607c793620e4fd38c8f5c1f5c92369cba2e15cb2e5a007603"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:7",
+      "sequence": 13305,
+      "chapter_label": "JOB 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "“Behold, I cry out of wrong, but I am not heard. I cry for help, but there is no justice.",
+      "ko": "내가 포학을 당한다고 부르짖으나 응답이 없고 간구할찌라도 신원함이 없구나",
+      "source_text_hash": "6db6cbe887d7b8e7c9b11cbd78ced5b800e390e7ee15807ffc05d4cdfac45fa8",
+      "translation_text_hash": "a467ba664c8cc0c3754634ec7ad1b30a197efa1ffb5bed9eb3fcb544ecbe44df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 포학을 당한다고 부르짖으나 응답이 없고 간구할찌라도 신원함이 없구나"
+      ],
+      "raw_text_hashes": [
+        "a467ba664c8cc0c3754634ec7ad1b30a197efa1ffb5bed9eb3fcb544ecbe44df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:8",
+      "sequence": 13306,
+      "chapter_label": "JOB 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "He has walled up my way so that I can’t pass, and has set darkness in my paths.",
+      "ko": "그가 내 길을 막아 지나지 못하게 하시고 내 첩경에 흑암을 두셨으며",
+      "source_text_hash": "4b48dcbabe0ddd894ccda85d7025187c3d2e932036d7b11c77f87fd7d6d1470c",
+      "translation_text_hash": "2e8a4c693159dd1062f46940f410130a0ceed5cecafa57be4f5d53bce3e63e6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내 길을 막아 지나지 못하게 하시고 내 첩경에 흑암을 두셨으며"
+      ],
+      "raw_text_hashes": [
+        "2e8a4c693159dd1062f46940f410130a0ceed5cecafa57be4f5d53bce3e63e6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:9",
+      "sequence": 13307,
+      "chapter_label": "JOB 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "He has stripped me of my glory, and taken the crown from my head.",
+      "ko": "나의 영광을 벗기시며 나의 면류관을 머리에서 취하시고",
+      "source_text_hash": "8584e1405e1862d8c9b5b58c5e09618faeaee94e9fd542e9fc65c731a9850af1",
+      "translation_text_hash": "cb00cd82e9d55273f0b9f586eca63cfa264741dc62359cb53f6677b8458a95cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 영광을 벗기시며 나의 면류관을 머리에서 취하시고"
+      ],
+      "raw_text_hashes": [
+        "cb00cd82e9d55273f0b9f586eca63cfa264741dc62359cb53f6677b8458a95cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:10",
+      "sequence": 13308,
+      "chapter_label": "JOB 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "He has broken me down on every side, and I am gone. He has plucked my hope up like a tree.",
+      "ko": "사면으로 나를 헐으시니 나는 죽었구나 내 소망을 나무 뽑듯 뽑으시고",
+      "source_text_hash": "ac1515aafa7366f1357343992b18da6fb36929f1bff118776edd5b09823cc20d",
+      "translation_text_hash": "dff79b07ec5914ee23634e9adca009041ca75f28bf1be0fb3fde963848f50b98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사면으로 나를 헐으시니 나는 죽었구나 내 소망을 나무 뽑듯 뽑으시고"
+      ],
+      "raw_text_hashes": [
+        "dff79b07ec5914ee23634e9adca009041ca75f28bf1be0fb3fde963848f50b98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:11",
+      "sequence": 13309,
+      "chapter_label": "JOB 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "He has also kindled his wrath against me. He counts me among his adversaries.",
+      "ko": "나를 향하여 진노하시고 원수 같이 보시는구나",
+      "source_text_hash": "942934ff659f95390ae280a8860539f0fe9e7bcb9b0bb66673c6a1f4e7e7e9c4",
+      "translation_text_hash": "e5dbafdabab99976766587dce0eb899513028fe46d56594f0138be2222c27585",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 향하여 진노하시고 원수 같이 보시는구나"
+      ],
+      "raw_text_hashes": [
+        "e5dbafdabab99976766587dce0eb899513028fe46d56594f0138be2222c27585"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:12",
+      "sequence": 13310,
+      "chapter_label": "JOB 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "His troops come on together, build a siege ramp against me, and encamp around my tent.",
+      "ko": "그 군대가 일제히 나아와서 길을 수축하고 나를 치며 내 장막을 둘러 진 쳤구나",
+      "source_text_hash": "4054fffb5fe30f07ac4eafc91e73c8ed832ba4b0c22067d8c1b896a99c72a3f9",
+      "translation_text_hash": "e5668a51ce76678ec6290aa52e7f548d6a003075e52fca39ca55dfc14e6f04a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 군대가 일제히 나아와서 길을 수축하고 나를 치며 내 장막을 둘러 진 쳤구나"
+      ],
+      "raw_text_hashes": [
+        "e5668a51ce76678ec6290aa52e7f548d6a003075e52fca39ca55dfc14e6f04a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:13",
+      "sequence": 13311,
+      "chapter_label": "JOB 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "“He has put my brothers far from me. My acquaintances are wholly estranged from me.",
+      "ko": "나의 형제들로 나를 멀리 떠나게 하시니 나를 아는 모든 사람이 내게 외인이 되었구나",
+      "source_text_hash": "3f572822bcc114759ac8a2ddff71359e00532c7ef496022cad9094c138d9eb14",
+      "translation_text_hash": "6c02bab056daf339c6bade2df1d5d57292e67957c82cdcb686ab9d20117828d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 형제들로 나를 멀리 떠나게 하시니 나를 아는 모든 사람이 내게 외인이 되었구나"
+      ],
+      "raw_text_hashes": [
+        "6c02bab056daf339c6bade2df1d5d57292e67957c82cdcb686ab9d20117828d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:14",
+      "sequence": 13312,
+      "chapter_label": "JOB 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "My relatives have gone away. My familiar friends have forgotten me.",
+      "ko": "내 친척은 나를 버리며 가까운 친구는 나를 잊었구나",
+      "source_text_hash": "238238fbd8986d53690e5cfb6b49d7a914c74514330f1a790eae34fcdea085a8",
+      "translation_text_hash": "9aeae85a2544a17f38287d767edb577b70c939ff9afc5ba4d3857791b560bfb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 친척은 나를 버리며 가까운 친구는 나를 잊었구나"
+      ],
+      "raw_text_hashes": [
+        "9aeae85a2544a17f38287d767edb577b70c939ff9afc5ba4d3857791b560bfb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:15",
+      "sequence": 13313,
+      "chapter_label": "JOB 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "Those who dwell in my house and my maids consider me a stranger. I am an alien in their sight.",
+      "ko": "내 집에 우거한 자와 내 계집 종들은 나를 외인으로 여기니 내가 그들 앞에서 타국 사람이 되었구나",
+      "source_text_hash": "3580286a2f9062f46dd1b1b520224205f74d9444d2fcf32991905fd950a824eb",
+      "translation_text_hash": "f5183622b9427d12b007e695ec2e3be68858202b78ff2caa43186574caec6ae0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 집에 우거한 자와 내 계집 종들은 나를 외인으로 여기니 내가 그들 앞에서 타국 사람이 되었구나"
+      ],
+      "raw_text_hashes": [
+        "f5183622b9427d12b007e695ec2e3be68858202b78ff2caa43186574caec6ae0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:16",
+      "sequence": 13314,
+      "chapter_label": "JOB 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "I call to my servant, and he gives me no answer. I beg him with my mouth.",
+      "ko": "내가 내 종을 불러도 대답지 아니하니 내 입으로 그에게 청하여야 하겠구나",
+      "source_text_hash": "3a05e57271fc1f101a80363705d2d88eb30906e5bb9f9c6c420a4eb20657ab8d",
+      "translation_text_hash": "f43aa294c73c78604defd610e5b9711bbdb7b524772bb515f46eea343519ce8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 종을 불러도 대답지 아니하니 내 입으로 그에게 청하여야 하겠구나"
+      ],
+      "raw_text_hashes": [
+        "f43aa294c73c78604defd610e5b9711bbdb7b524772bb515f46eea343519ce8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:17",
+      "sequence": 13315,
+      "chapter_label": "JOB 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "My breath is offensive to my wife. I am loathsome to the children of my own mother.",
+      "ko": "내 숨을 내 아내가 싫어하며 내 동포들도 혐의하는구나",
+      "source_text_hash": "69d9d42d441e689bf76e8cbcd7a32e97608c729582a5b6e3dde3f13511b72abf",
+      "translation_text_hash": "1a31e65c0ddd26dd22935ba2d4e32902c8e949915af6b2baa51182ab61153aba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 숨을 내 아내가 싫어하며 내 동포들도 혐의하는구나"
+      ],
+      "raw_text_hashes": [
+        "1a31e65c0ddd26dd22935ba2d4e32902c8e949915af6b2baa51182ab61153aba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:18",
+      "sequence": 13316,
+      "chapter_label": "JOB 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "Even young children despise me. If I arise, they speak against me.",
+      "ko": "어린 아이들이라도 나를 업신여기고 내가 일어나면 나를 조롱하는구나",
+      "source_text_hash": "4fa4f3e592418f4339fa13a90a67b9784cc8943a1ac4ec4369e214315f01981e",
+      "translation_text_hash": "38e1970d7148b1f369c5d05ccc5fb75c25ef69fe7a8111467a46368b0b5808db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어린 아이들이라도 나를 업신여기고 내가 일어나면 나를 조롱하는구나"
+      ],
+      "raw_text_hashes": [
+        "38e1970d7148b1f369c5d05ccc5fb75c25ef69fe7a8111467a46368b0b5808db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:19",
+      "sequence": 13317,
+      "chapter_label": "JOB 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "All my familiar friends abhor me. They whom I loved have turned against me.",
+      "ko": "나의 가까운 친구들이 나를 미워하며 나의 사랑하는 사람들이 돌이켜 나의 대적이 되었구나",
+      "source_text_hash": "fffb28d1d13108a384e641c10887ff3ebd4fee9dca86e2a48d364c907ed39132",
+      "translation_text_hash": "0e046809a178cd79bb35fcc76ebb5305f52e184e3c0e772e4cd0b22794ade60b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 가까운 친구들이 나를 미워하며 나의 사랑하는 사람들이 돌이켜 나의 대적이 되었구나"
+      ],
+      "raw_text_hashes": [
+        "0e046809a178cd79bb35fcc76ebb5305f52e184e3c0e772e4cd0b22794ade60b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:20",
+      "sequence": 13318,
+      "chapter_label": "JOB 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "My bones stick to my skin and to my flesh. I have escaped by the skin of my teeth.",
+      "ko": "내 피부와 살이 뼈에 붙었고 남은 것은 겨우 잇꺼풀 뿐이로구나",
+      "source_text_hash": "5c6148333daf85742405703fa00f656aae77dee48730d9072b21f800d102cb0a",
+      "translation_text_hash": "f9f9248e1d6aa1cfac7115156668a5e2fb121440b59d4459ff76c7f9ea87994e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 피부와 살이 뼈에 붙었고 남은 것은 겨우 잇꺼풀 뿐이로구나"
+      ],
+      "raw_text_hashes": [
+        "f9f9248e1d6aa1cfac7115156668a5e2fb121440b59d4459ff76c7f9ea87994e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:21",
+      "sequence": 13319,
+      "chapter_label": "JOB 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "“Have pity on me. Have pity on me, you my friends, for the hand of God has touched me.",
+      "ko": "나의 친구야 너희는 나를 불쌍히 여기라 나를 불쌍히 여기라 하나님의 손이 나를 치셨구나",
+      "source_text_hash": "5f2eb755968da733ddc0a43d6235c350ffd0eb20c4899fb61c3a6e99f26d5b71",
+      "translation_text_hash": "ce9b916226f9967688b52ff64e911522a412cae27cf30c2bf6d361fecd9cba6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 친구야 너희는 나를 불쌍히 여기라 나를 불쌍히 여기라 하나님의 손이 나를 치셨구나"
+      ],
+      "raw_text_hashes": [
+        "ce9b916226f9967688b52ff64e911522a412cae27cf30c2bf6d361fecd9cba6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:22",
+      "sequence": 13320,
+      "chapter_label": "JOB 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "Why do you persecute me as God, and are not satisfied with my flesh?",
+      "ko": "너희가 어찌하여 하나님처럼 나를 핍박하느냐 내 살을 먹고도 부족하냐",
+      "source_text_hash": "bef01e3a07ab7414df72710fdec73db68d56014fd99008983d3475e3ff81c8e1",
+      "translation_text_hash": "a82caec9de5ce461f64f2fc586feffe0f90e3d6612607cc38150e875e9d516ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 어찌하여 하나님처럼 나를 핍박하느냐 내 살을 먹고도 부족하냐"
+      ],
+      "raw_text_hashes": [
+        "a82caec9de5ce461f64f2fc586feffe0f90e3d6612607cc38150e875e9d516ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:23",
+      "sequence": 13321,
+      "chapter_label": "JOB 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "“Oh that my words were now written! Oh that they were inscribed in a book!",
+      "ko": "나의 말이 곧 기록되었으면, 책에 씌어졌으면,",
+      "source_text_hash": "508f80756ec7385dcc68ef7b16220af5acc749bfaeb2343ff547fbf558144643",
+      "translation_text_hash": "b707e3a7a1e31742db64d521d3656bc6d1cf2c124fa5c57e61dc8f6001db0986",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 말이 곧 기록되었으면, 책에 씌어졌으면,"
+      ],
+      "raw_text_hashes": [
+        "b707e3a7a1e31742db64d521d3656bc6d1cf2c124fa5c57e61dc8f6001db0986"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:24",
+      "sequence": 13322,
+      "chapter_label": "JOB 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "That with an iron pen and lead they were engraved in the rock forever!",
+      "ko": "철필과 연으로 영영히 돌에 새겨졌으면 좋겠노라",
+      "source_text_hash": "094e42bd061e4850f739db1802c36d85541a0c314a799395522a573f23f656a1",
+      "translation_text_hash": "13b7b9e3b738123c8d6966f3ab951f9d6f0fabe423cee178d4a0feec47da9fd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "철필과 연으로 영영히 돌에 새겨졌으면 좋겠노라"
+      ],
+      "raw_text_hashes": [
+        "13b7b9e3b738123c8d6966f3ab951f9d6f0fabe423cee178d4a0feec47da9fd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:25",
+      "sequence": 13323,
+      "chapter_label": "JOB 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "But as for me, I know that my Redeemer lives. In the end, he will stand upon the earth.",
+      "ko": "내가 알기에는 나의 구속자가 살아 계시니 후일에 그가 땅 위에 서실 것이라",
+      "source_text_hash": "10bf45b07c180cc64905546c28d41f483633326bdfc2fe921f1c25a8732a446f",
+      "translation_text_hash": "b9fd7ad76862a38d8805b62caed9a14e0469d0f2dc52c1c6bec57a3c8f24c0f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 알기에는 나의 구속자가 살아 계시니 후일에 그가 땅 위에 서실 것이라"
+      ],
+      "raw_text_hashes": [
+        "b9fd7ad76862a38d8805b62caed9a14e0469d0f2dc52c1c6bec57a3c8f24c0f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:26",
+      "sequence": 13324,
+      "chapter_label": "JOB 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "After my skin is destroyed, then I will see God in my flesh,",
+      "ko": "나의 이 가죽, 이것이 썩은 후에 내가 육체 밖에서 하나님을 보리라",
+      "source_text_hash": "dd66508a51659cd6e39e2079d9c4c74c331fbfed59a293d299e3e0f354b552eb",
+      "translation_text_hash": "cf705c4e54f9f2dba3bbbd203687939d72ec4242a11e92901958364e70279bd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 이 가죽, 이것이 썩은 후에 내가 육체 밖에서 하나님을 보리라"
+      ],
+      "raw_text_hashes": [
+        "cf705c4e54f9f2dba3bbbd203687939d72ec4242a11e92901958364e70279bd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:27",
+      "sequence": 13325,
+      "chapter_label": "JOB 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "whom I, even I, will see on my side. My eyes will see, and not as a stranger. “My heart is consumed within me.",
+      "ko": "내가 친히 그를 보리니 내 눈으로 그를 보기를 외인처럼 하지 않을 것이라 내 마음이 초급하구나",
+      "source_text_hash": "b2a789c029af1dfc97297dfbf460e5c25c2c878f3008b5c20b691355d66c7d80",
+      "translation_text_hash": "1f0c3c9bfb39b7e12d95fde12762ba4163f968453cd39f5c82dd39af5d10bc19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 친히 그를 보리니 내 눈으로 그를 보기를 외인처럼 하지 않을 것이라 내 마음이 초급하구나"
+      ],
+      "raw_text_hashes": [
+        "1f0c3c9bfb39b7e12d95fde12762ba4163f968453cd39f5c82dd39af5d10bc19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:28",
+      "sequence": 13326,
+      "chapter_label": "JOB 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "If you say, ‘How we will persecute him!’ because the root of the matter is found in me,",
+      "ko": "너희가 만일 이르기를 우리가 그를 어떻게 칠꼬 하며 또 이르기를 일의 뿌리가 그에게 있다 할찐대",
+      "source_text_hash": "54d14ce24b31d40e8fd32925dd993730b3ba1895c9da3dc6117673f02724d2bd",
+      "translation_text_hash": "bff157500cf717425f1f703665b4bf8da8a6ad33e36a79ab05e923997632fade",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 이르기를 우리가 그를 어떻게 칠꼬 하며 또 이르기를 일의 뿌리가 그에게 있다 할찐대"
+      ],
+      "raw_text_hashes": [
+        "bff157500cf717425f1f703665b4bf8da8a6ad33e36a79ab05e923997632fade"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:19:29",
+      "sequence": 13327,
+      "chapter_label": "JOB 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOB",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "be afraid of the sword, for wrath brings the punishments of the sword, that you may know there is a judgment.”",
+      "ko": "너희는 칼을 두려워할찌니라 분노는 칼의 형벌을 부르나니 너희가 심판이 있는줄을 알게 되리라",
+      "source_text_hash": "c636503a0a4d8cc67079ee18e8e8b8f7f77164635b039540e7822ec37c7415fb",
+      "translation_text_hash": "94b4d5672f6b0f788930a597b857c289a0c71319e5815e53314c9b30d6484354",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 칼을 두려워할찌니라 분노는 칼의 형벌을 부르나니 너희가 심판이 있는줄을 알게 되리라"
+      ],
+      "raw_text_hashes": [
+        "94b4d5672f6b0f788930a597b857c289a0c71319e5815e53314c9b30d6484354"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:007",
+  "unit_ordinal": 936,
+  "unit_label": "MAT 7",
+  "book_code": "MAT",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:7:1",
+      "sequence": 23318,
+      "chapter_label": "MAT 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "“Don’t judge, so that you won’t be judged.",
+      "ko": "비판을 받지 아니하려거든 비판하지 말라",
+      "source_text_hash": "7281fac8563809697fb19d07b2f2ed82b71c872e817328ef8ea4b32c4c40b4be",
+      "translation_text_hash": "fa0f7a4156a66352ca654c331bfcacd23e05062d6f048b01d259f9d4420d9df5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비판을 받지 아니하려거든 비판하지 말라"
+      ],
+      "raw_text_hashes": [
+        "fa0f7a4156a66352ca654c331bfcacd23e05062d6f048b01d259f9d4420d9df5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:2",
+      "sequence": 23319,
+      "chapter_label": "MAT 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "For with whatever judgment you judge, you will be judged; and with whatever measure you measure, it will be measured to you.",
+      "ko": "너희의 비판하는 그 비판으로 너희가 비판을 받을 것이요 너희의 헤아리는 그 헤아림으로 너희가 헤아림을 받을 것이니라",
+      "source_text_hash": "c8aeb67ea0c3d4accc834098554f9e222359ea967cb076ac384122860a42d114",
+      "translation_text_hash": "fad773d49b2038a1f08a1c0161349d3d92496f985dd129c5602c840c270681c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 비판하는 그 비판으로 너희가 비판을 받을 것이요 너희의 헤아리는 그 헤아림으로 너희가 헤아림을 받을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "fad773d49b2038a1f08a1c0161349d3d92496f985dd129c5602c840c270681c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:3",
+      "sequence": 23320,
+      "chapter_label": "MAT 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Why do you see the speck that is in your brother’s eye, but don’t consider the beam that is in your own eye?",
+      "ko": "어찌하여 형제의 눈속에 있는 티는 보고 네 눈속에 있는 들보는 깨닫지 못하느냐",
+      "source_text_hash": "f8bc965ea7a570010132292aed0096756f1040e28a59cf3805faca563cc118d6",
+      "translation_text_hash": "9eb6dd7ab7c01b11777996cd870c189f99a9e168ccbf66174c7bfbb90317a454",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 형제의 눈속에 있는 티는 보고 네 눈속에 있는 들보는 깨닫지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "9eb6dd7ab7c01b11777996cd870c189f99a9e168ccbf66174c7bfbb90317a454"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:4",
+      "sequence": 23321,
+      "chapter_label": "MAT 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Or how will you tell your brother, ‘Let me remove the speck from your eye,’ and behold, the beam is in your own eye?",
+      "ko": "보라 네 눈속에 들보가 있는데 어찌하여 형제에게 말하기를 나로 네 눈속에 있는 티를 빼게 하라 하겠느냐",
+      "source_text_hash": "c5690da05797af0ca81748cb4b6e5259d5114538edd0be5b7b19d5cdf9c2de10",
+      "translation_text_hash": "3cc1c468280f60e11afdccdbc472916df6b798cb424b8375fc1b28a395895992",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 네 눈속에 들보가 있는데 어찌하여 형제에게 말하기를 나로 네 눈속에 있는 티를 빼게 하라 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3cc1c468280f60e11afdccdbc472916df6b798cb424b8375fc1b28a395895992"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:5",
+      "sequence": 23322,
+      "chapter_label": "MAT 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "You hypocrite! First remove the beam out of your own eye, and then you can see clearly to remove the speck out of your brother’s eye.",
+      "ko": "외식하는 자여 먼저 네 눈속에서 들보를 빼어라 그 후에야 밝히 보고 형제의 눈속에서 티를 빼리라",
+      "source_text_hash": "d6bb7cf9a3fe8d17caa998413eeefb3e87c6611625214e69af53d43a402c495f",
+      "translation_text_hash": "5b9b136f5561f4d8e8d07ce176ad4b38e0e9cb076ca3b4e1d71d6a2824f4a524",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외식하는 자여 먼저 네 눈속에서 들보를 빼어라 그 후에야 밝히 보고 형제의 눈속에서 티를 빼리라"
+      ],
+      "raw_text_hashes": [
+        "5b9b136f5561f4d8e8d07ce176ad4b38e0e9cb076ca3b4e1d71d6a2824f4a524"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:6",
+      "sequence": 23323,
+      "chapter_label": "MAT 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "“Don’t give that which is holy to the dogs, neither throw your pearls before the pigs, lest perhaps they trample them under their feet, and turn and tear you to pieces.",
+      "ko": "거룩한 것을 개에게 주지 말며 너희 진주를 돼지 앞에 던지지 말라 저희가 그것을 발로 밟고 돌이켜 너희를 찢어 상할까 염려하라",
+      "source_text_hash": "7171edc5f1607b31e6c4989cc346a77db1018c5cd44b2210ef05a3e7aa2e41fe",
+      "translation_text_hash": "e6ae049db84c770281e3b745caf1179c86c0a6cf48ca745e73b221c11549f1ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거룩한 것을 개에게 주지 말며 너희 진주를 돼지 앞에 던지지 말라 저희가 그것을 발로 밟고 돌이켜 너희를 찢어 상할까 염려하라"
+      ],
+      "raw_text_hashes": [
+        "e6ae049db84c770281e3b745caf1179c86c0a6cf48ca745e73b221c11549f1ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:7",
+      "sequence": 23324,
+      "chapter_label": "MAT 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "“Ask, and it will be given you. Seek, and you will find. Knock, and it will be opened for you.",
+      "ko": "구하라 그러면 너희에게 주실 것이요 찾으라 그러면 찾을 것이요 문을 두드리라 그러면 너희에게 열릴 것이니",
+      "source_text_hash": "f54bc6c1a779720e5481bc880dbb2f8305e875d02737c61b83c17bccd4485dba",
+      "translation_text_hash": "3037f2f65c5adccd886616685b5f91c5a56fe32966e8018f6cb12f64ade06786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구하라 그러면 너희에게 주실 것이요 찾으라 그러면 찾을 것이요 문을 두드리라 그러면 너희에게 열릴 것이니"
+      ],
+      "raw_text_hashes": [
+        "3037f2f65c5adccd886616685b5f91c5a56fe32966e8018f6cb12f64ade06786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:8",
+      "sequence": 23325,
+      "chapter_label": "MAT 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "For everyone who asks receives. He who seeks finds. To him who knocks it will be opened.",
+      "ko": "구하는 이마다 얻을 것이요 찾는 이가 찾을 것이요 두드리는 이에게 열릴 것이니라",
+      "source_text_hash": "0be2edaaa7bfc342a52cb9e0f35fdac0d4a33ad2c76c1ab4837a8a05a52b6bd9",
+      "translation_text_hash": "4185156b4e56a84bf12517257be80e72d5ed40922deff1aa7beb2ec04b00157a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구하는 이마다 얻을 것이요 찾는 이가 찾을 것이요 두드리는 이에게 열릴 것이니라"
+      ],
+      "raw_text_hashes": [
+        "4185156b4e56a84bf12517257be80e72d5ed40922deff1aa7beb2ec04b00157a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:9",
+      "sequence": 23326,
+      "chapter_label": "MAT 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Or who is there among you who, if his son asks him for bread, will give him a stone?",
+      "ko": "너희 중에 누가 아들이 떡을 달라 하면 돌을 주며",
+      "source_text_hash": "4a5119ce76e837b1de6a4175d05dd6c44f0a248102790dfa2ef657656f6cace2",
+      "translation_text_hash": "3f4f1c99ef431aa22d29caa6d98c825aff215d3597c68cc433042e8fde504ced",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누가 아들이 떡을 달라 하면 돌을 주며"
+      ],
+      "raw_text_hashes": [
+        "3f4f1c99ef431aa22d29caa6d98c825aff215d3597c68cc433042e8fde504ced"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:10",
+      "sequence": 23327,
+      "chapter_label": "MAT 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "Or if he asks for a fish, who will give him a serpent?",
+      "ko": "생선을 달라 하면 뱀을 줄 사람이 있겠느냐",
+      "source_text_hash": "e0ae4a191ad6dacaf83f4a1ad0e456da1edc1a30f688f65778ab6bde978e9ef4",
+      "translation_text_hash": "d90973687becb5b1e5b0598448ba175eda2a801606e5e67be0a674a8edeb222b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생선을 달라 하면 뱀을 줄 사람이 있겠느냐"
+      ],
+      "raw_text_hashes": [
+        "d90973687becb5b1e5b0598448ba175eda2a801606e5e67be0a674a8edeb222b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:11",
+      "sequence": 23328,
+      "chapter_label": "MAT 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "If you then, being evil, know how to give good gifts to your children, how much more will your Father who is in heaven give good things to those who ask him!",
+      "ko": "너희가 악한 자라도 좋은 것으로 자식에게 줄줄 알거든 하물며 하늘에 계신 너희 아버지께서 구하는 자에게 좋은 것으로 주시지 않겠느냐",
+      "source_text_hash": "45eea8eef87c78f3149f1c3f8b3eee0a0f7dc03f95f64ec532450a5b403d5efd",
+      "translation_text_hash": "ecd3b76074094cc863411d07665302762b5df1e45ee57b726477aa34481a2349",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 악한 자라도 좋은 것으로 자식에게 줄줄 알거든 하물며 하늘에 계신 너희 아버지께서 구하는 자에게 좋은 것으로 주시지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "ecd3b76074094cc863411d07665302762b5df1e45ee57b726477aa34481a2349"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:12",
+      "sequence": 23329,
+      "chapter_label": "MAT 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore, whatever you desire for men to do to you, you shall also do to them; for this is the law and the prophets.",
+      "ko": "그러므로 무엇이든지 남에게 대접을 받고자 하는대로 너희도 남을 대접하라 이것이 율법이요 선지자니라",
+      "source_text_hash": "e923578393d95b1d1f79691228e08c9e25adc6582ece8e35a5d7cbed461e9b5a",
+      "translation_text_hash": "10c3319eaefff861336e306fc1658f4424b1aa67508ca0fa3dc6974775cc987d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 무엇이든지 남에게 대접을 받고자 하는대로 너희도 남을 대접하라 이것이 율법이요 선지자니라"
+      ],
+      "raw_text_hashes": [
+        "10c3319eaefff861336e306fc1658f4424b1aa67508ca0fa3dc6974775cc987d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:13",
+      "sequence": 23330,
+      "chapter_label": "MAT 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "“Enter in by the narrow gate; for the gate is wide and the way is broad that leads to destruction, and there are many who enter in by it.",
+      "ko": "좁은 문으로 들어가라 멸망으로 인도하는 문은 크고 그 길이 넓어 그리로 들어가는 자가 많고",
+      "source_text_hash": "aeed9ac5ec957de67a6565a8f32bf349e9ccc510b4fb4e3451793dd1ce7ae9d5",
+      "translation_text_hash": "530871073d79e538e145428df6d9ab48c6cbe12273cc9ef50e14167dc26fa140",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좁은 문으로 들어가라 멸망으로 인도하는 문은 크고 그 길이 넓어 그리로 들어가는 자가 많고"
+      ],
+      "raw_text_hashes": [
+        "530871073d79e538e145428df6d9ab48c6cbe12273cc9ef50e14167dc26fa140"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:14",
+      "sequence": 23331,
+      "chapter_label": "MAT 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "Hownarrow is the gate and the way is restricted that leads to life! There are few who find it.",
+      "ko": "생명으로 인도하는 문은 좁고 길이 협착하여 찾는 이가 적음이니라",
+      "source_text_hash": "c03c11ec0e1f53f83d2f4c7b80ef661b3e0a6c1a9fe4e3a8f90d0f87750d24e7",
+      "translation_text_hash": "8af74a831bff091ba941635211cc180edc6313009d1cbf7bf1ed1c671f327531",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생명으로 인도하는 문은 좁고 길이 협착하여 찾는 이가 적음이니라"
+      ],
+      "raw_text_hashes": [
+        "8af74a831bff091ba941635211cc180edc6313009d1cbf7bf1ed1c671f327531"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:15",
+      "sequence": 23332,
+      "chapter_label": "MAT 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "“Beware of false prophets, who come to you in sheep’s clothing, but inwardly are ravening wolves.",
+      "ko": "거짓 선지자들을 삼가라 양의 옷을 입고 너희에게 나아오나 속에는 노략질하는 이리라",
+      "source_text_hash": "d623b2ac1610649f0e22657613752bafa8f503cb418bb8670f413abef0cdc83e",
+      "translation_text_hash": "e28c429b3849ac7b41e87df99cdb509af2c25be04e653f21b4633327359f0d28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 선지자들을 삼가라 양의 옷을 입고 너희에게 나아오나 속에는 노략질하는 이리라"
+      ],
+      "raw_text_hashes": [
+        "e28c429b3849ac7b41e87df99cdb509af2c25be04e653f21b4633327359f0d28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:16",
+      "sequence": 23333,
+      "chapter_label": "MAT 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "By their fruits you will know them. Do you gather grapes from thorns or figs from thistles?",
+      "ko": "그의 열매로 그들을 알찌니 가시나무에서 포도를, 또는 엉겅퀴에서 무화과를 따겠느냐",
+      "source_text_hash": "048e410c4f346b9865f827ada0ddaddeb6f7eb480cecc5e9387e3e48c38ef132",
+      "translation_text_hash": "9cae5405bcc9af81009aa466e51f040a93427ed0be110e9dcccfcc19353432a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 열매로 그들을 알찌니 가시나무에서 포도를, 또는 엉겅퀴에서 무화과를 따겠느냐"
+      ],
+      "raw_text_hashes": [
+        "9cae5405bcc9af81009aa466e51f040a93427ed0be110e9dcccfcc19353432a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:17",
+      "sequence": 23334,
+      "chapter_label": "MAT 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "Even so, every good tree produces good fruit, but the corrupt tree produces evil fruit.",
+      "ko": "이와 같이 좋은 나무마다 아름다운 열매를 맺고 못된 나무가 나쁜 열매를 맺나니",
+      "source_text_hash": "c7c94c339f5590bc97ab48fec32107c1054973550f7c1aaccf0cde551d7c48a1",
+      "translation_text_hash": "c1bff6744f178cd7a44011b7dfcdf48e8db6fae8f63012b254d693fb349357d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 좋은 나무마다 아름다운 열매를 맺고 못된 나무가 나쁜 열매를 맺나니"
+      ],
+      "raw_text_hashes": [
+        "c1bff6744f178cd7a44011b7dfcdf48e8db6fae8f63012b254d693fb349357d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:18",
+      "sequence": 23335,
+      "chapter_label": "MAT 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "A good tree can’t produce evil fruit, neither can a corrupt tree produce good fruit.",
+      "ko": "좋은 나무가 나쁜 열매를 맺을 수 없고 못된 나무가 아름다운 열매를 맺을 수 없느니라",
+      "source_text_hash": "927ef750c9ee283a2b514f403a157986b43fda77b7ec8ab97a5dd4f8dcd6cf9b",
+      "translation_text_hash": "a7db70b002dc038dda7bf7613180f5abf52de0fe5d48fd6e23cd762dfa57298a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좋은 나무가 나쁜 열매를 맺을 수 없고 못된 나무가 아름다운 열매를 맺을 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "a7db70b002dc038dda7bf7613180f5abf52de0fe5d48fd6e23cd762dfa57298a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:19",
+      "sequence": 23336,
+      "chapter_label": "MAT 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "Every tree that doesn’t grow good fruit is cut down and thrown into the fire.",
+      "ko": "아름다운 열매를 맺지 아니하는 나무마다 찍혀 불에 던지우느니라",
+      "source_text_hash": "4b16ea3a8c82175013434467f590c13ab235cabb96d2ca1b9b75026b4e2a1533",
+      "translation_text_hash": "a9fb30a18394884267b64d7edccf551d9d96448f5da46ba488904a2a735583c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아름다운 열매를 맺지 아니하는 나무마다 찍혀 불에 던지우느니라"
+      ],
+      "raw_text_hashes": [
+        "a9fb30a18394884267b64d7edccf551d9d96448f5da46ba488904a2a735583c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:20",
+      "sequence": 23337,
+      "chapter_label": "MAT 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "Therefore by their fruits you will know them.",
+      "ko": "이러므로 그의 열매로 그들을 알리라",
+      "source_text_hash": "050da15c8f7bc61e6d372b0cdb669e4da4a606f6078e575fc8eb7aeb8d9fc534",
+      "translation_text_hash": "4922590ae2bde7ebecd0dee57c4749a8a7afd89ac017ed1c5d2921e2dab36831",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 그의 열매로 그들을 알리라"
+      ],
+      "raw_text_hashes": [
+        "4922590ae2bde7ebecd0dee57c4749a8a7afd89ac017ed1c5d2921e2dab36831"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:21",
+      "sequence": 23338,
+      "chapter_label": "MAT 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "“Not everyone who says to me, ‘Lord, Lord,’ will enter into the Kingdom of Heaven, but he who does the will of my Father who is in heaven.",
+      "ko": "나더러 주여 주여 하는 자마다 천국에 다 들어갈 것이 아니요 다만 하늘에 계신 내 아버지의 뜻대로 행하는 자라야 들어가리라",
+      "source_text_hash": "49072698332aa0cf2edc84cd897bc896a489bb150620de2f485623d3a767896c",
+      "translation_text_hash": "b1a93319a59faea4d06a267ba0124bc6dfb69ccf3b5235dca89560db58a04ec2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나더러 주여 주여 하는 자마다 천국에 다 들어갈 것이 아니요 다만 하늘에 계신 내 아버지의 뜻대로 행하는 자라야 들어가리라"
+      ],
+      "raw_text_hashes": [
+        "b1a93319a59faea4d06a267ba0124bc6dfb69ccf3b5235dca89560db58a04ec2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:22",
+      "sequence": 23339,
+      "chapter_label": "MAT 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "Many will tell me in that day, ‘Lord, Lord, didn’t we prophesy in your name, in your name cast out demons, and in your name do many mighty works?’",
+      "ko": "그 날에 많은 사람이 나더러 이르되 주여 주여 우리가 주의 이름으로 선지자 노릇하며 주의 이름으로 귀신을 쫓아 내며 주의 이름으로 많은 권능을 행치 아니하였나이까 하리니",
+      "source_text_hash": "1f35d954bd5f7a4176b102d4e9d810ba149c0ddca01fdea2968a40d65adeaacf",
+      "translation_text_hash": "13755abe66ee6d25f7226d40d9624aa7072f868d1c5740b94db9c081cf9a0b08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 많은 사람이 나더러 이르되 주여 주여 우리가 주의 이름으로 선지자 노릇하며 주의 이름으로 귀신을 쫓아 내며 주의 이름으로 많은 권능을 행치 아니하였나이까 하리니"
+      ],
+      "raw_text_hashes": [
+        "13755abe66ee6d25f7226d40d9624aa7072f868d1c5740b94db9c081cf9a0b08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:23",
+      "sequence": 23340,
+      "chapter_label": "MAT 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "Then I will tell them, ‘I never knew you. Depart from me, you who work iniquity.’",
+      "ko": "그때에 내가 저희에게 밝히 말하되 내가 너희를 도무지 알지 못하니 불법을 행하는 자들아 내게서 떠나가라 하리라",
+      "source_text_hash": "df5fadfcc73cae8019a49c076c615dd22ce618d9751e84ff4af0f074d4b7917e",
+      "translation_text_hash": "44f3c084121f39ac99ce8c3a09e7acb4ccbf99d3b15e01b68deefb1865a0a4a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그때에 내가 저희에게 밝히 말하되 내가 너희를 도무지 알지 못하니 불법을 행하는 자들아 내게서 떠나가라 하리라"
+      ],
+      "raw_text_hashes": [
+        "44f3c084121f39ac99ce8c3a09e7acb4ccbf99d3b15e01b68deefb1865a0a4a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:24",
+      "sequence": 23341,
+      "chapter_label": "MAT 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "“Everyone therefore who hears these words of mine and does them, I will liken him to a wise man who built his house on the rock.",
+      "ko": "그러므로 누구든지 나의 이 말을 듣고 행하는 자는 그 집을 반석 위에 지은 지혜로운 사람 같으리니",
+      "source_text_hash": "18ab2f5aa02cbbbb4ae02b0863f2448c4e378eae46f8864534571014ff260cf2",
+      "translation_text_hash": "8c793d5646af28bf7d57f9ed2b6291b150d9e4399c50309f30148c4acc4f61e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 누구든지 나의 이 말을 듣고 행하는 자는 그 집을 반석 위에 지은 지혜로운 사람 같으리니"
+      ],
+      "raw_text_hashes": [
+        "8c793d5646af28bf7d57f9ed2b6291b150d9e4399c50309f30148c4acc4f61e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:25",
+      "sequence": 23342,
+      "chapter_label": "MAT 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "The rain came down, the floods came, and the winds blew and beat on that house; and it didn’t fall, for it was founded on the rock.",
+      "ko": "비가 내리고 창수가 나고 바람이 불어 그 집에 부딪히되 무너지지 아니하나니 이는 주초를 반석 위에 놓은 연고요",
+      "source_text_hash": "27cf2e21bc7511d8ae5fbf44fd2e6c672eca42babd10597b510a85355745a8c8",
+      "translation_text_hash": "ec45b376c925985ffafb12b73f334d9df71e12091e167ae53ec9532655d7f453",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비가 내리고 창수가 나고 바람이 불어 그 집에 부딪히되 무너지지 아니하나니 이는 주초를 반석 위에 놓은 연고요"
+      ],
+      "raw_text_hashes": [
+        "ec45b376c925985ffafb12b73f334d9df71e12091e167ae53ec9532655d7f453"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:26",
+      "sequence": 23343,
+      "chapter_label": "MAT 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "Everyone who hears these words of mine and doesn’t do them will be like a foolish man who built his house on the sand.",
+      "ko": "나의 이 말을 듣고 행치 아니하는 자는 그 집을 모래 위에 지은 어리석은 사람 같으리니",
+      "source_text_hash": "ea171d92d23f1bf5eed0da79bdf8ece6e5d428552a45b6386833725fc365c275",
+      "translation_text_hash": "8e4613c478530496e0313633aa5564744cf21b6e4fa4c5d6d44bc4a3f4a9b6d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 이 말을 듣고 행치 아니하는 자는 그 집을 모래 위에 지은 어리석은 사람 같으리니"
+      ],
+      "raw_text_hashes": [
+        "8e4613c478530496e0313633aa5564744cf21b6e4fa4c5d6d44bc4a3f4a9b6d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:27",
+      "sequence": 23344,
+      "chapter_label": "MAT 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "The rain came down, the floods came, and the winds blew and beat on that house; and it fell—and its fall was great.”",
+      "ko": "비가 내리고 창수가 나고 바람이 불어 그 집에 부딪히매 무너져 그 무너짐이 심하니라",
+      "source_text_hash": "3020328916e9e34e0725d95c25dfe4772d4f4af770af653b3785a5d007cd0b99",
+      "translation_text_hash": "4b0372df0e98a91c0a596b088a3104bed450af9f25ac82f3ce9f0311bec2bfa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비가 내리고 창수가 나고 바람이 불어 그 집에 부딪히매 무너져 그 무너짐이 심하니라"
+      ],
+      "raw_text_hashes": [
+        "4b0372df0e98a91c0a596b088a3104bed450af9f25ac82f3ce9f0311bec2bfa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:28",
+      "sequence": 23345,
+      "chapter_label": "MAT 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "When Jesus had finished saying these things, the multitudes were astonished at his teaching,",
+      "ko": "예수께서 이 말씀을 마치시매 무리들이 그 가르치심에 놀래니",
+      "source_text_hash": "7c4aae4b631c018a7a7980d28a7f81e18be7bc977cf91c8b98e1220cdf61f2d7",
+      "translation_text_hash": "f6324168217206491795764d90bc0d25f086eff71ee755a693941aab324a0f47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 말씀을 마치시매 무리들이 그 가르치심에 놀래니"
+      ],
+      "raw_text_hashes": [
+        "f6324168217206491795764d90bc0d25f086eff71ee755a693941aab324a0f47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:7:29",
+      "sequence": 23346,
+      "chapter_label": "MAT 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "for he taught them with authority, and not like the scribes.",
+      "ko": "이는 그 가르치시는 것이 권세 있는 자와 같고 저희 서기관들과 같지 아니함일러라",
+      "source_text_hash": "83d7e7ae29bb6b77960ad47298104dc8f100fe54d39a227da6b37f1e0de07867",
+      "translation_text_hash": "bafaeea16b8e5ca19cbf4a808edb36c3497991534538ee09440e60e868e68952",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 가르치시는 것이 권세 있는 자와 같고 저희 서기관들과 같지 아니함일러라"
+      ],
+      "raw_text_hashes": [
+        "bafaeea16b8e5ca19cbf4a808edb36c3497991534538ee09440e60e868e68952"
+      ]
+    }
+  ]
+}

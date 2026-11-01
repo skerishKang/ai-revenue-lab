@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:018",
+  "unit_ordinal": 18,
+  "unit_label": "GEN 18",
+  "book_code": "GEN",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:18:1",
+      "sequence": 426,
+      "chapter_label": "GEN 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD appeared to him by the oaks of Mamre, as he sat in the tent door in the heat of the day.",
+      "ko": "여호와께서 마므레 상수리 수풀 근처에서 아브라함에게 나타나시니라 오정 즈음에 그가 장막 문에 앉았다가",
+      "source_text_hash": "dd7912be01fa055ec23c267c17e45413aa281095c9633384bdac896dba55ecb6",
+      "translation_text_hash": "c0c35c36b00accf83220b75e6fc78c59aa30e9b68585626b5e3a8e76ad639f0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 마므레 상수리 수풀 근처에서 아브라함에게 나타나시니라 오정 즈음에 그가 장막 문에 앉았다가"
+      ],
+      "raw_text_hashes": [
+        "c0c35c36b00accf83220b75e6fc78c59aa30e9b68585626b5e3a8e76ad639f0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:2",
+      "sequence": 427,
+      "chapter_label": "GEN 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "He lifted up his eyes and looked, and saw that three men stood near him. When he saw them, he ran to meet them from the tent door, and bowed himself to the earth,",
+      "ko": "눈을 들어 본즉 사람 셋이 맞은편에 섰는지라 그가 그들을 보자 곧 장막 문에서 달려나가 영접하며 몸을 땅에 굽혀",
+      "source_text_hash": "ef08b8569e34630d3f4f1c3ad4377992dff5f5970127c7477cd0183a8d763954",
+      "translation_text_hash": "4397ee0b4353b3f91349748588246ea0a52cf5eae0e372dc81a51465352e4bb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈을 들어 본즉 사람 셋이 맞은편에 섰는지라 그가 그들을 보자 곧 장막 문에서 달려나가 영접하며 몸을 땅에 굽혀"
+      ],
+      "raw_text_hashes": [
+        "4397ee0b4353b3f91349748588246ea0a52cf5eae0e372dc81a51465352e4bb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:3",
+      "sequence": 428,
+      "chapter_label": "GEN 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "and said, “My lord, if now I have found favor in your sight, please don’t go away from your servant.",
+      "ko": "가로되 내 주여 내가 주께 은혜를 입었사오면 원컨대 종을 떠나 지나가지 마옵시고",
+      "source_text_hash": "6cd25d9042902e114ab634f7d50824c3b7d9dbd24aad7bfde57076d073f19572",
+      "translation_text_hash": "f9ede0a933eb1abe6206f3a42bcb15dba731b1c9d9dae59b8790b76ca63853b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내 주여 내가 주께 은혜를 입었사오면 원컨대 종을 떠나 지나가지 마옵시고"
+      ],
+      "raw_text_hashes": [
+        "f9ede0a933eb1abe6206f3a42bcb15dba731b1c9d9dae59b8790b76ca63853b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:4",
+      "sequence": 429,
+      "chapter_label": "GEN 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "Now let a little water be fetched, wash your feet, and rest yourselves under the tree.",
+      "ko": "물을 조금 가져오게 하사 당신들의 발을 씻으시고 나무 아래서 쉬소서",
+      "source_text_hash": "ae3fa03abe352891ae444330326773c6d6bdd467a94c1febfb034370944d762e",
+      "translation_text_hash": "b058723bdd008fdd26390109c35bca6a18fc7f9cb38fa7e81e14eb8325e1223f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물을 조금 가져오게 하사 당신들의 발을 씻으시고 나무 아래서 쉬소서"
+      ],
+      "raw_text_hashes": [
+        "b058723bdd008fdd26390109c35bca6a18fc7f9cb38fa7e81e14eb8325e1223f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:5",
+      "sequence": 430,
+      "chapter_label": "GEN 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "I will get a piece of bread so you can refresh your heart. After that you may go your way, now that you have come to your servant.” They said, “Very well, do as you have said.”",
+      "ko": "내가 떡을 조금 가져오리니 당신들의 마음을 쾌활케 하신 후에 지나가소서 당신들이 종에게 오셨음이니이다 그들이 가로되 네 말대로 그리하라",
+      "source_text_hash": "e3a2e6618521b50909d9d75e71af693fc69eeb6c5e3941a7a9d9e8a65872504a",
+      "translation_text_hash": "9e1debca8e4de6ce089c46e5963d6fb27126f3d5ed0afd7d79ebba7d40adc742",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 떡을 조금 가져오리니 당신들의 마음을 쾌활케 하신 후에 지나가소서 당신들이 종에게 오셨음이니이다 그들이 가로되 네 말대로 그리하라"
+      ],
+      "raw_text_hashes": [
+        "9e1debca8e4de6ce089c46e5963d6fb27126f3d5ed0afd7d79ebba7d40adc742"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:6",
+      "sequence": 431,
+      "chapter_label": "GEN 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "Abraham hurried into the tent to Sarah, and said, “Quickly prepare three seahs of fine meal, knead it, and make cakes.”",
+      "ko": "아브라함이 급히 장막에 들어가 사라에게 이르러 이르되 속히 고운 가루 세 스아를 가져다가 반죽하여 떡을 만들라 하고",
+      "source_text_hash": "1b2d344ef7f91cb817539a6ebec1b7fde0cf1b57d908ff990c885d82ffe1cd15",
+      "translation_text_hash": "d893c08cab5baeb9fe44a82df0aa7c02f90c9485397087d4926afa3059115428",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 급히 장막에 들어가 사라에게 이르러 이르되 속히 고운 가루 세 스아를 가져다가 반죽하여 떡을 만들라 하고"
+      ],
+      "raw_text_hashes": [
+        "d893c08cab5baeb9fe44a82df0aa7c02f90c9485397087d4926afa3059115428"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:7",
+      "sequence": 432,
+      "chapter_label": "GEN 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "Abraham ran to the herd, and fetched a tender and good calf, and gave it to the servant. He hurried to dress it.",
+      "ko": "아브라함이 또 짐승 떼에 달려가서 기름지고 좋은 송아지를 취하여 하인에게 주니 그가 급히 요리한지라",
+      "source_text_hash": "f337422b556ba19c8c37b1b97c83043798e64466425d343522c5c44172b312a7",
+      "translation_text_hash": "70e34d084463af5ab39b567beb5bfcee5412ed42233d0219b342979c8d2dd114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 또 짐승 떼에 달려가서 기름지고 좋은 송아지를 취하여 하인에게 주니 그가 급히 요리한지라"
+      ],
+      "raw_text_hashes": [
+        "70e34d084463af5ab39b567beb5bfcee5412ed42233d0219b342979c8d2dd114"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:8",
+      "sequence": 433,
+      "chapter_label": "GEN 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "He took butter, milk, and the calf which he had dressed, and set it before them. He stood by them under the tree, and they ate.",
+      "ko": "아브라함이 뻐터와 우유와 하인이 요리한 송아지를 가져다가 그들의 앞에 진설하고 나무 아래 모셔 서매 그들이 먹으니라",
+      "source_text_hash": "0dc89534c525d8af67c92a93c14bbb17be72c30a332540f62f6bba0fe4a9ca85",
+      "translation_text_hash": "72c829d38af486bccc6aac27066a6c4a58e0bdde2b3127cdfa6b9537c5095083",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 뻐터와 우유와 하인이 요리한 송아지를 가져다가 그들의 앞에 진설하고 나무 아래 모셔 서매 그들이 먹으니라"
+      ],
+      "raw_text_hashes": [
+        "72c829d38af486bccc6aac27066a6c4a58e0bdde2b3127cdfa6b9537c5095083"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:9",
+      "sequence": 434,
+      "chapter_label": "GEN 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "They asked him, “Where is Sarah, your wife?” He said, “There, in the tent.”",
+      "ko": "그들이 아브라함에게 이르되 네 아내 사라가 어디 있느냐 대답하되 장막에 있나이다",
+      "source_text_hash": "b54860bcb3ad1e3bc4cc8965422ebc67f994fd594ad25837033813fc27d04595",
+      "translation_text_hash": "8a15452b3e42ea3a03f66b3b84e41bb7cffddc20920c9c0df64f99468173c6bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 아브라함에게 이르되 네 아내 사라가 어디 있느냐 대답하되 장막에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "8a15452b3e42ea3a03f66b3b84e41bb7cffddc20920c9c0df64f99468173c6bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:10",
+      "sequence": 435,
+      "chapter_label": "GEN 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "He said, “I will certainly return to you at about this time next year; and behold, Sarah your wife will have a son.” Sarah heard in the tent door, which was behind him.",
+      "ko": "그가 가라사대 기한이 이를 때에 내가 정녕 네게로 돌아오리니 네 아내 사라에게 아들이 있으리라 하시니 사라가 그 뒤 장막 문에서 들었더라",
+      "source_text_hash": "e450d11dcfa19268d2ed4cce5f93de8e5a5440b33d7cfd670d8c272b8acf1bef",
+      "translation_text_hash": "c492cf974cbac3ebb53bf5878a93c3b8b9c488416a06f79ab5040e098dbd631d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가라사대 기한이 이를 때에 내가 정녕 네게로 돌아오리니 네 아내 사라에게 아들이 있으리라 하시니 사라가 그 뒤 장막 문에서 들었더라"
+      ],
+      "raw_text_hashes": [
+        "c492cf974cbac3ebb53bf5878a93c3b8b9c488416a06f79ab5040e098dbd631d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:11",
+      "sequence": 436,
+      "chapter_label": "GEN 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "Now Abraham and Sarah were old, well advanced in age. Sarah had passed the age of childbearing.",
+      "ko": "아브라함과 사라가 나이 많아 늙었고 사라의 경수는 끊어졌는지라",
+      "source_text_hash": "8477add019e8be7899028668ed0aaa61229527d1fbf78c851e3478f786179248",
+      "translation_text_hash": "b33748f26a8b2031102a9bf1cab71bca7b54a07498ae6ff857f1373c260d1687",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함과 사라가 나이 많아 늙었고 사라의 경수는 끊어졌는지라"
+      ],
+      "raw_text_hashes": [
+        "b33748f26a8b2031102a9bf1cab71bca7b54a07498ae6ff857f1373c260d1687"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:12",
+      "sequence": 437,
+      "chapter_label": "GEN 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "Sarah laughed within herself, saying, “After I have grown old will I have pleasure, my lord being old also?”",
+      "ko": "사라가 속으로 웃고 이르되 내가 노쇠하였고 내 주인도 늙었으니 내게 어찌 낙이 있으리요",
+      "source_text_hash": "676ff10589554e5b6cad402793c997dfdd8e73be89e1760864e8e8842d0e9fcc",
+      "translation_text_hash": "cbfa74045bb10be323f3a0899a065947c9d5ee0a62ef2291cb4c3402d79a9e0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사라가 속으로 웃고 이르되 내가 노쇠하였고 내 주인도 늙었으니 내게 어찌 낙이 있으리요"
+      ],
+      "raw_text_hashes": [
+        "cbfa74045bb10be323f3a0899a065947c9d5ee0a62ef2291cb4c3402d79a9e0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:13",
+      "sequence": 438,
+      "chapter_label": "GEN 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD said to Abraham, “Why did Sarah laugh, saying, ‘Will I really bear a child when I am old?’",
+      "ko": "여호와께서 아브라함에게 이르시되 사라가 왜 웃으며 이르기를 내가 늙었거늘 어떻게 아들을 낳으리요 하느냐",
+      "source_text_hash": "cda0e0175cec46d4890b6b40e9130f8395631a8e36813973c5bc71802bd855a1",
+      "translation_text_hash": "bbe1a1cd75e8f94acb5013c8435caad43eab36f47ef15e6dc01e7cbc421600a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아브라함에게 이르시되 사라가 왜 웃으며 이르기를 내가 늙었거늘 어떻게 아들을 낳으리요 하느냐"
+      ],
+      "raw_text_hashes": [
+        "bbe1a1cd75e8f94acb5013c8435caad43eab36f47ef15e6dc01e7cbc421600a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:14",
+      "sequence": 439,
+      "chapter_label": "GEN 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "Is anything too hard for the LORD? At the set time I will return to you, when the season comes around, and Sarah will have a son.”",
+      "ko": "여호와께 능치 못한 일이 있겠느냐 기한이 이를 때에 내가 네게로 돌아오리니 사라에게 아들이 있으리라",
+      "source_text_hash": "6ccbe5c293987705184daf8478509853db3c7ea49fa9397eb80f6d3b7b8ced07",
+      "translation_text_hash": "904b50a9b68cd6df7b365f744115cb25378d1c647cb07810241381d442624b5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 능치 못한 일이 있겠느냐 기한이 이를 때에 내가 네게로 돌아오리니 사라에게 아들이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "904b50a9b68cd6df7b365f744115cb25378d1c647cb07810241381d442624b5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:15",
+      "sequence": 440,
+      "chapter_label": "GEN 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "Then Sarah denied it, saying, “I didn’t laugh,” for she was afraid. He said, “No, but you did laugh.”",
+      "ko": "사라가 두려워서 승인치 아니하여 가로되 내가 웃지 아니하였나이다 가라사대 아니라 네가 웃었느니라",
+      "source_text_hash": "6083207f044c2618eb7053d44c0bd8999beceae19b35ecfef6c24b5cd22da531",
+      "translation_text_hash": "6b4857490fc80e7f7a1da56514a716824bebf2e0cb695672f0936fb70bdae2c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사라가 두려워서 승인치 아니하여 가로되 내가 웃지 아니하였나이다 가라사대 아니라 네가 웃었느니라"
+      ],
+      "raw_text_hashes": [
+        "6b4857490fc80e7f7a1da56514a716824bebf2e0cb695672f0936fb70bdae2c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:16",
+      "sequence": 441,
+      "chapter_label": "GEN 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "The men rose up from there, and looked toward Sodom. Abraham went with them to see them on their way.",
+      "ko": "그 사람들이 거기서 일어나서 소돔으로 향하고 아브라함은 그들을 전송하러 함께 나가니라",
+      "source_text_hash": "fc0e8a6eceb800e83b231955a5b35d01ae545bee7b93a6ef946ae624c83942a7",
+      "translation_text_hash": "fe27921e6d43cc44c3ac8ca27e8e35421e7c8dd47e67bf78f1c41aa26c0ea2ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 거기서 일어나서 소돔으로 향하고 아브라함은 그들을 전송하러 함께 나가니라"
+      ],
+      "raw_text_hashes": [
+        "fe27921e6d43cc44c3ac8ca27e8e35421e7c8dd47e67bf78f1c41aa26c0ea2ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:17",
+      "sequence": 442,
+      "chapter_label": "GEN 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD said, “Will I hide from Abraham what I do,",
+      "ko": "여호와께서 가라사대 나의 하려는 것을 아브라함에게 숨기겠느냐",
+      "source_text_hash": "0a40168400b2b4f7fcb268eb4e606d863465e1b01c2da53d8bc029132bdb02f6",
+      "translation_text_hash": "7c2cd7c7335b8e1e2d7a4bdb1873ff69ca17c4f925edf68bf3b809cf728bfa8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 나의 하려는 것을 아브라함에게 숨기겠느냐"
+      ],
+      "raw_text_hashes": [
+        "7c2cd7c7335b8e1e2d7a4bdb1873ff69ca17c4f925edf68bf3b809cf728bfa8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:18",
+      "sequence": 443,
+      "chapter_label": "GEN 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "since Abraham will surely become a great and mighty nation, and all the nations of the earth will be blessed in him?",
+      "ko": "아브라함은 강대한 나라가 되고 천하 만민은 그를 인하여 복을 받게 될 것이 아니냐",
+      "source_text_hash": "ed243654c0519f8f0a835b66aff08db7e9b7746ee21f2b3484ee4f840cf052a7",
+      "translation_text_hash": "07bd210035714d8c6370c426c313957cc46d0c7ca43b042e11af848a64bb649d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함은 강대한 나라가 되고 천하 만민은 그를 인하여 복을 받게 될 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "07bd210035714d8c6370c426c313957cc46d0c7ca43b042e11af848a64bb649d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:19",
+      "sequence": 444,
+      "chapter_label": "GEN 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "For I have known him, to the end that he may command his children and his household after him, that they may keep the way of the LORD, to do righteousness and justice; to the end that the LORD may bring on Abraham that which he has spoken of him.”",
+      "ko": "내가 그로 그 자식과 권속에게 명하여 여호와의 도를 지켜 의와 공도를 행하게 하려고 그를 택하였나니 이는 나 여호와가 아브라함에게 대하여 말한 일을 이루려 함이니라",
+      "source_text_hash": "8bc74068d994ab758defcad7b82c78280146748d74b041cf8d6a3e6d43a21a99",
+      "translation_text_hash": "4c34e704544a5f9f1936663e2fd9e3bba67070e9146c87927df3c3dcd0291b3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그로 그 자식과 권속에게 명하여 여호와의 도를 지켜 의와 공도를 행하게 하려고 그를 택하였나니 이는 나 여호와가 아브라함에게 대하여 말한 일을 이루려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "4c34e704544a5f9f1936663e2fd9e3bba67070e9146c87927df3c3dcd0291b3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:20",
+      "sequence": 445,
+      "chapter_label": "GEN 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD said, “Because the cry of Sodom and Gomorrah is great, and because their sin is very grievous,",
+      "ko": "여호와께서 또 가라사대 소돔과 고모라에 대한 부르짖음이 크고 그 죄악이 심히 중하니",
+      "source_text_hash": "ce0c60b0d2fece4bcefc419717348e0af402003ae9d3a254400950fd3cfed75a",
+      "translation_text_hash": "43899f695f3c9b5e4123985bf13e241e082f3d0fc6dc503f45199c8f7c89b83e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 가라사대 소돔과 고모라에 대한 부르짖음이 크고 그 죄악이 심히 중하니"
+      ],
+      "raw_text_hashes": [
+        "43899f695f3c9b5e4123985bf13e241e082f3d0fc6dc503f45199c8f7c89b83e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:21",
+      "sequence": 446,
+      "chapter_label": "GEN 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "I will go down now, and see whether their deeds are as bad as the reports which have come to me. If not, I will know.”",
+      "ko": "내가 이제 내려가서 그 모든 행한 것이 과연 내게 들린 부르짖음과 같은지 그렇지 않은지 내가 보고 알려하노라",
+      "source_text_hash": "fb56fee16c9eab1c5ea034eb97e7acccd254fda6682d66eadf82b485b0372082",
+      "translation_text_hash": "7a6affd876cc09a60f574250ee317831ad468f9e3ec70fd06a15529b8954392d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이제 내려가서 그 모든 행한 것이 과연 내게 들린 부르짖음과 같은지 그렇지 않은지 내가 보고 알려하노라"
+      ],
+      "raw_text_hashes": [
+        "7a6affd876cc09a60f574250ee317831ad468f9e3ec70fd06a15529b8954392d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:22",
+      "sequence": 447,
+      "chapter_label": "GEN 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "The men turned from there, and went toward Sodom, but Abraham stood yet before the LORD.",
+      "ko": "그 사람들이 거기서 떠나 소돔으로 향하여 가고 아브라함은 여호와 앞에 그대로 섰더니",
+      "source_text_hash": "134031cdd3b88df6f91564b0276be45a403be2d6182c643b2df6c32e35432f07",
+      "translation_text_hash": "4ee2b111be2215864c8a6e9bd57cf60f985f74a4a03647a1c0b5af0342a39471",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 거기서 떠나 소돔으로 향하여 가고 아브라함은 여호와 앞에 그대로 섰더니"
+      ],
+      "raw_text_hashes": [
+        "4ee2b111be2215864c8a6e9bd57cf60f985f74a4a03647a1c0b5af0342a39471"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:23",
+      "sequence": 448,
+      "chapter_label": "GEN 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "Abraham came near, and said, “Will you consume the righteous with the wicked?",
+      "ko": "가까이 나아가 가로되 주께서 의인을 악인과 함께 멸하시려나이까",
+      "source_text_hash": "d9c6cf20f270293032dfa704c2861f750c5c8cec250d3426c63825f46adf86d6",
+      "translation_text_hash": "d3c06cb5999aae13752e2df5eec6a5ffc5c3eae1c3af8431ecb26774a05915ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가까이 나아가 가로되 주께서 의인을 악인과 함께 멸하시려나이까"
+      ],
+      "raw_text_hashes": [
+        "d3c06cb5999aae13752e2df5eec6a5ffc5c3eae1c3af8431ecb26774a05915ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:24",
+      "sequence": 449,
+      "chapter_label": "GEN 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "What if there are fifty righteous within the city? Will you consume and not spare the place for the fifty righteous who are in it?",
+      "ko": "그 성중에 의인 오십이 있을찌라도 주께서 그 곳을 멸하시고 그 오십 의인을 위하여 용서치 아니하시리이까",
+      "source_text_hash": "7444f689fb1c104d19322e6d29fa6df7dd796daa29cb88cc27eea80f2fe3cf64",
+      "translation_text_hash": "26453147abe79c3eb94f7a6ae801ad79a4fe28e31ded37683aa8a0053e35f096",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성중에 의인 오십이 있을찌라도 주께서 그 곳을 멸하시고 그 오십 의인을 위하여 용서치 아니하시리이까"
+      ],
+      "raw_text_hashes": [
+        "26453147abe79c3eb94f7a6ae801ad79a4fe28e31ded37683aa8a0053e35f096"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:25",
+      "sequence": 450,
+      "chapter_label": "GEN 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "May it be far from you to do things like that, to kill the righteous with the wicked, so that the righteous should be like the wicked. May that be far from you. Shouldn’t the Judge of all the earth do right?”",
+      "ko": "주께서 이같이 하사 의인을 악인과 함께 죽이심은 불가하오며 의인과 악인을 균등히하심도 불가하니이다 세상을 심판하시는 이가 공의를 행하실 것이 아니니이까",
+      "source_text_hash": "e4137ad25f352c3dcf7374799ffe833bcfeb7a14ddab5b7ab6c26457d2035b54",
+      "translation_text_hash": "a09107a14278ca3e35a46daa5f191999f3ea8520792d9e6b28b49dab2c318e0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 이같이 하사 의인을 악인과 함께 죽이심은 불가하오며 의인과 악인을 균등히하심도 불가하니이다 세상을 심판하시는 이가 공의를 행하실 것이 아니니이까"
+      ],
+      "raw_text_hashes": [
+        "a09107a14278ca3e35a46daa5f191999f3ea8520792d9e6b28b49dab2c318e0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:26",
+      "sequence": 451,
+      "chapter_label": "GEN 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "The LORD said, “If I find in Sodom fifty righteous within the city, then I will spare the whole place for their sake.”",
+      "ko": "여호와께서 가라사대 내가 만일 소돔 성중에서 의인 오십을 찾으면 그들을 위하여 온 지경을 용서하리라",
+      "source_text_hash": "92c5de6c0870e6d8affcafaa2c8b27a1622e277edbd6458bcd82041429855a9d",
+      "translation_text_hash": "b44dbfd6e93892fca41e15e4ed411a3987983026ca9684489d2f002bcb6edbd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 만일 소돔 성중에서 의인 오십을 찾으면 그들을 위하여 온 지경을 용서하리라"
+      ],
+      "raw_text_hashes": [
+        "b44dbfd6e93892fca41e15e4ed411a3987983026ca9684489d2f002bcb6edbd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:27",
+      "sequence": 452,
+      "chapter_label": "GEN 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "Abraham answered, “See now, I have taken it on myself to speak to the Lord, although I am dust and ashes.",
+      "ko": "아브라함이 말씀하여 가로되 티끌과 같은 나라도 감히 주께 고하나이다",
+      "source_text_hash": "c9fd5a5275a6878c2dc11203ada9d90cca31ee009582626bf25a1135c1da2f58",
+      "translation_text_hash": "448fd35ce2fee7927f1cfc60d7d1f3c38c43037d734b7fe38b0a42cf42353ab3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 말씀하여 가로되 티끌과 같은 나라도 감히 주께 고하나이다"
+      ],
+      "raw_text_hashes": [
+        "448fd35ce2fee7927f1cfc60d7d1f3c38c43037d734b7fe38b0a42cf42353ab3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:28",
+      "sequence": 453,
+      "chapter_label": "GEN 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "What if there will lack five of the fifty righteous? Will you destroy all the city for lack of five?” He said, “I will not destroy it if I find forty-five there.”",
+      "ko": "오십 의인 중에 오인이 부족할 것이면 그 오인 부족함을 인하여 온 성을 멸하시리이까 가라사대 내가 거기서 사십 오인을 찾으면 멸하지 아니하리라",
+      "source_text_hash": "11138bed766dfc5a55106624af89fe9b25ac0725d999a25e60d9fcac0ed68661",
+      "translation_text_hash": "076fb19262b9f9229c624da9252f6210bde729f1b4507989538fa9037256b99a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오십 의인 중에 오인이 부족할 것이면 그 오인 부족함을 인하여 온 성을 멸하시리이까 가라사대 내가 거기서 사십 오인을 찾으면 멸하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "076fb19262b9f9229c624da9252f6210bde729f1b4507989538fa9037256b99a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:29",
+      "sequence": 454,
+      "chapter_label": "GEN 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "He spoke to him yet again, and said, “What if there are forty found there?” He said, “I will not do it for the forty’s sake.”",
+      "ko": "아브라함이 또 고하여 가로되 거기서 사십인을 찾으시면 어찌 하시려나이까 가라사대 사십인을 인하여 멸하지 아니하리라",
+      "source_text_hash": "47583951fddc0fb1aa152bea2520bc1752b4a0c7de8868d50603958931c5faab",
+      "translation_text_hash": "ee8fec41a5e765c974c84adfe9f3338cd9282cfe599146e00ac64b36cc4964c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 또 고하여 가로되 거기서 사십인을 찾으시면 어찌 하시려나이까 가라사대 사십인을 인하여 멸하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "ee8fec41a5e765c974c84adfe9f3338cd9282cfe599146e00ac64b36cc4964c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:30",
+      "sequence": 455,
+      "chapter_label": "GEN 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "He said, “Oh don’t let the Lord be angry, and I will speak. What if there are thirty found there?” He said, “I will not do it if I find thirty there.”",
+      "ko": "아브라함이 가로되 내 주여 노하지 마옵시고 말씀하게 하옵소서 거기서 삼십인을 찾으시면 어찌 하시려나이까 가라사대 내가 거기서 삼십인을 찾으면 멸하지 아니하리라",
+      "source_text_hash": "28605c1b80b286c62463cff2aa2ec6c63d14d3539f384ce5e5f773416e306428",
+      "translation_text_hash": "6ee544e90a53722d29fe1b12d47b1efcf403aeb0b4c38a1aae82680bb417a8a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 가로되 내 주여 노하지 마옵시고 말씀하게 하옵소서 거기서 삼십인을 찾으시면 어찌 하시려나이까 가라사대 내가 거기서 삼십인을 찾으면 멸하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "6ee544e90a53722d29fe1b12d47b1efcf403aeb0b4c38a1aae82680bb417a8a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:31",
+      "sequence": 456,
+      "chapter_label": "GEN 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "He said, “See now, I have taken it on myself to speak to the Lord. What if there are twenty found there?” He said, “I will not destroy it for the twenty’s sake.”",
+      "ko": "아브라함이 또 가로되 내가 감히 내 주께 고하나이다 거기서 이십인을 찾으시면 어찌 하시려나이까 가라사대 내가 이십인을 인하여 멸하지 아니하리라",
+      "source_text_hash": "b75acd3460348cdb6be63563c8d632b9fafd8cbc5a2d000fcdce26ed861cd923",
+      "translation_text_hash": "06b8c1f3125893fa1b5c5bd80f1c40e67c1049fca7a92440ddd178ffabe1c18b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 또 가로되 내가 감히 내 주께 고하나이다 거기서 이십인을 찾으시면 어찌 하시려나이까 가라사대 내가 이십인을 인하여 멸하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "06b8c1f3125893fa1b5c5bd80f1c40e67c1049fca7a92440ddd178ffabe1c18b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:32",
+      "sequence": 457,
+      "chapter_label": "GEN 18",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 32
+        }
+      ],
+      "en": "He said, “Oh don’t let the Lord be angry, and I will speak just once more. What if ten are found there?” He said, “I will not destroy it for the ten’s sake.”",
+      "ko": "아브라함이 또 가로되 주는 노하지 마옵소서 내가 이번만 더 말씀하리이다 거기서 십인을 찾으시면 어찌 하시려나이까 가라사대 내가 십인을 인하여도 멸하지 아니하리라",
+      "source_text_hash": "0f8ba5deeef9153d13b99d0fc7d2cbf82e6dff34046f1b10192977a6dcd4d682",
+      "translation_text_hash": "a02752815d1f72174500a1155ea84c357772d33ebed73606e609671b6b604386",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 또 가로되 주는 노하지 마옵소서 내가 이번만 더 말씀하리이다 거기서 십인을 찾으시면 어찌 하시려나이까 가라사대 내가 십인을 인하여도 멸하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "a02752815d1f72174500a1155ea84c357772d33ebed73606e609671b6b604386"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:18:33",
+      "sequence": 458,
+      "chapter_label": "GEN 18",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 18,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 18,
+          "verse": 33
+        }
+      ],
+      "en": "The LORD went his way as soon as he had finished communing with Abraham, and Abraham returned to his place.",
+      "ko": "여호와께서 아브라함과 말씀을 마치시고 즉시 가시니 아브라함도 자기 곳으로 돌아갔더라",
+      "source_text_hash": "9b29a5408bd5530afb3704fe6adbdc426f53c33b1a9f3cffa38f676aea294b90",
+      "translation_text_hash": "773c5cd5eb8a30bdb93b6171124034192df99e554e1c1ec5738d654a80c9d392",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아브라함과 말씀을 마치시고 즉시 가시니 아브라함도 자기 곳으로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "773c5cd5eb8a30bdb93b6171124034192df99e554e1c1ec5738d654a80c9d392"
+      ]
+    }
+  ]
+}

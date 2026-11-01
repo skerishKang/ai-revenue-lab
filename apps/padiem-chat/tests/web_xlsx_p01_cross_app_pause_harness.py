@@ -100,6 +100,7 @@ SENTINELS = (OWNER, WORKSPACE, CALLER_ID, CREDENTIAL)
 
 MIGRATIONS = (
     "001_auth_history.sql", "002_projects.sql", "008_claw_document_metadata.sql",
+    "080_claw_document_metadata_user_id.sql",
     "009_claw_run_history.sql", "014_claw_run_history_conversation.sql",
     "015_claw_run_history_workspace.sql", "029_claw_web_xlsx_selection.sql",
     "030_claw_web_xlsx_p01_requests.sql",
