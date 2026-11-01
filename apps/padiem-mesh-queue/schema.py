@@ -2,7 +2,8 @@
 
 Only the migrations that own the tables the queue is responsible for are applied here:
 `oracle_mesh_dispatch` (047·048·049·063·074), `mesh_device_presence` (067·070) and the
-pairing directory `pc_pairing_codes` + `pc_device_links` (072·073). Conversation rows —
+pairing directory `pc_pairing_codes` + `pc_device_links` (072·073), and the latest
+drive inventory `mesh_device_drives` (086). Conversation rows —
 runs, messages, tool calls, the preferred-PC selection — stay in Cloudflare D1, which is
 the split the design was approved on.
 
@@ -79,6 +80,7 @@ QUEUE_MIGRATIONS = (
     "072_pc_device_pairing.sql",
     "073_pc_device_link_pause.sql",
     "074_oracle_mesh_dispatch_claim_lease.sql",
+    "086_mesh_device_drives.sql",
 )
 
 QUEUE_TABLES = (
@@ -86,6 +88,7 @@ QUEUE_TABLES = (
     "mesh_device_presence",
     "pc_pairing_codes",
     "pc_device_links",
+    "mesh_device_drives",
 )
 
 #: The ledger itself, plus the columns the queue's own SQL reads. A database that lacks any
@@ -104,6 +107,7 @@ REQUIRED_COLUMNS = {
     "mesh_device_presence": ("device_id", "connected", "received_at", "source"),
     "pc_pairing_codes": ("code_id", "state", "mesh_node_id", "expires_at"),
     "pc_device_links": ("link_id", "state", "roots_json", "paused_at"),
+    "mesh_device_drives": ("device_id", "drives_json", "received_at"),
 }
 
 __all__ = [
@@ -236,10 +240,17 @@ def apply(connection, *, migrations: tuple[str, ...] = QUEUE_MIGRATIONS) -> None
 
     _ensure_ledger(connection)
     recorded = _ledger(connection)
-    if not recorded and all(table in _table_names(connection) for table in QUEUE_TABLES):
+    # The pre-ledger deployment owned the first nine migrations. An additive
+    # table introduced later (086) must not make those destructive table rebuilds
+    # replay on an old database whose ledger has not been backfilled yet.
+    legacy_tables = ("oracle_mesh_dispatch", "mesh_device_presence",
+                     "pc_pairing_codes", "pc_device_links")
+    if not recorded and all(table in _table_names(connection) for table in legacy_tables):
         # Built by the version of this file that had no ledger: the statements have
         # already run here, so replaying them would fail on the first ALTER.
         for name in migrations:
+            if name not in QUEUE_MIGRATIONS[:9]:
+                continue
             _record(connection, name, _digest(texts[name]))
         recorded = _ledger(connection)
         _settle(connection)

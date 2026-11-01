@@ -92,6 +92,7 @@ PAIRING_METHODS = frozenset({
 })
 
 PRESENCE_METHODS = frozenset({"upsert", "load"})
+DRIVE_METHODS = frozenset({"upsert_drives", "load_drives"})
 
 _NO_STORE = {"Cache-Control": "no-store"}
 
@@ -127,7 +128,7 @@ def log_line(path: str, rpc: str, status: int, elapsed_ms: int, proof: str, run_
         path, rpc, status, elapsed_ms, proof, run_hash, dispatch_id)
 
 __all__ = [
-    "DISPATCH_METHODS", "MOMENT_ARGUMENTS", "INTERNAL_STORE_PATH", "PAIRING_METHODS",
+    "DISPATCH_METHODS", "DRIVE_METHODS", "MOMENT_ARGUMENTS", "INTERNAL_STORE_PATH", "PAIRING_METHODS",
     "PRESENCE_METHODS", "QUEUE_SERVICE_SECRET_HEADER", "STORE_FAILURE_CLASSES",
     "STORE_FAILURE_PREFIX", "TXN_RECOVERY_PREFIX", "make_internal_handler",
 ]
@@ -143,7 +144,7 @@ STORE_FAILURE_PREFIX = "MESH_QUEUE_STORE_FAILURE"
 #: the customer path or the value that was rejected. Anything outside this list is printed
 #: as `other`, so the label can never become a channel for caller-controlled content.
 STORE_FAILURE_CLASSES = frozenset({
-    "HistoryError", "MeshDevicePresenceStoreError", "PcPairingError",
+    "HistoryError", "MeshDevicePresenceStoreError", "MeshDeviceDriveStoreError", "PcPairingError",
     "IntegrityError", "OperationalError", "ProgrammingError", "DataError",
 })
 

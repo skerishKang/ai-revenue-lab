@@ -14,6 +14,8 @@ What is served (the executor's claim lane):
     POST /api/claw/connector/mesh-reads/cancel
     POST /api/claw/connector/mesh-reads/busy     (#6113: who is working on this PC now)
     POST /api/claw/connector/mesh-reads/lane-status   (#82: counts, ages and the beat)
+    POST /api/claw/connector/mesh-reads/drives        (latest drive inventory)
+    POST /api/claw/connector/mesh-reads/drives/targets (active linked PC ids)
     GET  /health                      (pending/working counts, no secret, no content)
 
 The lane-status read is the Chat route function itself, imported and served here, so the
@@ -74,6 +76,11 @@ from starlette.routing import Route
 from app.d1_sqlite import SqliteD1
 from app.history import D1HistoryStore
 from app.mesh_device_presence_store import D1MeshDevicePresenceStore
+from app.mesh_device_drive_store import D1MeshDeviceDriveStore
+from app.mesh_device_drive_routes import (
+    MESH_DEVICE_DRIVES_PATH, MESH_DEVICE_DRIVE_TARGETS_PATH,
+    mesh_device_drive_report, mesh_device_drive_targets,
+)
 from app.oracle_mesh_lease_renew_routes import (
     ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew,
 )
@@ -87,7 +94,7 @@ from app.oracle_mesh_read_return_routes import (
 from app.pc_device_pairing_store import D1PcPairingStore
 
 from internal_store import (
-    DISPATCH_METHODS, INTERNAL_STORE_PATH, PAIRING_METHODS, PRESENCE_METHODS,
+    DISPATCH_METHODS, DRIVE_METHODS, INTERNAL_STORE_PATH, PAIRING_METHODS, PRESENCE_METHODS,
     make_internal_handler,
 )
 from schema import open_queue
@@ -146,6 +153,8 @@ def store_resolvers():
         table[name] = by_holder("pc_device_pairing_store")
     for name in PRESENCE_METHODS:
         table[name] = by_holder("mesh_device_presence_store")
+    for name in DRIVE_METHODS:
+        table[name] = by_holder("mesh_device_drive_store")
     return table
 
 
@@ -225,6 +234,8 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
     app = Starlette(routes=[
         Route(HEALTH_PATH, health, methods=["GET"]),
         Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
+        Route(MESH_DEVICE_DRIVES_PATH, mesh_device_drive_report, methods=["POST"]),
+        Route(MESH_DEVICE_DRIVE_TARGETS_PATH, mesh_device_drive_targets, methods=["POST"]),
         Route(ORACLE_MESH_READ_RENEW_PATH, oracle_mesh_read_renew, methods=["POST"]),
         Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check,
               methods=["POST"]),
@@ -236,6 +247,7 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
     ])
     app.state.history_store = D1HistoryStore(database, run_ownership=_forwarded_run_ownership)
     app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(database)
+    app.state.mesh_device_drive_store = D1MeshDeviceDriveStore(database)
     app.state.pc_device_pairing_store = D1PcPairingStore(database)
     app.state.queue_database = database
     # The same composition the Worker root performs, run once here from files. An

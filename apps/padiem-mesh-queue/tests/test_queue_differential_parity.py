@@ -261,3 +261,4 @@ def test_a_name_the_queue_did_not_decline_is_never_answered():
     assert chat_side.QUEUE_DISPATCH_METHODS == internal.DISPATCH_METHODS
     assert chat_side.QUEUE_PAIRING_METHODS == internal.PAIRING_METHODS
     assert chat_side.QUEUE_PRESENCE_METHODS == internal.PRESENCE_METHODS
+    assert chat_side.QUEUE_DRIVE_METHODS == internal.DRIVE_METHODS

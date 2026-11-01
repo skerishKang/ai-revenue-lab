@@ -51,6 +51,7 @@ from .orchestration_composition import compose_orchestration_bridge
 from .orchestration_routes import install_orchestration_routes
 from .project_files import D1ProjectFileStore
 from .queue_store_proxy import (
+    QueueBackedDriveStore,
     QueueBackedPairingStore,
     QueueBackedPresenceStore,
     QueueForwardingHistoryStore,
@@ -290,9 +291,11 @@ def build_app():
 
     # The explicit COM2 queue below replaces them when that backend is selected.
     from .mesh_device_presence_store import D1MeshDevicePresenceStore
+    from .mesh_device_drive_store import D1MeshDeviceDriveStore
     from .pc_device_pairing_store import D1PcPairingStore
     from .claw_pc_device_selection_store import D1PcDeviceSelectionStore
     app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(db)
+    app.state.mesh_device_drive_store = D1MeshDeviceDriveStore(db)
     app.state.pc_device_pairing_store = D1PcPairingStore(db)
     app.state.claw_pc_device_selection_store = D1PcDeviceSelectionStore(db)
     app.state.pc_pairing_install_url = (os.getenv("PC_AGENT_INSTALL_URL") or "").strip()
@@ -309,6 +312,7 @@ def build_app():
         # explicitly sets PC_QUEUE_BACKEND=com2 takes this path.
         app.state.pc_device_pairing_store = QueueBackedPairingStore(queue_client)
         app.state.mesh_device_presence_store = QueueBackedPresenceStore(queue_client)
+        app.state.mesh_device_drive_store = QueueBackedDriveStore(queue_client)
         app.state.history_store = QueueForwardingHistoryStore(
             app.state.history_store, queue_client
         )

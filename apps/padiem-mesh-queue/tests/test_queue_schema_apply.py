@@ -126,7 +126,7 @@ def test_a_migration_that_has_never_run_still_runs(tmp_path, monkeypatch):
     try:
         schema.apply(connection, migrations=NAMES[:-1])
     except schema.QueueSchemaIncomplete:
-        pass  # 074 owns claimed_until, so eight files are not a servable database
+        pass  # The final migration owns a required table/column.
     assert NAMES[-1] not in _ledger_names(connection)
 
     counting = _Counting(connection)
@@ -137,8 +137,21 @@ def test_a_migration_that_has_never_run_still_runs(tmp_path, monkeypatch):
         str(r[1]) for r in counting.connection.execute("pragma table_info(oracle_mesh_dispatch)")
     }
     assert "claimed_until" in columns
-    replayed = [s for s in counting.statements if "claimed_until" not in s]
+    assert connection.execute("SELECT count(*) FROM mesh_device_drives").fetchone()[0] == 0
+    replayed = [s for s in counting.statements if "mesh_device_drives" not in s]
     assert _ddl(replayed) == []
+
+
+def test_086_on_a_pre_ledger_database_does_not_rebuild_or_erase_old_tables(tmp_path):
+    connection = _open(tmp_path)
+    _raw_run(connection, NAMES[:-1])
+    _seed_pairing_code(connection)
+    counting = _Counting(connection)
+    schema.apply(counting)
+    assert _ledger_names(connection) == set(NAMES)
+    assert connection.execute("SELECT state FROM pc_pairing_codes").fetchone()[0] == "pending"
+    assert connection.execute("SELECT count(*) FROM mesh_device_drives").fetchone()[0] == 0
+    assert not any("DROP TABLE" in sql or "RENAME TO" in sql for sql in counting.statements)
 
 
 def test_a_file_rewritten_after_it_ran_is_skipped_and_named(tmp_path, monkeypatch, capsys):

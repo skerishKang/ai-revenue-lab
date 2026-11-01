@@ -458,6 +458,24 @@ async def _read_device_directory(
             selected_state = selected_row["state"]
     else:
         selected_device_id = None
+    # Drive inventory is read-only display data from the production Mesh
+    # queue. Join only AFTER this request has proved its own device set;
+    # never enumerate inventory rows or accept a device ID from the browser.
+    drive_store = getattr(request.app.state, "mesh_device_drive_store", None)
+    load_drives = getattr(drive_store, "load_drives", None)
+    if callable(load_drives):
+        for device in safe:
+            if device["revoked"] or device["expired"]:
+                continue
+            try:
+                snapshot = load_drives(device_id=device["deviceId"])
+                if inspect.isawaitable(snapshot):
+                    snapshot = await snapshot
+                device.update(_drive_snapshot_projection(snapshot, device["deviceId"]))
+            except Exception:
+                # An unavailable inventory must not hide a usable computer or
+                # invent an empty/current drive list.
+                device["drivesStatus"] = "unavailable"
     return _response({
         "ok": True, "available": True, "ownerScoped": True,
         "scopeStatus": connector.status,
@@ -472,6 +490,40 @@ async def _read_device_directory(
             "selectedState": selected_state,
         } if selected_device_id is not None else {}),
     })
+
+
+def _drive_snapshot_projection(snapshot: Any, device_id: str) -> dict[str, Any]:
+    """Keep the device response closed even if the internal store grows."""
+    if snapshot is None:
+        return {"drivesStatus": "pending"}
+    if not isinstance(snapshot, Mapping) or snapshot.get("device_id") != device_id:
+        raise ValueError("Invalid drive snapshot")
+    drives = snapshot.get("drives")
+    received_at = snapshot.get("received_at")
+    if not isinstance(drives, list) or not isinstance(received_at, str):
+        raise ValueError("Invalid drive snapshot")
+    stamp = datetime.fromisoformat(received_at.replace("Z", "+00:00"))
+    if stamp.tzinfo is None:
+        raise ValueError("Invalid drive timestamp")
+    projected = []
+    seen = set()
+    for drive in drives:
+        if not isinstance(drive, Mapping):
+            raise ValueError("Invalid drive")
+        path, name, kind = (drive.get(key) for key in ("path", "name", "kind"))
+        free, total = drive.get("free_bytes"), drive.get("total_bytes")
+        if (not isinstance(path, str) or not path or path in seen
+                or not isinstance(name, str)
+                or kind not in ("fixed", "removable", "network", "cdrom", "ramdisk", "unknown")
+                or any(value is not None and (type(value) is not int or value < 0)
+                       for value in (free, total))
+                or (free is not None and total is not None and free > total)):
+            raise ValueError("Invalid drive")
+        seen.add(path)
+        projected.append({"path": path, "name": name, "kind": kind,
+                          "free_bytes": free, "total_bytes": total})
+    return {"drivesStatus": "ready", "drives": projected, "drivesUpdatedAt": received_at}
+
 
 async def _owner_usage_mutation(request: Request, *, paused: bool) -> JSONResponse:
     # Same-origin, zero-body authenticated owner gesture, matching GitHub's
