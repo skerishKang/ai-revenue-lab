@@ -509,7 +509,7 @@ def test_verified_pc_on_a_tools_route_declares_the_closed_pc_tool_set(monkeypatc
     assert len(client.calls) == 1
     sent = client.calls[0]
     assert [tool.name for tool in sent["tools"]] == [
-        "query_drives", "files_list", "files",
+        "query_drives", "files_list", "files", "browser",
     ]
     assert sent["tool_choice"] == "auto"
 

@@ -3606,7 +3606,7 @@ class D1HistoryStore:
         # without them raises here and every caller fails closed (503), so a
         # missing migration can never read as a successful deploy.
         row = await self._first(
-            "SELECT dispatch_id, user_id, run_id, kind, command_id, revision_ref, tool_request_ref, device_id, "
+            "SELECT dispatch_id, user_id, run_id, kind, command_id, revision_ref, tool_request_ref, "
             "result_sha256, result_bytes, termination, exit_code, state "
             "FROM oracle_mesh_dispatch WHERE dispatch_id=? AND user_id=?",
             dispatch_id, user_id,

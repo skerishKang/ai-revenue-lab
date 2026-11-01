@@ -263,10 +263,18 @@ async def read_browser_capture(history_store, *, user_id: str, dispatch_id: str,
     if not isinstance(dispatch_id, str) or not _CAPTURE_DISPATCH.fullmatch(dispatch_id):
         raise ValueError("browser_capture_unavailable")
     dispatch = await history_store.get_oracle_mesh_dispatch_for_owner(user_id=user_id, dispatch_id=dispatch_id)
+    bound_device = None
+    if device_id is not None:
+        # The device binding is the owner-scoped private read's fact; the public
+        # dispatch row deliberately carries none.
+        reader = getattr(history_store, "get_pc_output_dispatch_for_owner", None)
+        private = await reader(user_id=user_id, dispatch_id=dispatch_id) if callable(reader) else None
+        bound_device = (private.get("device_id") if isinstance(private, dict)
+                        else dispatch.get("device_id"))
     if (_browser_op(dispatch) != "browser_screenshot" or dispatch.get("state") != "done"
             or dispatch.get("termination") != "exited" or type(dispatch.get("exit_code")) is not int
             or dispatch.get("exit_code") != 0
-            or device_id is not None and dispatch.get("device_id") != device_id):
+            or device_id is not None and bound_device != device_id):
         raise ValueError("browser_capture_unavailable")
     value = await _original(history_store, user_id, dispatch)
     return _capture(value)

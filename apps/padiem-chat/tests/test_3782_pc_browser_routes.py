@@ -36,6 +36,13 @@ class History(fixtures._History):
     async def store_pc_output(self, **_):
         raise AssertionError("typed browser JSON must not be text-previewed")
 
+    async def get_pc_output_dispatch_for_owner(self, *, user_id, dispatch_id):
+        # The owner-scoped private read; the public row carries no device.
+        row = self.rows.get(dispatch_id)
+        if row is None or row.get("user_id") != user_id:
+            return None
+        return {"device_id": row["device_id"]}
+
 
 @pytest.fixture
 def lane(monkeypatch):
@@ -256,7 +263,14 @@ def test_real_history_pins_browser_scope():
     reference = "pc_browser:browser_open:pc_browser_" + "1" * 64
     row = asyncio.run(store.create_oracle_mesh_dispatch(**sql._tool_call_arguments(reference)))
     owned = asyncio.run(store.get_oracle_mesh_dispatch_for_owner(user_id=sql.USER, dispatch_id=row["dispatch_id"]))
-    assert owned["tool_request_ref"] == reference and owned["device_id"] == "device-1"
+    assert owned["tool_request_ref"] == reference
+    # The device binding is the owner-scoped private read's fact; the public
+    # row carries none (the queue contract pins that split).
+    stored_device = db.execute(
+        "SELECT device_id FROM oracle_mesh_dispatch WHERE dispatch_id=?",
+        (row["dispatch_id"],),
+    ).fetchone()[0]
+    assert stored_device == "device-1"
     assert asyncio.run(store.get_oracle_mesh_dispatch_for_owner(user_id=sql.OTHER_USER, dispatch_id=row["dispatch_id"])) is None
     db.close()
 

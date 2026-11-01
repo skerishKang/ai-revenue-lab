@@ -29,6 +29,8 @@ def test_explicit_user_browser_request_routes_to_browser(text):
 
 @pytest.mark.parametrize("text", [
     "example.com", "파일을 열어서 읽어 줘", "내 PC 파일 목록 보여 줘", "네", "결제", None,
+    # A file name is not a page: "name.ext" would otherwise read as a domain.
+    "내 PC notes/report.txt 읽어줘", "example.txt 열어 줘", "보고서.docx 내용 알려 줘",
 ])
 def test_unrelated_or_unconfirmed_request_does_not_select_browser(text):
     assert not requested_pc_browser(text)

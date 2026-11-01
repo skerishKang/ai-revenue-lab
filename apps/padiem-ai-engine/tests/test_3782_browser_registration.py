@@ -1,7 +1,14 @@
 """The browser scope reaches the existing PC runtime without widening files."""
 from copy import deepcopy
+from pathlib import Path
+import sys
 
 import pytest
+
+# The JavaScript/Python wire client is its own package beside the Engine app;
+# `uv sync` installs the Engine, not that sibling, so the one contract this
+# file shares with it is imported from its source tree.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "clients" / "python"))
 
 from app.orchestration_service import (
     _parse_agent_plan, _canonical_pc_plan, _validated_pc_tool_arguments,
