@@ -17,7 +17,13 @@ from pathlib import Path
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
-from app.asset_versions import MAP_SCRIPT_ID, compute_versions, versioned_html
+from app.asset_versions import (
+    MAP_SCRIPT_ID,
+    canonical_asset_bytes,
+    compute_versions,
+    short_hash,
+    versioned_html,
+)
 
 APP_ROOT = Path(__file__).resolve().parents[1]
 STATIC = APP_ROOT / "static"
@@ -60,7 +66,7 @@ def test_version_map_is_injected_for_the_dynamic_loaders():
     assert match, "the version map for the JS dynamic loaders is missing"
     carried = json.loads(match.group(1))
     for name in ("photo-resize.js", "pc-file-exchange.js", "pc-file-exchange.css"):
-        expected = hashlib.sha1((STATIC / name).read_bytes()).hexdigest()[:8]
+        expected = short_hash(canonical_asset_bytes((STATIC / name).read_bytes()))
         assert carried[name] == expected, name
 
 

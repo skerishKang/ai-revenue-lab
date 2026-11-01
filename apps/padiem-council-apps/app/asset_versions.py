@@ -37,8 +37,24 @@ OLD_MAP = re.compile(
     r'<script type="application/json" id="' + MAP_SCRIPT_ID + r'">.*?</script>', re.S)
 
 
+def canonical_asset_bytes(data: bytes) -> bytes:
+    r"""OS-independent hash input: NUL-free (text-treated) files hash their
+    CRLF→LF normalized form, everything else hashes the raw bytes.
+
+    Git stores text blobs LF-normalized, so a Windows checkout with
+    core.autocrlf=true materializes them CRLF while CI's Linux checkout keeps
+    LF — the same reviewed file must hash the same in both (#6578: a ?v= entry
+    baked on Windows failed the bake-freshness test on Linux). The NUL check is
+    the same axis as git's own binary detection: a file git would convert is
+    normalized here, a file git leaves byte-exact is hashed raw.
+    """
+    if b"\0" in data:
+        return data
+    return data.replace(b"\r\n", b"\n")
+
+
 def short_hash(data: bytes) -> str:
-    return hashlib.sha1(data).hexdigest()[:HASH_LENGTH]
+    return hashlib.sha1(canonical_asset_bytes(data)).hexdigest()[:HASH_LENGTH]
 
 
 def compute_versions(static_dir: Path = STATIC_DIR) -> dict[str, str]:
@@ -54,7 +70,7 @@ def compute_versions(static_dir: Path = STATIC_DIR) -> dict[str, str]:
         rel = path.relative_to(static_dir).as_posix()
         if rel == ENTRY_NAME:
             continue
-        versions[rel] = short_hash(path.read_bytes())
+        versions[rel] = short_hash(path.read_bytes())  # short_hash normalizes per canonical_asset_bytes
     return versions
 
 
