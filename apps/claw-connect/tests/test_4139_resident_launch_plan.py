@@ -236,7 +236,8 @@ class _FakeEnrollment:
     def committed_record(self):
         return self._record
 
-    def project_state(self, *, paused: bool, connected: bool):
+    def project_state(self, *, paused: bool = False, connecting: bool = False,
+                      connected: bool = False):
         from claw_connect.connection import ConnectionState
 
         return ConnectionState.OFFLINE
