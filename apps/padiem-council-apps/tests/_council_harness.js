@@ -172,7 +172,14 @@ let authStatusQueue = null;
 // these to walk the import/save/photo path through the shared dialog contract.
 let pcLinks = [];
 let pcReferenceText = "예전 축사 원고입니다. 문체를 참고하세요.";
+let pcReferenceName = "예전 축사.txt";
 let pcReferenceCode = "";
+// 참고 글 문서 경로(tus 재사용) 시나리오 조작반: 디스패치별 원본 바이트와,
+// 서버가 소유자 범위 404로 거절할(다른 계정의) 디스패치.
+let pcFileBytes = null;
+let pcFileRefusals = null;
+let pcUploadFails = false;
+let pcExtractedText = "";
 let pcUploads = [];
 const pcSaves = [];
 const pcReferenceReads = [];
@@ -256,15 +263,21 @@ async function fetch(url, init) {
   if (method === "POST" && String(url) === "/api/pc/reference") {
     pcReferenceReads.push(body);
     if (pcReferenceCode) return json({ error: { code: pcReferenceCode } }, 422);
-    return json({ ok: true, name: "예전 축사.hwp", text: pcReferenceText });
+    return json({ ok: true, name: pcReferenceName, text: pcReferenceText });
   }
   if (String(url).indexOf("/api/pc/file") === 0) {
     const dispatch = new URLSearchParams(String(url).split("?")[1] || "").get("dispatch_id");
     pcDispatches.push(dispatch);
+    // 다른 계정(또는 이미 사라진) 디스패치는 소유자 범위 404로 거절된다 — 외래 id는
+    // 모르는 id와 구분되지 않는다. 화면이 볼 것도 그 404뿐이다.
+    if (pcFileRefusals && pcFileRefusals[dispatch]) {
+      return json({ error: { code: "pc_dispatch_not_found" } }, 404);
+    }
+    const bytes = (pcFileBytes && pcFileBytes[dispatch]) || PC_PHOTO_BYTES;
     return {
       ok: true,
       status: 200,
-      blob: async () => ({ arrayBuffer: async () => PC_PHOTO_BYTES.buffer.slice(0) }),
+      blob: async () => ({ arrayBuffer: async () => bytes.buffer.slice(0) }),
     };
   }
   if (String(url) === "/api/auth/status") {
@@ -400,7 +413,10 @@ class FakeFile extends FakeBlob {
     this.name = String(name || "file");
     this.type = (options && options.type) || "";
     const first = Array.isArray(parts) ? parts[0] : parts;
-    this.__bytes = first instanceof Uint8Array ? first : new Uint8Array(0);
+    // council-app.js runs in a vm context, so its Uint8Array is another realm's;
+    // anything array-like is copied so a scenario can read the file's bytes.
+    this.__bytes = first instanceof Uint8Array ? first
+      : (first && typeof first.length === "number" ? Uint8Array.from(first) : new Uint8Array(0));
   }
 }
 
@@ -1769,7 +1785,7 @@ const SCENARIOS = {
           options.onSelect({ fileId: "pc-photo-1", name: "현장사진.png" });
           return;
         }
-        options.onSelect({ fileId: "pc-doc-1", name: "예전 축사.hwp" });
+        options.onSelect({ fileId: "pc-doc-1", name: "예전 축사.txt" });
       },
     };
     const state = { PadiemPcFileExchange: exchange };
@@ -1870,6 +1886,7 @@ const SCENARIOS = {
       photoCount, photoNames, photoUpload,
       snsPrompt: snsPromptB && snsPromptB.messages && snsPromptB.messages[0] ? snsPromptB.messages[0].content : "",
       openedModes: opened.map((o) => o.mode || "import"),
+      accepts: opened.map((o) => o.accept || null),
       endpoints: endpointSet(), alerts, pageErrors,
     };
   },
@@ -2236,6 +2253,145 @@ const SCENARIOS = {
       savePosted: pcSavesPosted.length === savesBeforeDocx + 1,
       notice: text(snsChooser),
     };
+    return out;
+  },
+
+  async pc_import() {
+    // 2026-11-02: 축사·SNS 참고 글의 "내 PC에서 가져오기"가 문서까지 잡는다.
+    // 텍스트(.txt·.md)는 기존 /api/pc/reference 읽기, 문서(.hwpx·.docx·.pdf)는
+    // /api/pc/file 원본 바이트 → #6584 tus 프로젝트 파일 경로 → Chat 추출 결과
+    // (GET …/files/{id}의 file.content). 구형 .hwp는 #6598 사유 코드 문장으로
+    // 거절하고, 다른 계정의 PC 파일은 서버 404 뒤 조용한 안내로 끝난다.
+    authState = { authenticated: true, user: { name: "테스트 사용자" } };
+    pcLinks = [{ state: "active" }];
+    pcReferenceText = "예전 인사말 원고입니다. 문체를 참고하세요.";
+    pcReferenceName = "예전 인사말.md";
+    pcReferenceReads.length = 0;
+    pcDispatches.length = 0;
+    storedFiles.length = 0;
+    pcFileBytes = { "pc-doc-hwpx": new Uint8Array([0x50, 0x4b, 0x03, 0x04, 0x2d, 0x00]) };
+    pcFileRefusals = { "pc-file-other-account": true };
+    pcExtractedText = "문서에서 추출한 예전 축사 본문입니다.";
+    const opened = [];
+    const uploads = [];
+    let pick = null;
+    const exchange = {
+      open(options) {
+        opened.push({ accept: options.accept || null, mode: options.mode || "import" });
+        if (options.onSelect && pick) {
+          const chosen = pick;
+          pick = null;
+          options.onSelect(chosen);
+        }
+      },
+    };
+    const uploader = {
+      upload(options) {
+        if (pcUploadFails) return Promise.reject(new Error("project-upload-unavailable"));
+        const file = options.file || {};
+        uploads.push({
+          name: file.name, projectId: options.projectId,
+          mediaType: options.mediaType, byteCount: file.__bytes ? file.__bytes.length : 0,
+        });
+        const storedFile = stored("예전 축사.hwpx", pcExtractedText, options.mediaType);
+        return Promise.resolve({ file: { id: storedFile.id, name: storedFile.name } });
+      },
+    };
+    const state = { PadiemPcFileExchange: exchange, PadiemProjectFileUpload: uploader };
+    const A = spawnSession(state);
+    await A.ctx.window.PadiemCouncilApps.init();
+    await sleep(30);
+    await A.root.querySelectorAll(".council-card-select")[0].dispatch("click");
+    await sleep(40);
+    const form = find(A, "councilSpeechForm");
+    const pickBtn = form.querySelector(".council-pc-ref-pick");
+    const status = () => text(form.querySelector(".council-pc-ref-status"));
+    const previews = () => form.querySelectorAll(".council-pc-ref-preview").map((n) => text(n));
+
+    // 문서(.hwpx): 원본 바이트 → tus 프로젝트 파일 → Chat 추출 본문이 참고 글로.
+    pick = { fileId: "pc-doc-hwpx", name: "예전 축사.hwpx" };
+    await pickBtn.dispatch("click");
+    await sleep(80);
+    const doc = {
+      accept: opened[0] ? opened[0].accept : null,
+      dispatches: pcDispatches.slice(),
+      upload: uploads[0] || null,
+      preview: previews()[0] || "",
+    };
+
+    // 구형 .hwp: 어떤 읽기도 부르지 않고 #6598 사유 코드의 문장으로 거절한다.
+    pick = { fileId: "pc-doc-hwp", name: "옛날 축사.hwp" };
+    await pickBtn.dispatch("click");
+    await sleep(40);
+    const hwp = {
+      status: status(),
+      dispatchesAfter: pcDispatches.length,
+      uploadsAfter: uploads.length,
+      referenceReadsAfter: pcReferenceReads.length,
+    };
+
+    // 텍스트(.md): 기존 /api/pc/reference 읽기 그대로.
+    pick = { fileId: "pc-doc-md", name: "예전 인사말.md" };
+    await pickBtn.dispatch("click");
+    await sleep(40);
+    const textMd = {
+      reads: pcReferenceReads.slice(),
+      previews: previews(),
+      status: status(),
+    };
+
+    // 다른 계정의 PC 파일: 서버가 소유자 범위 404로 거절 — 조용한 안내, 업로드 없음.
+    pick = { fileId: "pc-file-other-account", name: "남의 문서.hwpx" };
+    await pickBtn.dispatch("click");
+    await sleep(40);
+    const foreign = {
+      status: status(),
+      dispatchesAfter: pcDispatches.length,
+      uploadsAfter: uploads.length,
+    };
+
+    // tus 업로드 실패: 기존 '프로젝트에 올리지 못했습니다' 안내.
+    pcUploadFails = true;
+    pick = { fileId: "pc-doc-hwpx", name: "예전 축사.hwpx" };
+    await pickBtn.dispatch("click");
+    await sleep(40);
+    const uploadFail = { status: status(), uploadsAfter: uploads.length };
+    pcUploadFails = false;
+
+    // 추출 본문이 비면(서버가 빈 content를 답함) 참고 글로 넣지 않는다.
+    pcExtractedText = "";
+    pick = { fileId: "pc-doc-hwpx", name: "예전 축사.hwpx" };
+    await pickBtn.dispatch("click");
+    await sleep(60);
+    const emptyDoc = { status: status() };
+    pcExtractedText = "문서에서 추출한 예전 축사 본문입니다.";
+
+    // SNS 참고 글도 같은 형식 필터를 건다.
+    await A.ctx.window.PadiemCouncilApps.select("sns", false);
+    await sleep(40);
+    await find(A, "councilSnsForm").querySelector(".council-pc-ref-pick").dispatch("click");
+    await sleep(40);
+    const snsAccept = opened[opened.length - 1] ? opened[opened.length - 1].accept : null;
+
+    // 두 참고 글이 모두 프롬프트로 간다.
+    await A.ctx.window.PadiemCouncilApps.select("speech", false);
+    await sleep(40);
+    const speech = find(A, "councilSpeechForm");
+    speech.querySelector("[name=event]").value = "문서 참고 검증";
+    await speech.dispatch("submit");
+    await sleep(40);
+    const prompt = chatPayloads[chatPayloads.length - 1];
+    const out = {
+      doc, hwp, textMd, foreign, uploadFail, emptyDoc, snsAccept,
+      speechPrompt: prompt && prompt.messages && prompt.messages[0] ? prompt.messages[0].content : "",
+      endpoints: endpointSet(),
+      alerts, pageErrors,
+    };
+    pcLinks = [];
+    pcFileBytes = null;
+    pcFileRefusals = null;
+    pcReferenceText = "예전 축사 원고입니다. 문체를 참고하세요.";
+    pcReferenceName = "예전 축사.txt";
     return out;
   },
 };
