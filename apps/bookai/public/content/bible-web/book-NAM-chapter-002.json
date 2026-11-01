@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NAM:chapter:002",
+  "unit_ordinal": 902,
+  "unit_label": "NAM 2",
+  "book_code": "NAM",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NAM:2:1",
+      "sequence": 22701,
+      "chapter_label": "NAM 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "He who dashes in pieces has come up against you. Keep the fortress! Watch the way! Strengthen your waist! Fortify your power mightily!",
+      "ko": "파괴하는 자가 너를 치러 올라왔나니 너는 산성을 지키며 길을 파수하며 네 허리를 견고히 묶고 네 힘을 크게 굳게 할찌어다",
+      "source_text_hash": "40e0d23c4d83eedfa7a9bb7e42b63757eed7736d5860506d3038a91ccc17c9c7",
+      "translation_text_hash": "d9c8051f3b8e6fc4320e324946f48a3d8ddec5fae163000f2f7daaa65dae1759",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파괴하는 자가 너를 치러 올라왔나니 너는 산성을 지키며 길을 파수하며 네 허리를 견고히 묶고 네 힘을 크게 굳게 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "d9c8051f3b8e6fc4320e324946f48a3d8ddec5fae163000f2f7daaa65dae1759"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:2",
+      "sequence": 22702,
+      "chapter_label": "NAM 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "For the LORD restores the excellency of Jacob as the excellency of Israel, for the destroyers have destroyed them and ruined their vine branches.",
+      "ko": "여호와께서 야곱의 영광을 회복하시되 이스라엘의 영광 같게 하시나니 이는 약탈자들이 약탈하였고 또 그 포도나무 가지를 없이 하였음이라",
+      "source_text_hash": "b48b70ae2ae2191ab1ead7265b211f3e548861e9da293aa2ad9b3759ba7df176",
+      "translation_text_hash": "e9d448839bed2b63fccaa44e7e0c307e4e0052e30f36c36b9c33ac50b4a9d0c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 야곱의 영광을 회복하시되 이스라엘의 영광 같게 하시나니 이는 약탈자들이 약탈하였고 또 그 포도나무 가지를 없이 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "e9d448839bed2b63fccaa44e7e0c307e4e0052e30f36c36b9c33ac50b4a9d0c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:3",
+      "sequence": 22703,
+      "chapter_label": "NAM 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "The shield of his mighty men is made red. The valiant men are in scarlet. The chariots flash with steel in the day of his preparation, and the pine spears are brandished.",
+      "ko": "그의 용사들의 방패는 붉고 그의 무사들의 옷도 붉으며 그 항오를 벌이는 날에 병거의 철이 번쩍이고 노송나무 창이 요동하는도다",
+      "source_text_hash": "3d5190b111e00016608dcf785048ab48216dbaf49148e02bdf6df5647e25fd84",
+      "translation_text_hash": "6f60dcf55994282b09a7f10ac03bae360f62c0f3e6283e8d116d3fe75c812178",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 용사들의 방패는 붉고 그의 무사들의 옷도 붉으며 그 항오를 벌이는 날에 병거의 철이 번쩍이고 노송나무 창이 요동하는도다"
+      ],
+      "raw_text_hashes": [
+        "6f60dcf55994282b09a7f10ac03bae360f62c0f3e6283e8d116d3fe75c812178"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:4",
+      "sequence": 22704,
+      "chapter_label": "NAM 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "The chariots rage in the streets. They rush back and forth in the wide ways. Their appearance is like torches. They run like the lightnings.",
+      "ko": "그 병거는 거리에 미치게 달리며 대로에서 이리 저리 빨리 가니 그 모양이 횃불 같고 빠르기 번개 같도다",
+      "source_text_hash": "54eb7c2586bebd9113631ef632870a7f93c6b14dfab69adf1a8b6c7a18ca6cbc",
+      "translation_text_hash": "df39692f5cdc1f64ccdc8419c1454e14f0b26d7fefd9258f8b9705dc8ac8950d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 병거는 거리에 미치게 달리며 대로에서 이리 저리 빨리 가니 그 모양이 횃불 같고 빠르기 번개 같도다"
+      ],
+      "raw_text_hashes": [
+        "df39692f5cdc1f64ccdc8419c1454e14f0b26d7fefd9258f8b9705dc8ac8950d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:5",
+      "sequence": 22705,
+      "chapter_label": "NAM 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "He summons his picked troops. They stumble on their way. They dash to its wall, and the protective shield is put in place.",
+      "ko": "그가 그 존귀한 자를 생각해 내니 그들이 엎드러질듯이 달려서 급히 성에 이르러 막을 것을 예비하도다",
+      "source_text_hash": "3356255ea4750f2d8b83e396cd0549854606f1157f4dbeb506f709610257a3c5",
+      "translation_text_hash": "b145e5035b4c4bc9e32b1e2b8479b7c500aabfbd922a851e7e6a5a4dd4e27fc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 존귀한 자를 생각해 내니 그들이 엎드러질듯이 달려서 급히 성에 이르러 막을 것을 예비하도다"
+      ],
+      "raw_text_hashes": [
+        "b145e5035b4c4bc9e32b1e2b8479b7c500aabfbd922a851e7e6a5a4dd4e27fc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:6",
+      "sequence": 22706,
+      "chapter_label": "NAM 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "The gates of the rivers are opened, and the palace is dissolved.",
+      "ko": "강들의 수문이 열리고 왕궁이 소멸되며",
+      "source_text_hash": "9b40016f716de7e3e24152c8e133891695830ed3cd49312eb9c4fe431fdbd9f3",
+      "translation_text_hash": "55d680aa7c3da9760d4b4d645c9f4528cab07bcaed522492350dd962bccbc066",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강들의 수문이 열리고 왕궁이 소멸되며"
+      ],
+      "raw_text_hashes": [
+        "55d680aa7c3da9760d4b4d645c9f4528cab07bcaed522492350dd962bccbc066"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:7",
+      "sequence": 22707,
+      "chapter_label": "NAM 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "It is decreed: she is uncovered, she is carried away; and her servants moan as with the voice of doves, beating on their breasts.",
+      "ko": "정명대로 왕후가 벌거벗은 몸으로 끌려가며 그 모든 시녀가 가슴을 치며 비둘기 같이 슬피 우는도다",
+      "source_text_hash": "8e18c426858b00cfc5edaa589b8ca27380cb26b4f0e948c94218e577ed978159",
+      "translation_text_hash": "f02b34a0ea9217c86916642bf913b8010a494a118207b419241011710e59b243",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정명대로 왕후가 벌거벗은 몸으로 끌려가며 그 모든 시녀가 가슴을 치며 비둘기 같이 슬피 우는도다"
+      ],
+      "raw_text_hashes": [
+        "f02b34a0ea9217c86916642bf913b8010a494a118207b419241011710e59b243"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:8",
+      "sequence": 22708,
+      "chapter_label": "NAM 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "But Nineveh has been from of old like a pool of water, yet they flee away. “Stop! Stop!” they cry, but no one looks back.",
+      "ko": "니느웨는 예로부터 물이 모인 못 같더니 이제 모두 도망하니 서라 서라 하나 돌아보는 자가 없도다",
+      "source_text_hash": "4472617aa95012e85f76320faaf28fe9a5a3c421df7aec6daf5fa9fd225feca3",
+      "translation_text_hash": "5ab758a5f8c168880766bba35f8d300aa107d8d2c243a9ce932e776a7127efab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "니느웨는 예로부터 물이 모인 못 같더니 이제 모두 도망하니 서라 서라 하나 돌아보는 자가 없도다"
+      ],
+      "raw_text_hashes": [
+        "5ab758a5f8c168880766bba35f8d300aa107d8d2c243a9ce932e776a7127efab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:9",
+      "sequence": 22709,
+      "chapter_label": "NAM 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Take the plunder of silver. Take the plunder of gold, for there is no end of treasure, an abundance of every precious thing.",
+      "ko": "은을 노략하라 금을 늑탈하라 그 저축한 것이 무한하고 아름다운 기구가 풍부함이니라",
+      "source_text_hash": "679bcafa81545cb0ce2b429be8e7e66db71fed3f885247fd6cabaa5142d90e13",
+      "translation_text_hash": "8cd222f1c7f0dfd3a3a48e6cea3dae492f8d0cb9f809ef0cb31c134aaaab5b58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은을 노략하라 금을 늑탈하라 그 저축한 것이 무한하고 아름다운 기구가 풍부함이니라"
+      ],
+      "raw_text_hashes": [
+        "8cd222f1c7f0dfd3a3a48e6cea3dae492f8d0cb9f809ef0cb31c134aaaab5b58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:10",
+      "sequence": 22710,
+      "chapter_label": "NAM 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "She is empty, void, and waste. The heart melts, the knees knock together, their bodies and faces have grown pale.",
+      "ko": "니느웨가 공허하였고 황무하였도다 거민이 낙담하여 그 무릎이 서로 부딪히며 모든 허리가 아프게 되며 모든 낯이 빛을 잃도다",
+      "source_text_hash": "b7534444005e391ed8fc5d1b7d262235569b09c8dbd364da64284bcb5c9eb0b6",
+      "translation_text_hash": "35cd2d85fa6cf7b88610b77f5f663d164234906f03d2f4f8cc4dc792659d5bec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "니느웨가 공허하였고 황무하였도다 거민이 낙담하여 그 무릎이 서로 부딪히며 모든 허리가 아프게 되며 모든 낯이 빛을 잃도다"
+      ],
+      "raw_text_hashes": [
+        "35cd2d85fa6cf7b88610b77f5f663d164234906f03d2f4f8cc4dc792659d5bec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:11",
+      "sequence": 22711,
+      "chapter_label": "NAM 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Where is the den of the lions, and the feeding place of the young lions, where the lion and the lioness walked with the lion’s cubs, and no one made them afraid?",
+      "ko": "이제 사자의 굴이 어디뇨 젊은 사자의 먹는 곳이 어디뇨 전에는 수사자 암사자가 그 새끼 사자와 함께 거기서 다니되 그것들을 두렵게 할 자가 없었으며",
+      "source_text_hash": "e93e827f842d3231a304c90d253e57321890571cbf2808279d48ad989c91b85e",
+      "translation_text_hash": "1ca2120637e9226e377ad6cd23526118062dee798aa0aa3bfbc2200596ef2327",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 사자의 굴이 어디뇨 젊은 사자의 먹는 곳이 어디뇨 전에는 수사자 암사자가 그 새끼 사자와 함께 거기서 다니되 그것들을 두렵게 할 자가 없었으며"
+      ],
+      "raw_text_hashes": [
+        "1ca2120637e9226e377ad6cd23526118062dee798aa0aa3bfbc2200596ef2327"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:12",
+      "sequence": 22712,
+      "chapter_label": "NAM 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "The lion tore in pieces enough for his cubs, and strangled prey for his lionesses, and filled his caves with the kill and his dens with prey.",
+      "ko": "수사자가 그 새끼를 위하여 식물을 충분히 찢고 그 암사자를 위하여 무엇을 움켜서는 취한 것으로 그 굴에 채웠고 찢은 것으로 그 구멍에 채웠었도다",
+      "source_text_hash": "1962a5e9246f823dc730a2ffbc4e3ae53fb97da06e4fb3dc6239240bf9328e02",
+      "translation_text_hash": "f1983b399f6f44c4e02235cb49bd87ab814fd36d7dc8cb784bf4bfb940925c36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수사자가 그 새끼를 위하여 식물을 충분히 찢고 그 암사자를 위하여 무엇을 움켜서는 취한 것으로 그 굴에 채웠고 찢은 것으로 그 구멍에 채웠었도다"
+      ],
+      "raw_text_hashes": [
+        "f1983b399f6f44c4e02235cb49bd87ab814fd36d7dc8cb784bf4bfb940925c36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NAM:2:13",
+      "sequence": 22713,
+      "chapter_label": "NAM 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "NAM",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NAM",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "“Behold, I am against you,” says the LORD of Armies, “and I will burn her chariots in the smoke, and the sword will devour your young lions; and I will cut off your prey from the earth, and the voice of your messengers will no longer be heard.”",
+      "ko": "만군의 여호와의 말씀에 내가 네 대적이 되어 너의 병거들을 살라 연기가 되게 하고 너의 젊은 사자들을 칼로 멸할 것이며 내가 또 너의 노략한 것을 땅에서 끊으리니 너의 파견자의 목소리가 다시는 들리지 아니하리라 하셨느니라",
+      "source_text_hash": "a691cdbd379ebc27b800f3022e069a8c10f71c9d24ec6be848bcad7bfc75aa4d",
+      "translation_text_hash": "d2b743b0d4ae869566db4c75fd7c411f416795b28b4cea5fc5f81efe850e566d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와의 말씀에 내가 네 대적이 되어 너의 병거들을 살라 연기가 되게 하고 너의 젊은 사자들을 칼로 멸할 것이며 내가 또 너의 노략한 것을 땅에서 끊으리니 너의 파견자의 목소리가 다시는 들리지 아니하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "d2b743b0d4ae869566db4c75fd7c411f416795b28b4cea5fc5f81efe850e566d"
+      ]
+    }
+  ]
+}

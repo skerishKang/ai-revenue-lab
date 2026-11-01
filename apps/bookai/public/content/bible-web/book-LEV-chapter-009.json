@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:009",
+  "unit_ordinal": 99,
+  "unit_label": "LEV 9",
+  "book_code": "LEV",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:9:1",
+      "sequence": 2955,
+      "chapter_label": "LEV 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "On the eighth day, Moses called Aaron and his sons, and the elders of Israel;",
+      "ko": "제 팔일에 모세가 아론과 그 아들들과 이스라엘 장로들을 불러다가",
+      "source_text_hash": "463845b9fb9c40248f702678218a4091e54f2bf716bc9b8e9d27ba07259211a3",
+      "translation_text_hash": "29cbc72f7768f76e7e60c269cb1da3415b7eb9cab041bb37436669c63d499a13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 팔일에 모세가 아론과 그 아들들과 이스라엘 장로들을 불러다가"
+      ],
+      "raw_text_hashes": [
+        "29cbc72f7768f76e7e60c269cb1da3415b7eb9cab041bb37436669c63d499a13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:2",
+      "sequence": 2956,
+      "chapter_label": "LEV 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "and he said to Aaron, “Take a calf from the herd for a sin offering, and a ram for a burnt offering, without defect, and offer them before the LORD.",
+      "ko": "아론에게 이르되 흠 없는 송아지를 속죄제를 위하여 취하고 흠 없는 수양을 번제를 위하여 취하여 여호와 앞에 드리고",
+      "source_text_hash": "fb08edcf634b56fbf0384f9998810887c178992c3219165df6ca363167683f17",
+      "translation_text_hash": "5d42b551c5b2b02fc14b59766b3e9d6c3528c250e4cd1c37723eae243f77b26b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론에게 이르되 흠 없는 송아지를 속죄제를 위하여 취하고 흠 없는 수양을 번제를 위하여 취하여 여호와 앞에 드리고"
+      ],
+      "raw_text_hashes": [
+        "5d42b551c5b2b02fc14b59766b3e9d6c3528c250e4cd1c37723eae243f77b26b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:3",
+      "sequence": 2957,
+      "chapter_label": "LEV 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "You shall speak to the children of Israel, saying, ‘Take a male goat for a sin offering; and a calf and a lamb, both a year old, without defect, for a burnt offering;",
+      "ko": "이스라엘 자손에게 고하여 이르기를 너희는 수염소를 속죄제를 위하여 취하고 또 송아지와 어린 양의 일년 되고 흠 없는 것을 번제를 위하여 취하고",
+      "source_text_hash": "49a4b8f3e3a37de21e0662b39912a4325fd304efbf1ae5fe5212221eda29b884",
+      "translation_text_hash": "3fd45f8d84ba2d90ed8d4743614ca9e9e590ca9a44fa5eee687b5d23419fdb6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르기를 너희는 수염소를 속죄제를 위하여 취하고 또 송아지와 어린 양의 일년 되고 흠 없는 것을 번제를 위하여 취하고"
+      ],
+      "raw_text_hashes": [
+        "3fd45f8d84ba2d90ed8d4743614ca9e9e590ca9a44fa5eee687b5d23419fdb6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:4",
+      "sequence": 2958,
+      "chapter_label": "LEV 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "and a bull and a ram for peace offerings, to sacrifice before the LORD; and a meal offering mixed with oil: for today the LORD appears to you.’”",
+      "ko": "또 화목제를 위하여 여호와 앞에 드릴 수소와 수양을 취하고 또 기름 섞은 소제물을 가져오라 하라 오늘 여호와께서 너희에게 나타나실 것임이니라 하매",
+      "source_text_hash": "0ae2169b7ae766ade2e8fd99ec237a7b089fc5b6cfb0087019772ebcbfee65d8",
+      "translation_text_hash": "fdfe92c21383d5b89dbef39f37763fef40722321b149405db66900cfa7093092",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 화목제를 위하여 여호와 앞에 드릴 수소와 수양을 취하고 또 기름 섞은 소제물을 가져오라 하라 오늘 여호와께서 너희에게 나타나실 것임이니라 하매"
+      ],
+      "raw_text_hashes": [
+        "fdfe92c21383d5b89dbef39f37763fef40722321b149405db66900cfa7093092"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:5",
+      "sequence": 2959,
+      "chapter_label": "LEV 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "They brought what Moses commanded before the Tent of Meeting. All the congregation came near and stood before the LORD.",
+      "ko": "그들이 모세의 명한 모든 것을 회막 앞으로 가져 오고 온 회중이 나아와 여호와 앞에 선지라",
+      "source_text_hash": "9b9a86bb4a92f5145bdbce87f23ae92d8eae6d66b8d9495a569b354a3d279306",
+      "translation_text_hash": "f8627fad04d5b3074cc4e6cc029ca51962b5788fe5fa53afd8eee47ca8756768",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 모세의 명한 모든 것을 회막 앞으로 가져 오고 온 회중이 나아와 여호와 앞에 선지라"
+      ],
+      "raw_text_hashes": [
+        "f8627fad04d5b3074cc4e6cc029ca51962b5788fe5fa53afd8eee47ca8756768"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:6",
+      "sequence": 2960,
+      "chapter_label": "LEV 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "Moses said, “This is the thing which the LORD commanded that you should do; and the LORD’s glory shall appear to you.”",
+      "ko": "모세가 가로되 이는 여호와께서 너희에게 하라고 명하신 것이니 여호와의 영광이 너희에게 나타나리라",
+      "source_text_hash": "8f5bf9f825d189be7c3ae6153523f898b60aae34b7465bc87f2db99678df656e",
+      "translation_text_hash": "f3a3113c48ac84c684235e29b6852e9da139c2f3a3ba5a7df576810c521d0619",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 이는 여호와께서 너희에게 하라고 명하신 것이니 여호와의 영광이 너희에게 나타나리라"
+      ],
+      "raw_text_hashes": [
+        "f3a3113c48ac84c684235e29b6852e9da139c2f3a3ba5a7df576810c521d0619"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:7",
+      "sequence": 2961,
+      "chapter_label": "LEV 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Moses said to Aaron, “Draw near to the altar, and offer your sin offering, and your burnt offering, and make atonement for yourself, and for the people; and offer the offering of the people, and make atonement for them, as the LORD commanded.”",
+      "ko": "그가 또 아론에게 이르되 너는 단에 나아가 네 속죄제와 네 번제를 드려서 너를 위하여, 백성을 위하여 속하고 또 백성의 예물을 드려서 그들을 위하여 속하되 무릇 여호와의 명대로 하라",
+      "source_text_hash": "fca1413983bbefb965c6172697e242092a4c4e3bb19133033502d90d93132288",
+      "translation_text_hash": "7662c53b26b8cad0eed78c4ce24bbbb6938c84adc3437904052a614d5ea58c6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 아론에게 이르되 너는 단에 나아가 네 속죄제와 네 번제를 드려서 너를 위하여, 백성을 위하여 속하고 또 백성의 예물을 드려서 그들을 위하여 속하되 무릇 여호와의 명대로 하라"
+      ],
+      "raw_text_hashes": [
+        "7662c53b26b8cad0eed78c4ce24bbbb6938c84adc3437904052a614d5ea58c6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:8",
+      "sequence": 2962,
+      "chapter_label": "LEV 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "So Aaron came near to the altar, and killed the calf of the sin offering, which was for himself.",
+      "ko": "이에 아론이 단에 나아가 자기를 위한 속죄제 송아지를 잡으매",
+      "source_text_hash": "3a1921d6999d97ecce8a06fa294257d9a00a80a22c6501e8d98cbea467e21da9",
+      "translation_text_hash": "6f28f9ec7d9acc7c645d37165c0a5e7a62530486ce22abe9e08d53de31384055",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아론이 단에 나아가 자기를 위한 속죄제 송아지를 잡으매"
+      ],
+      "raw_text_hashes": [
+        "6f28f9ec7d9acc7c645d37165c0a5e7a62530486ce22abe9e08d53de31384055"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:9",
+      "sequence": 2963,
+      "chapter_label": "LEV 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "The sons of Aaron presented the blood to him; and he dipped his finger in the blood, and put it on the horns of the altar, and poured out the blood at the base of the altar;",
+      "ko": "아론의 아들들이 그 피를 아론에게 받들어 주니 아론이 손가락으로 그 피를 찍어 단 뿔들에 바르고 그 피는 단 밑에 쏟고",
+      "source_text_hash": "bb34c88a009504bd55cc2ab1e648da538a464e48cd28f8d765049fa28356d680",
+      "translation_text_hash": "18eca5466adc9b0f88ca94cb340520bb6f1a6cfab640d32815df0347c6b12262",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 아들들이 그 피를 아론에게 받들어 주니 아론이 손가락으로 그 피를 찍어 단 뿔들에 바르고 그 피는 단 밑에 쏟고"
+      ],
+      "raw_text_hashes": [
+        "18eca5466adc9b0f88ca94cb340520bb6f1a6cfab640d32815df0347c6b12262"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:10",
+      "sequence": 2964,
+      "chapter_label": "LEV 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "but the fat, and the kidneys, and the cover from the liver of the sin offering, he burned upon the altar, as the LORD commanded Moses.",
+      "ko": "그 속죄제 희생의 기름과 콩팥과 간 꺼풀을 단 위에 불사르니 여호와께서 모세에게 명하심과 같았고",
+      "source_text_hash": "18dbd3f9acf86537d4d76a9e9299d4b6c239c93426f27bdf1fbac0b5785aec7a",
+      "translation_text_hash": "aab67cd884e27fac75ca77a59646d9fdb85dbb52b16c2113e0934838a1f1669d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 속죄제 희생의 기름과 콩팥과 간 꺼풀을 단 위에 불사르니 여호와께서 모세에게 명하심과 같았고"
+      ],
+      "raw_text_hashes": [
+        "aab67cd884e27fac75ca77a59646d9fdb85dbb52b16c2113e0934838a1f1669d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:11",
+      "sequence": 2965,
+      "chapter_label": "LEV 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "The meat and the skin he burned with fire outside the camp.",
+      "ko": "그 고기와 가죽은 진 밖에서 불사르니라",
+      "source_text_hash": "3a5e42254feaa3d6440ddb8533723cb2f3aaf4176090a12dbae2a28d0ae1d5ad",
+      "translation_text_hash": "1f10fa4dbf66fc474cf99828f36ce1b7ecd282cae773c54792c68900bc9cc75c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 고기와 가죽은 진 밖에서 불사르니라"
+      ],
+      "raw_text_hashes": [
+        "1f10fa4dbf66fc474cf99828f36ce1b7ecd282cae773c54792c68900bc9cc75c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:12",
+      "sequence": 2966,
+      "chapter_label": "LEV 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "He killed the burnt offering; and Aaron’s sons delivered the blood to him, and he sprinkled it around on the altar.",
+      "ko": "아론이 또 번제 희생을 잡으매 아론의 아들들이 그 피를 그에게로 가져오니 그가 그 피를 단 주위에 뿌리고",
+      "source_text_hash": "9cb0aae9a74a4ea8befe14eacd065428d28010ebcd92695618df15549e4f12c4",
+      "translation_text_hash": "fc9dd856c6357369af7f578be6286497f7b8de3823fdf8d0813cfc52bc5d7fa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 또 번제 희생을 잡으매 아론의 아들들이 그 피를 그에게로 가져오니 그가 그 피를 단 주위에 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "fc9dd856c6357369af7f578be6286497f7b8de3823fdf8d0813cfc52bc5d7fa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:13",
+      "sequence": 2967,
+      "chapter_label": "LEV 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "They delivered the burnt offering to him, piece by piece, and the head. He burned them upon the altar.",
+      "ko": "그들이 또 번제의 희생 곧 그 각과 머리를 그에게로 가져오매 그가 단 위에 불사르고",
+      "source_text_hash": "15dea443166fd55f4f658198db9cd5e90450d1d2fdca01f1d0762152c0677a4b",
+      "translation_text_hash": "1178ae1caf157f0c794a73abfe0cfdf043ed0ab7aa6f804f09b46d4b7148ae7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 또 번제의 희생 곧 그 각과 머리를 그에게로 가져오매 그가 단 위에 불사르고"
+      ],
+      "raw_text_hashes": [
+        "1178ae1caf157f0c794a73abfe0cfdf043ed0ab7aa6f804f09b46d4b7148ae7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:14",
+      "sequence": 2968,
+      "chapter_label": "LEV 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "He washed the innards and the legs, and burned them on the burnt offering on the altar.",
+      "ko": "또 내장과 정갱이는 씻어서 단 윗 번제물 위에 불사르니라",
+      "source_text_hash": "a18df31ad6ab51a6166ec09262499937773e345f1a75e32416b851e199beb3e8",
+      "translation_text_hash": "69ff973d4c48054ea9ecdcb019a94f0997b0fc7b1dfa81e4d0f72881ff47e11b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내장과 정갱이는 씻어서 단 윗 번제물 위에 불사르니라"
+      ],
+      "raw_text_hashes": [
+        "69ff973d4c48054ea9ecdcb019a94f0997b0fc7b1dfa81e4d0f72881ff47e11b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:15",
+      "sequence": 2969,
+      "chapter_label": "LEV 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "He presented the people’s offering, and took the goat of the sin offering which was for the people, and killed it, and offered it for sin, like the first.",
+      "ko": "그가 또 백성의 예물을 드리되 곧 백성을 위한 속죄제의 염소를 취하여 잡아 전과 같이 죄를 위하여 드리고",
+      "source_text_hash": "0c86a72de50a238f953ba7c7a75a2cc5eecaea7ac01e64941156f69a02cb563e",
+      "translation_text_hash": "f819cd5d24280cddc05184a15d09ba8457b2b5c92ffe06abbc4b72bacefc4dfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 백성의 예물을 드리되 곧 백성을 위한 속죄제의 염소를 취하여 잡아 전과 같이 죄를 위하여 드리고"
+      ],
+      "raw_text_hashes": [
+        "f819cd5d24280cddc05184a15d09ba8457b2b5c92ffe06abbc4b72bacefc4dfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:16",
+      "sequence": 2970,
+      "chapter_label": "LEV 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "He presented the burnt offering, and offered it according to the ordinance.",
+      "ko": "또 번제 희생을 드리되 규례대로 드리고",
+      "source_text_hash": "22491048d5eb7d662edeb543d4d15dbcec1fbee5ab726bc894716c61e07b60c4",
+      "translation_text_hash": "cb92f3a72a4dccba3fbc81331272360355921521be6193ae2ae92a2a81b734aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 번제 희생을 드리되 규례대로 드리고"
+      ],
+      "raw_text_hashes": [
+        "cb92f3a72a4dccba3fbc81331272360355921521be6193ae2ae92a2a81b734aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:17",
+      "sequence": 2971,
+      "chapter_label": "LEV 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "He presented the meal offering, and filled his hand from there, and burned it upon the altar, in addition to the burnt offering of the morning.",
+      "ko": "또 소제를 드리되 그 중에서 한 움큼을 취하여 아침 번제물에 더하여 단 위에 불사르고",
+      "source_text_hash": "ce4058a710676f6374c19dd1a2eb425e6a9243025284d3d419c42cb4ee1ea753",
+      "translation_text_hash": "7dabbf60ed6c41d4044e0550cc09881581166923a99e6e0e2d7b6604df77777f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 소제를 드리되 그 중에서 한 움큼을 취하여 아침 번제물에 더하여 단 위에 불사르고"
+      ],
+      "raw_text_hashes": [
+        "7dabbf60ed6c41d4044e0550cc09881581166923a99e6e0e2d7b6604df77777f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:18",
+      "sequence": 2972,
+      "chapter_label": "LEV 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "He also killed the bull and the ram, the sacrifice of peace offerings, which was for the people. Aaron’s sons delivered to him the blood, which he sprinkled around on the altar;",
+      "ko": "또 백성을 위하는 화목제 희생의 수소와 수양을 잡으매 아론의 아들들이 그 피를 그에게로 가져오니 그가 단 주위에 뿌리고",
+      "source_text_hash": "f82c4640732cf574ca1ea1e0d45e2b825b5d901942531d3dbfd356a4cbf91470",
+      "translation_text_hash": "5ed3eb46b320c9ae54aef3e4eeb81a14586d75cf41d0e12a0433f0efe612f054",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 백성을 위하는 화목제 희생의 수소와 수양을 잡으매 아론의 아들들이 그 피를 그에게로 가져오니 그가 단 주위에 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "5ed3eb46b320c9ae54aef3e4eeb81a14586d75cf41d0e12a0433f0efe612f054"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:19",
+      "sequence": 2973,
+      "chapter_label": "LEV 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "and the fat of the bull and of the ram, the fat tail, and that which covers the innards, and the kidneys, and the cover of the liver;",
+      "ko": "그들이 또 수소와 수양의 기름과 기름진 꼬리와 내장에 덮인 것과 콩팥과 간 꺼풀을 아론에게로 가져다가",
+      "source_text_hash": "e4425358cfbb2344c44926534a46e45fe7747da4a9c546338da7818048fee601",
+      "translation_text_hash": "c816129229f05acb78e0bd16493437ff8d6298dd9adab6481df00620c4d4e4af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 또 수소와 수양의 기름과 기름진 꼬리와 내장에 덮인 것과 콩팥과 간 꺼풀을 아론에게로 가져다가"
+      ],
+      "raw_text_hashes": [
+        "c816129229f05acb78e0bd16493437ff8d6298dd9adab6481df00620c4d4e4af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:20",
+      "sequence": 2974,
+      "chapter_label": "LEV 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "and they put the fat upon the breasts, and he burned the fat on the altar.",
+      "ko": "그 기름을 가슴들 위에 놓으매 아론이 그 기름을 단 위에 불사르고",
+      "source_text_hash": "c0abb3a5c62755b66cfe21bea61ee5db50dd647c663f416fd6139310e6e3ac40",
+      "translation_text_hash": "dc41c952db5a34fcbcf4f59ee4932a4a85bca1be12dcdd6cce5fa49039ce9454",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기름을 가슴들 위에 놓으매 아론이 그 기름을 단 위에 불사르고"
+      ],
+      "raw_text_hashes": [
+        "dc41c952db5a34fcbcf4f59ee4932a4a85bca1be12dcdd6cce5fa49039ce9454"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:21",
+      "sequence": 2975,
+      "chapter_label": "LEV 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "Aaron waved the breasts and the right thigh for a wave offering before the LORD, as Moses commanded.",
+      "ko": "가슴들과 우편 뒷다리를 그가 여호와 앞에 요제로 흔드니 모세의 명한 것과 같았더라",
+      "source_text_hash": "07adf86d41cd6174626101564a433bd5db8a68a3710ee930b5c7ead6264c405c",
+      "translation_text_hash": "eb76960acd041f980c6b178f546eaab983ede5ee886310dcbc3d13375c67e16e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가슴들과 우편 뒷다리를 그가 여호와 앞에 요제로 흔드니 모세의 명한 것과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "eb76960acd041f980c6b178f546eaab983ede5ee886310dcbc3d13375c67e16e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:22",
+      "sequence": 2976,
+      "chapter_label": "LEV 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "Aaron lifted up his hands toward the people, and blessed them; and he came down from offering the sin offering, and the burnt offering, and the peace offerings.",
+      "ko": "아론이 백성을 향하여 손을 들어 축복함으로 속죄제와 번제와 화목제를 필하고 내려오니라",
+      "source_text_hash": "a88c3ce484253d9beac040c0e48c0ce3b84100522781d403db6ad0f3d515cf5b",
+      "translation_text_hash": "9fa2e3fb324f269482b2d9202bf484bc5fb124c155e2d828b8cb0198919664b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 백성을 향하여 손을 들어 축복함으로 속죄제와 번제와 화목제를 필하고 내려오니라"
+      ],
+      "raw_text_hashes": [
+        "9fa2e3fb324f269482b2d9202bf484bc5fb124c155e2d828b8cb0198919664b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:23",
+      "sequence": 2977,
+      "chapter_label": "LEV 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "Moses and Aaron went into the Tent of Meeting, and came out, and blessed the people; and the LORD’s glory appeared to all the people.",
+      "ko": "모세와 아론이 회막에 들어갔다가 나와서 백성에게 축복하매 여호와의 영광이 온 백성에게 나타나며",
+      "source_text_hash": "5976170e49ea8a31778711e7429f2d30869200a0529675ee4a44feb70d204bc4",
+      "translation_text_hash": "0ffcaa4f6e8e33140568211d8f4c445cabe8f7770dbbc93f2ff404d0f5662020",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 회막에 들어갔다가 나와서 백성에게 축복하매 여호와의 영광이 온 백성에게 나타나며"
+      ],
+      "raw_text_hashes": [
+        "0ffcaa4f6e8e33140568211d8f4c445cabe8f7770dbbc93f2ff404d0f5662020"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:9:24",
+      "sequence": 2978,
+      "chapter_label": "LEV 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "Fire came out from before the LORD, and consumed the burnt offering and the fat upon the altar. When all the people saw it, they shouted, and fell on their faces.",
+      "ko": "불이 여호와 앞에서 나와 단 위의 번제물과 기름을 사른지라 온 백성이 이를 보고 소리지르며 엎드렸더라",
+      "source_text_hash": "8aaa0b2071e482e7cf3b09c3070aff99e883a666d69086175a4f4b5509cfdb41",
+      "translation_text_hash": "c006c148cc9d44e2efa5ef9e9ee73ccb1e60d90d20dc648587640d2944a8ebab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불이 여호와 앞에서 나와 단 위의 번제물과 기름을 사른지라 온 백성이 이를 보고 소리지르며 엎드렸더라"
+      ],
+      "raw_text_hashes": [
+        "c006c148cc9d44e2efa5ef9e9ee73ccb1e60d90d20dc648587640d2944a8ebab"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:040",
+  "unit_ordinal": 40,
+  "unit_label": "GEN 40",
+  "book_code": "GEN",
+  "chapter_number": 40,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:40:1",
+      "sequence": 1174,
+      "chapter_label": "GEN 40",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 1
+        }
+      ],
+      "en": "After these things, the butler of the king of Egypt and his baker offended their lord, the king of Egypt.",
+      "ko": "그 후에 애굽왕의 술 맡은 자와 떡 굽는 자가 그 주 애굽왕에게 범죄한지라",
+      "source_text_hash": "68c03d005ed2f290fd606c5b939102217547fe6c1939425521fd50be7c46aef0",
+      "translation_text_hash": "199f0763facc79a61b1675068288891ca5560f24efdb6be27656925fb3049755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 애굽왕의 술 맡은 자와 떡 굽는 자가 그 주 애굽왕에게 범죄한지라"
+      ],
+      "raw_text_hashes": [
+        "199f0763facc79a61b1675068288891ca5560f24efdb6be27656925fb3049755"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:2",
+      "sequence": 1175,
+      "chapter_label": "GEN 40",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 2
+        }
+      ],
+      "en": "Pharaoh was angry with his two officers, the chief cup bearer and the chief baker.",
+      "ko": "바로가 그 두 관원장 곧 술 맡은 관원장과 떡 굽는 관원장에게 노하여",
+      "source_text_hash": "4f0ba6e8e9a88aa071bc4faac65a503d3ecf8ba5865ea6351c2bb746e9b789f6",
+      "translation_text_hash": "230292b996475b60a57b97c5ae2dc4bc2c15d7f0dac51b77a4f8a074963aeb7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 그 두 관원장 곧 술 맡은 관원장과 떡 굽는 관원장에게 노하여"
+      ],
+      "raw_text_hashes": [
+        "230292b996475b60a57b97c5ae2dc4bc2c15d7f0dac51b77a4f8a074963aeb7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:3",
+      "sequence": 1176,
+      "chapter_label": "GEN 40",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 3
+        }
+      ],
+      "en": "He put them in custody in the house of the captain of the guard, into the prison, the place where Joseph was bound.",
+      "ko": "그들을 시위대장의 집안에 있는 옥에 가두니 곧 요셉의 갇힌 곳이라",
+      "source_text_hash": "04056f49a194f7ee85a4bcab70c47068fc2cc738a947013d0d04bd6e7dfae562",
+      "translation_text_hash": "f54e3c5a701f4a81de6440046712cc98dbb25ce845f142fdbfd486746168f9eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 시위대장의 집안에 있는 옥에 가두니 곧 요셉의 갇힌 곳이라"
+      ],
+      "raw_text_hashes": [
+        "f54e3c5a701f4a81de6440046712cc98dbb25ce845f142fdbfd486746168f9eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:4",
+      "sequence": 1177,
+      "chapter_label": "GEN 40",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 4
+        }
+      ],
+      "en": "The captain of the guard assigned them to Joseph, and he took care of them. They stayed in prison many days.",
+      "ko": "시위대장이 요셉으로 그들에게 수종하게 하매 요셉이 그들을 섬겼더라 그들이 갇힌지 수일이라",
+      "source_text_hash": "4c79611ddb50e6bbca2bb9abf34db4b7382f815823c878acf88e222c8533acaf",
+      "translation_text_hash": "8619778453120cb3cc1f9b88cc29ec0a01d0b406c5368677823b689324aa0e01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대장이 요셉으로 그들에게 수종하게 하매 요셉이 그들을 섬겼더라 그들이 갇힌지 수일이라"
+      ],
+      "raw_text_hashes": [
+        "8619778453120cb3cc1f9b88cc29ec0a01d0b406c5368677823b689324aa0e01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:5",
+      "sequence": 1178,
+      "chapter_label": "GEN 40",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 5
+        }
+      ],
+      "en": "They both dreamed a dream, each man his dream, in one night, each man according to the interpretation of his dream, the cup bearer and the baker of the king of Egypt, who were bound in the prison.",
+      "ko": "옥에 갇힌 애굽 왕의 술 맡은 자와 떡 굽는 자 두 사람이 하룻밤에 꿈을 꾸니 각기 몽조가 다르더라",
+      "source_text_hash": "a5cca6e8b3e6548551950ca52efd09f5e4e16aa51556b7cd7db99d2a2a07cbc0",
+      "translation_text_hash": "e094eede2ed08e2c587ec4b93fcedb7937475e929259725446bbe47d13cf15e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옥에 갇힌 애굽 왕의 술 맡은 자와 떡 굽는 자 두 사람이 하룻밤에 꿈을 꾸니 각기 몽조가 다르더라"
+      ],
+      "raw_text_hashes": [
+        "e094eede2ed08e2c587ec4b93fcedb7937475e929259725446bbe47d13cf15e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:6",
+      "sequence": 1179,
+      "chapter_label": "GEN 40",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 6
+        }
+      ],
+      "en": "Joseph came in to them in the morning, and saw them, and saw that they were sad.",
+      "ko": "아침에 요셉이 들어가 보니 그들에게 근심 빛이 있는지라",
+      "source_text_hash": "341498182eb4754be1b3723f51db74bc96fabcf5d0aa2e583c00439a7cec0037",
+      "translation_text_hash": "851d6498ecaeb46462465b7b66dd6ebc81d1c7fe74cbad7cc4a43bca4c4f5d51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 요셉이 들어가 보니 그들에게 근심 빛이 있는지라"
+      ],
+      "raw_text_hashes": [
+        "851d6498ecaeb46462465b7b66dd6ebc81d1c7fe74cbad7cc4a43bca4c4f5d51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:7",
+      "sequence": 1180,
+      "chapter_label": "GEN 40",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 7
+        }
+      ],
+      "en": "He asked Pharaoh’s officers who were with him in custody in his master’s house, saying, “Why do you look so sad today?”",
+      "ko": "요셉이 그 주인의 집에 자기와 함께 갇힌 바로의 관원장에게 묻되 당신들이 오늘 어찌하여 근심 빛이 있나이까",
+      "source_text_hash": "beb4b2776e58a4921a7743de462d418769f7737df0fe40b2c799083f7a6af664",
+      "translation_text_hash": "9d76bd6af175fa5a9d9d64f3f9b34a89f1f5e2fe2be07b030ee027c67a2bd5d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그 주인의 집에 자기와 함께 갇힌 바로의 관원장에게 묻되 당신들이 오늘 어찌하여 근심 빛이 있나이까"
+      ],
+      "raw_text_hashes": [
+        "9d76bd6af175fa5a9d9d64f3f9b34a89f1f5e2fe2be07b030ee027c67a2bd5d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:8",
+      "sequence": 1181,
+      "chapter_label": "GEN 40",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 8
+        }
+      ],
+      "en": "They said to him, “We have dreamed a dream, and there is no one who can interpret it.” Joseph said to them, “Don’t interpretations belong to God? Please tell it to me.”",
+      "ko": "그들이 그에게 이르되 우리가 꿈을 꾸었으나 이를 해석할 자가 없도다 요셉이 그들에게 이르되 해석은 하나님께 있지 아니하니이까 청컨대 내게 고하소서",
+      "source_text_hash": "8e1814356c85ed461236e315d869bb211d14f1d3d461db781cc82c11a7097d90",
+      "translation_text_hash": "10042c3f417a0f8487d122ae23c79aae506bc5882500b39b94a57ae6aea1122e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그에게 이르되 우리가 꿈을 꾸었으나 이를 해석할 자가 없도다 요셉이 그들에게 이르되 해석은 하나님께 있지 아니하니이까 청컨대 내게 고하소서"
+      ],
+      "raw_text_hashes": [
+        "10042c3f417a0f8487d122ae23c79aae506bc5882500b39b94a57ae6aea1122e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:9",
+      "sequence": 1182,
+      "chapter_label": "GEN 40",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 9
+        }
+      ],
+      "en": "The chief cup bearer told his dream to Joseph, and said to him, “In my dream, behold, a vine was in front of me,",
+      "ko": "술 맡은 관원장이 그 꿈을 요셉에게 말하여 가로되 내가 꿈에 보니 내 앞에 포도나무가 있는데",
+      "source_text_hash": "6093ca6ec850fc9bc770941ad8393b6eff7151d0f9284569d12224ce4a6e2677",
+      "translation_text_hash": "0a410cd9d4a3965ec057e3f12099a44bf257d2781b008b696701b35f7e5dc283",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술 맡은 관원장이 그 꿈을 요셉에게 말하여 가로되 내가 꿈에 보니 내 앞에 포도나무가 있는데"
+      ],
+      "raw_text_hashes": [
+        "0a410cd9d4a3965ec057e3f12099a44bf257d2781b008b696701b35f7e5dc283"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:10",
+      "sequence": 1183,
+      "chapter_label": "GEN 40",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 10
+        }
+      ],
+      "en": "and in the vine were three branches. It was as though it budded, it blossomed, and its clusters produced ripe grapes.",
+      "ko": "그 나무에 세 가지가 있고 싹이 나서 꽃이 피고 포도송이가 익었고",
+      "source_text_hash": "be7b34a072200be6fb4086bda20fe18977c0f99e4eef1bf93f78e36c47d2e16f",
+      "translation_text_hash": "23ccbd493a4676a84d2742884f147107b48dda99ed61149ec1c54810d1f22d06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나무에 세 가지가 있고 싹이 나서 꽃이 피고 포도송이가 익었고"
+      ],
+      "raw_text_hashes": [
+        "23ccbd493a4676a84d2742884f147107b48dda99ed61149ec1c54810d1f22d06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:11",
+      "sequence": 1184,
+      "chapter_label": "GEN 40",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 11
+        }
+      ],
+      "en": "Pharaoh’s cup was in my hand; and I took the grapes, and pressed them into Pharaoh’s cup, and I gave the cup into Pharaoh’s hand.”",
+      "ko": "내 손에 바로의 잔이 있기로 내가 포도를 따서 그 즙을 바로의 잔에 짜서 그 잔을 바로의 손에 드렸노라",
+      "source_text_hash": "a051c136f61e72ea2199236a3eb532dec5ecb923f50f475698a0dc0c3ab5ff41",
+      "translation_text_hash": "a25a096900e093d77dc497edc54d963c9855770c5f1ec52139935c11da133613",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 손에 바로의 잔이 있기로 내가 포도를 따서 그 즙을 바로의 잔에 짜서 그 잔을 바로의 손에 드렸노라"
+      ],
+      "raw_text_hashes": [
+        "a25a096900e093d77dc497edc54d963c9855770c5f1ec52139935c11da133613"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:12",
+      "sequence": 1185,
+      "chapter_label": "GEN 40",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 12
+        }
+      ],
+      "en": "Joseph said to him, “This is its interpretation: the three branches are three days.",
+      "ko": "요셉이 그에게 이르되 그 해석이 이러하니 세 가지는 사흘이라",
+      "source_text_hash": "647ea18a1b0c08e9fbe4cda2f39e62858484a180feec6bdc946962e0ff78ad5e",
+      "translation_text_hash": "dd3ac968bcb86cf45a887878865b5c21a67d6170873d8beae636803fc15e73b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그에게 이르되 그 해석이 이러하니 세 가지는 사흘이라"
+      ],
+      "raw_text_hashes": [
+        "dd3ac968bcb86cf45a887878865b5c21a67d6170873d8beae636803fc15e73b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:13",
+      "sequence": 1186,
+      "chapter_label": "GEN 40",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 13
+        }
+      ],
+      "en": "Within three more days, Pharaoh will lift up your head, and restore you to your office. You will give Pharaoh’s cup into his hand, the way you did when you were his cup bearer.",
+      "ko": "지금부터 사흘 안에 바로가 당신의 머리를 들고 당신의 전직을 회복하리니 당신이 이왕에 술 맡은 자가 되었을 때에 하던것 같이 바로의 잔을 그 손에 받들게 되리이다",
+      "source_text_hash": "da0ac36752bcd78462abee88e10ae193cfcc82f93630524d18c364f8e71bd442",
+      "translation_text_hash": "21355f536cbcc3f21a703ad4ec1b300625eb95f4f755d07a86dd2075090551f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금부터 사흘 안에 바로가 당신의 머리를 들고 당신의 전직을 회복하리니 당신이 이왕에 술 맡은 자가 되었을 때에 하던것 같이 바로의 잔을 그 손에 받들게 되리이다"
+      ],
+      "raw_text_hashes": [
+        "21355f536cbcc3f21a703ad4ec1b300625eb95f4f755d07a86dd2075090551f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:14",
+      "sequence": 1187,
+      "chapter_label": "GEN 40",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 14
+        }
+      ],
+      "en": "But remember me when it is well with you. Please show kindness to me, and make mention of me to Pharaoh, and bring me out of this house.",
+      "ko": "당신이 득의하거든 나를 생각하고 내게 은혜를 베풀어서 내 사정을 바로에게 고하여 이 집에서 나를 건져내소서",
+      "source_text_hash": "7554960e35032f3814924b67cca4b7a4ae37147eab536757bb8d9c83682b6c80",
+      "translation_text_hash": "da41a11330c1326786ddc8c47fb79290d640728ae8ab8542588ba1b3c5563f3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신이 득의하거든 나를 생각하고 내게 은혜를 베풀어서 내 사정을 바로에게 고하여 이 집에서 나를 건져내소서"
+      ],
+      "raw_text_hashes": [
+        "da41a11330c1326786ddc8c47fb79290d640728ae8ab8542588ba1b3c5563f3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:15",
+      "sequence": 1188,
+      "chapter_label": "GEN 40",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 15
+        }
+      ],
+      "en": "For indeed, I was stolen away out of the land of the Hebrews, and here also I have done nothing that they should put me into the dungeon.”",
+      "ko": "나는 히브리 땅에서 끌려온 자요 여기서도 옥에 갇힐 일은 행치 아니하였나이다",
+      "source_text_hash": "9a672a5afa9c5d3ad1bdc3492a6dfba70700fc635770d76f787e6a68f96a425d",
+      "translation_text_hash": "0f4c2c9558aaed0ed3a3091e14a65a7d5aee270b33188eeecdd938b6b7a03281",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 히브리 땅에서 끌려온 자요 여기서도 옥에 갇힐 일은 행치 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "0f4c2c9558aaed0ed3a3091e14a65a7d5aee270b33188eeecdd938b6b7a03281"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:16",
+      "sequence": 1189,
+      "chapter_label": "GEN 40",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 16
+        }
+      ],
+      "en": "When the chief baker saw that the interpretation was good, he said to Joseph, “I also was in my dream, and behold, three baskets of white bread were on my head.",
+      "ko": "떡 굽는 관원장이 그 해석이 길함을 보고 요셉에게 이르되 나도 꿈에 보니 흰떡 세 광주리가 내 머리에 있고",
+      "source_text_hash": "23b7fa6673bd936d936bbf6024085c1664a5b37fb641f8d0f135753b420dc4bf",
+      "translation_text_hash": "035d0c30f961ae12256f0f796a052df65126e8ab158cb0fa17ec3dfc94bcbacf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떡 굽는 관원장이 그 해석이 길함을 보고 요셉에게 이르되 나도 꿈에 보니 흰떡 세 광주리가 내 머리에 있고"
+      ],
+      "raw_text_hashes": [
+        "035d0c30f961ae12256f0f796a052df65126e8ab158cb0fa17ec3dfc94bcbacf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:17",
+      "sequence": 1190,
+      "chapter_label": "GEN 40",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 17
+        }
+      ],
+      "en": "In the uppermost basket there were all kinds of baked food for Pharaoh, and the birds ate them out of the basket on my head.”",
+      "ko": "그 윗광주리에 바로를 위하여 만든 각종 구운 식물이 있는데 새들이 내 머리의 광주리에서 그것을 먹더라",
+      "source_text_hash": "728dfa8e18674b3fd298509c414e81601b82c45f31b5296436c4f03e3ca2cc36",
+      "translation_text_hash": "88ef71c149e9575fd7f103da4418f4a0c0b700ce2c280408bd3f218bfb38817a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 윗광주리에 바로를 위하여 만든 각종 구운 식물이 있는데 새들이 내 머리의 광주리에서 그것을 먹더라"
+      ],
+      "raw_text_hashes": [
+        "88ef71c149e9575fd7f103da4418f4a0c0b700ce2c280408bd3f218bfb38817a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:18",
+      "sequence": 1191,
+      "chapter_label": "GEN 40",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 18
+        }
+      ],
+      "en": "Joseph answered, “This is its interpretation. The three baskets are three days.",
+      "ko": "요셉이 대답하여 가로되 그 해석은 이러하니 세 광주리는 사흘이라",
+      "source_text_hash": "65320d4e19381bb20d1c8f8e9f10227064e802d846470c892247ac8c5e89cb37",
+      "translation_text_hash": "14ca8c719bf1d7462da8d81537fcbe6834483e5154607822f949f139f7a4d784",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 대답하여 가로되 그 해석은 이러하니 세 광주리는 사흘이라"
+      ],
+      "raw_text_hashes": [
+        "14ca8c719bf1d7462da8d81537fcbe6834483e5154607822f949f139f7a4d784"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:19",
+      "sequence": 1192,
+      "chapter_label": "GEN 40",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 19
+        }
+      ],
+      "en": "Within three more days, Pharaoh will lift up your head from off you, and will hang you on a tree; and the birds will eat your flesh from off you.”",
+      "ko": "지금부터 사흘 안에 바로가 당신의 머리를 끊고 당신을 나무에 달리니 새들이 당신의 고기를 뜯어 먹으리이다 하더니",
+      "source_text_hash": "c8863130cfa6650e129d2435cad2087b799076b03a15eae2bbe2bf3877ab689e",
+      "translation_text_hash": "21d28cb44232ed6ce93fe4801f22f0eb9a5ca7417ee984e3c3b3e2713f48ea8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금부터 사흘 안에 바로가 당신의 머리를 끊고 당신을 나무에 달리니 새들이 당신의 고기를 뜯어 먹으리이다 하더니"
+      ],
+      "raw_text_hashes": [
+        "21d28cb44232ed6ce93fe4801f22f0eb9a5ca7417ee984e3c3b3e2713f48ea8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:20",
+      "sequence": 1193,
+      "chapter_label": "GEN 40",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 20
+        }
+      ],
+      "en": "On the third day, which was Pharaoh’s birthday, he made a feast for all his servants, and he lifted up the head of the chief cup bearer and the head of the chief baker among his servants.",
+      "ko": "제삼일은 바로의 탄일이라 바로가 모든 신하를 위하여 잔치할 때에 술 맡은 관원장과 떡 굽는 관원장으로 머리를 그 신하 중에 들게 하니라",
+      "source_text_hash": "27d9e52a5ef3b8fac53d3d0f46ba2e025060da0e7b5118ccdb614f06aec41a1b",
+      "translation_text_hash": "b711b4be80fa2944f00f32c036246b3ca87cb3112ae3228808f1b03df58fed81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제삼일은 바로의 탄일이라 바로가 모든 신하를 위하여 잔치할 때에 술 맡은 관원장과 떡 굽는 관원장으로 머리를 그 신하 중에 들게 하니라"
+      ],
+      "raw_text_hashes": [
+        "b711b4be80fa2944f00f32c036246b3ca87cb3112ae3228808f1b03df58fed81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:21",
+      "sequence": 1194,
+      "chapter_label": "GEN 40",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 21
+        }
+      ],
+      "en": "He restored the chief cup bearer to his position again, and he gave the cup into Pharaoh’s hand;",
+      "ko": "바로의 술 맡은 관원장은 전직을 회복하매 그가 잔을 바로의 손에 받들어 드렸고",
+      "source_text_hash": "fcbd66b728f59ff98d3346368942ff2f365e6626ad9e1fcfc14965e3e005591b",
+      "translation_text_hash": "7b2450dc550606237593ba777db99aa576dff2647d8b21c595f0763ed5c45f83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 술 맡은 관원장은 전직을 회복하매 그가 잔을 바로의 손에 받들어 드렸고"
+      ],
+      "raw_text_hashes": [
+        "7b2450dc550606237593ba777db99aa576dff2647d8b21c595f0763ed5c45f83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:22",
+      "sequence": 1195,
+      "chapter_label": "GEN 40",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 22
+        }
+      ],
+      "en": "but he hanged the chief baker, as Joseph had interpreted to them.",
+      "ko": "떡 굽는 관원장은 매달리니 요셉이 그들에게 해석함과 같이 되었으나",
+      "source_text_hash": "2f32d644b68ca98ad1eb1990ebb3e0978a1cf54f785c1f26022deefb3d774b5d",
+      "translation_text_hash": "f0dfac7a19aac2b1c49ce9cf509a0fdb3892e7463d7ae46ccb6e801fbbf6ff72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떡 굽는 관원장은 매달리니 요셉이 그들에게 해석함과 같이 되었으나"
+      ],
+      "raw_text_hashes": [
+        "f0dfac7a19aac2b1c49ce9cf509a0fdb3892e7463d7ae46ccb6e801fbbf6ff72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:40:23",
+      "sequence": 1196,
+      "chapter_label": "GEN 40",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 40,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 40,
+          "verse": 23
+        }
+      ],
+      "en": "Yet the chief cup bearer didn’t remember Joseph, but forgot him.",
+      "ko": "술 맡은 관원장이 요셉을 기억지 않고 잊었더라",
+      "source_text_hash": "8263e0c97d278f9c1fd5134fd141e1ec2841cf59f9dfb3dd431bf82f6844d79e",
+      "translation_text_hash": "0108a98dc5fcb19dabd5f21e046bb626260d1a9c84eabd54b1bfd3fa566c7aff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술 맡은 관원장이 요셉을 기억지 않고 잊었더라"
+      ],
+      "raw_text_hashes": [
+        "0108a98dc5fcb19dabd5f21e046bb626260d1a9c84eabd54b1bfd3fa566c7aff"
+      ]
+    }
+  ]
+}

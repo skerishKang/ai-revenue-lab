@@ -16,6 +16,7 @@ from app.workspace_storage import (
 NOW = datetime(2026, 9, 9, 10, 0, tzinfo=timezone.utc)
 TENANT = "tenant_0123456789abcdef0123456789abcdef"
 OTHER_TENANT = "tenant_fedcba9876543210fedcba9876543210"
+USER = "usr_0123456789abcdef0123456789abcdef"
 
 
 class MemoryMetadata:
@@ -28,6 +29,10 @@ class MemoryMetadata:
 
     async def get_active(self, document_id):
         return self.rows.get(document_id)
+
+    async def get_active_owned(self, document_id, user_id):
+        row = self.rows.get(document_id)
+        return row if row is not None and row.user_id == user_id else None
 
     async def mark_deleted(self, document_id, deleted_at):
         self.rows.pop(document_id, None)
@@ -69,6 +74,7 @@ async def test_generated_docx_uses_server_generated_private_workspace_key() -> N
 
     saved = await storage.put_generated_docx(
         tenant_id=TENANT,
+        user_id=USER,
         filename="../unsafe quote 2026",
         body=b"PK-docx-bytes",
         now=NOW,
@@ -91,6 +97,7 @@ async def test_same_canonical_tenant_can_read_but_cross_tenant_is_denied() -> No
     storage, _, _ = store()
     saved = await storage.put_generated_docx(
         tenant_id=TENANT,
+        user_id=USER,
         filename="quote.docx",
         body=b"private-docx",
         now=NOW,
@@ -98,6 +105,7 @@ async def test_same_canonical_tenant_can_read_but_cross_tenant_is_denied() -> No
 
     metadata, body = await storage.get_for_tenant(
         tenant_id=TENANT,
+        user_id=USER,
         document_id=saved.document_id,
         now=NOW + timedelta(minutes=1),
     )
@@ -107,6 +115,7 @@ async def test_same_canonical_tenant_can_read_but_cross_tenant_is_denied() -> No
     with pytest.raises(WorkspaceStorageAccessError):
         await storage.get_for_tenant(
             tenant_id=OTHER_TENANT,
+            user_id=USER,
             document_id=saved.document_id,
             now=NOW + timedelta(minutes=1),
         )
@@ -140,6 +149,7 @@ async def test_r2_objectbody_arraybuffer_is_used_before_stream_body() -> None:
     storage, _, r2 = store()
     saved = await storage.put_generated_docx(
         tenant_id=TENANT,
+        user_id=USER,
         filename="quote.docx",
         body=b"PK-real-r2-shape",
         now=NOW,
@@ -153,6 +163,7 @@ async def test_r2_objectbody_arraybuffer_is_used_before_stream_body() -> None:
     r2.get = runtime_get
     _, payload = await storage.get_for_tenant(
         tenant_id=TENANT,
+        user_id=USER,
         document_id=saved.document_id,
         now=NOW + timedelta(minutes=1),
     )
@@ -165,6 +176,7 @@ async def test_r2_objectbody_arraybuffer_failure_does_not_fall_back_to_body() ->
     storage, _, r2 = store()
     saved = await storage.put_generated_docx(
         tenant_id=TENANT,
+        user_id=USER,
         filename="quote.docx",
         body=b"PK-no-fallback",
         now=NOW,
@@ -184,6 +196,7 @@ async def test_r2_objectbody_arraybuffer_failure_does_not_fall_back_to_body() ->
     with pytest.raises(WorkspaceStorageError, match="workspace document read failed"):
         await storage.get_for_tenant(
             tenant_id=TENANT,
+            user_id=USER,
             document_id=saved.document_id,
             now=NOW + timedelta(minutes=1),
         )
@@ -193,6 +206,7 @@ async def test_expired_generated_document_is_deleted_and_not_returned() -> None:
     storage, metadata, r2 = store()
     saved = await storage.put_generated_docx(
         tenant_id=TENANT,
+        user_id=USER,
         filename="quote.docx",
         body=b"private-docx",
         now=NOW,
@@ -200,6 +214,7 @@ async def test_expired_generated_document_is_deleted_and_not_returned() -> None:
 
     result = await storage.get_for_tenant(
         tenant_id=TENANT,
+        user_id=USER,
         document_id=saved.document_id,
         now=saved.expires_at,
     )
@@ -215,6 +230,7 @@ async def test_an_empty_body_is_refused_before_r2_write() -> None:
     with pytest.raises(ValueError):
         await storage.put_generated_docx(
             tenant_id=TENANT,
+            user_id=USER,
             filename="empty.docx",
             body=b"",
             now=NOW,
@@ -231,6 +247,7 @@ async def test_a_body_past_the_released_ceiling_is_still_stored() -> None:
 
     saved = await storage.put_generated_docx(
         tenant_id=TENANT,
+        user_id=USER,
         filename="large.docx",
         body=body,
         now=NOW,
@@ -255,6 +272,7 @@ async def test_r2_write_failure_fails_closed_without_metadata_row() -> None:
     with pytest.raises(WorkspaceStorageError):
         await storage.put_generated_docx(
             tenant_id=TENANT,
+            user_id=USER,
             filename="견적서.docx",
             body=b"PK-docx-bytes",
             now=NOW,
@@ -277,6 +295,7 @@ async def test_metadata_write_failure_cleans_up_orphan_r2_object() -> None:
     with pytest.raises(WorkspaceStorageError):
         await storage.put_generated_docx(
             tenant_id=TENANT,
+            user_id=USER,
             filename="견적서.docx",
             body=b"PK-docx-bytes",
             now=NOW,
@@ -293,7 +312,7 @@ async def test_metadata_write_failure_cleans_up_orphan_r2_object() -> None:
 async def test_caller_cannot_supply_object_key_or_document_id() -> None:
     storage, _, _ = store()
     method_params = storage.put_generated_docx.__signature__ if hasattr(storage.put_generated_docx, "__signature__") else None
-    # API shape itself accepts only tenant, filename, bytes and optional time.
+    # API shape itself accepts only tenant, owner, filename, bytes and optional time.
     import inspect
 
     names = set(inspect.signature(storage.put_generated_docx).parameters)

@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:020",
+  "unit_ordinal": 173,
+  "unit_label": "DEU 20",
+  "book_code": "DEU",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:20:1",
+      "sequence": 5429,
+      "chapter_label": "DEU 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "When you go out to battle against your enemies, and see horses, chariots, and a people more numerous than you, you shall not be afraid of them; for the LORD your God, who brought you up out of the land of Egypt, is with you.",
+      "ko": "네가 나가 대적과 싸우려할 때에 말과 병거와 민중이 너보다 많음을 볼찌라도 그들을 두려워 말라 애굽 땅에서 너를 인도하여 내신 네 하나님 여호와께서 너와 함께 하시느니라",
+      "source_text_hash": "ce9308dfc174f3525eb44650ddc3e32aeae742fd24c38f938ded768b2af2f7de",
+      "translation_text_hash": "5b85e16e6a3ad86b926a2a2ead64462411b8de2e806e76cd9c827258a675c4ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 나가 대적과 싸우려할 때에 말과 병거와 민중이 너보다 많음을 볼찌라도 그들을 두려워 말라 애굽 땅에서 너를 인도하여 내신 네 하나님 여호와께서 너와 함께 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "5b85e16e6a3ad86b926a2a2ead64462411b8de2e806e76cd9c827258a675c4ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:2",
+      "sequence": 5430,
+      "chapter_label": "DEU 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "It shall be, when you draw near to the battle, that the priest shall approach and speak to the people,",
+      "ko": "너희가 싸울 곳에 가까이 가거든 제사장은 백성에게 나아가서 고하여",
+      "source_text_hash": "8ee0d8f7e56ea04819ec16244aa34ff21197dde5350d9b2873c9f6394a37939f",
+      "translation_text_hash": "37d391a295094f3c26b3a7be79ddab3d0449c5023dc9d2ea3d14e603e462ef1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 싸울 곳에 가까이 가거든 제사장은 백성에게 나아가서 고하여"
+      ],
+      "raw_text_hashes": [
+        "37d391a295094f3c26b3a7be79ddab3d0449c5023dc9d2ea3d14e603e462ef1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:3",
+      "sequence": 5431,
+      "chapter_label": "DEU 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "and shall tell them, “Hear, Israel, you draw near today to battle against your enemies. Don’t let your heart faint! Don’t be afraid, nor tremble, neither be scared of them;",
+      "ko": "그들에게 이르기를 이스라엘아 들으라 너희가 오늘날 너희의 대적과 싸우려고 나아왔으니 마음에 겁내지 말며 두려워 말며 떨지 말며 그들로 인하여 놀라지 말라",
+      "source_text_hash": "d7fa397c75d06dd1037422a3181d67461ed93a6459e963c74f3541fe4f4db3d9",
+      "translation_text_hash": "cdf21d5c8401243f5a8f26f672b43ceaad099f609b4809e0919273ea394817fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르기를 이스라엘아 들으라 너희가 오늘날 너희의 대적과 싸우려고 나아왔으니 마음에 겁내지 말며 두려워 말며 떨지 말며 그들로 인하여 놀라지 말라"
+      ],
+      "raw_text_hashes": [
+        "cdf21d5c8401243f5a8f26f672b43ceaad099f609b4809e0919273ea394817fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:4",
+      "sequence": 5432,
+      "chapter_label": "DEU 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "for the LORD your God is he who goes with you, to fight for you against your enemies, to save you.”",
+      "ko": "너희 하나님 여호와는 너희와 함께 행하시며 너희를 위하여 너희 대적을 치고 너희를 구원하시는 자니라 할것이며",
+      "source_text_hash": "706854937ec8e59da181a7e86821a11aa908e5832ec6236ea19190d56df06c20",
+      "translation_text_hash": "cda027c86650b5bff7ffa05204a1c23f97be2e98b0c566290c5b7977202022f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와는 너희와 함께 행하시며 너희를 위하여 너희 대적을 치고 너희를 구원하시는 자니라 할것이며"
+      ],
+      "raw_text_hashes": [
+        "cda027c86650b5bff7ffa05204a1c23f97be2e98b0c566290c5b7977202022f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:5",
+      "sequence": 5433,
+      "chapter_label": "DEU 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "The officers shall speak to the people, saying, “What man is there who has built a new house, and has not dedicated it? Let him go and return to his house, lest he die in the battle, and another man dedicate it.",
+      "ko": "유사들은 백성에게 고하여 이르기를 새집을 건축하고 낙성식을 행치 못한 자가 있느냐 그는 집으로 돌아갈찌니 전사하면 타인이 낙성식을 행할까 하노라",
+      "source_text_hash": "772cde12fa19d24e2eaa6a0be90b3ed03797c7a7cff603ca63ec88917c324bfb",
+      "translation_text_hash": "b2be8311fbf34efbd4b5ee05724721ab8f9247ebbbd3c4a0420df547577f99be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유사들은 백성에게 고하여 이르기를 새집을 건축하고 낙성식을 행치 못한 자가 있느냐 그는 집으로 돌아갈찌니 전사하면 타인이 낙성식을 행할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "b2be8311fbf34efbd4b5ee05724721ab8f9247ebbbd3c4a0420df547577f99be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:6",
+      "sequence": 5434,
+      "chapter_label": "DEU 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "What man is there who has planted a vineyard, and has not used its fruit? Let him go and return to his house, lest he die in the battle, and another man use its fruit.",
+      "ko": "포도원을 만들고 그 과실을 먹지 못한 자가 있느냐 그는 집으로 돌아갈찌니 전사하면 타인이 그 과실을 먹을까 하노라",
+      "source_text_hash": "6ed837356206af8ede14a8b0337a21078660a1b4a4c28bf3a115787748781967",
+      "translation_text_hash": "d0309482c8eff2569a7422593e63e68e6055acbde51739cff15b14d38253cbcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도원을 만들고 그 과실을 먹지 못한 자가 있느냐 그는 집으로 돌아갈찌니 전사하면 타인이 그 과실을 먹을까 하노라"
+      ],
+      "raw_text_hashes": [
+        "d0309482c8eff2569a7422593e63e68e6055acbde51739cff15b14d38253cbcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:7",
+      "sequence": 5435,
+      "chapter_label": "DEU 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "What man is there who has pledged to be married to a wife, and has not taken her? Let him go and return to his house, lest he die in the battle, and another man take her.”",
+      "ko": "여자와 약혼하고 그를 취하지 못한 자가 있느냐 그는 집으로 돌아갈찌니 전사하면 타인이 그를 취할까 하노라 하고",
+      "source_text_hash": "f1903a208df850614c63a2b55bb7d0d13b125fce5c623c299baed2b40c66da6b",
+      "translation_text_hash": "24851294d162c2fc95e0b4d897126e21b05d82e9b2c269bcdde1f38856a23894",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자와 약혼하고 그를 취하지 못한 자가 있느냐 그는 집으로 돌아갈찌니 전사하면 타인이 그를 취할까 하노라 하고"
+      ],
+      "raw_text_hashes": [
+        "24851294d162c2fc95e0b4d897126e21b05d82e9b2c269bcdde1f38856a23894"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:8",
+      "sequence": 5436,
+      "chapter_label": "DEU 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "The officers shall speak further to the people, and they shall say, “What man is there who is fearful and faint-hearted? Let him go and return to his house, lest his brother’s heart melt as his heart.”",
+      "ko": "유사들은 오히려 또 백성에게 고하여 이르기를 두려워서 마음에 겁내는 자가 있느냐 그는 집으로 돌아갈찌니 그 형제들의 마음도 그의 마음과 같이 떨어질까 하노라 하여",
+      "source_text_hash": "2406e3dc414dffc996c7ad6bf5278c7ae1cb205a9df54645810c3b9427c54a02",
+      "translation_text_hash": "e85fdff8d6491a774f635202373d78cb03561833919dec5f11f66801ff4de79e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유사들은 오히려 또 백성에게 고하여 이르기를 두려워서 마음에 겁내는 자가 있느냐 그는 집으로 돌아갈찌니 그 형제들의 마음도 그의 마음과 같이 떨어질까 하노라 하여"
+      ],
+      "raw_text_hashes": [
+        "e85fdff8d6491a774f635202373d78cb03561833919dec5f11f66801ff4de79e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:9",
+      "sequence": 5437,
+      "chapter_label": "DEU 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "It shall be, when the officers have finished speaking to the people, that they shall appoint captains of armies at the head of the people.",
+      "ko": "백성에게 이르기를 필한 후에 군대의 장관들을 세워 무리를 거느리게 할찌니라",
+      "source_text_hash": "f1d364de584ae640a039154efdbb1c3d4a44aa4e4e325fa45830d2567abfda42",
+      "translation_text_hash": "5ab135ddc0ec15769c1c06f728e17735b5a57dafc1c3526bff0d73d3ebae0485",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성에게 이르기를 필한 후에 군대의 장관들을 세워 무리를 거느리게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "5ab135ddc0ec15769c1c06f728e17735b5a57dafc1c3526bff0d73d3ebae0485"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:10",
+      "sequence": 5438,
+      "chapter_label": "DEU 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "When you draw near to a city to fight against it, then proclaim peace to it.",
+      "ko": "네가 어떤 성읍으로 나아가서 치려할 때에 그 성에 먼저 평화를 선언하라",
+      "source_text_hash": "33509f557719b3ead5147a7aa00c902dff235e588d82ec52bc123c6fdb523b84",
+      "translation_text_hash": "a64c09dfc2ae999ce1b9edd1b2c15334f73d2f4fc892264b5cdb4e046993e267",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어떤 성읍으로 나아가서 치려할 때에 그 성에 먼저 평화를 선언하라"
+      ],
+      "raw_text_hashes": [
+        "a64c09dfc2ae999ce1b9edd1b2c15334f73d2f4fc892264b5cdb4e046993e267"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:11",
+      "sequence": 5439,
+      "chapter_label": "DEU 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "It shall be, if it gives you answer of peace and opens to you, then it shall be that all the people who are found therein shall become forced laborers to you, and shall serve you.",
+      "ko": "그 성읍이 만일 평화하기로 회답하고 너를 향하여 성문을 열거든 그 온 거민으로 네게 공을 바치고 너를 섬기게 할 것이요",
+      "source_text_hash": "7a1aa29c7a34fe0db47a7e969ab2dee0af17380334acdf578c37a6280dabc3e5",
+      "translation_text_hash": "6afb7b8a01b0260ff1b0be948ead1fff3baac3565e1248c17aaac0890dfe3417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍이 만일 평화하기로 회답하고 너를 향하여 성문을 열거든 그 온 거민으로 네게 공을 바치고 너를 섬기게 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "6afb7b8a01b0260ff1b0be948ead1fff3baac3565e1248c17aaac0890dfe3417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:12",
+      "sequence": 5440,
+      "chapter_label": "DEU 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "If it will make no peace with you, but will make war against you, then you shall besiege it.",
+      "ko": "만일 너와 평화하기를 싫어하고 너를 대적하여 싸우려하거든 너는 그 성읍을 에워쌀 것이며",
+      "source_text_hash": "6e0e4fef51fa3427941bcdd41719e4e6cfcd9695f77ae13ce6565e0b15f15047",
+      "translation_text_hash": "6e057638856a75c326c06e3ca4153f7743564513f63626d7cbd2c82f3a540d82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너와 평화하기를 싫어하고 너를 대적하여 싸우려하거든 너는 그 성읍을 에워쌀 것이며"
+      ],
+      "raw_text_hashes": [
+        "6e057638856a75c326c06e3ca4153f7743564513f63626d7cbd2c82f3a540d82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:13",
+      "sequence": 5441,
+      "chapter_label": "DEU 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "When the LORD your God delivers it into your hand, you shall strike every male of it with the edge of the sword;",
+      "ko": "네 하나님 여호와께서 그 성읍을 네 손에 붙이시거든 너는 칼날로 그 속의 남자를 다 쳐 죽이고",
+      "source_text_hash": "b1cb960f62721cf8de0454faa63d249ebca0d4ea01defd8a4b971e981fd10a09",
+      "translation_text_hash": "6461c6cda4b70ae1df97f2ef6b9ddd45abba1c497730e3621a04c898d83d1e9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 그 성읍을 네 손에 붙이시거든 너는 칼날로 그 속의 남자를 다 쳐 죽이고"
+      ],
+      "raw_text_hashes": [
+        "6461c6cda4b70ae1df97f2ef6b9ddd45abba1c497730e3621a04c898d83d1e9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:14",
+      "sequence": 5442,
+      "chapter_label": "DEU 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "but the women, the little ones, the livestock, and all that is in the city, even all its plunder, you shall take for plunder for yourself. You may use the plunder of your enemies, which the LORD your God has given you.",
+      "ko": "오직 여자들과 유아들과 육축과 무릇 그 성중에서 네가 탈취한 모든 것은 네 것이니 취하라 네가 대적에게서 탈취한 것은 네 하나님 여호와께서 네게 주신 것인즉 너는 그것을 누릴찌니라",
+      "source_text_hash": "ee5a3612b9b38bb65d938c830d09370083caad7ef61f9df88f0d759b59fa13d3",
+      "translation_text_hash": "6205ccb6ec6621c325bd14175599f7b2f827574dc265ab1e5be4e896d232899f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 여자들과 유아들과 육축과 무릇 그 성중에서 네가 탈취한 모든 것은 네 것이니 취하라 네가 대적에게서 탈취한 것은 네 하나님 여호와께서 네게 주신 것인즉 너는 그것을 누릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "6205ccb6ec6621c325bd14175599f7b2f827574dc265ab1e5be4e896d232899f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:15",
+      "sequence": 5443,
+      "chapter_label": "DEU 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "Thus you shall do to all the cities which are very far off from you, which are not of the cities of these nations.",
+      "ko": "네가 네게서 멀리 떠난 성읍들 곧 이 민족들에게 속하지 아니한 성읍들에게는 이같이 행하려니와",
+      "source_text_hash": "9c7c0f151a7f69a28f471f3bb04b94356eb91e69ebbc41d69e53086675aa5fd4",
+      "translation_text_hash": "065b7e29cea3a93239f7785403ee1e36178095cc50209ea8d43f8983e09418d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네게서 멀리 떠난 성읍들 곧 이 민족들에게 속하지 아니한 성읍들에게는 이같이 행하려니와"
+      ],
+      "raw_text_hashes": [
+        "065b7e29cea3a93239f7785403ee1e36178095cc50209ea8d43f8983e09418d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:16",
+      "sequence": 5444,
+      "chapter_label": "DEU 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "But of the cities of these peoples that the LORD your God gives you for an inheritance, you shall save alive nothing that breathes;",
+      "ko": "오직 네 하나님 여호와께서 네게 기업으로 주시는 이 민족들의 성읍에서는 호흡 있는 자를 하나도 살리지 말찌니",
+      "source_text_hash": "bfd7dfae00a01240908f36a35fc5bced9f56a7a9b0e98a168244a1ce8401cafa",
+      "translation_text_hash": "ccbf132eae8f04b7efbadddcb480b9d981d9aecd123f48a3c0457c0b6c91bc86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 네 하나님 여호와께서 네게 기업으로 주시는 이 민족들의 성읍에서는 호흡 있는 자를 하나도 살리지 말찌니"
+      ],
+      "raw_text_hashes": [
+        "ccbf132eae8f04b7efbadddcb480b9d981d9aecd123f48a3c0457c0b6c91bc86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:17",
+      "sequence": 5445,
+      "chapter_label": "DEU 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "but you shall utterly destroy them: the Hittite, the Amorite, the Canaanite, the Perizzite, the Hivite, and the Jebusite, as the LORD your God has commanded you;",
+      "ko": "곧 헷 족속과 아모리 족속과 가나안 족속과 브리스 족속과 히위 족속과 여부스 족속을 네가 진멸하되 네 하나님 여호와께서 네게 명하신대로 하라",
+      "source_text_hash": "359eaf6d526facb1c1d080faeb9214a3640969aeb1db3e3d99b371154004303a",
+      "translation_text_hash": "f2ff9a9f88fc02b6a437ef061f1eef856642a7824472369745229bbf035bb49f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 헷 족속과 아모리 족속과 가나안 족속과 브리스 족속과 히위 족속과 여부스 족속을 네가 진멸하되 네 하나님 여호와께서 네게 명하신대로 하라"
+      ],
+      "raw_text_hashes": [
+        "f2ff9a9f88fc02b6a437ef061f1eef856642a7824472369745229bbf035bb49f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:18",
+      "sequence": 5446,
+      "chapter_label": "DEU 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "that they not teach you to follow all their abominations, which they have done for their gods; so would you sin against the LORD your God.",
+      "ko": "이는 그들이 그 신들에게 행하는 모든 가증한 일로 너희에게 가르쳐 본받게 하여 너희로 너희의 하나님 여호와께 범죄케 할까 함이니라",
+      "source_text_hash": "468895bacdd90925a7c8a3f130d6f715fd09ce8e24720a05a316dcaff7dde5a4",
+      "translation_text_hash": "7e922826d2accf4a97c08a44db57b1b58746ed9e57d04d8367c2952e5f1916a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그들이 그 신들에게 행하는 모든 가증한 일로 너희에게 가르쳐 본받게 하여 너희로 너희의 하나님 여호와께 범죄케 할까 함이니라"
+      ],
+      "raw_text_hashes": [
+        "7e922826d2accf4a97c08a44db57b1b58746ed9e57d04d8367c2952e5f1916a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:19",
+      "sequence": 5447,
+      "chapter_label": "DEU 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "When you shall besiege a city a long time, in making war against it to take it, you shall not destroy its trees by wielding an ax against them; for you may eat of them. You shall not cut them down, for is the tree of the field man, that it should be besieged by you?",
+      "ko": "너희가 어느 성읍을 오래 동안 에워싸고 쳐서 취하려할 때에도 도끼를 둘러 그곳의 나무를 작벌하지 말라 이는 너희의 먹을 것이 될것임이니 찍지 말라 밭의 수목이 사람이냐 너희가 어찌 그것을 에워싸겠느냐",
+      "source_text_hash": "03497e700c034539b83a3609f40b4c88818a5fe6a7754c8eb607e6cada2e1627",
+      "translation_text_hash": "e6fe2414e088184441fdf4fd757a5e4ec5932a3b1628a4a0a0e5da3786e59222",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 어느 성읍을 오래 동안 에워싸고 쳐서 취하려할 때에도 도끼를 둘러 그곳의 나무를 작벌하지 말라 이는 너희의 먹을 것이 될것임이니 찍지 말라 밭의 수목이 사람이냐 너희가 어찌 그것을 에워싸겠느냐"
+      ],
+      "raw_text_hashes": [
+        "e6fe2414e088184441fdf4fd757a5e4ec5932a3b1628a4a0a0e5da3786e59222"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:20:20",
+      "sequence": 5448,
+      "chapter_label": "DEU 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "Only the trees that you know are not trees for food, you shall destroy and cut them down. You shall build bulwarks against the city that makes war with you, until it falls.",
+      "ko": "오직 과목이 아닌 줄로 아는 수목은 작벌하여 너희와 싸우는 그 성읍을 치는 기구를 만들어 그 성읍을 함락시킬 때까지 쓸찌니라",
+      "source_text_hash": "82467e20dacdc6a05d95dfe3b0cb66311ec31011d88683321f02b374e1b313ab",
+      "translation_text_hash": "9d34613a18ca34d9f84658017ff5b0cdd9823304a2b45ac0aeb54d2858ad5a31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 과목이 아닌 줄로 아는 수목은 작벌하여 너희와 싸우는 그 성읍을 치는 기구를 만들어 그 성읍을 함락시킬 때까지 쓸찌니라"
+      ],
+      "raw_text_hashes": [
+        "9d34613a18ca34d9f84658017ff5b0cdd9823304a2b45ac0aeb54d2858ad5a31"
+      ]
+    }
+  ]
+}

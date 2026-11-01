@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:031",
+  "unit_ordinal": 833,
+  "unit_label": "EZK 31",
+  "book_code": "EZK",
+  "chapter_number": 31,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:31:1",
+      "sequence": 21232,
+      "chapter_label": "EZK 31",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 1
+        }
+      ],
+      "en": "In the eleventh year, in the third month, in the first day of the month, the LORD’s word came to me, saying,",
+      "ko": "제 십 일년 삼월 초 일일에 여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "e47858657d0175ad24f7252da5f4d730c770dd92aab622f7d5559f23ab6c278a",
+      "translation_text_hash": "13add0b8f57a8c04dead2bd4370ac460ed0d7819ede25489d2456c04b874a54b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십 일년 삼월 초 일일에 여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "13add0b8f57a8c04dead2bd4370ac460ed0d7819ede25489d2456c04b874a54b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:2",
+      "sequence": 21233,
+      "chapter_label": "EZK 31",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, tell Pharaoh king of Egypt and his multitude: ‘Whom are you like in your greatness?",
+      "ko": "인자야 너는 애굽 왕 바로와 그 무리에게 이르기를 네 큰 위엄을 뉘게 비하랴",
+      "source_text_hash": "56e7e6cb5e4bee69b67fe5f710ffe90d5d6626b9c26082e6bf280a66e4e88262",
+      "translation_text_hash": "60c99e86e29f423f47ae88e42b88cc1034925620e0cfa578b33e4f983d4c9b8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 애굽 왕 바로와 그 무리에게 이르기를 네 큰 위엄을 뉘게 비하랴"
+      ],
+      "raw_text_hashes": [
+        "60c99e86e29f423f47ae88e42b88cc1034925620e0cfa578b33e4f983d4c9b8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:3",
+      "sequence": 21234,
+      "chapter_label": "EZK 31",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 3
+        }
+      ],
+      "en": "Behold, the Assyrian was a cedar in Lebanon with beautiful branches, and with a forest-like shade, of high stature; and its top was among the thick boughs.",
+      "ko": "볼찌어다 앗수르 사람은 가지가 아름답고 그늘은 삼림의 그늘 같으며 키가 높고 꼭대기가 구름에 닿은 레바논 백향목이었느니라",
+      "source_text_hash": "cfb9d469d5ddd5f27c0865ba48e716960d5d3d280697ceb79664187640b3e4b2",
+      "translation_text_hash": "de58168700f166d5a57bfa815f87d6c5bee893f030b68af58d9f3ebf8a9ee396",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "볼찌어다 앗수르 사람은 가지가 아름답고 그늘은 삼림의 그늘 같으며 키가 높고 꼭대기가 구름에 닿은 레바논 백향목이었느니라"
+      ],
+      "raw_text_hashes": [
+        "de58168700f166d5a57bfa815f87d6c5bee893f030b68af58d9f3ebf8a9ee396"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:4",
+      "sequence": 21235,
+      "chapter_label": "EZK 31",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 4
+        }
+      ],
+      "en": "The waters nourished it. The deep made it to grow. Its rivers ran all around its plantation. It sent out its channels to all the trees of the field.",
+      "ko": "물들이 그것을 기르며 깊은 물이 그것을 자라게 하며 강들이 그 심긴 곳을 둘러 흐르며 보의 물이 들의 모든 나무에까지 미치매",
+      "source_text_hash": "e479f740fee67f0820f92f0c20a1aa07b7607411eb22cb78e1a9f794fc83b076",
+      "translation_text_hash": "75123814b048a0a07ea26392f98cd1b253ad11446283eaba5b1b2dbcc6c21f35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물들이 그것을 기르며 깊은 물이 그것을 자라게 하며 강들이 그 심긴 곳을 둘러 흐르며 보의 물이 들의 모든 나무에까지 미치매"
+      ],
+      "raw_text_hashes": [
+        "75123814b048a0a07ea26392f98cd1b253ad11446283eaba5b1b2dbcc6c21f35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:5",
+      "sequence": 21236,
+      "chapter_label": "EZK 31",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore its stature was exalted above all the trees of the field; and its boughs were multiplied. Its branches became long by reason of many waters, when it spread them out.",
+      "ko": "그 나무가 물이 많으므로 키가 들의 모든 나무보다 높으며 굵은 가지가 번성하며 가는 가지가 길게 빼어났고",
+      "source_text_hash": "42c0e3147e4d545a77095bb248cb133642b7d3bc14501548d762d4b9335ef6bf",
+      "translation_text_hash": "c63642ada3d4ce512ded386439bda783660c8c3d1266190e4148efb62571cbe7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나무가 물이 많으므로 키가 들의 모든 나무보다 높으며 굵은 가지가 번성하며 가는 가지가 길게 빼어났고"
+      ],
+      "raw_text_hashes": [
+        "c63642ada3d4ce512ded386439bda783660c8c3d1266190e4148efb62571cbe7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:6",
+      "sequence": 21237,
+      "chapter_label": "EZK 31",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 6
+        }
+      ],
+      "en": "All the birds of the sky made their nests in its boughs. Under its branches, all the animals of the field gave birth to their young. All great nations lived under its shadow.",
+      "ko": "공중의 모든 새가 그 큰 가지에 깃들이며 들의 모든 짐승이 그 가는 가지 밑에 새끼를 낳으며 모든 큰 나라가 그 그늘 아래 거하였었느니라",
+      "source_text_hash": "d252a88dd565bc70805968409597de04bcdf056e2efac2f7e2ddaa53ed335446",
+      "translation_text_hash": "6bbdafe0d5ccc31f9481193a74b041ec22fcc8f52caa18aee9a261febb3cdd68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공중의 모든 새가 그 큰 가지에 깃들이며 들의 모든 짐승이 그 가는 가지 밑에 새끼를 낳으며 모든 큰 나라가 그 그늘 아래 거하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "6bbdafe0d5ccc31f9481193a74b041ec22fcc8f52caa18aee9a261febb3cdd68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:7",
+      "sequence": 21238,
+      "chapter_label": "EZK 31",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 7
+        }
+      ],
+      "en": "Thus it was beautiful in its greatness, in the length of its branches; for its root was by many waters.",
+      "ko": "그 뿌리가 큰 물가에 있으므로 그 나무가 크고 가지가 길어 모양이 아름다우매",
+      "source_text_hash": "53d6c16d10dd6245e4fdeed39595d2fb9352c3a0ca71ca452db9a7e84e666606",
+      "translation_text_hash": "5314fb57bcbe5f8a9b1d23df0954ca2af1b5b83c358e7fe44058687806b34d60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 뿌리가 큰 물가에 있으므로 그 나무가 크고 가지가 길어 모양이 아름다우매"
+      ],
+      "raw_text_hashes": [
+        "5314fb57bcbe5f8a9b1d23df0954ca2af1b5b83c358e7fe44058687806b34d60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:8",
+      "sequence": 21239,
+      "chapter_label": "EZK 31",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 8
+        }
+      ],
+      "en": "The cedars in the garden of God could not hide it. The cypress trees were not like its branches. The pine trees were not like its branches; nor was any tree in the garden of God like it in its beauty.",
+      "ko": "하나님의 동산의 백향목이 능히 그를 가리우지 못하며 잣나무가 그 굵은 가지만 못하며 단풍나무가 그 가는 가지만 못하며 하나님의 동산의 아무 나무도 그 아름다운 모양과 같지 못하였도다",
+      "source_text_hash": "584d159294c7af441358573299c08ed6dcd9c443e130b8b67851fd25d4604c01",
+      "translation_text_hash": "8e637f65e47078f96a79bc0cc4d175f6f253552b8a4d67f17de470d8566e26eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 동산의 백향목이 능히 그를 가리우지 못하며 잣나무가 그 굵은 가지만 못하며 단풍나무가 그 가는 가지만 못하며 하나님의 동산의 아무 나무도 그 아름다운 모양과 같지 못하였도다"
+      ],
+      "raw_text_hashes": [
+        "8e637f65e47078f96a79bc0cc4d175f6f253552b8a4d67f17de470d8566e26eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:9",
+      "sequence": 21240,
+      "chapter_label": "EZK 31",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 9
+        }
+      ],
+      "en": "I made it beautiful by the multitude of its branches, so that all the trees of Eden, that were in the garden of God, envied it.’",
+      "ko": "내가 그 가지로 많게 하여 모양이 아름답게 하였더니 하나님의 동산 에덴에 있는 모든 나무가 다 투기하였느니라",
+      "source_text_hash": "5e3fa901ae5f28546db184415084789fb6903a27377c2f98662a76c14bf4ae2f",
+      "translation_text_hash": "09ce43f3e83585928ab3ac9084e1ba67e43c946475db86974f090942050c4075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 가지로 많게 하여 모양이 아름답게 하였더니 하나님의 동산 에덴에 있는 모든 나무가 다 투기하였느니라"
+      ],
+      "raw_text_hashes": [
+        "09ce43f3e83585928ab3ac9084e1ba67e43c946475db86974f090942050c4075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:10",
+      "sequence": 21241,
+      "chapter_label": "EZK 31",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 10
+        }
+      ],
+      "en": "“Therefore thus said the Lord GOD: ‘Because he is exalted in stature, and he has set his top among the thick branches, and his heart is lifted up in his height,",
+      "ko": "그러므로 나 주 여호와가 말하노라 그의 키가 높고 꼭대기가 구름에 닿아서 높이 빼어났으므로 마음이 교만하였은즉",
+      "source_text_hash": "f92ca22bf1826ad2ee3c2306a10a3e2f90d326d10f9f3416c2c57bb8b4db4a56",
+      "translation_text_hash": "6ddfd239a3be09f377ef13270bfdd19a2879e9dc2bf2ba95f396b7f182c5f1ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 그의 키가 높고 꼭대기가 구름에 닿아서 높이 빼어났으므로 마음이 교만하였은즉"
+      ],
+      "raw_text_hashes": [
+        "6ddfd239a3be09f377ef13270bfdd19a2879e9dc2bf2ba95f396b7f182c5f1ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:11",
+      "sequence": 21242,
+      "chapter_label": "EZK 31",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 11
+        }
+      ],
+      "en": "I will deliver him into the hand of the mighty one of the nations. He will surely deal with him. I have driven him out for his wickedness.",
+      "ko": "내가 열국의 능한 자의 손에 붙일찌라 그가 임의로 대접할 것은 내가 그의 악을 인하여 쫓아 내었음이라",
+      "source_text_hash": "7bf747500f00007f8179eff805861922021a7a649810e9ad93b3862bd645e3dc",
+      "translation_text_hash": "8e80a8e009a66ff8866944d4f1e6e16da86bbc41c90fea9c0727604ccca6e721",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 열국의 능한 자의 손에 붙일찌라 그가 임의로 대접할 것은 내가 그의 악을 인하여 쫓아 내었음이라"
+      ],
+      "raw_text_hashes": [
+        "8e80a8e009a66ff8866944d4f1e6e16da86bbc41c90fea9c0727604ccca6e721"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:12",
+      "sequence": 21243,
+      "chapter_label": "EZK 31",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 12
+        }
+      ],
+      "en": "Foreigners, the tyrants of the nations, have cut him off and have left him. His branches have fallen on the mountains and in all the valleys, and his boughs are broken by all the watercourses of the land. All the peoples of the earth have gone down from his shadow and have left him.",
+      "ko": "열국의 강포한 다른 민족이 그를 찍어 버렸으므로 그 가는 가지가 산과 모든 골짜기에 떨어졌고 그 굵은 가지가 그 땅 모든 물 가에 꺾어졌으며 세상 모든 백성이 그를 버리고 그 그늘 아래서 떠나매",
+      "source_text_hash": "e1968790d61e1074932002a44c3e55cb843bbdfd877b881387b33df812b9dbaf",
+      "translation_text_hash": "15f6152dc4d36edd45b44bd513b2626c66f0167b951279a5d7c9d704d975d5d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국의 강포한 다른 민족이 그를 찍어 버렸으므로 그 가는 가지가 산과 모든 골짜기에 떨어졌고 그 굵은 가지가 그 땅 모든 물 가에 꺾어졌으며 세상 모든 백성이 그를 버리고 그 그늘 아래서 떠나매"
+      ],
+      "raw_text_hashes": [
+        "15f6152dc4d36edd45b44bd513b2626c66f0167b951279a5d7c9d704d975d5d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:13",
+      "sequence": 21244,
+      "chapter_label": "EZK 31",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 13
+        }
+      ],
+      "en": "All the birds of the sky will dwell on his ruin, and all the animals of the field will be on his branches,",
+      "ko": "공중의 모든 새가 그 넘어진 나무에 거하며 들의 모든 짐승이 그 가지에 있으리니",
+      "source_text_hash": "5f5e527f517a14c70ef88eb7d38cc2d1a8936f8824e40998fe90c3103ae4bca2",
+      "translation_text_hash": "7f4162e4288fd86e6311ea62dfbb135b9315ea699e2077496acd4cf71bbdb3ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공중의 모든 새가 그 넘어진 나무에 거하며 들의 모든 짐승이 그 가지에 있으리니"
+      ],
+      "raw_text_hashes": [
+        "7f4162e4288fd86e6311ea62dfbb135b9315ea699e2077496acd4cf71bbdb3ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:14",
+      "sequence": 21245,
+      "chapter_label": "EZK 31",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 14
+        }
+      ],
+      "en": "to the end that none of all the trees by the waters exalt themselves in their stature, and don’t set their top among the thick boughs. Their mighty ones don’t stand up on their height, even all who drink water; for they are all delivered to death, to the lower parts of the earth, among the children of men, with those who go down to the pit.’",
+      "ko": "이는 물 가에 있는 모든 나무로 키가 높다고 교만치 못하게 하며 그 꼭대기로 구름에 닿지 못하게 하며 또 물 대임을 받는 능한 자로 스스로 높아 서지 못하게 함이니 그들을 다 죽는데 붙여서 인생 중 구덩이로 내려가는 자와 함께 지하로 내려가게 하였음이니라",
+      "source_text_hash": "40c36051b6e0ab242f827c8e97ed28336a33f31206d8daf0963c3fd2d6730ceb",
+      "translation_text_hash": "54aaad9553a0edb86941ba826d7b5898619e45f00a34f69cdd1e650704e8fa3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 물 가에 있는 모든 나무로 키가 높다고 교만치 못하게 하며 그 꼭대기로 구름에 닿지 못하게 하며 또 물 대임을 받는 능한 자로 스스로 높아 서지 못하게 함이니 그들을 다 죽는데 붙여서 인생 중 구덩이로 내려가는 자와 함께 지하로 내려가게 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "54aaad9553a0edb86941ba826d7b5898619e45f00a34f69cdd1e650704e8fa3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:15",
+      "sequence": 21246,
+      "chapter_label": "EZK 31",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 15
+        }
+      ],
+      "en": "“The Lord GOD says: ‘In the day when he went down to Sheol, I caused a mourning. I covered the deep for him, and I restrained its rivers. The great waters were stopped. I caused Lebanon to mourn for him, and all the trees of the field fainted for him.",
+      "ko": "나 주 여호와가 말하노라 그가 음부에 내려가던 날에 내가 그를 위하여 애곡하게 하며 깊은 바다를 덮으며 모든 강을 쉬게 하며 큰 물을 그치게 하고 레바논으로 그를 위하여 애곡하게 하며 들의 모든 나무로 그로 인하여 쇠잔하게 하였느니라",
+      "source_text_hash": "ef0bb26603b773faed923f9b31d11bdd896c3691805d354ee9ba5f4c0ffd4381",
+      "translation_text_hash": "8ac47431fb97ed1a507e7806fe08d22c80ffc9508eee42454989449e3c73059a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 그가 음부에 내려가던 날에 내가 그를 위하여 애곡하게 하며 깊은 바다를 덮으며 모든 강을 쉬게 하며 큰 물을 그치게 하고 레바논으로 그를 위하여 애곡하게 하며 들의 모든 나무로 그로 인하여 쇠잔하게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "8ac47431fb97ed1a507e7806fe08d22c80ffc9508eee42454989449e3c73059a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:16",
+      "sequence": 21247,
+      "chapter_label": "EZK 31",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 16
+        }
+      ],
+      "en": "I made the nations to shake at the sound of his fall, when I cast him down to Sheol with those who descend into the pit. All the trees of Eden, the choice and best of Lebanon, all that drink water, were comforted in the lower parts of the earth.",
+      "ko": "내가 그로 구덩이에 내려가는 자와 함께 음부에 떨어뜨리던 때에 열국으로 그 떨어지는 소리를 인하여 진동하게 하였고 물 대임을 받은 에덴의 모든 나무 곧 레바논의 뛰어나고 아름다운 나무들로 지하에서 위로를 받게 하였느니라",
+      "source_text_hash": "95c1fcd4036222b531be3fbe75c899c67d5b5fb619e75886a02db56e617830d7",
+      "translation_text_hash": "78c26b34bc8e774ad40f04bfb594c6e73152d697f359b3e384574eee1fce8a26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그로 구덩이에 내려가는 자와 함께 음부에 떨어뜨리던 때에 열국으로 그 떨어지는 소리를 인하여 진동하게 하였고 물 대임을 받은 에덴의 모든 나무 곧 레바논의 뛰어나고 아름다운 나무들로 지하에서 위로를 받게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "78c26b34bc8e774ad40f04bfb594c6e73152d697f359b3e384574eee1fce8a26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:17",
+      "sequence": 21248,
+      "chapter_label": "EZK 31",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 17
+        }
+      ],
+      "en": "They also went down into Sheol with him to those who are slain by the sword; yes, those who were his arm, who lived under his shadow in the middle of the nations.",
+      "ko": "그러나 그들도 그와 함께 음부에 내려 칼에 살륙을 당한 자에게 이르렀나니 그들은 옛적에 그의 팔이 된 자요 열국 중에서 그 그늘 아래 거하던 자니라",
+      "source_text_hash": "d000a367d7aa21c0a76b904a2b64d6658d34c1bb519e93ecbec2728fa5ea186e",
+      "translation_text_hash": "6cbad6eec2fff7cb7fd2c5a04385e6a333f01012ebc8314f0fb88cc6836c7eae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그들도 그와 함께 음부에 내려 칼에 살륙을 당한 자에게 이르렀나니 그들은 옛적에 그의 팔이 된 자요 열국 중에서 그 그늘 아래 거하던 자니라"
+      ],
+      "raw_text_hashes": [
+        "6cbad6eec2fff7cb7fd2c5a04385e6a333f01012ebc8314f0fb88cc6836c7eae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:31:18",
+      "sequence": 21249,
+      "chapter_label": "EZK 31",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 31,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 31,
+          "verse": 18
+        }
+      ],
+      "en": "“‘To whom are you thus like in glory and in greatness among the trees of Eden? Yet you will be brought down with the trees of Eden to the lower parts of the earth. You will lie in the middle of the uncircumcised, with those who are slain by the sword. “‘This is Pharaoh and all his multitude,’ says the Lord GOD.”",
+      "ko": "너의 영화와 광대함이 에덴 모든 나무 중에 어떤 것과 같은고 그러나 네가 에덴 나무와 함께 지하에 내려갈 것이요 거기서 할례 받지 못하고 칼에 살륙 당한 자 중에 누우리라 이들은 바로와 그 모든 군대니라 나 주 여호와의 말이니라 하라",
+      "source_text_hash": "5070155c0291f37b1b1551bf953cbf8ca03005ebbc5291f274737511a82e72a3",
+      "translation_text_hash": "b813705183bbb3f4998f319078fb333394bd645cdddd8638d73cdd2771372c19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 영화와 광대함이 에덴 모든 나무 중에 어떤 것과 같은고 그러나 네가 에덴 나무와 함께 지하에 내려갈 것이요 거기서 할례 받지 못하고 칼에 살륙 당한 자 중에 누우리라 이들은 바로와 그 모든 군대니라 나 주 여호와의 말이니라 하라"
+      ],
+      "raw_text_hashes": [
+        "b813705183bbb3f4998f319078fb333394bd645cdddd8638d73cdd2771372c19"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:019",
+  "unit_ordinal": 19,
+  "unit_label": "GEN 19",
+  "book_code": "GEN",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:19:1",
+      "sequence": 459,
+      "chapter_label": "GEN 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "The two angels came to Sodom at evening. Lot sat in the gate of Sodom. Lot saw them, and rose up to meet them. He bowed himself with his face to the earth,",
+      "ko": "날이 저물 때에 그 두 천사가 소돔에 이르니 마침 롯이 소돔 성문에 앉았다가 그들을 보고 일어나 영접하고 땅에 엎드리어 절하여",
+      "source_text_hash": "65448c2fb692eaac4e4baf8c392e2ead326f8c054e469405ae41bd99b2fe93d4",
+      "translation_text_hash": "dcc47a552c8c81d1d7de6760a0960089554bf4cde53773b5e3fe1a150d07bf23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 저물 때에 그 두 천사가 소돔에 이르니 마침 롯이 소돔 성문에 앉았다가 그들을 보고 일어나 영접하고 땅에 엎드리어 절하여"
+      ],
+      "raw_text_hashes": [
+        "dcc47a552c8c81d1d7de6760a0960089554bf4cde53773b5e3fe1a150d07bf23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:2",
+      "sequence": 460,
+      "chapter_label": "GEN 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "and he said, “See now, my lords, please come into your servant’s house, stay all night, wash your feet, and you can rise up early, and go on your way.” They said, “No, but we will stay in the street all night.”",
+      "ko": "가로되 내 주여 돌이켜 종의 집으로 들어와 발을 씻고 주무시고 일찌기 일어나 갈 길을 가소서 그들이 가로되 아니라 우리가 거리에서 경야하리라",
+      "source_text_hash": "49581b75a6750fa05b0d9fab94704b38b6fe233d2676c94e9a6a4dcbfddc7129",
+      "translation_text_hash": "e144e905c6ce454a5b08633f749817f4015589eb72499817e9960059dcea15db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내 주여 돌이켜 종의 집으로 들어와 발을 씻고 주무시고 일찌기 일어나 갈 길을 가소서 그들이 가로되 아니라 우리가 거리에서 경야하리라"
+      ],
+      "raw_text_hashes": [
+        "e144e905c6ce454a5b08633f749817f4015589eb72499817e9960059dcea15db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:3",
+      "sequence": 461,
+      "chapter_label": "GEN 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "He urged them greatly, and they came in with him, and entered into his house. He made them a feast, and baked unleavened bread, and they ate.",
+      "ko": "롯이 간청하매 그제야 돌이켜서 그 집으로 들어 오는지라 롯이 그들을 위하여 식탁을 베풀고 무교병을 구우니 그들이 먹으니라",
+      "source_text_hash": "fe3480b455a1614d7d388be100486f3e3a85cc4a28d65eeb151149a4a7661ca8",
+      "translation_text_hash": "6b39d27973d5414b2c440eb201faf864ec8e97e1167f387d1545d2804f34eea8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯이 간청하매 그제야 돌이켜서 그 집으로 들어 오는지라 롯이 그들을 위하여 식탁을 베풀고 무교병을 구우니 그들이 먹으니라"
+      ],
+      "raw_text_hashes": [
+        "6b39d27973d5414b2c440eb201faf864ec8e97e1167f387d1545d2804f34eea8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:4",
+      "sequence": 462,
+      "chapter_label": "GEN 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "But before they lay down, the men of the city, the men of Sodom, surrounded the house, both young and old, all the people from every quarter.",
+      "ko": "그들의 눕기 전에 그 성 사람 곧 소돔 백성들이 무론 노소하고 사방에서 다 모여 그 집을 에워싸고",
+      "source_text_hash": "e8e6faea59562ec243b2660ff0f5f1e78a951a12d27c810a729125ab8f1d92ac",
+      "translation_text_hash": "ef82d22c799aa9feda4c316a88f36d6a1ec237860c654c17056d6377becb66fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 눕기 전에 그 성 사람 곧 소돔 백성들이 무론 노소하고 사방에서 다 모여 그 집을 에워싸고"
+      ],
+      "raw_text_hashes": [
+        "ef82d22c799aa9feda4c316a88f36d6a1ec237860c654c17056d6377becb66fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:5",
+      "sequence": 463,
+      "chapter_label": "GEN 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "They called to Lot, and said to him, “Where are the men who came in to you this night? Bring them out to us, that we may have sex with them.”",
+      "ko": "롯을 부르고 그에게 이르되 이 저녁에 네게 온 사람이 어디 있느냐 이끌어내라 우리가 그들을 상관하리라",
+      "source_text_hash": "d31ed18793ec31c12ebfe17b994582c62c622088830b753914a9b5e5a8e55457",
+      "translation_text_hash": "c4af8b689884cda08b15c4eb4f26ac8c5d6f9cc26cc7d01084b00f0037110789",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯을 부르고 그에게 이르되 이 저녁에 네게 온 사람이 어디 있느냐 이끌어내라 우리가 그들을 상관하리라"
+      ],
+      "raw_text_hashes": [
+        "c4af8b689884cda08b15c4eb4f26ac8c5d6f9cc26cc7d01084b00f0037110789"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:6",
+      "sequence": 464,
+      "chapter_label": "GEN 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "Lot went out to them through the door, and shut the door after himself.",
+      "ko": "롯이 문밖의 무리에게로 나가서 뒤로 문을 닫고",
+      "source_text_hash": "cf216c79628f7753bb0bf716e963d1e12e58405d7852b98da68d2edd4373cb90",
+      "translation_text_hash": "eaff9a604aa307be90c2b643f7803f08c4ce3862fc47ee22d416b6bbf193bf33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯이 문밖의 무리에게로 나가서 뒤로 문을 닫고"
+      ],
+      "raw_text_hashes": [
+        "eaff9a604aa307be90c2b643f7803f08c4ce3862fc47ee22d416b6bbf193bf33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:7",
+      "sequence": 465,
+      "chapter_label": "GEN 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "He said, “Please, my brothers, don’t act so wickedly.",
+      "ko": "이르되 청하노니 내 형제들아 이런 악을 행치 말라",
+      "source_text_hash": "a049ba82745bd9d0f47c4f33c4265a4685c73773c0b823725aa9e5910683ceb1",
+      "translation_text_hash": "17cb4eac195fa5794d358c4053ecb49941ea01add9ea6d8b14c55cce1a27f164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르되 청하노니 내 형제들아 이런 악을 행치 말라"
+      ],
+      "raw_text_hashes": [
+        "17cb4eac195fa5794d358c4053ecb49941ea01add9ea6d8b14c55cce1a27f164"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:8",
+      "sequence": 466,
+      "chapter_label": "GEN 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "See now, I have two virgin daughters. Please let me bring them out to you, and you may do to them what seems good to you. Only don’t do anything to these men, because they have come under the shadow of my roof.”",
+      "ko": "내게 남자를 가까이 아니한 두 딸이 있노라 청컨대 내가 그들을 너희에게로 이끌어내리니 너희 눈에 좋은대로 그들에게 행하고 이 사람들은 내 집에 들어왔은즉 이 사람들에게는 아무 짓도 하지말라",
+      "source_text_hash": "9a3aa7a22a62d75a5828ed706f074d51160308853c68f851d7643d695a8a8281",
+      "translation_text_hash": "59ae9e3b664677299ceeb20e5fdfdb9ce069a10c7f554717b5f18477917c4825",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 남자를 가까이 아니한 두 딸이 있노라 청컨대 내가 그들을 너희에게로 이끌어내리니 너희 눈에 좋은대로 그들에게 행하고 이 사람들은 내 집에 들어왔은즉 이 사람들에게는 아무 짓도 하지말라"
+      ],
+      "raw_text_hashes": [
+        "59ae9e3b664677299ceeb20e5fdfdb9ce069a10c7f554717b5f18477917c4825"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:9",
+      "sequence": 467,
+      "chapter_label": "GEN 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "They said, “Stand back!” Then they said, “This one fellow came in to live as a foreigner, and he appoints himself a judge. Now we will deal worse with you than with them!” They pressed hard on the man Lot, and came near to break the door.",
+      "ko": "그들이 가로되 너는 물러나라 또 가로되 이 놈이 들어와서 우거하면서 우리의 법관이 되려 하는도다 이제 우리가 그들보다 너를 더 해하리라 하고 롯을 밀치며 가까이 나아와서 그 문을 깨치려 하는지라",
+      "source_text_hash": "9877b05b696b6ad6107dac1bbabf8fd00dc615034deed25cf68ffcab3a505122",
+      "translation_text_hash": "aa49dd4cd31f56ef04045dc03b0829a20e6d589bb1118bbc56312636a2626309",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 너는 물러나라 또 가로되 이 놈이 들어와서 우거하면서 우리의 법관이 되려 하는도다 이제 우리가 그들보다 너를 더 해하리라 하고 롯을 밀치며 가까이 나아와서 그 문을 깨치려 하는지라"
+      ],
+      "raw_text_hashes": [
+        "aa49dd4cd31f56ef04045dc03b0829a20e6d589bb1118bbc56312636a2626309"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:10",
+      "sequence": 468,
+      "chapter_label": "GEN 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "But the men reached out their hand, and brought Lot into the house to them, and shut the door.",
+      "ko": "그 사람들이 손을 내밀어 롯을 집으로 끌어 들이고 문을 닫으며",
+      "source_text_hash": "c1fc02914bcbd05181baac9ef762debd0c96935f15c626e7bf83fb1706b82b4f",
+      "translation_text_hash": "3253e8594563a3948f3db5afe7a6b61efac36d15d032ea0da959a8ceb33bb8bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 손을 내밀어 롯을 집으로 끌어 들이고 문을 닫으며"
+      ],
+      "raw_text_hashes": [
+        "3253e8594563a3948f3db5afe7a6b61efac36d15d032ea0da959a8ceb33bb8bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:11",
+      "sequence": 469,
+      "chapter_label": "GEN 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "They struck the men who were at the door of the house with blindness, both small and great, so that they wearied themselves to find the door.",
+      "ko": "문밖의 무리로 무론 대소하고 그 눈을 어둡게 하니 그들이 문을 찾느라고 곤비하였더라",
+      "source_text_hash": "29296689beb3943383fcad9122fd51e8db4905d0abefbbbdb9c058877b6a9f86",
+      "translation_text_hash": "603d7a350b315462f27ff10c9f7d0f1d15e3787dc80d45da084bc0f27bb741db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문밖의 무리로 무론 대소하고 그 눈을 어둡게 하니 그들이 문을 찾느라고 곤비하였더라"
+      ],
+      "raw_text_hashes": [
+        "603d7a350b315462f27ff10c9f7d0f1d15e3787dc80d45da084bc0f27bb741db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:12",
+      "sequence": 470,
+      "chapter_label": "GEN 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "The men said to Lot, “Do you have anybody else here? Sons-in-law, your sons, your daughters, and whomever you have in the city, bring them out of the place:",
+      "ko": "그 사람들이 롯에게 이르되 이 외에 네게 속한 자가 또 있느냐 네 사위나 자녀나 성중에 네게 속한 자들을 다 성밖으로 이끌어내라",
+      "source_text_hash": "daee68db4a888a7ec279d2eabb5567461490f9d730ae34cbdc7feb03df1531ac",
+      "translation_text_hash": "4c741321b7aca77020e02f17427a0974e83ddaaf88e3749f52f8cbdb6065a359",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 롯에게 이르되 이 외에 네게 속한 자가 또 있느냐 네 사위나 자녀나 성중에 네게 속한 자들을 다 성밖으로 이끌어내라"
+      ],
+      "raw_text_hashes": [
+        "4c741321b7aca77020e02f17427a0974e83ddaaf88e3749f52f8cbdb6065a359"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:13",
+      "sequence": 471,
+      "chapter_label": "GEN 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "for we will destroy this place, because the outcry against them has grown so great before the LORD that the LORD has sent us to destroy it.”",
+      "ko": "그들에 대하여 부르짖음이 여호와 앞에 크므로 여호와께서 우리로 이곳을 멸하러 보내셨나니 우리가 멸하리라",
+      "source_text_hash": "87b211855f20ecc07520b866ff573217824b873abf2998669deff66abb08fa20",
+      "translation_text_hash": "d7827a335e3e040602c4b9d68087bef33ee86a5c7278d27778be34a7d230aa26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에 대하여 부르짖음이 여호와 앞에 크므로 여호와께서 우리로 이곳을 멸하러 보내셨나니 우리가 멸하리라"
+      ],
+      "raw_text_hashes": [
+        "d7827a335e3e040602c4b9d68087bef33ee86a5c7278d27778be34a7d230aa26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:14",
+      "sequence": 472,
+      "chapter_label": "GEN 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "Lot went out, and spoke to his sons-in-law, who were pledged to marry his daughters, and said, “Get up! Get out of this place, for the LORD will destroy the city!” But he seemed to his sons-in-law to be joking.",
+      "ko": "롯이 나가서 그 딸들과 정혼한 사위들에게 고하여 이르되 여호와께서 이 성을 멸하실터이니 너희는 일어나 이곳에서 떠나라 하되 그 사위들이 농담으로 여겼더라",
+      "source_text_hash": "ad12ee34cfbadc84c28e91ce2d18a67306a73c93025f0a96b1e6d1c812cbc436",
+      "translation_text_hash": "fea7e636b79873c689905f39704dbb507df11c73256021be3b1d901ce351737c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯이 나가서 그 딸들과 정혼한 사위들에게 고하여 이르되 여호와께서 이 성을 멸하실터이니 너희는 일어나 이곳에서 떠나라 하되 그 사위들이 농담으로 여겼더라"
+      ],
+      "raw_text_hashes": [
+        "fea7e636b79873c689905f39704dbb507df11c73256021be3b1d901ce351737c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:15",
+      "sequence": 473,
+      "chapter_label": "GEN 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "When the morning came, then the angels hurried Lot, saying, “Get up! Take your wife and your two daughters who are here, lest you be consumed in the iniquity of the city.”",
+      "ko": "동틀 때에 천사가 롯을 재촉하여 가로되 일어나 여기 있는 네 아내와 두 딸을 이끌라 이 성의 죄악 중에 함께 멸망할까 하노라",
+      "source_text_hash": "ebd607cf65181fe3343c335cbcd4d59476deb67227de98a7292565fbb4e842d8",
+      "translation_text_hash": "7a1ed24c980f8bf853a5839bc90939f77f73665dd619fc62ee7d3a15e43ee880",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동틀 때에 천사가 롯을 재촉하여 가로되 일어나 여기 있는 네 아내와 두 딸을 이끌라 이 성의 죄악 중에 함께 멸망할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "7a1ed24c980f8bf853a5839bc90939f77f73665dd619fc62ee7d3a15e43ee880"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:16",
+      "sequence": 474,
+      "chapter_label": "GEN 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "But he lingered; and the men grabbed his hand, his wife’s hand, and his two daughters’ hands, the LORD being merciful to him; and they took him out, and set him outside of the city.",
+      "ko": "그러나 롯이 지체하매 그 사람들이 롯의 손과 그 아내의 손과 두 딸의 손을 잡아 인도하여 성밖에 두니 여호와께서 그에게 인자를 더하심이었더라",
+      "source_text_hash": "925a0199ebe746929ad4e19fba369319bd68d78b2c61a3d7e5bf2f010a8419cd",
+      "translation_text_hash": "cde090578fe3a40c60902e49f03724693aaa26ee168d9b6e7d57c95ac5606f49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 롯이 지체하매 그 사람들이 롯의 손과 그 아내의 손과 두 딸의 손을 잡아 인도하여 성밖에 두니 여호와께서 그에게 인자를 더하심이었더라"
+      ],
+      "raw_text_hashes": [
+        "cde090578fe3a40c60902e49f03724693aaa26ee168d9b6e7d57c95ac5606f49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:17",
+      "sequence": 475,
+      "chapter_label": "GEN 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "It came to pass, when they had taken them out, that he said, “Escape for your life! Don’t look behind you, and don’t stay anywhere in the plain. Escape to the mountains, lest you be consumed!”",
+      "ko": "그 사람들이 그들을 밖으로 이끌어낸 후에 이르되 도망하여 생명을 보존하라 돌아보거나 들에 머무르거나 하지 말고 산으로 도망하여 멸망함을 면하라",
+      "source_text_hash": "6c0897586eac2c6fb243adaafb3f7ab49482b50c247947db3887119a4d8b08eb",
+      "translation_text_hash": "45a5a36245944c5b508269dd8cf78dbd90c06bc9e3f84b62276fb3dbf5472a5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 그들을 밖으로 이끌어낸 후에 이르되 도망하여 생명을 보존하라 돌아보거나 들에 머무르거나 하지 말고 산으로 도망하여 멸망함을 면하라"
+      ],
+      "raw_text_hashes": [
+        "45a5a36245944c5b508269dd8cf78dbd90c06bc9e3f84b62276fb3dbf5472a5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:18",
+      "sequence": 476,
+      "chapter_label": "GEN 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "Lot said to them, “Oh, not so, my lord.",
+      "ko": "롯이 그들에게 이르되 내 주여 그리 마옵소서",
+      "source_text_hash": "b379cbafac377ef27bb2a3fbba783bd569674c60d9926431402d8b753d90075e",
+      "translation_text_hash": "c0727b76f31e20eee04e25bbafff782408a42351c03341d8b3122b9bee5dbff1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯이 그들에게 이르되 내 주여 그리 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "c0727b76f31e20eee04e25bbafff782408a42351c03341d8b3122b9bee5dbff1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:19",
+      "sequence": 477,
+      "chapter_label": "GEN 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "See now, your servant has found favor in your sight, and you have magnified your loving kindness, which you have shown to me in saving my life. I can’t escape to the mountain, lest evil overtake me, and I die.",
+      "ko": "종이 주께 은혜를 얻었고 주께서 큰 인자를 내게 베푸사 내 생명을 구원하시오나 내가 도망하여 산까지 갈 수 없나이다 두렵건대 재앙을 만나 죽을까 하나이다",
+      "source_text_hash": "a5b3558a4f6ecfb765d3768a516836df38805f8ebe90fa3f4f424e78fa3f83d9",
+      "translation_text_hash": "7187564deb3d168624e77543cc17acf22b8de0adc833512955d0e6f7518ace9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 주께 은혜를 얻었고 주께서 큰 인자를 내게 베푸사 내 생명을 구원하시오나 내가 도망하여 산까지 갈 수 없나이다 두렵건대 재앙을 만나 죽을까 하나이다"
+      ],
+      "raw_text_hashes": [
+        "7187564deb3d168624e77543cc17acf22b8de0adc833512955d0e6f7518ace9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:20",
+      "sequence": 478,
+      "chapter_label": "GEN 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "See now, this city is near to flee to, and it is a little one. Oh let me escape there (isn’t it a little one?), and my soul will live.”",
+      "ko": "보소서 저 성은 도망하기 가깝고 작기도 하오니 나로 그곳에 도망하게 하소서 이는 작은 성이 아니니이까 내 생명이 보존되리이다",
+      "source_text_hash": "18d2a0fe85e7f032a32fc4c4db48372f64847401a1e9c96de8157c36bc324fad",
+      "translation_text_hash": "42327db05194ad8726c52655124c5f64cb24eaeccab888f993605cb2a1a62e90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보소서 저 성은 도망하기 가깝고 작기도 하오니 나로 그곳에 도망하게 하소서 이는 작은 성이 아니니이까 내 생명이 보존되리이다"
+      ],
+      "raw_text_hashes": [
+        "42327db05194ad8726c52655124c5f64cb24eaeccab888f993605cb2a1a62e90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:21",
+      "sequence": 479,
+      "chapter_label": "GEN 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "He said to him, “Behold, I have granted your request concerning this thing also, that I will not overthrow the city of which you have spoken.",
+      "ko": "그가 그에게 이르되 내가 이 일에도 네 소원을 들었은즉 너의 말하는 성을 멸하지 아니하리니",
+      "source_text_hash": "2defc805430705e9b364f638510c0b2262b3821af7dad5547f5a8227ac74ff93",
+      "translation_text_hash": "630bd4004e95a2776a410a21e432caba46c63995a71d558cfd742c592eb74491",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그에게 이르되 내가 이 일에도 네 소원을 들었은즉 너의 말하는 성을 멸하지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "630bd4004e95a2776a410a21e432caba46c63995a71d558cfd742c592eb74491"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:22",
+      "sequence": 480,
+      "chapter_label": "GEN 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "Hurry, escape there, for I can’t do anything until you get there.” Therefore the name of the city was called Zoar.",
+      "ko": "그리로 속히 도망하라 네가 거기 이르기까지는 내가 아무 일도 행할 수 없노라 하였더라 그러므로 그 성 이름을 소알이라 불렀더라",
+      "source_text_hash": "7798583393e4a1367d84051d4260982d8c32ffc9e76e0d883d1513ed414e66a2",
+      "translation_text_hash": "95b047b9067679868e6be83ee7498c624b5efab9c620d4c0f8161731fcbb7076",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리로 속히 도망하라 네가 거기 이르기까지는 내가 아무 일도 행할 수 없노라 하였더라 그러므로 그 성 이름을 소알이라 불렀더라"
+      ],
+      "raw_text_hashes": [
+        "95b047b9067679868e6be83ee7498c624b5efab9c620d4c0f8161731fcbb7076"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:23",
+      "sequence": 481,
+      "chapter_label": "GEN 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "The sun had risen on the earth when Lot came to Zoar.",
+      "ko": "롯이 소알에 들어갈 때에 해가 돋았더라",
+      "source_text_hash": "06a1f9736a17cd447d78e0267df72caabe513163326156db9c39aabc2228cb7d",
+      "translation_text_hash": "6d1d71ec4dd32d3b7ed8221ec9d567483ecffb0b3e73e4ead554322a0b78d15a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯이 소알에 들어갈 때에 해가 돋았더라"
+      ],
+      "raw_text_hashes": [
+        "6d1d71ec4dd32d3b7ed8221ec9d567483ecffb0b3e73e4ead554322a0b78d15a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:24",
+      "sequence": 482,
+      "chapter_label": "GEN 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "Then the LORD rained on Sodom and on Gomorrah sulfur and fire from the LORD out of the sky.",
+      "ko": "여호와께서 하늘 곧 여호와에게로서 유황과 불을 비 같이 소돔과 고모라에 내리사",
+      "source_text_hash": "a3707385a27de584107c00374b9d3dc11c411d635d40a89faa0e03f5d78bceba",
+      "translation_text_hash": "3f4f5d556a3ece0bbf3f9ead6b38c40333ff46e45427b559ed276506374036f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 하늘 곧 여호와에게로서 유황과 불을 비 같이 소돔과 고모라에 내리사"
+      ],
+      "raw_text_hashes": [
+        "3f4f5d556a3ece0bbf3f9ead6b38c40333ff46e45427b559ed276506374036f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:25",
+      "sequence": 483,
+      "chapter_label": "GEN 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "He overthrew those cities, all the plain, all the inhabitants of the cities, and that which grew on the ground.",
+      "ko": "그 성들과 온 들과 성에 거하는 모든 백성과 땅에 난 것을 다 엎어 멸하셨더라",
+      "source_text_hash": "1bee7fb1691764f863e780e2e368a45468dd3d1caae7f1364167bdb47c3b45a4",
+      "translation_text_hash": "187bd7597676e3d53aba7c4c15c3df2a3f7cff52700016716cc8df27282b2577",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성들과 온 들과 성에 거하는 모든 백성과 땅에 난 것을 다 엎어 멸하셨더라"
+      ],
+      "raw_text_hashes": [
+        "187bd7597676e3d53aba7c4c15c3df2a3f7cff52700016716cc8df27282b2577"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:26",
+      "sequence": 484,
+      "chapter_label": "GEN 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "But Lot’s wife looked back from behind him, and she became a pillar of salt.",
+      "ko": "롯의 아내는 뒤를 돌아 본고로 소금 기둥이 되었더라",
+      "source_text_hash": "09bfdd46ad0833deddd2c0714c68003f2c4cef2f4bafb51c65464b70c84c9334",
+      "translation_text_hash": "a7c386e3c2e4a016bd8b16b585b61605d6607d505f9a2d8f027a8d58374370e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯의 아내는 뒤를 돌아 본고로 소금 기둥이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "a7c386e3c2e4a016bd8b16b585b61605d6607d505f9a2d8f027a8d58374370e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:27",
+      "sequence": 485,
+      "chapter_label": "GEN 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "Abraham went up early in the morning to the place where he had stood before the LORD.",
+      "ko": "아브라함이 그 아침에 일찌기 일어나 여호와의 앞에 섰던 곳에 이르러",
+      "source_text_hash": "7d662d43829d374747c28ad79366995fa1843eb3fe3e3dfb74054d151b095068",
+      "translation_text_hash": "45c6c9bcca3757658f803d1987cd9e25b207c25d5aa1da98a0713811d23a6c89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 그 아침에 일찌기 일어나 여호와의 앞에 섰던 곳에 이르러"
+      ],
+      "raw_text_hashes": [
+        "45c6c9bcca3757658f803d1987cd9e25b207c25d5aa1da98a0713811d23a6c89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:28",
+      "sequence": 486,
+      "chapter_label": "GEN 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "He looked toward Sodom and Gomorrah, and toward all the land of the plain, and saw that the smoke of the land went up as the smoke of a furnace.",
+      "ko": "소돔과 고모라와 그 온 들을 향하여 눈을 들어 연기가 옹기점 연기 같이 치밀음을 보았더라",
+      "source_text_hash": "7ccf89c647bb168392655d516c78cc9627c79a788535f3a3d18eda59b6944f28",
+      "translation_text_hash": "3977e26459afb5551c9f1b29c5e7d3d0b31c4806b6f6e0cf75803e7deac2b1a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소돔과 고모라와 그 온 들을 향하여 눈을 들어 연기가 옹기점 연기 같이 치밀음을 보았더라"
+      ],
+      "raw_text_hashes": [
+        "3977e26459afb5551c9f1b29c5e7d3d0b31c4806b6f6e0cf75803e7deac2b1a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:29",
+      "sequence": 487,
+      "chapter_label": "GEN 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "When God destroyed the cities of the plain, God remembered Abraham, and sent Lot out of the middle of the overthrow, when he overthrew the cities in which Lot lived.",
+      "ko": "하나님이 들의 성들을 멸하실 때 곧 롯의 거하는 성을 엎으실 때에 아브라함을 생각하사 롯을 그 엎으시는 중에서 내어 보내셨더라",
+      "source_text_hash": "5ed2994852599c34783fcc7d44fb4c47acefeebfc456e8643229a230ea4d3472",
+      "translation_text_hash": "1ba3e4ac2ca2d0f9ab3c4a8dc5f66ccfbc19deb0c915d7caa3a0cf8469307dbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 들의 성들을 멸하실 때 곧 롯의 거하는 성을 엎으실 때에 아브라함을 생각하사 롯을 그 엎으시는 중에서 내어 보내셨더라"
+      ],
+      "raw_text_hashes": [
+        "1ba3e4ac2ca2d0f9ab3c4a8dc5f66ccfbc19deb0c915d7caa3a0cf8469307dbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:30",
+      "sequence": 488,
+      "chapter_label": "GEN 19",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 30
+        }
+      ],
+      "en": "Lot went up out of Zoar, and lived in the mountain, and his two daughters with him; for he was afraid to live in Zoar. He lived in a cave with his two daughters.",
+      "ko": "롯이 소알에 거하기를 두려워하여 두 딸과 함께 소알에서 나와 산에 올라 거하되 그 두 딸과 함께 굴에 거하였더니",
+      "source_text_hash": "7f6c378fa130d92c84b993a1c6cb7d44aba16691632f779c406c1644e6ba51b6",
+      "translation_text_hash": "18dcaf9057415326aabe9a50bace41f2c4a997b47470810bf12d0bdf696268a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯이 소알에 거하기를 두려워하여 두 딸과 함께 소알에서 나와 산에 올라 거하되 그 두 딸과 함께 굴에 거하였더니"
+      ],
+      "raw_text_hashes": [
+        "18dcaf9057415326aabe9a50bace41f2c4a997b47470810bf12d0bdf696268a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:31",
+      "sequence": 489,
+      "chapter_label": "GEN 19",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 31
+        }
+      ],
+      "en": "The firstborn said to the younger, “Our father is old, and there is not a man on the earth to come in to us in the way of all the earth.",
+      "ko": "큰 딸이 작은 딸에게 이르되 우리 아버지는 늙으셨고 이 땅에는 세상의 도리를 좇아 우리의 배필 될 사람이 없으니",
+      "source_text_hash": "d249fef8dc29c3686435dea16b77e7f8c3e1c039c9ae23e5abf56c55322f4071",
+      "translation_text_hash": "2bc14c3c909db066a01edcb80455b6f473ebcc58ba2e68c19c51a249413875ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 딸이 작은 딸에게 이르되 우리 아버지는 늙으셨고 이 땅에는 세상의 도리를 좇아 우리의 배필 될 사람이 없으니"
+      ],
+      "raw_text_hashes": [
+        "2bc14c3c909db066a01edcb80455b6f473ebcc58ba2e68c19c51a249413875ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:32",
+      "sequence": 490,
+      "chapter_label": "GEN 19",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 32
+        }
+      ],
+      "en": "Come, let’s make our father drink wine, and we will lie with him, that we may preserve our father’s family line.”",
+      "ko": "우리가 우리 아버지에게 술을 마시우고 동침하여 우리 아버지로 말미암아 인종을 전하자 하고",
+      "source_text_hash": "05af421e19e1d0a42c09f7dd9c6e156fc230fe10df455e700afb84346a10cd31",
+      "translation_text_hash": "faa153e4a4a26d862beab2b7df59401f073ba64bcf385e5f438480354f873ee5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리 아버지에게 술을 마시우고 동침하여 우리 아버지로 말미암아 인종을 전하자 하고"
+      ],
+      "raw_text_hashes": [
+        "faa153e4a4a26d862beab2b7df59401f073ba64bcf385e5f438480354f873ee5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:33",
+      "sequence": 491,
+      "chapter_label": "GEN 19",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 33
+        }
+      ],
+      "en": "They made their father drink wine that night: and the firstborn went in, and lay with her father. He didn’t know when she lay down, nor when she arose.",
+      "ko": "그 밤에 그들이 아비에게 술을 마시우고 큰 딸이 들어가서 그 아비와 동침하니라 그러나 그 아비는 그 딸의 눕고 일어나는 것을 깨닫지 못하였더라",
+      "source_text_hash": "2bc9109e005066b81ab965a471cd269dc4d3338505a460dc94f6db751514492b",
+      "translation_text_hash": "c14f2436f035cb6dcc4f98eec2223bf000cedb147af9a5b8f68bb262bc6353ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤에 그들이 아비에게 술을 마시우고 큰 딸이 들어가서 그 아비와 동침하니라 그러나 그 아비는 그 딸의 눕고 일어나는 것을 깨닫지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "c14f2436f035cb6dcc4f98eec2223bf000cedb147af9a5b8f68bb262bc6353ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:34",
+      "sequence": 492,
+      "chapter_label": "GEN 19",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 34
+        }
+      ],
+      "en": "It came to pass on the next day, that the firstborn said to the younger, “Behold, I lay last night with my father. Let’s make him drink wine again tonight. You go in, and lie with him, that we may preserve our father’s family line.”",
+      "ko": "이튿날에 큰 딸이 작은 딸에게 이르되 어제밤에는 내가 우리 아버지와 동침하였으니 오늘밤에도 우리가 아버지에게 술을 마시우고 네가 들어가 동침하고 우리가 아버지로 말미암아 인종을 전하자 하고",
+      "source_text_hash": "ef75672f11d12ac70dfc560fc426d5ee9b7b4a04bd260ab7a7e8f906bc553ba0",
+      "translation_text_hash": "f7c50a7e22c91138528cf19ef6e1f88bf3889d2b58335edd9bb6a97f28f7affd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날에 큰 딸이 작은 딸에게 이르되 어제밤에는 내가 우리 아버지와 동침하였으니 오늘밤에도 우리가 아버지에게 술을 마시우고 네가 들어가 동침하고 우리가 아버지로 말미암아 인종을 전하자 하고"
+      ],
+      "raw_text_hashes": [
+        "f7c50a7e22c91138528cf19ef6e1f88bf3889d2b58335edd9bb6a97f28f7affd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:35",
+      "sequence": 493,
+      "chapter_label": "GEN 19",
+      "verse_label": "35",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 35
+        }
+      ],
+      "en": "They made their father drink wine that night also. The younger went and lay with him. He didn’t know when she lay down, nor when she got up.",
+      "ko": "이 밤에도 그들이 아비에게 술을 마시우고 작은 딸이 일어나 아비와 동침하니라 그러나 아비는 그 딸의 눕고 일어나는 것을 깨닫지 못하였더라",
+      "source_text_hash": "6b4b319f33713e120cdb839f0113891dde214d19283db3280920802bdbc30ee9",
+      "translation_text_hash": "114e8c13e2b1d768740db5d421df564ec752d765535650367e6d2bdbc1249218",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 밤에도 그들이 아비에게 술을 마시우고 작은 딸이 일어나 아비와 동침하니라 그러나 아비는 그 딸의 눕고 일어나는 것을 깨닫지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "114e8c13e2b1d768740db5d421df564ec752d765535650367e6d2bdbc1249218"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:36",
+      "sequence": 494,
+      "chapter_label": "GEN 19",
+      "verse_label": "36",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 36
+        }
+      ],
+      "en": "Thus both of Lot’s daughters were with child by their father.",
+      "ko": "롯의 두 딸이 아비로 말미암아 잉태하고",
+      "source_text_hash": "d0f3f5499318a53688c7a99d000c91cd2c0ef22d01a7ceb0de9e9de9c058e902",
+      "translation_text_hash": "4b95a2f3b8537885723ee4c94951b89f38fbb6913d09f0c02443f2b25cb8b4f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "롯의 두 딸이 아비로 말미암아 잉태하고"
+      ],
+      "raw_text_hashes": [
+        "4b95a2f3b8537885723ee4c94951b89f38fbb6913d09f0c02443f2b25cb8b4f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:37",
+      "sequence": 495,
+      "chapter_label": "GEN 19",
+      "verse_label": "37",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 37
+        }
+      ],
+      "en": "The firstborn bore a son, and named him Moab. He is the father of the Moabites to this day.",
+      "ko": "큰 딸은 아들을 낳아 이름을 모압이라 하였으니 오늘날 모압 족속의 조상이요",
+      "source_text_hash": "e2c7a29209f935ccf812783cff69859335236eb1cf5087f242eeababca8193b3",
+      "translation_text_hash": "6b07d2fbdfb5ff23bad1b05578191c2ce2c2cd5c28d82cb5a40399d49fe2475f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 딸은 아들을 낳아 이름을 모압이라 하였으니 오늘날 모압 족속의 조상이요"
+      ],
+      "raw_text_hashes": [
+        "6b07d2fbdfb5ff23bad1b05578191c2ce2c2cd5c28d82cb5a40399d49fe2475f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:19:38",
+      "sequence": 496,
+      "chapter_label": "GEN 19",
+      "verse_label": "38",
+      "locator": {
+        "book": "GEN",
+        "chapter": 19,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 19,
+          "verse": 38
+        }
+      ],
+      "en": "The younger also bore a son, and called his name Ben Ammi. He is the father of the children of Ammon to this day.",
+      "ko": "작은 딸도 아들을 낳아 이름을 벤암미라 하였으니 오늘날 암몬 족속의 조상이었더라",
+      "source_text_hash": "613ee7a55b0e55e9bda817f72a1294d01ebd641c4ce04f419d6048a82abbf2cb",
+      "translation_text_hash": "7e23ee0de365ed30e17d90b0cdf5ac6632541cac98abf00dd42561def51c78ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "작은 딸도 아들을 낳아 이름을 벤암미라 하였으니 오늘날 암몬 족속의 조상이었더라"
+      ],
+      "raw_text_hashes": [
+        "7e23ee0de365ed30e17d90b0cdf5ac6632541cac98abf00dd42561def51c78ef"
+      ]
+    }
+  ]
+}

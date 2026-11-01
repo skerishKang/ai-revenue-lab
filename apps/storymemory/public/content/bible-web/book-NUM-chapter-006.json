@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:006",
+  "unit_ordinal": 123,
+  "unit_label": "NUM 6",
+  "book_code": "NUM",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:6:1",
+      "sequence": 3825,
+      "chapter_label": "NUM 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:2",
+      "sequence": 3826,
+      "chapter_label": "NUM 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, and tell them: ‘When either man or woman shall make a special vow, the vow of a Nazirite, to separate himself to the LORD,",
+      "ko": "이스라엘 자손에게 고하여 그들에게 이르라 남자나 여자가 특별한 서원 곧 나실인의 서원을 하고 자기 몸을 구별하여 여호와께 드리거든",
+      "source_text_hash": "24d5ed9b3bb3947cb52bb2d91693d92d46294443430e24a70498dc05bfb8344e",
+      "translation_text_hash": "e12fd776217d9cae9970c8d0e704821e546610671fe3c0279afb5319f9a0d91c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 그들에게 이르라 남자나 여자가 특별한 서원 곧 나실인의 서원을 하고 자기 몸을 구별하여 여호와께 드리거든"
+      ],
+      "raw_text_hashes": [
+        "e12fd776217d9cae9970c8d0e704821e546610671fe3c0279afb5319f9a0d91c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:3",
+      "sequence": 3827,
+      "chapter_label": "NUM 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "he shall separate himself from wine and strong drink. He shall drink no vinegar of wine, or vinegar of fermented drink, neither shall he drink any juice of grapes, nor eat fresh grapes or dried.",
+      "ko": "포도주와 독주를 멀리하며 포도주의 초나 독주의 초를 마시지 말며 포도즙도 마시지 말며 생포도나 건포도도 먹지 말찌니",
+      "source_text_hash": "2ac0649a3e607dec3d3bae85426ccdc5018f17839da544ff43201840ad3a31f9",
+      "translation_text_hash": "02305b95805c4a942ab8e665544bb68033eff8856050a8d74b75aa4330e65518",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도주와 독주를 멀리하며 포도주의 초나 독주의 초를 마시지 말며 포도즙도 마시지 말며 생포도나 건포도도 먹지 말찌니"
+      ],
+      "raw_text_hashes": [
+        "02305b95805c4a942ab8e665544bb68033eff8856050a8d74b75aa4330e65518"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:4",
+      "sequence": 3828,
+      "chapter_label": "NUM 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "All the days of his separation he shall eat nothing that is made of the grapevine, from the seeds even to the skins.",
+      "ko": "자기 몸을 구별하는 모든 날 동안에는 포도나무 소산은 씨나 껍질이라도 먹지 말찌며",
+      "source_text_hash": "09439efd01dbff24439365c4f59b04fdb98781a83110acc8a37d796196a71859",
+      "translation_text_hash": "6528170a7a3b5f51e426e40cd4dcd3a9b1c2b56e9304f5f885516f228ff8843c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 몸을 구별하는 모든 날 동안에는 포도나무 소산은 씨나 껍질이라도 먹지 말찌며"
+      ],
+      "raw_text_hashes": [
+        "6528170a7a3b5f51e426e40cd4dcd3a9b1c2b56e9304f5f885516f228ff8843c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:5",
+      "sequence": 3829,
+      "chapter_label": "NUM 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "“‘All the days of his vow of separation no razor shall come on his head, until the days are fulfilled in which he separates himself to the LORD. He shall be holy. He shall let the locks of the hair of his head grow long.",
+      "ko": "그 서원을 하고 구별하는 모든 날 동안은 삭도를 도무지 그 머리에 대지 말 것이라 자기 몸을 구별하여 여호와께 드리는 날이 차기까지 그는 거룩한즉 그 머리털을 길게 자라게 할 것이며",
+      "source_text_hash": "89e7d557c3579dd9d2dd44e5f5affa9a6b9dd5160d369ece8b590c8e12edc1a9",
+      "translation_text_hash": "33d5324463f2a88c6e04b83ed433c894298c3d44eb8063871453aaf69d2ef79d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 서원을 하고 구별하는 모든 날 동안은 삭도를 도무지 그 머리에 대지 말 것이라 자기 몸을 구별하여 여호와께 드리는 날이 차기까지 그는 거룩한즉 그 머리털을 길게 자라게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "33d5324463f2a88c6e04b83ed433c894298c3d44eb8063871453aaf69d2ef79d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:6",
+      "sequence": 3830,
+      "chapter_label": "NUM 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "“‘All the days that he separates himself to the LORD he shall not go near a dead body.",
+      "ko": "자기 몸을 구별하여 여호와께 드리는 모든 날 동안은 시체를 가까이 하지 말 것이요",
+      "source_text_hash": "7933d7a441460c3341267119e4881faf630005acda145c6c2ef534fac6b281de",
+      "translation_text_hash": "84f4be4abbc5e9233b770551a7d86de1c0f2ef3c378c9c6a944c06a8cf2636db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 몸을 구별하여 여호와께 드리는 모든 날 동안은 시체를 가까이 하지 말 것이요"
+      ],
+      "raw_text_hashes": [
+        "84f4be4abbc5e9233b770551a7d86de1c0f2ef3c378c9c6a944c06a8cf2636db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:7",
+      "sequence": 3831,
+      "chapter_label": "NUM 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "He shall not make himself unclean for his father, or for his mother, for his brother, or for his sister, when they die, because his separation to God is on his head.",
+      "ko": "그 부모 형제자매가 죽은 때에라도 그로 인하여 몸을 더럽히지 말 것이니 이는 자기 몸을 구별하여 하나님께 드리는 표가 그 머리에 있음이라",
+      "source_text_hash": "ef48304e5a52242d87284f56913ecf37bea2bbe22a291ed4ccae9729f6987624",
+      "translation_text_hash": "b689ac632bea13293ef697293289d5a5fc911c82af8eb89cf39d67c2009ca98a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부모 형제자매가 죽은 때에라도 그로 인하여 몸을 더럽히지 말 것이니 이는 자기 몸을 구별하여 하나님께 드리는 표가 그 머리에 있음이라"
+      ],
+      "raw_text_hashes": [
+        "b689ac632bea13293ef697293289d5a5fc911c82af8eb89cf39d67c2009ca98a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:8",
+      "sequence": 3832,
+      "chapter_label": "NUM 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "All the days of his separation he is holy to the LORD.",
+      "ko": "자기 몸을 구별하는 모든 날 동안 그는 여호와께 거룩한 자니라",
+      "source_text_hash": "2999394f064e4d57d1da711e0557f3c89d056be347f836585a1d79d78e082197",
+      "translation_text_hash": "190bce7b80ca7314d342de0639d52261a64853df671c105ce07d34b7befea4f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 몸을 구별하는 모든 날 동안 그는 여호와께 거룩한 자니라"
+      ],
+      "raw_text_hashes": [
+        "190bce7b80ca7314d342de0639d52261a64853df671c105ce07d34b7befea4f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:9",
+      "sequence": 3833,
+      "chapter_label": "NUM 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "“‘If any man dies very suddenly beside him, and he defiles the head of his separation, then he shall shave his head in the day of his cleansing. On the seventh day he shall shave it.",
+      "ko": "누가 홀연히 그 곁에서 죽어서 스스로 구별한 자의 머리를 더럽히거든 그 몸을 정결케 하는 날에 머리를 밀 것이니 곧 제 칠일에 밀 것이며",
+      "source_text_hash": "b9a9add16ed045efd4fdd41493175192a1be0b2a9c531a6eca398873bbf0f6ba",
+      "translation_text_hash": "8c0e2e9f745c599903bbd294015a9133931908ccfa23b254c75c42ee155fe773",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 홀연히 그 곁에서 죽어서 스스로 구별한 자의 머리를 더럽히거든 그 몸을 정결케 하는 날에 머리를 밀 것이니 곧 제 칠일에 밀 것이며"
+      ],
+      "raw_text_hashes": [
+        "8c0e2e9f745c599903bbd294015a9133931908ccfa23b254c75c42ee155fe773"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:10",
+      "sequence": 3834,
+      "chapter_label": "NUM 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "On the eighth day he shall bring two turtledoves or two young pigeons to the priest, to the door of the Tent of Meeting.",
+      "ko": "제 팔일에 산비둘기 두 마리나 집비둘기 새끼 두 마리를 가지고 회막문에 와서 제사장에게 줄 것이요",
+      "source_text_hash": "602e672d4f9a2a9db6474835ae818b0b69e921604ef2f46fd68c055cc249d343",
+      "translation_text_hash": "ad40a88af8ae04474a139a1e320424c573f20b12df0eea4c37bfea5e597a88fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 팔일에 산비둘기 두 마리나 집비둘기 새끼 두 마리를 가지고 회막문에 와서 제사장에게 줄 것이요"
+      ],
+      "raw_text_hashes": [
+        "ad40a88af8ae04474a139a1e320424c573f20b12df0eea4c37bfea5e597a88fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:11",
+      "sequence": 3835,
+      "chapter_label": "NUM 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "The priest shall offer one for a sin offering, and the other for a burnt offering, and make atonement for him, because he sinned by reason of the dead, and shall make his head holy that same day.",
+      "ko": "제사장은 그 하나를 속죄 제물로, 하나를 번제물로 드려서 그의 시체로 인하여 얻은 죄를 속하고 또 그는 당일에 그의 머리를 성결케 할 것이며",
+      "source_text_hash": "8b67e235efaa2929bfbfd7bd677b3239254c7a43cc73bd6e538c9495b3cb19a3",
+      "translation_text_hash": "7688a08fb9ac2ce116d0c48fa71b41790bfc3209ec2dcae4cb077afdcbd2fe5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 하나를 속죄 제물로, 하나를 번제물로 드려서 그의 시체로 인하여 얻은 죄를 속하고 또 그는 당일에 그의 머리를 성결케 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "7688a08fb9ac2ce116d0c48fa71b41790bfc3209ec2dcae4cb077afdcbd2fe5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:12",
+      "sequence": 3836,
+      "chapter_label": "NUM 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "He shall separate to the LORD the days of his separation, and shall bring a male lamb a year old for a trespass offering; but the former days shall be void, because his separation was defiled.",
+      "ko": "자기 몸을 구별하여 여호와께 드릴 날을 새로 정하고 일년 된 수양을 가져다가 속건제로 드릴찌니라 자기 몸을 구별한 때에 그 몸을 더럽혔은즉 지나간 날은 무효니라",
+      "source_text_hash": "1a0cd09fd3f53d9516a757ff917d5331c49ead42bfc43b4e4cc59ca76a45e2a7",
+      "translation_text_hash": "ccc9ca656ef5ad8ed09dca4ae28cdc252ea3e1623eefb25fe61506cb65d62186",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 몸을 구별하여 여호와께 드릴 날을 새로 정하고 일년 된 수양을 가져다가 속건제로 드릴찌니라 자기 몸을 구별한 때에 그 몸을 더럽혔은즉 지나간 날은 무효니라"
+      ],
+      "raw_text_hashes": [
+        "ccc9ca656ef5ad8ed09dca4ae28cdc252ea3e1623eefb25fe61506cb65d62186"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:13",
+      "sequence": 3837,
+      "chapter_label": "NUM 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "“‘This is the law of the Nazirite: when the days of his separation are fulfilled, he shall be brought to the door of the Tent of Meeting,",
+      "ko": "나실인의 법은 이러하니라 자기 몸을 구별한 날이 차면 그 사람을 회막문으로 데리고 갈 것이요",
+      "source_text_hash": "f13b0d8202e10d72d0174108e1dea70ef9845079b4f2f8517c7991d1d93a76c5",
+      "translation_text_hash": "cf3c3f1ce7f2dbb249d912061e1010c7a2d4ce552a56cd4e379bf456a31b30fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나실인의 법은 이러하니라 자기 몸을 구별한 날이 차면 그 사람을 회막문으로 데리고 갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "cf3c3f1ce7f2dbb249d912061e1010c7a2d4ce552a56cd4e379bf456a31b30fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:14",
+      "sequence": 3838,
+      "chapter_label": "NUM 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "and he shall offer his offering to the LORD: one male lamb a year old without defect for a burnt offering, one ewe lamb a year old without defect for a sin offering, one ram without defect for peace offerings,",
+      "ko": "그는 여호와께 예물을 드리되 번제물로 일년 된 흠 없는 수양 하나와 속죄 제물로 일년 된 흠 없는 어린 암양 하나와 화목제물로 흠 없는 수양 하나와",
+      "source_text_hash": "be00e4547e7d5e57a4da08a918592bd4602386f7d575d0aec0a328e5c2813986",
+      "translation_text_hash": "77b10b3f47b323eb2179b8178f2be04bcecdd855ea126b0f515f922e9a127bf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 여호와께 예물을 드리되 번제물로 일년 된 흠 없는 수양 하나와 속죄 제물로 일년 된 흠 없는 어린 암양 하나와 화목제물로 흠 없는 수양 하나와"
+      ],
+      "raw_text_hashes": [
+        "77b10b3f47b323eb2179b8178f2be04bcecdd855ea126b0f515f922e9a127bf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:15",
+      "sequence": 3839,
+      "chapter_label": "NUM 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "a basket of unleavened bread, cakes of fine flour mixed with oil, and unleavened wafers anointed with oil with their meal offering and their drink offerings.",
+      "ko": "무교병 한 광주리와 고운 가루에 기름 섞은 과자들과 기름 바른 무교전병들과 그 소제물과 전제물을 드릴 것이요",
+      "source_text_hash": "09243d1c5916133d75fc158a2741a7c1c818f7180eb4f7d8e49a52b363f73421",
+      "translation_text_hash": "35d058b11ccd849aa3ae16bd822a31cc765ecacd9d628d80495228bb0d252e23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무교병 한 광주리와 고운 가루에 기름 섞은 과자들과 기름 바른 무교전병들과 그 소제물과 전제물을 드릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "35d058b11ccd849aa3ae16bd822a31cc765ecacd9d628d80495228bb0d252e23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:16",
+      "sequence": 3840,
+      "chapter_label": "NUM 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "The priest shall present them before the LORD, and shall offer his sin offering and his burnt offering.",
+      "ko": "제사장은 그것들을 여호와 앞에 가져다가 속죄제와 번제를 드리고",
+      "source_text_hash": "7ff2d13ef02efc0b727dfdc8524b0227b344392c7058161826409979cab75e9e",
+      "translation_text_hash": "5df160ab9142bb41def8a97af3a7992a0ec5c5955b81c891504600b292a88c34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그것들을 여호와 앞에 가져다가 속죄제와 번제를 드리고"
+      ],
+      "raw_text_hashes": [
+        "5df160ab9142bb41def8a97af3a7992a0ec5c5955b81c891504600b292a88c34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:17",
+      "sequence": 3841,
+      "chapter_label": "NUM 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "He shall offer the ram for a sacrifice of peace offerings to the LORD, with the basket of unleavened bread. The priest shall offer also its meal offering and its drink offering.",
+      "ko": "화목 제물로 수양에 무교병 한 광주리를 아울러 여호와께 드리고 그 소제와 전제를 드릴 것이요",
+      "source_text_hash": "6dba30a37590d894df3fee2061e6420b15bce7fd7e45801f2392f61029d0fea5",
+      "translation_text_hash": "54f13b32106e9d758a7655770f58bfb42340c1f6b508210dfe961cbde504a25c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화목 제물로 수양에 무교병 한 광주리를 아울러 여호와께 드리고 그 소제와 전제를 드릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "54f13b32106e9d758a7655770f58bfb42340c1f6b508210dfe961cbde504a25c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:18",
+      "sequence": 3842,
+      "chapter_label": "NUM 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "The Nazirite shall shave the head of his separation at the door of the Tent of Meeting, take the hair of the head of his separation, and put it on the fire which is under the sacrifice of peace offerings.",
+      "ko": "자기 몸을 구별한 나실인은 회막 문에서 그 머리털을 밀고 그것을 화목제물 밑에 있는 불에 둘찌며",
+      "source_text_hash": "715d53a5efe4fbe4aab5da467325a4002aa8b4c96a5e47b3abf89be898c58b02",
+      "translation_text_hash": "e2ac6fcc09e2a731227fb5799b6c5ffd438b26434e81fb342ff02d6fb9165c48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 몸을 구별한 나실인은 회막 문에서 그 머리털을 밀고 그것을 화목제물 밑에 있는 불에 둘찌며"
+      ],
+      "raw_text_hashes": [
+        "e2ac6fcc09e2a731227fb5799b6c5ffd438b26434e81fb342ff02d6fb9165c48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:19",
+      "sequence": 3843,
+      "chapter_label": "NUM 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "The priest shall take the boiled shoulder of the ram, one unleavened cake out of the basket, and one unleavened wafer, and shall put them on the hands of the Nazirite after he has shaved the head of his separation;",
+      "ko": "자기 몸을 구별한 나실인이 그 머리 털을 민 후에 제사장이 삶은 수양의 어깨와 광주리 가운데 무교병 하나와 무교전병 하나를 취하여 나실인의 두 손에 두고",
+      "source_text_hash": "c00c79624648c53c4b3f96919e5fa5dc1b961155af430ff3c6087e821da0659c",
+      "translation_text_hash": "cb1a6f4c3d4bf47312ae7d7109f00b1a4fc569ed67fbc05eced38d3092541e74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 몸을 구별한 나실인이 그 머리 털을 민 후에 제사장이 삶은 수양의 어깨와 광주리 가운데 무교병 하나와 무교전병 하나를 취하여 나실인의 두 손에 두고"
+      ],
+      "raw_text_hashes": [
+        "cb1a6f4c3d4bf47312ae7d7109f00b1a4fc569ed67fbc05eced38d3092541e74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:20",
+      "sequence": 3844,
+      "chapter_label": "NUM 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "and the priest shall wave them for a wave offering before the LORD. They are holy for the priest, together with the breast that is waved and the thigh that is offered. After that the Nazirite may drink wine.",
+      "ko": "여호와 앞에 요제로 흔들 것이며 그것과 흔든 가슴과 든 넓적다리는 성물이라 다 제사장에게 돌릴것이니라 그 후에는 나실인이 포도주를 마실 수 있느니라",
+      "source_text_hash": "394a3912ca9befca32ca3afd00c46b46e5ba0bffd2af8ba105578835987178d1",
+      "translation_text_hash": "ec3dea5edc79ec1cf94c455bc6501a2ed4318ca9733dc1f927a4e6e76b6ae13f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 앞에 요제로 흔들 것이며 그것과 흔든 가슴과 든 넓적다리는 성물이라 다 제사장에게 돌릴것이니라 그 후에는 나실인이 포도주를 마실 수 있느니라"
+      ],
+      "raw_text_hashes": [
+        "ec3dea5edc79ec1cf94c455bc6501a2ed4318ca9733dc1f927a4e6e76b6ae13f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:21",
+      "sequence": 3845,
+      "chapter_label": "NUM 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "“‘This is the law of the Nazirite who vows and of his offering to the LORD for his separation, in addition to that which he is able to afford. According to his vow which he vows, so he must do after the law of his separation.’”",
+      "ko": "이는 곧 서원한 나실인이 자기 몸을 구별한 일로 인하여 여호와께 예물을 드림과 행할 법이며 이 외에도 힘이 미치는대로 하려니와 그 서원한대로 자기 몸을 구별하는 법을 따라 할 것이니라",
+      "source_text_hash": "69d64556d64290054ec93edac5b2bfead4de011b8e6dba70e2c0d16a2d9dff83",
+      "translation_text_hash": "a12a711a725e2185eec43ae00b50b36740297a13f6d3c494c6f4f713447fdede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 곧 서원한 나실인이 자기 몸을 구별한 일로 인하여 여호와께 예물을 드림과 행할 법이며 이 외에도 힘이 미치는대로 하려니와 그 서원한대로 자기 몸을 구별하는 법을 따라 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "a12a711a725e2185eec43ae00b50b36740297a13f6d3c494c6f4f713447fdede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:22",
+      "sequence": 3846,
+      "chapter_label": "NUM 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:23",
+      "sequence": 3847,
+      "chapter_label": "NUM 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "“Speak to Aaron and to his sons, saying, ‘This is how you shall bless the children of Israel.’ You shall tell them,",
+      "ko": "아론과 그 아들들에게 고하여 이르기를 너희는 이스라엘 자손을 위하여 이렇게 축복하여 이르되",
+      "source_text_hash": "66d85be453f4da9b108eedf1a75285259227964eb44a6ee1fd54306aafc35699",
+      "translation_text_hash": "a48282026b474b39dff87b1dbaafd3f3496a3f3c2e217f4bd89b137dd5cf6cee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들에게 고하여 이르기를 너희는 이스라엘 자손을 위하여 이렇게 축복하여 이르되"
+      ],
+      "raw_text_hashes": [
+        "a48282026b474b39dff87b1dbaafd3f3496a3f3c2e217f4bd89b137dd5cf6cee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:24",
+      "sequence": 3848,
+      "chapter_label": "NUM 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "‘The LORD bless you, and keep you.",
+      "ko": "여호와는 네게 복을 주시고 너를 지키시기를 원하며",
+      "source_text_hash": "b466ad0b9184ac563e83506f970a6292f2f86ff7b151332218ea8bb03bdb3202",
+      "translation_text_hash": "be39a8c97fe4ac5951e6b160b3772e8413aa82d1fadf4d3a4f8bca334a456f10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 네게 복을 주시고 너를 지키시기를 원하며"
+      ],
+      "raw_text_hashes": [
+        "be39a8c97fe4ac5951e6b160b3772e8413aa82d1fadf4d3a4f8bca334a456f10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:25",
+      "sequence": 3849,
+      "chapter_label": "NUM 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD make his face to shine on you, and be gracious to you.",
+      "ko": "여호와는 그 얼굴로 네게 비취사 은혜 베푸시기를 원하며",
+      "source_text_hash": "2fd58055d1c342a0777bf08b2e900ef4149b74f69ac7991e5ab9e5c613fa8e43",
+      "translation_text_hash": "451c90f6aa71fd23233f78b40ec3e3779a1b74a81dff1d0e1d6764e477c84612",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 그 얼굴로 네게 비취사 은혜 베푸시기를 원하며"
+      ],
+      "raw_text_hashes": [
+        "451c90f6aa71fd23233f78b40ec3e3779a1b74a81dff1d0e1d6764e477c84612"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:26",
+      "sequence": 3850,
+      "chapter_label": "NUM 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "The LORD lift up his face toward you, and give you peace.’",
+      "ko": "여호와는 그 얼굴을 네게로 향하여 드사 평강 주시기를 원하노라 할찌니라 하라",
+      "source_text_hash": "fce9608f281a64f04c508762e0ab6574b069cdf04b2007f78af5968029da5758",
+      "translation_text_hash": "3a93abd1411045ec060b58b925fe2c8229ea2becbaf117e34a8fc5a73ac0fb54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 그 얼굴을 네게로 향하여 드사 평강 주시기를 원하노라 할찌니라 하라"
+      ],
+      "raw_text_hashes": [
+        "3a93abd1411045ec060b58b925fe2c8229ea2becbaf117e34a8fc5a73ac0fb54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:6:27",
+      "sequence": 3851,
+      "chapter_label": "NUM 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "“So they shall put my name on the children of Israel; and I will bless them.”",
+      "ko": "그들은 이같이 내 이름으로 이스라엘 자손에게 축복할찌니 내가 그들에게 복을 주리라",
+      "source_text_hash": "c36bb42ecf1b84447e3836fe7fa1538fa19a9099c0fca3972dbe93fdfcf78900",
+      "translation_text_hash": "338ee96cd06f6eac097027e433ff223fd81e9b8e8e891438de47d2d7b7cdfc7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 이같이 내 이름으로 이스라엘 자손에게 축복할찌니 내가 그들에게 복을 주리라"
+      ],
+      "raw_text_hashes": [
+        "338ee96cd06f6eac097027e433ff223fd81e9b8e8e891438de47d2d7b7cdfc7f"
+      ]
+    }
+  ]
+}

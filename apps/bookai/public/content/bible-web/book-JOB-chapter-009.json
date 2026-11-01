@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:009",
+  "unit_ordinal": 445,
+  "unit_label": "JOB 9",
+  "book_code": "JOB",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:9:1",
+      "sequence": 13053,
+      "chapter_label": "JOB 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Then Job answered,",
+      "ko": "욥이 대답하여 가로되",
+      "source_text_hash": "5263caab7b43bc090defa0c0dbc9d551ac80859d1634826a141a04fc1349df96",
+      "translation_text_hash": "6e432eb41091f2b4077fe347703fb37615a4e3a45f9b3ead4a29e1a2b2065a30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "6e432eb41091f2b4077fe347703fb37615a4e3a45f9b3ead4a29e1a2b2065a30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:2",
+      "sequence": 13054,
+      "chapter_label": "JOB 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "“Truly I know that it is so, but how can man be just with God?",
+      "ko": "내가 진실로 그 일이 그런줄을 알거니와 인생이 어찌 하나님 앞에 의로우랴",
+      "source_text_hash": "f1b97edfba6087cbfdcfb6b479059b331f1cb1f8930861b3ce2eacef0b28aa73",
+      "translation_text_hash": "9146bc3843963f235df4ee76084dd2838544867b58c96dbf44d61aa757b765cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 그 일이 그런줄을 알거니와 인생이 어찌 하나님 앞에 의로우랴"
+      ],
+      "raw_text_hashes": [
+        "9146bc3843963f235df4ee76084dd2838544867b58c96dbf44d61aa757b765cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:3",
+      "sequence": 13055,
+      "chapter_label": "JOB 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "If he is pleased to contend with him, he can’t answer him one time in a thousand.",
+      "ko": "사람이 하나님과 쟁변하려 할찌라도 천 마디에 한 마디도 대답하지 못하리라",
+      "source_text_hash": "b865ecd0cf0ccb8c468b8c564f3ac3b41c8f4d34ef65fbe9ff4f266f706b81ce",
+      "translation_text_hash": "bb47a0d07f71de2ceb0264ccd6cd6557e1098ef0fb79018068759e1f0e6facc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 하나님과 쟁변하려 할찌라도 천 마디에 한 마디도 대답하지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "bb47a0d07f71de2ceb0264ccd6cd6557e1098ef0fb79018068759e1f0e6facc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:4",
+      "sequence": 13056,
+      "chapter_label": "JOB 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "God is wise in heart, and mighty in strength. Who has hardened himself against him and prospered?",
+      "ko": "하나님은 마음이 지혜로우시고 힘이 강하시니 스스로 강퍅히 하여 그를 거역하고 형통한 자가 누구이랴",
+      "source_text_hash": "6526f3916f7de1418b034f93ee7104502edd32e8fa1101997bc7ce044ce39dca",
+      "translation_text_hash": "c9e6e013133befe5882d7795a48195fc5d20ce2e3dc5f106760bbf83482e86a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 마음이 지혜로우시고 힘이 강하시니 스스로 강퍅히 하여 그를 거역하고 형통한 자가 누구이랴"
+      ],
+      "raw_text_hashes": [
+        "c9e6e013133befe5882d7795a48195fc5d20ce2e3dc5f106760bbf83482e86a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:5",
+      "sequence": 13057,
+      "chapter_label": "JOB 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "He removes the mountains, and they don’t know it, when he overturns them in his anger.",
+      "ko": "그가 진노하심으로 산을 무너뜨리시며 옮기실찌라도 산이 깨닫지 못하며",
+      "source_text_hash": "c72c607066e8fa60dbd56c876fbeab672cd19307ed2f0b1dfe79b5586cd5dc84",
+      "translation_text_hash": "b236395fa2a1d7506e32681e45d24b5c958b67eafe59e5c2ceb8ff03787b9c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 진노하심으로 산을 무너뜨리시며 옮기실찌라도 산이 깨닫지 못하며"
+      ],
+      "raw_text_hashes": [
+        "b236395fa2a1d7506e32681e45d24b5c958b67eafe59e5c2ceb8ff03787b9c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:6",
+      "sequence": 13058,
+      "chapter_label": "JOB 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "He shakes the earth out of its place. Its pillars tremble.",
+      "ko": "그가 땅을 움직여 그 자리에서 미신즉 그 기둥이 흔들리며",
+      "source_text_hash": "c954df91e04347c4dee5c4d20e6d2b416501151644232bf4d3c90b008965cac4",
+      "translation_text_hash": "0b8a1f7f3117e0684666bfe414e7ee911215f3705503385ab6292d6393c7b2aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 땅을 움직여 그 자리에서 미신즉 그 기둥이 흔들리며"
+      ],
+      "raw_text_hashes": [
+        "0b8a1f7f3117e0684666bfe414e7ee911215f3705503385ab6292d6393c7b2aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:7",
+      "sequence": 13059,
+      "chapter_label": "JOB 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "He commands the sun and it doesn’t rise, and seals up the stars.",
+      "ko": "그가 해를 명하여 뜨지 못하게 하시며 별들을 봉하시며",
+      "source_text_hash": "c7954c0e536e18070e39f5de69328ac65c2865c4e3dab58f801092fbb18e70d6",
+      "translation_text_hash": "d416adaf0855dbcd26695b8b28def96a36b30f31a840da3d69109dbd0cac09f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 해를 명하여 뜨지 못하게 하시며 별들을 봉하시며"
+      ],
+      "raw_text_hashes": [
+        "d416adaf0855dbcd26695b8b28def96a36b30f31a840da3d69109dbd0cac09f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:8",
+      "sequence": 13060,
+      "chapter_label": "JOB 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "He alone stretches out the heavens, and treads on the waves of the sea.",
+      "ko": "그가 홀로 하늘을 펴시며 바다 물결을 밟으시며",
+      "source_text_hash": "8806f176c92e28a3943124eacf4c7b5b5874484b0f6e8821134aa6a8e1ecfe83",
+      "translation_text_hash": "479edd5ac57e0e7d62fc4a27a5e56248ce32b6dedc67e8006cc4aa3df43acd84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 홀로 하늘을 펴시며 바다 물결을 밟으시며"
+      ],
+      "raw_text_hashes": [
+        "479edd5ac57e0e7d62fc4a27a5e56248ce32b6dedc67e8006cc4aa3df43acd84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:9",
+      "sequence": 13061,
+      "chapter_label": "JOB 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "He makes the Bear, Orion, and the Pleiades, and the rooms of the south.",
+      "ko": "북두성과 삼성과 묘성과 남방의 밀실을 만드셨으며",
+      "source_text_hash": "54e2fec1cb0952aa855af6a64bc2d6093792979b3538c739f9b84a0bb4eaefb5",
+      "translation_text_hash": "1993381732640e749b677a2089c5908d76800bc199e1870769d5c7d41dc3affd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북두성과 삼성과 묘성과 남방의 밀실을 만드셨으며"
+      ],
+      "raw_text_hashes": [
+        "1993381732640e749b677a2089c5908d76800bc199e1870769d5c7d41dc3affd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:10",
+      "sequence": 13062,
+      "chapter_label": "JOB 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "He does great things past finding out; yes, marvelous things without number.",
+      "ko": "측량할 수 없는 큰 일을, 셀 수 없는 기이한 일을 행하시느니라",
+      "source_text_hash": "8b90ededc96f4aec3578b25eb17f22887d1e74db4a3ea92c10129075e3a64f62",
+      "translation_text_hash": "61d5ab0a433198863c79a7c92db7e8b82a150dd9061b2b8c2331e32ea10180a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "측량할 수 없는 큰 일을, 셀 수 없는 기이한 일을 행하시느니라"
+      ],
+      "raw_text_hashes": [
+        "61d5ab0a433198863c79a7c92db7e8b82a150dd9061b2b8c2331e32ea10180a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:11",
+      "sequence": 13063,
+      "chapter_label": "JOB 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, he goes by me, and I don’t see him. He passes on also, but I don’t perceive him.",
+      "ko": "그가 내 앞으로 지나시나 내가 보지 못하며 그가 내 앞에서 나아가시나 내가 깨닫지 못하느니라",
+      "source_text_hash": "395896a51f109f9cf1023933a1776989c809b176693a1b4b11e0dbf0005fcaf0",
+      "translation_text_hash": "85ec28ee04c39f56f6d494a3fa284d49e63c429390ca66681bb032fbca34f1b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내 앞으로 지나시나 내가 보지 못하며 그가 내 앞에서 나아가시나 내가 깨닫지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "85ec28ee04c39f56f6d494a3fa284d49e63c429390ca66681bb032fbca34f1b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:12",
+      "sequence": 13064,
+      "chapter_label": "JOB 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "Behold, he snatches away. Who can hinder him? Who will ask him, ‘What are you doing?’",
+      "ko": "하나님이 빼앗으시면 누가 막을 수 있으며 무엇을 하시나이까 누가 물을 수 있으랴",
+      "source_text_hash": "bd298029a16f8ef687bbdf8f00ceab555fff383c5b21c86a3cf05e970f94adec",
+      "translation_text_hash": "04d3ce4f4f7439875234b7157546b707693cf2b464881063357b110fa27e69fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 빼앗으시면 누가 막을 수 있으며 무엇을 하시나이까 누가 물을 수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "04d3ce4f4f7439875234b7157546b707693cf2b464881063357b110fa27e69fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:13",
+      "sequence": 13065,
+      "chapter_label": "JOB 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "“God will not withdraw his anger. The helpers of Rahab stoop under him.",
+      "ko": "하나님이 진노를 돌이키지 아니하시나니 라합을 돕는 자들이 그 아래 굴복하겠거든",
+      "source_text_hash": "e4c10e5384da0da7c7269bae4cb35deb09171f7c9f0ecd2c9193d49443138775",
+      "translation_text_hash": "ace8371765cacd6e15e3b839c87c7a79db5e43d1a42752df802f3712be4f7248",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 진노를 돌이키지 아니하시나니 라합을 돕는 자들이 그 아래 굴복하겠거든"
+      ],
+      "raw_text_hashes": [
+        "ace8371765cacd6e15e3b839c87c7a79db5e43d1a42752df802f3712be4f7248"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:14",
+      "sequence": 13066,
+      "chapter_label": "JOB 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "How much less will I answer him, and choose my words to argue with him?",
+      "ko": "하물며 내가 감히 대답하겠으며 무슨 말을 택하여 더불어 변론하랴",
+      "source_text_hash": "bf6ecad0685b58bce53b003cf5762c55ebdae4579d8f26d44f2ad5237235a0b2",
+      "translation_text_hash": "690c14594d64c85a9956afdbb3f2646239dc0174b7413a11f02dd9468da9e157",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하물며 내가 감히 대답하겠으며 무슨 말을 택하여 더불어 변론하랴"
+      ],
+      "raw_text_hashes": [
+        "690c14594d64c85a9956afdbb3f2646239dc0174b7413a11f02dd9468da9e157"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:15",
+      "sequence": 13067,
+      "chapter_label": "JOB 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "Though I were righteous, yet I wouldn’t answer him. I would make supplication to my judge.",
+      "ko": "가령 내가 의로울찌라도 감히 대답하지 못하고 나를 심판하실 그에게 간구하였을 뿐이며",
+      "source_text_hash": "176ac5230395af77246033437a6425e8c088c94e2fee1a6258fa92550a2eeac6",
+      "translation_text_hash": "a0b345fc45180c53604397402bebc2cf6961487b217945dcc587f78a00c70e0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 의로울찌라도 감히 대답하지 못하고 나를 심판하실 그에게 간구하였을 뿐이며"
+      ],
+      "raw_text_hashes": [
+        "a0b345fc45180c53604397402bebc2cf6961487b217945dcc587f78a00c70e0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:16",
+      "sequence": 13068,
+      "chapter_label": "JOB 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "If I had called, and he had answered me, yet I wouldn’t believe that he listened to my voice.",
+      "ko": "가령 내가 그를 부르므로 그가 내게 대답하셨을찌라도 내 음성을 들으셨다고는 내가 믿지 아니하리라",
+      "source_text_hash": "34b9ad9380627c0e803751bdca810a5c17ddcffdae0448ac3fb6bc3feedd4045",
+      "translation_text_hash": "f9c9698790f1231e56e31c9e21cf5090ef1e5e20208490560d57401abd947993",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 그를 부르므로 그가 내게 대답하셨을찌라도 내 음성을 들으셨다고는 내가 믿지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "f9c9698790f1231e56e31c9e21cf5090ef1e5e20208490560d57401abd947993"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:17",
+      "sequence": 13069,
+      "chapter_label": "JOB 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "For he breaks me with a storm, and multiplies my wounds without cause.",
+      "ko": "그가 폭풍으로 나를 꺾으시고 까닭 없이 내 상처를 많게 하시며",
+      "source_text_hash": "0bd4fa1bcf9882faf9250445ad20b51803120a55349f80b28f58a20a8a8ec346",
+      "translation_text_hash": "3b053f593b9b31a69ab9fb208a786b4965ba7e5bdeb3444c526cf5b543299d77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 폭풍으로 나를 꺾으시고 까닭 없이 내 상처를 많게 하시며"
+      ],
+      "raw_text_hashes": [
+        "3b053f593b9b31a69ab9fb208a786b4965ba7e5bdeb3444c526cf5b543299d77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:18",
+      "sequence": 13070,
+      "chapter_label": "JOB 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "He will not allow me to catch my breath, but fills me with bitterness.",
+      "ko": "나로 숨을 쉬지 못하게 하시며 괴로움으로 내게 채우시는구나",
+      "source_text_hash": "2e3e902ee16835ab2a2f538422a591a666dacb64f85c1a0b4ceb24321139a076",
+      "translation_text_hash": "820017c9bd085f69e288461ac9a95b8f6d4489256448645433025abc5a8c69c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 숨을 쉬지 못하게 하시며 괴로움으로 내게 채우시는구나"
+      ],
+      "raw_text_hashes": [
+        "820017c9bd085f69e288461ac9a95b8f6d4489256448645433025abc5a8c69c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:19",
+      "sequence": 13071,
+      "chapter_label": "JOB 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "If it is a matter of strength, behold, he is mighty! If of justice, ‘Who,’ says he, ‘will summon me?’",
+      "ko": "힘으로 말하면 그가 강하시고 심판으로 말하면 누가 그를 호출하겠느냐",
+      "source_text_hash": "089e5bf2c7a0dc7d9a77a9eaac733009793f50ad0abc6b09017b000ffe02c4ca",
+      "translation_text_hash": "ec8141eba4872bbe3201e6276ded5b7500c9e77f81708f48126b138843ce6827",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힘으로 말하면 그가 강하시고 심판으로 말하면 누가 그를 호출하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "ec8141eba4872bbe3201e6276ded5b7500c9e77f81708f48126b138843ce6827"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:20",
+      "sequence": 13072,
+      "chapter_label": "JOB 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "Though I am righteous, my own mouth will condemn me. Though I am blameless, it will prove me perverse.",
+      "ko": "가령 내가 의로울찌라도 내 입이 나를 정죄하리니 가령 내가 순전할찌라도 나의 패괴함을 증거하리라",
+      "source_text_hash": "82cebcfd36e305f8865fbe5f3b1f943aec4b527bc94e23aebc3d2af06aa4a9ab",
+      "translation_text_hash": "6357e420a7ffbe42cdb77118e6b86d48d2bd57f1dfb92096b3fe4cf6766c9df6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 의로울찌라도 내 입이 나를 정죄하리니 가령 내가 순전할찌라도 나의 패괴함을 증거하리라"
+      ],
+      "raw_text_hashes": [
+        "6357e420a7ffbe42cdb77118e6b86d48d2bd57f1dfb92096b3fe4cf6766c9df6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:21",
+      "sequence": 13073,
+      "chapter_label": "JOB 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "I am blameless. I don’t respect myself. I despise my life.",
+      "ko": "나는 순전하다마는 내가 나를 돌아보지 아니하고 내 생명을 천히 여기는구나",
+      "source_text_hash": "b6b9bd323c3d9c98f356e6507f0e2740dc0c0eb26d7ea7e71401f17a166b2cfc",
+      "translation_text_hash": "4fda0ce43a0afaa999e5b17738129cbdc3a55329ba49ecb2fe9e6a992455be7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 순전하다마는 내가 나를 돌아보지 아니하고 내 생명을 천히 여기는구나"
+      ],
+      "raw_text_hashes": [
+        "4fda0ce43a0afaa999e5b17738129cbdc3a55329ba49ecb2fe9e6a992455be7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:22",
+      "sequence": 13074,
+      "chapter_label": "JOB 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "“It is all the same. Therefore I say he destroys the blameless and the wicked.",
+      "ko": "일이 다 일반이라 그러므로 나는 말하기를 하나님이 순전한 자나 악한 자나 멸망시키신다 하나니",
+      "source_text_hash": "14a7eb0560a45a7aae873d29d360b5ef5609b9a5c4bfa2747dc010b53c771b31",
+      "translation_text_hash": "590124c705a7a7be58c4d9a53a01fdd1dfa094be340c05b9e8bcbfbd874f0378",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일이 다 일반이라 그러므로 나는 말하기를 하나님이 순전한 자나 악한 자나 멸망시키신다 하나니"
+      ],
+      "raw_text_hashes": [
+        "590124c705a7a7be58c4d9a53a01fdd1dfa094be340c05b9e8bcbfbd874f0378"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:23",
+      "sequence": 13075,
+      "chapter_label": "JOB 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "If the scourge kills suddenly, he will mock at the trial of the innocent.",
+      "ko": "홀연히 재앙이 내려 도륙될 때에 무죄한 자의 고난을 그가 비웃으시리라",
+      "source_text_hash": "72d6ce4a72512d69d5bc427d91b1e532608949186b260efd9fe43ab53f31237c",
+      "translation_text_hash": "43c7299514a5f2e67833477c47e80cca524a6376d4abc1ee50f32291d441c1a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홀연히 재앙이 내려 도륙될 때에 무죄한 자의 고난을 그가 비웃으시리라"
+      ],
+      "raw_text_hashes": [
+        "43c7299514a5f2e67833477c47e80cca524a6376d4abc1ee50f32291d441c1a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:24",
+      "sequence": 13076,
+      "chapter_label": "JOB 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "The earth is given into the hand of the wicked. He covers the faces of its judges. If not he, then who is it?",
+      "ko": "세상이 악인의 손에 붙이웠고 재판관의 얼굴도 가리워졌나니 그렇게 되게 한 이가 그가 아니시면 누구이뇨",
+      "source_text_hash": "d3fd851e50ea940e14a91c3bba79d6998e3c0d1c5dfe88a540fb703e93593d93",
+      "translation_text_hash": "11ebe2bdad62fbee40f769c18c43530f7dc2aee8a54bc601b598b52b6e606d4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상이 악인의 손에 붙이웠고 재판관의 얼굴도 가리워졌나니 그렇게 되게 한 이가 그가 아니시면 누구이뇨"
+      ],
+      "raw_text_hashes": [
+        "11ebe2bdad62fbee40f769c18c43530f7dc2aee8a54bc601b598b52b6e606d4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:25",
+      "sequence": 13077,
+      "chapter_label": "JOB 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "“Now my days are swifter than a runner. They flee away. They see no good.",
+      "ko": "나의 날이 체부보다 빠르니 달려가므로 복을 볼 수 없구나",
+      "source_text_hash": "c2b6eb3e09d6292798fe206423b039468d20a7b2b37e8ff54bb60ebff66ad878",
+      "translation_text_hash": "701d236344d19962cee9cc25a741997a8af9c5d1c91dae59477f491a2477b7bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 날이 체부보다 빠르니 달려가므로 복을 볼 수 없구나"
+      ],
+      "raw_text_hashes": [
+        "701d236344d19962cee9cc25a741997a8af9c5d1c91dae59477f491a2477b7bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:26",
+      "sequence": 13078,
+      "chapter_label": "JOB 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "They have passed away as the swift ships, as the eagle that swoops on the prey.",
+      "ko": "그 지나가는 것이 빠른 배 같고 움킬 것에 날아 내리는 독수리와도 같구나",
+      "source_text_hash": "6ef492dc353ca791cb2b63915eff1d658c5cb08d646d8175981e909f68a97738",
+      "translation_text_hash": "514e722bc2290d7c7ff7e042d45ca7614dd0826f0e5912c9fb8d8f72672e0ddc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지나가는 것이 빠른 배 같고 움킬 것에 날아 내리는 독수리와도 같구나"
+      ],
+      "raw_text_hashes": [
+        "514e722bc2290d7c7ff7e042d45ca7614dd0826f0e5912c9fb8d8f72672e0ddc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:27",
+      "sequence": 13079,
+      "chapter_label": "JOB 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "If I say, ‘I will forget my complaint, I will put off my sad face, and cheer up,’",
+      "ko": "가령 내가 말하기를 내 원통함을 잊고 얼굴 빛을 고쳐 즐거운 모양을 하자 할찌라도",
+      "source_text_hash": "065a99834b54ce6c8e6e1194c64a37d68ac6e496f504ac1e757b7ec6c0b030bb",
+      "translation_text_hash": "d77d4664e8b053d763a4036ede9cf81166b5418c8c4f8629ff7426d17d71062f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 내가 말하기를 내 원통함을 잊고 얼굴 빛을 고쳐 즐거운 모양을 하자 할찌라도"
+      ],
+      "raw_text_hashes": [
+        "d77d4664e8b053d763a4036ede9cf81166b5418c8c4f8629ff7426d17d71062f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:28",
+      "sequence": 13080,
+      "chapter_label": "JOB 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "I am afraid of all my sorrows. I know that you will not hold me innocent.",
+      "ko": "오히려 내 모든 고통을 두려워하오니 주께서 나를 무죄히 여기지 않으실 줄을 아나이다",
+      "source_text_hash": "338edcfc3b940a33ac292bfb675693ecbb7ea0dca214bfb79ea7dd785a2cbef2",
+      "translation_text_hash": "a3feb838adf146406af7d4cd8b67538623903b2ce98a4ccb2209ca46330265fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오히려 내 모든 고통을 두려워하오니 주께서 나를 무죄히 여기지 않으실 줄을 아나이다"
+      ],
+      "raw_text_hashes": [
+        "a3feb838adf146406af7d4cd8b67538623903b2ce98a4ccb2209ca46330265fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:29",
+      "sequence": 13081,
+      "chapter_label": "JOB 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "I will be condemned. Why then do I labor in vain?",
+      "ko": "내가 정죄하심을 입을찐대 어찌 헛되이 수고하리이까",
+      "source_text_hash": "034f5dc46a9a9b58665a4ea6cc05586ad5d6dc558d8a85d62dc7a3323ed81693",
+      "translation_text_hash": "629f6c54466f60df6988cda3d1d60ed03a68ec2c233da6d70632a82148187cf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 정죄하심을 입을찐대 어찌 헛되이 수고하리이까"
+      ],
+      "raw_text_hashes": [
+        "629f6c54466f60df6988cda3d1d60ed03a68ec2c233da6d70632a82148187cf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:30",
+      "sequence": 13082,
+      "chapter_label": "JOB 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "If I wash myself with snow, and cleanse my hands with lye,",
+      "ko": "내가 눈 녹은 물로 몸을 씻고 잿물로 손을 깨끗이 할찌라도",
+      "source_text_hash": "b65b8be6585349dbb706af8a5748e25c755cb8131137e4ebbacf0f8f85d07a27",
+      "translation_text_hash": "f9b608914ab39c34ecb8159301b688ade63a2f9b24b0f63c6f6f08ee2af673ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 눈 녹은 물로 몸을 씻고 잿물로 손을 깨끗이 할찌라도"
+      ],
+      "raw_text_hashes": [
+        "f9b608914ab39c34ecb8159301b688ade63a2f9b24b0f63c6f6f08ee2af673ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:31",
+      "sequence": 13083,
+      "chapter_label": "JOB 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "yet you will plunge me in the ditch. My own clothes will abhor me.",
+      "ko": "주께서 나를 개천에 빠지게 하시리니 내 옷이라도 나를 싫어하리이다",
+      "source_text_hash": "588a663a371c9c06429f78e761119e418e024e8aeff14ed613b65e8679ca060d",
+      "translation_text_hash": "9838255c2bbf7bc098449f873169a64a620f09e86bac291c48df06f71419d3ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나를 개천에 빠지게 하시리니 내 옷이라도 나를 싫어하리이다"
+      ],
+      "raw_text_hashes": [
+        "9838255c2bbf7bc098449f873169a64a620f09e86bac291c48df06f71419d3ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:32",
+      "sequence": 13084,
+      "chapter_label": "JOB 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "For he is not a man, as I am, that I should answer him, that we should come together in judgment.",
+      "ko": "하나님은 나처럼 사람이 아니신즉 내가 그에게 대답함도 불가하고 대질하여 재판할 수도 없고",
+      "source_text_hash": "52da3d3fdaa1576300ae398d9e4d44660ac71a76393b2f2f56ad8dc271265f6c",
+      "translation_text_hash": "cafcdb33439a68c5905f2a6ab85d3a80df0349c496c4652e6f32d05dcf00b69f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 나처럼 사람이 아니신즉 내가 그에게 대답함도 불가하고 대질하여 재판할 수도 없고"
+      ],
+      "raw_text_hashes": [
+        "cafcdb33439a68c5905f2a6ab85d3a80df0349c496c4652e6f32d05dcf00b69f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:33",
+      "sequence": 13085,
+      "chapter_label": "JOB 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "There is no umpire between us, that might lay his hand on us both.",
+      "ko": "양척 사이에 손을 얹을 판결자도 없구나",
+      "source_text_hash": "4d433cb01be0bfc2b27d454b901a67560ebeaf5795e27b47a8e12e30506fcd2e",
+      "translation_text_hash": "0685f73657658197fd412d2e55f1085806bfe90ddd7a2e6026d431a5c138e518",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "양척 사이에 손을 얹을 판결자도 없구나"
+      ],
+      "raw_text_hashes": [
+        "0685f73657658197fd412d2e55f1085806bfe90ddd7a2e6026d431a5c138e518"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:34",
+      "sequence": 13086,
+      "chapter_label": "JOB 9",
+      "verse_label": "34",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 34
+        }
+      ],
+      "en": "Let him take his rod away from me. Let his terror not make me afraid;",
+      "ko": "주께서 그 막대기를 내게서 떠나게 하시고 그 위엄으로 나를 두렵게 하지 아니 하시기를 원하노라",
+      "source_text_hash": "a4b7cccf765da8589b90559e0df63ebe6bda9c38795b218c3a25f518608b1b40",
+      "translation_text_hash": "ac5d953f5e54e5728879963bad3cf53addd13c4eeabf287d8f3c0853ad7d3cfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 그 막대기를 내게서 떠나게 하시고 그 위엄으로 나를 두렵게 하지 아니 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "ac5d953f5e54e5728879963bad3cf53addd13c4eeabf287d8f3c0853ad7d3cfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:9:35",
+      "sequence": 13087,
+      "chapter_label": "JOB 9",
+      "verse_label": "35",
+      "locator": {
+        "book": "JOB",
+        "chapter": 9,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 9,
+          "verse": 35
+        }
+      ],
+      "en": "then I would speak, and not fear him, for I am not so in myself.",
+      "ko": "그리하시면 내가 두려움 없이 말하리라 나는 본래 그런 자가 아니니라",
+      "source_text_hash": "f41d0ca724109dc28959509a9344387bb2873e02f41fb8ebc72642f9d30c426b",
+      "translation_text_hash": "0f9eb1bdb132ce54c71ca5fcbb5658c30af96982ce8dba81898dee4f556fb7b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하시면 내가 두려움 없이 말하리라 나는 본래 그런 자가 아니니라"
+      ],
+      "raw_text_hashes": [
+        "0f9eb1bdb132ce54c71ca5fcbb5658c30af96982ce8dba81898dee4f556fb7b9"
+      ]
+    }
+  ]
+}

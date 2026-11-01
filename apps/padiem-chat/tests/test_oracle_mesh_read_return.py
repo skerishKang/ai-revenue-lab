@@ -403,9 +403,10 @@ def test_request_poll_real_read_result_reaches_the_same_conversation(monkeypatch
     del seen_paths
 
 
-def test_a_failed_read_keeps_its_marker_body_and_closes_failed(monkeypatch):
+def test_a_failed_read_keeps_its_marker_body_and_closes_failed(monkeypatch, caplog):
     """#5015: an oversize/read failure is stored, never collapsed to empty."""
-
+    import sys
+    monkeypatch.setattr(sys.modules[__name__], "RUN", "chat_pcq_" + "a" * 32)
     setup_auth(monkeypatch)
     history = History()
     dispatch_id = create_dispatch(history)
@@ -413,6 +414,8 @@ def test_a_failed_read_keeps_its_marker_body_and_closes_failed(monkeypatch):
                       Request({}, state(history=history), secret=SECRET))
     nonce = poll["dispatch"]["nonce"]
 
+    import logging
+    caplog.set_level(logging.INFO, logger=routes.__name__)
     marker = routes.PC_FILES_ERROR_PREFIX + "too_large"
     marker_bytes = marker.encode("utf-8")
     marker_sha = hashlib.sha256(marker_bytes).hexdigest()
@@ -432,6 +435,9 @@ def test_a_failed_read_keeps_its_marker_body_and_closes_failed(monkeypatch):
     assert history.rows[dispatch_id]["state"] == "failed"
     # The marker, not the file, is the verified body the Engine will read.
     assert history.originals[dispatch_id] == marker_bytes
+    for stage in ("received", "stored", "queue_finished"):
+        assert "pc_result stage=" + stage + " run_hash=" + hashlib.sha256(RUN.encode()).hexdigest()[:16] + " dispatch_id=" in caplog.text
+    assert RUN not in caplog.text
     assert history.appended[0]["status"] == "failed"
     assert marker not in history.appended[0]["content"]
 

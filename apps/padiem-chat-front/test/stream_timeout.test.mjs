@@ -13,7 +13,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { createFront } from "../worker.mjs";
+import { createFront as realCreateFront } from "../worker.mjs";
+const createFront = (options = {}) => realCreateFront({
+  ...options,
+  sign: async (request) => new Headers(request.headers),
+});
 
 const ORIGIN = "https://chat-com2.padiem.net";
 
@@ -95,18 +99,15 @@ test("the deadline only covers the header wait: a late header aborts and falls b
   assert.equal(response.headers.get("x-padiem-front"), "read_fallback_static");
 });
 
-test("a 5xx is replaced before its body is forwarded, so no stream mixes origins", async () => {
+test("a 5xx response passes through without mixing origins", async () => {
   const upstream = new Response(trickle(["partial-upstream"], 10), { status: 502 });
   const handle = createFront({ fetchImpl: async () => upstream });
-
   const response = await handle(
-    new Request("https://chat.padiem.net/api/conversations"),
-    baseEnv(),
+    new Request("https://chat.padiem.net/api/conversations"), baseEnv(),
   );
-
-  assert.equal(response.status, 503);
-  const text = await response.text();
-  assert.doesNotMatch(text, /partial-upstream/);
+  assert.equal(response, upstream);
+  assert.equal(response.status, 502);
+  assert.equal(await response.text(), "partial-upstream");
 });
 
 test("a started stream is returned untouched, so no fallback can append to it", async () => {
@@ -140,4 +141,71 @@ test("an upgrade response is handed back as the same object", async () => {
 
   const response = await handle(request, baseEnv());
   assert.equal(response, marker);
+});
+
+
+test("repeated slow API reads return 504 without opening the host health cache", async () => {
+  const calls = [];
+  const handle = createFront({ fetchImpl: async (request) => {
+    const path = new URL(request.url).pathname;
+    calls.push(path);
+    if (path === "/api/pc/pairings") {
+      return new Promise((resolve, reject) => request.signal.addEventListener("abort", () =>
+        reject(new DOMException("aborted", "AbortError")), { once: true }));
+    }
+    return new Response("authenticated", { status: 200 });
+  } });
+  const env = baseEnv({ API_READ_TIMEOUT_MS: "10" });
+  for (let i = 0; i < 3; i++) {
+    const response = await handle(new Request("https://chat.padiem.net/api/pc/pairings"), env);
+    assert.equal(response.status, 504);
+    assert.equal((await response.json()).error.code, "upstream_timeout");
+  }
+  const auth = await handle(new Request("https://chat.padiem.net/api/auth/status"), env);
+  assert.equal(auth.status, 200);
+  assert.equal(await auth.text(), "authenticated");
+  assert.equal(calls.length, 4);
+});
+
+test("timed-out POST never poisons health or sends a canonical write to fallback", async () => {
+  let fallbacks = 0;
+  const handle = createFront({ fetchImpl: async (request) => {
+    if (request.method === "POST") return new Promise((resolve, reject) =>
+      request.signal.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")), { once: true }));
+    return new Response("ok");
+  } });
+  const env = baseEnv({ UPSTREAM_TIMEOUT_MS: "10", API_READ_TIMEOUT_MS: "30",
+    COM2_CANONICAL: "writes", FALLBACK_MODE: "service",
+    CHAT_WORKER: { fetch: async () => { fallbacks++; return new Response("fallback"); } } });
+  const response = await handle(new Request("https://chat.padiem.net/api/chat/stream", {
+    method: "POST", body: "{}",
+  }), env);
+  assert.equal(response.status, 504);
+  assert.equal(fallbacks, 0);
+  assert.equal((await handle(new Request("https://chat.padiem.net/api/auth/status"), env)).status, 200);
+});
+
+test("API read timeout is configurable separately from the existing POST deadline", async () => {
+  const handle = createFront({ fetchImpl: async (request) => {
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    if (request.signal.aborted) throw new DOMException("aborted", "AbortError");
+    return new Response("ok");
+  } });
+  const env = baseEnv({ UPSTREAM_TIMEOUT_MS: "10", API_READ_TIMEOUT_MS: "80" });
+  assert.equal((await handle(new Request("https://chat.padiem.net/api/conversations"), env)).status, 200);
+  assert.equal((await handle(new Request("https://chat.padiem.net/api/chat/stream", {
+    method: "POST", body: "{}",
+  }), env)).status, 504);
+});
+
+test("unknown transport failures do not poison unrelated requests", async () => {
+  let calls = 0;
+  const handle = createFront({ fetchImpl: async () => {
+    calls++;
+    if (calls === 1) throw new Error("synthetic unrelated transport error");
+    return new Response("ok");
+  } });
+  assert.equal((await handle(new Request("https://chat.padiem.net/api/a"), baseEnv())).status, 502);
+  assert.equal((await handle(new Request("https://chat.padiem.net/api/b"), baseEnv())).status, 200);
+  assert.equal(calls, 2);
 });

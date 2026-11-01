@@ -36,15 +36,15 @@ OWNERSHIP = [{"account_ref": "acct-1", "device_id": "device-1", "node_ref": "nod
               "command_exec": True}]
 LINE = re.compile(
     r"\AMESH_QUEUE_REQUEST path=/internal/store rpc=[a-z_]{1,64} status=[0-9]{3} "
-    r"ms=[0-9]{1,7} proof=(ok|bad|absent)\Z")
+    r"ms=[0-9]{1,7} proof=(ok|bad|absent) run_hash=(none|[0-9a-f]{16}) dispatch_id=(none|dsp_[0-9a-f]{32})\Z")
 
 #: The door's other two shapes (#5881, after the 2026-10-30 attempt). Fixed forms, a class
 #: name from a list and a status word - nothing a caller can put words into.
 FAILURE_LINE = re.compile(
     r"\AMESH_QUEUE_STORE_FAILURE path=/internal/store rpc=[a-z_]{1,64} "
-    r"fail=[A-Za-z_]{1,40}\Z")
+    r"fail=[A-Za-z_]{1,40} run_hash=(none|[0-9a-f]{16}) dispatch_id=(none|dsp_[0-9a-f]{32})\Z")
 RECOVERY_LINE = re.compile(
-    r"\AMESH_QUEUE_TXN_RECOVERED path=/internal/store rpc=[a-z_]{1,64}\Z")
+    r"\AMESH_QUEUE_TXN_RECOVERED path=/internal/store rpc=[a-z_]{1,64} run_hash=(none|[0-9a-f]{16}) dispatch_id=(none|dsp_[0-9a-f]{32})\Z")
 
 
 class _Headers(dict):
@@ -154,4 +154,24 @@ def test_an_unreadable_switch_value_is_off_and_the_shape_is_bounded():
     assert shouted == ""
     line = log_line(INTERNAL_STORE_PATH, "list_links", 200, 12, "ok")
     assert line == ("MESH_QUEUE_REQUEST path=/internal/store rpc=list_links status=200"
-                    " ms=12 proof=ok")
+                    " ms=12 proof=ok run_hash=none dispatch_id=none")
+
+
+def test_authenticated_correlation_headers_are_bounded_and_logged():
+    app = _app(request_log="all")
+    request = _Request(app.state, LIST_LINKS)
+    request.headers["x-padiem-pc-run-hash"] = "a" * 16
+    request.headers["x-padiem-pc-dispatch-id"] = "dsp_" + "b" * 32
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        response = asyncio.run(_handler(app)(request))
+    assert response.status_code == 200
+    assert "run_hash=" + "a" * 16 in out.getvalue()
+    assert "dispatch_id=dsp_" + "b" * 32 in out.getvalue()
+    request.headers["x-padiem-pc-run-hash"] = "chat_pcq_" + "a" * 32
+    request.headers["x-padiem-pc-dispatch-id"] = "dsp_bogus\nsecret"
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        asyncio.run(_handler(app)(request))
+    assert "run_hash=none dispatch_id=none" in out.getvalue()
+    assert "chat_pcq_" not in out.getvalue() and "secret" not in out.getvalue()

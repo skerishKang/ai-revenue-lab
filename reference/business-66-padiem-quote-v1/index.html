@@ -183,7 +183,7 @@
           id="easyFileInput"
           type="file"
           hidden
-          accept=".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
+          accept=".pdf,.docx,.pptx,.xlsx,.hwp,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
           aria-label="견적서 파일 선택"
         >
       </div>
@@ -321,6 +321,7 @@
           <div class="button-row">
             <button class="btn soft" id="saveHistory">최근 견적에 저장</button>
             <button class="btn primary" id="printPdf">PDF로 저장 / 인쇄</button>
+            <small class="pdf-license-notice">PDF 생성에 PyMuPDF(AGPL-3.0) 사용 · 소스: <a href="https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer" target="_blank" rel="noopener noreferrer">공개 저장소</a> · <a href="https://github.com/skerishKang/ai-revenue-lab/blob/main/apps/b66-pdf-renderer/THIRD_PARTY_LICENSES.md" target="_blank" rel="noopener noreferrer">라이선스 고지</a></small>
             <button class="btn soft" id="xlsxDownload">Excel 다운로드</button>
             <button class="btn" id="emailFuture">이메일 보내기 · 다음 단계</button>
           </div>
@@ -363,7 +364,7 @@
             id="skillRegisterFile"
             type="file"
             hidden
-            accept=".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
+            accept=".pdf,.docx,.pptx,.xlsx,.hwp,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
             aria-label="등록할 견적서 파일 선택"
           >
           <details class="advanced-template">

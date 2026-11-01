@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:001",
+  "unit_ordinal": 1168,
+  "unit_label": "REV 1",
+  "book_code": "REV",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:1:1",
+      "sequence": 30695,
+      "chapter_label": "REV 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "This is the Revelation of Jesus Christ, which God gave him to show to his servants the things which must happen soon, which he sent and made known by his angel to his servant, John,",
+      "ko": "예수 그리스도의 계시라 이는 하나님이 그에게 주사 반드시 속히 될 일을 그 종들에게 보이시려고 그 천사를 그 종 요한에게 보내어 지시하신 것이라",
+      "source_text_hash": "76799737229e1e5f4544006aaf32fcbba1ebbf7f52418d2737e6437890de708f",
+      "translation_text_hash": "1c37491b2cae883b0e88202b4c2bfa3b54fa0e1bf0f6fff68b6213ea41c5d105",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수 그리스도의 계시라 이는 하나님이 그에게 주사 반드시 속히 될 일을 그 종들에게 보이시려고 그 천사를 그 종 요한에게 보내어 지시하신 것이라"
+      ],
+      "raw_text_hashes": [
+        "1c37491b2cae883b0e88202b4c2bfa3b54fa0e1bf0f6fff68b6213ea41c5d105"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:2",
+      "sequence": 30696,
+      "chapter_label": "REV 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "who testified to God’s word and of the testimony of Jesus Christ, about everything that he saw.",
+      "ko": "요한은 하나님의 말씀과 예수 그리스도의 증거 곧 자기의 본 것을 다 증거하였느니라",
+      "source_text_hash": "aae4c45347541c096a362061d990ee056ecc621c06a880ab10f809bf318a9968",
+      "translation_text_hash": "415a15c0a2deff6bfd3648cdf18e457215305ab6d91090ccc55d89b8456225d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한은 하나님의 말씀과 예수 그리스도의 증거 곧 자기의 본 것을 다 증거하였느니라"
+      ],
+      "raw_text_hashes": [
+        "415a15c0a2deff6bfd3648cdf18e457215305ab6d91090ccc55d89b8456225d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:3",
+      "sequence": 30697,
+      "chapter_label": "REV 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Blessed is he who reads and those who hear the words of the prophecy, and keep the things that are written in it, for the time is near.",
+      "ko": "이 예언의 말씀을 읽는 자와 듣는 자들과 그 가운데 기록한 것을 지키는 자들이 복이 있나니 때가 가까움이라",
+      "source_text_hash": "ec481c7ab4efe6b48e78bd6983ad058af6aa00f19d374b9c9e86c044b7c8152f",
+      "translation_text_hash": "0839680cd91b51d563fdbd1aec6f265f3756aa1bf74225b473b14ddaac5b805c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 예언의 말씀을 읽는 자와 듣는 자들과 그 가운데 기록한 것을 지키는 자들이 복이 있나니 때가 가까움이라"
+      ],
+      "raw_text_hashes": [
+        "0839680cd91b51d563fdbd1aec6f265f3756aa1bf74225b473b14ddaac5b805c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:4",
+      "sequence": 30698,
+      "chapter_label": "REV 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "John, to the seven assemblies that are in Asia: Grace to you and peace from God, who is and who was and who is to come; and from the seven Spirits who are before his throne;",
+      "ko": "요한은 아시아에 있는 일곱 교회에 편지하노니 이제도 계시고 전에도 계시고 장차 오실 이와 그 보좌 앞에 일곱 영과",
+      "source_text_hash": "9a9690121df92d9eef172cee7ed627a55e47c447b7ba2238296924f079d7e695",
+      "translation_text_hash": "95d03a4acc5581d11d767eb9297a73f39fe3ccf580f94820c72870e61714e5fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한은 아시아에 있는 일곱 교회에 편지하노니 이제도 계시고 전에도 계시고 장차 오실 이와 그 보좌 앞에 일곱 영과"
+      ],
+      "raw_text_hashes": [
+        "95d03a4acc5581d11d767eb9297a73f39fe3ccf580f94820c72870e61714e5fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:5",
+      "sequence": 30699,
+      "chapter_label": "REV 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "and from Jesus Christ, the faithful witness, the firstborn of the dead, and the ruler of the kings of the earth. To him who loves us, and washed us from our sins by his blood—",
+      "ko": "또 충성된 증인으로 죽은 자들 가운데서 먼저 나시고 땅의 임금들의 머리가 되신 예수 그리스도로 말미암아 은혜와 평강이 너희에게 있기를 원하노라 우리를 사랑하사 그의 피로 우리 죄에서 우리를 해방하시고",
+      "source_text_hash": "0761871ed55f40ac6c191e7b79c70c875d5ee5c6d31b591215ed5e3d5bd4cf07",
+      "translation_text_hash": "bb7dd959dd18fc9b4a5c69f17f75738923deb6d83f1e569ccf350bd5cfd36fb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 충성된 증인으로 죽은 자들 가운데서 먼저 나시고 땅의 임금들의 머리가 되신 예수 그리스도로 말미암아 은혜와 평강이 너희에게 있기를 원하노라 우리를 사랑하사 그의 피로 우리 죄에서 우리를 해방하시고"
+      ],
+      "raw_text_hashes": [
+        "bb7dd959dd18fc9b4a5c69f17f75738923deb6d83f1e569ccf350bd5cfd36fb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:6",
+      "sequence": 30700,
+      "chapter_label": "REV 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "and he made us to be a Kingdom, priests to his God and Father—to him be the glory and the dominion forever and ever. Amen.",
+      "ko": "그 아버지 하나님을 위하여 우리를 나라와 제사장으로 삼으신 그에게 영광과 능력이 세세토록 있기를 원하노라 아멘",
+      "source_text_hash": "99ec5ea9ddcdb6bc6fbf152e70e884e21804395fb87973062dd55895c9e3efe3",
+      "translation_text_hash": "b6a5bed113b5bf5b542ee1df9574aac3f90401c817a00bbbcd06f2c2ac4379bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아버지 하나님을 위하여 우리를 나라와 제사장으로 삼으신 그에게 영광과 능력이 세세토록 있기를 원하노라 아멘"
+      ],
+      "raw_text_hashes": [
+        "b6a5bed113b5bf5b542ee1df9574aac3f90401c817a00bbbcd06f2c2ac4379bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:7",
+      "sequence": 30701,
+      "chapter_label": "REV 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Behold, he is coming with the clouds, and every eye will see him, including those who pierced him. All the tribes of the earth will mourn over him. Even so, Amen.",
+      "ko": "볼찌어다 구름을 타고 오시리라 각인의 눈이 그를 보겠고 그를 찌른 자들도 볼터이요 땅에 있는 모든 족속이 그를 인하여 애곡하리니 그러하리라 아멘",
+      "source_text_hash": "6c2ce47f53a773440738851a8e6b25ccdfba06820f5e425dfc83ee61239ab084",
+      "translation_text_hash": "984ca487cb623e8b7ee46af4ddb59184d7d432085d657ae9e3b5c97458014a8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "볼찌어다 구름을 타고 오시리라 각인의 눈이 그를 보겠고 그를 찌른 자들도 볼터이요 땅에 있는 모든 족속이 그를 인하여 애곡하리니 그러하리라 아멘"
+      ],
+      "raw_text_hashes": [
+        "984ca487cb623e8b7ee46af4ddb59184d7d432085d657ae9e3b5c97458014a8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:8",
+      "sequence": 30702,
+      "chapter_label": "REV 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "“I am the Alpha and the Omega,”says the Lord God, “who is and who was and who is to come, the Almighty.”",
+      "ko": "주 하나님이 가라사대 나는 알파와 오메가라 이제도 있고 전에도 있었고 장차 올 자요 전능한 자라 하시더라",
+      "source_text_hash": "5409b54f57286cf9ac60d9832baae759b0411ccfdb537b6c5fbe94fb736af4c4",
+      "translation_text_hash": "82b530ec05fde0a516d5aeb09bffca0c55e2f2716ed4d496f571d038ea42d24a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 하나님이 가라사대 나는 알파와 오메가라 이제도 있고 전에도 있었고 장차 올 자요 전능한 자라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "82b530ec05fde0a516d5aeb09bffca0c55e2f2716ed4d496f571d038ea42d24a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:9",
+      "sequence": 30703,
+      "chapter_label": "REV 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "I John, your brother and partner with you in the oppression, Kingdom, and perseverance in Christ Jesus, was on the isle that is called Patmos because of God’s Word and the testimony of Jesus Christ.",
+      "ko": "나 요한은 너희 형제요 예수의 환난과 나라와 참음에 동참하는 자라 하나님의 말씀과 예수의 증거를 인하여 밧모라 하는 섬에 있었더니",
+      "source_text_hash": "c7023d58504585a3ddf1b8632a9db139bcf27fd4d907f434ec54781d042346ed",
+      "translation_text_hash": "56df302133b91eae4e235c8cf2bba6c11e99f0bded217533395678f66c807b47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 요한은 너희 형제요 예수의 환난과 나라와 참음에 동참하는 자라 하나님의 말씀과 예수의 증거를 인하여 밧모라 하는 섬에 있었더니"
+      ],
+      "raw_text_hashes": [
+        "56df302133b91eae4e235c8cf2bba6c11e99f0bded217533395678f66c807b47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:10",
+      "sequence": 30704,
+      "chapter_label": "REV 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "I was in the Spirit on the Lord’s day, and I heard behind me a loud voice, like a trumpet",
+      "ko": "주의 날에 내가 성령에 감동하여 내 뒤에서 나는 나팔 소리 같은 큰 음성을 들으니",
+      "source_text_hash": "676056b1811d09003f7b476c5a30a1443402d31ea54e6ef962ecb816f6d6f930",
+      "translation_text_hash": "9d3092b69893dcccb47aa85727a65f20e5b19c3799d370557568bb529c92a9af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 날에 내가 성령에 감동하여 내 뒤에서 나는 나팔 소리 같은 큰 음성을 들으니"
+      ],
+      "raw_text_hashes": [
+        "9d3092b69893dcccb47aa85727a65f20e5b19c3799d370557568bb529c92a9af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:11",
+      "sequence": 30705,
+      "chapter_label": "REV 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "saying, “What you see, write in a book and send to the seven assemblies:to Ephesus, Smyrna, Pergamum, Thyatira, Sardis, Philadelphia, and to Laodicea.”",
+      "ko": "가로되 너 보는 것을 책에 써서 에베소, 서머나, 버가모, 두아디라, 사데, 빌라델비아, 라오디게아 일곱 교회에 보내라 하시기로",
+      "source_text_hash": "84e928cd0a1a225dfae8f3ecabcaddf3ee24b8b73103ebca651677af3b897f42",
+      "translation_text_hash": "5cc2d5ba93b0ed7322d73e0413bea5b629e77d2836fa1854bd6dee0fa7bec026",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 너 보는 것을 책에 써서 에베소, 서머나, 버가모, 두아디라, 사데, 빌라델비아, 라오디게아 일곱 교회에 보내라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "5cc2d5ba93b0ed7322d73e0413bea5b629e77d2836fa1854bd6dee0fa7bec026"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:12",
+      "sequence": 30706,
+      "chapter_label": "REV 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "I turned to see the voice that spoke with me. Having turned, I saw seven golden lamp stands.",
+      "ko": "몸을 돌이켜 나더러 말한 음성을 알아 보려고 하여 돌이킬 때에 일곱 금 촛대를 보았는데",
+      "source_text_hash": "bd5ba7752d70965f14e94ec712641cfa4594f4d4a79b802608f80f7ee1677638",
+      "translation_text_hash": "eee7ea9240c97444b2d7779168bb1f5495421d994eb8093f4c78790a8266478c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몸을 돌이켜 나더러 말한 음성을 알아 보려고 하여 돌이킬 때에 일곱 금 촛대를 보았는데"
+      ],
+      "raw_text_hashes": [
+        "eee7ea9240c97444b2d7779168bb1f5495421d994eb8093f4c78790a8266478c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:13",
+      "sequence": 30707,
+      "chapter_label": "REV 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "And among the lamp stands was one like a son of man, clothed with a robe reaching down to his feet, and with a golden sash around his chest.",
+      "ko": "촛대 사이에 인자 같은 이가 발에 끌리는 옷을 입고 가슴에 금띠를 띠고",
+      "source_text_hash": "afb06539a0c647caee89852033c15562bb518848a82d779ced95934e1b59984f",
+      "translation_text_hash": "46375f176e80e881b941adb50b4dc7819ead0e525bb8d9b0771cf2b9d8eaea62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "촛대 사이에 인자 같은 이가 발에 끌리는 옷을 입고 가슴에 금띠를 띠고"
+      ],
+      "raw_text_hashes": [
+        "46375f176e80e881b941adb50b4dc7819ead0e525bb8d9b0771cf2b9d8eaea62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:14",
+      "sequence": 30708,
+      "chapter_label": "REV 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "His head and his hair were white as white wool, like snow. His eyes were like a flame of fire.",
+      "ko": "그 머리와 털의 희기가 흰 양털 같고 눈 같으며 그의 눈은 불꽃 같고",
+      "source_text_hash": "58e641876a0a5520c51c0e6ca4d185b24655d8c5eb571f1795e3c8d7c521a18b",
+      "translation_text_hash": "d4687c9910ff5484a9c7b9a41fdc4e1664703b2d8f9831c833abd7a9fe333a4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 머리와 털의 희기가 흰 양털 같고 눈 같으며 그의 눈은 불꽃 같고"
+      ],
+      "raw_text_hashes": [
+        "d4687c9910ff5484a9c7b9a41fdc4e1664703b2d8f9831c833abd7a9fe333a4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:15",
+      "sequence": 30709,
+      "chapter_label": "REV 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "His feet were like burnished brass, as if it had been refined in a furnace. His voice was like the voice of many waters.",
+      "ko": "그의 발은 풀무에 단련한 빛난 주석 같고 그의 음성은 많은 물 소리와 같으며",
+      "source_text_hash": "d5476bddcad083da4a99e6b3f763fec2e88bd79f5a231bde7825b707b3bcf59e",
+      "translation_text_hash": "0199f70438610f633dc88650f9a9f404eedcfc8341a6ad95b2523e381d18de24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 발은 풀무에 단련한 빛난 주석 같고 그의 음성은 많은 물 소리와 같으며"
+      ],
+      "raw_text_hashes": [
+        "0199f70438610f633dc88650f9a9f404eedcfc8341a6ad95b2523e381d18de24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:16",
+      "sequence": 30710,
+      "chapter_label": "REV 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "He had seven stars in his right hand. Out of his mouth proceeded a sharp two-edged sword. His face was like the sun shining at its brightest.",
+      "ko": "그 오른손에 일곱 별이 있고 그 입에서 좌우에 날선 검이 나오고 그 얼굴은 해가 힘있게 비취는것 같더라",
+      "source_text_hash": "3f2f29e78340cf58a37cb639c9c9c9ff4598a51ccbcecc80c5d34ba07f8d2627",
+      "translation_text_hash": "72d3ecdb0bc5533343b1562dbfb179fef09474a77d740f604d89e20c67ed2bc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 오른손에 일곱 별이 있고 그 입에서 좌우에 날선 검이 나오고 그 얼굴은 해가 힘있게 비취는것 같더라"
+      ],
+      "raw_text_hashes": [
+        "72d3ecdb0bc5533343b1562dbfb179fef09474a77d740f604d89e20c67ed2bc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:17",
+      "sequence": 30711,
+      "chapter_label": "REV 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "When I saw him, I fell at his feet like a dead man. He laid his right hand on me, saying, “Don’t be afraid. I am the first and the last,",
+      "ko": "내가 볼때에 그 발앞에 엎드러져 죽은 자 같이 되매 그가 오른손을 내게 얹고 가라사대 두려워 말라 나는 처음이요 나중이니",
+      "source_text_hash": "670c4d148a81ec9851350aa08937e6264b4fca185a7e51a530f5b70f8d4961c2",
+      "translation_text_hash": "8bfb0a395afb6aced505c9f5e1bfd912bd6d41ba63caa09921acb04efe95fa99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 볼때에 그 발앞에 엎드러져 죽은 자 같이 되매 그가 오른손을 내게 얹고 가라사대 두려워 말라 나는 처음이요 나중이니"
+      ],
+      "raw_text_hashes": [
+        "8bfb0a395afb6aced505c9f5e1bfd912bd6d41ba63caa09921acb04efe95fa99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:18",
+      "sequence": 30712,
+      "chapter_label": "REV 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "and the Living one. I was dead, and behold, I am alive forever and ever. Amen. I have the keys of Death and of Hades.",
+      "ko": "곧 산 자라 내가 전에 죽었었노라 볼찌어다 이제 세세토록 살아 있어 사망과 음부의 열쇠를 가졌노니",
+      "source_text_hash": "11185f09de695fe3b913d1fd72aea8a39a4e7d8adf808774ec7c8eeb1263bc7c",
+      "translation_text_hash": "066b9aa9ed88525074c7fedd6430a1045f1931063de9f57677102d1b1120c1a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 산 자라 내가 전에 죽었었노라 볼찌어다 이제 세세토록 살아 있어 사망과 음부의 열쇠를 가졌노니"
+      ],
+      "raw_text_hashes": [
+        "066b9aa9ed88525074c7fedd6430a1045f1931063de9f57677102d1b1120c1a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:19",
+      "sequence": 30713,
+      "chapter_label": "REV 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "Write therefore the things which you have seen, and the things which are, and the things which will happen hereafter.",
+      "ko": "그러므로 네 본 것과 이제 있는 일과 장차 될 일을 기록하라",
+      "source_text_hash": "ab5254045b4a5c2a35ad827f57d8c4128e7e589c2b1e563c73ffb2c19f440244",
+      "translation_text_hash": "471e5697594688319031b81438097a960d60917c94b9c468e88dd3f66cecdbf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 네 본 것과 이제 있는 일과 장차 될 일을 기록하라"
+      ],
+      "raw_text_hashes": [
+        "471e5697594688319031b81438097a960d60917c94b9c468e88dd3f66cecdbf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:1:20",
+      "sequence": 30714,
+      "chapter_label": "REV 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "REV",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "The mystery of the seven stars which you saw in my right hand, and the seven golden lamp stands is this: The seven stars are the angelsof the seven assemblies. The seven lamp stands are seven assemblies.",
+      "ko": "네 본 것은 내 오른손에 일곱 별의 비밀과 일곱 금 촛대라 일곱 별은 일곱 교회의 사자요 일곱 촛대는 일곱 교회니라",
+      "source_text_hash": "e5a628180041fd2639838af85269f77d68ec67509c042ec2ac030695aad55251",
+      "translation_text_hash": "de77e82335922d4ddd7e87206f3e7459a6d02493607f060871af6046c1330a2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 본 것은 내 오른손에 일곱 별의 비밀과 일곱 금 촛대라 일곱 별은 일곱 교회의 사자요 일곱 촛대는 일곱 교회니라"
+      ],
+      "raw_text_hashes": [
+        "de77e82335922d4ddd7e87206f3e7459a6d02493607f060871af6046c1330a2e"
+      ]
+    }
+  ]
+}

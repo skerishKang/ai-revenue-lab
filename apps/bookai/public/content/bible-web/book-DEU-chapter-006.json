@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:006",
+  "unit_ordinal": 159,
+  "unit_label": "DEU 6",
+  "book_code": "DEU",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:6:1",
+      "sequence": 5088,
+      "chapter_label": "DEU 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Now these are the commandments, the statutes, and the ordinances, which the LORD your God commanded to teach you, that you might do them in the land that you go over to possess;",
+      "ko": "이는 곧 너희 하나님 여호와께서 너희에게 가르치라 명하신바 명령과 규례와 법도라 너희가 건너가서 얻을 땅에서 행할 것이니",
+      "source_text_hash": "119e86af305476d94b7044f48e817516726692ec5e1824c33fcacae31224cf30",
+      "translation_text_hash": "a644cd8fa0e8b878ad4b83461c291ec171904d90cf12d74d1fec9bc8eafbfa63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 곧 너희 하나님 여호와께서 너희에게 가르치라 명하신바 명령과 규례와 법도라 너희가 건너가서 얻을 땅에서 행할 것이니"
+      ],
+      "raw_text_hashes": [
+        "a644cd8fa0e8b878ad4b83461c291ec171904d90cf12d74d1fec9bc8eafbfa63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:2",
+      "sequence": 5089,
+      "chapter_label": "DEU 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "that you might fear the LORD your God, to keep all his statutes and his commandments, which I command you—you, your son, and your son’s son, all the days of your life; and that your days may be prolonged.",
+      "ko": "곧 너와 네 아들과 네 손자로 평생에 네 하나님 여호와를 경외하며 내가 너희에게 명한 그 모든 규례와 명령을 지키게 하기 위한 것이며 또 네 날을 장구케 하기 위한 것이라",
+      "source_text_hash": "dcd174a7161d06845daab0262f43fa3b3ba409b4f42ee4ae5f6e166c173a3f54",
+      "translation_text_hash": "9695b9fb875ffcce11e58262d81b94d6e4d00791a3cae0db2a04e048cf65342d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 너와 네 아들과 네 손자로 평생에 네 하나님 여호와를 경외하며 내가 너희에게 명한 그 모든 규례와 명령을 지키게 하기 위한 것이며 또 네 날을 장구케 하기 위한 것이라"
+      ],
+      "raw_text_hashes": [
+        "9695b9fb875ffcce11e58262d81b94d6e4d00791a3cae0db2a04e048cf65342d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:3",
+      "sequence": 5090,
+      "chapter_label": "DEU 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Hear therefore, Israel, and observe to do it, that it may be well with you, and that you may increase mightily, as the LORD, the God of your fathers, has promised to you, in a land flowing with milk and honey.",
+      "ko": "이스라엘아 듣고 삼가 그것을 행하라 그리하면 네가 복을 얻고 네 열조의 하나님 여호와께서 네게 허락하심 같이 젖과 꿀이 흐르는 땅에서 너의 수효가 심히 번성하리라",
+      "source_text_hash": "ad63c1cde492f19f891d29eab170587b5352fb1cbcbce88a0552ed0f6a04ba01",
+      "translation_text_hash": "a0fd3e222bb926a8d52e1b4e607afbc7f9e3540fef1af28f7e3dc09d3b40f649",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 듣고 삼가 그것을 행하라 그리하면 네가 복을 얻고 네 열조의 하나님 여호와께서 네게 허락하심 같이 젖과 꿀이 흐르는 땅에서 너의 수효가 심히 번성하리라"
+      ],
+      "raw_text_hashes": [
+        "a0fd3e222bb926a8d52e1b4e607afbc7f9e3540fef1af28f7e3dc09d3b40f649"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:4",
+      "sequence": 5091,
+      "chapter_label": "DEU 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Hear, Israel: The LORD is our God. The LORD is one.",
+      "ko": "이스라엘아 들으라 우리 하나님 여호와는 오직 하나인 여호와시니",
+      "source_text_hash": "84e3bc3136d5549c68847f0c150e754b5db599408888ed85df457bf5429a3a24",
+      "translation_text_hash": "8ac16d4363c3582f3840953a1dfcae02ead682134c9cee1f292389469e3bd6de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 들으라 우리 하나님 여호와는 오직 하나인 여호와시니"
+      ],
+      "raw_text_hashes": [
+        "8ac16d4363c3582f3840953a1dfcae02ead682134c9cee1f292389469e3bd6de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:5",
+      "sequence": 5092,
+      "chapter_label": "DEU 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "You shall love the LORD your God with all your heart, with all your soul, and with all your might.",
+      "ko": "너는 마음을 다하고 성품을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라",
+      "source_text_hash": "1695df820cbb395dead2030cb1433eb0602b4aa3186e21f5247d8de7d79816ff",
+      "translation_text_hash": "597ed43ebec40cca9330141457123aa47130e73a79a27de73fe1b2a3a6934b72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 마음을 다하고 성품을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라"
+      ],
+      "raw_text_hashes": [
+        "597ed43ebec40cca9330141457123aa47130e73a79a27de73fe1b2a3a6934b72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:6",
+      "sequence": 5093,
+      "chapter_label": "DEU 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "These words, which I command you today, shall be on your heart;",
+      "ko": "오늘날 내가 네게 명하는 이 말씀을 너는 마음에 새기고",
+      "source_text_hash": "71ad7d36e6a1b61dcc28faff1ed432c9ceb5155029c063af9e2006f2298767b5",
+      "translation_text_hash": "539210c39e5d1d3fe57bb64dc69fcc6b61060b9fe0d0c8069cf8491e5005a710",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날 내가 네게 명하는 이 말씀을 너는 마음에 새기고"
+      ],
+      "raw_text_hashes": [
+        "539210c39e5d1d3fe57bb64dc69fcc6b61060b9fe0d0c8069cf8491e5005a710"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:7",
+      "sequence": 5094,
+      "chapter_label": "DEU 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "and you shall teach them diligently to your children, and shall talk of them when you sit in your house, and when you walk by the way, and when you lie down, and when you rise up.",
+      "ko": "네 자녀에게 부지런히 가르치며 집에 앉았을 때에든지 길에 행할 때에든지 누웠을 때에든지 일어날 때에든지 이 말씀을 강론할 것이며",
+      "source_text_hash": "083b57c5f404fd994b37f997d4fd9953c57cc42f88a5eb80230e6815a40fd180",
+      "translation_text_hash": "05e55901f68f991976a83a91f6263cc0b654d6d5c51f0c5b32225ecf709fa979",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자녀에게 부지런히 가르치며 집에 앉았을 때에든지 길에 행할 때에든지 누웠을 때에든지 일어날 때에든지 이 말씀을 강론할 것이며"
+      ],
+      "raw_text_hashes": [
+        "05e55901f68f991976a83a91f6263cc0b654d6d5c51f0c5b32225ecf709fa979"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:8",
+      "sequence": 5095,
+      "chapter_label": "DEU 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "You shall bind them for a sign on your hand, and they shall be for frontlets between your eyes.",
+      "ko": "너는 또 그것을 네 손목에 매어 기호를 삼으며 네 미간에 붙여 표를 삼고",
+      "source_text_hash": "ca95af1a141a409a1ec7903c1007780a3c38bd3d826c482b5fbaf9d29f15e8d5",
+      "translation_text_hash": "e7f03ab1ca98a303610a149ed2c9ec5d75a8cc1dcfa8cf83ea73b6461a576aed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 그것을 네 손목에 매어 기호를 삼으며 네 미간에 붙여 표를 삼고"
+      ],
+      "raw_text_hashes": [
+        "e7f03ab1ca98a303610a149ed2c9ec5d75a8cc1dcfa8cf83ea73b6461a576aed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:9",
+      "sequence": 5096,
+      "chapter_label": "DEU 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "You shall write them on the door posts of your house and on your gates.",
+      "ko": "또 네 집 문설주와 바깥 문에 기록할찌니라",
+      "source_text_hash": "5e8bd94eabb274d9f43b8505fb15a05e7944f8ee0e7f846fa3f16de2820f2cc8",
+      "translation_text_hash": "9b11bdcd3b6e5cfb80127391fec2a912df9cefa7cbfd0f4f9d69e0c2239fe77a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네 집 문설주와 바깥 문에 기록할찌니라"
+      ],
+      "raw_text_hashes": [
+        "9b11bdcd3b6e5cfb80127391fec2a912df9cefa7cbfd0f4f9d69e0c2239fe77a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:10",
+      "sequence": 5097,
+      "chapter_label": "DEU 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "It shall be, when the LORD your God brings you into the land which he swore to your fathers, to Abraham, to Isaac, and to Jacob, to give you, great and goodly cities which you didn’t build,",
+      "ko": "네 하나님 여호와께서 네 열조 아브라함과 이삭과 야곱을 향하여 네게 주리라 맹세하신 땅으로 너로 들어가게 하시고 네가 건축하지 아니한 크고 아름다운 성읍을 얻게 하시며",
+      "source_text_hash": "9deb1ec0a473574fbcd7b6c44316ff78bb85a45099a230d5a47a897f702badab",
+      "translation_text_hash": "4a903e8052bc453425ca0c10e1f29fdea7dab9e2b9b8243412d860835ba4e48f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네 열조 아브라함과 이삭과 야곱을 향하여 네게 주리라 맹세하신 땅으로 너로 들어가게 하시고 네가 건축하지 아니한 크고 아름다운 성읍을 얻게 하시며"
+      ],
+      "raw_text_hashes": [
+        "4a903e8052bc453425ca0c10e1f29fdea7dab9e2b9b8243412d860835ba4e48f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:11",
+      "sequence": 5098,
+      "chapter_label": "DEU 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "and houses full of all good things which you didn’t fill, and cisterns dug out which you didn’t dig, vineyards and olive trees which you didn’t plant, and you shall eat and be full;",
+      "ko": "네가 채우지 아니한 아름다운 물건이 가득한 집을 얻게 하시며 네가 파지 아니한 우물을 얻게 하시며 네가 심지 아니한 포도원과 감람나무를 얻게 하사 너로 배불리 먹게 하실 때에",
+      "source_text_hash": "2255ae91a819297ac5755278d4fa99823b84dcb547e4bf2afde26b2884110a31",
+      "translation_text_hash": "7190c39dc04854bee510435583e11065c7c7c305ccafcc2a0bc0afc483ce0d60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 채우지 아니한 아름다운 물건이 가득한 집을 얻게 하시며 네가 파지 아니한 우물을 얻게 하시며 네가 심지 아니한 포도원과 감람나무를 얻게 하사 너로 배불리 먹게 하실 때에"
+      ],
+      "raw_text_hashes": [
+        "7190c39dc04854bee510435583e11065c7c7c305ccafcc2a0bc0afc483ce0d60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:12",
+      "sequence": 5099,
+      "chapter_label": "DEU 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "then beware lest you forget the LORD, who brought you out of the land of Egypt, out of the house of bondage.",
+      "ko": "너는 조심하여 너를 애굽 땅 종 되었던 집에서 인도하여 내신 여호와를 잊지 말고",
+      "source_text_hash": "f28c515ccdfa7f606810ebfb7a7246411270da5518d34111274bbfed568af9c2",
+      "translation_text_hash": "cebf22f237f260d072fee62adc8a8c949fc7558e5bbdc76490efa43ce0080c8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 조심하여 너를 애굽 땅 종 되었던 집에서 인도하여 내신 여호와를 잊지 말고"
+      ],
+      "raw_text_hashes": [
+        "cebf22f237f260d072fee62adc8a8c949fc7558e5bbdc76490efa43ce0080c8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:13",
+      "sequence": 5100,
+      "chapter_label": "DEU 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "You shall fear the LORD your God; and you shall serve him, and shall swear by his name.",
+      "ko": "네 하나님 여호와를 경외하며 섬기며 그 이름으로 맹세할 것이니라",
+      "source_text_hash": "ed82af96e74a20fab5e588ae2afa1ca3ee8f55547374c9e584e32727d5360ca8",
+      "translation_text_hash": "0023c4064d58d7ebc6a6287432607da8d596804c2effeb222b2a853da2a3ab54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와를 경외하며 섬기며 그 이름으로 맹세할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "0023c4064d58d7ebc6a6287432607da8d596804c2effeb222b2a853da2a3ab54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:14",
+      "sequence": 5101,
+      "chapter_label": "DEU 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "You shall not go after other gods, of the gods of the peoples who are around you,",
+      "ko": "너희는 다른 신들 곧 네 사면에 있는 백성의 신들을 좇지 말라",
+      "source_text_hash": "cc7a34e8f22af66bbd7a0ff5b13a58c61ad33cda9c91b38430607cf38b5f9e0c",
+      "translation_text_hash": "fa537a85421acc06f5d5a4c3454bfbb48cfe6ed5de1b2cb73b805c639e4dd055",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 다른 신들 곧 네 사면에 있는 백성의 신들을 좇지 말라"
+      ],
+      "raw_text_hashes": [
+        "fa537a85421acc06f5d5a4c3454bfbb48cfe6ed5de1b2cb73b805c639e4dd055"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:15",
+      "sequence": 5102,
+      "chapter_label": "DEU 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "for the LORD your God among you is a jealous God, lest the anger of the LORD your God be kindled against you, and he destroy you from off the face of the earth.",
+      "ko": "너희 중에 계신 너희 하나님 여호와는 질투하시는 하나님이신즉 너희 하나님 여호와께서 네게 진노하사 너를 지면에서 멸절시키실까 두려워하노라",
+      "source_text_hash": "88b1aa0f5f1537cba8ac9068781d632a1902c89ec4e557b8ac4d1b6fb3c92ccb",
+      "translation_text_hash": "c6d6e904a945ef81d5afaedd58949c9e5e7680fc5e0b0faae20214d9a3b4f023",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 계신 너희 하나님 여호와는 질투하시는 하나님이신즉 너희 하나님 여호와께서 네게 진노하사 너를 지면에서 멸절시키실까 두려워하노라"
+      ],
+      "raw_text_hashes": [
+        "c6d6e904a945ef81d5afaedd58949c9e5e7680fc5e0b0faae20214d9a3b4f023"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:16",
+      "sequence": 5103,
+      "chapter_label": "DEU 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "You shall not tempt the LORD your God, as you tempted him in Massah.",
+      "ko": "너희가 맛사에서 시험한것 같이 너희의 하나님 여호와를 시험하지 말고",
+      "source_text_hash": "3640c904fc836482896e6af8f66eae61c873ca18541f8fc4250bf3e25613f3d2",
+      "translation_text_hash": "2bda3428913316ab40a57849e3cf4d7457aa33ddcbd79887cf63da9565e80bdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 맛사에서 시험한것 같이 너희의 하나님 여호와를 시험하지 말고"
+      ],
+      "raw_text_hashes": [
+        "2bda3428913316ab40a57849e3cf4d7457aa33ddcbd79887cf63da9565e80bdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:17",
+      "sequence": 5104,
+      "chapter_label": "DEU 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "You shall diligently keep the commandments of the LORD your God, and his testimonies, and his statutes, which he has commanded you.",
+      "ko": "너희의 하나님 여호와께서 너희에게 명하신 명령과 증거하신 것과 규례를 삼가 지키며",
+      "source_text_hash": "f1af60e839722ed514843c4972e45f46268372543f1d01b35b15fd173f5b7c95",
+      "translation_text_hash": "d113e38be53fdb6a347e91e07b4c4cc82774b4a87e345691409693ff7e2ed309",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 하나님 여호와께서 너희에게 명하신 명령과 증거하신 것과 규례를 삼가 지키며"
+      ],
+      "raw_text_hashes": [
+        "d113e38be53fdb6a347e91e07b4c4cc82774b4a87e345691409693ff7e2ed309"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:18",
+      "sequence": 5105,
+      "chapter_label": "DEU 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "You shall do that which is right and good in the LORD’s sight, that it may be well with you and that you may go in and possess the good land which the LORD swore to your fathers,",
+      "ko": "여호와의 보시기에 정직하고 선량한 일을 행하라 그리하면 네가 복을 얻고 여호와께서 네 열조에게 맹세하사 네 대적을 몰수히 네 앞에서 쫓아내리라 하신 아름다운 땅을 들어가서 얻으리니 여호와의 말씀과 같으리라",
+      "source_text_hash": "b636ab4d0f497b7056ddc3e03322c55338e5ac601297610e1f04d3cfe9d9199f",
+      "translation_text_hash": "d8bb63c3e9e45c9691c3fc8922ca8bc8e0f52ad7a5058aa73777ba397ffec71b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 보시기에 정직하고 선량한 일을 행하라 그리하면 네가 복을 얻고 여호와께서 네 열조에게 맹세하사 네 대적을 몰수히 네 앞에서 쫓아내리라 하신 아름다운 땅을 들어가서 얻으리니 여호와의 말씀과 같으리라"
+      ],
+      "raw_text_hashes": [
+        "d8bb63c3e9e45c9691c3fc8922ca8bc8e0f52ad7a5058aa73777ba397ffec71b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:19",
+      "sequence": 5106,
+      "chapter_label": "DEU 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "to thrust out all your enemies from before you, as the LORD has spoken.",
+      "ko": "(18절에 포함되어 있음)",
+      "source_text_hash": "140a1113d6fb42694103cec7ef8bc02d41ebd20d0714c426effc2457bb37305b",
+      "translation_text_hash": "0cf0246cf5df529452fd8e7354e75419ee2f2bf624a4d47a9ced96aaa348090d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(18절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "0cf0246cf5df529452fd8e7354e75419ee2f2bf624a4d47a9ced96aaa348090d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:20",
+      "sequence": 5107,
+      "chapter_label": "DEU 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "When your son asks you in time to come, saying, “What do the testimonies, the statutes, and the ordinances, which the LORD our God has commanded you mean?”",
+      "ko": "후일에 네 아들이 네게 묻기를 우리 하나님 여호와의 명하신 증거와 말씀과 규례와 법도가 무슨 뜻이뇨 하거든",
+      "source_text_hash": "3e47bfc4e12a4fec2c22e67bac0520dcc64b3687b5582153fe16554ce1268bd0",
+      "translation_text_hash": "327effa876b101fa2926b819c22878717cde6dc39a4f6b0346e1579af96beca7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후일에 네 아들이 네게 묻기를 우리 하나님 여호와의 명하신 증거와 말씀과 규례와 법도가 무슨 뜻이뇨 하거든"
+      ],
+      "raw_text_hashes": [
+        "327effa876b101fa2926b819c22878717cde6dc39a4f6b0346e1579af96beca7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:21",
+      "sequence": 5108,
+      "chapter_label": "DEU 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "then you shall tell your son, “We were Pharaoh’s slaves in Egypt. The LORD brought us out of Egypt with a mighty hand;",
+      "ko": "너는 네 아들에게 이르기를 우리가 옛적에 애굽에서 바로의 종이 되었더니 여호와께서 권능의 손으로 우리를 애굽에서 인도하여 내셨나니",
+      "source_text_hash": "694098fb9d11c09cce8ef64ce82c55dbc41f92f9a5ebb455d09585f92acedd4a",
+      "translation_text_hash": "c729cb355e3dbffb10e6171834dfff541608e94cf59299f5c121fc0b6c4b7a5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 아들에게 이르기를 우리가 옛적에 애굽에서 바로의 종이 되었더니 여호와께서 권능의 손으로 우리를 애굽에서 인도하여 내셨나니"
+      ],
+      "raw_text_hashes": [
+        "c729cb355e3dbffb10e6171834dfff541608e94cf59299f5c121fc0b6c4b7a5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:22",
+      "sequence": 5109,
+      "chapter_label": "DEU 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "and the LORD showed great and awesome signs and wonders on Egypt, on Pharaoh, and on all his house, before our eyes;",
+      "ko": "곧 여호와께서 우리의 목전에서 크고 두려운 이적과 기사를 애굽과 바로와 그 온 집에 베푸시고",
+      "source_text_hash": "5183925c3718d2504452813fc74f7018432b5d93f9eecfceb8c7a3e37866358b",
+      "translation_text_hash": "854208c96424a2bfe1f7addb3f913e72d2d3db926cf9a13b8b834c609c882eb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 여호와께서 우리의 목전에서 크고 두려운 이적과 기사를 애굽과 바로와 그 온 집에 베푸시고"
+      ],
+      "raw_text_hashes": [
+        "854208c96424a2bfe1f7addb3f913e72d2d3db926cf9a13b8b834c609c882eb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:23",
+      "sequence": 5110,
+      "chapter_label": "DEU 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "and he brought us out from there, that he might bring us in, to give us the land which he swore to our fathers.",
+      "ko": "우리 열조에게 맹세하신 땅으로 우리에게 주어 들어가게 하시려고 우리를 거기서 인도하여 내시고",
+      "source_text_hash": "0488c2e0640cf9cd2cf63582509788725212f53981917cd52d0ab165ed27c470",
+      "translation_text_hash": "e1f7e55e4620c896ad77c2581919242a3c1ef1500ac4413aae83db945a4d2148",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 열조에게 맹세하신 땅으로 우리에게 주어 들어가게 하시려고 우리를 거기서 인도하여 내시고"
+      ],
+      "raw_text_hashes": [
+        "e1f7e55e4620c896ad77c2581919242a3c1ef1500ac4413aae83db945a4d2148"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:24",
+      "sequence": 5111,
+      "chapter_label": "DEU 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "The LORD commanded us to do all these statutes, to fear the LORD our God, for our good always, that he might preserve us alive, as we are today.",
+      "ko": "여호와께서 우리에게 이 모든 규례를 지키라 명하셨으니 이는 우리로 우리 하나님 여호와를 경외하여 항상 복을 누리게 하기 위하심이며 또 여호와께서 우리로 오늘날과 같이 생활하게 하려 하심이라",
+      "source_text_hash": "069f713679498ee4c41b656531f4fc6b8f5d4c38017f78011785bb2f5d69c5e4",
+      "translation_text_hash": "2088eb3b5297eb73e1500246eb1d8fd94c465143e3e72656c421ca89384685bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 우리에게 이 모든 규례를 지키라 명하셨으니 이는 우리로 우리 하나님 여호와를 경외하여 항상 복을 누리게 하기 위하심이며 또 여호와께서 우리로 오늘날과 같이 생활하게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "2088eb3b5297eb73e1500246eb1d8fd94c465143e3e72656c421ca89384685bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:6:25",
+      "sequence": 5112,
+      "chapter_label": "DEU 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "It shall be righteousness to us, if we observe to do all these commandments before the LORD our God, as he has commanded us.”",
+      "ko": "우리가 그 명하신대로 이 모든 명령을 우리 하나님 여호와 앞에서 삼가 지키면 그것이 곧 우리의 의로움이니라 할찌니라",
+      "source_text_hash": "7475332e31ade75faab6b8e080f1f0d3083a5ff16bdb6c32042dfe6d2c99dd5f",
+      "translation_text_hash": "ee6908526519333bdfaf9823db04fd2df91314be775a7b1ebedcf9fbfa7429b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그 명하신대로 이 모든 명령을 우리 하나님 여호와 앞에서 삼가 지키면 그것이 곧 우리의 의로움이니라 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "ee6908526519333bdfaf9823db04fd2df91314be775a7b1ebedcf9fbfa7429b9"
+      ]
+    }
+  ]
+}

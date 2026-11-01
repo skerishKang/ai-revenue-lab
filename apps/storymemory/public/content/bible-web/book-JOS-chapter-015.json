@@ -1,0 +1,2029 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:015",
+  "unit_ordinal": 202,
+  "unit_label": "JOS 15",
+  "book_code": "JOS",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:15:1",
+      "sequence": 6204,
+      "chapter_label": "JOS 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "The lot for the tribe of the children of Judah according to their families was to the border of Edom, even to the wilderness of Zin southward, at the uttermost part of the south.",
+      "ko": "유다 자손의 지파가 그 가족대로 제비 뽑은 땅의 극남단은 에돔 지경에 이르고 또 남으로 신 광야까지라",
+      "source_text_hash": "a5b80c2bddedcae4c4d6b49999b3082ba00f039c13627f7d03d80b6cc5c7416e",
+      "translation_text_hash": "bcd80eddb06b60dc13e04b8e160e9d9df75c8f6b3792ad6b9267076d28782af7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 자손의 지파가 그 가족대로 제비 뽑은 땅의 극남단은 에돔 지경에 이르고 또 남으로 신 광야까지라"
+      ],
+      "raw_text_hashes": [
+        "bcd80eddb06b60dc13e04b8e160e9d9df75c8f6b3792ad6b9267076d28782af7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:2",
+      "sequence": 6205,
+      "chapter_label": "JOS 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "Their south border was from the uttermost part of the Salt Sea, from the bay that looks southward;",
+      "ko": "그 남편 경계는 염해의 극단 곧 남향한 해만에서부터",
+      "source_text_hash": "b9c67b9e335f1110d61738b7f17994e2764995ce457edaf1b71abebee16665bb",
+      "translation_text_hash": "48ac84fac2215a379bff8e00814032a782b019ca8112ba988626863fbe42f543",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편 경계는 염해의 극단 곧 남향한 해만에서부터"
+      ],
+      "raw_text_hashes": [
+        "48ac84fac2215a379bff8e00814032a782b019ca8112ba988626863fbe42f543"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:3",
+      "sequence": 6206,
+      "chapter_label": "JOS 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "and it went out southward of the ascent of Akrabbim, and passed along to Zin, and went up by the south of Kadesh Barnea, and passed along by Hezron, went up to Addar, and turned toward Karka;",
+      "ko": "아그랍빔 비탈 남편으로 지나 신에 이르고 가데스 바네아 남편으로 올라가서 헤스론을 지나며 아달로 올라가서 돌이켜 갈가에 이르고",
+      "source_text_hash": "1929ed3e3a9e3ab6be0a3de5cf65faa72b3cd027fd0ecb6185e85def3a8cfc5f",
+      "translation_text_hash": "7f0059e4c04b9b0519fea29c4375078e0167b30d03f1b58b155ae82224ab4623",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아그랍빔 비탈 남편으로 지나 신에 이르고 가데스 바네아 남편으로 올라가서 헤스론을 지나며 아달로 올라가서 돌이켜 갈가에 이르고"
+      ],
+      "raw_text_hashes": [
+        "7f0059e4c04b9b0519fea29c4375078e0167b30d03f1b58b155ae82224ab4623"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:4",
+      "sequence": 6207,
+      "chapter_label": "JOS 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "and it passed along to Azmon, went out at the brook of Egypt; and the border ended at the sea. This shall be your south border.",
+      "ko": "거기서 아스몬에 이르고 애굽 시내에 미치며 바다에 이르러 경계의 끝이 되나니 이것이 너희 남편 경계가 되리라",
+      "source_text_hash": "f946b58b25e893b4b2c6322808dd76cdc3371a5e4453db23e1e00093fecd0054",
+      "translation_text_hash": "b3f3b3501c87d70b8abe56e08202507464f29cd203d2d06942d9445b6deff5fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 아스몬에 이르고 애굽 시내에 미치며 바다에 이르러 경계의 끝이 되나니 이것이 너희 남편 경계가 되리라"
+      ],
+      "raw_text_hashes": [
+        "b3f3b3501c87d70b8abe56e08202507464f29cd203d2d06942d9445b6deff5fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:5",
+      "sequence": 6208,
+      "chapter_label": "JOS 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "The east border was the Salt Sea, even to the end of the Jordan. The border of the north quarter was from the bay of the sea at the end of the Jordan.",
+      "ko": "그 동편 경계는 염해니 요단 끝까지요 그 북편 경계는 요단 끝에 당한 해만에서부터",
+      "source_text_hash": "34c6876775a6d79e47e76571b18191796329ab77f45c0063abce50b712da04da",
+      "translation_text_hash": "093d3c44aab378be11bf12df1e4cde25fd6a95b53e422c65b28f8599780208d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 동편 경계는 염해니 요단 끝까지요 그 북편 경계는 요단 끝에 당한 해만에서부터"
+      ],
+      "raw_text_hashes": [
+        "093d3c44aab378be11bf12df1e4cde25fd6a95b53e422c65b28f8599780208d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:6",
+      "sequence": 6209,
+      "chapter_label": "JOS 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "The border went up to Beth Hoglah, and passed along by the north of Beth Arabah; and the border went up to the stone of Bohan the son of Reuben.",
+      "ko": "벧호글라로 올라가서 벧 아라바 북편을 지나 르우벤 자손 보한의 돌에 이르고",
+      "source_text_hash": "d729d9da8dcbf2b79d03e86f7d579f85f3022d60a029e5ea9c2c42202cb9cf02",
+      "translation_text_hash": "4f0411c02b387c0e873be10036091e70cad6d8cddcd1ae6aefa5558372a3a4ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧호글라로 올라가서 벧 아라바 북편을 지나 르우벤 자손 보한의 돌에 이르고"
+      ],
+      "raw_text_hashes": [
+        "4f0411c02b387c0e873be10036091e70cad6d8cddcd1ae6aefa5558372a3a4ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:7",
+      "sequence": 6210,
+      "chapter_label": "JOS 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "The border went up to Debir from the valley of Achor, and so northward, looking toward Gilgal, that faces the ascent of Adummim, which is on the south side of the river. The border passed along to the waters of En Shemesh, and ended at En Rogel.",
+      "ko": "또 아골 골짜기에서부터 드빌을 지나 북으로 올라가서 강 남편에 있는 아둠밈 비탈 맞은편 길갈을 향하고 나아가 엔 세메스 물을 지나 엔로겔에 이르며",
+      "source_text_hash": "630a3ba44bd7a057c36cba23a3c6347a2a856fed856a019dd51e907daf28bbaf",
+      "translation_text_hash": "899fd106151f9dfbd7510c2eea2a2cb39dfc21b02838906aad39e0537a9340bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아골 골짜기에서부터 드빌을 지나 북으로 올라가서 강 남편에 있는 아둠밈 비탈 맞은편 길갈을 향하고 나아가 엔 세메스 물을 지나 엔로겔에 이르며"
+      ],
+      "raw_text_hashes": [
+        "899fd106151f9dfbd7510c2eea2a2cb39dfc21b02838906aad39e0537a9340bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:8",
+      "sequence": 6211,
+      "chapter_label": "JOS 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "The border went up by the valley of the son of Hinnom to the side of the Jebusite (also called Jerusalem) southward; and the border went up to the top of the mountain that lies before the valley of Hinnom westward, which is at the farthest part of the valley of Rephaim northward.",
+      "ko": "또 힌놈의 아들의 골짜기로 올라가서 여부스 곧 예루살렘 남편 어깨에 이르며 또 힌놈의 골짜기 앞 서편에 있는 산 꼭대기로 올라가나니 이곳은 르바임 골짜기 북편 끝이며",
+      "source_text_hash": "345cb21c9aed89e61b4d365b973c014599af383201bf531b4c70b962534a1e75",
+      "translation_text_hash": "5b0c86381db7f5f55e45f4358dd363c8314f30e6030e8eb1c8f9d5702087b872",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 힌놈의 아들의 골짜기로 올라가서 여부스 곧 예루살렘 남편 어깨에 이르며 또 힌놈의 골짜기 앞 서편에 있는 산 꼭대기로 올라가나니 이곳은 르바임 골짜기 북편 끝이며"
+      ],
+      "raw_text_hashes": [
+        "5b0c86381db7f5f55e45f4358dd363c8314f30e6030e8eb1c8f9d5702087b872"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:9",
+      "sequence": 6212,
+      "chapter_label": "JOS 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "The border extended from the top of the mountain to the spring of the waters of Nephtoah, and went out to the cities of Mount Ephron; and the border extended to Baalah (also called Kiriath Jearim);",
+      "ko": "또 이 산 꼭대기에서부터 넵도아 샘물까지 이르러 에브론산 성읍들에 미치고 또 바알라 곧 기럇 여아림에 미치며",
+      "source_text_hash": "04be884824211e4b7fff9f8f7bee184241fd825802a38c0654145f7d891077b2",
+      "translation_text_hash": "7c68559c8344ec1cec675134a7abbb8ec27174e95e2f11ebe62c2db6f1a915a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이 산 꼭대기에서부터 넵도아 샘물까지 이르러 에브론산 성읍들에 미치고 또 바알라 곧 기럇 여아림에 미치며"
+      ],
+      "raw_text_hashes": [
+        "7c68559c8344ec1cec675134a7abbb8ec27174e95e2f11ebe62c2db6f1a915a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:10",
+      "sequence": 6213,
+      "chapter_label": "JOS 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "and the border turned about from Baalah westward to Mount Seir, and passed along to the side of Mount Jearim (also called Chesalon) on the north, and went down to Beth Shemesh, and passed along by Timnah;",
+      "ko": "또 바알라에서부터 서편으로 돌이켜 세일산에 이르러 여아림 산 곧 그살론 곁 북편에 이르고 또 벧 세메스로 내려가서 딤나로 지나고",
+      "source_text_hash": "638e7c0a87f5752b80db00a5113316d097ad503a6a2041506837f62c4ce996e7",
+      "translation_text_hash": "59f167fe66b554512c036834d048974a4a2cc92780915d724a4a911b9a44a2d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 바알라에서부터 서편으로 돌이켜 세일산에 이르러 여아림 산 곧 그살론 곁 북편에 이르고 또 벧 세메스로 내려가서 딤나로 지나고"
+      ],
+      "raw_text_hashes": [
+        "59f167fe66b554512c036834d048974a4a2cc92780915d724a4a911b9a44a2d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:11",
+      "sequence": 6214,
+      "chapter_label": "JOS 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "and the border went out to the side of Ekron northward; and the border extended to Shikkeron, and passed along to Mount Baalah, and went out at Jabneel; and the goings out of the border were at the sea.",
+      "ko": "또 에그론 북편으로 나아가 식그론에 이르러 바알라산에 미치고 얍느엘에 이르나니 그 끝은 바다며",
+      "source_text_hash": "6e9c980662360e67b7b060d27b329e2d82464879ae9b8d070e302b4e404607b6",
+      "translation_text_hash": "dee4beb5a1fc6e3954347163b652a48aef4c96315cae4bcb833d13b8df1e07f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 에그론 북편으로 나아가 식그론에 이르러 바알라산에 미치고 얍느엘에 이르나니 그 끝은 바다며"
+      ],
+      "raw_text_hashes": [
+        "dee4beb5a1fc6e3954347163b652a48aef4c96315cae4bcb833d13b8df1e07f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:12",
+      "sequence": 6215,
+      "chapter_label": "JOS 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "The west border was to the shore of the great sea. This is the border of the children of Judah according to their families.",
+      "ko": "서편 경계는 대해와 그 해변이니 유다 자손이 그 가족대로 얻은 사면 경계가 이러하니라",
+      "source_text_hash": "c35bcf3f08318f4f81ec2e7ccde1590d9e168206d2bef56f473d0bb3874bd0f6",
+      "translation_text_hash": "2b88443e4a9232463bb51e0ace3011712a96ba0ceddb34152976d771a6b7f2e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서편 경계는 대해와 그 해변이니 유다 자손이 그 가족대로 얻은 사면 경계가 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "2b88443e4a9232463bb51e0ace3011712a96ba0ceddb34152976d771a6b7f2e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:13",
+      "sequence": 6216,
+      "chapter_label": "JOS 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "He gave to Caleb the son of Jephunneh a portion among the children of Judah, according to the commandment of the LORD to Joshua, even Kiriath Arba, named after the father of Anak (also called Hebron).",
+      "ko": "여호와께서 여호수아에게 명하신대로 여호수아가 기럇 아르바 곧 헤브론 성을 유다 자손 중에서 분깃으로 여분네의 아들 갈렙에게 주었으니 아르바는 아낙의 아비였더라",
+      "source_text_hash": "172c745c1be8dc942e1e8de07566621c71159e66fea036588037835f8304b802",
+      "translation_text_hash": "f1d294d81916ddf7008bd3b0d60bbb42c4b925e10a84b8e3b91d3ce8487f9e0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아에게 명하신대로 여호수아가 기럇 아르바 곧 헤브론 성을 유다 자손 중에서 분깃으로 여분네의 아들 갈렙에게 주었으니 아르바는 아낙의 아비였더라"
+      ],
+      "raw_text_hashes": [
+        "f1d294d81916ddf7008bd3b0d60bbb42c4b925e10a84b8e3b91d3ce8487f9e0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:14",
+      "sequence": 6217,
+      "chapter_label": "JOS 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "Caleb drove out the three sons of Anak: Sheshai, and Ahiman, and Talmai, the children of Anak.",
+      "ko": "갈렙이 거기서 아낙의 소생 곧 그 세 아들 세새와 아히만과 달매를 쫓아내었고",
+      "source_text_hash": "487a23cdec9e36f0117423b4e43eeeafa6d9a19975d498cd2e78405666551b1e",
+      "translation_text_hash": "a480cc2affa118978082772cd556175a8596f339d249b1e4920d75b4d144cb8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈렙이 거기서 아낙의 소생 곧 그 세 아들 세새와 아히만과 달매를 쫓아내었고"
+      ],
+      "raw_text_hashes": [
+        "a480cc2affa118978082772cd556175a8596f339d249b1e4920d75b4d144cb8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:15",
+      "sequence": 6218,
+      "chapter_label": "JOS 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "He went up against the inhabitants of Debir: now the name of Debir before was Kiriath Sepher.",
+      "ko": "거기서 올라가서 드빌 거민을 쳤는데 드빌의 본 이름은 기럇 세벨이라",
+      "source_text_hash": "e956af52fd0c32bb60ff333347445aa733c5b742d3d675498135737b31dd1b9e",
+      "translation_text_hash": "5bd9c881536df2d2d13e52e64ea7e4174cb65940c798dbb9ee5f608663746865",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 올라가서 드빌 거민을 쳤는데 드빌의 본 이름은 기럇 세벨이라"
+      ],
+      "raw_text_hashes": [
+        "5bd9c881536df2d2d13e52e64ea7e4174cb65940c798dbb9ee5f608663746865"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:16",
+      "sequence": 6219,
+      "chapter_label": "JOS 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "Caleb said, “He who strikes Kiriath Sepher, and takes it, to him I will give Achsah my daughter as wife.”",
+      "ko": "갈렙이 말하기를 기럇 세벨을 쳐서 그것을 취하는 자에게는 내가 내 딸 악사를 아내로 주리라 하였더니",
+      "source_text_hash": "3e28caef930a4324e72b5bbe75af50522c8451f7668d0c5b3392c185505d6cab",
+      "translation_text_hash": "3442588943d1c723a8be69cd226c931fb7d2ebcb20b043a911b2e86b4df0f6c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈렙이 말하기를 기럇 세벨을 쳐서 그것을 취하는 자에게는 내가 내 딸 악사를 아내로 주리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "3442588943d1c723a8be69cd226c931fb7d2ebcb20b043a911b2e86b4df0f6c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:17",
+      "sequence": 6220,
+      "chapter_label": "JOS 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "Othniel the son of Kenaz, the brother of Caleb, took it: and he gave him Achsah his daughter as wife.",
+      "ko": "갈렙의 아우요 그나스의 아들인 옷니엘이 그것을 취함으로 갈렙이 그 딸 악사를 그에게 아내로 주었더라",
+      "source_text_hash": "85eb33520bffe8f23a02277b3fafc0b8b7bac5d09ba83974e195cb14dd9d5354",
+      "translation_text_hash": "0452a1a564c61ca538892cf6f2aafcf64241b27324da0cf775542de6b3bebb66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈렙의 아우요 그나스의 아들인 옷니엘이 그것을 취함으로 갈렙이 그 딸 악사를 그에게 아내로 주었더라"
+      ],
+      "raw_text_hashes": [
+        "0452a1a564c61ca538892cf6f2aafcf64241b27324da0cf775542de6b3bebb66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:18",
+      "sequence": 6221,
+      "chapter_label": "JOS 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "When she came, she had him ask her father for a field. She got off her donkey, and Caleb said, “What do you want?”",
+      "ko": "악사가 출가할 때에 그에게 청하여 자기 아비에게 밭을 구하자 하고 나귀에서 내리매 갈렙이 그에게 묻되 네가 무엇을 원하느냐",
+      "source_text_hash": "e950d624a65c411a6ac6f9c32ea601f0b92754231817ed11017bbb283a6c10ac",
+      "translation_text_hash": "e7cefda54ec29f5f77c3d417e4245a8507c4c124a6b3bcd20bb553dcbdc86ab0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악사가 출가할 때에 그에게 청하여 자기 아비에게 밭을 구하자 하고 나귀에서 내리매 갈렙이 그에게 묻되 네가 무엇을 원하느냐"
+      ],
+      "raw_text_hashes": [
+        "e7cefda54ec29f5f77c3d417e4245a8507c4c124a6b3bcd20bb553dcbdc86ab0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:19",
+      "sequence": 6222,
+      "chapter_label": "JOS 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "She said, “Give me a blessing. Because you have set me in the land of the South, give me also springs of water.” So he gave her the upper springs and the lower springs.",
+      "ko": "가로되 내게 복을 주소서 아버지께서 나를 남방 땅으로 보내시오니 샘물도 내게 주소서 하매 갈렙이 윗샘과 아랫샘을 그에게 주었더라",
+      "source_text_hash": "b6ca00f53362f01f8e67b69ab260ee6a3878ded36f0d341cd82093476675fc14",
+      "translation_text_hash": "cc3574a9e3b9afc29664d63e88f4a25cda739808c82803d2a0a3b5ff2a595e63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내게 복을 주소서 아버지께서 나를 남방 땅으로 보내시오니 샘물도 내게 주소서 하매 갈렙이 윗샘과 아랫샘을 그에게 주었더라"
+      ],
+      "raw_text_hashes": [
+        "cc3574a9e3b9afc29664d63e88f4a25cda739808c82803d2a0a3b5ff2a595e63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:20",
+      "sequence": 6223,
+      "chapter_label": "JOS 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "This is the inheritance of the tribe of the children of Judah according to their families.",
+      "ko": "유다 자손의 지파가 그 가족대로 얻은 기업은 이러하니라",
+      "source_text_hash": "1d58cc987fe77c1a6a76e15d5ecee9a45d60db38fb31bd48c59abb0b2559116f",
+      "translation_text_hash": "3a9b0393c742563afa3cdd28cc72958aaa8458740c37e0dba24c90bf69019cdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 자손의 지파가 그 가족대로 얻은 기업은 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "3a9b0393c742563afa3cdd28cc72958aaa8458740c37e0dba24c90bf69019cdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:21",
+      "sequence": 6224,
+      "chapter_label": "JOS 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "The farthest cities of the tribe of the children of Judah toward the border of Edom in the South were Kabzeel, Eder, Jagur,",
+      "ko": "유다 자손의 지파의 남으로 에돔 경계에 접근한 성읍들은 갑스엘과 에델과 야굴과",
+      "source_text_hash": "6571f1eba4c38a1789d45c3f5300ef80f0ff2f10fab0ea58f69a45f788fe88a0",
+      "translation_text_hash": "743ec8a9bfdc6bc0d63c6ab0680729556f2a595fbeca9e1c6baa1fa142a750a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 자손의 지파의 남으로 에돔 경계에 접근한 성읍들은 갑스엘과 에델과 야굴과"
+      ],
+      "raw_text_hashes": [
+        "743ec8a9bfdc6bc0d63c6ab0680729556f2a595fbeca9e1c6baa1fa142a750a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:22",
+      "sequence": 6225,
+      "chapter_label": "JOS 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "Kinah, Dimonah, Adadah,",
+      "ko": "기나와 디모나와 아다다와",
+      "source_text_hash": "0e2ffa3a38368f036c447e9a11f6ed60f2f19ff9198520e33669d92b6e4d3010",
+      "translation_text_hash": "e956dbe0013025b4078d33a4502c3059bbb7180a9bcf3458382c04bb32207b5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기나와 디모나와 아다다와"
+      ],
+      "raw_text_hashes": [
+        "e956dbe0013025b4078d33a4502c3059bbb7180a9bcf3458382c04bb32207b5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:23",
+      "sequence": 6226,
+      "chapter_label": "JOS 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "Kedesh, Hazor, Ithnan,",
+      "ko": "게데스와 하솔과 잇난과",
+      "source_text_hash": "76a8b24af0edbbe01839372b681d823ac30ecdadfa46338d3b5ebfcb6743f900",
+      "translation_text_hash": "ab1a596afb894befe2005a507ccdd7505904bee10696ebac04de5db58a9f5d6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게데스와 하솔과 잇난과"
+      ],
+      "raw_text_hashes": [
+        "ab1a596afb894befe2005a507ccdd7505904bee10696ebac04de5db58a9f5d6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:24",
+      "sequence": 6227,
+      "chapter_label": "JOS 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "Ziph, Telem, Bealoth,",
+      "ko": "십과 델렘과 브알롯과",
+      "source_text_hash": "c128400a6b3fccdec35ce87b0854aa4a12f4f9909aa46eafb12d10f56832fdaf",
+      "translation_text_hash": "a913e29ad142a01584be27f3a44db1dd8934967eceee1f84f32c72991fd16aaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십과 델렘과 브알롯과"
+      ],
+      "raw_text_hashes": [
+        "a913e29ad142a01584be27f3a44db1dd8934967eceee1f84f32c72991fd16aaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:25",
+      "sequence": 6228,
+      "chapter_label": "JOS 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "Hazor Hadattah, Kerioth Hezron (also called Hazor),",
+      "ko": "하솔 하닷다와 그리욧 헤스론 곧 하솔과",
+      "source_text_hash": "cc0a8e9cc676f7f9c5e07cc3647f8dbe5cc065fba7418a03ca112211546ed679",
+      "translation_text_hash": "43f44a450537f80df4dd8b566dae19bc5c68272359347daf0ac87365ead89305",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하솔 하닷다와 그리욧 헤스론 곧 하솔과"
+      ],
+      "raw_text_hashes": [
+        "43f44a450537f80df4dd8b566dae19bc5c68272359347daf0ac87365ead89305"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:26",
+      "sequence": 6229,
+      "chapter_label": "JOS 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "Amam, Shema, Moladah,",
+      "ko": "아맘과 세마와 몰라다와",
+      "source_text_hash": "3d0120fb7f4d5598defa26b1677add9c2a0daa3605f35c1d8d79529253b5c4b0",
+      "translation_text_hash": "2afe5943ad4cd011763c0dc671cdeb0449c7ec659aaea5a8f303d9bd77650ac1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아맘과 세마와 몰라다와"
+      ],
+      "raw_text_hashes": [
+        "2afe5943ad4cd011763c0dc671cdeb0449c7ec659aaea5a8f303d9bd77650ac1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:27",
+      "sequence": 6230,
+      "chapter_label": "JOS 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "Hazar Gaddah, Heshmon, Beth Pelet,",
+      "ko": "하살갓다와 헤스몬과 벧 벨렛과",
+      "source_text_hash": "1897852be6c67f25f44070c9fcdeb5b7647019994a2ca79bc81cebb236b12c0a",
+      "translation_text_hash": "55ecd7873ba82e23281a05c0a762ea697b4d03920c01998277f10c50c7cb877e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하살갓다와 헤스몬과 벧 벨렛과"
+      ],
+      "raw_text_hashes": [
+        "55ecd7873ba82e23281a05c0a762ea697b4d03920c01998277f10c50c7cb877e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:28",
+      "sequence": 6231,
+      "chapter_label": "JOS 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "Hazar Shual, Beersheba, Biziothiah,",
+      "ko": "하살 수알과 브엘세바와 비스요댜와",
+      "source_text_hash": "56f6b534a85bdae65f08206c5c014dd97ecce4ad72beca5b70dc5acde7f1bec0",
+      "translation_text_hash": "f962268377ed752e01c138ce4481b349ce4b96cb2454816f4dceccf2b92caf4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하살 수알과 브엘세바와 비스요댜와"
+      ],
+      "raw_text_hashes": [
+        "f962268377ed752e01c138ce4481b349ce4b96cb2454816f4dceccf2b92caf4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:29",
+      "sequence": 6232,
+      "chapter_label": "JOS 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "Baalah, Iim, Ezem,",
+      "ko": "바알라와 이임과 에셈과",
+      "source_text_hash": "a5cd66eb6e3dad214ab61083dc90af08c8ea542ac51d0e35e31fb947ca45c85c",
+      "translation_text_hash": "f9b9ff5be0183d6255d8052322e7e686ae9d000d72b761ab8415141e0b9cc8f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바알라와 이임과 에셈과"
+      ],
+      "raw_text_hashes": [
+        "f9b9ff5be0183d6255d8052322e7e686ae9d000d72b761ab8415141e0b9cc8f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:30",
+      "sequence": 6233,
+      "chapter_label": "JOS 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "Eltolad, Chesil, Hormah,",
+      "ko": "엘돌랏과 그실과 홀마와",
+      "source_text_hash": "3e9bdf69b2a1565b5c18aaf636ef189d4bec4ffe15b7d4d25566ee926d599e20",
+      "translation_text_hash": "691b369e741ebe9181ad49b1c8e2ae9087f896cdd2eb11846528b5cf3976e033",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘돌랏과 그실과 홀마와"
+      ],
+      "raw_text_hashes": [
+        "691b369e741ebe9181ad49b1c8e2ae9087f896cdd2eb11846528b5cf3976e033"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:31",
+      "sequence": 6234,
+      "chapter_label": "JOS 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "Ziklag, Madmannah, Sansannah,",
+      "ko": "시글락과 맛만나와 산산나와 르바옷과",
+      "source_text_hash": "ce12ef1a377b6c78cd23ce677bffb0e7187a45e941bdbd11ed4585686ea30c4a",
+      "translation_text_hash": "b3571a3a8d4255b0ea456a1c379b6d4761dfe389786c3ed4891b21894e42c8db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시글락과 맛만나와 산산나와 르바옷과"
+      ],
+      "raw_text_hashes": [
+        "b3571a3a8d4255b0ea456a1c379b6d4761dfe389786c3ed4891b21894e42c8db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:32",
+      "sequence": 6235,
+      "chapter_label": "JOS 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "Lebaoth, Shilhim, Ain, and Rimmon. All the cities are twenty-nine, with their villages.",
+      "ko": "실힘과 아인과 림몬이니 모두 이십 구 성읍이요 또 그 촌락이었으며",
+      "source_text_hash": "a54b070f8e1b27d5a20f6e83a376ab9e86420f937a5fbeb28bf7060cf98892b2",
+      "translation_text_hash": "a481e4b6333c98a85ad7d4e9838ad1a32cee1b6e9493e807c77788159e5c5daf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "실힘과 아인과 림몬이니 모두 이십 구 성읍이요 또 그 촌락이었으며"
+      ],
+      "raw_text_hashes": [
+        "a481e4b6333c98a85ad7d4e9838ad1a32cee1b6e9493e807c77788159e5c5daf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:33",
+      "sequence": 6236,
+      "chapter_label": "JOS 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "In the lowland, Eshtaol, Zorah, Ashnah,",
+      "ko": "평지에는 에스다올과 소라와 아스나와",
+      "source_text_hash": "8dd96da4206b440f820f0406120790eef341d3860e50831b3734ab7109049b6a",
+      "translation_text_hash": "0e3d8b81031aec4280ff292fdc9787633f089b113afd714ca5ecc7608da1701c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평지에는 에스다올과 소라와 아스나와"
+      ],
+      "raw_text_hashes": [
+        "0e3d8b81031aec4280ff292fdc9787633f089b113afd714ca5ecc7608da1701c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:34",
+      "sequence": 6237,
+      "chapter_label": "JOS 15",
+      "verse_label": "34",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 34
+        }
+      ],
+      "en": "Zanoah, En Gannim, Tappuah, Enam,",
+      "ko": "사노아와 엔간님과 답부아와 에남과",
+      "source_text_hash": "279e765bd71d0c42f3ed1f741a2e3592448d44545dc69e36c8a030ea49ac7b36",
+      "translation_text_hash": "7374de6111d6a6c819f02250e80c54f3460162d71a05f0fdca13661eaededd5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사노아와 엔간님과 답부아와 에남과"
+      ],
+      "raw_text_hashes": [
+        "7374de6111d6a6c819f02250e80c54f3460162d71a05f0fdca13661eaededd5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:35",
+      "sequence": 6238,
+      "chapter_label": "JOS 15",
+      "verse_label": "35",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 35
+        }
+      ],
+      "en": "Jarmuth, Adullam, Socoh, Azekah,",
+      "ko": "야르뭇과 아둘람과 소고와 아세가와",
+      "source_text_hash": "6bdba0620e34123f096a4aa7a60b002adc86543f6c97f4399183599a41652ecb",
+      "translation_text_hash": "9fa0d1f7a0c61d8153ad3f14352506d224429bccd33115a0816dc1230dc60462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야르뭇과 아둘람과 소고와 아세가와"
+      ],
+      "raw_text_hashes": [
+        "9fa0d1f7a0c61d8153ad3f14352506d224429bccd33115a0816dc1230dc60462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:36",
+      "sequence": 6239,
+      "chapter_label": "JOS 15",
+      "verse_label": "36",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 36
+        }
+      ],
+      "en": "Shaaraim, Adithaim and Gederah (or Gederothaim); fourteen cities with their villages.",
+      "ko": "사아라임과 아디다임과 그데라와 그데로다임이니 모두 십 사 성읍이요 또 그 촌락이었으며",
+      "source_text_hash": "ba03103ad3ca9d490c80e905e5ea1576c54a8b057e4fedf29faf411b89130e70",
+      "translation_text_hash": "59f6fe8c68b5c5edec6fbc95b0af1c95c6386b488f774c86bec43825f865c84f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사아라임과 아디다임과 그데라와 그데로다임이니 모두 십 사 성읍이요 또 그 촌락이었으며"
+      ],
+      "raw_text_hashes": [
+        "59f6fe8c68b5c5edec6fbc95b0af1c95c6386b488f774c86bec43825f865c84f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:37",
+      "sequence": 6240,
+      "chapter_label": "JOS 15",
+      "verse_label": "37",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 37
+        }
+      ],
+      "en": "Zenan, Hadashah, Migdal Gad,",
+      "ko": "스난과 하다사와 믹달갓과",
+      "source_text_hash": "df3e248d72ec0e5d494320ea6d289fa3eff1c00a12b45a047bb6e86064c09d5e",
+      "translation_text_hash": "13e8c21641b898e25f62aefb721e5b727f54044b01ace3f3a01ec0fdd516220f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스난과 하다사와 믹달갓과"
+      ],
+      "raw_text_hashes": [
+        "13e8c21641b898e25f62aefb721e5b727f54044b01ace3f3a01ec0fdd516220f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:38",
+      "sequence": 6241,
+      "chapter_label": "JOS 15",
+      "verse_label": "38",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 38
+        }
+      ],
+      "en": "Dilean, Mizpah, Joktheel,",
+      "ko": "딜르안과 미스베와 욕드엘과",
+      "source_text_hash": "d80be6c0b1bf3131b9a8f40818f7eb8fcbac424970e97ce5bbe8ed537769d4bd",
+      "translation_text_hash": "896cd70a2e7bbc0c3e81ecb0d891492c23a06b7a2cf6baecc99d9040f851cfe2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딜르안과 미스베와 욕드엘과"
+      ],
+      "raw_text_hashes": [
+        "896cd70a2e7bbc0c3e81ecb0d891492c23a06b7a2cf6baecc99d9040f851cfe2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:39",
+      "sequence": 6242,
+      "chapter_label": "JOS 15",
+      "verse_label": "39",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 39
+        }
+      ],
+      "en": "Lachish, Bozkath, Eglon,",
+      "ko": "라기스와 보스갓과 에글론과",
+      "source_text_hash": "e56ab774743d618d6c7047baae779dadf06ed87709eb97c0cd4d48c7e3bf94a8",
+      "translation_text_hash": "74b2afa318dde4f2aa85178661c4d165c28d281d23825475b28a1715f03c4ddc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라기스와 보스갓과 에글론과"
+      ],
+      "raw_text_hashes": [
+        "74b2afa318dde4f2aa85178661c4d165c28d281d23825475b28a1715f03c4ddc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:40",
+      "sequence": 6243,
+      "chapter_label": "JOS 15",
+      "verse_label": "40",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 40
+        }
+      ],
+      "en": "Cabbon, Lahmam, Chitlish,",
+      "ko": "갑본과 라맘과 기들리스와",
+      "source_text_hash": "38315f1655ac5f3312f8be7f5fa2ec1a7ea167ceeb9960076b470bbefa0df24d",
+      "translation_text_hash": "4944a92d3a1ed48c36a417f580298fb1e9728b16ab3b6bd5bb71ccb3609a4378",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갑본과 라맘과 기들리스와"
+      ],
+      "raw_text_hashes": [
+        "4944a92d3a1ed48c36a417f580298fb1e9728b16ab3b6bd5bb71ccb3609a4378"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:41",
+      "sequence": 6244,
+      "chapter_label": "JOS 15",
+      "verse_label": "41",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 41
+        }
+      ],
+      "en": "Gederoth, Beth Dagon, Naamah, and Makkedah; sixteen cities with their villages.",
+      "ko": "그데롯과 벧다곤과 나아마와 막게다니 모두 십 륙 성읍이요 또 그 촌락이었으며",
+      "source_text_hash": "ead38d5dc7cb617050106f18792f8c323738a2200748e6723cfd0fac09645e2b",
+      "translation_text_hash": "e767d032d7003dc1104c0ad7d4706a7c713a9e5ebda55fa222b302012cb544ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그데롯과 벧다곤과 나아마와 막게다니 모두 십 륙 성읍이요 또 그 촌락이었으며"
+      ],
+      "raw_text_hashes": [
+        "e767d032d7003dc1104c0ad7d4706a7c713a9e5ebda55fa222b302012cb544ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:42",
+      "sequence": 6245,
+      "chapter_label": "JOS 15",
+      "verse_label": "42",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 42
+        }
+      ],
+      "en": "Libnah, Ether, Ashan,",
+      "ko": "립나와 에델과 아산과",
+      "source_text_hash": "7195cc13b8c6dba98b51d66ae8037418613489be59cac9631980104cc74ae549",
+      "translation_text_hash": "eb21c207974a37741887bf1df7536496df8a5f0d706bb021d308269e4be3bcef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "립나와 에델과 아산과"
+      ],
+      "raw_text_hashes": [
+        "eb21c207974a37741887bf1df7536496df8a5f0d706bb021d308269e4be3bcef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:43",
+      "sequence": 6246,
+      "chapter_label": "JOS 15",
+      "verse_label": "43",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 43
+        }
+      ],
+      "en": "Iphtah, Ashnah, Nezib,",
+      "ko": "입다와 아스나와 느십과",
+      "source_text_hash": "d337e13b987a94b9fb7452b9a7c56c0f7d091ea065fca09d6d08dcc964ba01bd",
+      "translation_text_hash": "0ae1e53fd598f91ba377823ee90b7a72f97f4bf234dd89df969a7f9410b8282f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입다와 아스나와 느십과"
+      ],
+      "raw_text_hashes": [
+        "0ae1e53fd598f91ba377823ee90b7a72f97f4bf234dd89df969a7f9410b8282f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:44",
+      "sequence": 6247,
+      "chapter_label": "JOS 15",
+      "verse_label": "44",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 44
+        }
+      ],
+      "en": "Keilah, Achzib, and Mareshah; nine cities with their villages.",
+      "ko": "그일라와 악십과 마레사니 모두 아홉 성읍이요 또 그 촌락이었으며",
+      "source_text_hash": "37d19905191a572539fc5790aa57c8c76bdb949401caa1854b12fea43f4be24a",
+      "translation_text_hash": "f1f1c1930a29342899dd50f0b254c26c3a34907b6e2db5aa74bf1bd7cb4ebd44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그일라와 악십과 마레사니 모두 아홉 성읍이요 또 그 촌락이었으며"
+      ],
+      "raw_text_hashes": [
+        "f1f1c1930a29342899dd50f0b254c26c3a34907b6e2db5aa74bf1bd7cb4ebd44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:45",
+      "sequence": 6248,
+      "chapter_label": "JOS 15",
+      "verse_label": "45",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 45
+        }
+      ],
+      "en": "Ekron, with its towns and its villages;",
+      "ko": "에그론과 그 향리와 촌락과",
+      "source_text_hash": "a6db37a56e4f746c8f731f44c9ecee0571b5f152724fa818a2490b4005fd4937",
+      "translation_text_hash": "065bf74c44ae3e074f21be68085204a94796e41c6a8987bbc20ca7218dbb3356",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에그론과 그 향리와 촌락과"
+      ],
+      "raw_text_hashes": [
+        "065bf74c44ae3e074f21be68085204a94796e41c6a8987bbc20ca7218dbb3356"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:46",
+      "sequence": 6249,
+      "chapter_label": "JOS 15",
+      "verse_label": "46",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 46
+        }
+      ],
+      "en": "from Ekron even to the sea, all that were by the side of Ashdod, with their villages.",
+      "ko": "에그론에서부터 바다까지 아스돗 곁에 있는 모든 성읍과 그 촌락이었으며",
+      "source_text_hash": "ce2ae9420a919aeb65eee91101d791ac1d3e88b4e6721684804754e3c84cc9fb",
+      "translation_text_hash": "bf2950d1548d8cbce36c68b500bd689dd22ac727ab24e76264970cefa8530b10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에그론에서부터 바다까지 아스돗 곁에 있는 모든 성읍과 그 촌락이었으며"
+      ],
+      "raw_text_hashes": [
+        "bf2950d1548d8cbce36c68b500bd689dd22ac727ab24e76264970cefa8530b10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:47",
+      "sequence": 6250,
+      "chapter_label": "JOS 15",
+      "verse_label": "47",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 47
+        }
+      ],
+      "en": "Ashdod, its towns and its villages; Gaza, its towns and its villages; to the brook of Egypt, and the great sea with its coastline.",
+      "ko": "아스돗과 그 향리와 촌락과 가사와 그 향리와 촌락이니 애굽 시내와 대해 가에 이르기까지였으며",
+      "source_text_hash": "0ade3ee247ae50206e95caad6bde6916a3ae4074c0dc12be1fac4d9f4159f7bc",
+      "translation_text_hash": "bc9e3b4154f21aae6d99df4ae88a50bf0d0325fa6214c8b6bb668772043a0c37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스돗과 그 향리와 촌락과 가사와 그 향리와 촌락이니 애굽 시내와 대해 가에 이르기까지였으며"
+      ],
+      "raw_text_hashes": [
+        "bc9e3b4154f21aae6d99df4ae88a50bf0d0325fa6214c8b6bb668772043a0c37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:48",
+      "sequence": 6251,
+      "chapter_label": "JOS 15",
+      "verse_label": "48",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 48
+        }
+      ],
+      "en": "In the hill country, Shamir, Jattir, Socoh,",
+      "ko": "산지는 사밀과 얏딜과 소고와",
+      "source_text_hash": "d0808c3bc582898eb135d082fcd3a113461d690e130db386e02ed2cca6c88915",
+      "translation_text_hash": "81f933f643d80e0d6f0459bc8ccc172f230e4e3d07dd61b37b419b1fe4e50d2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산지는 사밀과 얏딜과 소고와"
+      ],
+      "raw_text_hashes": [
+        "81f933f643d80e0d6f0459bc8ccc172f230e4e3d07dd61b37b419b1fe4e50d2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:49",
+      "sequence": 6252,
+      "chapter_label": "JOS 15",
+      "verse_label": "49",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 49
+        }
+      ],
+      "en": "Dannah, Kiriath Sannah (which is Debir),",
+      "ko": "단나와 기럇 산나 곧 드빌과",
+      "source_text_hash": "497807b61d9bb1cb9724205cb6629a994e193f743d42e766ee184b557f11730b",
+      "translation_text_hash": "5de2d4d426aa39897f89ea15ec93e31846a14116ce77b9fc9c01ec9adc91bd80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단나와 기럇 산나 곧 드빌과"
+      ],
+      "raw_text_hashes": [
+        "5de2d4d426aa39897f89ea15ec93e31846a14116ce77b9fc9c01ec9adc91bd80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:50",
+      "sequence": 6253,
+      "chapter_label": "JOS 15",
+      "verse_label": "50",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 50
+        }
+      ],
+      "en": "Anab, Eshtemoh, Anim,",
+      "ko": "아납과 에스드모와 아님과",
+      "source_text_hash": "5b569668bde2ef7c893d4f4e2aa21b78425771991aa663ab6fefa22227831d85",
+      "translation_text_hash": "f9fa77028e71d88b0db00bb6f1dba6bc354173ba6bda0fb6ec55efdecfb9d5bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아납과 에스드모와 아님과"
+      ],
+      "raw_text_hashes": [
+        "f9fa77028e71d88b0db00bb6f1dba6bc354173ba6bda0fb6ec55efdecfb9d5bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:51",
+      "sequence": 6254,
+      "chapter_label": "JOS 15",
+      "verse_label": "51",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 51
+        }
+      ],
+      "en": "Goshen, Holon, and Giloh; eleven cities with their villages.",
+      "ko": "고센과 홀론과 길로니 모두 십 일 성읍이요 또 그 촌락이었으며",
+      "source_text_hash": "a5820b2f8edb833fe07cdbbc93bd6ff2236e2c28df087b9426b4ab0424a9a950",
+      "translation_text_hash": "4f908c371afbb83441de3b90620d269f5cabe36d14d58e49af23a6e2ad64b1a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고센과 홀론과 길로니 모두 십 일 성읍이요 또 그 촌락이었으며"
+      ],
+      "raw_text_hashes": [
+        "4f908c371afbb83441de3b90620d269f5cabe36d14d58e49af23a6e2ad64b1a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:52",
+      "sequence": 6255,
+      "chapter_label": "JOS 15",
+      "verse_label": "52",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 52
+        }
+      ],
+      "en": "Arab, Dumah, Eshan,",
+      "ko": "아랍과 두마와 에산과",
+      "source_text_hash": "e53bbac6fa0954cbf381c91c3f12e1089b6f6e73dc35004d113604dd07599966",
+      "translation_text_hash": "439d9f8b7e8ef9f88719144c2ed8e5b65b9767d9edb441607c2f360285c4bd41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아랍과 두마와 에산과"
+      ],
+      "raw_text_hashes": [
+        "439d9f8b7e8ef9f88719144c2ed8e5b65b9767d9edb441607c2f360285c4bd41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:53",
+      "sequence": 6256,
+      "chapter_label": "JOS 15",
+      "verse_label": "53",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 53
+        }
+      ],
+      "en": "Janim, Beth Tappuah, Aphekah,",
+      "ko": "야님과 벧 답부아와 아베가와",
+      "source_text_hash": "94c4bf3e33e1a3e4b20fab5d6876201852e30db53bc3012061413ba2bd8e3f6d",
+      "translation_text_hash": "df6db8e533ab085a5239f6926b724c52d65a66c2207b2f2a27d006f6ce13896a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야님과 벧 답부아와 아베가와"
+      ],
+      "raw_text_hashes": [
+        "df6db8e533ab085a5239f6926b724c52d65a66c2207b2f2a27d006f6ce13896a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:54",
+      "sequence": 6257,
+      "chapter_label": "JOS 15",
+      "verse_label": "54",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 54
+        }
+      ],
+      "en": "Humtah, Kiriath Arba (also called Hebron), and Zior; nine cities with their villages.",
+      "ko": "훔다와 기럇 아르바 곧 헤브론과 시올이니 모두 아홉 성읍이요 또 그 촌락이었으며",
+      "source_text_hash": "07be38b9bbae02be38fa9049009af157f90a26f73a017662c7f4a42198266997",
+      "translation_text_hash": "2b75d64271928145023fbc07e0ef08ae5547d84a2d4bb0750e8e3f5bfff1c388",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "훔다와 기럇 아르바 곧 헤브론과 시올이니 모두 아홉 성읍이요 또 그 촌락이었으며"
+      ],
+      "raw_text_hashes": [
+        "2b75d64271928145023fbc07e0ef08ae5547d84a2d4bb0750e8e3f5bfff1c388"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:55",
+      "sequence": 6258,
+      "chapter_label": "JOS 15",
+      "verse_label": "55",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 55
+        }
+      ],
+      "en": "Maon, Carmel, Ziph, Jutah,",
+      "ko": "마온과 갈멜과 십과 윳다와",
+      "source_text_hash": "5ebfc78986ee5f6ccad3c81f2aa3855e4a568da780623171911c0e264c473206",
+      "translation_text_hash": "ef20aa04466ad95c54c0c9e28cb210692d280b06311ae4107505a3e280fecd14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마온과 갈멜과 십과 윳다와"
+      ],
+      "raw_text_hashes": [
+        "ef20aa04466ad95c54c0c9e28cb210692d280b06311ae4107505a3e280fecd14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:56",
+      "sequence": 6259,
+      "chapter_label": "JOS 15",
+      "verse_label": "56",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 56
+        }
+      ],
+      "en": "Jezreel, Jokdeam, Zanoah,",
+      "ko": "이스르엘과 욕드암과 사노아와",
+      "source_text_hash": "ce85fc01c7054f51329da8b0ce6824ffee1cc9419948f6d4bcc0758668075cdc",
+      "translation_text_hash": "c8b95a6e3527a18b8ebe17b84ab6080873f7d7dcd4e4a5eedb4f57e0ac07f91a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스르엘과 욕드암과 사노아와"
+      ],
+      "raw_text_hashes": [
+        "c8b95a6e3527a18b8ebe17b84ab6080873f7d7dcd4e4a5eedb4f57e0ac07f91a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:57",
+      "sequence": 6260,
+      "chapter_label": "JOS 15",
+      "verse_label": "57",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 57
+        }
+      ],
+      "en": "Kain, Gibeah, and Timnah; ten cities with their villages.",
+      "ko": "가인과 기브아와 딤나니 모두 열 성읍이요 또 그 촌락이었으며",
+      "source_text_hash": "5e916d93bd540c73738cdb4f7b2bf2f14678bf41b829ed149e4b3796ce84e7e0",
+      "translation_text_hash": "a2abeb2c1616edd2cae4de9a82337ba89d55dba766f3a18847b1641805992132",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가인과 기브아와 딤나니 모두 열 성읍이요 또 그 촌락이었으며"
+      ],
+      "raw_text_hashes": [
+        "a2abeb2c1616edd2cae4de9a82337ba89d55dba766f3a18847b1641805992132"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:58",
+      "sequence": 6261,
+      "chapter_label": "JOS 15",
+      "verse_label": "58",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 58
+        }
+      ],
+      "en": "Halhul, Beth Zur, Gedor,",
+      "ko": "할훌과 벧 술과 그돌과",
+      "source_text_hash": "7e121279953a654314391b219903056c721117099f5cb18af082a20293b46f12",
+      "translation_text_hash": "1e203820f119474fb302977b434c858c80c95e9996647d001c3d939cb0f6e41b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할훌과 벧 술과 그돌과"
+      ],
+      "raw_text_hashes": [
+        "1e203820f119474fb302977b434c858c80c95e9996647d001c3d939cb0f6e41b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:59",
+      "sequence": 6262,
+      "chapter_label": "JOS 15",
+      "verse_label": "59",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 59
+        }
+      ],
+      "en": "Maarath, Beth Anoth, and Eltekon; six cities with their villages.",
+      "ko": "마아랏과 벧 아놋과 엘드곤이니 모두 여섯 성읍이요 또 그 촌락이었으며",
+      "source_text_hash": "3400742af61906b32b2c1428c442cfa5c42690cc0f296e53c74b712da1ea5272",
+      "translation_text_hash": "01b031c7d7bce6c9a07f8c30588291a01d59cb30ac6f41eb49f1a6551dea6f68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마아랏과 벧 아놋과 엘드곤이니 모두 여섯 성읍이요 또 그 촌락이었으며"
+      ],
+      "raw_text_hashes": [
+        "01b031c7d7bce6c9a07f8c30588291a01d59cb30ac6f41eb49f1a6551dea6f68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:60",
+      "sequence": 6263,
+      "chapter_label": "JOS 15",
+      "verse_label": "60",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 60
+        }
+      ],
+      "en": "Kiriath Baal (also called Kiriath Jearim), and Rabbah; two cities with their villages.",
+      "ko": "기럇 바알 곧 기럇 여아림과 라빠니 모두 두 성읍이요 또 그 촌락이었으며",
+      "source_text_hash": "29e04af0eb602809d367db773d3374c4e0efb3fe9bf9d5d1e83e7f1826923c1e",
+      "translation_text_hash": "8ae4641398f15ad10b592d35843f7571a86faa62db36389af869d89d08a08f84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기럇 바알 곧 기럇 여아림과 라빠니 모두 두 성읍이요 또 그 촌락이었으며"
+      ],
+      "raw_text_hashes": [
+        "8ae4641398f15ad10b592d35843f7571a86faa62db36389af869d89d08a08f84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:61",
+      "sequence": 6264,
+      "chapter_label": "JOS 15",
+      "verse_label": "61",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 61
+        }
+      ],
+      "en": "In the wilderness, Beth Arabah, Middin, Secacah,",
+      "ko": "광야에는 벧 아라바와 밋딘과 스가가와",
+      "source_text_hash": "7221847d18a3e8d915cabdc36271e7e436e4230a5baeab5f3e1b4e7ccd91c912",
+      "translation_text_hash": "d4e36e1d9eada12527872d12d6c60501eaa18969b85d9bba724aa526e0726054",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야에는 벧 아라바와 밋딘과 스가가와"
+      ],
+      "raw_text_hashes": [
+        "d4e36e1d9eada12527872d12d6c60501eaa18969b85d9bba724aa526e0726054"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:62",
+      "sequence": 6265,
+      "chapter_label": "JOS 15",
+      "verse_label": "62",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 62
+        }
+      ],
+      "en": "Nibshan, the City of Salt, and En Gedi; six cities with their villages.",
+      "ko": "닙산과 염성과 엔 게디니 모두 여섯 성읍이요 또 그 촌락이었더라",
+      "source_text_hash": "21eae61f25675169523ac9ddd182fc2ce3784b68dd8c1be20412e99ec2b0ddee",
+      "translation_text_hash": "9fab6846d5788ed5ff01fc9a917a52f7c2ac63ffee3d337d67fad14b13fb9fed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "닙산과 염성과 엔 게디니 모두 여섯 성읍이요 또 그 촌락이었더라"
+      ],
+      "raw_text_hashes": [
+        "9fab6846d5788ed5ff01fc9a917a52f7c2ac63ffee3d337d67fad14b13fb9fed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:15:63",
+      "sequence": 6266,
+      "chapter_label": "JOS 15",
+      "verse_label": "63",
+      "locator": {
+        "book": "JOS",
+        "chapter": 15,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 15,
+          "verse": 63
+        }
+      ],
+      "en": "As for the Jebusites, the inhabitants of Jerusalem, the children of Judah couldn’t drive them out; but the Jebusites live with the children of Judah at Jerusalem to this day.",
+      "ko": "예루살렘 거민 여부스 사람을 유다 자손이 쫓아내지 못하였으므로 여부스 사람이 오늘날까지 유다 자손과 함께 예루살렘에 거하니라",
+      "source_text_hash": "fef82e85ee59b4143c66f6336fbaa99cce9b187c00277bc7fe65b913793cabd4",
+      "translation_text_hash": "a9d95b8b00c732269a9cc5f97b54e61645eb52170026cff9ba09c37deaa5ade0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 거민 여부스 사람을 유다 자손이 쫓아내지 못하였으므로 여부스 사람이 오늘날까지 유다 자손과 함께 예루살렘에 거하니라"
+      ],
+      "raw_text_hashes": [
+        "a9d95b8b00c732269a9cc5f97b54e61645eb52170026cff9ba09c37deaa5ade0"
+      ]
+    }
+  ]
+}

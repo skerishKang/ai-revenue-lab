@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:005",
+  "unit_ordinal": 241,
+  "unit_label": "1SA 5",
+  "book_code": "1SA",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:5:1",
+      "sequence": 7321,
+      "chapter_label": "1SA 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Now the Philistines had taken God’s ark, and they brought it from Ebenezer to Ashdod.",
+      "ko": "블레셋 사람이 하나님의 궤를 빼앗아가지고 에벤에셀에서부터 아스돗에 이르니라",
+      "source_text_hash": "70820b58b51fc7ab5c9720cb7c22793da7716243d901e2bac19dde03d2ecda39",
+      "translation_text_hash": "53946387c84f978451672c867c9a5c203ef974560060d3318aa24b0a8469a2a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 하나님의 궤를 빼앗아가지고 에벤에셀에서부터 아스돗에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "53946387c84f978451672c867c9a5c203ef974560060d3318aa24b0a8469a2a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:2",
+      "sequence": 7322,
+      "chapter_label": "1SA 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "The Philistines took God’s ark, and brought it into the house of Dagon and set it by Dagon.",
+      "ko": "블레셋 사람이 하나님의 궤를 가지고 다곤의 당에 들어가서 다곤의 곁에 두었더니",
+      "source_text_hash": "6b25ac59d33b3ae90c6580fc7831ae93b99d1ea542099db5181a1c527d16dd71",
+      "translation_text_hash": "5edc830796e15ac63b12547d8937d407b4c4cfe2816e2e3c9210813d69d0ef9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 하나님의 궤를 가지고 다곤의 당에 들어가서 다곤의 곁에 두었더니"
+      ],
+      "raw_text_hashes": [
+        "5edc830796e15ac63b12547d8937d407b4c4cfe2816e2e3c9210813d69d0ef9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:3",
+      "sequence": 7323,
+      "chapter_label": "1SA 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "When the people of Ashdod arose early on the next day, behold, Dagon had fallen on his face to the ground before the LORD’s ark. They took Dagon and set him in his place again.",
+      "ko": "아스돗 사람이 이튿날 일찌기 일어나 본즉 다곤이 여호와의 궤 앞에서 엎드러져 그 얼굴이 땅에 닿았는지라 그들이 다곤을 일으켜 다시 그 자리에 세웠더니",
+      "source_text_hash": "ba8c98101b7952721a013bcc61499409d941ddb68017157979e7d984b399316b",
+      "translation_text_hash": "055d067e9a7407ad3c3de1068c74debf180c870c61646064f9e640544a2daea4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스돗 사람이 이튿날 일찌기 일어나 본즉 다곤이 여호와의 궤 앞에서 엎드러져 그 얼굴이 땅에 닿았는지라 그들이 다곤을 일으켜 다시 그 자리에 세웠더니"
+      ],
+      "raw_text_hashes": [
+        "055d067e9a7407ad3c3de1068c74debf180c870c61646064f9e640544a2daea4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:4",
+      "sequence": 7324,
+      "chapter_label": "1SA 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "When they arose early on the following morning, behold, Dagon had fallen on his face to the ground before the LORD’s ark; and the head of Dagon and both the palms of his hands were cut off on the threshold. Only Dagon’s torso was intact.",
+      "ko": "그 이튿날 아침에 그들이 일찌기 일어나 본즉 다곤이 여호와의 궤 앞에서 엎드러져 얼굴이 땅에 닿았고 그 머리와 두 손목은 끊어져 문지방에 있고 다곤의 몸둥이만 남았더라",
+      "source_text_hash": "0fc321589373edde8c3e81db8e0f933861718f22d082177caf818380f16545d2",
+      "translation_text_hash": "be4cf5cd62d59df0a477396bfaaced0ad3bd0199e41c15aefab9047de4fea7c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이튿날 아침에 그들이 일찌기 일어나 본즉 다곤이 여호와의 궤 앞에서 엎드러져 얼굴이 땅에 닿았고 그 머리와 두 손목은 끊어져 문지방에 있고 다곤의 몸둥이만 남았더라"
+      ],
+      "raw_text_hashes": [
+        "be4cf5cd62d59df0a477396bfaaced0ad3bd0199e41c15aefab9047de4fea7c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:5",
+      "sequence": 7325,
+      "chapter_label": "1SA 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore neither the priests of Dagon nor any who come into Dagon’s house step on the threshold of Dagon in Ashdod to this day.",
+      "ko": "그러므로 다곤의 제사장들이나 다곤의 당에 들어가는 자는 오늘까지 아스돗에 있는 다곤의 문지방을 밟지 아니하더라",
+      "source_text_hash": "a492b2df42873b62c012cb414558d6a6f0b0c10799e05450003797e0e7a15a31",
+      "translation_text_hash": "7d4d4ee23ce6f209b2c29eaca56f9d52daf60be6d1cedb20c2a4c39f93347757",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 다곤의 제사장들이나 다곤의 당에 들어가는 자는 오늘까지 아스돗에 있는 다곤의 문지방을 밟지 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "7d4d4ee23ce6f209b2c29eaca56f9d52daf60be6d1cedb20c2a4c39f93347757"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:6",
+      "sequence": 7326,
+      "chapter_label": "1SA 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "But the LORD’s hand was heavy on the people of Ashdod, and he destroyed them and struck them with tumors, even Ashdod and its borders.",
+      "ko": "여호와의 손이 아스돗 사람에게 엄중히 더하사 독종의 재앙으로 아스돗과 그 지경을 쳐서 망하게 하니",
+      "source_text_hash": "a26fa14934f994004a910c1973460ebaecc30047d18550a23a2dd2a2ae69283e",
+      "translation_text_hash": "1eecee858bbc2665104a7a0852d73ee005585fb90a7cd64b25e98740cc2b5e89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 손이 아스돗 사람에게 엄중히 더하사 독종의 재앙으로 아스돗과 그 지경을 쳐서 망하게 하니"
+      ],
+      "raw_text_hashes": [
+        "1eecee858bbc2665104a7a0852d73ee005585fb90a7cd64b25e98740cc2b5e89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:7",
+      "sequence": 7327,
+      "chapter_label": "1SA 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "When the men of Ashdod saw that it was so, they said, “The ark of the God of Israel shall not stay with us, for his hand is severe on us and on Dagon our god.”",
+      "ko": "아스돗 사람들이 이를 보고 가로되 이스라엘 신의 궤를 우리와 함께 있게 못할찌라 그 손이 우리와 우리 신 다곤을 친다 하고",
+      "source_text_hash": "1f910cdeac28cb85eeb9cee82d7ca200d6dba5f5c18078b5c1461f228a4431be",
+      "translation_text_hash": "5bef809df8cb1b9f2ff888e76d23b333b18717621c2d46726de53713193f1e18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스돗 사람들이 이를 보고 가로되 이스라엘 신의 궤를 우리와 함께 있게 못할찌라 그 손이 우리와 우리 신 다곤을 친다 하고"
+      ],
+      "raw_text_hashes": [
+        "5bef809df8cb1b9f2ff888e76d23b333b18717621c2d46726de53713193f1e18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:8",
+      "sequence": 7328,
+      "chapter_label": "1SA 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "They sent therefore and gathered together all the lords of the Philistines, and said, “What shall we do with the ark of the God of Israel?” They answered, “Let the ark of the God of Israel be carried over to Gath.” They carried the ark of the God of Israel there.",
+      "ko": "이에 보내어 블레셋 사람의 모든 방백을 모으고 가로되 우리가 이스라엘 신의 궤를 어찌할꼬 그들이 대답하되 이스라엘 신의 궤를 가드로 옮겨가라 하므로 이스라엘 신의 궤를 옮겨 갔더니",
+      "source_text_hash": "17335738d039b27450af464b54b23d4277dbf82278534a6e6d0e9c6e8e56e06d",
+      "translation_text_hash": "fb895ed632403458b2805bcb03e87c8a7764b9a38ce7680c36d2967fdf66af16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 보내어 블레셋 사람의 모든 방백을 모으고 가로되 우리가 이스라엘 신의 궤를 어찌할꼬 그들이 대답하되 이스라엘 신의 궤를 가드로 옮겨가라 하므로 이스라엘 신의 궤를 옮겨 갔더니"
+      ],
+      "raw_text_hashes": [
+        "fb895ed632403458b2805bcb03e87c8a7764b9a38ce7680c36d2967fdf66af16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:9",
+      "sequence": 7329,
+      "chapter_label": "1SA 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "It was so, that after they had carried it there, the LORD’s hand was against the city with a very great confusion; and he struck the men of the city, both small and great, so that tumors broke out on them.",
+      "ko": "그것을 옮겨간 후에 여호와의 손이 심히 큰 환난을 그 성에 더하사 성읍 사람의 작은 자와 큰 자를 다 쳐서 독종이 나게 하신지라",
+      "source_text_hash": "30d6e6dc078359681223397b84a67c3fcb3e289a80e6381ac4ddfbcdd20f558f",
+      "translation_text_hash": "bda4880cde987027dcb41b25e88414a32b94bc64edd11cd5413d3d250faa451a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 옮겨간 후에 여호와의 손이 심히 큰 환난을 그 성에 더하사 성읍 사람의 작은 자와 큰 자를 다 쳐서 독종이 나게 하신지라"
+      ],
+      "raw_text_hashes": [
+        "bda4880cde987027dcb41b25e88414a32b94bc64edd11cd5413d3d250faa451a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:10",
+      "sequence": 7330,
+      "chapter_label": "1SA 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "So they sent God’s ark to Ekron. As God’s ark came to Ekron, the Ekronites cried out, saying, “They have brought the ark of the God of Israel here to us, to kill us and our people.”",
+      "ko": "이에 그들이 하나님의 궤를 에그론으로 보내니라 하나님의 궤가 에그론에 이른즉 에그론 사람이 부르짖어 가로되 그들이 이스라엘 신의 궤를 우리에게로 가져다가 우리와 우리 백성을 죽이려 한다 하고",
+      "source_text_hash": "7dcb680848f30f6b6dbbb424c78377534b6dbc56611211be793d5211ffd14ab5",
+      "translation_text_hash": "111e50226ae3f92e94d1c2112daf0d575850022cd31422a899f0e34bebd2868e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그들이 하나님의 궤를 에그론으로 보내니라 하나님의 궤가 에그론에 이른즉 에그론 사람이 부르짖어 가로되 그들이 이스라엘 신의 궤를 우리에게로 가져다가 우리와 우리 백성을 죽이려 한다 하고"
+      ],
+      "raw_text_hashes": [
+        "111e50226ae3f92e94d1c2112daf0d575850022cd31422a899f0e34bebd2868e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:11",
+      "sequence": 7331,
+      "chapter_label": "1SA 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "They sent therefore and gathered together all the lords of the Philistines, and they said, “Send the ark of the God of Israel away, and let it go again to its own place, that it not kill us and our people.” For there was a deadly panic throughout all the city. The hand of God was very heavy there.",
+      "ko": "이에 보내어 블레셋 모든 방백을 모으고 가로되 이스라엘 신의 궤를 보내어 본처로 돌아가게 하고 우리와 우리 백성 죽임을 면케 하자 하니 이는 온 성이 사망의 환난을 당함이라 거기서 하나님의 손이 엄중하시므로",
+      "source_text_hash": "7ffd9908462b5cfa20cfc97a5fc3d9d2ae494d09acc745d860dfb74eb94e943b",
+      "translation_text_hash": "4f3aadf48462cd10d7a495fda6932b8087abcf8e85f483641e057d0296c377c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 보내어 블레셋 모든 방백을 모으고 가로되 이스라엘 신의 궤를 보내어 본처로 돌아가게 하고 우리와 우리 백성 죽임을 면케 하자 하니 이는 온 성이 사망의 환난을 당함이라 거기서 하나님의 손이 엄중하시므로"
+      ],
+      "raw_text_hashes": [
+        "4f3aadf48462cd10d7a495fda6932b8087abcf8e85f483641e057d0296c377c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:5:12",
+      "sequence": 7332,
+      "chapter_label": "1SA 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "The men who didn’t die were struck with the tumors; and the cry of the city went up to heaven.",
+      "ko": "죽지 아니한 사람들은 독종으로 치심을 받아 성읍의 부르짖음이 하늘에 사무쳤더라",
+      "source_text_hash": "a590f0180011f52a0b2a4721940c73fc0053046121a9e484229eb3d820a6a27f",
+      "translation_text_hash": "2f1efd03f8994f4f323605f3a354dd914656f5f9b252979dd5f0b53a2d07e1e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽지 아니한 사람들은 독종으로 치심을 받아 성읍의 부르짖음이 하늘에 사무쳤더라"
+      ],
+      "raw_text_hashes": [
+        "2f1efd03f8994f4f323605f3a354dd914656f5f9b252979dd5f0b53a2d07e1e5"
+      ]
+    }
+  ]
+}

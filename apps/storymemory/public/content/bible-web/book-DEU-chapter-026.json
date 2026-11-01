@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:026",
+  "unit_ordinal": 179,
+  "unit_label": "DEU 26",
+  "book_code": "DEU",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:26:1",
+      "sequence": 5568,
+      "chapter_label": "DEU 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "It shall be, when you have come in to the land which the LORD your God gives you for an inheritance, possess it, and dwell in it,",
+      "ko": "네 하나님 여호와께서 네게 기업으로 주사 얻게 하시는 땅에 네가 들어가서 거기 거할 때에",
+      "source_text_hash": "6ebc019336682a91ba3a8c44a5be2c8bf0f51db13dd78fba3ebf4915d752d15d",
+      "translation_text_hash": "5f51901151eb1561321d71a268fb4e56bbe11910ca66aa07d09e17ad33d5bca2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네게 기업으로 주사 얻게 하시는 땅에 네가 들어가서 거기 거할 때에"
+      ],
+      "raw_text_hashes": [
+        "5f51901151eb1561321d71a268fb4e56bbe11910ca66aa07d09e17ad33d5bca2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:2",
+      "sequence": 5569,
+      "chapter_label": "DEU 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "that you shall take some of the first of all the fruit of the ground, which you shall bring in from your land that the LORD your God gives you. You shall put it in a basket, and shall go to the place which the LORD your God shall choose to cause his name to dwell there.",
+      "ko": "네 하나님 여호와께서 네게 주시는 땅에서 그 토지 모든 소산의 맏물을 거둔 후에 그것을 취하여 광주리에 담고 네 하나님 여호와께서 그 이름을 두시려고 택하신 곳으로 그것을 가지고 가서",
+      "source_text_hash": "8689f2f52ac8e21d6296099c269cc992309b98b9765cd2d2ca44ecc85dfbe20e",
+      "translation_text_hash": "19227ecfcbda205501626720f0ac8c4fe8efd9c6b598aad1be45cc833fa55fcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네게 주시는 땅에서 그 토지 모든 소산의 맏물을 거둔 후에 그것을 취하여 광주리에 담고 네 하나님 여호와께서 그 이름을 두시려고 택하신 곳으로 그것을 가지고 가서"
+      ],
+      "raw_text_hashes": [
+        "19227ecfcbda205501626720f0ac8c4fe8efd9c6b598aad1be45cc833fa55fcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:3",
+      "sequence": 5570,
+      "chapter_label": "DEU 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "You shall come to the priest who shall be in those days, and tell him, “I profess today to the LORD your God, that I have come to the land which the LORD swore to our fathers to give us.”",
+      "ko": "당시 제사장에게 나아가서 그에게 이르기를 내가 오늘날 당신의 하나님 여호와께 고하나이다 내가 여호와께서 우리에게 주리라고 우리 열조에게 맹세하신 땅에 이르렀나이다 할 것이요",
+      "source_text_hash": "9ac979cad522bbe8cff4a1c280ba76aecefcd4c62fca261c9b2f6d8fa4aa2487",
+      "translation_text_hash": "f2f875812f8560a0097c5fc2b368f1cfd27b08b96905da84e5eb2fbcdb2391ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당시 제사장에게 나아가서 그에게 이르기를 내가 오늘날 당신의 하나님 여호와께 고하나이다 내가 여호와께서 우리에게 주리라고 우리 열조에게 맹세하신 땅에 이르렀나이다 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "f2f875812f8560a0097c5fc2b368f1cfd27b08b96905da84e5eb2fbcdb2391ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:4",
+      "sequence": 5571,
+      "chapter_label": "DEU 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "The priest shall take the basket out of your hand, and set it down before the LORD your God’s altar.",
+      "ko": "제사장은 네 손에서 그 광주리를 취하여다가 네 하나님 여호와의 단 앞에 놓을 것이며",
+      "source_text_hash": "ef3b0ebb277fdd98768c9e5c03652daebb3f5556d67f80ae58b6732a6244f302",
+      "translation_text_hash": "51eefe47a02f17b5c44b833c55fb93627bf9c38b1c756a3feb8294c8c33e0acb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 네 손에서 그 광주리를 취하여다가 네 하나님 여호와의 단 앞에 놓을 것이며"
+      ],
+      "raw_text_hashes": [
+        "51eefe47a02f17b5c44b833c55fb93627bf9c38b1c756a3feb8294c8c33e0acb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:5",
+      "sequence": 5572,
+      "chapter_label": "DEU 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "You shall answer and say before the LORD your God, “My father was a Syrian ready to perish. He went down into Egypt, and lived there, few in number. There he became a great, mighty, and populous nation.",
+      "ko": "너는 또 네 하나님 여호와 앞에 아뢰기를 내 조상은 유리하는 아람 사람으로서 소수의 사람을 거느리고 애굽에 내려가서 거기 우거하여 필경은 거기서 크고 강하고 번성한 민족이 되었더니",
+      "source_text_hash": "33863d25699415117b6b67a5873e18ca50274f916e2efe457dca9ad835ca4968",
+      "translation_text_hash": "67d1081e32ea5da9c740fcdcc1f4fc16d996b13c6d6a02c37ab1de4f41546f93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 네 하나님 여호와 앞에 아뢰기를 내 조상은 유리하는 아람 사람으로서 소수의 사람을 거느리고 애굽에 내려가서 거기 우거하여 필경은 거기서 크고 강하고 번성한 민족이 되었더니"
+      ],
+      "raw_text_hashes": [
+        "67d1081e32ea5da9c740fcdcc1f4fc16d996b13c6d6a02c37ab1de4f41546f93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:6",
+      "sequence": 5573,
+      "chapter_label": "DEU 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "The Egyptians mistreated us, afflicted us, and imposed hard labor on us.",
+      "ko": "애굽 사람이 우리를 학대하며 우리를 괴롭게 하며 우리에게 중역을 시키므로",
+      "source_text_hash": "385091ccc58b8d1cd2499a07283271206b16667e226c3eb6e69156fab3b22f4c",
+      "translation_text_hash": "755bd344c93a2129ed2c04e8d0ff1c2ce6208e4855d4144edbbf43fc3430a520",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 사람이 우리를 학대하며 우리를 괴롭게 하며 우리에게 중역을 시키므로"
+      ],
+      "raw_text_hashes": [
+        "755bd344c93a2129ed2c04e8d0ff1c2ce6208e4855d4144edbbf43fc3430a520"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:7",
+      "sequence": 5574,
+      "chapter_label": "DEU 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "Then we cried to the LORD, the God of our fathers. The LORD heard our voice, and saw our affliction, our toil, and our oppression.",
+      "ko": "우리가 우리 조상의 하나님 여호와께 부르짖었더니 여호와께서 우리 음성을 들으시고 우리의 고통과 신고와 압제를 하감하시고",
+      "source_text_hash": "3bfb66ebf09be04cb8067c8491dd3be40082a6657780796cad0ae8b5c3055f55",
+      "translation_text_hash": "59de159cfb3edbab4ef8e7029c0a0fff83c2fb9842c87585214f1a1e45084326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리 조상의 하나님 여호와께 부르짖었더니 여호와께서 우리 음성을 들으시고 우리의 고통과 신고와 압제를 하감하시고"
+      ],
+      "raw_text_hashes": [
+        "59de159cfb3edbab4ef8e7029c0a0fff83c2fb9842c87585214f1a1e45084326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:8",
+      "sequence": 5575,
+      "chapter_label": "DEU 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD brought us out of Egypt with a mighty hand, with an outstretched arm, with great terror, with signs, and with wonders;",
+      "ko": "여호와께서 강한 손과 편 팔과 큰 위엄과 이적과 기사로 우리를 애굽에서 인도하여 내시고",
+      "source_text_hash": "9c8987567122d3e0c5f73e1d0e55bc4cf9018fb67a4d887a03dbccb0e5ba685f",
+      "translation_text_hash": "82d93558b7639dc4833a8cb34bbade598635c63417561ca56a8c8a6ff7e84696",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 강한 손과 편 팔과 큰 위엄과 이적과 기사로 우리를 애굽에서 인도하여 내시고"
+      ],
+      "raw_text_hashes": [
+        "82d93558b7639dc4833a8cb34bbade598635c63417561ca56a8c8a6ff7e84696"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:9",
+      "sequence": 5576,
+      "chapter_label": "DEU 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "and he has brought us into this place, and has given us this land, a land flowing with milk and honey.",
+      "ko": "이곳으로 인도하사 이 땅 곧 젖과 꿀이 흐르는 땅을 주셨나이다",
+      "source_text_hash": "77dceb5dea29f7afd74dd22ac3a0eadecfb200d914309c66617647524f1fef40",
+      "translation_text_hash": "e7975edcf60157937b504783d14413e5effa8fed68f63acff56998e2cdcc7dc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이곳으로 인도하사 이 땅 곧 젖과 꿀이 흐르는 땅을 주셨나이다"
+      ],
+      "raw_text_hashes": [
+        "e7975edcf60157937b504783d14413e5effa8fed68f63acff56998e2cdcc7dc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:10",
+      "sequence": 5577,
+      "chapter_label": "DEU 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "Now, behold, I have brought the first of the fruit of the ground, which you, the LORD, have given me.” You shall set it down before the LORD your God, and worship before the LORD your God.",
+      "ko": "여호와여 이제 내가 주께서 내게 주신 토지 소산의 맏물을 가져왔나이다 하고 너는 그것을 네 하나님 여호와 앞에 두고 네 하나님 여호와 앞에 경배할 것이며",
+      "source_text_hash": "180c8ad9f11bb408f5457b9182fa63b60dc64f5428ff4b1ae48ab61df71118b6",
+      "translation_text_hash": "acb6939bc4ca0f4e91561cbea2d912dacf4e3c4fc64ac123844f49250fbe8df1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 이제 내가 주께서 내게 주신 토지 소산의 맏물을 가져왔나이다 하고 너는 그것을 네 하나님 여호와 앞에 두고 네 하나님 여호와 앞에 경배할 것이며"
+      ],
+      "raw_text_hashes": [
+        "acb6939bc4ca0f4e91561cbea2d912dacf4e3c4fc64ac123844f49250fbe8df1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:11",
+      "sequence": 5578,
+      "chapter_label": "DEU 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "You shall rejoice in all the good which the LORD your God has given to you, and to your house, you, and the Levite, and the foreigner who is among you.",
+      "ko": "네 하나님 여호와께서 너와 네 집에 주신 모든 복을 인하여 너는 레위인과 너의 중에 우거하는 객과 함께 즐거워할찌니라",
+      "source_text_hash": "4868cea98f1e58d68992f7497e8a81f935d441ae211987355633b693c55ea0c3",
+      "translation_text_hash": "56e2608691f2751058824414511ad1fcaaa1d751ea6357e0e819726f1ce75c3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 너와 네 집에 주신 모든 복을 인하여 너는 레위인과 너의 중에 우거하는 객과 함께 즐거워할찌니라"
+      ],
+      "raw_text_hashes": [
+        "56e2608691f2751058824414511ad1fcaaa1d751ea6357e0e819726f1ce75c3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:12",
+      "sequence": 5579,
+      "chapter_label": "DEU 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "When you have finished tithing all the tithe of your increase in the third year, which is the year of tithing, then you shall give it to the Levite, to the foreigner, to the fatherless, and to the widow, that they may eat within your gates and be filled.",
+      "ko": "제 삼년 곧 십일조를 드리는 해에 네 모든 소산의 십일조 다 내기를 마친 후에 그것을 레위인과 객과 고아와 과부에게 주어서 네 성문 안에서 먹어 배부르게 하라",
+      "source_text_hash": "757494bf953f205853e1bffbf3063f9bf6a59a171bf7e385a27d52b7a1da3b87",
+      "translation_text_hash": "d73c57eb84cd9c9bc29708a8e5402aa898a02383427b1006f520cc6476618b20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 삼년 곧 십일조를 드리는 해에 네 모든 소산의 십일조 다 내기를 마친 후에 그것을 레위인과 객과 고아와 과부에게 주어서 네 성문 안에서 먹어 배부르게 하라"
+      ],
+      "raw_text_hashes": [
+        "d73c57eb84cd9c9bc29708a8e5402aa898a02383427b1006f520cc6476618b20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:13",
+      "sequence": 5580,
+      "chapter_label": "DEU 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "You shall say before the LORD your God, “I have put away the holy things out of my house, and also have given them to the Levite, to the foreigner, to the fatherless, and to the widow, according to all your commandment which you have commanded me. I have not transgressed any of your commandments, neither have I forgotten them.",
+      "ko": "그리 할 때에 네 하나님 여호와 앞에 고하기를 내가 성물을 내 집에서 내어 레위인과 객과 고아와 과부에게 주기를 주께서 내게 명하신 명령대로 하였사오니 내가 주의 명령을 범치도 아니하였고 잊지도 아니하였나이다",
+      "source_text_hash": "45e03ba6a8b1285bf54d89784536fb4ef7a95fdda5a496f4b85c7105480fb6d0",
+      "translation_text_hash": "07a6fe95b66f4848041b300225132b2f21db3bd75e9d8aaa8565fe9c0e1df1fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리 할 때에 네 하나님 여호와 앞에 고하기를 내가 성물을 내 집에서 내어 레위인과 객과 고아와 과부에게 주기를 주께서 내게 명하신 명령대로 하였사오니 내가 주의 명령을 범치도 아니하였고 잊지도 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "07a6fe95b66f4848041b300225132b2f21db3bd75e9d8aaa8565fe9c0e1df1fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:14",
+      "sequence": 5581,
+      "chapter_label": "DEU 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "I have not eaten of it in my mourning, neither have I removed any of it while I was unclean, nor given of it for the dead. I have listened to the LORD my God’s voice. I have done according to all that you have commanded me.",
+      "ko": "내가 애곡하는 날에 이 성물을 먹지 아니하였고 부정한 몸으로 이를 떼어두지 아니하였고 죽은 자를 위하여 이를 쓰지 아니하였고 내 하나님 여호와의 말씀을 청종하여 주께서 내게 명령하신대로 다 행하였사오니",
+      "source_text_hash": "9165b3e13af8c4a4b2d2d725887ef204652b7c3e466343da07e9827843a4e084",
+      "translation_text_hash": "1cd0b124b0bc498af3fee5e2c235db80de7b88bc44ac314499be06288af3713f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애곡하는 날에 이 성물을 먹지 아니하였고 부정한 몸으로 이를 떼어두지 아니하였고 죽은 자를 위하여 이를 쓰지 아니하였고 내 하나님 여호와의 말씀을 청종하여 주께서 내게 명령하신대로 다 행하였사오니"
+      ],
+      "raw_text_hashes": [
+        "1cd0b124b0bc498af3fee5e2c235db80de7b88bc44ac314499be06288af3713f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:15",
+      "sequence": 5582,
+      "chapter_label": "DEU 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "Look down from your holy habitation, from heaven, and bless your people Israel, and the ground which you have given us, as you swore to our fathers, a land flowing with milk and honey.”",
+      "ko": "원컨대 주의 거룩한 처소 하늘에서 하감하시고 주의 백성 이스라엘에게 복을 주시며 우리 열조에게 맹세하여 우리에게 주신바 젖과 꿀이 흐르는 땅에 복을 내리소서 할찌니라",
+      "source_text_hash": "05402beda85d09a8d8702f19564a1d180e93fb4702142ca2b9b594e9ec18cab6",
+      "translation_text_hash": "962611613fe61704cf483f18f02a3fea01b01cf218ff7a67fcbf8955f5371c83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원컨대 주의 거룩한 처소 하늘에서 하감하시고 주의 백성 이스라엘에게 복을 주시며 우리 열조에게 맹세하여 우리에게 주신바 젖과 꿀이 흐르는 땅에 복을 내리소서 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "962611613fe61704cf483f18f02a3fea01b01cf218ff7a67fcbf8955f5371c83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:16",
+      "sequence": 5583,
+      "chapter_label": "DEU 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "Today the LORD your God commands you to do these statutes and ordinances. You shall therefore keep and do them with all your heart and with all your soul.",
+      "ko": "오늘날 네 하나님 여호와께서 이 규례와 법도를 행하라고 네게 명하시나니 그런즉 너는 마음을 다하고 성품을 다하여 지켜 행하라",
+      "source_text_hash": "1e066f5b1a47a39fb233bf693234de7a98f7a7d13c409cf76f4681f0b38f7c6d",
+      "translation_text_hash": "5dd1f9bb0d0ee8337adf038e6f7891a67eeb3674ab1ae9f9df8330b7a16b6fbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날 네 하나님 여호와께서 이 규례와 법도를 행하라고 네게 명하시나니 그런즉 너는 마음을 다하고 성품을 다하여 지켜 행하라"
+      ],
+      "raw_text_hashes": [
+        "5dd1f9bb0d0ee8337adf038e6f7891a67eeb3674ab1ae9f9df8330b7a16b6fbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:17",
+      "sequence": 5584,
+      "chapter_label": "DEU 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "You have declared today that the LORD is your God, and that you would walk in his ways, keep his statutes, his commandments, and his ordinances, and listen to his voice.",
+      "ko": "네가 오늘날 여호와를 네 하나님으로 인정하고 또 그 도를 행하고 그 규례와 명령과 법도를 지키며 그 소리를 들으리라 확언하였고",
+      "source_text_hash": "f6d1e254ae1bece5d0adbacc487259fb143748c668f7aa8d820ae77d6b0ff8c8",
+      "translation_text_hash": "d77f43b8d4da0404c8eb1de3be3504c8428bef05be756aab29b08650601c337d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 오늘날 여호와를 네 하나님으로 인정하고 또 그 도를 행하고 그 규례와 명령과 법도를 지키며 그 소리를 들으리라 확언하였고"
+      ],
+      "raw_text_hashes": [
+        "d77f43b8d4da0404c8eb1de3be3504c8428bef05be756aab29b08650601c337d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:18",
+      "sequence": 5585,
+      "chapter_label": "DEU 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD has declared today that you are a people for his own possession, as he has promised you, and that you should keep all his commandments.",
+      "ko": "여호와께서도 네게 말씀하신 대로 오늘날 너를 자기의 보배로운 백성으로 인정하시고 또 그 모든 명령을 지키게 하리라 확언하셨은즉",
+      "source_text_hash": "41483858d0f8acdb7ca4b02bc62fcae8a3bc3df9eb6c6f150fe0cbaa0504753f",
+      "translation_text_hash": "9cf98a2e8bc0940ce1baea790ac7de0b6b9dbeda6e9b13daf8882f774864ec5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서도 네게 말씀하신 대로 오늘날 너를 자기의 보배로운 백성으로 인정하시고 또 그 모든 명령을 지키게 하리라 확언하셨은즉"
+      ],
+      "raw_text_hashes": [
+        "9cf98a2e8bc0940ce1baea790ac7de0b6b9dbeda6e9b13daf8882f774864ec5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:26:19",
+      "sequence": 5586,
+      "chapter_label": "DEU 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "He will make you high above all nations that he has made, in praise, in name, and in honor, and that you may be a holy people to the LORD your God, as he has spoken.",
+      "ko": "여호와께서 너의 칭찬과 명예와 영광으로 그 지으신 모든 민족 위에 뛰어나게 하시고 그 말씀하신대로 너로 네 하나님 여호와의 성민이 되게 하시리라",
+      "source_text_hash": "91fbbb081deaddb2d18ab6e4f09931256189ec4b2d0919258a73f95469822796",
+      "translation_text_hash": "924eb21b3a18874f59f89c392a44c323732f1f5a94989a81a7dc98648d435d8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너의 칭찬과 명예와 영광으로 그 지으신 모든 민족 위에 뛰어나게 하시고 그 말씀하신대로 너로 네 하나님 여호와의 성민이 되게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "924eb21b3a18874f59f89c392a44c323732f1f5a94989a81a7dc98648d435d8a"
+      ]
+    }
+  ]
+}

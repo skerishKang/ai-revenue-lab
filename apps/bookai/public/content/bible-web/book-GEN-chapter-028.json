@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:028",
+  "unit_ordinal": 28,
+  "unit_label": "GEN 28",
+  "book_code": "GEN",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:28:1",
+      "sequence": 775,
+      "chapter_label": "GEN 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "Isaac called Jacob, blessed him, and commanded him, “You shall not take a wife of the daughters of Canaan.",
+      "ko": "이삭이 야곱을 불러 그에게 축복하고 또 부탁하여 가로되 너는 가나안 사람의 딸들 중에서 아내를 취하지 말고",
+      "source_text_hash": "be70e347c42104906782ddc5deae1843ef71280fbc657b7871e1fb863535dc63",
+      "translation_text_hash": "9f322c163d255aaf73e9978f9e30eb6fae66311ccf1b3a952a2e5d9a3abb5c4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 야곱을 불러 그에게 축복하고 또 부탁하여 가로되 너는 가나안 사람의 딸들 중에서 아내를 취하지 말고"
+      ],
+      "raw_text_hashes": [
+        "9f322c163d255aaf73e9978f9e30eb6fae66311ccf1b3a952a2e5d9a3abb5c4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:2",
+      "sequence": 776,
+      "chapter_label": "GEN 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "Arise, go to Paddan Aram, to the house of Bethuel your mother’s father. Take a wife from there from the daughters of Laban, your mother’s brother.",
+      "ko": "일어나 밧단아람으로 가서 너의 외조부 브두엘 집에 이르러 거기서 너의 외삼촌 라반의 딸 중에서 아내를 취하라",
+      "source_text_hash": "b44ee6b0ff728e91d2dc118374bce0e4363a9daf37bbd79928a8dce814c06701",
+      "translation_text_hash": "662ad913fe4fef37781dc317d69c1b68f9cf2e3ae0176b4624e80d4774fd4210",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 밧단아람으로 가서 너의 외조부 브두엘 집에 이르러 거기서 너의 외삼촌 라반의 딸 중에서 아내를 취하라"
+      ],
+      "raw_text_hashes": [
+        "662ad913fe4fef37781dc317d69c1b68f9cf2e3ae0176b4624e80d4774fd4210"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:3",
+      "sequence": 777,
+      "chapter_label": "GEN 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "May God Almighty bless you, and make you fruitful, and multiply you, that you may be a company of peoples,",
+      "ko": "전능하신 하나님이 네게 복을 주어 너로 생육하고 번성케하사 너로 여러 족속을 이루게 하시고",
+      "source_text_hash": "bf6de980cea4ecf4457b424bcf639da169ecfb6f6d9a9d63e924d921ba22b4d1",
+      "translation_text_hash": "3634bffe8628b5dec3f3b8960b7f66285796f878322cf21f1843a5ed13063d7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전능하신 하나님이 네게 복을 주어 너로 생육하고 번성케하사 너로 여러 족속을 이루게 하시고"
+      ],
+      "raw_text_hashes": [
+        "3634bffe8628b5dec3f3b8960b7f66285796f878322cf21f1843a5ed13063d7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:4",
+      "sequence": 778,
+      "chapter_label": "GEN 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "and give you the blessing of Abraham, to you and to your offspring with you, that you may inherit the land where you travel, which God gave to Abraham.”",
+      "ko": "아브라함에게 허락하신 복을 네게 주시되 너와 너와 함께 네 자손에게 주사 너로 하나님이 아브라함에게 주신 땅 곧 너의 우거하는 땅을 유업으로 받게 하시기를 원하노라",
+      "source_text_hash": "5abe0e9c2aac096a3ba0dd0af7777963e6c875f6ca7d74c19c090d25207d9979",
+      "translation_text_hash": "13517c5317e74b48beae2a13eac49880d48c6d8ba18a17a890cbbb27c302d346",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함에게 허락하신 복을 네게 주시되 너와 너와 함께 네 자손에게 주사 너로 하나님이 아브라함에게 주신 땅 곧 너의 우거하는 땅을 유업으로 받게 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "13517c5317e74b48beae2a13eac49880d48c6d8ba18a17a890cbbb27c302d346"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:5",
+      "sequence": 779,
+      "chapter_label": "GEN 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "Isaac sent Jacob away. He went to Paddan Aram to Laban, son of Bethuel the Syrian, the brother of Rebekah, Jacob’s and Esau’s mother.",
+      "ko": "이에 이삭이 야곱을 보내었더니 밧단아람으로 가서 라반에게 이르렀으니 라반은 아람 사람 브두엘의 아들이요 야곱과 에서의 어미 리브가의 오라비더라",
+      "source_text_hash": "e2e68d9a91517e6571e9ac96e02cde064a07d9d1fadae0d95d64b80cb14ed34b",
+      "translation_text_hash": "9d0c3c60b9ae6373c0f579c510d38d716cde67388b07044f763022a847649ab3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이삭이 야곱을 보내었더니 밧단아람으로 가서 라반에게 이르렀으니 라반은 아람 사람 브두엘의 아들이요 야곱과 에서의 어미 리브가의 오라비더라"
+      ],
+      "raw_text_hashes": [
+        "9d0c3c60b9ae6373c0f579c510d38d716cde67388b07044f763022a847649ab3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:6",
+      "sequence": 780,
+      "chapter_label": "GEN 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "Now Esau saw that Isaac had blessed Jacob and sent him away to Paddan Aram, to take him a wife from there, and that as he blessed him he gave him a command, saying, “You shall not take a wife of the daughters of Canaan;”",
+      "ko": "에서가 본즉 이삭이 야곱에게 축복하고 그를 밧단아람으로 보내어 거기서 아내를 취하게 하였고 또 그에게 축복하고 명하기를 너는 가나안 사람의 딸들 중에서 아내를 취하지 말라 하였고",
+      "source_text_hash": "fac6002ebfb8861b021f266d193457804e648848121496997d2b6e91bc4ab69e",
+      "translation_text_hash": "a06278415f7555a3b0058793609d3cb48c2335de44e2118b1d8089bc843ed69e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서가 본즉 이삭이 야곱에게 축복하고 그를 밧단아람으로 보내어 거기서 아내를 취하게 하였고 또 그에게 축복하고 명하기를 너는 가나안 사람의 딸들 중에서 아내를 취하지 말라 하였고"
+      ],
+      "raw_text_hashes": [
+        "a06278415f7555a3b0058793609d3cb48c2335de44e2118b1d8089bc843ed69e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:7",
+      "sequence": 781,
+      "chapter_label": "GEN 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "and that Jacob obeyed his father and his mother, and was gone to Paddan Aram.",
+      "ko": "또 야곱이 부모의 명을 좇아 밧단아람으로 갔으며",
+      "source_text_hash": "9b3ab783d20b9ca4c29e1a5c7f28f4e2f35ac85dbe52f8844e9d8510a82e506d",
+      "translation_text_hash": "58adbc9cbe6b1c3dc2732ee06b1f568cb245b30e96d892f315689f83319eafe7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 야곱이 부모의 명을 좇아 밧단아람으로 갔으며"
+      ],
+      "raw_text_hashes": [
+        "58adbc9cbe6b1c3dc2732ee06b1f568cb245b30e96d892f315689f83319eafe7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:8",
+      "sequence": 782,
+      "chapter_label": "GEN 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "Esau saw that the daughters of Canaan didn’t please Isaac, his father.",
+      "ko": "에서가 또 본즉 가나안 사람의 딸들이 그 아비 이삭을 기쁘게 못하는지라",
+      "source_text_hash": "8a480ee8cb132d3499e59cfae0b8c5ec3afc809c2b81ba816d675c1a91ed348f",
+      "translation_text_hash": "b71931047556f640f75854b9f0062429d8a8f6e79e9e6d8079537caf4ce0d4ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서가 또 본즉 가나안 사람의 딸들이 그 아비 이삭을 기쁘게 못하는지라"
+      ],
+      "raw_text_hashes": [
+        "b71931047556f640f75854b9f0062429d8a8f6e79e9e6d8079537caf4ce0d4ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:9",
+      "sequence": 783,
+      "chapter_label": "GEN 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "So Esau went to Ishmael, and took, in addition to the wives that he had, Mahalath the daughter of Ishmael, Abraham’s son, the sister of Nebaioth, to be his wife.",
+      "ko": "이에 에서가 이스마엘에게 가서 그 본처들 외에 아브라함의 아들 이스마엘의 딸이요 느바욧의 누이인 마할랏을 아내로 취하였더라",
+      "source_text_hash": "a3346ef6721a3d4065c287acdb0cc1ac970bdd4a6a4052bd8b955fcefe243b48",
+      "translation_text_hash": "e745ea733ba1f15e5c2341b6c1bbd769ce66468e1c861c132e1ae74779d7c04b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 에서가 이스마엘에게 가서 그 본처들 외에 아브라함의 아들 이스마엘의 딸이요 느바욧의 누이인 마할랏을 아내로 취하였더라"
+      ],
+      "raw_text_hashes": [
+        "e745ea733ba1f15e5c2341b6c1bbd769ce66468e1c861c132e1ae74779d7c04b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:10",
+      "sequence": 784,
+      "chapter_label": "GEN 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "Jacob went out from Beersheba, and went toward Haran.",
+      "ko": "야곱이 브엘세바에서 떠나 하란으로 향하여 가더니",
+      "source_text_hash": "1c8daa2be1c1b2f34e15c26459ea267c319e8ec046f989afe36d497ad68c6ddd",
+      "translation_text_hash": "f48bb810fcb6128f27e52ad3c9a450f96e312cfbb0286cd9e5be294bfa331611",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 브엘세바에서 떠나 하란으로 향하여 가더니"
+      ],
+      "raw_text_hashes": [
+        "f48bb810fcb6128f27e52ad3c9a450f96e312cfbb0286cd9e5be294bfa331611"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:11",
+      "sequence": 785,
+      "chapter_label": "GEN 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "He came to a certain place, and stayed there all night, because the sun had set. He took one of the stones of the place, and put it under his head, and lay down in that place to sleep.",
+      "ko": "한 곳에 이르러는 해가 진지라 거기서 유숙하려고 그곳의 한 돌을 취하여 베개하고 거기 누워 자더니",
+      "source_text_hash": "84d2ea7fce033466498c48f6876530e6c1487691379447a937686e927e65d9d2",
+      "translation_text_hash": "08c0536c97dcd3ecfa1b4a89166927ef5f984b254d2f85720fbfb48f82b33561",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 곳에 이르러는 해가 진지라 거기서 유숙하려고 그곳의 한 돌을 취하여 베개하고 거기 누워 자더니"
+      ],
+      "raw_text_hashes": [
+        "08c0536c97dcd3ecfa1b4a89166927ef5f984b254d2f85720fbfb48f82b33561"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:12",
+      "sequence": 786,
+      "chapter_label": "GEN 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "He dreamed and saw a stairway set upon the earth, and its top reached to heaven. Behold, the angels of God were ascending and descending on it.",
+      "ko": "꿈에 본즉 사닥다리가 땅위에 섰는데 그 꼭대기가 하늘에 닿았고 또 본즉 하나님의 사자가 그 위에서 오르락 내리락하고",
+      "source_text_hash": "8dee09106a4c5d3bc42164c636f7ddad043f25e706172ab6058487a443133cba",
+      "translation_text_hash": "ef85c9155e6e4263050316a294d0a1b9165d5ae825258948622a895302f35e89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "꿈에 본즉 사닥다리가 땅위에 섰는데 그 꼭대기가 하늘에 닿았고 또 본즉 하나님의 사자가 그 위에서 오르락 내리락하고"
+      ],
+      "raw_text_hashes": [
+        "ef85c9155e6e4263050316a294d0a1b9165d5ae825258948622a895302f35e89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:13",
+      "sequence": 787,
+      "chapter_label": "GEN 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "Behold, the LORD stood above it, and said, “I am the LORD, the God of Abraham your father, and the God of Isaac. I will give the land you lie on to you and to your offspring.",
+      "ko": "또 본즉 여호와께서 그 위에 서서 가라사대 나는 여호와니 너의 조부 아브라함의 하나님이요 이삭의 하나님이라 너 누운 땅을 내가 너와 네 자손에게 주리니",
+      "source_text_hash": "7eae7e706062044c1448aabf12a9885337b1bad7feee8b27bff3cbd42312e1ab",
+      "translation_text_hash": "c0b44c61fa4350550374676c84b3c32046bc7a4f86d68b75651cd4f3e7eb17e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 본즉 여호와께서 그 위에 서서 가라사대 나는 여호와니 너의 조부 아브라함의 하나님이요 이삭의 하나님이라 너 누운 땅을 내가 너와 네 자손에게 주리니"
+      ],
+      "raw_text_hashes": [
+        "c0b44c61fa4350550374676c84b3c32046bc7a4f86d68b75651cd4f3e7eb17e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:14",
+      "sequence": 788,
+      "chapter_label": "GEN 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "Your offspring will be as the dust of the earth, and you will spread abroad to the west, and to the east, and to the north, and to the south. In you and in your offspring, all the families of the earth will be blessed.",
+      "ko": "네 자손이 땅의 티끌 같이 되어서 동서 남북에 편만할찌며 땅의 모든 족속이 너와 네 자손을 인하여 복을 얻으리라",
+      "source_text_hash": "e0cbae61fa465e8bc40793a89708a8fd616a67358d03db6aa2732da3b19f9b6f",
+      "translation_text_hash": "e5466d3485f400d497a9fe90df69bef45329177c3aacbd958254ee74d63d3216",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자손이 땅의 티끌 같이 되어서 동서 남북에 편만할찌며 땅의 모든 족속이 너와 네 자손을 인하여 복을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "e5466d3485f400d497a9fe90df69bef45329177c3aacbd958254ee74d63d3216"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:15",
+      "sequence": 789,
+      "chapter_label": "GEN 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "Behold, I am with you, and will keep you, wherever you go, and will bring you again into this land. For I will not leave you until I have done that which I have spoken of to you.”",
+      "ko": "내가 너와 함께 있어 네가 어디로 가든지 너를 지키며 너를 이끌어 이 땅으로 돌아오게 할찌라 내가 네게 허락한 것을 다 이루기까지 너를 떠나지 아니하리라 하신지라",
+      "source_text_hash": "2572e3f3e41c5b7176e3b08f8598b0f8e786c6f04082a2cab0a3d6a33749e1fe",
+      "translation_text_hash": "039ac3efa988f3c8cc5b08b41aa767a670ac129aa694b29ae0c591248272eb54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너와 함께 있어 네가 어디로 가든지 너를 지키며 너를 이끌어 이 땅으로 돌아오게 할찌라 내가 네게 허락한 것을 다 이루기까지 너를 떠나지 아니하리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "039ac3efa988f3c8cc5b08b41aa767a670ac129aa694b29ae0c591248272eb54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:16",
+      "sequence": 790,
+      "chapter_label": "GEN 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "Jacob awakened out of his sleep, and he said, “Surely the LORD is in this place, and I didn’t know it.”",
+      "ko": "야곱이 잠이 깨어 가로되 여호와께서 과연 여기 계시거늘 내가 알지 못하였도다",
+      "source_text_hash": "c8e00091890245825719c2b2e4d5d805737a12f24339b3db947df2ccfce66ccc",
+      "translation_text_hash": "09361166a23e29d8fb94fc7d217de7b5d84f6b4f552b747d1c85e8795eb2692f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 잠이 깨어 가로되 여호와께서 과연 여기 계시거늘 내가 알지 못하였도다"
+      ],
+      "raw_text_hashes": [
+        "09361166a23e29d8fb94fc7d217de7b5d84f6b4f552b747d1c85e8795eb2692f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:17",
+      "sequence": 791,
+      "chapter_label": "GEN 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "He was afraid, and said, “How awesome this place is! This is none other than God’s house, and this is the gate of heaven.”",
+      "ko": "이에 두려워하여 가로되 두렵도다 이곳이여 다른 것이 아니라 이는 하나님의 전이요 이는 하늘의 문이로다 하고",
+      "source_text_hash": "2a06f3c78b074dc5dcb0ccf535fc91b639e4a742b7df127f50323761a72b2412",
+      "translation_text_hash": "eaaabf44c1ecf400accbec824f5940a46b917ca716d65e0f91a519e12150cd4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 두려워하여 가로되 두렵도다 이곳이여 다른 것이 아니라 이는 하나님의 전이요 이는 하늘의 문이로다 하고"
+      ],
+      "raw_text_hashes": [
+        "eaaabf44c1ecf400accbec824f5940a46b917ca716d65e0f91a519e12150cd4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:18",
+      "sequence": 792,
+      "chapter_label": "GEN 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "Jacob rose up early in the morning, and took the stone that he had put under his head, and set it up for a pillar, and poured oil on its top.",
+      "ko": "야곱이 아침에 일찌기 일어나 베개하였던 돌을 가져 기둥으로 세우고 그 위에 기름을 붓고",
+      "source_text_hash": "6739022ce420a32407c34647b0dfcb5819e8f094487eaf80723340333ed00e48",
+      "translation_text_hash": "8be8f3637b6601ef182766199c1eff17d75c2861e3d4b2b396bda211b8de0830",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 아침에 일찌기 일어나 베개하였던 돌을 가져 기둥으로 세우고 그 위에 기름을 붓고"
+      ],
+      "raw_text_hashes": [
+        "8be8f3637b6601ef182766199c1eff17d75c2861e3d4b2b396bda211b8de0830"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:19",
+      "sequence": 793,
+      "chapter_label": "GEN 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "He called the name of that place Bethel, but the name of the city was Luz at the first.",
+      "ko": "그곳 이름을 벧엘이라 하였더라 이 성의 본 이름은 루스더라",
+      "source_text_hash": "35a1d805514b8250cf6fa1fbd951caefda62c95c4916eff7ea5898f7ed8efc9c",
+      "translation_text_hash": "d797d8c7e0a5d356f3996318e18ef5c51a5fb6bb95d8728344d505145924a18c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그곳 이름을 벧엘이라 하였더라 이 성의 본 이름은 루스더라"
+      ],
+      "raw_text_hashes": [
+        "d797d8c7e0a5d356f3996318e18ef5c51a5fb6bb95d8728344d505145924a18c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:20",
+      "sequence": 794,
+      "chapter_label": "GEN 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "Jacob vowed a vow, saying, “If God will be with me, and will keep me in this way that I go, and will give me bread to eat, and clothing to put on,",
+      "ko": "야곱이 서원하여 가로되 하나님이 나와 함께 계시사 내가 가는 이 길에서 나를 지키시고 먹을 양식과 입을 옷을 주사",
+      "source_text_hash": "bec5bdb810e79cc462935928a34883264d993ca55413b982ee075f579bbeccc5",
+      "translation_text_hash": "7b8a9c34fa7b7f834573ba1f28edc4d5ce15485c170f06c84859eb1be10af90a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 서원하여 가로되 하나님이 나와 함께 계시사 내가 가는 이 길에서 나를 지키시고 먹을 양식과 입을 옷을 주사"
+      ],
+      "raw_text_hashes": [
+        "7b8a9c34fa7b7f834573ba1f28edc4d5ce15485c170f06c84859eb1be10af90a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:21",
+      "sequence": 795,
+      "chapter_label": "GEN 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "so that I come again to my father’s house in peace, and the LORD will be my God,",
+      "ko": "나로 평안히 아비 집으로 돌아가게 하시오면 여호와께서 나의 하나님이 되실 것이요",
+      "source_text_hash": "3169a0833caa375390468bc96e6eeaa7c324b4f0797c48c017432ade482107a6",
+      "translation_text_hash": "f05bbbf017e2b32ed19fa2cbf676b71432014ad541e714821261e6f2422a7695",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 평안히 아비 집으로 돌아가게 하시오면 여호와께서 나의 하나님이 되실 것이요"
+      ],
+      "raw_text_hashes": [
+        "f05bbbf017e2b32ed19fa2cbf676b71432014ad541e714821261e6f2422a7695"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:28:22",
+      "sequence": 796,
+      "chapter_label": "GEN 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "then this stone, which I have set up for a pillar, will be God’s house. Of all that you will give me I will surely give a tenth to you.”",
+      "ko": "내가 기둥으로 세운 이 돌이 하나님의 전이 될 것이요 하나님께서 내게 주신 모든 것에서 십분 일을 내가 반드시 하나님께 드리겠나이다 하였더라",
+      "source_text_hash": "610f89105a1a56e466c8b4d35a058f57c075e989aa68d4882129a1f4159afc92",
+      "translation_text_hash": "02d49708144b9c50d54ddf22578319b7c682c98af87453919ba457956d3df338",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 기둥으로 세운 이 돌이 하나님의 전이 될 것이요 하나님께서 내게 주신 모든 것에서 십분 일을 내가 반드시 하나님께 드리겠나이다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "02d49708144b9c50d54ddf22578319b7c682c98af87453919ba457956d3df338"
+      ]
+    }
+  ]
+}

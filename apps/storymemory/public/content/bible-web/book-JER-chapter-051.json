@@ -1,0 +1,2061 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:051",
+  "unit_ordinal": 796,
+  "unit_label": "JER 51",
+  "book_code": "JER",
+  "chapter_number": 51,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:51:1",
+      "sequence": 20214,
+      "chapter_label": "JER 51",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD says: “Behold, I will raise up against Babylon, and against those who dwell in Lebkamai, a destroying wind.",
+      "ko": "여호와께서 이같이 말씀하시되 보라 내가 멸망시키는 자의 마음을 일으켜 바벨론을 치고 또 나를 대적하는 자 중에 처하는 자를 치되",
+      "source_text_hash": "8bd039b2b4252a66ec5a8a38e078ad537ecddd8b0a28f52c7611d25a99ea7d97",
+      "translation_text_hash": "5e23d629f97afac6d9154fb8a9f4bb91f57d05adcacad9a9be44f52e2159f652",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 보라 내가 멸망시키는 자의 마음을 일으켜 바벨론을 치고 또 나를 대적하는 자 중에 처하는 자를 치되"
+      ],
+      "raw_text_hashes": [
+        "5e23d629f97afac6d9154fb8a9f4bb91f57d05adcacad9a9be44f52e2159f652"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:2",
+      "sequence": 20215,
+      "chapter_label": "JER 51",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 2
+        }
+      ],
+      "en": "I will send to Babylon strangers, who will winnow her. They will empty her land; for in the day of trouble they will be against her all around.",
+      "ko": "내가 타국인을 바벨론에 보내어 키질하여 그 땅을 비게 하리니 재앙의 날에 그를 에워 치리로다",
+      "source_text_hash": "2a038af8878cfae883d51103c4a525ab7e030b695e1dfe5cda62c9323ca802d4",
+      "translation_text_hash": "9c53578c6aefb6aa71b7eb8bdd786b62016f55da39d435864dee2c4d13aab150",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 타국인을 바벨론에 보내어 키질하여 그 땅을 비게 하리니 재앙의 날에 그를 에워 치리로다"
+      ],
+      "raw_text_hashes": [
+        "9c53578c6aefb6aa71b7eb8bdd786b62016f55da39d435864dee2c4d13aab150"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:3",
+      "sequence": 20216,
+      "chapter_label": "JER 51",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 3
+        }
+      ],
+      "en": "Against him who bends, let the archer bend his bow, also against him who lifts himself up in his coat of mail. Don’t spare her young men! Utterly destroy all her army!",
+      "ko": "활을 당기는 자를 향하며 갑주를 갖추고 선 자를 향하여 쏘는 자는 그 활을 당길 것이라 그 청년들을 아끼지 말며 그 군대를 진멸하라",
+      "source_text_hash": "6b629c194f162b33b65ad16ea906852f9c0f47c5a3db0cbfc0e4675b358f0dde",
+      "translation_text_hash": "6b65980f9c94c3e2ded20f81d6590ecb8f7bd9fd5a0f31983b9772df161e400b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "활을 당기는 자를 향하며 갑주를 갖추고 선 자를 향하여 쏘는 자는 그 활을 당길 것이라 그 청년들을 아끼지 말며 그 군대를 진멸하라"
+      ],
+      "raw_text_hashes": [
+        "6b65980f9c94c3e2ded20f81d6590ecb8f7bd9fd5a0f31983b9772df161e400b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:4",
+      "sequence": 20217,
+      "chapter_label": "JER 51",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 4
+        }
+      ],
+      "en": "They will fall down slain in the land of the Chaldeans, and thrust through in her streets.",
+      "ko": "무리가 갈대아인의 땅에서 죽임을 당하여 엎드러질 것이요 그 거리에서 찔림을 당한 자가 엎드러지리라 하시도다",
+      "source_text_hash": "922a8c0c389f15d677c8308dfb197f80299f5c5aca8436bbed34622c1a6e1e3c",
+      "translation_text_hash": "ab030e7f1650602d886f1a59cf204debf8964f79a27eccf113440bfb54d2e7f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 갈대아인의 땅에서 죽임을 당하여 엎드러질 것이요 그 거리에서 찔림을 당한 자가 엎드러지리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "ab030e7f1650602d886f1a59cf204debf8964f79a27eccf113440bfb54d2e7f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:5",
+      "sequence": 20218,
+      "chapter_label": "JER 51",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 5
+        }
+      ],
+      "en": "For Israel is not forsaken, nor Judah, by his God, by the LORD of Armies; though their land is full of guilt against the Holy One of Israel.",
+      "ko": "대저 이스라엘과 유다가 이스라엘의 거룩하신 자를 거역하므로 죄과가 땅에 가득하나 그 하나님 만군의 여호와에게 버림을 입지 아니하였나니",
+      "source_text_hash": "d98036656f157796e5ef29f8e6d532b27fff7e5f7705de6298e20dc72e31027b",
+      "translation_text_hash": "0f8144ac3125ae0cd16ec5f222b4128252dce41cbc19848d1597904eb6bf88e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 이스라엘과 유다가 이스라엘의 거룩하신 자를 거역하므로 죄과가 땅에 가득하나 그 하나님 만군의 여호와에게 버림을 입지 아니하였나니"
+      ],
+      "raw_text_hashes": [
+        "0f8144ac3125ae0cd16ec5f222b4128252dce41cbc19848d1597904eb6bf88e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:6",
+      "sequence": 20219,
+      "chapter_label": "JER 51",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 6
+        }
+      ],
+      "en": "“Flee out of the middle of Babylon! Everyone save his own life! Don’t be cut off in her iniquity, for it is the time of the LORD’s vengeance. He will give to her a recompense.",
+      "ko": "바벨론 가운데서 도망하여 나와서 각기 생명을 구원하고 그의 죄악으로 인하여 끊침을 보지 말지어다 이는 여호와의 보수의 때니 그에게 보복하시리라",
+      "source_text_hash": "cc04f3f7a79243d1c7904e11c8f01d8c2eca5be2ed082a293a5682b38f61a425",
+      "translation_text_hash": "3090e4eb6f2594678c8fc6460f5cb8e3ee1ee9f4bbbc46f98ee304ef42039348",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 가운데서 도망하여 나와서 각기 생명을 구원하고 그의 죄악으로 인하여 끊침을 보지 말지어다 이는 여호와의 보수의 때니 그에게 보복하시리라"
+      ],
+      "raw_text_hashes": [
+        "3090e4eb6f2594678c8fc6460f5cb8e3ee1ee9f4bbbc46f98ee304ef42039348"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:7",
+      "sequence": 20220,
+      "chapter_label": "JER 51",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 7
+        }
+      ],
+      "en": "Babylon has been a golden cup in the LORD’s hand, who made all the earth drunk. The nations have drunk of her wine; therefore the nations have gone mad.",
+      "ko": "바벨론은 여호와의 수중의 온 세계로 취케 하는 금잔이라 열방이 그 포도주를 마시고 인하여 미쳤도다",
+      "source_text_hash": "641e7070a28220702625e4e1721f9114330fb183cc82afaa8cf468bd2d9ce3b1",
+      "translation_text_hash": "385dda5221f0e1598b0e85ac28fc145663cd2f82ebddd28fedafac961f70a97d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론은 여호와의 수중의 온 세계로 취케 하는 금잔이라 열방이 그 포도주를 마시고 인하여 미쳤도다"
+      ],
+      "raw_text_hashes": [
+        "385dda5221f0e1598b0e85ac28fc145663cd2f82ebddd28fedafac961f70a97d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:8",
+      "sequence": 20221,
+      "chapter_label": "JER 51",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 8
+        }
+      ],
+      "en": "Babylon has suddenly fallen and been destroyed! Wail for her! Take balm for her pain. Perhaps she may be healed.",
+      "ko": "바벨론이 졸지에 넘어져 파멸되니 이로 인하여 울라 그 창상을 인하여 유향을 구하라 혹 나으리로다",
+      "source_text_hash": "333ad310e2a0296939a6e9794110de1a868efd677b98cd3429527e652e129fd0",
+      "translation_text_hash": "d7408bae56d674c73144090de1c5c8b1b47cd1e507f2b811db481da51286d574",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론이 졸지에 넘어져 파멸되니 이로 인하여 울라 그 창상을 인하여 유향을 구하라 혹 나으리로다"
+      ],
+      "raw_text_hashes": [
+        "d7408bae56d674c73144090de1c5c8b1b47cd1e507f2b811db481da51286d574"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:9",
+      "sequence": 20222,
+      "chapter_label": "JER 51",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 9
+        }
+      ],
+      "en": "“We would have healed Babylon, but she is not healed. Forsake her, and let’s each go into his own country; for her judgment reaches to heaven, and is lifted up even to the skies.",
+      "ko": "우리가 바벨론을 치료하려 하여도 낫지 아니한즉 버리고 각기 고토로 돌아가자 그 화가 하늘에 미쳤고 궁창에 달하였음이로다",
+      "source_text_hash": "b00ee856f1fa5dcd16519c09c3969bbeb883e6ba0542c8dca46893e1f2e87546",
+      "translation_text_hash": "fe3f05cada585413bab116ade029fadc27652bd8eda689de0afa54972487d068",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 바벨론을 치료하려 하여도 낫지 아니한즉 버리고 각기 고토로 돌아가자 그 화가 하늘에 미쳤고 궁창에 달하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "fe3f05cada585413bab116ade029fadc27652bd8eda689de0afa54972487d068"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:10",
+      "sequence": 20223,
+      "chapter_label": "JER 51",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 10
+        }
+      ],
+      "en": "‘The LORD has produced our righteousness. Come, and let’s declare in Zion the work of the LORD our God.’",
+      "ko": "여호와께서 우리 의를 드러내셨으니 오라 시온에서 우리 하나님 여호와의 일을 선포하자",
+      "source_text_hash": "228ba330b745331e390c390ce2d5a2cb97d666a942b81a21eb59138db4950e60",
+      "translation_text_hash": "75addd416cb61c18a44e480190cad641fbf18cd76e658e96785febac2ebbd911",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 우리 의를 드러내셨으니 오라 시온에서 우리 하나님 여호와의 일을 선포하자"
+      ],
+      "raw_text_hashes": [
+        "75addd416cb61c18a44e480190cad641fbf18cd76e658e96785febac2ebbd911"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:11",
+      "sequence": 20224,
+      "chapter_label": "JER 51",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 11
+        }
+      ],
+      "en": "“Make the arrows sharp! Hold the shields firmly! The LORD has stirred up the spirit of the kings of the Medes, because his purpose is against Babylon, to destroy it; for it is the vengeance of the LORD, the vengeance of his temple.",
+      "ko": "화살을 갈며 방패를 굳게 잡으라 여호와께서 메대 왕들의 마음을 격발하사 바벨론을 멸하기로 뜻하시나니 이는 여호와의 보수하시는 것 곧 그 성전의 보수하시는 것이라",
+      "source_text_hash": "cd0d8da72e0f2f6874b46e5e8a2cd73b51b952ff9a4a09003ec4866597ee7c53",
+      "translation_text_hash": "0087f4c10e8fc933e78518ffa19cb9e1af027cea3896f6a7e48825d733084106",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화살을 갈며 방패를 굳게 잡으라 여호와께서 메대 왕들의 마음을 격발하사 바벨론을 멸하기로 뜻하시나니 이는 여호와의 보수하시는 것 곧 그 성전의 보수하시는 것이라"
+      ],
+      "raw_text_hashes": [
+        "0087f4c10e8fc933e78518ffa19cb9e1af027cea3896f6a7e48825d733084106"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:12",
+      "sequence": 20225,
+      "chapter_label": "JER 51",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 12
+        }
+      ],
+      "en": "Set up a standard against the walls of Babylon! Make the watch strong! Set the watchmen, and prepare the ambushes; for the LORD has both purposed and done that which he spoke concerning the inhabitants of Babylon.",
+      "ko": "바벨론 성벽을 향하여 기를 세우고 튼튼히 지키며 파숫군을 세우며 복병을 베풀어 방비하라 이는 여호와께서 바벨론 거민에 대하여 말씀하신대로 경영하시고 행하심이로다",
+      "source_text_hash": "ad20b31c28b39f2f0b961797eaea0c136f77911226cffeab45c58753917618ca",
+      "translation_text_hash": "3854e877a01e1cc37116502f9aae0eefd29b03bd04dfc25fe9bb8a7510324cc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 성벽을 향하여 기를 세우고 튼튼히 지키며 파숫군을 세우며 복병을 베풀어 방비하라 이는 여호와께서 바벨론 거민에 대하여 말씀하신대로 경영하시고 행하심이로다"
+      ],
+      "raw_text_hashes": [
+        "3854e877a01e1cc37116502f9aae0eefd29b03bd04dfc25fe9bb8a7510324cc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:13",
+      "sequence": 20226,
+      "chapter_label": "JER 51",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 13
+        }
+      ],
+      "en": "You who dwell on many waters, abundant in treasures, your end has come, the measure of your covetousness.",
+      "ko": "많은 물 가에 거하여 재물이 많은 자여 네 탐남의 한정, 네 결국이 이르렀도다",
+      "source_text_hash": "aaeecd8dd7b5d88f54c5e631a59e7065469e86b0fb53f10fa5a3161c8aa3c5f6",
+      "translation_text_hash": "92b8f081f999269328f13004ed3ce38f7384b7d560545324fe2f58a668891127",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 물 가에 거하여 재물이 많은 자여 네 탐남의 한정, 네 결국이 이르렀도다"
+      ],
+      "raw_text_hashes": [
+        "92b8f081f999269328f13004ed3ce38f7384b7d560545324fe2f58a668891127"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:14",
+      "sequence": 20227,
+      "chapter_label": "JER 51",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD of Armies has sworn by himself, saying, ‘Surely I will fill you with men, as with locusts, and they will lift up a shout against you.’",
+      "ko": "만군의 여호와께서 자기로 맹세하시되 내가 진실로 사람을 황충 같이 네게 가득히 하리니 그들이 너를 향하여 소리를 높이리라 하시도다",
+      "source_text_hash": "64fced4c4decf1f85c56d7269a66c1e48c42c3a97215066cf9a2eb42f203de38",
+      "translation_text_hash": "d709719abb7e4a4b84f6ff6e3f7d41b74a909897bfdb30b92bb150bc234ca103",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 자기로 맹세하시되 내가 진실로 사람을 황충 같이 네게 가득히 하리니 그들이 너를 향하여 소리를 높이리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "d709719abb7e4a4b84f6ff6e3f7d41b74a909897bfdb30b92bb150bc234ca103"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:15",
+      "sequence": 20228,
+      "chapter_label": "JER 51",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 15
+        }
+      ],
+      "en": "“He has made the earth by his power. He has established the world by his wisdom. By his understanding he has stretched out the heavens.",
+      "ko": "여호와께서 그 권능으로 땅을 지으셨고 그 지혜로 세계를 세우셨고 그 명철로 하늘들을 펴셨으며",
+      "source_text_hash": "cd4dbccd971fb659eaf6b1e3fdba178f490d2f83d855e1ab8f8fa9cbf5ed1f90",
+      "translation_text_hash": "cc4d929fffa502720800f3bf25c24f2ad17ed3f63d9abadd31bc866cd36b7a76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 권능으로 땅을 지으셨고 그 지혜로 세계를 세우셨고 그 명철로 하늘들을 펴셨으며"
+      ],
+      "raw_text_hashes": [
+        "cc4d929fffa502720800f3bf25c24f2ad17ed3f63d9abadd31bc866cd36b7a76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:16",
+      "sequence": 20229,
+      "chapter_label": "JER 51",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 16
+        }
+      ],
+      "en": "When he utters his voice, there is a roar of waters in the heavens, and he causes the vapors to ascend from the ends of the earth. He makes lightning for the rain, and brings the wind out of his treasuries.",
+      "ko": "그가 목소리를 발하신즉 하늘에 많은 물이 생기나니 그는 땅 끝에서 구름이 오르게 하시며 비를 위하여 번개하게 하시며 그 곳간에서 바람을 내시거늘",
+      "source_text_hash": "913398b795285371ddc22ef2e781d129598a8b4bc1f0905be373389197f24e2b",
+      "translation_text_hash": "eaf82dccda085913ef08602b26d5732f24f83aac77bd48382de217533655c427",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 목소리를 발하신즉 하늘에 많은 물이 생기나니 그는 땅 끝에서 구름이 오르게 하시며 비를 위하여 번개하게 하시며 그 곳간에서 바람을 내시거늘"
+      ],
+      "raw_text_hashes": [
+        "eaf82dccda085913ef08602b26d5732f24f83aac77bd48382de217533655c427"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:17",
+      "sequence": 20230,
+      "chapter_label": "JER 51",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 17
+        }
+      ],
+      "en": "“Every man has become stupid and without knowledge. Every goldsmith is disappointed by his image, for his molten images are falsehood, and there is no breath in them.",
+      "ko": "사람마다 우준하고 무식하도다 금장색마다 자기의 만든 신상으로 인하여 수치를 당하나니 이는 그 부어만든 우상은 거짓이요 그 속에 생기가 없음이라",
+      "source_text_hash": "e1f81e84cc4f314ff116f257b6fcf4bbc5d79c2246a37839ab16fefbd257b1c6",
+      "translation_text_hash": "d3e8a450caf867ed04991d81c5ea9c122e4668400d44d3a018b86a384a840d8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람마다 우준하고 무식하도다 금장색마다 자기의 만든 신상으로 인하여 수치를 당하나니 이는 그 부어만든 우상은 거짓이요 그 속에 생기가 없음이라"
+      ],
+      "raw_text_hashes": [
+        "d3e8a450caf867ed04991d81c5ea9c122e4668400d44d3a018b86a384a840d8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:18",
+      "sequence": 20231,
+      "chapter_label": "JER 51",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 18
+        }
+      ],
+      "en": "They are vanity, a work of delusion. In the time of their visitation, they will perish.",
+      "ko": "그것들은 헛것이요 망령되이 만든 것인즉 징벌하시는 때에 멸망할 것이나",
+      "source_text_hash": "a1dad36dad29b024b01a726668eddec01c683da5afed56acb2e1861f6a97b1ca",
+      "translation_text_hash": "ae775a57c9b98373dd7a0714e9c20fc1dcdab3c0c2769d610c3981121a237110",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들은 헛것이요 망령되이 만든 것인즉 징벌하시는 때에 멸망할 것이나"
+      ],
+      "raw_text_hashes": [
+        "ae775a57c9b98373dd7a0714e9c20fc1dcdab3c0c2769d610c3981121a237110"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:19",
+      "sequence": 20232,
+      "chapter_label": "JER 51",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 19
+        }
+      ],
+      "en": "The portion of Jacob is not like these, for he formed all things, including the tribe of his inheritance. The LORD of Armies is his name.",
+      "ko": "야곱의 분깃은 이같지 아니하시니 그는 만물의 조성자요 이스라엘은 그 산업의 지파라 그 이름은 만군의 여호와시니라",
+      "source_text_hash": "bea37c5be7ddeb524c7d6964ddcddf24e078cac0240a0134720800a35d24594b",
+      "translation_text_hash": "e6faaa605f83a72e314242acdf2aa83dc15f31cd2e04ef5e8c261af0d61bf9e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 분깃은 이같지 아니하시니 그는 만물의 조성자요 이스라엘은 그 산업의 지파라 그 이름은 만군의 여호와시니라"
+      ],
+      "raw_text_hashes": [
+        "e6faaa605f83a72e314242acdf2aa83dc15f31cd2e04ef5e8c261af0d61bf9e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:20",
+      "sequence": 20233,
+      "chapter_label": "JER 51",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 20
+        }
+      ],
+      "en": "“You are my battle ax and weapons of war. With you I will break the nations into pieces. With you I will destroy kingdoms.",
+      "ko": "여호와께서 가라사대 너는 나의 철퇴 곧 병기라 내가 너로 열방을 파하며 너로 국가들을 멸하며",
+      "source_text_hash": "8573d962bc6fe7ac8eaabd6eae3655b3256300ec38373105ec9fd815143951f7",
+      "translation_text_hash": "d6c9d98fb1bac93f2120902bbebe19ad13d233cc1b54b1bfdf2ae24e8d39ae2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 너는 나의 철퇴 곧 병기라 내가 너로 열방을 파하며 너로 국가들을 멸하며"
+      ],
+      "raw_text_hashes": [
+        "d6c9d98fb1bac93f2120902bbebe19ad13d233cc1b54b1bfdf2ae24e8d39ae2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:21",
+      "sequence": 20234,
+      "chapter_label": "JER 51",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 21
+        }
+      ],
+      "en": "With you I will break in pieces the horse and his rider.",
+      "ko": "내가 너로 말과 그 탄 자를 부수며 너로 병거와 그 탄 자를 부수며",
+      "source_text_hash": "02cd8ae8d07c9bf902c6ccceb3e2ba25f365e69941b8a0490aafa20669bb901e",
+      "translation_text_hash": "c3862fda9bd888487ef058dc401e14bbdc08b8d00d4a41def82b49aed5b89060",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너로 말과 그 탄 자를 부수며 너로 병거와 그 탄 자를 부수며"
+      ],
+      "raw_text_hashes": [
+        "c3862fda9bd888487ef058dc401e14bbdc08b8d00d4a41def82b49aed5b89060"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:22",
+      "sequence": 20235,
+      "chapter_label": "JER 51",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 22
+        }
+      ],
+      "en": "With you I will break in pieces the chariot and him who rides therein. With you I will break in pieces man and woman. With you I will break in pieces the old man and the youth. With you I will break in pieces the young man and the virgin.",
+      "ko": "너로 남자와 여자를 부수며 너로 노년과 유년을 부수며 너로 청년과 처녀를 부수며",
+      "source_text_hash": "d35c6ea48ea20ad35952f065bd7bd39dce26aaaee642955d41bc1def54b46d73",
+      "translation_text_hash": "b824918072021973c4b5607c9cd3a0f5966ef90d69d9589321a21b0ea2a37e8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너로 남자와 여자를 부수며 너로 노년과 유년을 부수며 너로 청년과 처녀를 부수며"
+      ],
+      "raw_text_hashes": [
+        "b824918072021973c4b5607c9cd3a0f5966ef90d69d9589321a21b0ea2a37e8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:23",
+      "sequence": 20236,
+      "chapter_label": "JER 51",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 23
+        }
+      ],
+      "en": "With you I will break in pieces the shepherd and his flock. With you I will break in pieces the farmer and his yoke. With you I will break in pieces governors and deputies.",
+      "ko": "너로 목자와 그 양떼를 부수며 너로 농부와 그 멍엣소를 부수며 너로 방백들과 두령들을 부수리로다",
+      "source_text_hash": "f329906d2b356511a99cbd74768a033e27f5a352d76726abd1eca1c4280d4e45",
+      "translation_text_hash": "8fe45d128c4d6b5da3b81524a038475f149491226c3a80e96f8fa1426358cd92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너로 목자와 그 양떼를 부수며 너로 농부와 그 멍엣소를 부수며 너로 방백들과 두령들을 부수리로다"
+      ],
+      "raw_text_hashes": [
+        "8fe45d128c4d6b5da3b81524a038475f149491226c3a80e96f8fa1426358cd92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:24",
+      "sequence": 20237,
+      "chapter_label": "JER 51",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 24
+        }
+      ],
+      "en": "“I will give to Babylon and to all the inhabitants of Chaldea all their evil that they have done in Zion in your sight,” says the LORD.",
+      "ko": "그들이 너희 목전에 시온에서 모든 악을 행한대로 내가 바벨론과 갈대아 모든 거민에게 갚으리라 여호와의 말이니라",
+      "source_text_hash": "190f38ecb45d0ce807e4e3fa9b4291ed64dd2d29e612c7736740605d5bcec737",
+      "translation_text_hash": "60881ee69a9051c74850c672a4d49fec769dd7800400f9ad93cb0af63f50423a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 너희 목전에 시온에서 모든 악을 행한대로 내가 바벨론과 갈대아 모든 거민에게 갚으리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "60881ee69a9051c74850c672a4d49fec769dd7800400f9ad93cb0af63f50423a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:25",
+      "sequence": 20238,
+      "chapter_label": "JER 51",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 25
+        }
+      ],
+      "en": "“Behold, I am against you, destroying mountain,” says the LORD, “which destroys all the earth. I will stretch out my hand on you, roll you down from the rocks, and will make you a burned mountain.",
+      "ko": "나 여호와가 말하노라 온 세계를 멸한 멸망의 산아 보라 나는 네 대적이라 나의 손을 네 위에 펴서 너를 바위에서 굴리고 너로 불 탄 산이 되게 할 것이니",
+      "source_text_hash": "1a05a4c2bb1fe60180090dd6c3380c72673fa8e12057a1ba361e5f5607c73caf",
+      "translation_text_hash": "226bbc3c8716cc37baeba4daf797a9ae5e63761892519ae9a02787a9059a54f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 온 세계를 멸한 멸망의 산아 보라 나는 네 대적이라 나의 손을 네 위에 펴서 너를 바위에서 굴리고 너로 불 탄 산이 되게 할 것이니"
+      ],
+      "raw_text_hashes": [
+        "226bbc3c8716cc37baeba4daf797a9ae5e63761892519ae9a02787a9059a54f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:26",
+      "sequence": 20239,
+      "chapter_label": "JER 51",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 26
+        }
+      ],
+      "en": "They won’t take a cornerstone from you, nor a stone for foundations; but you will be desolate forever,” says the LORD.",
+      "ko": "사람이 네게서 집 모퉁이 돌이나 기촛돌을 취하지 아니할 것이요 너는 영영히 황무지가 될 것이니라 여호와의 말이니라",
+      "source_text_hash": "56354564ea5262bd6dade101a5c455c621bede13f40eb00cf0b0ed0709686943",
+      "translation_text_hash": "c67ba8f34c03fb59be273587a5a66a19c1fab26110e697d0c50eaf5c9e42752c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 네게서 집 모퉁이 돌이나 기촛돌을 취하지 아니할 것이요 너는 영영히 황무지가 될 것이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "c67ba8f34c03fb59be273587a5a66a19c1fab26110e697d0c50eaf5c9e42752c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:27",
+      "sequence": 20240,
+      "chapter_label": "JER 51",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 27
+        }
+      ],
+      "en": "“Set up a standard in the land! Blow the trumpet among the nations! Prepare the nations against her! Call together against her the kingdoms of Ararat, Minni, and Ashkenaz! Appoint a marshal against her! Cause the horses to come up as the swarming locusts!",
+      "ko": "땅에 기를 세우며 열방 중에 나팔을 불어서 열국을 예비시켜 그를 치며 아라랏과 민니와 아스그나스 나라를 불러모아 그를 치며 대장을 세우고 그를 치되 사나운 황충 같이 그 말들을 몰아오게 하라",
+      "source_text_hash": "a139ef8306adcb77bbae9b53397c2da7abd72a1469c8dbee9b6fb0a539503aea",
+      "translation_text_hash": "0c39c7af1b836173775db0d925486cdf40acaa420eef83cf24ec25beae55c1c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅에 기를 세우며 열방 중에 나팔을 불어서 열국을 예비시켜 그를 치며 아라랏과 민니와 아스그나스 나라를 불러모아 그를 치며 대장을 세우고 그를 치되 사나운 황충 같이 그 말들을 몰아오게 하라"
+      ],
+      "raw_text_hashes": [
+        "0c39c7af1b836173775db0d925486cdf40acaa420eef83cf24ec25beae55c1c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:28",
+      "sequence": 20241,
+      "chapter_label": "JER 51",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 28
+        }
+      ],
+      "en": "Prepare against her the nations, the kings of the Medes, its governors, and all its deputies, and all the land of their dominion!",
+      "ko": "열국 곧 메대인의 왕들과 그 방백들과 그 모든 두령과 그 관할하는 모든 땅을 예비시켜 그를 치게 하라",
+      "source_text_hash": "f590c00c9e3bfdbeb32da3ad8382a637409668afe69aa882e445dccb5e46b285",
+      "translation_text_hash": "e21be3fa109c4993be01e2456f3c75cc268790fc23b49d72ed43c039cfa2fa27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국 곧 메대인의 왕들과 그 방백들과 그 모든 두령과 그 관할하는 모든 땅을 예비시켜 그를 치게 하라"
+      ],
+      "raw_text_hashes": [
+        "e21be3fa109c4993be01e2456f3c75cc268790fc23b49d72ed43c039cfa2fa27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:29",
+      "sequence": 20242,
+      "chapter_label": "JER 51",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 29
+        }
+      ],
+      "en": "The land trembles and is in pain; for the purposes of the LORD against Babylon stand, to make the land of Babylon a desolation, without inhabitant.",
+      "ko": "땅이 진동하며 고통하나니 이는 나 여호와가 바벨론을 쳐서 그 땅으로 황무하여 거민이 없게 할 경영이 섰음이라",
+      "source_text_hash": "5efcee5647af2e88e997a92a6a0164b5a5ba0ab5c675f5ebac1929e210aadb3a",
+      "translation_text_hash": "935bf9487007d8babf5714880ec17f8a917c506e6db58a7ef3c9384a137a17d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 진동하며 고통하나니 이는 나 여호와가 바벨론을 쳐서 그 땅으로 황무하여 거민이 없게 할 경영이 섰음이라"
+      ],
+      "raw_text_hashes": [
+        "935bf9487007d8babf5714880ec17f8a917c506e6db58a7ef3c9384a137a17d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:30",
+      "sequence": 20243,
+      "chapter_label": "JER 51",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 30
+        }
+      ],
+      "en": "The mighty men of Babylon have stopped fighting, they remain in their strongholds. Their might has failed. They have become as women. Her dwelling places are set on fire. Her bars are broken.",
+      "ko": "바벨론의 용사는 싸움을 그치고 그 요새에 머무르나 기력이 쇠하여 여인 같이 되며 그 거처는 불타고 그 문빗장은 부러졌으며",
+      "source_text_hash": "06c9dc925b619829cd11defb0fee08e4b99426bc7900438824bdb521e0c3c20c",
+      "translation_text_hash": "8696cfb6f08fe52e0cf92aa50bc112b502a611f423791e657e79b309942daa96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론의 용사는 싸움을 그치고 그 요새에 머무르나 기력이 쇠하여 여인 같이 되며 그 거처는 불타고 그 문빗장은 부러졌으며"
+      ],
+      "raw_text_hashes": [
+        "8696cfb6f08fe52e0cf92aa50bc112b502a611f423791e657e79b309942daa96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:31",
+      "sequence": 20244,
+      "chapter_label": "JER 51",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 31
+        }
+      ],
+      "en": "One runner will run to meet another, and one messenger to meet another, to show the king of Babylon that his city is taken on every quarter.",
+      "ko": "보발군이 달려 만나고 사자가 달려 만나서 바벨론 왕에게 고하기를 그 성읍 사방이 함락되었으며",
+      "source_text_hash": "b2f9d4ffa790998de45fbcc6f0e13970b6a8e6bdc8f2c87a48104797bc4dd7ee",
+      "translation_text_hash": "a5e75330bfa8ebbd18e2a395ce88e36c4ac917c16647042e355a54ba797968a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보발군이 달려 만나고 사자가 달려 만나서 바벨론 왕에게 고하기를 그 성읍 사방이 함락되었으며"
+      ],
+      "raw_text_hashes": [
+        "a5e75330bfa8ebbd18e2a395ce88e36c4ac917c16647042e355a54ba797968a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:32",
+      "sequence": 20245,
+      "chapter_label": "JER 51",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 32
+        }
+      ],
+      "en": "So the passages are seized. They have burned the reeds with fire. The men of war are frightened.”",
+      "ko": "모든 나루는 빼앗겼으며 갈밭이 불탔으며 군사들이 두려워하더이다 하리라",
+      "source_text_hash": "9898934e2c6973e7d0b18e15e4404b0faaa64e07e97e7d8bb3bafe6c9758bc61",
+      "translation_text_hash": "903e9bbd8df842316c05a7027bf29daf61c3f0fb21ceb4db3b8f22be2c8d968f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 나루는 빼앗겼으며 갈밭이 불탔으며 군사들이 두려워하더이다 하리라"
+      ],
+      "raw_text_hashes": [
+        "903e9bbd8df842316c05a7027bf29daf61c3f0fb21ceb4db3b8f22be2c8d968f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:33",
+      "sequence": 20246,
+      "chapter_label": "JER 51",
+      "verse_label": "33",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 33
+        }
+      ],
+      "en": "For the LORD of Armies, the God of Israel says: “The daughter of Babylon is like a threshing floor at the time when it is trodden. Yet a little while, and the time of harvest comes for her.”",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 딸 바벨론은 때가 이른 타작마당과 같은지라 미구에 추수 때가 이르리라 하시도다",
+      "source_text_hash": "d222493848d9beba34214bbf71255e9b7ed750d60a7613fdbc85b1d546dbe05f",
+      "translation_text_hash": "9e56fbbeff5ace257bb8c70321478f35e863fde2da826f5e80eead524d012762",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 딸 바벨론은 때가 이른 타작마당과 같은지라 미구에 추수 때가 이르리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "9e56fbbeff5ace257bb8c70321478f35e863fde2da826f5e80eead524d012762"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:34",
+      "sequence": 20247,
+      "chapter_label": "JER 51",
+      "verse_label": "34",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 34
+        }
+      ],
+      "en": "“Nebuchadnezzar the king of Babylon has devoured me. He has crushed me. He has made me an empty vessel. He has, like a monster, swallowed me up. He has filled his mouth with my delicacies. He has cast me out.",
+      "ko": "바벨론 왕 느부갓네살이 나를 먹으며 나를 멸하며 나로 빈 그릇이 되게 하며 용 같이 나를 삼키며 나의 좋은 음식으로 그 배를 채우고 나를 쫓아내었으니",
+      "source_text_hash": "92d0b5242aedaa0760dc7d5122d3f622eb07796058f7c762c1f4023234571e65",
+      "translation_text_hash": "6ce0cb906b84f9b74e1903da768ffff58b0ba7ce3c0be3b964dbfc45b0a76c87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕 느부갓네살이 나를 먹으며 나를 멸하며 나로 빈 그릇이 되게 하며 용 같이 나를 삼키며 나의 좋은 음식으로 그 배를 채우고 나를 쫓아내었으니"
+      ],
+      "raw_text_hashes": [
+        "6ce0cb906b84f9b74e1903da768ffff58b0ba7ce3c0be3b964dbfc45b0a76c87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:35",
+      "sequence": 20248,
+      "chapter_label": "JER 51",
+      "verse_label": "35",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 35
+        }
+      ],
+      "en": "May the violence done to me and to my flesh be on Babylon!” the inhabitant of Zion will say; and, “May my blood be on the inhabitants of Chaldea!” will Jerusalem say.",
+      "ko": "나와 내 육체에 대한 잔학이 바벨론에 돌아가기를 원한다고 시온 거민이 말할 것이요 내 피 흘린 죄가 갈대아 거민에게로 돌아가기를 원한다고 예루살렘이 말하리라",
+      "source_text_hash": "9c1eccadc9ea363cba1607b9e6f97803455a9f61684f373acc35780c4f7b20ff",
+      "translation_text_hash": "ce635df0034f139776c3ccf5cc3fe229abc3aaf7b6aed5818fd51c7afe47024e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 내 육체에 대한 잔학이 바벨론에 돌아가기를 원한다고 시온 거민이 말할 것이요 내 피 흘린 죄가 갈대아 거민에게로 돌아가기를 원한다고 예루살렘이 말하리라"
+      ],
+      "raw_text_hashes": [
+        "ce635df0034f139776c3ccf5cc3fe229abc3aaf7b6aed5818fd51c7afe47024e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:36",
+      "sequence": 20249,
+      "chapter_label": "JER 51",
+      "verse_label": "36",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 36
+        }
+      ],
+      "en": "Therefore the LORD says: “Behold, I will plead your cause, and take vengeance for you. I will dry up her sea, and make her fountain dry.",
+      "ko": "그러므로 여호와께서 이같이 말씀하시되 보라 내가 네 송사를 듣고 너를 위하여 보수하여 그 바다를 말리며 그 샘을 말리리니",
+      "source_text_hash": "e2608001886ddb216dd46d12adc4764185a782f796f14640f4778df170acc67b",
+      "translation_text_hash": "060ce1eb4ef1bf0dc0753277d19cb5a7b683afff6d5ab129f6a35d17c7d9ea63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 이같이 말씀하시되 보라 내가 네 송사를 듣고 너를 위하여 보수하여 그 바다를 말리며 그 샘을 말리리니"
+      ],
+      "raw_text_hashes": [
+        "060ce1eb4ef1bf0dc0753277d19cb5a7b683afff6d5ab129f6a35d17c7d9ea63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:37",
+      "sequence": 20250,
+      "chapter_label": "JER 51",
+      "verse_label": "37",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 37
+        }
+      ],
+      "en": "Babylon will become heaps, a dwelling place for jackals, an astonishment, and a hissing, without inhabitant.",
+      "ko": "바벨론이 황폐한 무더기가 되어서 시랑의 거처와 놀람과 치솟거리가 되고 거민이 없으리라",
+      "source_text_hash": "7e6bdf30f60f1759a1369605581175ee46495cb4b03c0cf3dac1b79fcdab9ad8",
+      "translation_text_hash": "c2cddd7a5a1051688dd8868a3845d190449e1c45c9e659c668e7b876cf276c68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론이 황폐한 무더기가 되어서 시랑의 거처와 놀람과 치솟거리가 되고 거민이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "c2cddd7a5a1051688dd8868a3845d190449e1c45c9e659c668e7b876cf276c68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:38",
+      "sequence": 20251,
+      "chapter_label": "JER 51",
+      "verse_label": "38",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 38
+        }
+      ],
+      "en": "They will roar together like young lions. They will growl as lions’ cubs.",
+      "ko": "그들이 다 사자 같이 소리하며 어린 사자 같이 부르짖으며",
+      "source_text_hash": "d63ce132256281dc50037d4f6792f3c2ee609109d61ce7dccdb76939985d95bc",
+      "translation_text_hash": "3794e7f4ed4fc3fe8ba5e242ec8e5b00af29b4a20143fb7169469814536f4f2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 다 사자 같이 소리하며 어린 사자 같이 부르짖으며"
+      ],
+      "raw_text_hashes": [
+        "3794e7f4ed4fc3fe8ba5e242ec8e5b00af29b4a20143fb7169469814536f4f2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:39",
+      "sequence": 20252,
+      "chapter_label": "JER 51",
+      "verse_label": "39",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 39
+        }
+      ],
+      "en": "When they are inflamed, I will make their feast, and I will make them drunk, that they may rejoice, and sleep a perpetual sleep, and not wake up,” says the LORD.",
+      "ko": "열정이 일어날 때에 내가 연회를 베풀고 그들로 취하여 기뻐하다가 영영히 잠들어 깨지 못하게 하리라 여호와의 말이니라",
+      "source_text_hash": "3b2e4140bd594812bca4a59b1cc9a75b4c8b70b720b7ba9e2fa41016191a45bb",
+      "translation_text_hash": "f20faf75ca2cee21a9d32a32ec1fcfa91a512b7a682460828c3043427d4b23ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열정이 일어날 때에 내가 연회를 베풀고 그들로 취하여 기뻐하다가 영영히 잠들어 깨지 못하게 하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "f20faf75ca2cee21a9d32a32ec1fcfa91a512b7a682460828c3043427d4b23ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:40",
+      "sequence": 20253,
+      "chapter_label": "JER 51",
+      "verse_label": "40",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 40
+        }
+      ],
+      "en": "“I will bring them down like lambs to the slaughter, like rams with male goats.",
+      "ko": "내가 그들을 끌어 내려서 어린 양과 수양과 수염소가 도수장으로 가는 것 같게 하리라",
+      "source_text_hash": "423fe18a5d9db782cfc90bcca519fe92dd7176932ae5bbd2f937a27c8a2cf250",
+      "translation_text_hash": "e9f3f9384cd7183a6dc0c036924d1263383bdaddd0c9cda7897bfd486a4c40b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 끌어 내려서 어린 양과 수양과 수염소가 도수장으로 가는 것 같게 하리라"
+      ],
+      "raw_text_hashes": [
+        "e9f3f9384cd7183a6dc0c036924d1263383bdaddd0c9cda7897bfd486a4c40b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:41",
+      "sequence": 20254,
+      "chapter_label": "JER 51",
+      "verse_label": "41",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 41
+        }
+      ],
+      "en": "“How Sheshach is taken! How the praise of the whole earth is seized! How Babylon has become a desolation among the nations!",
+      "ko": "슬프다 세삭이 함락되었도다 온 세상의 칭찬 받는 성이 빼앗겼도다 슬프다 바벨론이 열방 중에 황폐하였도다",
+      "source_text_hash": "3afef10caa447ec5cf7f2cd783e7bfca8811963125600fc87163e9f0d8241f92",
+      "translation_text_hash": "af6235d5d51abbab4f46edcef6a995c3829f7dace61d28d58a358419d3c84e96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 세삭이 함락되었도다 온 세상의 칭찬 받는 성이 빼앗겼도다 슬프다 바벨론이 열방 중에 황폐하였도다"
+      ],
+      "raw_text_hashes": [
+        "af6235d5d51abbab4f46edcef6a995c3829f7dace61d28d58a358419d3c84e96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:42",
+      "sequence": 20255,
+      "chapter_label": "JER 51",
+      "verse_label": "42",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 42
+        }
+      ],
+      "en": "The sea has come up on Babylon. She is covered with the multitude of its waves.",
+      "ko": "바다가 바벨론에 넘침이여 그 많은 파도가 그것에 덮였도다",
+      "source_text_hash": "4f026792f5532af37c9a258abb8938e1ac72403910f955908d6652fa0de7c3ec",
+      "translation_text_hash": "edacaaa00c0aceb42b56f581bcf7762d058437667f7820528232130af806927e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다가 바벨론에 넘침이여 그 많은 파도가 그것에 덮였도다"
+      ],
+      "raw_text_hashes": [
+        "edacaaa00c0aceb42b56f581bcf7762d058437667f7820528232130af806927e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:43",
+      "sequence": 20256,
+      "chapter_label": "JER 51",
+      "verse_label": "43",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 43
+        }
+      ],
+      "en": "Her cities have become a desolation, a dry land, and a desert, a land in which no man dwells. No son of man passes by it.",
+      "ko": "그 성읍들은 황폐하여 마른 땅과 사막과 거민이 없는 땅이 되었으니 그리로 지나가는 인자가 없도다",
+      "source_text_hash": "649ac53a620cc34604eb3bc496c84b9dafae5150f2e1163cfe1b597ebc83db5b",
+      "translation_text_hash": "69ed35ce50c13fffa29cb1e23791d337a518084a7fa73bea1f26cdfabde515a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍들은 황폐하여 마른 땅과 사막과 거민이 없는 땅이 되었으니 그리로 지나가는 인자가 없도다"
+      ],
+      "raw_text_hashes": [
+        "69ed35ce50c13fffa29cb1e23791d337a518084a7fa73bea1f26cdfabde515a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:44",
+      "sequence": 20257,
+      "chapter_label": "JER 51",
+      "verse_label": "44",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 44
+        }
+      ],
+      "en": "I will execute judgment on Bel in Babylon, and I will bring out of his mouth that which he has swallowed up. The nations will not flow any more to him. Yes, the wall of Babylon will fall.",
+      "ko": "내가 벨을 바벨론에서 벌하고 그 삼킨 것을 그 입에서 끌어 내리니 열방이 다시는 그에게로 흘러가지 아니하겠고 바벨론 성벽은 무너지리로다",
+      "source_text_hash": "b6873db68a10e9603d1faa2bbd2ab5c38b8f55d05f217af0de310719819c88a0",
+      "translation_text_hash": "b25b642b78405923c2e8939c54c28f16df5d6c380c19f5a75143ccd38f173547",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 벨을 바벨론에서 벌하고 그 삼킨 것을 그 입에서 끌어 내리니 열방이 다시는 그에게로 흘러가지 아니하겠고 바벨론 성벽은 무너지리로다"
+      ],
+      "raw_text_hashes": [
+        "b25b642b78405923c2e8939c54c28f16df5d6c380c19f5a75143ccd38f173547"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:45",
+      "sequence": 20258,
+      "chapter_label": "JER 51",
+      "verse_label": "45",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 45
+        }
+      ],
+      "en": "“My people, go away from the middle of her, and each of you save yourselves from the LORD’s fierce anger.",
+      "ko": "나의 백성아 너희는 그 중에서 나와 각기 나 여호와의 진노에서 스스로 구원하라",
+      "source_text_hash": "af9a8eb25c68a5667658d138a542a88047ddc73fadb109aaa6284265cdbb2c60",
+      "translation_text_hash": "0431a9ef1a94e6df8a51c3f71b3eeca95adc3112819b14166fa20cd08a823a24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 백성아 너희는 그 중에서 나와 각기 나 여호와의 진노에서 스스로 구원하라"
+      ],
+      "raw_text_hashes": [
+        "0431a9ef1a94e6df8a51c3f71b3eeca95adc3112819b14166fa20cd08a823a24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:46",
+      "sequence": 20259,
+      "chapter_label": "JER 51",
+      "verse_label": "46",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 46
+        }
+      ],
+      "en": "Don’t let your heart faint. Don’t fear for the news that will be heard in the land. For news will come one year, and after that in another year news will come, and violence in the land, ruler against ruler.",
+      "ko": "너희 마음을 겁약하게 말며 이 땅에서 들리는 풍설을 인하여 두려워 말라 풍설은 이 해에도 있겠고 저 해에도 있으리라 경내에는 강포함이 있어 관원끼리 서로 치리라",
+      "source_text_hash": "25260bb5be41a2806603eb400489c9b9d483eaf518fd0980471210de6c8fdfc4",
+      "translation_text_hash": "89188e551e26e1713bfd6137f94ab4d2c481ea4b622aee94bea9904dd0fe97e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 마음을 겁약하게 말며 이 땅에서 들리는 풍설을 인하여 두려워 말라 풍설은 이 해에도 있겠고 저 해에도 있으리라 경내에는 강포함이 있어 관원끼리 서로 치리라"
+      ],
+      "raw_text_hashes": [
+        "89188e551e26e1713bfd6137f94ab4d2c481ea4b622aee94bea9904dd0fe97e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:47",
+      "sequence": 20260,
+      "chapter_label": "JER 51",
+      "verse_label": "47",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 47
+        }
+      ],
+      "en": "Therefore behold, the days come that I will execute judgment on the engraved images of Babylon; and her whole land will be confounded. All her slain will fall in the middle of her.",
+      "ko": "그러므로 보라 날이 이르리니 내가 바벨론의 조각한 신상들을 벌할 것이라 그 온 땅이 치욕을 당하겠고 그 살륙 당한 모든 자가 그 가운데 엎드러질 것이며",
+      "source_text_hash": "2df0a9dbc3c2db782a9db1f44a71822fc80722fcab8374282fd23e6f75b97a5f",
+      "translation_text_hash": "3feeb69da152e02d6c8dcfb5345d9923ab7f8bf21762b6351a73c7f17bf22364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 보라 날이 이르리니 내가 바벨론의 조각한 신상들을 벌할 것이라 그 온 땅이 치욕을 당하겠고 그 살륙 당한 모든 자가 그 가운데 엎드러질 것이며"
+      ],
+      "raw_text_hashes": [
+        "3feeb69da152e02d6c8dcfb5345d9923ab7f8bf21762b6351a73c7f17bf22364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:48",
+      "sequence": 20261,
+      "chapter_label": "JER 51",
+      "verse_label": "48",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 48
+        }
+      ],
+      "en": "Then the heavens and the earth, and all that is therein, will sing for joy over Babylon; for the destroyers will come to her from the north,” says the LORD.",
+      "ko": "하늘과 땅과 그 중의 모든것이 바벨론을 인하여 기뻐 노래하리니 이는 파멸시키는 자가 북방에서 그에게 옴이니라 여호와의 말이니라",
+      "source_text_hash": "bf3e7ef55aec0067fd2cc7ad54eb056561c10ea90f17dfdfc2ff7c0bc0334361",
+      "translation_text_hash": "29b493473b30a7b7b107259212a93429e52d3d3c75957c8d8466db3f267bc71d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘과 땅과 그 중의 모든것이 바벨론을 인하여 기뻐 노래하리니 이는 파멸시키는 자가 북방에서 그에게 옴이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "29b493473b30a7b7b107259212a93429e52d3d3c75957c8d8466db3f267bc71d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:49",
+      "sequence": 20262,
+      "chapter_label": "JER 51",
+      "verse_label": "49",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 49
+        }
+      ],
+      "en": "“As Babylon has caused the slain of Israel to fall, so the slain of all the land will fall at Babylon.",
+      "ko": "바벨론이 이스라엘 사람을 살륙하여 엎드러뜨림 같이 온 땅 사람이 바벨론에서 살륙을 당하여 엎드러지리라 하시도다",
+      "source_text_hash": "e3074fb6662c4a3b7edd58cab6362fbba9da5579e74d8fd41f8339e06bce033a",
+      "translation_text_hash": "7a7fed2a3de67ae7ce5f7eed169b6b68b9c533d418abfba4ade7c62ea6d52d21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론이 이스라엘 사람을 살륙하여 엎드러뜨림 같이 온 땅 사람이 바벨론에서 살륙을 당하여 엎드러지리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "7a7fed2a3de67ae7ce5f7eed169b6b68b9c533d418abfba4ade7c62ea6d52d21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:50",
+      "sequence": 20263,
+      "chapter_label": "JER 51",
+      "verse_label": "50",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 50
+        }
+      ],
+      "en": "You who have escaped the sword, go! Don’t stand still! Remember the LORD from afar, and let Jerusalem come into your mind.”",
+      "ko": "칼을 면한 자들이여 서지 말라 행하라 원방에서 여호와를 생각하며 예루살렘을 너희 마음에 두라",
+      "source_text_hash": "9be34d7999f7126b3f3bbafd0f1113768c6519d6dcaae09c5890c179cef6ed43",
+      "translation_text_hash": "90ccb1be0fe2070a149aa2480da77bec32abccc7228d93f901ede222f151c0ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칼을 면한 자들이여 서지 말라 행하라 원방에서 여호와를 생각하며 예루살렘을 너희 마음에 두라"
+      ],
+      "raw_text_hashes": [
+        "90ccb1be0fe2070a149aa2480da77bec32abccc7228d93f901ede222f151c0ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:51",
+      "sequence": 20264,
+      "chapter_label": "JER 51",
+      "verse_label": "51",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 51
+        }
+      ],
+      "en": "“We are confounded because we have heard reproach. Confusion has covered our faces, for strangers have come into the sanctuaries of the LORD’s house.”",
+      "ko": "이방인이 여호와의 집 성소에 들어가므로 우리가 책망을 들으며 수치를 당하여 부끄러움이 우리 얼굴에 덮였느니라",
+      "source_text_hash": "3bbc145b2a3e7f3fbc1c23ebd26a3c15adc0a364ad1a9b50d618ff427b04e984",
+      "translation_text_hash": "79b3a044e10e2d6da4e240af5bb13b943ed6837865c23d5dd154f1d9547e3ce4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인이 여호와의 집 성소에 들어가므로 우리가 책망을 들으며 수치를 당하여 부끄러움이 우리 얼굴에 덮였느니라"
+      ],
+      "raw_text_hashes": [
+        "79b3a044e10e2d6da4e240af5bb13b943ed6837865c23d5dd154f1d9547e3ce4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:52",
+      "sequence": 20265,
+      "chapter_label": "JER 51",
+      "verse_label": "52",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 52
+        }
+      ],
+      "en": "“Therefore behold, the days come,” says the LORD, “that I will execute judgment on her engraved images; and through all her land the wounded will groan.",
+      "ko": "그러므로 여호와께서 가라사대 보라 날이 이르리니 내가 그 조각한 신상을 벌할 것이라 상함을 입은 자들이 그 땅에서 신음하리라",
+      "source_text_hash": "66a2cd04cfbce278ee62a255b7a88e8242eaffc8a92f3c5893f9731c245660de",
+      "translation_text_hash": "2527fa4918b8f6ee2fd450da507a853c9cb30afec6c197033381108cbafe04a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 가라사대 보라 날이 이르리니 내가 그 조각한 신상을 벌할 것이라 상함을 입은 자들이 그 땅에서 신음하리라"
+      ],
+      "raw_text_hashes": [
+        "2527fa4918b8f6ee2fd450da507a853c9cb30afec6c197033381108cbafe04a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:53",
+      "sequence": 20266,
+      "chapter_label": "JER 51",
+      "verse_label": "53",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 53
+        }
+      ],
+      "en": "Though Babylon should mount up to the sky, and though she should fortify the height of her strength, yet destroyers will come to her from me,” says the LORD.",
+      "ko": "가령 바벨론이 하늘까지 솟아오른다 하자 그 성을 높이어 견고히 한다 하자 멸망시킬 자가 내게서부터 그들에게 임하리라 여호와의 말이니라",
+      "source_text_hash": "76fab547197567388aa42cd66bfcf3d2429c2d08c1255f65693cd3dfd8957cf3",
+      "translation_text_hash": "6ef207fa2b8a493adde3149b595e2913026f8e80e3a3e13ca6aadace43a1daa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 바벨론이 하늘까지 솟아오른다 하자 그 성을 높이어 견고히 한다 하자 멸망시킬 자가 내게서부터 그들에게 임하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "6ef207fa2b8a493adde3149b595e2913026f8e80e3a3e13ca6aadace43a1daa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:54",
+      "sequence": 20267,
+      "chapter_label": "JER 51",
+      "verse_label": "54",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 54
+        }
+      ],
+      "en": "“The sound of a cry comes from Babylon, and of great destruction from the land of the Chaldeans!",
+      "ko": "바벨론에서 부르짖는 소리여 갈대아인의 땅에 큰 파멸의 소리로다",
+      "source_text_hash": "cd410bc549778288f5f12627d4397ab7fd239d52b29b3bd6de0ca148c3abb261",
+      "translation_text_hash": "96ec4430203c7db3920c00764fafa121507b665b70c6fd925b427f38ef45ab4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론에서 부르짖는 소리여 갈대아인의 땅에 큰 파멸의 소리로다"
+      ],
+      "raw_text_hashes": [
+        "96ec4430203c7db3920c00764fafa121507b665b70c6fd925b427f38ef45ab4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:55",
+      "sequence": 20268,
+      "chapter_label": "JER 51",
+      "verse_label": "55",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 55
+        }
+      ],
+      "en": "For the LORD lays Babylon waste, and destroys out of her the great voice! Their waves roar like many waters. The noise of their voice is uttered.",
+      "ko": "이는 여호와께서 바벨론을 황폐케 하사 그 떠드는 소리를 끊으심이로다 그 대적이 많은 물의 요동함 같이 요란한 소리를 발하니",
+      "source_text_hash": "26f89a3a31940a026f92d3b267b26cd2979ab78983658f1c2367018c466d737b",
+      "translation_text_hash": "3f1f3b7877c37f39a0d15546857a27153ce8477366209eb178e48ef7fa3cc5c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와께서 바벨론을 황폐케 하사 그 떠드는 소리를 끊으심이로다 그 대적이 많은 물의 요동함 같이 요란한 소리를 발하니"
+      ],
+      "raw_text_hashes": [
+        "3f1f3b7877c37f39a0d15546857a27153ce8477366209eb178e48ef7fa3cc5c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:56",
+      "sequence": 20269,
+      "chapter_label": "JER 51",
+      "verse_label": "56",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 56
+        }
+      ],
+      "en": "For the destroyer has come on her, even on Babylon. Her mighty men are taken. Their bows are broken in pieces, for the LORD is a God of retribution. He will surely repay.",
+      "ko": "곧 멸망시키는 자가 바벨론에 임함이라 그 용사들이 사로잡히고 그들의 활이 꺾이도다 여호와는 보복의 하나님이시니 반드시 보응하시리로다",
+      "source_text_hash": "234cfe8048f8a3d2c3b460280d843b16003c267e1680a141731b819ffedf145f",
+      "translation_text_hash": "be1cba4af8d135db26d8e587510e4ebdeaa0779596fd05539a68c3bffb708a85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 멸망시키는 자가 바벨론에 임함이라 그 용사들이 사로잡히고 그들의 활이 꺾이도다 여호와는 보복의 하나님이시니 반드시 보응하시리로다"
+      ],
+      "raw_text_hashes": [
+        "be1cba4af8d135db26d8e587510e4ebdeaa0779596fd05539a68c3bffb708a85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:57",
+      "sequence": 20270,
+      "chapter_label": "JER 51",
+      "verse_label": "57",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 57
+        }
+      ],
+      "en": "I will make her princes, her wise men, her governors, her deputies, and her mighty men drunk. They will sleep a perpetual sleep, and not wake up,” says the King, whose name is the LORD of Armies.",
+      "ko": "만군의 여호와라 일컫는 왕이 이같이 말씀하시되 내가 그 방백들과 박사들과 감독들과 관장들과 용사들로 취하게 하리니 그들이 영영히 자고 깨지 못하리라",
+      "source_text_hash": "dd6fb842500893226c4aa075243fdfae0d701d61b9f2c182f2f5b1630f6acd64",
+      "translation_text_hash": "6e2c44b79f807bebf557dcd8ca9e44c7f1aec25ddb6db4fe157fa47449bc7c22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와라 일컫는 왕이 이같이 말씀하시되 내가 그 방백들과 박사들과 감독들과 관장들과 용사들로 취하게 하리니 그들이 영영히 자고 깨지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "6e2c44b79f807bebf557dcd8ca9e44c7f1aec25ddb6db4fe157fa47449bc7c22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:58",
+      "sequence": 20271,
+      "chapter_label": "JER 51",
+      "verse_label": "58",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 58
+        }
+      ],
+      "en": "The LORD of Armies says: “The wide walls of Babylon will be utterly overthrown. Her high gates will be burned with fire. The peoples will labor for vanity, and the nations for the fire; and they will be weary.”",
+      "ko": "만군의 여호와가 이같이 말하노라 바벨론의 넓은 성벽은 온전히 무너지겠고 그 높은 문들은 불에 탈 것이며 백성들의 수고는 헛될 것이요 민족들의 수고는 불탈 것인즉 그들이 쇠패하리라 하시니라",
+      "source_text_hash": "8dc8a5c24646180d2b8edd5fb2c741aae710155590c944a055a5622ba38f4885",
+      "translation_text_hash": "ce082a33fc9db618a0b93fc2cb482bd262c2de9f2db16e6aba62fcb8bc21389e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이같이 말하노라 바벨론의 넓은 성벽은 온전히 무너지겠고 그 높은 문들은 불에 탈 것이며 백성들의 수고는 헛될 것이요 민족들의 수고는 불탈 것인즉 그들이 쇠패하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "ce082a33fc9db618a0b93fc2cb482bd262c2de9f2db16e6aba62fcb8bc21389e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:59",
+      "sequence": 20272,
+      "chapter_label": "JER 51",
+      "verse_label": "59",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 59
+        }
+      ],
+      "en": "The word which Jeremiah the prophet commanded Seraiah the son of Neriah, the son of Mahseiah, when he went with Zedekiah the king of Judah to Babylon in the fourth year of his reign. Now Seraiah was chief quartermaster.",
+      "ko": "유다 왕 시드기야 사년에 마세야의 손자 네리야의 아들 스라야가 왕과 함께 바벨론으로 갈 때에 선지자 예레미야가 그에게 말씀을 명하니 스라야는 시종장이더라",
+      "source_text_hash": "6dbcb5021b6685781d0699dafcfc9bdba0a300e3317c2bce988b61feea12ccee",
+      "translation_text_hash": "b70dabe17b2d4aa5698a12ce520ce91dcd098559fd8efe203e268fb03f4da1b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 시드기야 사년에 마세야의 손자 네리야의 아들 스라야가 왕과 함께 바벨론으로 갈 때에 선지자 예레미야가 그에게 말씀을 명하니 스라야는 시종장이더라"
+      ],
+      "raw_text_hashes": [
+        "b70dabe17b2d4aa5698a12ce520ce91dcd098559fd8efe203e268fb03f4da1b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:60",
+      "sequence": 20273,
+      "chapter_label": "JER 51",
+      "verse_label": "60",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 60
+        }
+      ],
+      "en": "Jeremiah wrote in a book all the evil that should come on Babylon, even all these words that are written concerning Babylon.",
+      "ko": "예레미야가 바벨론에 임할 모든 재앙 곧 바벨론에 대하여 기록한 이 모든 말씀을 한 책에 기록하고",
+      "source_text_hash": "27529c9e9afadcfa352bf0f14c687fa8b1282a6031342e1c8154ec406615752f",
+      "translation_text_hash": "f1e04d27dd6b430583289d116e29409b81e6a44fd164e54125e96eff3aac1d06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 바벨론에 임할 모든 재앙 곧 바벨론에 대하여 기록한 이 모든 말씀을 한 책에 기록하고"
+      ],
+      "raw_text_hashes": [
+        "f1e04d27dd6b430583289d116e29409b81e6a44fd164e54125e96eff3aac1d06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:61",
+      "sequence": 20274,
+      "chapter_label": "JER 51",
+      "verse_label": "61",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 61
+        }
+      ],
+      "en": "Jeremiah said to Seraiah, “When you come to Babylon, then see that you read all these words,",
+      "ko": "예레미야가 스라야에게 이르되 너는 바벨론에 이르거든 삼가 이 모든 말씀을 읽고",
+      "source_text_hash": "ea4d1e72ffdfe95ed4d83b3c8afc28e5197225103f8962c15b2a3952c6a9899a",
+      "translation_text_hash": "1d68deb38b0a83f7292511319214879d111cf52746d2e6547f99587598ecd7e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 스라야에게 이르되 너는 바벨론에 이르거든 삼가 이 모든 말씀을 읽고"
+      ],
+      "raw_text_hashes": [
+        "1d68deb38b0a83f7292511319214879d111cf52746d2e6547f99587598ecd7e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:62",
+      "sequence": 20275,
+      "chapter_label": "JER 51",
+      "verse_label": "62",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 62
+        }
+      ],
+      "en": "and say, ‘LORD, you have spoken concerning this place, to cut it off, that no one will dwell in it, neither man nor animal, but that it will be desolate forever.’",
+      "ko": "말하기를 여호와여 주께서 이곳에 대하여 말씀하시기를 이 땅을 멸하여 사람이나 짐승이 거기 거하지 못하게 하고 영영히 황폐케 하리라 하셨나이다 하라",
+      "source_text_hash": "6d3198db03ba78cf500569da39dac87ea02243d87858f96fcfedee9899f7a47d",
+      "translation_text_hash": "09e8e81f89f4be14d5578d613c2b38b470ce7a1d07a73193dfce2e613f8dc185",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 여호와여 주께서 이곳에 대하여 말씀하시기를 이 땅을 멸하여 사람이나 짐승이 거기 거하지 못하게 하고 영영히 황폐케 하리라 하셨나이다 하라"
+      ],
+      "raw_text_hashes": [
+        "09e8e81f89f4be14d5578d613c2b38b470ce7a1d07a73193dfce2e613f8dc185"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:63",
+      "sequence": 20276,
+      "chapter_label": "JER 51",
+      "verse_label": "63",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 63
+        }
+      ],
+      "en": "It will be, when you have finished reading this book, that you shall bind a stone to it, and cast it into the middle of the Euphrates.",
+      "ko": "너는 이 책 읽기를 다한 후에 책에 돌을 매어 유브라데 하수 속에 던지며",
+      "source_text_hash": "9deec269a73990e8f01b1ee61ffbc2ab3f70463298840d35672bcebf1442b009",
+      "translation_text_hash": "7551bfa1d6d3873ee9ec2751f5cbe730426c5c264c30bed9291bfdc2dde0313c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이 책 읽기를 다한 후에 책에 돌을 매어 유브라데 하수 속에 던지며"
+      ],
+      "raw_text_hashes": [
+        "7551bfa1d6d3873ee9ec2751f5cbe730426c5c264c30bed9291bfdc2dde0313c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:51:64",
+      "sequence": 20277,
+      "chapter_label": "JER 51",
+      "verse_label": "64",
+      "locator": {
+        "book": "JER",
+        "chapter": 51,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 51,
+          "verse": 64
+        }
+      ],
+      "en": "Then you shall say, ‘Thus will Babylon sink, and will not rise again because of the evil that I will bring on her; and they will be weary.’” Thus far are the words of Jeremiah.",
+      "ko": "말하기를 바벨론이 나의 재앙 내림을 인하여 이같이 침륜하고 다시 일어나지 못하리니 그들이 쇠패하리라 하라 하니라 예레미야의 말이 이에 마치니라",
+      "source_text_hash": "4e775cc2b8f23ec9765d5dbd25b516638e3e8079e12f20f07d1aa2998c983d55",
+      "translation_text_hash": "e3e4393ece1304bf30e58403474db9ee536553c0bb33b8dea854a247ab3bbb90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 바벨론이 나의 재앙 내림을 인하여 이같이 침륜하고 다시 일어나지 못하리니 그들이 쇠패하리라 하라 하니라 예레미야의 말이 이에 마치니라"
+      ],
+      "raw_text_hashes": [
+        "e3e4393ece1304bf30e58403474db9ee536553c0bb33b8dea854a247ab3bbb90"
+      ]
+    }
+  ]
+}

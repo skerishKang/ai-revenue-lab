@@ -1,0 +1,237 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:067",
+  "unit_ordinal": 545,
+  "unit_label": "PSA 67",
+  "book_code": "PSA",
+  "chapter_number": 67,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:67:1",
+      "sequence": 14895,
+      "chapter_label": "PSA 67",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 67,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 67,
+          "verse": 1
+        }
+      ],
+      "en": "May God be merciful to us, bless us, and cause his face to shine on us. Selah.",
+      "ko": "하나님은 우리를 긍휼히 여기사 복을 주시고 그 얼굴 빛으로 우리에게 비취사(셀라)",
+      "source_text_hash": "212c603911228eadcba2b1a3a3e712e29c8aec53e29da51642c6c4bc87d7ddc6",
+      "translation_text_hash": "74873ee8adbf11798ec353b03320dc2b05e1784b35e000bc239a407561dcd9aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 우리를 긍휼히 여기사 복을 주시고 그 얼굴 빛으로 우리에게 비취사(셀라)"
+      ],
+      "raw_text_hashes": [
+        "74873ee8adbf11798ec353b03320dc2b05e1784b35e000bc239a407561dcd9aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:67:2",
+      "sequence": 14896,
+      "chapter_label": "PSA 67",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 67,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 67,
+          "verse": 2
+        }
+      ],
+      "en": "That your way may be known on earth, and your salvation among all nations,",
+      "ko": "주의 도를 땅 위에, 주의 구원을 만방 중에 알리소서",
+      "source_text_hash": "b9a8c368734803adf66405cf211a203d61c861e98a68204a3d5c4a552ae588d5",
+      "translation_text_hash": "3b02837ae0a3b8888da77b1e48a7550ea3464dc2d435420f47bb6f1f880265d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 도를 땅 위에, 주의 구원을 만방 중에 알리소서"
+      ],
+      "raw_text_hashes": [
+        "3b02837ae0a3b8888da77b1e48a7550ea3464dc2d435420f47bb6f1f880265d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:67:3",
+      "sequence": 14897,
+      "chapter_label": "PSA 67",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 67,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 67,
+          "verse": 3
+        }
+      ],
+      "en": "let the peoples praise you, God. Let all the peoples praise you.",
+      "ko": "하나님이여 민족들로 주를 찬송케 하시며 모든 민족으로 주를 찬송케 하소서",
+      "source_text_hash": "8158af34d1175ab7cdf83ec07baeb02563a2cd0c8eda7bc8113577fbe64f00e6",
+      "translation_text_hash": "d6b9acf27be674a9847e449916b9e6e2d5b24a69b1fcfaa0213bed91903ebc5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 민족들로 주를 찬송케 하시며 모든 민족으로 주를 찬송케 하소서"
+      ],
+      "raw_text_hashes": [
+        "d6b9acf27be674a9847e449916b9e6e2d5b24a69b1fcfaa0213bed91903ebc5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:67:4",
+      "sequence": 14898,
+      "chapter_label": "PSA 67",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 67,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 67,
+          "verse": 4
+        }
+      ],
+      "en": "Oh let the nations be glad and sing for joy, for you will judge the peoples with equity, and govern the nations on earth. Selah.",
+      "ko": "열방은 기쁘고 즐겁게 노래할찌니 주는 민족들을 공평히 판단하시며 땅 위에 열방을 치리하실 것임이니이다(셀라)",
+      "source_text_hash": "003b02f2b296a1f740760f97da1acabe78b52c4677ad2668c9db00eda4ff80e1",
+      "translation_text_hash": "83a16ab9ced6c93d899d75d092f090d7d501b03661b9fdc67f576f3908c28f02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방은 기쁘고 즐겁게 노래할찌니 주는 민족들을 공평히 판단하시며 땅 위에 열방을 치리하실 것임이니이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "83a16ab9ced6c93d899d75d092f090d7d501b03661b9fdc67f576f3908c28f02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:67:5",
+      "sequence": 14899,
+      "chapter_label": "PSA 67",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 67,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 67,
+          "verse": 5
+        }
+      ],
+      "en": "Let the peoples praise you, God. Let all the peoples praise you.",
+      "ko": "하나님이여 민족들로 주를 찬송케 하시며 모든 민족으로 주를 찬송케 하소서",
+      "source_text_hash": "f2e1597d3e2509628c560470d7b1da34472870c84be72401e31c30575e37fc40",
+      "translation_text_hash": "d6b9acf27be674a9847e449916b9e6e2d5b24a69b1fcfaa0213bed91903ebc5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 민족들로 주를 찬송케 하시며 모든 민족으로 주를 찬송케 하소서"
+      ],
+      "raw_text_hashes": [
+        "d6b9acf27be674a9847e449916b9e6e2d5b24a69b1fcfaa0213bed91903ebc5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:67:6",
+      "sequence": 14900,
+      "chapter_label": "PSA 67",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 67,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 67,
+          "verse": 6
+        }
+      ],
+      "en": "The earth has yielded its increase. God, even our own God, will bless us.",
+      "ko": "땅이 그 소산을 내었도다 하나님 곧 우리 하나님이 우리에게 복을 주시리로다",
+      "source_text_hash": "8d23b94e4e783924f1f64c3efc4413d4e4563b228ffaa1f3f8b4b496d3cb29c0",
+      "translation_text_hash": "51ff292105c64a674f0bc8788e599e4d471c2e890061ce95a0bca9fa18f9a27d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 그 소산을 내었도다 하나님 곧 우리 하나님이 우리에게 복을 주시리로다"
+      ],
+      "raw_text_hashes": [
+        "51ff292105c64a674f0bc8788e599e4d471c2e890061ce95a0bca9fa18f9a27d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:67:7",
+      "sequence": 14901,
+      "chapter_label": "PSA 67",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 67,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 67,
+          "verse": 7
+        }
+      ],
+      "en": "God will bless us. All the ends of the earth shall fear him.",
+      "ko": "하나님이 우리에게 복을 주시리니 땅의 모든 끝이 하나님을 경외하리로다",
+      "source_text_hash": "592264182fb574a5de8ee156fc34f73ca7af3a2cc5a4c71c76512b407803845d",
+      "translation_text_hash": "f90d7c646f1dd30cf0a5883a31a3d5c7b4df23a43842aa0ff4e79687b2e954f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 우리에게 복을 주시리니 땅의 모든 끝이 하나님을 경외하리로다"
+      ],
+      "raw_text_hashes": [
+        "f90d7c646f1dd30cf0a5883a31a3d5c7b4df23a43842aa0ff4e79687b2e954f5"
+      ]
+    }
+  ]
+}

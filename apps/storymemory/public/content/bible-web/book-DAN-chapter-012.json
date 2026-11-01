@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:012",
+  "unit_ordinal": 862,
+  "unit_label": "DAN 12",
+  "book_code": "DAN",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:12:1",
+      "sequence": 22083,
+      "chapter_label": "DAN 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "“At that time Michael will stand up, the great prince who stands for the children of your people; and there will be a time of trouble, such as never was since there was a nation even to that same time. At that time your people will be delivered, everyone who is found written in the book.",
+      "ko": "그 때에 네 민족을 호위하는 대군 미가엘이 일어날 것이요 또 환난이 있으리니 이는 개국 이래로 그 때까지 없던 환난일 것이며 그 때에 네 백성 중 무릇 책에 기록된 모든 자가 구원을 얻을 것이라",
+      "source_text_hash": "05d78d52ae6ea3b5ecaaf05aaae17860d942b57738962999120bd0270a37620c",
+      "translation_text_hash": "7689a254b0ea42655b597e1170ba1e5d6ea1d8bb7a9387646265801f7814f8e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 네 민족을 호위하는 대군 미가엘이 일어날 것이요 또 환난이 있으리니 이는 개국 이래로 그 때까지 없던 환난일 것이며 그 때에 네 백성 중 무릇 책에 기록된 모든 자가 구원을 얻을 것이라"
+      ],
+      "raw_text_hashes": [
+        "7689a254b0ea42655b597e1170ba1e5d6ea1d8bb7a9387646265801f7814f8e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:2",
+      "sequence": 22084,
+      "chapter_label": "DAN 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "Many of those who sleep in the dust of the earth will awake, some to everlasting life, and some to shame and everlasting contempt.",
+      "ko": "땅의 티끌 가운데서 자는 자 중에 많이 깨어 영생을 얻는 자도 있겠고 수욕을 받아서 무궁히 부끄러움을 입을 자도 있을 것이며",
+      "source_text_hash": "bd38434ae9cd2e657afe10cd94d511ed6e575ec60a6cc9b8a6f2d1130de3ebdb",
+      "translation_text_hash": "21a9e698433ecd13f2795cae497a00963f29812b5f188338c9a5f638536fe9e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 티끌 가운데서 자는 자 중에 많이 깨어 영생을 얻는 자도 있겠고 수욕을 받아서 무궁히 부끄러움을 입을 자도 있을 것이며"
+      ],
+      "raw_text_hashes": [
+        "21a9e698433ecd13f2795cae497a00963f29812b5f188338c9a5f638536fe9e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:3",
+      "sequence": 22085,
+      "chapter_label": "DAN 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "Those who are wise will shine as the brightness of the expanse. Those who turn many to righteousness will shine as the stars forever and ever.",
+      "ko": "지혜 있는 자는 궁창의 빛과 같이 빛날 것이요 많은 사람을 옳은데로 돌아오게 한 자는 별과 같이 영원토록 비취리라",
+      "source_text_hash": "b9824772bd463509c76ac18c84e211b7d31816410fe33521bf725a17907e20ba",
+      "translation_text_hash": "83f17939361a16e2dbb64274e5afa1b472a5b1435bd068ddea5653af6a1c0a08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜 있는 자는 궁창의 빛과 같이 빛날 것이요 많은 사람을 옳은데로 돌아오게 한 자는 별과 같이 영원토록 비취리라"
+      ],
+      "raw_text_hashes": [
+        "83f17939361a16e2dbb64274e5afa1b472a5b1435bd068ddea5653af6a1c0a08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:4",
+      "sequence": 22086,
+      "chapter_label": "DAN 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "But you, Daniel, shut up the words and seal the book, even to the time of the end. Many will run back and forth, and knowledge will be increased.”",
+      "ko": "다니엘아 마지막 때까지 이 말을 간수하고 이 글을 봉함하라 많은 사람이 빨리 왕래하며 지식이 더하리라",
+      "source_text_hash": "d9e643c7259001afd1a18fd4b0f8c0f8ff191aa1faebdce129c81802e1ede13a",
+      "translation_text_hash": "3fb79a63b50c08fefac9398964c00c56299a11f8a2b50eb45c853147df96b66f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘아 마지막 때까지 이 말을 간수하고 이 글을 봉함하라 많은 사람이 빨리 왕래하며 지식이 더하리라"
+      ],
+      "raw_text_hashes": [
+        "3fb79a63b50c08fefac9398964c00c56299a11f8a2b50eb45c853147df96b66f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:5",
+      "sequence": 22087,
+      "chapter_label": "DAN 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "Then I, Daniel, looked, and behold, two others stood, one on the river bank on this side, and the other on the river bank on that side.",
+      "ko": "나 다니엘이 본즉 다른 두 사람이 있어 하나는 강 이편 언덕에 섰고 하나는 강 저편 언덕에 섰더니",
+      "source_text_hash": "b5e6052730c9e5c16472dfb6fcc209aa0d3a50e947a51a6b8bffdc0bceaba2cc",
+      "translation_text_hash": "2dbf62fdadff657c55db7c318e15713a403c0469e818cbba5899ece8318607f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 다니엘이 본즉 다른 두 사람이 있어 하나는 강 이편 언덕에 섰고 하나는 강 저편 언덕에 섰더니"
+      ],
+      "raw_text_hashes": [
+        "2dbf62fdadff657c55db7c318e15713a403c0469e818cbba5899ece8318607f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:6",
+      "sequence": 22088,
+      "chapter_label": "DAN 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "One said to the man clothed in linen, who was above the waters of the river, “How long will it be to the end of these wonders?”",
+      "ko": "그중에 하나가 세마포 옷을 입은 자 곧 강물 위에 있는 자에게 이르되 이 기사의 끝이 어느 때까지냐 하기로",
+      "source_text_hash": "507704e543cdd0bd2e24af17e74658ea93d5e6815a7f615a7fbf5f3ff90b9e89",
+      "translation_text_hash": "3c789bc63488990b027e1f84b09024db323a2cfb6d6de314e815768dd2afaa9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그중에 하나가 세마포 옷을 입은 자 곧 강물 위에 있는 자에게 이르되 이 기사의 끝이 어느 때까지냐 하기로"
+      ],
+      "raw_text_hashes": [
+        "3c789bc63488990b027e1f84b09024db323a2cfb6d6de314e815768dd2afaa9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:7",
+      "sequence": 22089,
+      "chapter_label": "DAN 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "I heard the man clothed in linen, who was above the waters of the river, when he held up his right hand and his left hand to heaven, and swore by him who lives forever that it will be for a time, times, and a half; and when they have finished breaking in pieces the power of the holy people, all these things will be finished.",
+      "ko": "내가 들은즉 그 세마포 옷을 입고 강물 위에 있는 자가 그 좌우 손을 들어 하늘을 향하여 영생하시는 자를 가리켜 맹세하여 가로되 반드시 한때 두때 반때를 지나서 성도의 권세가 다 깨어지기까지니 그렇게 되면 이 모든 일이 다 끝나리라 하더라",
+      "source_text_hash": "ba13488dcf0f9c5f8fc5ddc3d70c8d3e2c4b2ca76fc4ef72f6669d2fa2f4584f",
+      "translation_text_hash": "99a5b2b9853bcc9415a24ad8d51efb3b03c46a5f2475743621fbe805e68727c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 들은즉 그 세마포 옷을 입고 강물 위에 있는 자가 그 좌우 손을 들어 하늘을 향하여 영생하시는 자를 가리켜 맹세하여 가로되 반드시 한때 두때 반때를 지나서 성도의 권세가 다 깨어지기까지니 그렇게 되면 이 모든 일이 다 끝나리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "99a5b2b9853bcc9415a24ad8d51efb3b03c46a5f2475743621fbe805e68727c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:8",
+      "sequence": 22090,
+      "chapter_label": "DAN 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "I heard, but I didn’t understand. Then I said, “My lord, what will be the outcome of these things?”",
+      "ko": "내가 듣고도 깨닫지 못한지라 내가 가로되 내 주여 이 모든 일의 결국이 어떠하겠삽나이까",
+      "source_text_hash": "220e9fcc005fbc4f3fc32a2848f462315d519fa85bee1edb67afe5aff7508a6d",
+      "translation_text_hash": "c520219fbc877d5acf3f0d01253226fe08a5716629854fd1a484e6fe7650df10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 듣고도 깨닫지 못한지라 내가 가로되 내 주여 이 모든 일의 결국이 어떠하겠삽나이까"
+      ],
+      "raw_text_hashes": [
+        "c520219fbc877d5acf3f0d01253226fe08a5716629854fd1a484e6fe7650df10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:9",
+      "sequence": 22091,
+      "chapter_label": "DAN 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "He said, “Go your way, Daniel; for the words are shut up and sealed until the time of the end.",
+      "ko": "그가 가로되 다니엘아 갈찌어다 대저 이 말은 마지막 때까지 간수하고 봉함할 것임이니라",
+      "source_text_hash": "d51dc78cb301e8f98ab52060f66e0d59788a894b9d6f92320c36bf35f15317f6",
+      "translation_text_hash": "f057ebebf4ff16b5a6e1fe4e5d5f95249dffab07e34885f16a0b2d4ef28e5f45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가로되 다니엘아 갈찌어다 대저 이 말은 마지막 때까지 간수하고 봉함할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "f057ebebf4ff16b5a6e1fe4e5d5f95249dffab07e34885f16a0b2d4ef28e5f45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:10",
+      "sequence": 22092,
+      "chapter_label": "DAN 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "Many will purify themselves, and make themselves white, and be refined, but the wicked will do wickedly; and none of the wicked will understand, but those who are wise will understand.",
+      "ko": "많은 사람이 연단을 받아 스스로 정결케 하며 희게 할 것이나 악한 사람은 악을 행하리니 악한 자는 아무도 깨닫지 못하되 오직 지혜 있는 자는 깨달으리라",
+      "source_text_hash": "8cd4246ab7728fbe9bf9ecf232516a748d2d305328511e7eaa257af87f71cff7",
+      "translation_text_hash": "8fe6027c4a264688ddfed0b2f9822015a3282c027e8d8f8ae11928990b09bd02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 사람이 연단을 받아 스스로 정결케 하며 희게 할 것이나 악한 사람은 악을 행하리니 악한 자는 아무도 깨닫지 못하되 오직 지혜 있는 자는 깨달으리라"
+      ],
+      "raw_text_hashes": [
+        "8fe6027c4a264688ddfed0b2f9822015a3282c027e8d8f8ae11928990b09bd02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:11",
+      "sequence": 22093,
+      "chapter_label": "DAN 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "“From the time that the continual burnt offering is taken away and the abomination that makes desolate set up, there will be one thousand two hundred ninety days.",
+      "ko": "매일 드리는 제사를 폐하며 멸망케 할 미운 물건을 세울 때부터 일천 이백 구십일을 지낼 것이요",
+      "source_text_hash": "6391f1b53cb50f90c185e4f00d152532fcd4e9f474d41696153253b50c61d19d",
+      "translation_text_hash": "02e33d5c4c3ada18af090784ee751df2f8473aae3cfd8f2e2dce5cabbdf32f35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매일 드리는 제사를 폐하며 멸망케 할 미운 물건을 세울 때부터 일천 이백 구십일을 지낼 것이요"
+      ],
+      "raw_text_hashes": [
+        "02e33d5c4c3ada18af090784ee751df2f8473aae3cfd8f2e2dce5cabbdf32f35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:12",
+      "sequence": 22094,
+      "chapter_label": "DAN 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Blessed is he who waits, and comes to the one thousand three hundred thirty-five days.",
+      "ko": "기다려서 일천 삼백 삼십 오일까지 이르는 그 사람은 복이 있으리라",
+      "source_text_hash": "2b66676a720122bf4642d7cf3bfacd2d0849e93829ba1504d96f1ba2afe4e33f",
+      "translation_text_hash": "66dc3e1cfd5d6a0ed48babebd96db24985422b645a997c6652f23ca0ed107881",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기다려서 일천 삼백 삼십 오일까지 이르는 그 사람은 복이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "66dc3e1cfd5d6a0ed48babebd96db24985422b645a997c6652f23ca0ed107881"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:12:13",
+      "sequence": 22095,
+      "chapter_label": "DAN 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "“But go your way until the end; for you will rest, and will stand in your inheritance at the end of the days.”",
+      "ko": "너는 가서 마지막을 기다리라 이는 네가 평안히 쉬다가 끝날에는 네 업을 누릴 것임이니라",
+      "source_text_hash": "2d1bb8b3dada8c7966ec36d170ca3fa30b0809ba8801cb635495dd54961e2d07",
+      "translation_text_hash": "5906a9c6b6f2df4b79e2b9e20c312327c904e7eefaf0d193df33ad47eef857f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 가서 마지막을 기다리라 이는 네가 평안히 쉬다가 끝날에는 네 업을 누릴 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "5906a9c6b6f2df4b79e2b9e20c312327c904e7eefaf0d193df33ad47eef857f4"
+      ]
+    }
+  ]
+}

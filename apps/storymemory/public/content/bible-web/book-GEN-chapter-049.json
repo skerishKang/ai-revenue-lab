@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:049",
+  "unit_ordinal": 49,
+  "unit_label": "GEN 49",
+  "book_code": "GEN",
+  "chapter_number": 49,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:49:1",
+      "sequence": 1475,
+      "chapter_label": "GEN 49",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 1
+        }
+      ],
+      "en": "Jacob called to his sons, and said: “Gather yourselves together, that I may tell you that which will happen to you in the days to come.",
+      "ko": "야곱이 그 아들들을 불러 이르되 너희는 모이라 너희의 후일에 당할 일을 내가 너희에게 이르리라",
+      "source_text_hash": "76e77f1905bc4c97737155dedda47a3bbf20b960964f68bb27a33ebc1da7aed5",
+      "translation_text_hash": "76b02205d1720da47e7153f094e9aee3cddb17c1a13b6a78fbfd1deaf8fc2c6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 그 아들들을 불러 이르되 너희는 모이라 너희의 후일에 당할 일을 내가 너희에게 이르리라"
+      ],
+      "raw_text_hashes": [
+        "76b02205d1720da47e7153f094e9aee3cddb17c1a13b6a78fbfd1deaf8fc2c6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:2",
+      "sequence": 1476,
+      "chapter_label": "GEN 49",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 2
+        }
+      ],
+      "en": "Assemble yourselves, and hear, you sons of Jacob. Listen to Israel, your father.",
+      "ko": "너희는 모여 들으라 야곱의 아들들아 너희 아비 이스라엘에게 들을찌어다",
+      "source_text_hash": "b5b0d076df24b13f111db7fcdd9ca60c9d316c8123e580725432dc83c6aaad0b",
+      "translation_text_hash": "c13ca91445ba12b53563ec3ee83da84c4c8c8a9f52720c5ab4ad89efa3771ee8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 모여 들으라 야곱의 아들들아 너희 아비 이스라엘에게 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "c13ca91445ba12b53563ec3ee83da84c4c8c8a9f52720c5ab4ad89efa3771ee8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:3",
+      "sequence": 1477,
+      "chapter_label": "GEN 49",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 3
+        }
+      ],
+      "en": "“Reuben, you are my firstborn, my might, and the beginning of my strength, excelling in dignity, and excelling in power.",
+      "ko": "르우벤아 너는 내 장자요 나의 능력이요 나의 기력의 시작이라 위광이 초등하고 권능이 탁월하도다마는",
+      "source_text_hash": "bba6fee71ab4e29463c9e2c39a021d1a4c530a5123875b782b59cefac60f53ec",
+      "translation_text_hash": "b4721271ffd14300bf03f19cf77148639ccfca7714f01fbb007d14a32602608d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤아 너는 내 장자요 나의 능력이요 나의 기력의 시작이라 위광이 초등하고 권능이 탁월하도다마는"
+      ],
+      "raw_text_hashes": [
+        "b4721271ffd14300bf03f19cf77148639ccfca7714f01fbb007d14a32602608d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:4",
+      "sequence": 1478,
+      "chapter_label": "GEN 49",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 4
+        }
+      ],
+      "en": "Boiling over like water, you shall not excel, because you went up to your father’s bed, then defiled it. He went up to my couch.",
+      "ko": "물의 끓음 같았은즉 너는 탁월치 못하리니 네가 아비의 침상에 올라 더럽혔음이로다 그가 내 침상에 올랐었도다",
+      "source_text_hash": "0b4f372925e45fc7bdfc32b57e6dc21ef2120e4800fc52f873c04ee8a350d003",
+      "translation_text_hash": "4d32df9e115880b46028972972a713db62720f0b03d27e499badf84a27511d79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물의 끓음 같았은즉 너는 탁월치 못하리니 네가 아비의 침상에 올라 더럽혔음이로다 그가 내 침상에 올랐었도다"
+      ],
+      "raw_text_hashes": [
+        "4d32df9e115880b46028972972a713db62720f0b03d27e499badf84a27511d79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:5",
+      "sequence": 1479,
+      "chapter_label": "GEN 49",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 5
+        }
+      ],
+      "en": "“Simeon and Levi are brothers. Their swords are weapons of violence.",
+      "ko": "시므온과 레위는 형제요 그들의 칼은 잔해하는 기계로다",
+      "source_text_hash": "0181712173565f7d765e24a8937f68b8e6c4d4267ce4035174aa189d48f910b9",
+      "translation_text_hash": "897a4fe8374154b81d260780b25b85be3af14dff0a69da4b0f9972185c161017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온과 레위는 형제요 그들의 칼은 잔해하는 기계로다"
+      ],
+      "raw_text_hashes": [
+        "897a4fe8374154b81d260780b25b85be3af14dff0a69da4b0f9972185c161017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:6",
+      "sequence": 1480,
+      "chapter_label": "GEN 49",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 6
+        }
+      ],
+      "en": "My soul, don’t come into their council. My glory, don’t be united to their assembly; for in their anger they killed men. In their self-will they hamstrung cattle.",
+      "ko": "내 혼아 그들의 모의에 상관하지 말찌어다 내 영광아 그들의 집회에 참예하지 말찌어다 그들이 그 분노대로 사람을 죽이고 그 혈기대로 소의 발목 힘줄을 끊었음이로다",
+      "source_text_hash": "4da994aa3cb5f5792f5b0962b9dc767f26c4b32465aec4db6a691c68e4796c45",
+      "translation_text_hash": "a16a401ab30114835d8cf7a656eda215c5dcccb03e272555cb9e3a95c3e07722",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 혼아 그들의 모의에 상관하지 말찌어다 내 영광아 그들의 집회에 참예하지 말찌어다 그들이 그 분노대로 사람을 죽이고 그 혈기대로 소의 발목 힘줄을 끊었음이로다"
+      ],
+      "raw_text_hashes": [
+        "a16a401ab30114835d8cf7a656eda215c5dcccb03e272555cb9e3a95c3e07722"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:7",
+      "sequence": 1481,
+      "chapter_label": "GEN 49",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 7
+        }
+      ],
+      "en": "Cursed be their anger, for it was fierce; and their wrath, for it was cruel. I will divide them in Jacob, and scatter them in Israel.",
+      "ko": "그 노염이 혹독하니 저주를 받을 것이요 분기가 맹렬하니 저주를 받을 것이라 내가 그들을 야곱 중에서 나누며 이스라엘 중에서 흩으리로다",
+      "source_text_hash": "7bb75f13bfdf8c06c75cb14353dad275e32bed7ad60eed27f2d3c42eee44036e",
+      "translation_text_hash": "485e36f7e0aa415396935db22c8dc22097161310d535cde3369fe8aff3ae994e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 노염이 혹독하니 저주를 받을 것이요 분기가 맹렬하니 저주를 받을 것이라 내가 그들을 야곱 중에서 나누며 이스라엘 중에서 흩으리로다"
+      ],
+      "raw_text_hashes": [
+        "485e36f7e0aa415396935db22c8dc22097161310d535cde3369fe8aff3ae994e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:8",
+      "sequence": 1482,
+      "chapter_label": "GEN 49",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 8
+        }
+      ],
+      "en": "“Judah, your brothers will praise you. Your hand will be on the neck of your enemies. Your father’s sons will bow down before you.",
+      "ko": "유다야 너는 네 형제의 찬송이 될찌라 네 손이 네 원수의 목을 잡을 것이요 네 아비의 아들들이 네 앞에 절하리로다",
+      "source_text_hash": "f7fb858e588329130c7970636da58a1d05faf45de67888f39ab60c67e73f7861",
+      "translation_text_hash": "2a5413a04b08ca9e7bebf99d1ad511fd792417abca7d5185c5478d5345940635",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다야 너는 네 형제의 찬송이 될찌라 네 손이 네 원수의 목을 잡을 것이요 네 아비의 아들들이 네 앞에 절하리로다"
+      ],
+      "raw_text_hashes": [
+        "2a5413a04b08ca9e7bebf99d1ad511fd792417abca7d5185c5478d5345940635"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:9",
+      "sequence": 1483,
+      "chapter_label": "GEN 49",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 9
+        }
+      ],
+      "en": "Judah is a lion’s cub. From the prey, my son, you have gone up. He stooped down, he crouched as a lion, as a lioness. Who will rouse him up?",
+      "ko": "유다는 사자 새끼로다 내 아들아 너는 움킨 것을 찢고 올라 갔도다 그의 엎드리고 웅크림이 수사자 같고 암사자 같으니 누가 그를 범할 수 있으랴",
+      "source_text_hash": "6379e8160a0c2d03db66380dc5b4af6fc36ab51f0939e237a43956a39094bfef",
+      "translation_text_hash": "8b0305e71ae14bf4f97935e197f864c66c1685baf8c0196364965c2dce5c311a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다는 사자 새끼로다 내 아들아 너는 움킨 것을 찢고 올라 갔도다 그의 엎드리고 웅크림이 수사자 같고 암사자 같으니 누가 그를 범할 수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "8b0305e71ae14bf4f97935e197f864c66c1685baf8c0196364965c2dce5c311a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:10",
+      "sequence": 1484,
+      "chapter_label": "GEN 49",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 10
+        }
+      ],
+      "en": "The scepter will not depart from Judah, nor the ruler’s staff from between his feet, until he comes to whom it belongs. The obedience of the peoples will be to him.",
+      "ko": "홀이 유다를 떠나지 아니하며 치리자의 지팡이가 그 발 사이에서 떠나지 아니하시기를 실로가 오시기까지 미치리니 그에게 모든 백성이 복종하리로다",
+      "source_text_hash": "ebe4a13fc4347dd08c5dbceba1ef07805631ead9b4a2ad879bc63fb26259acce",
+      "translation_text_hash": "21660e0c5b45a7b87551a703c12e25003b288a8ec1f4160730fa680e029fb7e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홀이 유다를 떠나지 아니하며 치리자의 지팡이가 그 발 사이에서 떠나지 아니하시기를 실로가 오시기까지 미치리니 그에게 모든 백성이 복종하리로다"
+      ],
+      "raw_text_hashes": [
+        "21660e0c5b45a7b87551a703c12e25003b288a8ec1f4160730fa680e029fb7e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:11",
+      "sequence": 1485,
+      "chapter_label": "GEN 49",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 11
+        }
+      ],
+      "en": "Binding his foal to the vine, his donkey’s colt to the choice vine, he has washed his garments in wine, his robes in the blood of grapes.",
+      "ko": "그의 나귀를 포도나무에 매며 그 암나귀 새끼를 아름다운 포도나무에 맬 것이며 또 그 옷을 포도주에 빨며 그 복장을 포도즙에 빨리로다",
+      "source_text_hash": "bf023ea86ff90ab562d1f40eff2047fefb534497c015d622d927fdb87e8517e0",
+      "translation_text_hash": "5103c666e59f5dd0c676dc244ac20663f0ee5136e6c431312178aba6fb1e47da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 나귀를 포도나무에 매며 그 암나귀 새끼를 아름다운 포도나무에 맬 것이며 또 그 옷을 포도주에 빨며 그 복장을 포도즙에 빨리로다"
+      ],
+      "raw_text_hashes": [
+        "5103c666e59f5dd0c676dc244ac20663f0ee5136e6c431312178aba6fb1e47da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:12",
+      "sequence": 1486,
+      "chapter_label": "GEN 49",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 12
+        }
+      ],
+      "en": "His eyes will be red with wine, his teeth white with milk.",
+      "ko": "그 눈은 포도주로 인하여 붉겠고 그 이는 우유로 인하여 희리로다",
+      "source_text_hash": "fa636f936007eb465fe9560a0911e0188a59f77918466278adadd88b22c41fc0",
+      "translation_text_hash": "0a51d479f00c484e2943c895267371fa2aff9412f48a91c36cd52985d87b828d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 눈은 포도주로 인하여 붉겠고 그 이는 우유로 인하여 희리로다"
+      ],
+      "raw_text_hashes": [
+        "0a51d479f00c484e2943c895267371fa2aff9412f48a91c36cd52985d87b828d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:13",
+      "sequence": 1487,
+      "chapter_label": "GEN 49",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 13
+        }
+      ],
+      "en": "“Zebulun will dwell at the haven of the sea. He will be for a haven of ships. His border will be on Sidon.",
+      "ko": "스불론은 해변에 거하리니 그곳은 배 매는 해변이라 그 지경이 시돈까지리로다",
+      "source_text_hash": "3132e22889ed78c6f5ad4f9c5819334e035efb04aced99baa0981ca2795701cf",
+      "translation_text_hash": "b06722065cf88f8d7c40bb1962ded00ec424b53151f6ad6a2dd0afcadd5c95a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론은 해변에 거하리니 그곳은 배 매는 해변이라 그 지경이 시돈까지리로다"
+      ],
+      "raw_text_hashes": [
+        "b06722065cf88f8d7c40bb1962ded00ec424b53151f6ad6a2dd0afcadd5c95a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:14",
+      "sequence": 1488,
+      "chapter_label": "GEN 49",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 14
+        }
+      ],
+      "en": "“Issachar is a strong donkey, lying down between the saddlebags.",
+      "ko": "잇사갈은 양의 우리 사이에 꿇어 앉은 건장한 나귀로다",
+      "source_text_hash": "2d94f28967e4828e6fd89252f84409564086a85d346e92e1338391b208a1697c",
+      "translation_text_hash": "602c29bee0678e25d56c8e2fbb0e5fb91a2b0d00d4af3a72ad3be9b4acc796cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈은 양의 우리 사이에 꿇어 앉은 건장한 나귀로다"
+      ],
+      "raw_text_hashes": [
+        "602c29bee0678e25d56c8e2fbb0e5fb91a2b0d00d4af3a72ad3be9b4acc796cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:15",
+      "sequence": 1489,
+      "chapter_label": "GEN 49",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 15
+        }
+      ],
+      "en": "He saw a resting place, that it was good, the land, that it was pleasant. He bows his shoulder to the burden, and becomes a servant doing forced labor.",
+      "ko": "그는 쉴 곳을 보고 좋게 여기며 토지를 보고 아름답게 여기고 어깨를 내려 짐을 메고 압제 아래서 섬기리로다",
+      "source_text_hash": "1ef590d1b0d7b86b515df27d7452c9d1e02188eaa12bdc9c3e248d4d26729eff",
+      "translation_text_hash": "cfff23fc58005fb5e5af4cda405789c8066919c200e53fb1b8ea8a00fc97f3f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 쉴 곳을 보고 좋게 여기며 토지를 보고 아름답게 여기고 어깨를 내려 짐을 메고 압제 아래서 섬기리로다"
+      ],
+      "raw_text_hashes": [
+        "cfff23fc58005fb5e5af4cda405789c8066919c200e53fb1b8ea8a00fc97f3f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:16",
+      "sequence": 1490,
+      "chapter_label": "GEN 49",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 16
+        }
+      ],
+      "en": "“Dan will judge his people, as one of the tribes of Israel.",
+      "ko": "단은 이스라엘의 한 지파 같이 그 백성을 심판하리로다",
+      "source_text_hash": "6996529669a68c46369bc2509a8976b2669fb6c2f98a5f3ed262f7fea5a89c90",
+      "translation_text_hash": "a6a605555a04ce4ab25614c9340ff0a01d4f6eea53573d5f987f0c58cd609a5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단은 이스라엘의 한 지파 같이 그 백성을 심판하리로다"
+      ],
+      "raw_text_hashes": [
+        "a6a605555a04ce4ab25614c9340ff0a01d4f6eea53573d5f987f0c58cd609a5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:17",
+      "sequence": 1491,
+      "chapter_label": "GEN 49",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 17
+        }
+      ],
+      "en": "Dan will be a serpent on the trail, an adder in the path, that bites the horse’s heels, so that his rider falls backward.",
+      "ko": "단은 길의 뱀이요 첩경의 독사리로다 말굽을 물어서 그 탄 자로 뒤로 떨어지게 하리로다",
+      "source_text_hash": "6e8fa5fd4cc3810ccae464ecf737c71fc67461a1d83434470f51b4105d58a908",
+      "translation_text_hash": "ce6adadf943bb9583fdec85c64d1de5556629e4c1460d023d4f242aab0c01066",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단은 길의 뱀이요 첩경의 독사리로다 말굽을 물어서 그 탄 자로 뒤로 떨어지게 하리로다"
+      ],
+      "raw_text_hashes": [
+        "ce6adadf943bb9583fdec85c64d1de5556629e4c1460d023d4f242aab0c01066"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:18",
+      "sequence": 1492,
+      "chapter_label": "GEN 49",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 18
+        }
+      ],
+      "en": "I have waited for your salvation, LORD.",
+      "ko": "여호와여 나는 주의 구원을 기다리나이다",
+      "source_text_hash": "75b02a4021dab46d4fe675f91ee3c9ca0112262c3e93e47ff85206d3cca0c9b6",
+      "translation_text_hash": "7a470dc91a52b1a915df617f8f57032cb3894a2dbddb0312ccbf2e5759129b56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나는 주의 구원을 기다리나이다"
+      ],
+      "raw_text_hashes": [
+        "7a470dc91a52b1a915df617f8f57032cb3894a2dbddb0312ccbf2e5759129b56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:19",
+      "sequence": 1493,
+      "chapter_label": "GEN 49",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 19
+        }
+      ],
+      "en": "“A troop will press on Gad, but he will press on their heel.",
+      "ko": "갓은 군대의 박격을 받으나 도리어 그 뒤를 추격하리로다",
+      "source_text_hash": "2ef1c2bc8890dfe1a2b4da0bfe16d464deae85a39b17f7ee53c2ae10b1b782a4",
+      "translation_text_hash": "8d01346a94826e09ae3854c5860909330f8c08780e7e79a6cb30416c99125403",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓은 군대의 박격을 받으나 도리어 그 뒤를 추격하리로다"
+      ],
+      "raw_text_hashes": [
+        "8d01346a94826e09ae3854c5860909330f8c08780e7e79a6cb30416c99125403"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:20",
+      "sequence": 1494,
+      "chapter_label": "GEN 49",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 20
+        }
+      ],
+      "en": "“Asher’s food will be rich. He will produce royal dainties.",
+      "ko": "아셀에게서 나는 식물은 기름진 것이라 그가 왕의 진수를 공궤하리로다",
+      "source_text_hash": "0aa0490f8dfa96bbe65363b3abd9d99e4b347b564a0e82b4429aa00c6d8150c1",
+      "translation_text_hash": "2fabe4973ed7241274a53567b343a9afb0d1edcb97d23ce01a71487206282e7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀에게서 나는 식물은 기름진 것이라 그가 왕의 진수를 공궤하리로다"
+      ],
+      "raw_text_hashes": [
+        "2fabe4973ed7241274a53567b343a9afb0d1edcb97d23ce01a71487206282e7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:21",
+      "sequence": 1495,
+      "chapter_label": "GEN 49",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 21
+        }
+      ],
+      "en": "“Naphtali is a doe set free, who bears beautiful fawns.",
+      "ko": "납달리는 놓인 암사슴이라 아름다운 소리를 발하는도다",
+      "source_text_hash": "d655db9805226b4a83022b361f348adf3829803aaa3238cdb3e92a9838a93c65",
+      "translation_text_hash": "722cf5a92bfab5ef84f093ee53a128fc746b34c2b9a1f01f13ff8a253fec6c29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리는 놓인 암사슴이라 아름다운 소리를 발하는도다"
+      ],
+      "raw_text_hashes": [
+        "722cf5a92bfab5ef84f093ee53a128fc746b34c2b9a1f01f13ff8a253fec6c29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:22",
+      "sequence": 1496,
+      "chapter_label": "GEN 49",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 22
+        }
+      ],
+      "en": "“Joseph is a fruitful vine, a fruitful vine by a spring. His branches run over the wall.",
+      "ko": "요셉은 무성한 가지 곧 샘 곁의 무성한 가지라 그 가지가 담을 넘었도다",
+      "source_text_hash": "e59fb72bc088bf0fd79f6801845b5b23b9cc371811f3cd27c1eceb9318abdc5a",
+      "translation_text_hash": "b146e3814d944da29fbf4a28cdd3dce2ab6826b048c15c8244415ef6aded1467",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉은 무성한 가지 곧 샘 곁의 무성한 가지라 그 가지가 담을 넘었도다"
+      ],
+      "raw_text_hashes": [
+        "b146e3814d944da29fbf4a28cdd3dce2ab6826b048c15c8244415ef6aded1467"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:23",
+      "sequence": 1497,
+      "chapter_label": "GEN 49",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 23
+        }
+      ],
+      "en": "The archers have severely grieved him, shot at him, and persecuted him:",
+      "ko": "활쏘는 자가 그를 학대하며 그를 쏘며 그를 군박하였으나",
+      "source_text_hash": "164214799902c8f0adf1415598170e45c0941068be385ae7eb2397eccedbcd8b",
+      "translation_text_hash": "83bbbafce19fb4a7a386dab31f31cb737cb5b89dde46218d9b8278466e9a850b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "활쏘는 자가 그를 학대하며 그를 쏘며 그를 군박하였으나"
+      ],
+      "raw_text_hashes": [
+        "83bbbafce19fb4a7a386dab31f31cb737cb5b89dde46218d9b8278466e9a850b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:24",
+      "sequence": 1498,
+      "chapter_label": "GEN 49",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 24
+        }
+      ],
+      "en": "But his bow remained strong. The arms of his hands were made strong, by the hands of the Mighty One of Jacob, (from there is the shepherd, the stone of Israel),",
+      "ko": "요셉의 활이 도리어 견강하며 그의 팔이 힘이 있으니 야곱의 전능자의 손을 힘입음이라 그로부터 이스라엘의 반석인 목자가 나도다",
+      "source_text_hash": "e4856c4090944a8af0d1250dc83c35c3e73e35cfe9ef8c5d4f7c83e65d30b481",
+      "translation_text_hash": "4ce83c951277d8ea87baa5b8a1308a805e3de63411a934ca3fecab676ae35eab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉의 활이 도리어 견강하며 그의 팔이 힘이 있으니 야곱의 전능자의 손을 힘입음이라 그로부터 이스라엘의 반석인 목자가 나도다"
+      ],
+      "raw_text_hashes": [
+        "4ce83c951277d8ea87baa5b8a1308a805e3de63411a934ca3fecab676ae35eab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:25",
+      "sequence": 1499,
+      "chapter_label": "GEN 49",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 25
+        }
+      ],
+      "en": "even by the God of your father, who will help you, by the Almighty, who will bless you, with blessings of heaven above, blessings of the deep that lies below, blessings of the breasts, and of the womb.",
+      "ko": "네 아비의 하나님께로 말미암나니 그가 너를 도우실 것이요 전능자로 말미암나니 그가 네게 복을 주실 것이라 위로 하늘의 복과 아래로 원천의 복과 젖먹이는 복과 태의 복이리로다",
+      "source_text_hash": "9e962546afc9bf845af58006ae914d838341ac1c7f011fbe8f6c2ff2af9615cb",
+      "translation_text_hash": "d87366aaf678a885eb1e8d30d2d8a833cd5be4ccc99cfc3e96b35dc7ea7f231e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 아비의 하나님께로 말미암나니 그가 너를 도우실 것이요 전능자로 말미암나니 그가 네게 복을 주실 것이라 위로 하늘의 복과 아래로 원천의 복과 젖먹이는 복과 태의 복이리로다"
+      ],
+      "raw_text_hashes": [
+        "d87366aaf678a885eb1e8d30d2d8a833cd5be4ccc99cfc3e96b35dc7ea7f231e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:26",
+      "sequence": 1500,
+      "chapter_label": "GEN 49",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 26
+        }
+      ],
+      "en": "The blessings of your father have prevailed above the blessings of my ancestors, above the boundaries of the ancient hills. They will be on the head of Joseph, on the crown of the head of him who is separated from his brothers.",
+      "ko": "네 아비의 축복이 내 부여조의 축복보다 나아서 영원한 산이 한 없음 같이 이 축복이 요셉의 머리로 돌아오며 그 형제중 뛰어난 자의 정수리로 돌아오리로다",
+      "source_text_hash": "412c417ab8459228f2464cf1412d16b86c2990f0ff3a3eb868ebf5939f5dbda5",
+      "translation_text_hash": "a53efb34ec92ed35166803b9a39fe5cd0c859a30d4c69d01043527591977e755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 아비의 축복이 내 부여조의 축복보다 나아서 영원한 산이 한 없음 같이 이 축복이 요셉의 머리로 돌아오며 그 형제중 뛰어난 자의 정수리로 돌아오리로다"
+      ],
+      "raw_text_hashes": [
+        "a53efb34ec92ed35166803b9a39fe5cd0c859a30d4c69d01043527591977e755"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:27",
+      "sequence": 1501,
+      "chapter_label": "GEN 49",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 27
+        }
+      ],
+      "en": "“Benjamin is a ravenous wolf. In the morning he will devour the prey. At evening he will divide the plunder.”",
+      "ko": "베냐민은 물어 뜯는 이리라 아침에는 빼앗은 것을 먹고 저녁에는 움킨 것을 나누리로다",
+      "source_text_hash": "c81005f4197bd0903be9b80af6642622d28309170e2043d9e39f7c644548c731",
+      "translation_text_hash": "ec6481eddbf7613415a016bb1990c3e23f7f49a5b11365dde35378641911aa39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민은 물어 뜯는 이리라 아침에는 빼앗은 것을 먹고 저녁에는 움킨 것을 나누리로다"
+      ],
+      "raw_text_hashes": [
+        "ec6481eddbf7613415a016bb1990c3e23f7f49a5b11365dde35378641911aa39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:28",
+      "sequence": 1502,
+      "chapter_label": "GEN 49",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 28
+        }
+      ],
+      "en": "All these are the twelve tribes of Israel, and this is what their father spoke to them, and blessed them. He blessed everyone according to his own blessing.",
+      "ko": "이들은 이스라엘의 십 이 지파라 이와 같이 그 아비가 그들에게 말하고 그들에게 축복하였으되 곧 그들 각인의 분량대로 축복하였더라",
+      "source_text_hash": "916a8a9ad17d3953717d2731342c4d3e7500909859b8ac63d2fdccff87d9e5b7",
+      "translation_text_hash": "26690e3a54f82709f573495a9ee6a7e24229d186d665a934d8a873a11079baa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 이스라엘의 십 이 지파라 이와 같이 그 아비가 그들에게 말하고 그들에게 축복하였으되 곧 그들 각인의 분량대로 축복하였더라"
+      ],
+      "raw_text_hashes": [
+        "26690e3a54f82709f573495a9ee6a7e24229d186d665a934d8a873a11079baa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:29",
+      "sequence": 1503,
+      "chapter_label": "GEN 49",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 29
+        }
+      ],
+      "en": "He instructed them, and said to them, “I am to be gathered to my people. Bury me with my fathers in the cave that is in the field of Ephron the Hittite,",
+      "ko": "그가 그들에게 명하여 가로되 내가 내 열조에게로 돌아가리니 나를 헷 사람 에브론의 밭에 있는 굴에 우리 부여조와 함께 장사하라",
+      "source_text_hash": "0655c3ba3cf59ca3d3a71c039317a1e952db178f292fefa8856c2c89ec85d614",
+      "translation_text_hash": "de3eee08198d44f212f0f275935cc2933de11e48631b837f9a8a561009d3311d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그들에게 명하여 가로되 내가 내 열조에게로 돌아가리니 나를 헷 사람 에브론의 밭에 있는 굴에 우리 부여조와 함께 장사하라"
+      ],
+      "raw_text_hashes": [
+        "de3eee08198d44f212f0f275935cc2933de11e48631b837f9a8a561009d3311d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:30",
+      "sequence": 1504,
+      "chapter_label": "GEN 49",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 30
+        }
+      ],
+      "en": "in the cave that is in the field of Machpelah, which is before Mamre, in the land of Canaan, which Abraham bought with the field from Ephron the Hittite as a burial place.",
+      "ko": "이 굴은 가나안 땅 마므레 앞 막벨라 밭에 있는 것이라 아브라함이 헷 사람 에브론에게서 밭과 함께 사서 그 소유 매장지를 삼았으므로",
+      "source_text_hash": "37680cd16c3051b418ae1a702a8c249e2cd93603e1fd3b96109001e0822c5b85",
+      "translation_text_hash": "cded3bd1367d1815fb5d4d471bd3a72df56782aef6c83b22602340bceff4f587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 굴은 가나안 땅 마므레 앞 막벨라 밭에 있는 것이라 아브라함이 헷 사람 에브론에게서 밭과 함께 사서 그 소유 매장지를 삼았으므로"
+      ],
+      "raw_text_hashes": [
+        "cded3bd1367d1815fb5d4d471bd3a72df56782aef6c83b22602340bceff4f587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:31",
+      "sequence": 1505,
+      "chapter_label": "GEN 49",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 31
+        }
+      ],
+      "en": "There they buried Abraham and Sarah, his wife. There they buried Isaac and Rebekah, his wife, and there I buried Leah:",
+      "ko": "아브라함과 그 아내 사라가 거기 장사되었고 이삭과 그 아내 리브가도 거기 장사되었으며 나도 레아를 그곳에 장사하였노라",
+      "source_text_hash": "74235962d17be0bcfce32c5517c49aa4d3a8b1ec908978c1a502a2a2df40306f",
+      "translation_text_hash": "3dda1d801f8ab5c4fc0f13566e506a26f6f58e7501f33c8e10d035b2a83a7034",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함과 그 아내 사라가 거기 장사되었고 이삭과 그 아내 리브가도 거기 장사되었으며 나도 레아를 그곳에 장사하였노라"
+      ],
+      "raw_text_hashes": [
+        "3dda1d801f8ab5c4fc0f13566e506a26f6f58e7501f33c8e10d035b2a83a7034"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:32",
+      "sequence": 1506,
+      "chapter_label": "GEN 49",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 32
+        }
+      ],
+      "en": "the field and the cave that is therein, which was purchased from the children of Heth.”",
+      "ko": "이 밭과 거기 있는 굴은 헷 사람에게서 산 것이니라",
+      "source_text_hash": "309c4997b52d3e73a5d5d8d38429439ae807127a8cc5530a2abdc63ce1e0f37d",
+      "translation_text_hash": "ff1d2dce1b2d068ccfd49e7f3a1db7aae153a74bb2cd85f961a3333b5f6fd414",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 밭과 거기 있는 굴은 헷 사람에게서 산 것이니라"
+      ],
+      "raw_text_hashes": [
+        "ff1d2dce1b2d068ccfd49e7f3a1db7aae153a74bb2cd85f961a3333b5f6fd414"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:49:33",
+      "sequence": 1507,
+      "chapter_label": "GEN 49",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 49,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 49,
+          "verse": 33
+        }
+      ],
+      "en": "When Jacob finished charging his sons, he gathered up his feet into the bed, breathed his last breath, and was gathered to his people.",
+      "ko": "야곱이 아들에게 명하기를 마치고 그 발을 침상에 거두고 기운이 진하여 그 열조에게로 돌아갔더라",
+      "source_text_hash": "6ee39a5bd99dbee15cba3e73015e1ca4d9cdd7c72e5aeeb8f8fd1af4f7791821",
+      "translation_text_hash": "7832f13928aae9bc1cb6a00632d82d1fbf35900ffa7eefac7a5805ac001e3fe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 아들에게 명하기를 마치고 그 발을 침상에 거두고 기운이 진하여 그 열조에게로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "7832f13928aae9bc1cb6a00632d82d1fbf35900ffa7eefac7a5805ac001e3fe1"
+      ]
+    }
+  ]
+}

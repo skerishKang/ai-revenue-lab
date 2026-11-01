@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:020",
+  "unit_ordinal": 387,
+  "unit_label": "2CH 20",
+  "book_code": "2CH",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:20:1",
+      "sequence": 11589,
+      "chapter_label": "2CH 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "After this, the children of Moab, the children of Ammon, and with them some of the Meunites, came against Jehoshaphat to battle.",
+      "ko": "그 후에 모압 자손과 암몬 자손이 몇 마온 사람과 함께 와서 여호사밧을 치고자 한지라",
+      "source_text_hash": "4e8d899e25193a55f9a3cf425956d4bfc0d2d233557a0a174faeaa16c9695ca7",
+      "translation_text_hash": "588bc3121bf93c2d71143d6b78ef5ae0d2ab0296199502b363c10e5e3acca0cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 모압 자손과 암몬 자손이 몇 마온 사람과 함께 와서 여호사밧을 치고자 한지라"
+      ],
+      "raw_text_hashes": [
+        "588bc3121bf93c2d71143d6b78ef5ae0d2ab0296199502b363c10e5e3acca0cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:2",
+      "sequence": 11590,
+      "chapter_label": "2CH 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "Then some came who told Jehoshaphat, saying, “A great multitude is coming against you from beyond the sea from Syria. Behold, they are in Hazazon Tamar” (that is, En Gedi).",
+      "ko": "혹이 와서 여호사밧에게 고하여 가로되 큰 무리가 바다 저편 아람에서 왕을 치러 오는데 이제 하사손다말 곧 엔게디에 있나이다",
+      "source_text_hash": "38a1800456963fc5220208912f51e3e06f3785a9e7ceb362ceddab9527055098",
+      "translation_text_hash": "d65a673d96e3d827e892441243119d846d6105bf570c0c84407241d82283fdfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 와서 여호사밧에게 고하여 가로되 큰 무리가 바다 저편 아람에서 왕을 치러 오는데 이제 하사손다말 곧 엔게디에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "d65a673d96e3d827e892441243119d846d6105bf570c0c84407241d82283fdfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:3",
+      "sequence": 11591,
+      "chapter_label": "2CH 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "Jehoshaphat was alarmed, and set himself to seek the LORD. He proclaimed a fast throughout all Judah.",
+      "ko": "여호사밧이 두려워하여 여호와께로 낯을 향하여 간구하고 온 유다 백성에게 금식하라 공포하매",
+      "source_text_hash": "3d3212eb92a66ae1fa83978f1fea3b5dc6a355e421d1750999ffed66c25b5da4",
+      "translation_text_hash": "0d6e1bf15f960deb0982d661dce748fe7c626dd5d696f9b20a2881ad4e8f7ab8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 두려워하여 여호와께로 낯을 향하여 간구하고 온 유다 백성에게 금식하라 공포하매"
+      ],
+      "raw_text_hashes": [
+        "0d6e1bf15f960deb0982d661dce748fe7c626dd5d696f9b20a2881ad4e8f7ab8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:4",
+      "sequence": 11592,
+      "chapter_label": "2CH 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "Judah gathered themselves together to seek help from the LORD. They came out of all the cities of Judah to seek the LORD.",
+      "ko": "유다 사람이 여호와께 도우심을 구하려 하여 유다 모든 성읍에서 모여와서 여호와께 간구하더라",
+      "source_text_hash": "c74f3150a7cf8c31db2881a2815dff223572f208a1cf50ba7e047006c93a6446",
+      "translation_text_hash": "a0ded190621154789fa3391448ed43d297cb80e8550f62c129340ba171e048f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 사람이 여호와께 도우심을 구하려 하여 유다 모든 성읍에서 모여와서 여호와께 간구하더라"
+      ],
+      "raw_text_hashes": [
+        "a0ded190621154789fa3391448ed43d297cb80e8550f62c129340ba171e048f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:5",
+      "sequence": 11593,
+      "chapter_label": "2CH 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "Jehoshaphat stood in the assembly of Judah and Jerusalem, in the LORD’s house, before the new court;",
+      "ko": "여호사밧이 여호와의 전 새 뜰 앞에서 유다와 예루살렘의 회중 가운데 서서",
+      "source_text_hash": "b675683d579bd4b94ee88e43cd8f0499d8bde7fcb7f0873cc9c864b60970d458",
+      "translation_text_hash": "baabc7f2e19810e8a1ca18286ac2d464536c8d5e300809b3fadc21a49eafb3a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 여호와의 전 새 뜰 앞에서 유다와 예루살렘의 회중 가운데 서서"
+      ],
+      "raw_text_hashes": [
+        "baabc7f2e19810e8a1ca18286ac2d464536c8d5e300809b3fadc21a49eafb3a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:6",
+      "sequence": 11594,
+      "chapter_label": "2CH 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "and he said, “LORD, the God of our fathers, aren’t you God in heaven? Aren’t you ruler over all the kingdoms of the nations? Power and might are in your hand, so that no one is able to withstand you.",
+      "ko": "가로되 우리 열조의 하나님 여호와여 주는 하늘에서 하나님이 아니시니이까 이방 사람의 모든 나라를 다스리지 아니하시나이까 주의 손에 권세와 능력이 있사오니 능히 막을 사람이 없나이다",
+      "source_text_hash": "1f895553c7f255f19b419493c4396768c61074677f5a4eab115392ab0ae5b838",
+      "translation_text_hash": "a1300b02f22ca76371c90083ee35d7136f8e26b13f9898a75ddb709c5a34e8c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 우리 열조의 하나님 여호와여 주는 하늘에서 하나님이 아니시니이까 이방 사람의 모든 나라를 다스리지 아니하시나이까 주의 손에 권세와 능력이 있사오니 능히 막을 사람이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "a1300b02f22ca76371c90083ee35d7136f8e26b13f9898a75ddb709c5a34e8c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:7",
+      "sequence": 11595,
+      "chapter_label": "2CH 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "Didn’t you, our God, drive out the inhabitants of this land before your people Israel, and give it to the offspring of Abraham your friend forever?",
+      "ko": "우리 하나님이시여 전에 이 땅 거민을 주의 백성 이스라엘 앞에서 쫓아내시고 그 땅으로 주의 벗 아브라함의 자손에게 영영히 주지 아니하셨나이까",
+      "source_text_hash": "8b65ff7e5462639739b717f95d3eec463ed868a58394d217208da9b50e2f5123",
+      "translation_text_hash": "4d8ad63f62a0b8582e78a5ddeae218777ddf844bd8dc26aaaf3129da0605a3c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님이시여 전에 이 땅 거민을 주의 백성 이스라엘 앞에서 쫓아내시고 그 땅으로 주의 벗 아브라함의 자손에게 영영히 주지 아니하셨나이까"
+      ],
+      "raw_text_hashes": [
+        "4d8ad63f62a0b8582e78a5ddeae218777ddf844bd8dc26aaaf3129da0605a3c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:8",
+      "sequence": 11596,
+      "chapter_label": "2CH 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "They lived in it, and have built you a sanctuary in it for your name, saying,",
+      "ko": "저희가 이 땅에 거하여 주의 이름을 위하여 한 성소를 건축하고 이르기를",
+      "source_text_hash": "c9941e0d7020118bcd0460ec5081c5c863957785e9c7ddaab43aa339ea93ac70",
+      "translation_text_hash": "ae212c4abe61469c3951e3c902f2048e2b694afd12782f8f8bd3abec6a19a5bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이 땅에 거하여 주의 이름을 위하여 한 성소를 건축하고 이르기를"
+      ],
+      "raw_text_hashes": [
+        "ae212c4abe61469c3951e3c902f2048e2b694afd12782f8f8bd3abec6a19a5bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:9",
+      "sequence": 11597,
+      "chapter_label": "2CH 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "‘If evil comes on us—the sword, judgment, pestilence, or famine—we will stand before this house, and before you (for your name is in this house), and cry to you in our affliction, and you will hear and save.’",
+      "ko": "만일 재앙이나 난리나 견책이나 온역이나 기근이 우리에게 임하면 주의 이름이 이 전에 있으니 우리가 이 전 앞과 주의 앞에 서서 이 환난 가운데서 주께 부르짖은즉 들으시고 구원하시리라 하였나이다",
+      "source_text_hash": "e981b9b1c09ffb36b126a5e7c631b6d15adedd054bd58c8fa0393066f7498b9c",
+      "translation_text_hash": "a8e9fc1829748ae0fc42a2b4f4c39306be7f7113ead2c1b8294ce43d1cf66573",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 재앙이나 난리나 견책이나 온역이나 기근이 우리에게 임하면 주의 이름이 이 전에 있으니 우리가 이 전 앞과 주의 앞에 서서 이 환난 가운데서 주께 부르짖은즉 들으시고 구원하시리라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "a8e9fc1829748ae0fc42a2b4f4c39306be7f7113ead2c1b8294ce43d1cf66573"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:10",
+      "sequence": 11598,
+      "chapter_label": "2CH 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "Now, behold, the children of Ammon and Moab and Mount Seir, whom you would not let Israel invade when they came out of the land of Egypt, but they turned away from them, and didn’t destroy them;",
+      "ko": "옛적에 이스라엘이 애굽 땅에서 나올 때에 암몬 자손과 모압 자손과 세일산 사람을 침노하기를 주께서 용납하지 아니하시므로 이에 치우쳐 저희를 떠나고 멸하지 아니하였거늘",
+      "source_text_hash": "16a0c48089c781374df59cde67c6dd6b6b53d35e62b6a7fb3ddffd7b8df1ae84",
+      "translation_text_hash": "f142c015718e4827ee2a2f7b9bf555f93e7ba1277fb51c70d68fb978a0df6e76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적에 이스라엘이 애굽 땅에서 나올 때에 암몬 자손과 모압 자손과 세일산 사람을 침노하기를 주께서 용납하지 아니하시므로 이에 치우쳐 저희를 떠나고 멸하지 아니하였거늘"
+      ],
+      "raw_text_hashes": [
+        "f142c015718e4827ee2a2f7b9bf555f93e7ba1277fb51c70d68fb978a0df6e76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:11",
+      "sequence": 11599,
+      "chapter_label": "2CH 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "behold, how they reward us, to come to cast us out of your possession, which you have given us to inherit.",
+      "ko": "이제 저희가 우리에게 갚는 것을 보옵소서 저희가 와서 주께서 우리에게 주신 주의 기업에서 우리를 쫓아 내고자 하나이다",
+      "source_text_hash": "ebb426a1917f0f0156e42adea382caf468751c37175edd0f0430e49b8892f31f",
+      "translation_text_hash": "f3e85944e60c372bf27f50f3d9f559cc140081de57382bc661240d3a8900a32d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 저희가 우리에게 갚는 것을 보옵소서 저희가 와서 주께서 우리에게 주신 주의 기업에서 우리를 쫓아 내고자 하나이다"
+      ],
+      "raw_text_hashes": [
+        "f3e85944e60c372bf27f50f3d9f559cc140081de57382bc661240d3a8900a32d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:12",
+      "sequence": 11600,
+      "chapter_label": "2CH 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "Our God, will you not judge them? For we have no might against this great company that comes against us. We don’t know what to do, but our eyes are on you.”",
+      "ko": "우리 하나님이여 저희를 징벌하지 아니하시나이까 우리를 치러 오는 이 큰 무리를 우리가 대적할 능력이 없고 어떻게 할줄도 알지 못하옵고 오직 주만 바라보나이다 하고",
+      "source_text_hash": "60a416edd08c4c696d8321447e588dc89010afec1b2fbb95f330be83c82fa036",
+      "translation_text_hash": "cae8665a85b2f0d42a8159932d756270c25731148f24f10af0fe515ea11bcaef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님이여 저희를 징벌하지 아니하시나이까 우리를 치러 오는 이 큰 무리를 우리가 대적할 능력이 없고 어떻게 할줄도 알지 못하옵고 오직 주만 바라보나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "cae8665a85b2f0d42a8159932d756270c25731148f24f10af0fe515ea11bcaef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:13",
+      "sequence": 11601,
+      "chapter_label": "2CH 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "All Judah stood before the LORD, with their little ones, their wives, and their children.",
+      "ko": "유다 모든 사람은 그 아내와 자녀와 어린 자로 더불어 여호와 앞에 섰더라",
+      "source_text_hash": "5f3fbc9a20033aa2f5201d587caa596ad33d149fd5612a653c133a2bc2ea11ee",
+      "translation_text_hash": "c41f0be2e3d01e9d5f7ad00ff6b9ab6f734056476c733e276c8b50fdda16e07b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 모든 사람은 그 아내와 자녀와 어린 자로 더불어 여호와 앞에 섰더라"
+      ],
+      "raw_text_hashes": [
+        "c41f0be2e3d01e9d5f7ad00ff6b9ab6f734056476c733e276c8b50fdda16e07b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:14",
+      "sequence": 11602,
+      "chapter_label": "2CH 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "Then the LORD’s Spirit came on Jahaziel the son of Zechariah, the son of Benaiah, the son of Jeiel, the son of Mattaniah, the Levite, of the sons of Asaph, in the middle of the assembly;",
+      "ko": "여호와의 신이 회중 가운데서 레위 사람 야하시엘에게 임하셨으니 저는 아삽 자손 맛다냐의 현손이요 여이엘의 증손이요 브나야의 손자요 스가랴의 아들이더라",
+      "source_text_hash": "757baa3b6b7e56a4e8c275b552e5589505da2904d11731b8e635b9dd164b1d81",
+      "translation_text_hash": "3e0f04626efe73ca40bfb5b1dcc7712e7ecdd926bcc02b83ccaf9c5f373cb3c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 신이 회중 가운데서 레위 사람 야하시엘에게 임하셨으니 저는 아삽 자손 맛다냐의 현손이요 여이엘의 증손이요 브나야의 손자요 스가랴의 아들이더라"
+      ],
+      "raw_text_hashes": [
+        "3e0f04626efe73ca40bfb5b1dcc7712e7ecdd926bcc02b83ccaf9c5f373cb3c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:15",
+      "sequence": 11603,
+      "chapter_label": "2CH 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "and he said, “Listen, all Judah, and you inhabitants of Jerusalem, and you, King Jehoshaphat. The LORD says to you, ‘Don’t be afraid, and don’t be dismayed because of this great multitude; for the battle is not yours, but God’s.",
+      "ko": "야하시엘이 가로되 온 유다와 예루살렘 거민과 여호사밧왕이여 들을찌어다 여호와께서 너희에게 말씀하시기를 이 큰 무리로 인하여 두려워하거나 놀라지 말라 이 전쟁이 너희에게 속한 것이 아니요 하나님께 속한 것이니라",
+      "source_text_hash": "977f8d736c5b343fe7b560ccf3c19d0c611fa1ea5ace9e9a5d8d9e92dcee00fb",
+      "translation_text_hash": "607649b3484f8c6f9cc3cfce2f2e02df71946abbb1fc679e93cc8c9094536560",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야하시엘이 가로되 온 유다와 예루살렘 거민과 여호사밧왕이여 들을찌어다 여호와께서 너희에게 말씀하시기를 이 큰 무리로 인하여 두려워하거나 놀라지 말라 이 전쟁이 너희에게 속한 것이 아니요 하나님께 속한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "607649b3484f8c6f9cc3cfce2f2e02df71946abbb1fc679e93cc8c9094536560"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:16",
+      "sequence": 11604,
+      "chapter_label": "2CH 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "Tomorrow, go down against them. Behold, they are coming up by the ascent of Ziz. You will find them at the end of the valley, before the wilderness of Jeruel.",
+      "ko": "내일 너희는 마주 내려 가라 저희가 시스 고개로 말미암아 올라 오리니 너희가 골짜기 어귀 여루엘 들 앞에서 만나려니와",
+      "source_text_hash": "5cf6bd02ed9f60f4a9e66b88d064ee4113eff76e93f152f2c69a7c5f29ff743a",
+      "translation_text_hash": "e9e240f6fd77cbaf8396734bef22a8166a2485bbd763babe5aeb562b3e86dec2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내일 너희는 마주 내려 가라 저희가 시스 고개로 말미암아 올라 오리니 너희가 골짜기 어귀 여루엘 들 앞에서 만나려니와"
+      ],
+      "raw_text_hashes": [
+        "e9e240f6fd77cbaf8396734bef22a8166a2485bbd763babe5aeb562b3e86dec2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:17",
+      "sequence": 11605,
+      "chapter_label": "2CH 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "You will not need to fight this battle. Set yourselves, stand still, and see the salvation of the LORD with you, O Judah and Jerusalem. Don’t be afraid, nor be dismayed. Go out against them tomorrow, for the LORD is with you.’”",
+      "ko": "이 전쟁에는 너희가 싸울 것이 없나니 항오를 이루고 서서 너희와 함께한 여호와가 구원하는 것을 보라 유다와 예루살렘아 너희는 두려워하며 놀라지 말고 내일 저희를 마주 나가라 여호와가 너희와 함께 하리라 하셨느니라 하매",
+      "source_text_hash": "c74e7a1a5287d8538b1ce9b9daa6a69e0c8e9843f6ca608f3b038317c858ebc6",
+      "translation_text_hash": "94740e5b5a6c4c08679f82c813b47787a14e1640005aa47489f75c46488c70e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 전쟁에는 너희가 싸울 것이 없나니 항오를 이루고 서서 너희와 함께한 여호와가 구원하는 것을 보라 유다와 예루살렘아 너희는 두려워하며 놀라지 말고 내일 저희를 마주 나가라 여호와가 너희와 함께 하리라 하셨느니라 하매"
+      ],
+      "raw_text_hashes": [
+        "94740e5b5a6c4c08679f82c813b47787a14e1640005aa47489f75c46488c70e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:18",
+      "sequence": 11606,
+      "chapter_label": "2CH 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "Jehoshaphat bowed his head with his face to the ground; and all Judah and the inhabitants of Jerusalem fell down before the LORD, worshiping the LORD.",
+      "ko": "여호사밧이 몸을 굽혀 얼굴을 땅에 대니 온 유다와 예루살렘 거민들도 여호와 앞에 엎드려 경배하고",
+      "source_text_hash": "3ffc1e3363d02221ce10b50e90bd29c764659e240aa29b6c6b4713cc3a356ef0",
+      "translation_text_hash": "0120456fad7616186636e175d78a18755645424e20a10fc1d109054d473db5e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 몸을 굽혀 얼굴을 땅에 대니 온 유다와 예루살렘 거민들도 여호와 앞에 엎드려 경배하고"
+      ],
+      "raw_text_hashes": [
+        "0120456fad7616186636e175d78a18755645424e20a10fc1d109054d473db5e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:19",
+      "sequence": 11607,
+      "chapter_label": "2CH 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "The Levites, of the children of the Kohathites and of the children of the Korahites, stood up to praise the LORD, the God of Israel, with an exceedingly loud voice.",
+      "ko": "그핫 자손과 고라 자손에게 속한 레위 사람들은 서서 심히 큰 소리로 이스라엘 하나님 여호와를 찬송하니라",
+      "source_text_hash": "7bee2312e70cd60dff389d93e9e8a75e0ce762cccef3eb207e3c12cbfd22a218",
+      "translation_text_hash": "3cfe1137c444c1933a1dcfe6aa6cf94b57d110fa7f893acc55c90819e21666d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그핫 자손과 고라 자손에게 속한 레위 사람들은 서서 심히 큰 소리로 이스라엘 하나님 여호와를 찬송하니라"
+      ],
+      "raw_text_hashes": [
+        "3cfe1137c444c1933a1dcfe6aa6cf94b57d110fa7f893acc55c90819e21666d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:20",
+      "sequence": 11608,
+      "chapter_label": "2CH 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "They rose early in the morning and went out into the wilderness of Tekoa. As they went out, Jehoshaphat stood and said, “Listen to me, Judah and you inhabitants of Jerusalem! Believe in the LORD your God, so you will be established! Believe his prophets, so you will prosper.”",
+      "ko": "이에 백성들이 일찌기 일어나서 드고아 들로 나가니라 나갈 때에 여호사밧이 서서 가로되 유다와 예루살렘 거민들아 내 말을 들을찌어다 너희는 너희 하나님 여호와를 신뢰하라 그리하면 견고히 서리라 그 선지자를 신뢰하라 그리하면 형통하리라 하고",
+      "source_text_hash": "aed98a5e907fdc5a1b49644ccabc938873bbdd0d6d7ffa18180cc17d75d34e7c",
+      "translation_text_hash": "d6a7989995c1ab75fc0796d1fe9348dcfe33fcd0743e69fe51e85e191f55282c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 백성들이 일찌기 일어나서 드고아 들로 나가니라 나갈 때에 여호사밧이 서서 가로되 유다와 예루살렘 거민들아 내 말을 들을찌어다 너희는 너희 하나님 여호와를 신뢰하라 그리하면 견고히 서리라 그 선지자를 신뢰하라 그리하면 형통하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "d6a7989995c1ab75fc0796d1fe9348dcfe33fcd0743e69fe51e85e191f55282c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:21",
+      "sequence": 11609,
+      "chapter_label": "2CH 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "When he had taken counsel with the people, he appointed those who were to sing to the LORD and give praise in holy array as they go out before the army, and say, “Give thanks to the LORD, for his loving kindness endures forever.”",
+      "ko": "백성으로 더불어 의논하고 노래하는 자를 택하여 거룩한 예복을 입히고 군대 앞에서 행하며 여호와를 찬송하여 이르기를 여호와께 감사하세 그 자비하심이 영원하도다 하게 하였더니",
+      "source_text_hash": "65ca3c393d64bc1e7c233e7733fb51d83c63aa3f3bd75dc68befcdfcef6874e5",
+      "translation_text_hash": "d7f8c7a3b41c5fb7f9830871b59bdacc7eeba75a96b31674c206c8c80d69541a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성으로 더불어 의논하고 노래하는 자를 택하여 거룩한 예복을 입히고 군대 앞에서 행하며 여호와를 찬송하여 이르기를 여호와께 감사하세 그 자비하심이 영원하도다 하게 하였더니"
+      ],
+      "raw_text_hashes": [
+        "d7f8c7a3b41c5fb7f9830871b59bdacc7eeba75a96b31674c206c8c80d69541a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:22",
+      "sequence": 11610,
+      "chapter_label": "2CH 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "When they began to sing and to praise, the LORD set ambushers against the children of Ammon, Moab, and Mount Seir, who had come against Judah; and they were struck.",
+      "ko": "그 노래와 찬송이 시작될 때에 여호와께서 복병을 두어 유다를 치러 온 암몬 자손과 모압과 세일산 사람을 치게 하시므로 저희가 패하였으니",
+      "source_text_hash": "c3a58d70da9ec50685a8110a5a0f9aca7129a7c8815741a3e75977f081bd53bd",
+      "translation_text_hash": "a47058982750f9ddd8eb47351103da333acb92b8fec3e8b1bdbb9f4b3bef77a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 노래와 찬송이 시작될 때에 여호와께서 복병을 두어 유다를 치러 온 암몬 자손과 모압과 세일산 사람을 치게 하시므로 저희가 패하였으니"
+      ],
+      "raw_text_hashes": [
+        "a47058982750f9ddd8eb47351103da333acb92b8fec3e8b1bdbb9f4b3bef77a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:23",
+      "sequence": 11611,
+      "chapter_label": "2CH 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "For the children of Ammon and Moab stood up against the inhabitants of Mount Seir to utterly kill and destroy them. When they had finished the inhabitants of Seir, everyone helped to destroy each other.",
+      "ko": "곧 암몬과 모압 자손이 일어나 세일산 거민을 쳐서 진멸하고 세일 거민을 멸한 후에는 저희가 피차에 살륙하였더라",
+      "source_text_hash": "299bcdd039d76961b10df552c10a6e0830a263d730b9963da2dbe876038c9d6a",
+      "translation_text_hash": "ea288f743a75a26381bc5d6992c89757b05fb7ecb25212c1d887f84a858807a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 암몬과 모압 자손이 일어나 세일산 거민을 쳐서 진멸하고 세일 거민을 멸한 후에는 저희가 피차에 살륙하였더라"
+      ],
+      "raw_text_hashes": [
+        "ea288f743a75a26381bc5d6992c89757b05fb7ecb25212c1d887f84a858807a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:24",
+      "sequence": 11612,
+      "chapter_label": "2CH 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "When Judah came to the place overlooking the wilderness, they looked at the multitude; and behold, they were dead bodies fallen to the earth, and there were none who escaped.",
+      "ko": "유다 사람이 들 망대에 이르러 그 무리를 본즉 땅에 엎드러진 시체뿐이요 하나도 피한 자가 없는지라",
+      "source_text_hash": "5bae89485f6404eb6d75e704d6c08a2d571b953d8be7c66a5ac02cd55dbdaeee",
+      "translation_text_hash": "369fb23574e1d52a499be729b01dc63533b5233118af7b14ac2ca738234cb6af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 사람이 들 망대에 이르러 그 무리를 본즉 땅에 엎드러진 시체뿐이요 하나도 피한 자가 없는지라"
+      ],
+      "raw_text_hashes": [
+        "369fb23574e1d52a499be729b01dc63533b5233118af7b14ac2ca738234cb6af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:25",
+      "sequence": 11613,
+      "chapter_label": "2CH 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "When Jehoshaphat and his people came to take their plunder, they found among them in abundance both riches and dead bodies with precious jewels, which they stripped off for themselves, more than they could carry away. They took plunder for three days, it was so much.",
+      "ko": "여호사밧과 그 백성이 가서 적군의 물건을 취할쌔 본즉 그 가운데에 재물과 의복과 보물이 많이 있는 고로 각기 취하는데 그 물건이 너무 많아 능히 가져갈 수 없을만큼 많으므로 사흘 동안에 취하고",
+      "source_text_hash": "c8958e41f4f27a9aed350a7e3e601b3b31987e3db185f31f86171f8698b9fc70",
+      "translation_text_hash": "1f9b4fd5ad47eebe9d9518bfd3c313bb491ed90baa01addc3353e4b4a6ebc5ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧과 그 백성이 가서 적군의 물건을 취할쌔 본즉 그 가운데에 재물과 의복과 보물이 많이 있는 고로 각기 취하는데 그 물건이 너무 많아 능히 가져갈 수 없을만큼 많으므로 사흘 동안에 취하고"
+      ],
+      "raw_text_hashes": [
+        "1f9b4fd5ad47eebe9d9518bfd3c313bb491ed90baa01addc3353e4b4a6ebc5ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:26",
+      "sequence": 11614,
+      "chapter_label": "2CH 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "On the fourth day, they assembled themselves in Beracah Valley, for there they blessed the LORD. Therefore the name of that place was called “Beracah Valley” to this day.",
+      "ko": "제 사일에 무리가 브라가 골짜기에 모여서 거기서 여호와를 송축한지라 그러므로 오늘날까지 그곳을 브라가 골짜기라 일컫더라",
+      "source_text_hash": "9fbcfaab285a4c37cc6ee546cb1dd30af74c2b435af8df19abaf6d4e5741756e",
+      "translation_text_hash": "daf57ceb5f105dca68b2d66367804df1634081d876792df46d3da014f38d7d24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 사일에 무리가 브라가 골짜기에 모여서 거기서 여호와를 송축한지라 그러므로 오늘날까지 그곳을 브라가 골짜기라 일컫더라"
+      ],
+      "raw_text_hashes": [
+        "daf57ceb5f105dca68b2d66367804df1634081d876792df46d3da014f38d7d24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:27",
+      "sequence": 11615,
+      "chapter_label": "2CH 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "Then they returned, every man of Judah and Jerusalem, with Jehoshaphat in front of them, to go again to Jerusalem with joy; for the LORD had made them to rejoice over their enemies.",
+      "ko": "유다와 예루살렘 모든 사람이 여호사밧을 선두로 즐거이 예루살렘으로 돌아왔으니 이는 여호와께서 저희로 그 적군을 이김을 인하여 즐거워하게 하셨음이라",
+      "source_text_hash": "785018c610a69d76ccddf22cd79d538ccd8756439385b1fd17c59fcaca33d642",
+      "translation_text_hash": "19e01ba2edfaaf29c662b07bd6f2d5ce7585a7e17c09667d0356924245e46b33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다와 예루살렘 모든 사람이 여호사밧을 선두로 즐거이 예루살렘으로 돌아왔으니 이는 여호와께서 저희로 그 적군을 이김을 인하여 즐거워하게 하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "19e01ba2edfaaf29c662b07bd6f2d5ce7585a7e17c09667d0356924245e46b33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:28",
+      "sequence": 11616,
+      "chapter_label": "2CH 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "They came to Jerusalem with stringed instruments, harps, and trumpets to the LORD’s house.",
+      "ko": "무리가 비파와 수금과 나팔을 합주하고 예루살렘에 이르러 여호와의 전에 나아가니라",
+      "source_text_hash": "71493768203792dd76c08f6fc11384af12faa910c95bd67950bb4976147663ab",
+      "translation_text_hash": "02ea56b1e1a1de632158bc679f39dc9cecf61c9436468ad4884bf32c9f787674",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 비파와 수금과 나팔을 합주하고 예루살렘에 이르러 여호와의 전에 나아가니라"
+      ],
+      "raw_text_hashes": [
+        "02ea56b1e1a1de632158bc679f39dc9cecf61c9436468ad4884bf32c9f787674"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:29",
+      "sequence": 11617,
+      "chapter_label": "2CH 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "The fear of God was on all the kingdoms of the countries when they heard that the LORD fought against the enemies of Israel.",
+      "ko": "이방 모든 나라가 여호와께서 이스라엘의 적군을 치셨다 함을 듣고 하나님을 두려워한고로",
+      "source_text_hash": "3a9d474a5720339fc814438def2275e058a535a898ab433cfc4d7485a7adbe90",
+      "translation_text_hash": "992efe34f37affac65eb068ca72e717da779199807ba6f44d6f9a8b1f2e726b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방 모든 나라가 여호와께서 이스라엘의 적군을 치셨다 함을 듣고 하나님을 두려워한고로"
+      ],
+      "raw_text_hashes": [
+        "992efe34f37affac65eb068ca72e717da779199807ba6f44d6f9a8b1f2e726b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:30",
+      "sequence": 11618,
+      "chapter_label": "2CH 20",
+      "verse_label": "30",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 30
+        }
+      ],
+      "en": "So the realm of Jehoshaphat was quiet, for his God gave him rest all around.",
+      "ko": "여호사밧의 나라가 태평하였으니 이는 그 하나님이 사방에서 저희에게 평강을 주셨음이더라",
+      "source_text_hash": "188751ad2b829f78614edf68069333a80c96f2211e1871c38974b5297051c688",
+      "translation_text_hash": "a4338fe3ad07eee23fbddbbe4e2acff8fb9a8b24b533e6c1408eaac5d4ff12c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧의 나라가 태평하였으니 이는 그 하나님이 사방에서 저희에게 평강을 주셨음이더라"
+      ],
+      "raw_text_hashes": [
+        "a4338fe3ad07eee23fbddbbe4e2acff8fb9a8b24b533e6c1408eaac5d4ff12c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:31",
+      "sequence": 11619,
+      "chapter_label": "2CH 20",
+      "verse_label": "31",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 31
+        }
+      ],
+      "en": "So Jehoshaphat reigned over Judah. He was thirty-five years old when he began to reign. He reigned twenty-five years in Jerusalem. His mother’s name was Azubah the daughter of Shilhi.",
+      "ko": "여호사밧이 유다 왕이 되어 위에 나아갈 때에 나이 삼십 오세라 예루살렘에서 이십 오년을 치리하니라 그 모친의 이름은 아수바라 실히의 딸이더라",
+      "source_text_hash": "1ffd3d7ce988d9893f716088d68654671acd68f327e6548751de7372900eb46c",
+      "translation_text_hash": "e806f624b0d05b01999cfe3ecaa4010f127602691a62365e9269609b5b852f2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 유다 왕이 되어 위에 나아갈 때에 나이 삼십 오세라 예루살렘에서 이십 오년을 치리하니라 그 모친의 이름은 아수바라 실히의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "e806f624b0d05b01999cfe3ecaa4010f127602691a62365e9269609b5b852f2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:32",
+      "sequence": 11620,
+      "chapter_label": "2CH 20",
+      "verse_label": "32",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 32
+        }
+      ],
+      "en": "He walked in the way of Asa his father, and didn’t turn away from it, doing that which was right in the LORD’s eyes.",
+      "ko": "여호사밧이 그 부친 아사의 길로 행하여 돌이켜 떠나지 아니하고 여호와 보시기에 정직히 행하였으나",
+      "source_text_hash": "46677dcc09ac0e2aa3a25578e8992a8a622d69e93f5db2b7d4c3fa6d616f17a5",
+      "translation_text_hash": "0332bc2e93552097277b42f691e1d0474416f18dcd09aa3e59a55038b1834cd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 그 부친 아사의 길로 행하여 돌이켜 떠나지 아니하고 여호와 보시기에 정직히 행하였으나"
+      ],
+      "raw_text_hashes": [
+        "0332bc2e93552097277b42f691e1d0474416f18dcd09aa3e59a55038b1834cd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:33",
+      "sequence": 11621,
+      "chapter_label": "2CH 20",
+      "verse_label": "33",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 33
+        }
+      ],
+      "en": "However the high places were not taken away, and the people had still not set their hearts on the God of their fathers.",
+      "ko": "산당은 폐하지 아니하였으므로 백성이 오히려 마음을 정하여 그 열조의 하나님께로 돌아오지 아니하였더라",
+      "source_text_hash": "adb5829ef24706f70c67a1e8e73f6a2e9a93c5d64a2e85a18d7018999c9a7508",
+      "translation_text_hash": "06f6c5b4510e0a63f58ce5bf901f3ec7eed05b18bf07f00f7a7efb04364f4e16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산당은 폐하지 아니하였으므로 백성이 오히려 마음을 정하여 그 열조의 하나님께로 돌아오지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "06f6c5b4510e0a63f58ce5bf901f3ec7eed05b18bf07f00f7a7efb04364f4e16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:34",
+      "sequence": 11622,
+      "chapter_label": "2CH 20",
+      "verse_label": "34",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 34
+        }
+      ],
+      "en": "Now the rest of the acts of Jehoshaphat, first and last, behold, they are written in the history of Jehu the son of Hanani, which is included in the book of the kings of Israel.",
+      "ko": "이 외에 여호사밧의 시종 행적이 하나니의 아들 예후의 글에 다 기록되었고 그 글은 이스라엘 열왕기에 올랐더라",
+      "source_text_hash": "bb3ffdecde9107665c8313a3e5d66748abe2d871f04bd7a2422e380a22a486a9",
+      "translation_text_hash": "8d0d89fb979d5f5aa46600ba69ce7120315ce364ebfd5efa42f3ee821228edf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 외에 여호사밧의 시종 행적이 하나니의 아들 예후의 글에 다 기록되었고 그 글은 이스라엘 열왕기에 올랐더라"
+      ],
+      "raw_text_hashes": [
+        "8d0d89fb979d5f5aa46600ba69ce7120315ce364ebfd5efa42f3ee821228edf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:35",
+      "sequence": 11623,
+      "chapter_label": "2CH 20",
+      "verse_label": "35",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 35
+        }
+      ],
+      "en": "After this, Jehoshaphat king of Judah joined himself with Ahaziah king of Israel. The same did very wickedly.",
+      "ko": "유다 왕 여호사밧이 나중에 이스라엘 왕 아하시야와 교제하였는데 아하시야는 심히 악을 행하는 자이었더라",
+      "source_text_hash": "c681a9fcfd4688f10e92a39ff2f116082d15af24d05d3dfb9ff107b688f9a864",
+      "translation_text_hash": "b8e902d723075d7b574911f8def2a16f3abff9cbc953cfc2ead8c3044b8604c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 여호사밧이 나중에 이스라엘 왕 아하시야와 교제하였는데 아하시야는 심히 악을 행하는 자이었더라"
+      ],
+      "raw_text_hashes": [
+        "b8e902d723075d7b574911f8def2a16f3abff9cbc953cfc2ead8c3044b8604c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:36",
+      "sequence": 11624,
+      "chapter_label": "2CH 20",
+      "verse_label": "36",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 36
+        }
+      ],
+      "en": "He joined himself with him to make ships to go to Tarshish. They made the ships in Ezion Geber.",
+      "ko": "두 왕이 서로 결합하고 배를 지어 다시스로 보내고자 하여 에시온게벨에서 배를 지었더니",
+      "source_text_hash": "8965d0a1d8f5fab6a565c1a771e96ef5cac9a17beae8539fd604c338fa374424",
+      "translation_text_hash": "2e7ffa139ea9c4852cb9370d9cf18017c9d2a3115c5b502984c43c7373a6ed23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 왕이 서로 결합하고 배를 지어 다시스로 보내고자 하여 에시온게벨에서 배를 지었더니"
+      ],
+      "raw_text_hashes": [
+        "2e7ffa139ea9c4852cb9370d9cf18017c9d2a3115c5b502984c43c7373a6ed23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:20:37",
+      "sequence": 11625,
+      "chapter_label": "2CH 20",
+      "verse_label": "37",
+      "locator": {
+        "book": "2CH",
+        "chapter": 20,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 20,
+          "verse": 37
+        }
+      ],
+      "en": "Then Eliezer the son of Dodavahu of Mareshah prophesied against Jehoshaphat, saying, “Because you have joined yourself with Ahaziah, the LORD has destroyed your works.” The ships were wrecked, so that they were not able to go to Tarshish.",
+      "ko": "마레사 사람 도다와후의 아들 엘리에셀이 여호사밧을 향하여 예언하여 가로되 왕이 아하시야와 교제하는고로 여호와께서 왕의 지은 것을 파하시리라 하더니 이에 그 배가 파상하여 다시스로 가지 못하였더라",
+      "source_text_hash": "a014cd8a662b4f36471f8f2e2e1b7f043034c545b2a9b4f6ea7fe225d7a1e72e",
+      "translation_text_hash": "f3c4584eb7d76f4ae35b1ee7de9cd3c9cf515ba570f395a5c9e7a6c51bb6b415",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마레사 사람 도다와후의 아들 엘리에셀이 여호사밧을 향하여 예언하여 가로되 왕이 아하시야와 교제하는고로 여호와께서 왕의 지은 것을 파하시리라 하더니 이에 그 배가 파상하여 다시스로 가지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "f3c4584eb7d76f4ae35b1ee7de9cd3c9cf515ba570f395a5c9e7a6c51bb6b415"
+      ]
+    }
+  ]
+}

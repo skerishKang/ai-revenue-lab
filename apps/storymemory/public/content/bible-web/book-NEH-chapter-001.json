@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NEH:chapter:001",
+  "unit_ordinal": 414,
+  "unit_label": "NEH 1",
+  "book_code": "NEH",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NEH:1:1",
+      "sequence": 12298,
+      "chapter_label": "NEH 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The words of Nehemiah the son of Hacaliah. Now in the month Chislev, in the twentieth year, as I was in Susa the palace,",
+      "ko": "하가랴의 아들 느헤미야의 말이라 아닥사스다왕 제 이십년 기슬르월에 내가 수산궁에 있더니",
+      "source_text_hash": "a93d8b50246c0155b8cf1afdc9075a8d805bc40c981775b17d7b46f6c2fb505f",
+      "translation_text_hash": "6d60cab7436b50476d45c5d8c7533248ab6e02bb0566816e3fb1e2e3b83770e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하가랴의 아들 느헤미야의 말이라 아닥사스다왕 제 이십년 기슬르월에 내가 수산궁에 있더니"
+      ],
+      "raw_text_hashes": [
+        "6d60cab7436b50476d45c5d8c7533248ab6e02bb0566816e3fb1e2e3b83770e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:1:2",
+      "sequence": 12299,
+      "chapter_label": "NEH 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Hanani, one of my brothers, came, he and certain men out of Judah; and I asked them about the Jews who had escaped, who were left of the captivity, and concerning Jerusalem.",
+      "ko": "나의 한 형제 중 하나니가 두어 사람과 함께 유다에서 이르렀기로 내가 그 사로잡힘을 면하고 남아 있는 유다 사람과 예루살렘 형편을 물은즉",
+      "source_text_hash": "fc4c56c51d98e6df47806a56dcadf7da18d084df92f9c8b2338e50a210a313c0",
+      "translation_text_hash": "9f86a41779ea20d483c9082df04e32829ceeda3e4a37d0115cce102cce8be947",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 한 형제 중 하나니가 두어 사람과 함께 유다에서 이르렀기로 내가 그 사로잡힘을 면하고 남아 있는 유다 사람과 예루살렘 형편을 물은즉"
+      ],
+      "raw_text_hashes": [
+        "9f86a41779ea20d483c9082df04e32829ceeda3e4a37d0115cce102cce8be947"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:1:3",
+      "sequence": 12300,
+      "chapter_label": "NEH 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "They said to me, “The remnant who are left of the captivity there in the province are in great affliction and reproach. The wall of Jerusalem is also broken down, and its gates are burned with fire.”",
+      "ko": "저희가 내게 이르되 사로잡힘을 면하고 남은 자가 그 도에서 큰 환난을 만나고 능욕을 받으며 예루살렘성은 훼파되고 성문들은 소화되었다 하는지라",
+      "source_text_hash": "f4c76f3a20df45d23a2a43ff034c175abba5bc7b77149a553f26db1232eda1fb",
+      "translation_text_hash": "942861fcdbaf35ecb98ce9c226d4c7a34c84c5224520293336f5809071c90f97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 내게 이르되 사로잡힘을 면하고 남은 자가 그 도에서 큰 환난을 만나고 능욕을 받으며 예루살렘성은 훼파되고 성문들은 소화되었다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "942861fcdbaf35ecb98ce9c226d4c7a34c84c5224520293336f5809071c90f97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:1:4",
+      "sequence": 12301,
+      "chapter_label": "NEH 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "When I heard these words, I sat down and wept, and mourned several days; and I fasted and prayed before the God of heaven,",
+      "ko": "내가 이 말을 듣고 앉아서 울고 수일 동안 슬퍼하며 하늘의 하나님 앞에 금식하며 기도하여",
+      "source_text_hash": "573147197039e4b2d9731e10517e86efe3e2d01f506844c1027ad150c3373c3d",
+      "translation_text_hash": "e338b64c035e673efab1b552a74a934b27768ea7b98c4912ec68f93eab445502",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 말을 듣고 앉아서 울고 수일 동안 슬퍼하며 하늘의 하나님 앞에 금식하며 기도하여"
+      ],
+      "raw_text_hashes": [
+        "e338b64c035e673efab1b552a74a934b27768ea7b98c4912ec68f93eab445502"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:1:5",
+      "sequence": 12302,
+      "chapter_label": "NEH 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "and said, “I beg you, LORD, the God of heaven, the great and awesome God who keeps covenant and loving kindness with those who love him and keep his commandments,",
+      "ko": "가로되 하늘의 하나님 여호와 크고 두려우신 하나님이여 주를 사랑하고 주의 계명을 지키는 자에게 언약을 지키시며 긍휼을 베푸시는 주여 간구하나이다",
+      "source_text_hash": "6276e9bd525f99a589b62b1d3e2deddd7079e89eeda50cdc46c9daac21936921",
+      "translation_text_hash": "d1eabbaf95ceff38e381947b3fcbde1e505c87a1c314fc8d6bffcab68c2ee851",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 하늘의 하나님 여호와 크고 두려우신 하나님이여 주를 사랑하고 주의 계명을 지키는 자에게 언약을 지키시며 긍휼을 베푸시는 주여 간구하나이다"
+      ],
+      "raw_text_hashes": [
+        "d1eabbaf95ceff38e381947b3fcbde1e505c87a1c314fc8d6bffcab68c2ee851"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:1:6",
+      "sequence": 12303,
+      "chapter_label": "NEH 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "let your ear now be attentive and your eyes open, that you may listen to the prayer of your servant which I pray before you at this time, day and night, for the children of Israel your servants, while I confess the sins of the children of Israel which we have sinned against you. Yes, I and my father’s house have sinned.",
+      "ko": "이제 종이 주의 종 이스라엘 자손을 위하여 주야로 기도하오며 이스라엘 자손의 주 앞에 범죄함을 자복하오니 주는 귀를 기울이시며 눈을 여시사 종의 기도를 들으시옵소서 나와 나의 아비 집이 범죄하여",
+      "source_text_hash": "872febcffbec7a31ee0149bf9db5e515402a97d17921b93503de43a7e69167f7",
+      "translation_text_hash": "4432fb22bab40f42f3414ead6899d741245bea059f8e71eb1824b10d062ec108",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 종이 주의 종 이스라엘 자손을 위하여 주야로 기도하오며 이스라엘 자손의 주 앞에 범죄함을 자복하오니 주는 귀를 기울이시며 눈을 여시사 종의 기도를 들으시옵소서 나와 나의 아비 집이 범죄하여"
+      ],
+      "raw_text_hashes": [
+        "4432fb22bab40f42f3414ead6899d741245bea059f8e71eb1824b10d062ec108"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:1:7",
+      "sequence": 12304,
+      "chapter_label": "NEH 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "We have dealt very corruptly against you, and have not kept the commandments, nor the statutes, nor the ordinances, which you commanded your servant Moses.",
+      "ko": "주를 향하여 심히 악을 행하여 주의 종 모세에게 주께서 명하신 계명과 율례와 규례를 지키지 아니하였나이다",
+      "source_text_hash": "668b994259ee0a820b66acd8cdae375df71f604400ece7c55ff936097507c947",
+      "translation_text_hash": "7f491873defa37b9875fe1001aa519fb78e20242320ce1dd83ba18b238543f79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 향하여 심히 악을 행하여 주의 종 모세에게 주께서 명하신 계명과 율례와 규례를 지키지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "7f491873defa37b9875fe1001aa519fb78e20242320ce1dd83ba18b238543f79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:1:8",
+      "sequence": 12305,
+      "chapter_label": "NEH 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "“Remember, I beg you, the word that you commanded your servant Moses, saying, ‘If you trespass, I will scatter you among the peoples;",
+      "ko": "옛적에 주께서 주의 종 모세에게 명하여 가라사대 만일 너희가 범죄하면 내가 너희를 열국 중에 흩을 것이요",
+      "source_text_hash": "7d66fe557bde700a26ac2975f09385e0f180ef651a4399dfc49a018ec16060b6",
+      "translation_text_hash": "35b9d5fda29b4cc0b31ac3e784e06b3c8fdf780bd4f659d4629afdcc9f8dd45c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적에 주께서 주의 종 모세에게 명하여 가라사대 만일 너희가 범죄하면 내가 너희를 열국 중에 흩을 것이요"
+      ],
+      "raw_text_hashes": [
+        "35b9d5fda29b4cc0b31ac3e784e06b3c8fdf780bd4f659d4629afdcc9f8dd45c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:1:9",
+      "sequence": 12306,
+      "chapter_label": "NEH 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "but if you return to me, and keep my commandments and do them, though your outcasts were in the uttermost part of the heavens, yet I will gather them from there, and will bring them to the place that I have chosen, to cause my name to dwell there.’",
+      "ko": "만일 내게로 돌아와서 내 계명을 지켜 행하면 너희 쫓긴 자가 하늘 끝에 있을찌라도 내가 거기서부터 모아 내 이름을 두려고 택한 곳에 돌아오게 하리라 하신 말씀을 이제 청컨대 기억하옵소서",
+      "source_text_hash": "a1dac900602fa493356a9324edbea0bb3fd2a8315e72d52db5268bbd3736edef",
+      "translation_text_hash": "6393f26b395ab6d088f9319bce6137ebe2ef663db220fc01ba7802d2159784dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 내게로 돌아와서 내 계명을 지켜 행하면 너희 쫓긴 자가 하늘 끝에 있을찌라도 내가 거기서부터 모아 내 이름을 두려고 택한 곳에 돌아오게 하리라 하신 말씀을 이제 청컨대 기억하옵소서"
+      ],
+      "raw_text_hashes": [
+        "6393f26b395ab6d088f9319bce6137ebe2ef663db220fc01ba7802d2159784dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:1:10",
+      "sequence": 12307,
+      "chapter_label": "NEH 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "“Now these are your servants and your people, whom you have redeemed by your great power and by your strong hand.",
+      "ko": "이들은 주께서 일찍 큰 권능과 강한 손으로 구속하신 주의 종이요 주의 백성이니이다",
+      "source_text_hash": "6effd060540436e74a5d993c054cd723b0858106162d74acec001ba1f0f35024",
+      "translation_text_hash": "644154918d7ff17e9f51e1681934d728ff0d4d2167859eb70ad1b0a7198445c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 주께서 일찍 큰 권능과 강한 손으로 구속하신 주의 종이요 주의 백성이니이다"
+      ],
+      "raw_text_hashes": [
+        "644154918d7ff17e9f51e1681934d728ff0d4d2167859eb70ad1b0a7198445c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:1:11",
+      "sequence": 12308,
+      "chapter_label": "NEH 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "NEH",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Lord, I beg you, let your ear be attentive now to the prayer of your servant, and to the prayer of your servants who delight to fear your name; and please prosper your servant today, and grant him mercy in the sight of this man.” Now I was cup bearer to the king.",
+      "ko": "주여 구하오니 귀를 기울이사 종의 기도와 주의 이름을 경외하기를 기뻐하는 종들의 기도를 들으시고 오늘날 종으로 형통하여 이 사람 앞에서 은혜를 입게 하옵소서 하였나니 그 때에 내가 왕의 술 관원이 되었었느니라",
+      "source_text_hash": "658e324399f81057b7da6e5d3ad3e132398f2dcbed5d1f6c3385171f1218438b",
+      "translation_text_hash": "9e2729cfb0a1a78010995ed1cea14e9dd41bd947e1dfd19f3f8eb6b70cb70461",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 구하오니 귀를 기울이사 종의 기도와 주의 이름을 경외하기를 기뻐하는 종들의 기도를 들으시고 오늘날 종으로 형통하여 이 사람 앞에서 은혜를 입게 하옵소서 하였나니 그 때에 내가 왕의 술 관원이 되었었느니라"
+      ],
+      "raw_text_hashes": [
+        "9e2729cfb0a1a78010995ed1cea14e9dd41bd947e1dfd19f3f8eb6b70cb70461"
+      ]
+    }
+  ]
+}

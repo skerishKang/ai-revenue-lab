@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:001",
+  "unit_ordinal": 746,
+  "unit_label": "JER 1",
+  "book_code": "JER",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:1:1",
+      "sequence": 18948,
+      "chapter_label": "JER 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The words of Jeremiah the son of Hilkiah, one of the priests who were in Anathoth in the land of Benjamin.",
+      "ko": "베냐민 땅 아나돗의 제사장 중 힐기야의 아들 예레미야의 말이라",
+      "source_text_hash": "f6909976cbf7bbe78e10772db77528c2d5c35e7f108798294530d55aca21c7b6",
+      "translation_text_hash": "4651c76477675a8a8402c91655160f90a43cf314ed8f11581634b89f1414ea19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 땅 아나돗의 제사장 중 힐기야의 아들 예레미야의 말이라"
+      ],
+      "raw_text_hashes": [
+        "4651c76477675a8a8402c91655160f90a43cf314ed8f11581634b89f1414ea19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:2",
+      "sequence": 18949,
+      "chapter_label": "JER 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD’s word came to him in the days of Josiah the son of Amon, king of Judah, in the thirteenth year of his reign.",
+      "ko": "아몬의 아들 유다 왕 요시야의 다스린지 십 삼년에 여호와의 말씀이 예레미야에게 임하였고",
+      "source_text_hash": "49174540b5c15cd9302523f2528afc7109e6d7d39d6925326cf18ec12b5ce168",
+      "translation_text_hash": "2546c3fccc5022ab08ca448b633d52de53281483c070956add8c6de53e297d6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아몬의 아들 유다 왕 요시야의 다스린지 십 삼년에 여호와의 말씀이 예레미야에게 임하였고"
+      ],
+      "raw_text_hashes": [
+        "2546c3fccc5022ab08ca448b633d52de53281483c070956add8c6de53e297d6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:3",
+      "sequence": 18950,
+      "chapter_label": "JER 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "It came also in the days of Jehoiakim the son of Josiah, king of Judah, to the end of the eleventh year of Zedekiah, the son of Josiah, king of Judah, to the carrying away of Jerusalem captive in the fifth month.",
+      "ko": "요시야의 아들 유다 왕 여호야김 시대부터 요시야의 아들 유다 왕 시드기야의 제 십 일년 말까지 임하니라 이 해 오월에 예루살렘이 사로잡히니라",
+      "source_text_hash": "25360ad646e12f9a4dc5a8806ae047acb5ebcc64492855a5e89f8c664bf8da05",
+      "translation_text_hash": "c46902feff091256780f56b8776c03ff2d960aa185fa8c49c04b57372a7d6141",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야의 아들 유다 왕 여호야김 시대부터 요시야의 아들 유다 왕 시드기야의 제 십 일년 말까지 임하니라 이 해 오월에 예루살렘이 사로잡히니라"
+      ],
+      "raw_text_hashes": [
+        "c46902feff091256780f56b8776c03ff2d960aa185fa8c49c04b57372a7d6141"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:4",
+      "sequence": 18951,
+      "chapter_label": "JER 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Now the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하니라 이르시되",
+      "source_text_hash": "1427a59272b4e738cdc60fd8a3687faf45caa2c766d2d9ab7317a06e9b6dc364",
+      "translation_text_hash": "c10961067badc4e6053f89b63d34f264023d34a1f79f584a4129d4c822688852",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하니라 이르시되"
+      ],
+      "raw_text_hashes": [
+        "c10961067badc4e6053f89b63d34f264023d34a1f79f584a4129d4c822688852"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:5",
+      "sequence": 18952,
+      "chapter_label": "JER 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "“Before I formed you in the womb, I knew you. Before you were born, I sanctified you. I have appointed you a prophet to the nations.”",
+      "ko": "내가 너를 복중에 짓기 전에 너를 알았고 네가 태에서 나오기 전에 너를 구별하였고 너를 열방의 선지자로 세웠노라 하시기로",
+      "source_text_hash": "a42b3a4a5afd12ebc35332233724181aa04ca81178fe75302c0cce0f8f01d993",
+      "translation_text_hash": "86da51e04c61030124035ba2bffe820b47608d0ea20f8d21a9b846fa3f581634",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 복중에 짓기 전에 너를 알았고 네가 태에서 나오기 전에 너를 구별하였고 너를 열방의 선지자로 세웠노라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "86da51e04c61030124035ba2bffe820b47608d0ea20f8d21a9b846fa3f581634"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:6",
+      "sequence": 18953,
+      "chapter_label": "JER 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Then I said, “Ah, Lord GOD! Behold, I don’t know how to speak; for I am a child.”",
+      "ko": "내가 가로되 슬프도소이다 주 여호와여 보소서 나는 아이라 말할 줄을 알지 못하나이다",
+      "source_text_hash": "9c4a841da675b682d86e0310e8d6ecff95cc95fa42a81905dc29b7eed18a3e43",
+      "translation_text_hash": "6a84714c16c87f168f83df165e8cb9b717a286e2feb7c986c34f53cb6f1ea294",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가로되 슬프도소이다 주 여호와여 보소서 나는 아이라 말할 줄을 알지 못하나이다"
+      ],
+      "raw_text_hashes": [
+        "6a84714c16c87f168f83df165e8cb9b717a286e2feb7c986c34f53cb6f1ea294"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:7",
+      "sequence": 18954,
+      "chapter_label": "JER 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "But the LORD said to me, “Don’t say, ‘I am a child;’ for you must go to whomever I send you, and you must say whatever I command you.",
+      "ko": "여호와께서 내게 이르시되 너는 아이라 하지 말고 내가 너를 누구에게 보내든지 너는 가며 내가 네게 무엇을 명하든지 너는 말할찌니라",
+      "source_text_hash": "6811f5c0558ad219e4d25408c5065ceca3c1561ff60a09f57dc339a96874fd81",
+      "translation_text_hash": "ed80d383d4e1e972bde1e77f140aff1b0a0c474b3c58ea80cf7c98447dfffd60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 너는 아이라 하지 말고 내가 너를 누구에게 보내든지 너는 가며 내가 네게 무엇을 명하든지 너는 말할찌니라"
+      ],
+      "raw_text_hashes": [
+        "ed80d383d4e1e972bde1e77f140aff1b0a0c474b3c58ea80cf7c98447dfffd60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:8",
+      "sequence": 18955,
+      "chapter_label": "JER 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Don’t be afraid because of them, for I am with you to rescue you,” says the LORD.",
+      "ko": "너는 그들을 인하여 두려워 말라 내가 너와 함께하여 너를 구원하리라 나 여호와의 말이니라 하시고",
+      "source_text_hash": "9344280b010a18bbbadf1bf714c5ab7bb0ab1ba6ded18e0deda3a411a1140cb0",
+      "translation_text_hash": "7128d2f75903be91b5a6586714fd08d31d198b2cfe2ba18e9d5530d46ba1ba41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들을 인하여 두려워 말라 내가 너와 함께하여 너를 구원하리라 나 여호와의 말이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "7128d2f75903be91b5a6586714fd08d31d198b2cfe2ba18e9d5530d46ba1ba41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:9",
+      "sequence": 18956,
+      "chapter_label": "JER 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Then the LORD stretched out his hand and touched my mouth. Then the LORD said to me, “Behold, I have put my words in your mouth.",
+      "ko": "여호와께서 그 손을 내밀어 내 입에 대시며 내게 이르시되 보라 내가 내 말을 네 입에 두었노라",
+      "source_text_hash": "b6f683acf1a9873e1d8b305a24b411d357342eeb1395ebaf4a43a1351d45e6cc",
+      "translation_text_hash": "091fc5b58438d7d9d73def10df20d1efd802a058d1c8c382db3bbd241ce85225",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 손을 내밀어 내 입에 대시며 내게 이르시되 보라 내가 내 말을 네 입에 두었노라"
+      ],
+      "raw_text_hashes": [
+        "091fc5b58438d7d9d73def10df20d1efd802a058d1c8c382db3bbd241ce85225"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:10",
+      "sequence": 18957,
+      "chapter_label": "JER 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Behold, I have today set you over the nations and over the kingdoms, to uproot and to tear down, to destroy and to overthrow, to build and to plant.”",
+      "ko": "보라 내가 오늘날 너를 열방 만국 위에 세우고 너로 뽑으며 파괴하며 파멸하며 넘어뜨리며 건설하며 심게 하였느니라",
+      "source_text_hash": "1807c48b9ca0cdb393e65047198166c55326193f55b6fde8e5b50a16ed5f28aa",
+      "translation_text_hash": "e81b2b4f2f0eb909358723dadfb4d646637f395e2a8095469ef72350467999b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 오늘날 너를 열방 만국 위에 세우고 너로 뽑으며 파괴하며 파멸하며 넘어뜨리며 건설하며 심게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e81b2b4f2f0eb909358723dadfb4d646637f395e2a8095469ef72350467999b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:11",
+      "sequence": 18958,
+      "chapter_label": "JER 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Moreover the LORD’s word came to me, saying, “Jeremiah, what do you see?” I said, “I see a branch of an almond tree.”",
+      "ko": "여호와의 말씀이 또 내게 임하니라 이르시되 예레미야야 네가 무엇을 보느냐 대답하되 내가 살구나무 가지를 보나이다",
+      "source_text_hash": "f060db6b5384775fe8875ab0bf1d295f2e7e687ed14a9dd20e44a757251e6a92",
+      "translation_text_hash": "c02e4ce492f8d189f999cc16eee5663f5a9cd632552bdc7df504958af6359ec5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하니라 이르시되 예레미야야 네가 무엇을 보느냐 대답하되 내가 살구나무 가지를 보나이다"
+      ],
+      "raw_text_hashes": [
+        "c02e4ce492f8d189f999cc16eee5663f5a9cd632552bdc7df504958af6359ec5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:12",
+      "sequence": 18959,
+      "chapter_label": "JER 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Then the LORD said to me, “You have seen well; for I watch over my word to perform it.”",
+      "ko": "여호와께서 내게 이르시되 네가 잘 보았도다 이는 내가 내 말을 지켜 그대로 이루려 함이니라",
+      "source_text_hash": "564205a9ee005277934941dff51d883a9e59d9a574972797e0d9074e38b05438",
+      "translation_text_hash": "adb67c22be27cb76e23add46e08f1195a84f8782a115d346ca507d5127953326",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 네가 잘 보았도다 이는 내가 내 말을 지켜 그대로 이루려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "adb67c22be27cb76e23add46e08f1195a84f8782a115d346ca507d5127953326"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:13",
+      "sequence": 18960,
+      "chapter_label": "JER 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD’s word came to me the second time, saying, “What do you see?” I said, “I see a boiling cauldron; and it is tipping away from the north.”",
+      "ko": "여호와의 말씀이 다시 내게 임하니라 이르시되 네가 무엇을 보느냐 대답하되 끓는 가마를 보나이다 그 면이 북에서부터 기울어졌나이다",
+      "source_text_hash": "e807e02b993aaa34f3ef73af4308eba3b95b46b54278c3715c0419c675f0a40a",
+      "translation_text_hash": "f24fbd8f03c968ffb1889df4eaee5b6a78502e28e6ea7ef963368229e59a0b7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 다시 내게 임하니라 이르시되 네가 무엇을 보느냐 대답하되 끓는 가마를 보나이다 그 면이 북에서부터 기울어졌나이다"
+      ],
+      "raw_text_hashes": [
+        "f24fbd8f03c968ffb1889df4eaee5b6a78502e28e6ea7ef963368229e59a0b7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:14",
+      "sequence": 18961,
+      "chapter_label": "JER 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Then the LORD said to me, “Out of the north, evil will break out on all the inhabitants of the land.",
+      "ko": "여호와께서 내게 이르시되 재앙이 북방에서 일어나 이 땅의 모든 거민에게 임하리라",
+      "source_text_hash": "ef8f2bcb8c73c226d1c3f4b4f4ac64aa2da70f3dc51e5f970ae4725c3cb2b14a",
+      "translation_text_hash": "ba72cb3fd2a9827ddb5a5b1bffda625547dce951e310d795578c099675734bb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 재앙이 북방에서 일어나 이 땅의 모든 거민에게 임하리라"
+      ],
+      "raw_text_hashes": [
+        "ba72cb3fd2a9827ddb5a5b1bffda625547dce951e310d795578c099675734bb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:15",
+      "sequence": 18962,
+      "chapter_label": "JER 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "For behold, I will call all the families of the kingdoms of the north,” says the LORD. “They will come, and they will each set his throne at the entrance of the gates of Jerusalem, and against all its walls all around, and against all the cities of Judah.",
+      "ko": "나 여호와가 말하노라 내가 북방 모든 나라의 족속을 부를 것인즉 그들이 와서 예루살렘 성문 어귀에 각기 자리를 정하고 그 사면 성벽과 유다 모든 성읍을 치리라",
+      "source_text_hash": "9a59d6b1b029769becaf8633d68b24c65fcddd21dc95ff2975e3a32b572c8cfe",
+      "translation_text_hash": "8cf17039fa7ca07ffbb500192b950f0bf4f2610bdc5b1716752176034e25ef9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내가 북방 모든 나라의 족속을 부를 것인즉 그들이 와서 예루살렘 성문 어귀에 각기 자리를 정하고 그 사면 성벽과 유다 모든 성읍을 치리라"
+      ],
+      "raw_text_hashes": [
+        "8cf17039fa7ca07ffbb500192b950f0bf4f2610bdc5b1716752176034e25ef9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:16",
+      "sequence": 18963,
+      "chapter_label": "JER 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "I will utter my judgments against them concerning all their wickedness, in that they have forsaken me, and have burned incense to other gods, and worshiped the works of their own hands.",
+      "ko": "무리가 나를 버리고 다른 신들에게 분향하며 자기 손으로 만든 것에 절하였은즉 내가 나의 심판을 베풀어 그들의 모든 죄악을 징계하리라",
+      "source_text_hash": "1b82e1040cd2a55d92de025b1205ab973e7ab9dbb6939330a3914fd0034345d4",
+      "translation_text_hash": "98977fd15b5f4c9528ad5835bf295a73137392e02393c5a13ed24db1d82f876c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 나를 버리고 다른 신들에게 분향하며 자기 손으로 만든 것에 절하였은즉 내가 나의 심판을 베풀어 그들의 모든 죄악을 징계하리라"
+      ],
+      "raw_text_hashes": [
+        "98977fd15b5f4c9528ad5835bf295a73137392e02393c5a13ed24db1d82f876c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:17",
+      "sequence": 18964,
+      "chapter_label": "JER 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "“You therefore put your belt on your waist, arise, and say to them all that I command you. Don’t be dismayed at them, lest I dismay you before them.",
+      "ko": "그러므로 너는 네 허리를 동이고 일어나 내가 네게 명한 바를 다 그들에게 고하라 그들을 인하여 두려워 말라 두렵건대 내가 너로 그들 앞에서 두려움을 당하게 할까 하노라",
+      "source_text_hash": "b7220b9e5efca0bf656f744b1c42ff024d0c3db2b23da92f705dad78db5aec42",
+      "translation_text_hash": "bdf3e915c9e7232421dbb7bcb762699faf02bdb00966a4bfaa1239e24cd138ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 네 허리를 동이고 일어나 내가 네게 명한 바를 다 그들에게 고하라 그들을 인하여 두려워 말라 두렵건대 내가 너로 그들 앞에서 두려움을 당하게 할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "bdf3e915c9e7232421dbb7bcb762699faf02bdb00966a4bfaa1239e24cd138ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:18",
+      "sequence": 18965,
+      "chapter_label": "JER 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "For behold, I have made you today a fortified city, an iron pillar, and bronze walls against the whole land—against the kings of Judah, against its princes, against its priests, and against the people of the land.",
+      "ko": "보라 내가 오늘날 너로 그 온 땅과 유다 왕들과 그 족장들과 그 제사장들과 그 땅 백성 앞에 견고한 성읍, 쇠기둥, 놋성벽이 되게 하였은즉",
+      "source_text_hash": "f51271c0d3a3b4c153f80e770065659806a885b56a48f2674427e9a59a04e7e2",
+      "translation_text_hash": "7e9d712bb21876fd90c6b38864f720a0d7c03bfd9438b881eb1c07e8610b336d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 오늘날 너로 그 온 땅과 유다 왕들과 그 족장들과 그 제사장들과 그 땅 백성 앞에 견고한 성읍, 쇠기둥, 놋성벽이 되게 하였은즉"
+      ],
+      "raw_text_hashes": [
+        "7e9d712bb21876fd90c6b38864f720a0d7c03bfd9438b881eb1c07e8610b336d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:1:19",
+      "sequence": 18966,
+      "chapter_label": "JER 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "They will fight against you, but they will not prevail against you; for I am with you”, says the LORD, “to rescue you.”",
+      "ko": "그들이 너를 치나 이기지 못하리니 이는 내가 너와 함께하여 너를 구원할 것임이니라 여호와의 말이니라",
+      "source_text_hash": "492bb21e48d0434aa92b7c04acbfa49f169126faac7b10d5830a6a89f48bbcbe",
+      "translation_text_hash": "f1e28d29c187e797297ec8b2c8d96719072f9a76a1ac3bd7dd8f1add93cf0e3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 너를 치나 이기지 못하리니 이는 내가 너와 함께하여 너를 구원할 것임이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "f1e28d29c187e797297ec8b2c8d96719072f9a76a1ac3bd7dd8f1add93cf0e3f"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:002",
+  "unit_ordinal": 1064,
+  "unit_label": "1CO 2",
+  "book_code": "1CO",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:2:1",
+      "sequence": 28392,
+      "chapter_label": "1CO 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "When I came to you, brothers, I didn’t come with excellence of speech or of wisdom, proclaiming to you the testimony of God.",
+      "ko": "형제들아 내가 너희에게 나아가 하나님의 증거를 전할 때에 말과 지혜의 아름다운 것으로 아니하였나니",
+      "source_text_hash": "c6c44064f5c1fe20f22a0f849d3faae97680d53b884d6923e1712e370440c4e0",
+      "translation_text_hash": "08ba81ef5d78754ba7ef67c618f214df8892a9d367ea62038b81072c41acc173",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 너희에게 나아가 하나님의 증거를 전할 때에 말과 지혜의 아름다운 것으로 아니하였나니"
+      ],
+      "raw_text_hashes": [
+        "08ba81ef5d78754ba7ef67c618f214df8892a9d367ea62038b81072c41acc173"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:2",
+      "sequence": 28393,
+      "chapter_label": "1CO 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "For I determined not to know anything among you except Jesus Christ and him crucified.",
+      "ko": "내가 너희 중에서 예수 그리스도와 그의 십자가에 못 박히신 것 외에는 아무 것도 알지 아니하기로 작정하였음이라",
+      "source_text_hash": "bd50a984c605e33b2694c1c67c8dc7e395439a27d81f7a58720bb10f6201300d",
+      "translation_text_hash": "41153010519166f409a53feeec55ef45f9f791a4288d1eece2d1cf57cb6eb741",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 중에서 예수 그리스도와 그의 십자가에 못 박히신 것 외에는 아무 것도 알지 아니하기로 작정하였음이라"
+      ],
+      "raw_text_hashes": [
+        "41153010519166f409a53feeec55ef45f9f791a4288d1eece2d1cf57cb6eb741"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:3",
+      "sequence": 28394,
+      "chapter_label": "1CO 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "I was with you in weakness, in fear, and in much trembling.",
+      "ko": "내가 너희 가운데 거할 때에 약하며 두려워하며 심히 떨었노라",
+      "source_text_hash": "46390762c68e2d6def1cc7a7f87068a4c85ec6e56639f858349fccf291131200",
+      "translation_text_hash": "46bef3d8229affb0cdd2e166d9c36bd6b65d8381a8b5823680f0a0ac10026308",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 가운데 거할 때에 약하며 두려워하며 심히 떨었노라"
+      ],
+      "raw_text_hashes": [
+        "46bef3d8229affb0cdd2e166d9c36bd6b65d8381a8b5823680f0a0ac10026308"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:4",
+      "sequence": 28395,
+      "chapter_label": "1CO 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "My speech and my preaching were not in persuasive words of human wisdom, but in demonstration of the Spirit and of power,",
+      "ko": "내 말과 내 전도함이 지혜의 권하는 말로 하지 아니하고 다만 성령의 나타남과 능력으로 하여",
+      "source_text_hash": "e73ff1a9d580675b65c0d168b479f7b1f7aa68a188d98612d8b5b5674f58fa7e",
+      "translation_text_hash": "e6b85835d767c3f14eea284500da5bc4b592cfa550052b6d310fd44b3f01ad55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 말과 내 전도함이 지혜의 권하는 말로 하지 아니하고 다만 성령의 나타남과 능력으로 하여"
+      ],
+      "raw_text_hashes": [
+        "e6b85835d767c3f14eea284500da5bc4b592cfa550052b6d310fd44b3f01ad55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:5",
+      "sequence": 28396,
+      "chapter_label": "1CO 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "that your faith wouldn’t stand in the wisdom of men, but in the power of God.",
+      "ko": "너희 믿음이 사람의 지혜에 있지 아니하고 다만 하나님의 능력에 있게 하려 하였노라",
+      "source_text_hash": "266f4ea5ad75de6ece6cad933f41f40012410c37075270b9719f859de2b3ff29",
+      "translation_text_hash": "aec7cab1e771c91da00023eeccf6282d6fc212a02b6673ef93a9a4adc5221b25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 믿음이 사람의 지혜에 있지 아니하고 다만 하나님의 능력에 있게 하려 하였노라"
+      ],
+      "raw_text_hashes": [
+        "aec7cab1e771c91da00023eeccf6282d6fc212a02b6673ef93a9a4adc5221b25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:6",
+      "sequence": 28397,
+      "chapter_label": "1CO 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "We speak wisdom, however, among those who are full grown, yet a wisdom not of this world nor of the rulers of this world who are coming to nothing.",
+      "ko": "그러나 우리가 온전한 자들 중에서 지혜를 말하노니 이는 이 세상의 지혜가 아니요 또 이 세상의 없어질 관원의 지혜도 아니요",
+      "source_text_hash": "aa74e6bbc66f44dd06504f9df92f0a65141e6077533b5bcd13a1e5c46e4cafd9",
+      "translation_text_hash": "869605b6ce68235e06eab83460ac60120d0afc7e44c1f99f90825f15a63fc834",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리가 온전한 자들 중에서 지혜를 말하노니 이는 이 세상의 지혜가 아니요 또 이 세상의 없어질 관원의 지혜도 아니요"
+      ],
+      "raw_text_hashes": [
+        "869605b6ce68235e06eab83460ac60120d0afc7e44c1f99f90825f15a63fc834"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:7",
+      "sequence": 28398,
+      "chapter_label": "1CO 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "But we speak God’s wisdom in a mystery, the wisdom that has been hidden, which God foreordained before the worlds for our glory,",
+      "ko": "오직 비밀한 가운데 있는 하나님의 지혜를 말하는 것이니 곧 감취었던 것인데 하나님이 우리의 영광을 위하사 만세 전에 미리 정하신 것이라",
+      "source_text_hash": "34f44d8a14f3bf7b39f19714265f3660a921e29fc58c4ad730e62033b6a7ddb1",
+      "translation_text_hash": "d92c94846757eea5b42f19d8838ee6ca1253f15a51f2e4b41c2de43962877a96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 비밀한 가운데 있는 하나님의 지혜를 말하는 것이니 곧 감취었던 것인데 하나님이 우리의 영광을 위하사 만세 전에 미리 정하신 것이라"
+      ],
+      "raw_text_hashes": [
+        "d92c94846757eea5b42f19d8838ee6ca1253f15a51f2e4b41c2de43962877a96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:8",
+      "sequence": 28399,
+      "chapter_label": "1CO 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "which none of the rulers of this world has known. For had they known it, they wouldn’t have crucified the Lord of glory.",
+      "ko": "이 지혜는 이 세대의 관원이 하나도 알지 못하였나니 만일 알았더면 영광의 주를 십자가에 못 박지 아니하였으리라",
+      "source_text_hash": "c9183d03a1152eb8314ff23eb0ca0887fec794674b4e065b0b8652b2d218b4e7",
+      "translation_text_hash": "89542f7e015bc9c56d7d734fe2330b5fff5834ed5059dbb6d505a0ce900365da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 지혜는 이 세대의 관원이 하나도 알지 못하였나니 만일 알았더면 영광의 주를 십자가에 못 박지 아니하였으리라"
+      ],
+      "raw_text_hashes": [
+        "89542f7e015bc9c56d7d734fe2330b5fff5834ed5059dbb6d505a0ce900365da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:9",
+      "sequence": 28400,
+      "chapter_label": "1CO 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "But as it is written, “Things which an eye didn’t see, and an ear didn’t hear, which didn’t enter into the heart of man, these God has prepared for those who love him.”",
+      "ko": "기록된바 하나님이 자기를 사랑하는 자들을 위하여 예비하신 모든 것은 눈으로 보지 못하고 귀로도 듣지 못하고 사람의 마음으로도 생각지 못하였다 함과 같으니라",
+      "source_text_hash": "f6807bc9ca9b7308ce09291de975aa93cd90b0527335436851c015879eadab46",
+      "translation_text_hash": "3e5f05b34953b14125c13992040571213fe7b3dca7a0be283c3b7f4318379fce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 하나님이 자기를 사랑하는 자들을 위하여 예비하신 모든 것은 눈으로 보지 못하고 귀로도 듣지 못하고 사람의 마음으로도 생각지 못하였다 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "3e5f05b34953b14125c13992040571213fe7b3dca7a0be283c3b7f4318379fce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:10",
+      "sequence": 28401,
+      "chapter_label": "1CO 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "But to us, God revealed them through the Spirit. For the Spirit searches all things, yes, the deep things of God.",
+      "ko": "오직 하나님이 성령으로 이것을 우리에게 보이셨으니 성령은 모든 것 곧 하나님의 깊은 것이라도 통달하시느니라",
+      "source_text_hash": "1fb0e98d7eed58e4c2e282e7fb33a33c21c635eb651a5704c24836607eaf33b9",
+      "translation_text_hash": "f395f840217e6d561a02d2e4db8ebf12db4c345c3a613b0fc9133540b3a70adc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 하나님이 성령으로 이것을 우리에게 보이셨으니 성령은 모든 것 곧 하나님의 깊은 것이라도 통달하시느니라"
+      ],
+      "raw_text_hashes": [
+        "f395f840217e6d561a02d2e4db8ebf12db4c345c3a613b0fc9133540b3a70adc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:11",
+      "sequence": 28402,
+      "chapter_label": "1CO 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "For who among men knows the things of a man except the spirit of the man which is in him? Even so, no one knows the things of God except God’s Spirit.",
+      "ko": "사람의 사정을 사람의 속에 있는 영 외에는 누가 알리요 이와 같이 하나님의 사정도 하나님의 영 외에는 아무도 알지 못하느니라",
+      "source_text_hash": "1b72b0c7de47517aa22e396ca9b51b35f74de7bb088be399d7e86dce1b8a6519",
+      "translation_text_hash": "d9e5901f91e6cbbdeedd3eaa24779b5470074bad5612d36a55972b1fdd4895e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 사정을 사람의 속에 있는 영 외에는 누가 알리요 이와 같이 하나님의 사정도 하나님의 영 외에는 아무도 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "d9e5901f91e6cbbdeedd3eaa24779b5470074bad5612d36a55972b1fdd4895e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:12",
+      "sequence": 28403,
+      "chapter_label": "1CO 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "But we received not the spirit of the world, but the Spirit which is from God, that we might know the things that were freely given to us by God.",
+      "ko": "우리가 세상의 영을 받지 아니하고 오직 하나님께로 온 영을 받았으니 이는 우리로 하여금 하나님께서 우리에게 은혜로 주신 것들을 알게 하려 하심이라",
+      "source_text_hash": "56bace4ee49c7d07268cb96eb98584aeb917c674be6e8f265c8ede4f88eb892a",
+      "translation_text_hash": "a14d372551a46ea08f724c7a9a09c2f72d55d1e553b77d78147e17bd451ea7df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 세상의 영을 받지 아니하고 오직 하나님께로 온 영을 받았으니 이는 우리로 하여금 하나님께서 우리에게 은혜로 주신 것들을 알게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "a14d372551a46ea08f724c7a9a09c2f72d55d1e553b77d78147e17bd451ea7df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:13",
+      "sequence": 28404,
+      "chapter_label": "1CO 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "We also speak these things, not in words which man’s wisdom teaches but which the Holy Spirit teaches, comparing spiritual things with spiritual things.",
+      "ko": "우리가 이것을 말하거니와 사람의 지혜의 가르친 말로 아니하고 오직 성령의 가르치신 것으로 하니 신령한 일은 신령한 것으로 분별하느니라",
+      "source_text_hash": "e9dfe505ad845e6e885e6d47550e0d3a066ec4ff755f7b0fc36cee581ebf50aa",
+      "translation_text_hash": "2ea8029e6b69fc23ea0ddaf04e50471a7d0d76ec2a02a2df602f8f07194ca094",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이것을 말하거니와 사람의 지혜의 가르친 말로 아니하고 오직 성령의 가르치신 것으로 하니 신령한 일은 신령한 것으로 분별하느니라"
+      ],
+      "raw_text_hashes": [
+        "2ea8029e6b69fc23ea0ddaf04e50471a7d0d76ec2a02a2df602f8f07194ca094"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:14",
+      "sequence": 28405,
+      "chapter_label": "1CO 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Now the natural man doesn’t receive the things of God’s Spirit, for they are foolishness to him; and he can’t know them, because they are spiritually discerned.",
+      "ko": "육에 속한 사람은 하나님의 성령의 일을 받지 아니하나니 저희에게는 미련하게 보임이요 또 깨닫지도 못하나니 이런 일은 영적으로라야 분변함이니라",
+      "source_text_hash": "b860fde652ba5fd93aaf20a83d28a23f53b0f1f509496e04cfffb82b2e7afe2c",
+      "translation_text_hash": "6bdac40b015a2700593ba42b07cd6c16354a2d99765fa6c37c5465225bad94bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육에 속한 사람은 하나님의 성령의 일을 받지 아니하나니 저희에게는 미련하게 보임이요 또 깨닫지도 못하나니 이런 일은 영적으로라야 분변함이니라"
+      ],
+      "raw_text_hashes": [
+        "6bdac40b015a2700593ba42b07cd6c16354a2d99765fa6c37c5465225bad94bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:15",
+      "sequence": 28406,
+      "chapter_label": "1CO 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "But he who is spiritual discerns all things, and he himself is to be judged by no one.",
+      "ko": "신령한 자는 모든 것을 판단하나 자기는 아무에게도 판단을 받지 아니하느니라",
+      "source_text_hash": "cd008581c86c88e5136a368528b635121ba19646f3891f0bbffa01d992a4cae9",
+      "translation_text_hash": "98d7dc762e8630ba7d7e805dd509008399af9f81ceb93a7243bf6c366675bff4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신령한 자는 모든 것을 판단하나 자기는 아무에게도 판단을 받지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "98d7dc762e8630ba7d7e805dd509008399af9f81ceb93a7243bf6c366675bff4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:2:16",
+      "sequence": 28407,
+      "chapter_label": "1CO 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "“For who has known the mind of the Lord that he should instruct him?” But we have Christ’s mind.",
+      "ko": "누가 주의 마음을 알아서 주를 가르치겠느냐 그러나 우리가 그리스도의 마음을 가졌느니라",
+      "source_text_hash": "2907a6181b95ad5f08528ae33e855568c76b8686f82fd0ff23d38039c3152a69",
+      "translation_text_hash": "5c605062c61e4540f6cadd0d9e5824f8616f02ce17d729ac00e31e5c653d7658",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 주의 마음을 알아서 주를 가르치겠느냐 그러나 우리가 그리스도의 마음을 가졌느니라"
+      ],
+      "raw_text_hashes": [
+        "5c605062c61e4540f6cadd0d9e5824f8616f02ce17d729ac00e31e5c653d7658"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:028",
+  "unit_ordinal": 264,
+  "unit_label": "1SA 28",
+  "book_code": "1SA",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:28:1",
+      "sequence": 7944,
+      "chapter_label": "1SA 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "In those days, the Philistines gathered their armies together for warfare, to fight with Israel. Achish said to David, “Know assuredly that you will go out with me in the army, you and your men.”",
+      "ko": "그 때에 블레셋 사람이 이스라엘을 쳐서 싸우려고 군대를 모집한지라 아기스가 다윗에게 이르되 너는 밝히 알라 너와 네 사람들이 나와 한가지로 나가서 군대에 참가할 것이니라",
+      "source_text_hash": "5ba3c030c79d9fae4d421d6d78178c2539ac6ac86147433c8ebb9d2fd357b086",
+      "translation_text_hash": "4ed81d8c88ba7a7a85aa9cbe4ec61a647268e92335662fa6ecb54c83a4944967",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 블레셋 사람이 이스라엘을 쳐서 싸우려고 군대를 모집한지라 아기스가 다윗에게 이르되 너는 밝히 알라 너와 네 사람들이 나와 한가지로 나가서 군대에 참가할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "4ed81d8c88ba7a7a85aa9cbe4ec61a647268e92335662fa6ecb54c83a4944967"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:2",
+      "sequence": 7945,
+      "chapter_label": "1SA 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "David said to Achish, “Therefore you will know what your servant can do.” Achish said to David, “Therefore I will make you my bodyguard forever.”",
+      "ko": "다윗이 아기스에게 이르되 그러면 당신이 종의 행할 바를 아시리이다 아기스가 다윗에게 이르되 그러면 내가 너로 영영히 내 머리 지키는 자를 삼으리라 하니라",
+      "source_text_hash": "c475e83052cb15a73be98aafa5e3a9da403153a3d4cce5523b7108eae1d6e593",
+      "translation_text_hash": "7e6cfcc7d9e0d5a83efef3bf14121685581ab09c72ba29b219b772c242a59601",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아기스에게 이르되 그러면 당신이 종의 행할 바를 아시리이다 아기스가 다윗에게 이르되 그러면 내가 너로 영영히 내 머리 지키는 자를 삼으리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "7e6cfcc7d9e0d5a83efef3bf14121685581ab09c72ba29b219b772c242a59601"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:3",
+      "sequence": 7946,
+      "chapter_label": "1SA 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "Now Samuel was dead, and all Israel had mourned for him and buried him in Ramah, even in his own city. Saul had sent away those who had familiar spirits and the wizards out of the land.",
+      "ko": "사무엘이 죽었으므로 온 이스라엘이 그를 애곡하며 그의 본성 라마에 장사하였고 사울은 신접한 자와 박수를 그 땅에서 쫓아 내었었더라",
+      "source_text_hash": "039b5678d7dc795ba4b5d49057b1cf02b3ec7a9d642b271ee954f9b32143cd89",
+      "translation_text_hash": "c33549cf38d50db859904cc9c00ed3c45d80f09d7d6da686b4848243cbcdbef7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 죽었으므로 온 이스라엘이 그를 애곡하며 그의 본성 라마에 장사하였고 사울은 신접한 자와 박수를 그 땅에서 쫓아 내었었더라"
+      ],
+      "raw_text_hashes": [
+        "c33549cf38d50db859904cc9c00ed3c45d80f09d7d6da686b4848243cbcdbef7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:4",
+      "sequence": 7947,
+      "chapter_label": "1SA 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "The Philistines gathered themselves together, and came and encamped in Shunem; and Saul gathered all Israel together, and they encamped in Gilboa.",
+      "ko": "블레셋 사람이 모여 수넴에 이르러 진 치매 사울이 온 이스라엘을 모아 길보아에 진 쳤더니",
+      "source_text_hash": "c9fce0a3c892bd7311b4a1a3c0f2322d1d768914c4e137371c43a79b2d19d285",
+      "translation_text_hash": "2d6703af279ae0949e582c3b2221b25257b90ef204841d47de558b22ade92f58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 모여 수넴에 이르러 진 치매 사울이 온 이스라엘을 모아 길보아에 진 쳤더니"
+      ],
+      "raw_text_hashes": [
+        "2d6703af279ae0949e582c3b2221b25257b90ef204841d47de558b22ade92f58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:5",
+      "sequence": 7948,
+      "chapter_label": "1SA 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "When Saul saw the army of the Philistines, he was afraid, and his heart trembled greatly.",
+      "ko": "사울이 블레셋 사람의 군대를 보고 두려워서 그 마음이 크게 떨린지라",
+      "source_text_hash": "00f15b9d7e09c9083eebaa19c7f7888fcb15cf6c4f0e208827913f83cd935be2",
+      "translation_text_hash": "6f01b502e855512a1d69fa61a28f4f57a09b30f7edc209018e9be3eb7877f8c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 블레셋 사람의 군대를 보고 두려워서 그 마음이 크게 떨린지라"
+      ],
+      "raw_text_hashes": [
+        "6f01b502e855512a1d69fa61a28f4f57a09b30f7edc209018e9be3eb7877f8c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:6",
+      "sequence": 7949,
+      "chapter_label": "1SA 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "When Saul inquired of the LORD, the LORD didn’t answer him by dreams, by Urim, or by prophets.",
+      "ko": "사울이 여호와께 묻자오되 여호와께서 꿈으로도, 우림으로도, 선지자로도 그에게 대답지 아니하시므로",
+      "source_text_hash": "66e2c000f2662896210c0a37d1256539595e76768ee15cebc64b2ba0645491ca",
+      "translation_text_hash": "d96eba073a909ccf7735e764cd9b6b6b3ff096af205fcd4c8c0f641e2e64282d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 여호와께 묻자오되 여호와께서 꿈으로도, 우림으로도, 선지자로도 그에게 대답지 아니하시므로"
+      ],
+      "raw_text_hashes": [
+        "d96eba073a909ccf7735e764cd9b6b6b3ff096af205fcd4c8c0f641e2e64282d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:7",
+      "sequence": 7950,
+      "chapter_label": "1SA 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "Then Saul said to his servants, “Seek for me a woman who has a familiar spirit, that I may go to her and inquire of her.” His servants said to him, “Behold, there is a woman who has a familiar spirit at Endor.”",
+      "ko": "사울이 그 신하들에게 이르되 나를 위하여 신접한 여인을 찾으라 내가 그리로 가서 그에게 물으리라 그 신하들이 그에게 이르되 보소서 엔돌에 신접한 여인이 있나이다",
+      "source_text_hash": "409c65da3199040238224e7bf02daab5860618179fb616959768302d6c659375",
+      "translation_text_hash": "712314fe71fafcf66d066d57e1fa18bffe7751b1d53744ee262ed8b80bdfc42d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 그 신하들에게 이르되 나를 위하여 신접한 여인을 찾으라 내가 그리로 가서 그에게 물으리라 그 신하들이 그에게 이르되 보소서 엔돌에 신접한 여인이 있나이다"
+      ],
+      "raw_text_hashes": [
+        "712314fe71fafcf66d066d57e1fa18bffe7751b1d53744ee262ed8b80bdfc42d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:8",
+      "sequence": 7951,
+      "chapter_label": "1SA 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "Saul disguised himself and put on other clothing, and went, he and two men with him, and they came to the woman by night. Then he said, “Please consult for me by the familiar spirit, and bring me up whomever I shall name to you.”",
+      "ko": "사울이 다른 옷을 입어 변장하고 두 사람과 함께 갈쌔 그들이 밤에 그 여인에게 이르러는 사울이 가로되 청하노니 나를 위하여 신접한 술법으로 내가 네게 말하는 사람을 불러올리라",
+      "source_text_hash": "11af0a636fd0807ec4e06df1f55ef8c48eacafa1889b318781c8775b40ed29be",
+      "translation_text_hash": "3c8b8079077500ad54e11a47a2054d158933180e34168c6aba47e17e0b702ace",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 다른 옷을 입어 변장하고 두 사람과 함께 갈쌔 그들이 밤에 그 여인에게 이르러는 사울이 가로되 청하노니 나를 위하여 신접한 술법으로 내가 네게 말하는 사람을 불러올리라"
+      ],
+      "raw_text_hashes": [
+        "3c8b8079077500ad54e11a47a2054d158933180e34168c6aba47e17e0b702ace"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:9",
+      "sequence": 7952,
+      "chapter_label": "1SA 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "The woman said to him, “Behold, you know what Saul has done, how he has cut off those who have familiar spirits and the wizards out of the land. Why then do you lay a snare for my life, to cause me to die?”",
+      "ko": "여인이 그에게 이르되 네가 사울의 행한 일 곧 그가 신접한 자와 박수를 이 땅에서 멸절시켰음을 아나니 네가 어찌하여 내 생명에 올무를 놓아 나를 죽게 하려느냐",
+      "source_text_hash": "fe5a258782a8f06bf0eb79efebf4a888f3d3f7fbcf927344aa3e2433bd0bf4ab",
+      "translation_text_hash": "8e25bf05674375c0b08bea6dadcd03f0d02e7b4c7f568319f34f7530aa8abac9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 그에게 이르되 네가 사울의 행한 일 곧 그가 신접한 자와 박수를 이 땅에서 멸절시켰음을 아나니 네가 어찌하여 내 생명에 올무를 놓아 나를 죽게 하려느냐"
+      ],
+      "raw_text_hashes": [
+        "8e25bf05674375c0b08bea6dadcd03f0d02e7b4c7f568319f34f7530aa8abac9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:10",
+      "sequence": 7953,
+      "chapter_label": "1SA 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "Saul swore to her by the LORD, saying, “As the LORD lives, no punishment will happen to you for this thing.”",
+      "ko": "사울이 여호와로 그에게 맹세하여 가로되 여호와께서 사시거니와 네가 이 일로는 벌을 당치 아니하리라",
+      "source_text_hash": "82ad19077ec45e73bfa01d928f24c9cff19f524f015642e51de4a17083077657",
+      "translation_text_hash": "41b69638c83842b77e25a6f1760ef2611c7780767360250f1796cb11103c7bc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 여호와로 그에게 맹세하여 가로되 여호와께서 사시거니와 네가 이 일로는 벌을 당치 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "41b69638c83842b77e25a6f1760ef2611c7780767360250f1796cb11103c7bc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:11",
+      "sequence": 7954,
+      "chapter_label": "1SA 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "Then the woman said, “Whom shall I bring up to you?” He said, “Bring Samuel up for me.”",
+      "ko": "여인이 가로되 내가 누구를 네게로 불러 올리랴 사울이 가로되 사무엘을 불러 올리라",
+      "source_text_hash": "9173bae51dbd4c021b2926f6e374bbf4d5443457c7567a4c05ebafbd73238b25",
+      "translation_text_hash": "6f3967328dd85e7d6156fb2e13266d96352e2bdb3af0013e0a63b69337fb6540",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 가로되 내가 누구를 네게로 불러 올리랴 사울이 가로되 사무엘을 불러 올리라"
+      ],
+      "raw_text_hashes": [
+        "6f3967328dd85e7d6156fb2e13266d96352e2bdb3af0013e0a63b69337fb6540"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:12",
+      "sequence": 7955,
+      "chapter_label": "1SA 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "When the woman saw Samuel, she cried with a loud voice; and the woman spoke to Saul, saying, “Why have you deceived me? For you are Saul!”",
+      "ko": "여인이 사무엘을 보고 큰 소리로 외치며 사울에게 말하여 가로되 당신이 어찌하여 나를 속이셨나이까 당신이 사울이시니이다",
+      "source_text_hash": "5367d5642413016fcdefe0ffd64ea68280324c0c52a0e880a12c655d088cc37e",
+      "translation_text_hash": "c7d541c4e8ff2e915911eef3ad48f8a6bfe166e589e5c37c7b30ec05008e225e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 사무엘을 보고 큰 소리로 외치며 사울에게 말하여 가로되 당신이 어찌하여 나를 속이셨나이까 당신이 사울이시니이다"
+      ],
+      "raw_text_hashes": [
+        "c7d541c4e8ff2e915911eef3ad48f8a6bfe166e589e5c37c7b30ec05008e225e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:13",
+      "sequence": 7956,
+      "chapter_label": "1SA 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "The king said to her, “Don’t be afraid! What do you see?” The woman said to Saul, “I see a god coming up out of the earth.”",
+      "ko": "왕이 그에게 이르되 두려워 말라 네가 무엇을 보았느냐 여인이 사울에게 이르되 내가 신이 땅에서 올라오는 것을 보았나이다",
+      "source_text_hash": "9b32fc99fb367ce67e54c22a3d931baa88395e71d98a2e5b746291cb724c197e",
+      "translation_text_hash": "e398857aec202ae35ac09d7f4c2eb29a097e5125e14d6feca2c8c5f270e7e881",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그에게 이르되 두려워 말라 네가 무엇을 보았느냐 여인이 사울에게 이르되 내가 신이 땅에서 올라오는 것을 보았나이다"
+      ],
+      "raw_text_hashes": [
+        "e398857aec202ae35ac09d7f4c2eb29a097e5125e14d6feca2c8c5f270e7e881"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:14",
+      "sequence": 7957,
+      "chapter_label": "1SA 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "He said to her, “What does he look like?” She said, “An old man comes up. He is covered with a robe.” Saul perceived that it was Samuel, and he bowed with his face to the ground, and showed respect.",
+      "ko": "사울이 그에게 이르되 그 모양이 어떠하냐 그가 가로되 한 노인이 올라 오는데 그가 겉옷을 입었나이다 사울이 그가 사무엘인줄 알고 그 얼굴을 땅에 대고 절하니라",
+      "source_text_hash": "4385b853eca8bd3dd6e0d4172ce93f64cc88db2bad0a5852ce5c9616200e4299",
+      "translation_text_hash": "0945c0a93bf7753c3bf852e41f832c1d00e5924ecdb336d0d3c2afa2de55d84a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 그에게 이르되 그 모양이 어떠하냐 그가 가로되 한 노인이 올라 오는데 그가 겉옷을 입었나이다 사울이 그가 사무엘인줄 알고 그 얼굴을 땅에 대고 절하니라"
+      ],
+      "raw_text_hashes": [
+        "0945c0a93bf7753c3bf852e41f832c1d00e5924ecdb336d0d3c2afa2de55d84a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:15",
+      "sequence": 7958,
+      "chapter_label": "1SA 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "Samuel said to Saul, “Why have you disturbed me, to bring me up?” Saul answered, “I am very distressed; for the Philistines make war against me, and God has departed from me, and answers me no more, by prophets, or by dreams. Therefore I have called you, that you may make known to me what I shall do.”",
+      "ko": "사무엘이 사울에게 이르되 네가 어찌하여 나를 불러 올려서 나로 분요케 하느냐 사울이 대답하되 나는 심히 군급하니이다 블레셋 사람은 나를 향하여 군대를 일으켰고 하나님은 나를 떠나서 다시는 선지자로도, 꿈으로도 내게 대답지 아니하시기로 나의 행할 일을 배우려고 당신을 불러 올렸나이다",
+      "source_text_hash": "d8c71efba29a747bbf0fc529e0135e15ebdde80b634c404e2fc75847ca3ee96c",
+      "translation_text_hash": "b74ff44ea18d9677b4ca8be920980cd49d02ef3d830fc1a42ac7794ce20e5be9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사울에게 이르되 네가 어찌하여 나를 불러 올려서 나로 분요케 하느냐 사울이 대답하되 나는 심히 군급하니이다 블레셋 사람은 나를 향하여 군대를 일으켰고 하나님은 나를 떠나서 다시는 선지자로도, 꿈으로도 내게 대답지 아니하시기로 나의 행할 일을 배우려고 당신을 불러 올렸나이다"
+      ],
+      "raw_text_hashes": [
+        "b74ff44ea18d9677b4ca8be920980cd49d02ef3d830fc1a42ac7794ce20e5be9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:16",
+      "sequence": 7959,
+      "chapter_label": "1SA 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "Samuel said, “Why then do you ask me, since the LORD has departed from you and has become your adversary?",
+      "ko": "사무엘이 가로되 여호와께서 너를 떠나 네 대적이 되셨거늘 네가 어찌하여 내게 묻느냐",
+      "source_text_hash": "88f160c74f208e217d3a0a30a15527d7adfa4259986d5e0cb217b4cbd589e4c2",
+      "translation_text_hash": "f4351239f3ac2a0a9a7abe33f391c00a09b121e01271fab1569de216624d05e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 가로되 여호와께서 너를 떠나 네 대적이 되셨거늘 네가 어찌하여 내게 묻느냐"
+      ],
+      "raw_text_hashes": [
+        "f4351239f3ac2a0a9a7abe33f391c00a09b121e01271fab1569de216624d05e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:17",
+      "sequence": 7960,
+      "chapter_label": "1SA 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD has done to you as he spoke by me. The LORD has torn the kingdom out of your hand and given it to your neighbor, even to David.",
+      "ko": "여호와께서 나로 말씀하신대로 네게 행하사 나라를 네 손에서 떼어 네 이웃 다윗에게 주셨느니라",
+      "source_text_hash": "0a2e01f180300545bf130395c8169d5d9c1ae4d5c24c7b0708f94932ffdd87ac",
+      "translation_text_hash": "1c5a9b86aed83b637f1d615c86ae807a5988e8507409b12c4826b00396c227b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 나로 말씀하신대로 네게 행하사 나라를 네 손에서 떼어 네 이웃 다윗에게 주셨느니라"
+      ],
+      "raw_text_hashes": [
+        "1c5a9b86aed83b637f1d615c86ae807a5988e8507409b12c4826b00396c227b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:18",
+      "sequence": 7961,
+      "chapter_label": "1SA 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "Because you didn’t obey the LORD’s voice, and didn’t execute his fierce wrath on Amalek, therefore the LORD has done this thing to you today.",
+      "ko": "네가 여호와의 목소리를 순종치 아니하고 그의 진노를 아말렉에게 쏟지 아니하였으므로 여호와께서 오늘날 이 일을 네게 행하셨고",
+      "source_text_hash": "7e81779a773940ec8eea0326ba760558bedf9086e6346bc21dc8f4b14159cf50",
+      "translation_text_hash": "bddbd1642fd561b534261b98e74d12ff2bb49e308fbc18b2ccbdbe6d01c2d8d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 여호와의 목소리를 순종치 아니하고 그의 진노를 아말렉에게 쏟지 아니하였으므로 여호와께서 오늘날 이 일을 네게 행하셨고"
+      ],
+      "raw_text_hashes": [
+        "bddbd1642fd561b534261b98e74d12ff2bb49e308fbc18b2ccbdbe6d01c2d8d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:19",
+      "sequence": 7962,
+      "chapter_label": "1SA 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "Moreover the LORD will deliver Israel also with you into the hand of the Philistines; and tomorrow you and your sons will be with me. The LORD will deliver the army of Israel also into the hand of the Philistines.”",
+      "ko": "여호와께서 이스라엘을 너와 함께 블레셋 사람의 손에 붙이시리니 내일 너와 네 아들들이 나와 함께 있으리라 여호와께서 또 이스라엘 군대를 블레셋 사람의 손에 붙이시리라",
+      "source_text_hash": "9c78829397a245732c8604c92876d5e62a14d91b08889c4d8923976dd7d6c2f4",
+      "translation_text_hash": "3bf7f4aa61c8dd1dc5143ccf2bd6c1a5549b595f91afffd7fd92aa8c717c68ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘을 너와 함께 블레셋 사람의 손에 붙이시리니 내일 너와 네 아들들이 나와 함께 있으리라 여호와께서 또 이스라엘 군대를 블레셋 사람의 손에 붙이시리라"
+      ],
+      "raw_text_hashes": [
+        "3bf7f4aa61c8dd1dc5143ccf2bd6c1a5549b595f91afffd7fd92aa8c717c68ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:20",
+      "sequence": 7963,
+      "chapter_label": "1SA 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "Then Saul fell immediately his full length on the earth, and was terrified, because of Samuel’s words. There was no strength in him, for he had eaten no bread all day long or all night long.",
+      "ko": "사울이 갑자기 땅에 온전히 엎드러지니 이는 사무엘의 말을 인하여 심히 두려워함이요 또 그 기력이 진하였으니 이는 그가 종일 종야에 식물을 먹지 못하였음이라",
+      "source_text_hash": "6e0928a7f5d18c35c5517a7072bf9854717ee10c6a1c5dbb24fa06f508ba45fc",
+      "translation_text_hash": "93b75294663eeb149596b1856703073ccefff80552e8bb7d51a7125800f45c3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 갑자기 땅에 온전히 엎드러지니 이는 사무엘의 말을 인하여 심히 두려워함이요 또 그 기력이 진하였으니 이는 그가 종일 종야에 식물을 먹지 못하였음이라"
+      ],
+      "raw_text_hashes": [
+        "93b75294663eeb149596b1856703073ccefff80552e8bb7d51a7125800f45c3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:21",
+      "sequence": 7964,
+      "chapter_label": "1SA 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "The woman came to Saul and saw that he was very troubled, and said to him, “Behold, your servant has listened to your voice, and I have put my life in my hand, and have listened to your words which you spoke to me.",
+      "ko": "그 여인이 사울에게 이르러 그 심히 고통함을 보고 그에게 이르되 여종이 왕의 말씀을 듣고 나의 생명을 아끼지 아니하고 왕이 내게 이르신 말씀을 청종하였사오니",
+      "source_text_hash": "3fabd4ad35582a7984e4e8d770b1010b5a01a0066f4b453dd489cb94068a22fd",
+      "translation_text_hash": "beba4474f078ac9b4913f084af67f9d51726d10d5fae17d3cbea6773082625d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여인이 사울에게 이르러 그 심히 고통함을 보고 그에게 이르되 여종이 왕의 말씀을 듣고 나의 생명을 아끼지 아니하고 왕이 내게 이르신 말씀을 청종하였사오니"
+      ],
+      "raw_text_hashes": [
+        "beba4474f078ac9b4913f084af67f9d51726d10d5fae17d3cbea6773082625d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:22",
+      "sequence": 7965,
+      "chapter_label": "1SA 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "Now therefore, please listen also to the voice of your servant, and let me set a morsel of bread before you. Eat, that you may have strength when you go on your way.”",
+      "ko": "그런즉 청컨대 이제 여종의 말을 들으사 나로 왕의 앞에 한 조각 떡을 드리게 하시고 왕은 잡수시고 길 가실 때에 기력을 얻으소서",
+      "source_text_hash": "22a8d3036fa09d61a217671a851744f33732b3bdd2dfaeaab51dbf6f6e9c173a",
+      "translation_text_hash": "e5a59c156074de415eeb1a006d1bad38f7dab086ea7798bdb5a216d5c5a8ac74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 청컨대 이제 여종의 말을 들으사 나로 왕의 앞에 한 조각 떡을 드리게 하시고 왕은 잡수시고 길 가실 때에 기력을 얻으소서"
+      ],
+      "raw_text_hashes": [
+        "e5a59c156074de415eeb1a006d1bad38f7dab086ea7798bdb5a216d5c5a8ac74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:23",
+      "sequence": 7966,
+      "chapter_label": "1SA 28",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 23
+        }
+      ],
+      "en": "But he refused, and said, “I will not eat.” But his servants, together with the woman, constrained him; and he listened to their voice. So he arose from the earth and sat on the bed.",
+      "ko": "사울이 거절하여 가로되 내가 먹지 아니하겠노라 그 신하들과 여인이 강권하매 그 말을 듣고 땅에서 일어나 침상에 앉으니라",
+      "source_text_hash": "d440a94075b680096e7e0dd720c903ba11768caad8b3182777c4b57958f267a8",
+      "translation_text_hash": "72165254e5864d33cc8250caa852d812c6acf156c90c39165210c5c80472b8df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 거절하여 가로되 내가 먹지 아니하겠노라 그 신하들과 여인이 강권하매 그 말을 듣고 땅에서 일어나 침상에 앉으니라"
+      ],
+      "raw_text_hashes": [
+        "72165254e5864d33cc8250caa852d812c6acf156c90c39165210c5c80472b8df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:24",
+      "sequence": 7967,
+      "chapter_label": "1SA 28",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 24
+        }
+      ],
+      "en": "The woman had a fattened calf in the house. She hurried and killed it; and she took flour and kneaded it, and baked unleavened bread of it.",
+      "ko": "여인의 집에 살진 송아지가 있으므로 그것을 급히 잡고 가루를 취하여 뭉쳐 무교병을 만들고 구워서",
+      "source_text_hash": "a4881f2e764bec3c2b5df72e6ceb8dd066f124537353e5806313fba0339b4b02",
+      "translation_text_hash": "a267a7eee69af1e6f5f42bea41a8d11a2e60d3f5b4da8a1b5b5983245349b6fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인의 집에 살진 송아지가 있으므로 그것을 급히 잡고 가루를 취하여 뭉쳐 무교병을 만들고 구워서"
+      ],
+      "raw_text_hashes": [
+        "a267a7eee69af1e6f5f42bea41a8d11a2e60d3f5b4da8a1b5b5983245349b6fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:28:25",
+      "sequence": 7968,
+      "chapter_label": "1SA 28",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 28,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 28,
+          "verse": 25
+        }
+      ],
+      "en": "She brought it before Saul and before his servants, and they ate. Then they rose up and went away that night.",
+      "ko": "사울의 앞에와 그 신하들의 앞에 드리니 그들이 먹고 일어나서 그 밤에 가니라",
+      "source_text_hash": "3641ab18124ac1199cf401d66e600278a1c4bf9eaea2764b6d55d99e55f412d3",
+      "translation_text_hash": "a163b64d6d6e7f20cb12cbe2defc77e0edf4736f6919d26e41f7d8b6a07d9bdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 앞에와 그 신하들의 앞에 드리니 그들이 먹고 일어나서 그 밤에 가니라"
+      ],
+      "raw_text_hashes": [
+        "a163b64d6d6e7f20cb12cbe2defc77e0edf4736f6919d26e41f7d8b6a07d9bdd"
+      ]
+    }
+  ]
+}

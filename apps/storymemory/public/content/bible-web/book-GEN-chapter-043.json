@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:043",
+  "unit_ordinal": 43,
+  "unit_label": "GEN 43",
+  "book_code": "GEN",
+  "chapter_number": 43,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:43:1",
+      "sequence": 1292,
+      "chapter_label": "GEN 43",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 1
+        }
+      ],
+      "en": "The famine was severe in the land.",
+      "ko": "그 땅에 기근이 심하고",
+      "source_text_hash": "7fcdc2406f51dea2b0b69341e1073183e050610601fef21589a00ae830a35226",
+      "translation_text_hash": "8c20b69913401c12a196b6307a8076c94b7b58afb208ffd07741c7da1958eb83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅에 기근이 심하고"
+      ],
+      "raw_text_hashes": [
+        "8c20b69913401c12a196b6307a8076c94b7b58afb208ffd07741c7da1958eb83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:2",
+      "sequence": 1293,
+      "chapter_label": "GEN 43",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 2
+        }
+      ],
+      "en": "When they had eaten up the grain which they had brought out of Egypt, their father said to them, “Go again, buy us a little more food.”",
+      "ko": "그들이 애굽에서 가져온 곡식을 다 먹으매 그 아비가 그들에게 이르되 다시 가서 우리를 위하여 양식을 조금 사라",
+      "source_text_hash": "1b8c7294c9d0eb3a0e00c7a5d994724fe8e9a42506cf158e425098ecc56ed7bb",
+      "translation_text_hash": "b16d1eb5a3be0348130d5987e18422b7031fad5631454bc37e1c963273636613",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 애굽에서 가져온 곡식을 다 먹으매 그 아비가 그들에게 이르되 다시 가서 우리를 위하여 양식을 조금 사라"
+      ],
+      "raw_text_hashes": [
+        "b16d1eb5a3be0348130d5987e18422b7031fad5631454bc37e1c963273636613"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:3",
+      "sequence": 1294,
+      "chapter_label": "GEN 43",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 3
+        }
+      ],
+      "en": "Judah spoke to him, saying, “The man solemnly warned us, saying, ‘You shall not see my face, unless your brother is with you.’",
+      "ko": "유다가 아비에게 말하여 가로되 그 사람이 엄히 우리에게 경계하여 가로되 너희 아우가 너희와 함께하지 아니하면 너희가 내 얼굴을 보지 못하리라 하였으니",
+      "source_text_hash": "1f2673255c6555bd5c8b1bfc178f423b49df1e1d9fe3fcf18c5927300ac90eb2",
+      "translation_text_hash": "cce0967efd92c74deb6668ff115766430506f8b02553a750cc9532a0907151bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 아비에게 말하여 가로되 그 사람이 엄히 우리에게 경계하여 가로되 너희 아우가 너희와 함께하지 아니하면 너희가 내 얼굴을 보지 못하리라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "cce0967efd92c74deb6668ff115766430506f8b02553a750cc9532a0907151bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:4",
+      "sequence": 1295,
+      "chapter_label": "GEN 43",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 4
+        }
+      ],
+      "en": "If you’ll send our brother with us, we’ll go down and buy you food;",
+      "ko": "아버지께서 우리 아우를 우리와 함께 보내시면 우리가 내려가서 아버지를 위하여 양식을 사려니와",
+      "source_text_hash": "cb652bfdf4612c3d65ba6b7031c6443e028dd2f54b5bebaf0ecb69af89bff3ad",
+      "translation_text_hash": "e5e08b4757a5a6137cab342f63b35c69c4074a227efbc9beb5b6f84f56ed6160",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 우리 아우를 우리와 함께 보내시면 우리가 내려가서 아버지를 위하여 양식을 사려니와"
+      ],
+      "raw_text_hashes": [
+        "e5e08b4757a5a6137cab342f63b35c69c4074a227efbc9beb5b6f84f56ed6160"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:5",
+      "sequence": 1296,
+      "chapter_label": "GEN 43",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 5
+        }
+      ],
+      "en": "but if you don’t send him, we won’t go down, for the man said to us, ‘You shall not see my face, unless your brother is with you.’”",
+      "ko": "아버지께서 만일 그를 보내지 않으시면 우리는 내려가지 아니하리니 그 사람이 우리에게 말하기를 너희 아우가 너희와 함께하지 아니하면 너희가 내 얼굴을 보지 못하리라 하였음이니이다",
+      "source_text_hash": "561f7dd3ce370ac1e647295d3cf42c17bd54d97a7f4e9cfbd7d08752c4480b27",
+      "translation_text_hash": "e41cc79202658c8e9762e214ddffe50c866f7477b50d5ee4bcb1b485f4bc8a9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 만일 그를 보내지 않으시면 우리는 내려가지 아니하리니 그 사람이 우리에게 말하기를 너희 아우가 너희와 함께하지 아니하면 너희가 내 얼굴을 보지 못하리라 하였음이니이다"
+      ],
+      "raw_text_hashes": [
+        "e41cc79202658c8e9762e214ddffe50c866f7477b50d5ee4bcb1b485f4bc8a9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:6",
+      "sequence": 1297,
+      "chapter_label": "GEN 43",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 6
+        }
+      ],
+      "en": "Israel said, “Why did you treat me so badly, telling the man that you had another brother?”",
+      "ko": "이스라엘이 가로되 너희가 어찌하여 너희에게 오히려 아우가 있다고 그 사람에게 고하여 나를 해롭게 하였느냐",
+      "source_text_hash": "3f3108c3c001e7c7851eea7d1cfe86029d253030d39284e912c90265ab06de71",
+      "translation_text_hash": "b85ae1a6e7722742474057ac6cd555a8fbb7ce925da34b852e2a97824b497a67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 가로되 너희가 어찌하여 너희에게 오히려 아우가 있다고 그 사람에게 고하여 나를 해롭게 하였느냐"
+      ],
+      "raw_text_hashes": [
+        "b85ae1a6e7722742474057ac6cd555a8fbb7ce925da34b852e2a97824b497a67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:7",
+      "sequence": 1298,
+      "chapter_label": "GEN 43",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 7
+        }
+      ],
+      "en": "They said, “The man asked directly concerning ourselves, and concerning our relatives, saying, ‘Is your father still alive? Have you another brother?’ We just answered his questions. Is there any way we could know that he would say, ‘Bring your brother down’?”",
+      "ko": "그들이 가로되 그 사람이 우리와 우리의 친족에 대하여 자세히 힐문하여 이르기를 너희 아버지가 그저 살았느냐 너희에게 아우가 있느냐 하기로 그 말을 조조이 그에게 대답한 것이라 그가 너희 아우를 데리고 내려오라 할줄을 우리가 어찌 알았으리이까",
+      "source_text_hash": "95bcce469272db0aace395d805eeca63db6ed3348f7be20900e8258d7ce25c0b",
+      "translation_text_hash": "6a886c1a687af69e37ba813cefd24594a92e75001b0a088a532ff2e88d52ea23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 그 사람이 우리와 우리의 친족에 대하여 자세히 힐문하여 이르기를 너희 아버지가 그저 살았느냐 너희에게 아우가 있느냐 하기로 그 말을 조조이 그에게 대답한 것이라 그가 너희 아우를 데리고 내려오라 할줄을 우리가 어찌 알았으리이까"
+      ],
+      "raw_text_hashes": [
+        "6a886c1a687af69e37ba813cefd24594a92e75001b0a088a532ff2e88d52ea23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:8",
+      "sequence": 1299,
+      "chapter_label": "GEN 43",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 8
+        }
+      ],
+      "en": "Judah said to Israel, his father, “Send the boy with me, and we’ll get up and go, so that we may live, and not die, both we, and you, and also our little ones.",
+      "ko": "유다가 아비 이스라엘에게 이르되 저 아이를 나와 함께 보내시면 우리가 곧 가리니 그러면 우리와 아버지와 우리 어린 것들이 다 살고 죽지 아니하리이다",
+      "source_text_hash": "060c946d151faf9cd9cdf6a231e092fa49f6eb410f62b854c9d32115efcc99b6",
+      "translation_text_hash": "093ec459c6617997d58ec5dab06933a3d5d13be711cd554bc2cd5005ce4038b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 아비 이스라엘에게 이르되 저 아이를 나와 함께 보내시면 우리가 곧 가리니 그러면 우리와 아버지와 우리 어린 것들이 다 살고 죽지 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "093ec459c6617997d58ec5dab06933a3d5d13be711cd554bc2cd5005ce4038b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:9",
+      "sequence": 1300,
+      "chapter_label": "GEN 43",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 9
+        }
+      ],
+      "en": "I’ll be collateral for him. From my hand will you require him. If I don’t bring him to you, and set him before you, then let me bear the blame forever;",
+      "ko": "내가 그의 몸을 담보하오리니 아버지께서 내 손에 그를 물으소서 내가 만일 그를 아버지께 데려다가 아버지 앞에 두지 아니하면 내가 영원히 죄를 지리이다",
+      "source_text_hash": "c29c65d62ca07289bf5255510564c737f47796d5467f0b1dcf51357c41a10a85",
+      "translation_text_hash": "2f54a1a8299d18a4bb4cf933236dce253c7a0789588f52b8241402d575790a26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그의 몸을 담보하오리니 아버지께서 내 손에 그를 물으소서 내가 만일 그를 아버지께 데려다가 아버지 앞에 두지 아니하면 내가 영원히 죄를 지리이다"
+      ],
+      "raw_text_hashes": [
+        "2f54a1a8299d18a4bb4cf933236dce253c7a0789588f52b8241402d575790a26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:10",
+      "sequence": 1301,
+      "chapter_label": "GEN 43",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 10
+        }
+      ],
+      "en": "for if we hadn’t delayed, surely we would have returned a second time by now.”",
+      "ko": "우리가 지체하지 아니하였더면 벌써 두번 갔다 왔으리이다",
+      "source_text_hash": "a638b77d1ec7dba31fbdfbc8bf9a63b5b6b4f4a0db3d6e3b2fe8a09a9d1d78fd",
+      "translation_text_hash": "463f92ba57cf711a5835f856cbe9d7c8f9aeec8de688e12ce42c4678cccdce40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 지체하지 아니하였더면 벌써 두번 갔다 왔으리이다"
+      ],
+      "raw_text_hashes": [
+        "463f92ba57cf711a5835f856cbe9d7c8f9aeec8de688e12ce42c4678cccdce40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:11",
+      "sequence": 1302,
+      "chapter_label": "GEN 43",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 11
+        }
+      ],
+      "en": "Their father, Israel, said to them, “If it must be so, then do this: Take from the choice fruits of the land in your bags, and carry down a present for the man, a little balm, a little honey, spices and myrrh, nuts, and almonds;",
+      "ko": "그들의 아비 이스라엘이 그들에게 이르되 그러할찐대 이렇게 하라 너희는 이 땅의 아름다운 소산을 그릇에 담아가지고 내려가서 그 사람에게 예물을 삼을찌니 곧 유향 조금과 꿀 조금과 향품과 몰약과 비자와 파단행이니라",
+      "source_text_hash": "28f9399a0197122be52ee17d78fe1958024978b3ba4ce9d189e093da7c8b2748",
+      "translation_text_hash": "3b44f96ce821eabac558e3dbf06227af8a38426081fa49c5d87ff6334b4dce91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 아비 이스라엘이 그들에게 이르되 그러할찐대 이렇게 하라 너희는 이 땅의 아름다운 소산을 그릇에 담아가지고 내려가서 그 사람에게 예물을 삼을찌니 곧 유향 조금과 꿀 조금과 향품과 몰약과 비자와 파단행이니라"
+      ],
+      "raw_text_hashes": [
+        "3b44f96ce821eabac558e3dbf06227af8a38426081fa49c5d87ff6334b4dce91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:12",
+      "sequence": 1303,
+      "chapter_label": "GEN 43",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 12
+        }
+      ],
+      "en": "and take double money in your hand, and take back the money that was returned in the mouth of your sacks. Perhaps it was an oversight.",
+      "ko": "너희 손에 돈을 배나 가지고 너희 자루 아구에 도로 넣여 온 그 돈을 다시 가지고 가라 혹 차착이 있었을까 두렵도다",
+      "source_text_hash": "8e9aa1ac3462b576b9de4739cdb60a737901216ff306149b20af03d5ea9fe435",
+      "translation_text_hash": "d7ca41633b6e1759c96902c3fe350f0d4ba373b0dfea01e5178029d38077dc03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 손에 돈을 배나 가지고 너희 자루 아구에 도로 넣여 온 그 돈을 다시 가지고 가라 혹 차착이 있었을까 두렵도다"
+      ],
+      "raw_text_hashes": [
+        "d7ca41633b6e1759c96902c3fe350f0d4ba373b0dfea01e5178029d38077dc03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:13",
+      "sequence": 1304,
+      "chapter_label": "GEN 43",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 13
+        }
+      ],
+      "en": "Take your brother also, get up, and return to the man.",
+      "ko": "네 아우도 데리고 떠나 다시 그 사람에게로 가라",
+      "source_text_hash": "73f0e858e42cb6df410aece1a2ea9147142156dd2526bb629b7ad64f671e5f26",
+      "translation_text_hash": "c56aadb01ef5370b4bcb6a2288de27ab2ec0601bf9e1e661b0cd063f90b48f81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 아우도 데리고 떠나 다시 그 사람에게로 가라"
+      ],
+      "raw_text_hashes": [
+        "c56aadb01ef5370b4bcb6a2288de27ab2ec0601bf9e1e661b0cd063f90b48f81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:14",
+      "sequence": 1305,
+      "chapter_label": "GEN 43",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 14
+        }
+      ],
+      "en": "May God Almighty give you mercy before the man, that he may release to you your other brother and Benjamin. If I am bereaved of my children, I am bereaved.”",
+      "ko": "전능하신 하나님께서 그 사람 앞에서 너희에게 은혜를 베푸사 그 사람으로 너희 다른 형제와 베냐민을 돌려보내게 하시기를 원하노라 내가 자식을 잃게 되면 잃으리로다",
+      "source_text_hash": "7e7b03150a49617fdce0150fabea968f2689fe49c4c4604714c7e814e2903cc4",
+      "translation_text_hash": "5f53a4367d5ab68ce019f6133451c433b97a3b3ec710f374e369785036f4d26b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전능하신 하나님께서 그 사람 앞에서 너희에게 은혜를 베푸사 그 사람으로 너희 다른 형제와 베냐민을 돌려보내게 하시기를 원하노라 내가 자식을 잃게 되면 잃으리로다"
+      ],
+      "raw_text_hashes": [
+        "5f53a4367d5ab68ce019f6133451c433b97a3b3ec710f374e369785036f4d26b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:15",
+      "sequence": 1306,
+      "chapter_label": "GEN 43",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 15
+        }
+      ],
+      "en": "The men took that present, and they took double money in their hand, and Benjamin; and got up, went down to Egypt, and stood before Joseph.",
+      "ko": "그 사람들이 그 예물을 취하고 갑절 돈을 자기들의 손에 가지고 베냐민을 데리고 애굽에 내려가서 요셉의 앞에 서니라",
+      "source_text_hash": "0b0dfd7e02bf2a3d0d9151ac037e627760303471e33a88c366b8d8eb3ae9ab62",
+      "translation_text_hash": "73efd651ecc88d8839d0d4410ed51264d723c6224a9159b8748541d751d3ec60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 그 예물을 취하고 갑절 돈을 자기들의 손에 가지고 베냐민을 데리고 애굽에 내려가서 요셉의 앞에 서니라"
+      ],
+      "raw_text_hashes": [
+        "73efd651ecc88d8839d0d4410ed51264d723c6224a9159b8748541d751d3ec60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:16",
+      "sequence": 1307,
+      "chapter_label": "GEN 43",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 16
+        }
+      ],
+      "en": "When Joseph saw Benjamin with them, he said to the steward of his house, “Bring the men into the house, and butcher an animal, and prepare; for the men will dine with me at noon.”",
+      "ko": "요셉이 베냐민이 그들과 함께 있음을 보고 그 청지기에게 이르되 이 사람들을 집으로 인도해 들이고 짐승을 잡고 준비하라 이 사람들이 오정에 나와 함께 먹을 것이니라",
+      "source_text_hash": "9cce4fda53df48a6558f78d372bf6fedb4fd573393c540e87b0390a99cfcd0df",
+      "translation_text_hash": "3dc2e3bcef36ac05bc00a51ab1d553cb9d7e95f474d220032f22485920cb09b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 베냐민이 그들과 함께 있음을 보고 그 청지기에게 이르되 이 사람들을 집으로 인도해 들이고 짐승을 잡고 준비하라 이 사람들이 오정에 나와 함께 먹을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3dc2e3bcef36ac05bc00a51ab1d553cb9d7e95f474d220032f22485920cb09b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:17",
+      "sequence": 1308,
+      "chapter_label": "GEN 43",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 17
+        }
+      ],
+      "en": "The man did as Joseph commanded, and the man brought the men to Joseph’s house.",
+      "ko": "그 사람이 요셉의 명대로 하여 그 사람들을 요셉의 집으로 인도하니",
+      "source_text_hash": "30f8bb8f411ea5d1fdc48bfe6694a01bdd9fb76cd0f6afc6a50cddec0100670d",
+      "translation_text_hash": "5c63b91d758c563608f875e8ad5915b72a200a701ffe0f61e830a39e2a8a18ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 요셉의 명대로 하여 그 사람들을 요셉의 집으로 인도하니"
+      ],
+      "raw_text_hashes": [
+        "5c63b91d758c563608f875e8ad5915b72a200a701ffe0f61e830a39e2a8a18ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:18",
+      "sequence": 1309,
+      "chapter_label": "GEN 43",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 18
+        }
+      ],
+      "en": "The men were afraid, because they were brought to Joseph’s house; and they said, “Because of the money that was returned in our sacks the first time, we’re brought in; that he may seek occasion against us, attack us, and seize us as slaves, along with our donkeys.”",
+      "ko": "그 사람들이 요셉의 집으로 인도되매 두려워하여 이르되 전일 우리 자루에 넣여 있던 돈의 일로 우리가 끌려드도다 이는 우리를 억류하고 달려들어 우리를 잡아 노예를 삼고 우리의 나귀를 빼앗으려 함이로다 하고",
+      "source_text_hash": "7fc9715f20be8f58a1ef8e44ecefa6f6ba866f2b28a85568ff809007b027ab42",
+      "translation_text_hash": "cd4e6b90e2403b28570f84fad630b62bddfe66126934c968fd7384fa3f5c405b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 요셉의 집으로 인도되매 두려워하여 이르되 전일 우리 자루에 넣여 있던 돈의 일로 우리가 끌려드도다 이는 우리를 억류하고 달려들어 우리를 잡아 노예를 삼고 우리의 나귀를 빼앗으려 함이로다 하고"
+      ],
+      "raw_text_hashes": [
+        "cd4e6b90e2403b28570f84fad630b62bddfe66126934c968fd7384fa3f5c405b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:19",
+      "sequence": 1310,
+      "chapter_label": "GEN 43",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 19
+        }
+      ],
+      "en": "They came near to the steward of Joseph’s house, and they spoke to him at the door of the house,",
+      "ko": "그들이 요셉의 청지기에게 가까이 나아가 그 집 문앞에서 그에게 고하여",
+      "source_text_hash": "6843c928a454c62285d70e6cd2584557083c8a438732b60328251f4c6271f6cc",
+      "translation_text_hash": "bdee2407800329f08df9ff13db39a54be323635d7b6a2da9086758decf4404ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 요셉의 청지기에게 가까이 나아가 그 집 문앞에서 그에게 고하여"
+      ],
+      "raw_text_hashes": [
+        "bdee2407800329f08df9ff13db39a54be323635d7b6a2da9086758decf4404ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:20",
+      "sequence": 1311,
+      "chapter_label": "GEN 43",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 20
+        }
+      ],
+      "en": "and said, “Oh, my lord, we indeed came down the first time to buy food.",
+      "ko": "가로되 내 주여 우리가 전일에 내려와서 양식을 사가지고",
+      "source_text_hash": "7133ab1f213aa1f2f12e0aa887bdb2affbbed9f29bbb4f6c20f3348d59e286b2",
+      "translation_text_hash": "5c1bf34d55bdcec9cc10d7b39e63a6e3f2829b9615c56c2c61ed2ebe6e10713e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내 주여 우리가 전일에 내려와서 양식을 사가지고"
+      ],
+      "raw_text_hashes": [
+        "5c1bf34d55bdcec9cc10d7b39e63a6e3f2829b9615c56c2c61ed2ebe6e10713e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:21",
+      "sequence": 1312,
+      "chapter_label": "GEN 43",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 21
+        }
+      ],
+      "en": "When we came to the lodging place, we opened our sacks, and behold, each man’s money was in the mouth of his sack, our money in full weight. We have brought it back in our hand.",
+      "ko": "객점에 이르러 자루를 풀어본즉 각인의 돈이 본수대로 자루 아구에 있기로 우리가 도로 가져왔고",
+      "source_text_hash": "aa43125cd26f64db846e1d2f12e5b171fc9f8217d3f9f443db684f1f92e4d395",
+      "translation_text_hash": "b4c0c07680a471e89052928ee7895d2b6191d59f2666d8d789ba5ed595020178",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "객점에 이르러 자루를 풀어본즉 각인의 돈이 본수대로 자루 아구에 있기로 우리가 도로 가져왔고"
+      ],
+      "raw_text_hashes": [
+        "b4c0c07680a471e89052928ee7895d2b6191d59f2666d8d789ba5ed595020178"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:22",
+      "sequence": 1313,
+      "chapter_label": "GEN 43",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 22
+        }
+      ],
+      "en": "We have brought down other money in our hand to buy food. We don’t know who put our money in our sacks.”",
+      "ko": "양식 살 다른 돈도 우리가 가지고 내려왔나이다 우리의 돈을 우리 자루에 넣은 자는 누구인지 우리가 알지 못하나이다",
+      "source_text_hash": "4730ec8655674fb7e4282d958840c943dab21e5581751c5b4f8175c16a53f03e",
+      "translation_text_hash": "14fe31833de722ac9cf70bb5721f83559b6a789ceb9b04bd603cca2b8ae7aaf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "양식 살 다른 돈도 우리가 가지고 내려왔나이다 우리의 돈을 우리 자루에 넣은 자는 누구인지 우리가 알지 못하나이다"
+      ],
+      "raw_text_hashes": [
+        "14fe31833de722ac9cf70bb5721f83559b6a789ceb9b04bd603cca2b8ae7aaf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:23",
+      "sequence": 1314,
+      "chapter_label": "GEN 43",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 23
+        }
+      ],
+      "en": "He said, “Peace be to you. Don’t be afraid. Your God, and the God of your father, has given you treasure in your sacks. I received your money.” He brought Simeon out to them.",
+      "ko": "그가 이르되 너희는 안심하라 두려워 말라 너희 하나님 너희 아버지의 하나님이 재물을 너희 자루에 넣어 너희에게 주신 것이니라 너희 돈은 내가 이미 받았느니라 하고 시므온을 그들에게로 이끌어내고",
+      "source_text_hash": "7ea331b273577fb83d2f0a27c32269de293543da0443994c953ebea1cac34c4a",
+      "translation_text_hash": "9806bfed6b4a0a397bf9082475d7864a5b8cee060d863d3e19a637abbcdc485d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이르되 너희는 안심하라 두려워 말라 너희 하나님 너희 아버지의 하나님이 재물을 너희 자루에 넣어 너희에게 주신 것이니라 너희 돈은 내가 이미 받았느니라 하고 시므온을 그들에게로 이끌어내고"
+      ],
+      "raw_text_hashes": [
+        "9806bfed6b4a0a397bf9082475d7864a5b8cee060d863d3e19a637abbcdc485d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:24",
+      "sequence": 1315,
+      "chapter_label": "GEN 43",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 24
+        }
+      ],
+      "en": "The man brought the men into Joseph’s house, and gave them water, and they washed their feet. He gave their donkeys fodder.",
+      "ko": "그들을 요셉의 집으로 인도하고 물을 주어 발을 씻게 하며 그 나귀에게 먹이를 주더라",
+      "source_text_hash": "9c405484587533cdf604d86431a92a1ce2155156251b770542687ba18c0f2e2f",
+      "translation_text_hash": "8c60703886167e5ac12fdab05839d0b8f7e71b9758c72cc17e50906a5574fa38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 요셉의 집으로 인도하고 물을 주어 발을 씻게 하며 그 나귀에게 먹이를 주더라"
+      ],
+      "raw_text_hashes": [
+        "8c60703886167e5ac12fdab05839d0b8f7e71b9758c72cc17e50906a5574fa38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:25",
+      "sequence": 1316,
+      "chapter_label": "GEN 43",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 25
+        }
+      ],
+      "en": "They prepared the present for Joseph’s coming at noon, for they heard that they should eat bread there.",
+      "ko": "그들이 여기서 먹겠다 함을 들으므로 예물을 정돈하고 요셉이 오정에 오기를 기다리더니",
+      "source_text_hash": "436e3446b3484c9490c8388235b9af437fc657fab49ebe245020a0ec327b97ae",
+      "translation_text_hash": "e6274960636c267ccefa63081d99f155e50292622cb19a451f21a3c4ec06fb96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여기서 먹겠다 함을 들으므로 예물을 정돈하고 요셉이 오정에 오기를 기다리더니"
+      ],
+      "raw_text_hashes": [
+        "e6274960636c267ccefa63081d99f155e50292622cb19a451f21a3c4ec06fb96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:26",
+      "sequence": 1317,
+      "chapter_label": "GEN 43",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 26
+        }
+      ],
+      "en": "When Joseph came home, they brought him the present which was in their hand into the house, and bowed themselves down to the earth before him.",
+      "ko": "요셉이 집으로 오매 그들이 그 집으로 들어가서 그 예물을 그에게 드리고 땅에 엎드리어 절하니",
+      "source_text_hash": "78ffab7ca76922afb700952e102cf5b99defd53a9b699f121d7c2bcb90544f0b",
+      "translation_text_hash": "95a0c7c7ffd512721fe13775edafcb2642f7eadf6db76926de0f7e6b95d24bad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 집으로 오매 그들이 그 집으로 들어가서 그 예물을 그에게 드리고 땅에 엎드리어 절하니"
+      ],
+      "raw_text_hashes": [
+        "95a0c7c7ffd512721fe13775edafcb2642f7eadf6db76926de0f7e6b95d24bad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:27",
+      "sequence": 1318,
+      "chapter_label": "GEN 43",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 27
+        }
+      ],
+      "en": "He asked them of their welfare, and said, “Is your father well, the old man of whom you spoke? Is he yet alive?”",
+      "ko": "요셉이 그들의 안부를 물으며 가로되 너희 아버지 너희가 말하던 그 노인이 안녕하시냐 지금까지 생존하셨느냐",
+      "source_text_hash": "eeacc3bedbe4c62f3787f3eaf3f3feffd50bac5486caf4e6864b003d460c5b61",
+      "translation_text_hash": "16cc45eb178c8312da274b282fa427f7ee391d2dc6dcb71d3f4996c5279e4a70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그들의 안부를 물으며 가로되 너희 아버지 너희가 말하던 그 노인이 안녕하시냐 지금까지 생존하셨느냐"
+      ],
+      "raw_text_hashes": [
+        "16cc45eb178c8312da274b282fa427f7ee391d2dc6dcb71d3f4996c5279e4a70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:28",
+      "sequence": 1319,
+      "chapter_label": "GEN 43",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 28
+        }
+      ],
+      "en": "They said, “Your servant, our father, is well. He is still alive.” They bowed down humbly.",
+      "ko": "그들이 대답하되 주의 종 우리 아비가 평안하고 지금까지 생존하였나이다 하고 머리 숙여 절하더라",
+      "source_text_hash": "de40f8b81e133c3bb5f6bcbfc8516d928305484d76367174493eb94a34ec3ab7",
+      "translation_text_hash": "32064897cdf1826620cad14e4e426d257779f0f46480d758dc111ae33d880913",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 대답하되 주의 종 우리 아비가 평안하고 지금까지 생존하였나이다 하고 머리 숙여 절하더라"
+      ],
+      "raw_text_hashes": [
+        "32064897cdf1826620cad14e4e426d257779f0f46480d758dc111ae33d880913"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:29",
+      "sequence": 1320,
+      "chapter_label": "GEN 43",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 29
+        }
+      ],
+      "en": "He lifted up his eyes, and saw Benjamin, his brother, his mother’s son, and said, “Is this your youngest brother, of whom you spoke to me?” He said, “God be gracious to you, my son.”",
+      "ko": "요셉이 눈을 들어 자기 어머니의 아들 자기 동생 베냐민을 보고 가로되 너희가 내게 말하던 너희 작은 동생이 이냐 그가 또 가로되 소자여 하나님이 네게 은혜 베푸시기를 원하노라",
+      "source_text_hash": "1b882d01698cfcc77b5dadc71eb063dd035fb4632f51ee7916d7468c55355e86",
+      "translation_text_hash": "b7fe9a6d99c0c66841e9eaf9e76f4b09683c35d9ce76f99f2d85bcc7d298eb47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 눈을 들어 자기 어머니의 아들 자기 동생 베냐민을 보고 가로되 너희가 내게 말하던 너희 작은 동생이 이냐 그가 또 가로되 소자여 하나님이 네게 은혜 베푸시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "b7fe9a6d99c0c66841e9eaf9e76f4b09683c35d9ce76f99f2d85bcc7d298eb47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:30",
+      "sequence": 1321,
+      "chapter_label": "GEN 43",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 30
+        }
+      ],
+      "en": "Joseph hurried, for his heart yearned over his brother; and he sought a place to weep. He entered into his room, and wept there.",
+      "ko": "요셉이 아우를 인하여 마음이 타는듯 하므로 급히 울곳을 찾아 안방으로 들어가서 울고",
+      "source_text_hash": "ffb9dd1521ad798046129e2794ec9551d5121e695b18ae8161107a3b6ad86c27",
+      "translation_text_hash": "8c3e8cbdd5cbfa9aeb6f3e1ebc91726147c67625ea66f6127a5613533af25059",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 아우를 인하여 마음이 타는듯 하므로 급히 울곳을 찾아 안방으로 들어가서 울고"
+      ],
+      "raw_text_hashes": [
+        "8c3e8cbdd5cbfa9aeb6f3e1ebc91726147c67625ea66f6127a5613533af25059"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:31",
+      "sequence": 1322,
+      "chapter_label": "GEN 43",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 31
+        }
+      ],
+      "en": "He washed his face, and came out. He controlled himself, and said, “Serve the meal.”",
+      "ko": "얼굴을 씻고 나와서 그 정을 억제하고 음식을 차리라 하매",
+      "source_text_hash": "6662391b943b5b2f36650daf6a305fb5bd92096e0032a6fb8dd5fba61b136aeb",
+      "translation_text_hash": "be6822a1e458e62ff9561cf6c0b3563fc80294af85532d5687435c9bcff76ba0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "얼굴을 씻고 나와서 그 정을 억제하고 음식을 차리라 하매"
+      ],
+      "raw_text_hashes": [
+        "be6822a1e458e62ff9561cf6c0b3563fc80294af85532d5687435c9bcff76ba0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:32",
+      "sequence": 1323,
+      "chapter_label": "GEN 43",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 32
+        }
+      ],
+      "en": "They served him by himself, and them by themselves, and the Egyptians who ate with him by themselves, because the Egyptians don’t eat with the Hebrews, for that is an abomination to the Egyptians.",
+      "ko": "그들이 요셉에게 따로 하고 그 형제들에게 따로 하고 배식하는 애굽 사람에게도 따로 하니 애굽 사람은 히브리 사람과 같이 먹으면 부정을 입음이었더라",
+      "source_text_hash": "63849b79960f5cb6683803c6d9ccde74aebfd28724f2871c5ddc5c10af3f3f3b",
+      "translation_text_hash": "eab384b91e398cfc60bbc139365e509635bc278fb078547bd0d2d874f396d5d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 요셉에게 따로 하고 그 형제들에게 따로 하고 배식하는 애굽 사람에게도 따로 하니 애굽 사람은 히브리 사람과 같이 먹으면 부정을 입음이었더라"
+      ],
+      "raw_text_hashes": [
+        "eab384b91e398cfc60bbc139365e509635bc278fb078547bd0d2d874f396d5d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:33",
+      "sequence": 1324,
+      "chapter_label": "GEN 43",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 33
+        }
+      ],
+      "en": "They sat before him, the firstborn according to his birthright, and the youngest according to his youth, and the men marveled with one another.",
+      "ko": "그들이 요셉의 앞에 앉되 그 장유의 차서대로 앉히운바 되니 그들이 서로 이상히 여겼더라",
+      "source_text_hash": "3b0cc694f6512af24117499bb3dccbecebee398f0b583807ec9af03d59eb7cbf",
+      "translation_text_hash": "a65ebf7112933ab5b07ed320b2f6162477b58b707f81a5aee9e30357e38adbd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 요셉의 앞에 앉되 그 장유의 차서대로 앉히운바 되니 그들이 서로 이상히 여겼더라"
+      ],
+      "raw_text_hashes": [
+        "a65ebf7112933ab5b07ed320b2f6162477b58b707f81a5aee9e30357e38adbd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:43:34",
+      "sequence": 1325,
+      "chapter_label": "GEN 43",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 43,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 43,
+          "verse": 34
+        }
+      ],
+      "en": "He sent portions to them from before him, but Benjamin’s portion was five times as much as any of theirs. They drank, and were merry with him.",
+      "ko": "요셉이 자기 식물로 그들에게 주되 베냐민에게는 다른 사람보다 오배나 주매 그들이 마시며 요셉과 함께 즐거워하였더라",
+      "source_text_hash": "762de44c06f310646377f515b26a274721dca8c51012e29f112243f75c478838",
+      "translation_text_hash": "1cde34b05816fa6202b0b736882676fbe8f1381553abcdd59948aa63f1fa18e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 자기 식물로 그들에게 주되 베냐민에게는 다른 사람보다 오배나 주매 그들이 마시며 요셉과 함께 즐거워하였더라"
+      ],
+      "raw_text_hashes": [
+        "1cde34b05816fa6202b0b736882676fbe8f1381553abcdd59948aa63f1fa18e7"
+      ]
+    }
+  ]
+}

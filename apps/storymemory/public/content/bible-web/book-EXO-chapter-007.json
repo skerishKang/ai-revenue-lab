@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:007",
+  "unit_ordinal": 57,
+  "unit_label": "EXO 7",
+  "book_code": "EXO",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:7:1",
+      "sequence": 1687,
+      "chapter_label": "EXO 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Moses, “Behold, I have made you as God to Pharaoh; and Aaron your brother shall be your prophet.",
+      "ko": "여호와께서 모세에게 이르시되 볼찌어다 내가 너로 바로에게 신이 되게 하였은즉 네 형 아론은 네 대언자가 되리니",
+      "source_text_hash": "83d36d5597792f137b7c3f0a061ae1cf6fe9b451131a692725c8a02e3fced0e9",
+      "translation_text_hash": "9c9fba3a90780f7b3103a790aa05fdce94c7dee99029f799d083cceef34850bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 볼찌어다 내가 너로 바로에게 신이 되게 하였은즉 네 형 아론은 네 대언자가 되리니"
+      ],
+      "raw_text_hashes": [
+        "9c9fba3a90780f7b3103a790aa05fdce94c7dee99029f799d083cceef34850bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:2",
+      "sequence": 1688,
+      "chapter_label": "EXO 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "You shall speak all that I command you; and Aaron your brother shall speak to Pharaoh, that he let the children of Israel go out of his land.",
+      "ko": "내가 네게 명한 바를 너는 네 형 아론에게 말하고 그는 바로에게 말하여 그로 이스라엘 자손을 그 땅에서 보내게 할찌니라",
+      "source_text_hash": "114458b29142d1866561b8291b75deeb2391ac49c50f77c22228c0710efdb2d8",
+      "translation_text_hash": "9d8058d5050a72c255724bac54b5a88b010016a49216f113a6c096dbba9c0150",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 명한 바를 너는 네 형 아론에게 말하고 그는 바로에게 말하여 그로 이스라엘 자손을 그 땅에서 보내게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "9d8058d5050a72c255724bac54b5a88b010016a49216f113a6c096dbba9c0150"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:3",
+      "sequence": 1689,
+      "chapter_label": "EXO 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "I will harden Pharaoh’s heart, and multiply my signs and my wonders in the land of Egypt.",
+      "ko": "내가 바로의 마음을 강퍅케 하고 나의 표징과 나의 이적을 애굽 땅에 많이 행하리라마는",
+      "source_text_hash": "abce8a5c6034178b264b786b7bfbebb0d8e2e29ca3d9823f899f5922a66945d0",
+      "translation_text_hash": "59e31290f636ad700d4780897c79abf442cc59142f932d5c824c88701c39c593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바로의 마음을 강퍅케 하고 나의 표징과 나의 이적을 애굽 땅에 많이 행하리라마는"
+      ],
+      "raw_text_hashes": [
+        "59e31290f636ad700d4780897c79abf442cc59142f932d5c824c88701c39c593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:4",
+      "sequence": 1690,
+      "chapter_label": "EXO 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "But Pharaoh will not listen to you, so I will lay my hand on Egypt, and bring out my armies, my people the children of Israel, out of the land of Egypt by great judgments.",
+      "ko": "바로가 너희를 듣지 아니할 터인즉 내가 내 손을 애굽에 더하여 여러 큰 재앙을 내리고 내 군대, 내 백성 이스라엘 자손을 그 땅에서 인도하여 낼찌라",
+      "source_text_hash": "c9adecad66a3535bfa21cf19e0eb3f6dda8feeeb0aada0a6e689595dcde23169",
+      "translation_text_hash": "736a462d8d42bcbd67bb1f6669f98ef31cc977fa6ebb4bc21a7d36fb2b32ff5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 너희를 듣지 아니할 터인즉 내가 내 손을 애굽에 더하여 여러 큰 재앙을 내리고 내 군대, 내 백성 이스라엘 자손을 그 땅에서 인도하여 낼찌라"
+      ],
+      "raw_text_hashes": [
+        "736a462d8d42bcbd67bb1f6669f98ef31cc977fa6ebb4bc21a7d36fb2b32ff5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:5",
+      "sequence": 1691,
+      "chapter_label": "EXO 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "The Egyptians shall know that I am the LORD when I stretch out my hand on Egypt, and bring the children of Israel out from among them.”",
+      "ko": "내가 내 손을 애굽 위에 펴서 이스라엘 자손을 그 땅에서 인도하여 낼 때에야 애굽 사람이 나를 여호와인줄 알리라 하시매",
+      "source_text_hash": "4776ca22082a29f7fd2e37cebdc561f6e6acee24285cc008663a33f94b5a7043",
+      "translation_text_hash": "671d5f6bf3a23e5ff27eeba6bf5421607d6c46af76b50044f84324016ae4769e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 손을 애굽 위에 펴서 이스라엘 자손을 그 땅에서 인도하여 낼 때에야 애굽 사람이 나를 여호와인줄 알리라 하시매"
+      ],
+      "raw_text_hashes": [
+        "671d5f6bf3a23e5ff27eeba6bf5421607d6c46af76b50044f84324016ae4769e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:6",
+      "sequence": 1692,
+      "chapter_label": "EXO 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "Moses and Aaron did so. As the LORD commanded them, so they did.",
+      "ko": "모세와 아론이 여호와께서 자기들에게 명하신대로 곧 그대로 행하였더라",
+      "source_text_hash": "6f7374957e08df25ed5a86b2860055be6a2690d05ea5befb611badd2df91c8b7",
+      "translation_text_hash": "b6c136346ebaf0d1a8afd5d53e3af9a9372257dcc55e20b557148ef6e1cf59e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 여호와께서 자기들에게 명하신대로 곧 그대로 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "b6c136346ebaf0d1a8afd5d53e3af9a9372257dcc55e20b557148ef6e1cf59e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:7",
+      "sequence": 1693,
+      "chapter_label": "EXO 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Moses was eighty years old, and Aaron eighty-three years old, when they spoke to Pharaoh.",
+      "ko": "그들이 바로에게 말할 때에 모세는 팔십세이었고 아론은 팔십 삼세이었더라",
+      "source_text_hash": "a73aed8f4fc8b3da9f43eb0af16bf69aa5fe3df7048189b38bee14dfac2739c2",
+      "translation_text_hash": "4930aef06445dc9d33675aea2abfaf4885544f47d56e6c127568d9ae8b585966",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 바로에게 말할 때에 모세는 팔십세이었고 아론은 팔십 삼세이었더라"
+      ],
+      "raw_text_hashes": [
+        "4930aef06445dc9d33675aea2abfaf4885544f47d56e6c127568d9ae8b585966"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:8",
+      "sequence": 1694,
+      "chapter_label": "EXO 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying,",
+      "ko": "여호와께서 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "e6c7cd4c60d1b58d8caa7e02e4352f1d925cf188a6f005f934b711230470272a",
+      "translation_text_hash": "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:9",
+      "sequence": 1695,
+      "chapter_label": "EXO 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "“When Pharaoh speaks to you, saying, ‘Perform a miracle!’ then you shall tell Aaron, ‘Take your rod, and cast it down before Pharaoh, and it will become a serpent.’”",
+      "ko": "바로가 너희에게 이르기를 너희는 이적을 보이라 하거든 너는 아론에게 명하기를 너의 지팡이를 가져 바로 앞에 던지라 하라 그것이 뱀이 되리라",
+      "source_text_hash": "3e7457c495b6d20830882457707e6c7e3fe58a842874fde59fdd47c0b578df56",
+      "translation_text_hash": "7c9d9d7acdbae0a0d8cddb2d899938eab489f4958e025c83560b187cf3131bf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 너희에게 이르기를 너희는 이적을 보이라 하거든 너는 아론에게 명하기를 너의 지팡이를 가져 바로 앞에 던지라 하라 그것이 뱀이 되리라"
+      ],
+      "raw_text_hashes": [
+        "7c9d9d7acdbae0a0d8cddb2d899938eab489f4958e025c83560b187cf3131bf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:10",
+      "sequence": 1696,
+      "chapter_label": "EXO 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "Moses and Aaron went in to Pharaoh, and they did so, as the LORD had commanded. Aaron cast down his rod before Pharaoh and before his servants, and it became a serpent.",
+      "ko": "모세와 아론이 바로에게 가서 여호와의 명하신대로 행하여 아론이 바로와 그 신하 앞에 지팡이를 던졌더니 뱀이 된지라",
+      "source_text_hash": "a5f755d57c5b4f7d013854b8f6f48435e433278c0d62ad10b5b957694dca74d8",
+      "translation_text_hash": "64191bd91d01e571cf71f7b7fb8f1822405413731dfcfa2114d1855a9c004834",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 바로에게 가서 여호와의 명하신대로 행하여 아론이 바로와 그 신하 앞에 지팡이를 던졌더니 뱀이 된지라"
+      ],
+      "raw_text_hashes": [
+        "64191bd91d01e571cf71f7b7fb8f1822405413731dfcfa2114d1855a9c004834"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:11",
+      "sequence": 1697,
+      "chapter_label": "EXO 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Then Pharaoh also called for the wise men and the sorcerers. They also, the magicians of Egypt, did the same thing with their enchantments.",
+      "ko": "바로도 박사와 박수를 부르매 그 애굽 술객들도 그 술법으로 그와 같이 행하되",
+      "source_text_hash": "98cfaa5a217f07e549003bb2bed343eeeada3049a25d203538383d83b26dbc25",
+      "translation_text_hash": "87cea72ba555d3ad8ab5f7501f0c65d0dce88e2ff8cc5d8482276764b88fdfaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로도 박사와 박수를 부르매 그 애굽 술객들도 그 술법으로 그와 같이 행하되"
+      ],
+      "raw_text_hashes": [
+        "87cea72ba555d3ad8ab5f7501f0c65d0dce88e2ff8cc5d8482276764b88fdfaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:12",
+      "sequence": 1698,
+      "chapter_label": "EXO 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "For they each cast down their rods, and they became serpents; but Aaron’s rod swallowed up their rods.",
+      "ko": "각 사람이 지팡이를 던지매 뱀이 되었으나 아론의 지팡이가 그들의 지팡이를 삼키니라",
+      "source_text_hash": "962870a1571fc4814ea37d59330e25841903ac6273526a30a84389d89a6a3615",
+      "translation_text_hash": "7c5a005c0e28d7ce5aeef650a889f153ffb68d2a1c42ea813ec873ee966cd50a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 사람이 지팡이를 던지매 뱀이 되었으나 아론의 지팡이가 그들의 지팡이를 삼키니라"
+      ],
+      "raw_text_hashes": [
+        "7c5a005c0e28d7ce5aeef650a889f153ffb68d2a1c42ea813ec873ee966cd50a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:13",
+      "sequence": 1699,
+      "chapter_label": "EXO 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "Pharaoh’s heart was hardened, and he didn’t listen to them, as the LORD had spoken.",
+      "ko": "그러나 바로의 마음이 강퍅하여 그들을 듣지 아니하니 여호와의 말씀과 같더라",
+      "source_text_hash": "75d8f4e7e78cc70fcdb30cafa7d51559bc7ad35ca34444239f17a9a2d0ed0e1e",
+      "translation_text_hash": "35cc2d530ab578d0aec6dc0681f6b2bf55046879da478030967c62bcc7bddb5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 바로의 마음이 강퍅하여 그들을 듣지 아니하니 여호와의 말씀과 같더라"
+      ],
+      "raw_text_hashes": [
+        "35cc2d530ab578d0aec6dc0681f6b2bf55046879da478030967c62bcc7bddb5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:14",
+      "sequence": 1700,
+      "chapter_label": "EXO 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD said to Moses, “Pharaoh’s heart is stubborn. He refuses to let the people go.",
+      "ko": "여호와께서 모세에게 이르시되 바로의 마음이 완강하여 백성 보내기를 거절하는도다",
+      "source_text_hash": "7980d730d33d6e2220187fa0211e3a3d5d7fbede295865fd13e4e046ed5c9065",
+      "translation_text_hash": "6e4d89b22e218a72dc46dd84d0d203bfd34e6127ffe7b444086c67ae893c0b9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 바로의 마음이 완강하여 백성 보내기를 거절하는도다"
+      ],
+      "raw_text_hashes": [
+        "6e4d89b22e218a72dc46dd84d0d203bfd34e6127ffe7b444086c67ae893c0b9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:15",
+      "sequence": 1701,
+      "chapter_label": "EXO 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "Go to Pharaoh in the morning. Behold, he is going out to the water. You shall stand by the river’s bank to meet him. You shall take the rod which was turned to a serpent in your hand.",
+      "ko": "아침에 너는 바로에게로 가라 그가 물로 나오리니 너는 하숫가에 서서 그를 맞으며 그 뱀 되었던 지팡이를 손에 잡고",
+      "source_text_hash": "17f3dca7d857800d7984c6128ce7222efab6d8d50341efb806f616718b34ef86",
+      "translation_text_hash": "d1d80fa5c7e2cc8063e587c1a2b33ae3cfb05c8ce7462db4b075b665d247567f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 너는 바로에게로 가라 그가 물로 나오리니 너는 하숫가에 서서 그를 맞으며 그 뱀 되었던 지팡이를 손에 잡고"
+      ],
+      "raw_text_hashes": [
+        "d1d80fa5c7e2cc8063e587c1a2b33ae3cfb05c8ce7462db4b075b665d247567f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:16",
+      "sequence": 1702,
+      "chapter_label": "EXO 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "You shall tell him, ‘The LORD, the God of the Hebrews, has sent me to you, saying, “Let my people go, that they may serve me in the wilderness. Behold, until now you haven’t listened.”",
+      "ko": "그에게 이르기를 히브리 사람의 하나님 여호와께서 나를 왕에게 보내어 이르시되 내 백성을 보내라 그들이 광야에서 나를 섬길 것이니라 하였으나 이제까지 네가 듣지 아니하도다",
+      "source_text_hash": "5c35872da45b630ad559bea6be21cc606665288c3eccdd4e128aa3f4a85c4b24",
+      "translation_text_hash": "5fc9bed354647ae0564d2da295ea0e993a0aea3a743dc59838444da82869c5db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 이르기를 히브리 사람의 하나님 여호와께서 나를 왕에게 보내어 이르시되 내 백성을 보내라 그들이 광야에서 나를 섬길 것이니라 하였으나 이제까지 네가 듣지 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "5fc9bed354647ae0564d2da295ea0e993a0aea3a743dc59838444da82869c5db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:17",
+      "sequence": 1703,
+      "chapter_label": "EXO 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD says, “In this you shall know that I am the LORD. Behold: I will strike with the rod that is in my hand on the waters which are in the river, and they shall be turned to blood.",
+      "ko": "여호와가 이같이 이르노니 네가 이로 인하여 나를 여호와인줄 알리라 하셨느니라 볼찌어다 내가 내 손의 지팡이로 하수를 치면 그것이 피로 변하고",
+      "source_text_hash": "6f2b90bc8acd20e335c8df03b8d38be8623f0129bd1a4cb39ca07b57c00621d1",
+      "translation_text_hash": "05af1f84a0ce78b0bd867063a1a032790396120c4cc074724d3d66e61dc21fda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 이같이 이르노니 네가 이로 인하여 나를 여호와인줄 알리라 하셨느니라 볼찌어다 내가 내 손의 지팡이로 하수를 치면 그것이 피로 변하고"
+      ],
+      "raw_text_hashes": [
+        "05af1f84a0ce78b0bd867063a1a032790396120c4cc074724d3d66e61dc21fda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:18",
+      "sequence": 1704,
+      "chapter_label": "EXO 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "The fish that are in the river will die and the river will become foul. The Egyptians will loathe to drink water from the river.”’”",
+      "ko": "하수의 고기가 죽고 그 물에서는 악취가 나리니 애굽 사람들이 그 물 마시기를 싫어하리라 하라",
+      "source_text_hash": "8059784cf077903faa76d02f0771c9315a2ab1874097e61db2c7defd55258800",
+      "translation_text_hash": "710ab020c6039d05716041ecec9e2294b368a98cd6fbaf56de182ba5712c270e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하수의 고기가 죽고 그 물에서는 악취가 나리니 애굽 사람들이 그 물 마시기를 싫어하리라 하라"
+      ],
+      "raw_text_hashes": [
+        "710ab020c6039d05716041ecec9e2294b368a98cd6fbaf56de182ba5712c270e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:19",
+      "sequence": 1705,
+      "chapter_label": "EXO 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD said to Moses, “Tell Aaron, ‘Take your rod, and stretch out your hand over the waters of Egypt, over their rivers, over their streams, and over their pools, and over all their ponds of water, that they may become blood. There will be blood throughout all the land of Egypt, both in vessels of wood and in vessels of stone.’”",
+      "ko": "여호와께서 또 모세에게 이르시되 아론에게 명하기를 네 지팡이를 잡고 네 팔을 애굽의 물들과 하수들과 운하와 못과 모든 호수 위에 펴라 하라 그것들이 피가 되리니 애굽 온 땅에와 나무 그릇에와 돌 그릇에 모두 피가 있으리라",
+      "source_text_hash": "0ec79cd719b3b24f89e4458e74c458baa726fb72aa1f63efd8e25ac613639861",
+      "translation_text_hash": "f229f7294984a27ee726c22ad974f63cfd52280fbc063ab1f1d75de4af31ca68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세에게 이르시되 아론에게 명하기를 네 지팡이를 잡고 네 팔을 애굽의 물들과 하수들과 운하와 못과 모든 호수 위에 펴라 하라 그것들이 피가 되리니 애굽 온 땅에와 나무 그릇에와 돌 그릇에 모두 피가 있으리라"
+      ],
+      "raw_text_hashes": [
+        "f229f7294984a27ee726c22ad974f63cfd52280fbc063ab1f1d75de4af31ca68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:20",
+      "sequence": 1706,
+      "chapter_label": "EXO 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "Moses and Aaron did so, as the LORD commanded; and he lifted up the rod, and struck the waters that were in the river, in the sight of Pharaoh, and in the sight of his servants; and all the waters that were in the river were turned to blood.",
+      "ko": "모세와 아론이 여호와의 명하신대로 행하여 바로와 그 신하의 목전에서 지팡이를 들어 하수를 치니 그 물이 다 피로 변하고",
+      "source_text_hash": "d964e0ef32635b6c58893ecd7a03e2b07ecca631c934b5b889d3f47aa557ae18",
+      "translation_text_hash": "1f04f5c934f50b03018e9447db62774dd866377a97599d2bc060859e78ed0ca6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 여호와의 명하신대로 행하여 바로와 그 신하의 목전에서 지팡이를 들어 하수를 치니 그 물이 다 피로 변하고"
+      ],
+      "raw_text_hashes": [
+        "1f04f5c934f50b03018e9447db62774dd866377a97599d2bc060859e78ed0ca6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:21",
+      "sequence": 1707,
+      "chapter_label": "EXO 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "The fish that were in the river died. The river became foul. The Egyptians couldn’t drink water from the river. The blood was throughout all the land of Egypt.",
+      "ko": "하수의 고기가 죽고 그 물에서는 악취가 나니 애굽 사람들이 하수 물을 마시지 못하며 애굽 온 땅에는 피가 있으나",
+      "source_text_hash": "c252b329cb6b664b16b25d93332ff0c1f27597aa055751878475c2feeaa5f459",
+      "translation_text_hash": "6d962242a4f1575a686666abad6e009418989ce961515bae3183152b32fe6785",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하수의 고기가 죽고 그 물에서는 악취가 나니 애굽 사람들이 하수 물을 마시지 못하며 애굽 온 땅에는 피가 있으나"
+      ],
+      "raw_text_hashes": [
+        "6d962242a4f1575a686666abad6e009418989ce961515bae3183152b32fe6785"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:22",
+      "sequence": 1708,
+      "chapter_label": "EXO 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "The magicians of Egypt did the same thing with their enchantments. So Pharaoh’s heart was hardened, and he didn’t listen to them, as the LORD had spoken.",
+      "ko": "애굽 술객들도 자기 술법으로 그와 같이 행하므로 바로의 마음이 강퍅하여 그들을 듣지 아니하니 여호와의 말씀과 같더라",
+      "source_text_hash": "f425eda66b900eb8ce564ecc83808f6fb3ce97224d80651efb0ff305af4ac60f",
+      "translation_text_hash": "d1f19da142122c178acbdc03091b6e65237ab73a2af57eb5759843b6c57eaecb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 술객들도 자기 술법으로 그와 같이 행하므로 바로의 마음이 강퍅하여 그들을 듣지 아니하니 여호와의 말씀과 같더라"
+      ],
+      "raw_text_hashes": [
+        "d1f19da142122c178acbdc03091b6e65237ab73a2af57eb5759843b6c57eaecb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:23",
+      "sequence": 1709,
+      "chapter_label": "EXO 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "Pharaoh turned and went into his house, and he didn’t even take this to heart.",
+      "ko": "바로가 돌이켜 궁으로 들어가고 그 일에도 관념하지 아니하였고",
+      "source_text_hash": "43feb6d962c736099a19d75250c0e37b4c873d5001b32d78e51c7d15c541a6ab",
+      "translation_text_hash": "8671118d46f7f0f290cf9a617f4f9bbd122c7ec8701f51b1a6039d9e392fd64f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 돌이켜 궁으로 들어가고 그 일에도 관념하지 아니하였고"
+      ],
+      "raw_text_hashes": [
+        "8671118d46f7f0f290cf9a617f4f9bbd122c7ec8701f51b1a6039d9e392fd64f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:24",
+      "sequence": 1710,
+      "chapter_label": "EXO 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "All the Egyptians dug around the river for water to drink; for they couldn’t drink the river water.",
+      "ko": "애굽 사람들은 하수 물을 마실 수 없으므로 하숫가를 두루 파서 마실 물을 구하였더라",
+      "source_text_hash": "83bd2491c57a37d5a442e360cf94c832495fbe89c34dd3c2abce4ddeffe99b26",
+      "translation_text_hash": "cfe00ccdfcf4ead182edcd9ef34c6b863feca9dd412dfdb5cca9b92dc0b1177f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 사람들은 하수 물을 마실 수 없으므로 하숫가를 두루 파서 마실 물을 구하였더라"
+      ],
+      "raw_text_hashes": [
+        "cfe00ccdfcf4ead182edcd9ef34c6b863feca9dd412dfdb5cca9b92dc0b1177f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:7:25",
+      "sequence": 1711,
+      "chapter_label": "EXO 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "Seven days were fulfilled, after the LORD had struck the river.",
+      "ko": "여호와께서 하수를 치신 후 칠일이 지나니라",
+      "source_text_hash": "fae482c00d402bf7965f993973e1c3527a1470ac2049783e96c5c8805b14ee93",
+      "translation_text_hash": "b2ed755108a7cb84cbefa56a770905d08cc8931249daac9d2c6072c5b2cad8d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 하수를 치신 후 칠일이 지나니라"
+      ],
+      "raw_text_hashes": [
+        "b2ed755108a7cb84cbefa56a770905d08cc8931249daac9d2c6072c5b2cad8d8"
+      ]
+    }
+  ]
+}

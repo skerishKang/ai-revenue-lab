@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:022",
+  "unit_ordinal": 72,
+  "unit_label": "EXO 22",
+  "book_code": "EXO",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:22:1",
+      "sequence": 2115,
+      "chapter_label": "EXO 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "“If a man steals an ox or a sheep, and kills it or sells it, he shall pay five oxen for an ox, and four sheep for a sheep.",
+      "ko": "사람이 소나 양을 도적질하여 잡거나 팔면 그는 소 하나에 소 다섯으로 갚고 양 하나에 양 넷으로 갚을찌니라",
+      "source_text_hash": "60fb4fad2d41dedadc17c5a2ffa0d870f30cb2de11b7751af4eaa42fccd1a06c",
+      "translation_text_hash": "13aa857da25acfedebeac32cc24203c1c9d6a28c593767f54999245e2cc78c2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 소나 양을 도적질하여 잡거나 팔면 그는 소 하나에 소 다섯으로 갚고 양 하나에 양 넷으로 갚을찌니라"
+      ],
+      "raw_text_hashes": [
+        "13aa857da25acfedebeac32cc24203c1c9d6a28c593767f54999245e2cc78c2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:2",
+      "sequence": 2116,
+      "chapter_label": "EXO 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "If the thief is found breaking in, and is struck so that he dies, there shall be no guilt of bloodshed for him.",
+      "ko": "도적이 뚫고 들어옴을 보고 그를 쳐 죽이면 피 흘린 죄가 없으나",
+      "source_text_hash": "f370d00fcfe4afbdcc04944051d11d769c5963279a1e5bd8c6ccdcd13f09c24a",
+      "translation_text_hash": "57affd192eb3220a73797efa58c06ac23f7225a8dbe71fe236acdd8b2a9ffbe2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적이 뚫고 들어옴을 보고 그를 쳐 죽이면 피 흘린 죄가 없으나"
+      ],
+      "raw_text_hashes": [
+        "57affd192eb3220a73797efa58c06ac23f7225a8dbe71fe236acdd8b2a9ffbe2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:3",
+      "sequence": 2117,
+      "chapter_label": "EXO 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "If the sun has risen on him, he is guilty of bloodshed. He shall make restitution. If he has nothing, then he shall be sold for his theft.",
+      "ko": "해 돋은 후이면 피 흘린 죄가 있으리라 도적은 반드시 배상할 것이나 배상할 것이 없으면 그 몸을 팔아 그 도적질한 것을 배상할 것이요",
+      "source_text_hash": "fda6d00de43722221eaeeceef1335fc04d3826c3f60ae5da756a3b91e057fe63",
+      "translation_text_hash": "a1596aff2fa98aa7f2ca2c3c3a5593df73a49b542d3ead5e210fd57201b100f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해 돋은 후이면 피 흘린 죄가 있으리라 도적은 반드시 배상할 것이나 배상할 것이 없으면 그 몸을 팔아 그 도적질한 것을 배상할 것이요"
+      ],
+      "raw_text_hashes": [
+        "a1596aff2fa98aa7f2ca2c3c3a5593df73a49b542d3ead5e210fd57201b100f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:4",
+      "sequence": 2118,
+      "chapter_label": "EXO 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "If the stolen property is found in his hand alive, whether it is ox, donkey, or sheep, he shall pay double.",
+      "ko": "도적질한 것이 살아 그 손에 있으면 소나 나귀나 양을 무론하고 갑절을 배상할찌니라",
+      "source_text_hash": "cd8e923fd3b27f75454bce6aa43be6fa4e764bfc972eb51ac0a9bd88009a441c",
+      "translation_text_hash": "6a403749f60be0dacb5f0a3c91478ce6e2570138c5d01782f1d979709f9f6bed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적질한 것이 살아 그 손에 있으면 소나 나귀나 양을 무론하고 갑절을 배상할찌니라"
+      ],
+      "raw_text_hashes": [
+        "6a403749f60be0dacb5f0a3c91478ce6e2570138c5d01782f1d979709f9f6bed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:5",
+      "sequence": 2119,
+      "chapter_label": "EXO 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "“If a man causes a field or vineyard to be eaten by letting his animal loose, and it grazes in another man’s field, he shall make restitution from the best of his own field, and from the best of his own vineyard.",
+      "ko": "사람이 밭에서나 포도원에서 먹이다가 그 짐승을 놓아서 남의 밭에서 먹게 하면 자기 밭의 제일 좋은 것과 자기 포도원의 제일 좋은 것으로 배상할찌니라",
+      "source_text_hash": "ac5062d0943f3fbd2a09d02bc3841f343dee1f3c733d310833af75bf671fb28b",
+      "translation_text_hash": "130724fe241bd09e1aad551c386ce2ef4b11eea7d9409f6dc5a8f108b2f6bd6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 밭에서나 포도원에서 먹이다가 그 짐승을 놓아서 남의 밭에서 먹게 하면 자기 밭의 제일 좋은 것과 자기 포도원의 제일 좋은 것으로 배상할찌니라"
+      ],
+      "raw_text_hashes": [
+        "130724fe241bd09e1aad551c386ce2ef4b11eea7d9409f6dc5a8f108b2f6bd6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:6",
+      "sequence": 2120,
+      "chapter_label": "EXO 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "“If fire breaks out, and catches in thorns so that the shocks of grain, or the standing grain, or the field are consumed; he who kindled the fire shall surely make restitution.",
+      "ko": "불이 나서 가시나무에 미쳐 낟가리나 거두지 못한 곡식이나 전원을 태우면 불 놓은 자가 반드시 배상할찌니라",
+      "source_text_hash": "3acb740894805d44ecb4a0b7a2c8381d2dbde11e19d07fa55406a68965b33e64",
+      "translation_text_hash": "a02b8922ec9b33fe405e7be201a135db59ccccff0d9ca1d54a031e531b324e35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불이 나서 가시나무에 미쳐 낟가리나 거두지 못한 곡식이나 전원을 태우면 불 놓은 자가 반드시 배상할찌니라"
+      ],
+      "raw_text_hashes": [
+        "a02b8922ec9b33fe405e7be201a135db59ccccff0d9ca1d54a031e531b324e35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:7",
+      "sequence": 2121,
+      "chapter_label": "EXO 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "“If a man delivers to his neighbor money or stuff to keep, and it is stolen out of the man’s house, if the thief is found, he shall pay double.",
+      "ko": "사람이 돈이나 물품을 이웃에게 맡겨 지키게 하였다가 그 이웃의 집에서 봉적하였는데 그 도적이 잡히면 갑절을 배상할 것이요",
+      "source_text_hash": "64a6f2d9e99486185d9dad23bf4704e3307bd82911d3690f60d9fc7ae8d06465",
+      "translation_text_hash": "73bfc798da7f268cbe5cc5e4d036bb821d53465c380c7cd6c2416d0c7c334945",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 돈이나 물품을 이웃에게 맡겨 지키게 하였다가 그 이웃의 집에서 봉적하였는데 그 도적이 잡히면 갑절을 배상할 것이요"
+      ],
+      "raw_text_hashes": [
+        "73bfc798da7f268cbe5cc5e4d036bb821d53465c380c7cd6c2416d0c7c334945"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:8",
+      "sequence": 2122,
+      "chapter_label": "EXO 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "If the thief isn’t found, then the master of the house shall come near to God, to find out whether or not he has put his hand on his neighbor’s goods.",
+      "ko": "도적이 잡히지 아니하면 그 집 주인이 재판장 앞에 가서 자기가 그 이웃의 물품에 손 댄 여부의 조사를 받을 것이며",
+      "source_text_hash": "aa9e4171bb491ce8fac525f27646f3f6e8b16fb732e25ddff3eef7b07def2cac",
+      "translation_text_hash": "121638adc5f691aa5d991e41ddd55f179b4be468c08a1a9f6c10adfd60020444",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적이 잡히지 아니하면 그 집 주인이 재판장 앞에 가서 자기가 그 이웃의 물품에 손 댄 여부의 조사를 받을 것이며"
+      ],
+      "raw_text_hashes": [
+        "121638adc5f691aa5d991e41ddd55f179b4be468c08a1a9f6c10adfd60020444"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:9",
+      "sequence": 2123,
+      "chapter_label": "EXO 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "For every matter of trespass, whether it is for ox, for donkey, for sheep, for clothing, or for any kind of lost thing, about which one says, ‘This is mine,’ the cause of both parties shall come before God. He whom God condemns shall pay double to his neighbor.",
+      "ko": "어떠한 과실에든지 소에든지 나귀에든지 양에든지 의복에든지 또는 아무 잃은 물건에든지 그것에 대하여 혹이 이르기를 이것이 그것이라 하면 두 편이 재판장 앞에 나아갈 것이요 재판장이 죄 있다고 하는 자가 그 상대편에게 갑절을 배상할찌니라",
+      "source_text_hash": "b4da37e13b3a0661d2faeae517ac723decc55e3745d99a3f8cd270867a9563e7",
+      "translation_text_hash": "44ff6796a1b7722f2938af74c692949389c267864a39858528332f775e97dded",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떠한 과실에든지 소에든지 나귀에든지 양에든지 의복에든지 또는 아무 잃은 물건에든지 그것에 대하여 혹이 이르기를 이것이 그것이라 하면 두 편이 재판장 앞에 나아갈 것이요 재판장이 죄 있다고 하는 자가 그 상대편에게 갑절을 배상할찌니라"
+      ],
+      "raw_text_hashes": [
+        "44ff6796a1b7722f2938af74c692949389c267864a39858528332f775e97dded"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:10",
+      "sequence": 2124,
+      "chapter_label": "EXO 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "“If a man delivers to his neighbor a donkey, an ox, a sheep, or any animal to keep, and it dies or is injured, or driven away, no man seeing it;",
+      "ko": "사람이 나귀나 소나 양이나 다른 짐승을 이웃에게 맡겨 지키게 하였다가 죽거나 상하거나 몰려 가도 본 사람이 없으면",
+      "source_text_hash": "59772fc448a15262861b958702150d8f3644ea5f33caf0644529f279108828fd",
+      "translation_text_hash": "9322ba478cfef30c37e265cba810f337dc0d9a9c051ac1475b236929c5480c96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 나귀나 소나 양이나 다른 짐승을 이웃에게 맡겨 지키게 하였다가 죽거나 상하거나 몰려 가도 본 사람이 없으면"
+      ],
+      "raw_text_hashes": [
+        "9322ba478cfef30c37e265cba810f337dc0d9a9c051ac1475b236929c5480c96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:11",
+      "sequence": 2125,
+      "chapter_label": "EXO 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "the oath of the LORD shall be between them both, he has not put his hand on his neighbor’s goods; and its owner shall accept it, and he shall not make restitution.",
+      "ko": "두 사람 사이에 맡은 자가 이웃의 것에 손을 대지 아니하였다고 여호와로 맹세할 것이요 그 임자는 그대로 믿을 것이며 그 사람은 배상하지 아니하려니와",
+      "source_text_hash": "20c2f9f9e96907d185a0f1f1a23c6a774c26585ed3b08a397887e704c3595380",
+      "translation_text_hash": "ec1c52060e46550bc805880c0d69f1d96d0b1f1cfde6e593a599d5e184c47040",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람 사이에 맡은 자가 이웃의 것에 손을 대지 아니하였다고 여호와로 맹세할 것이요 그 임자는 그대로 믿을 것이며 그 사람은 배상하지 아니하려니와"
+      ],
+      "raw_text_hashes": [
+        "ec1c52060e46550bc805880c0d69f1d96d0b1f1cfde6e593a599d5e184c47040"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:12",
+      "sequence": 2126,
+      "chapter_label": "EXO 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "But if it is stolen from him, the one who stole shall make restitution to its owner.",
+      "ko": "만일 자기에게서 봉적하였으면 그 임자에게 배상할 것이며",
+      "source_text_hash": "1af0af7ed3b5135b2ad5f5d268a249a45033fd993de96caf07e97d236c85da6b",
+      "translation_text_hash": "7b2319a195234181d7122e0ac63fe582da9b4525a18b16c35f790dd9a1772142",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 자기에게서 봉적하였으면 그 임자에게 배상할 것이며"
+      ],
+      "raw_text_hashes": [
+        "7b2319a195234181d7122e0ac63fe582da9b4525a18b16c35f790dd9a1772142"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:13",
+      "sequence": 2127,
+      "chapter_label": "EXO 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "If it is torn in pieces, let him bring it for evidence. He shall not make good that which was torn.",
+      "ko": "만일 찢겼으면 그것을 가져다가 증거할 것이요 그 찢긴 것에 대하여 배상하지 않을찌니라",
+      "source_text_hash": "1c2ef78fd17d05cfbbf1fe0a3442510e3bb1467122ad3bb22b55257e3c986ef6",
+      "translation_text_hash": "53e5f39875cd549af0983cbfae72a829c5503ae80622190ffeab590646c86e3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 찢겼으면 그것을 가져다가 증거할 것이요 그 찢긴 것에 대하여 배상하지 않을찌니라"
+      ],
+      "raw_text_hashes": [
+        "53e5f39875cd549af0983cbfae72a829c5503ae80622190ffeab590646c86e3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:14",
+      "sequence": 2128,
+      "chapter_label": "EXO 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "“If a man borrows anything of his neighbor’s, and it is injured, or dies, its owner not being with it, he shall surely make restitution.",
+      "ko": "만일 이웃에게 빌어온 것이 그 임자가 함께 있지 아니할 때에 상하거나 죽으면 반드시 배상하려니와",
+      "source_text_hash": "89acb129ca7aced100ee7fcb65cc45f0852b3cdd0d46d56c9856e56a96d8970d",
+      "translation_text_hash": "4a53d7c093a19a08a8c8730c5c03d270bfce0d296e84f8acc3fc135eb42b6337",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 이웃에게 빌어온 것이 그 임자가 함께 있지 아니할 때에 상하거나 죽으면 반드시 배상하려니와"
+      ],
+      "raw_text_hashes": [
+        "4a53d7c093a19a08a8c8730c5c03d270bfce0d296e84f8acc3fc135eb42b6337"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:15",
+      "sequence": 2129,
+      "chapter_label": "EXO 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "If its owner is with it, he shall not make it good. If it is a leased thing, it came for its lease.",
+      "ko": "그 임자가 그것과 함께 하였으면 배상하지 않을찌며 세 낸것도 세를 위하여 왔은즉 배상하지 않을찌니라",
+      "source_text_hash": "87e3c4d271da9a83958667722dd580f2c567ee62a9237dd34f165b296dec347b",
+      "translation_text_hash": "69d53911b9881b917853c4cb934e1e1ccaef4f16287a53402783ace3869524a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 임자가 그것과 함께 하였으면 배상하지 않을찌며 세 낸것도 세를 위하여 왔은즉 배상하지 않을찌니라"
+      ],
+      "raw_text_hashes": [
+        "69d53911b9881b917853c4cb934e1e1ccaef4f16287a53402783ace3869524a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:16",
+      "sequence": 2130,
+      "chapter_label": "EXO 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "“If a man entices a virgin who isn’t pledged to be married, and lies with her, he shall surely pay a dowry for her to be his wife.",
+      "ko": "사람이 정혼하지 아니한 처녀를 꾀어 동침하였으면 빙폐를 드려 아내로 삼을 것이요",
+      "source_text_hash": "458f3eed64a24b0e87c950f82582a40d43cf0d9a34892f3cc5064338defa109d",
+      "translation_text_hash": "67278350162277148730c1b4a7d96cec0a8b865d47503bc39a15418b2f16161b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 정혼하지 아니한 처녀를 꾀어 동침하였으면 빙폐를 드려 아내로 삼을 것이요"
+      ],
+      "raw_text_hashes": [
+        "67278350162277148730c1b4a7d96cec0a8b865d47503bc39a15418b2f16161b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:17",
+      "sequence": 2131,
+      "chapter_label": "EXO 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "If her father utterly refuses to give her to him, he shall pay money according to the dowry of virgins.",
+      "ko": "만일 그 아비가 그로 그에게 주기를 거절하면 그는 처녀에게 빙폐하는 일례로 돈을 낼찌니라",
+      "source_text_hash": "0cc7adecd01da89a49f00c2a6045a4fe03f923efbcd45c85a2af3b8668b7a09b",
+      "translation_text_hash": "bdaab035e48b9d4eb64d790acc0e0fb4c2afb80f516b7867960b8337e5175db4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그 아비가 그로 그에게 주기를 거절하면 그는 처녀에게 빙폐하는 일례로 돈을 낼찌니라"
+      ],
+      "raw_text_hashes": [
+        "bdaab035e48b9d4eb64d790acc0e0fb4c2afb80f516b7867960b8337e5175db4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:18",
+      "sequence": 2132,
+      "chapter_label": "EXO 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "“You shall not allow a sorceress to live.",
+      "ko": "너는 무당을 살려 두지 말찌니라",
+      "source_text_hash": "6d7b8d9fa230be52c5c00fa62d15831bc06203b4352ce6c25fc76291560560e1",
+      "translation_text_hash": "436115735246c4582b6b962511722f722e4b5171b06e0e2df34b6cbfcec397c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 무당을 살려 두지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "436115735246c4582b6b962511722f722e4b5171b06e0e2df34b6cbfcec397c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:19",
+      "sequence": 2133,
+      "chapter_label": "EXO 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "“Whoever has sex with an animal shall surely be put to death.",
+      "ko": "짐승과 행음하는 자는 반드시 죽일찌니라",
+      "source_text_hash": "8ff9bb0abf496a14fb624bee45ce4a1d95b99b72069b3cb72638a68d29426667",
+      "translation_text_hash": "247ff5aab4b60a74c8cd1c3a39ede429ad65fc81c45cc2ae0f105d78775b7c59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "짐승과 행음하는 자는 반드시 죽일찌니라"
+      ],
+      "raw_text_hashes": [
+        "247ff5aab4b60a74c8cd1c3a39ede429ad65fc81c45cc2ae0f105d78775b7c59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:20",
+      "sequence": 2134,
+      "chapter_label": "EXO 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "“He who sacrifices to any god, except to the LORD only, shall be utterly destroyed.",
+      "ko": "여호와 외에 다른 신에게 희생을 드리는 자는 멸할찌니라",
+      "source_text_hash": "6fdc012ddfb43b634499c75c5a7c323497c1edc38e5dae10c886f5352954a246",
+      "translation_text_hash": "132ac71074a156b92f7c4739478c5f559d975edf9fbc1e9a4db1e4e91272cb2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 외에 다른 신에게 희생을 드리는 자는 멸할찌니라"
+      ],
+      "raw_text_hashes": [
+        "132ac71074a156b92f7c4739478c5f559d975edf9fbc1e9a4db1e4e91272cb2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:21",
+      "sequence": 2135,
+      "chapter_label": "EXO 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "“You shall not wrong an alien or oppress him, for you were aliens in the land of Egypt.",
+      "ko": "너는 이방 나그네를 압제하지 말며 그들을 학대하지 말라 너희도 애굽 땅에서 나그네이었었음이니라",
+      "source_text_hash": "af652864b529ab2b348b761f89c8dcc51ea4f9d2c093d2eea286d7098ea8ae29",
+      "translation_text_hash": "534eaf83cdef262d30ddbfe2d8a25936cd13da020eac466a0797f345eeb48d2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이방 나그네를 압제하지 말며 그들을 학대하지 말라 너희도 애굽 땅에서 나그네이었었음이니라"
+      ],
+      "raw_text_hashes": [
+        "534eaf83cdef262d30ddbfe2d8a25936cd13da020eac466a0797f345eeb48d2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:22",
+      "sequence": 2136,
+      "chapter_label": "EXO 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "“You shall not take advantage of any widow or fatherless child.",
+      "ko": "너는 과부나 고아를 해롭게 하지 말라",
+      "source_text_hash": "f959a5866415d48af0d733d685e8b1a7a7d1080618df2a0ed1ae6622f5e8be0f",
+      "translation_text_hash": "1d74a5c0b468d813c69b95f91c1db0a7d55692718924f94be34647ea6581a8d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 과부나 고아를 해롭게 하지 말라"
+      ],
+      "raw_text_hashes": [
+        "1d74a5c0b468d813c69b95f91c1db0a7d55692718924f94be34647ea6581a8d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:23",
+      "sequence": 2137,
+      "chapter_label": "EXO 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "If you take advantage of them at all, and they cry at all to me, I will surely hear their cry;",
+      "ko": "네가 만일 그들을 해롭게 하므로 그들이 내게 부르짖으면 내가 반드시 그 부르짖음을 들을찌라",
+      "source_text_hash": "85bac5668cd3efb190f4ee8bce2dd3efe38fd5b8087549e6db9e7fad789025fd",
+      "translation_text_hash": "8eb5df6d91a450ecb33c83dcfee8713f3876c3cb0ec7a41b8aab4cfd7ed50c6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 그들을 해롭게 하므로 그들이 내게 부르짖으면 내가 반드시 그 부르짖음을 들을찌라"
+      ],
+      "raw_text_hashes": [
+        "8eb5df6d91a450ecb33c83dcfee8713f3876c3cb0ec7a41b8aab4cfd7ed50c6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:24",
+      "sequence": 2138,
+      "chapter_label": "EXO 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "and my wrath will grow hot, and I will kill you with the sword; and your wives shall be widows, and your children fatherless.",
+      "ko": "나의 노가 맹렬하므로 내가 칼로 너희를 죽이리니 너희 아내는 과부가 되고 너희 자녀는 고아가 되리라",
+      "source_text_hash": "e62f047c1f7842e386d40c6543e9b51e1697c65d61be5fc52407eeb028450f50",
+      "translation_text_hash": "09021918269420c0e10d83226b52bda555fdefc57c4caea9631741ff33090ac8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 노가 맹렬하므로 내가 칼로 너희를 죽이리니 너희 아내는 과부가 되고 너희 자녀는 고아가 되리라"
+      ],
+      "raw_text_hashes": [
+        "09021918269420c0e10d83226b52bda555fdefc57c4caea9631741ff33090ac8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:25",
+      "sequence": 2139,
+      "chapter_label": "EXO 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "“If you lend money to any of my people with you who is poor, you shall not be to him as a creditor. You shall not charge him interest.",
+      "ko": "네가 만일 너와 함께한 나의 백성 중 가난한 자에게 돈을 꾸이거든 너는 그에게 채주 같이 하지 말며 변리를 받지 말 것이며",
+      "source_text_hash": "f763f9ed66015fca709576a7d8f764f3e89ff3f81d5645fd658b330cca0fe834",
+      "translation_text_hash": "3950eac423d92f817ca7a0ebe52066eed32aa973a9f2bd1392255d45b0a911bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 너와 함께한 나의 백성 중 가난한 자에게 돈을 꾸이거든 너는 그에게 채주 같이 하지 말며 변리를 받지 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "3950eac423d92f817ca7a0ebe52066eed32aa973a9f2bd1392255d45b0a911bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:26",
+      "sequence": 2140,
+      "chapter_label": "EXO 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "If you take your neighbor’s garment as collateral, you shall restore it to him before the sun goes down,",
+      "ko": "네가 만일 이웃의 옷을 전당잡거든 해가 지기 전에 그에게 돌려 보내라",
+      "source_text_hash": "0f7d907c46abed600468a2cdabdffabc0e5b6aad28ec61456bdb7936cc4d7f94",
+      "translation_text_hash": "b9f2af1730b3c7af4988ed3e6773e8ff23ddd723b681fb58ac03abac9775dd38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 이웃의 옷을 전당잡거든 해가 지기 전에 그에게 돌려 보내라"
+      ],
+      "raw_text_hashes": [
+        "b9f2af1730b3c7af4988ed3e6773e8ff23ddd723b681fb58ac03abac9775dd38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:27",
+      "sequence": 2141,
+      "chapter_label": "EXO 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "for that is his only covering, it is his garment for his skin. What would he sleep in? It will happen, when he cries to me, that I will hear, for I am gracious.",
+      "ko": "그 몸을 가릴 것이 이뿐이라 이는 그 살의 옷인즉 그가 무엇을 입고 자겠느냐 그가 내게 부르짖으면 내가 들으리니 나는 자비한 자임이니라",
+      "source_text_hash": "67df4f99198d1dbbeb959c59158432cae6d78798ecfa603e34e28556c7bb8319",
+      "translation_text_hash": "d8a528c2d4a57306f9caf7dc5e24f38f86fc4466b49d95a73628d06c505c70bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 몸을 가릴 것이 이뿐이라 이는 그 살의 옷인즉 그가 무엇을 입고 자겠느냐 그가 내게 부르짖으면 내가 들으리니 나는 자비한 자임이니라"
+      ],
+      "raw_text_hashes": [
+        "d8a528c2d4a57306f9caf7dc5e24f38f86fc4466b49d95a73628d06c505c70bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:28",
+      "sequence": 2142,
+      "chapter_label": "EXO 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "“You shall not blaspheme God, nor curse a ruler of your people.",
+      "ko": "너는 재판장을 욕하지 말며 백성의 유사를 저주하지 말찌니라",
+      "source_text_hash": "01c17112e04bbe033f05bc968eb660816e138a3e14316fab21c671afdbbf4999",
+      "translation_text_hash": "6cc9ce54128c8f7c0185c06954bd47bfc43bd07ec1a5b66a421b51658f0928e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 재판장을 욕하지 말며 백성의 유사를 저주하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "6cc9ce54128c8f7c0185c06954bd47bfc43bd07ec1a5b66a421b51658f0928e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:29",
+      "sequence": 2143,
+      "chapter_label": "EXO 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "“You shall not delay to offer from your harvest and from the outflow of your presses. “You shall give the firstborn of your sons to me.",
+      "ko": "너는 너의 추수한 것과 너의 짜낸 즙을 드리기에 더디게 말찌며 너의 처음 난 아들들을 내게 줄찌며",
+      "source_text_hash": "cfa3a25d2d363193f442319393aad7212c520d0392086573a1e6fe141e8c2015",
+      "translation_text_hash": "1c67d77e97d151c1f19c36df371a339d7bb9deab177435c51a7ca885f26ed5e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 너의 추수한 것과 너의 짜낸 즙을 드리기에 더디게 말찌며 너의 처음 난 아들들을 내게 줄찌며"
+      ],
+      "raw_text_hashes": [
+        "1c67d77e97d151c1f19c36df371a339d7bb9deab177435c51a7ca885f26ed5e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:30",
+      "sequence": 2144,
+      "chapter_label": "EXO 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "You shall do likewise with your cattle and with your sheep. It shall be with its mother seven days, then on the eighth day you shall give it to me.",
+      "ko": "너의 소와 양도 그 일례로 하되 칠일 동안 어미와 함께 있게 하다가 팔일만에 내게 줄찌니라",
+      "source_text_hash": "eeb0a65b6c321397f1932d28aed603f53ddfdb8d21f63b216ab939173b8a697b",
+      "translation_text_hash": "682b9a67c7fc7bca5ed3406a03af4e0d6dfed21e3ba3c1125b508c24ec334da0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 소와 양도 그 일례로 하되 칠일 동안 어미와 함께 있게 하다가 팔일만에 내게 줄찌니라"
+      ],
+      "raw_text_hashes": [
+        "682b9a67c7fc7bca5ed3406a03af4e0d6dfed21e3ba3c1125b508c24ec334da0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:22:31",
+      "sequence": 2145,
+      "chapter_label": "EXO 22",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 22,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 22,
+          "verse": 31
+        }
+      ],
+      "en": "“You shall be holy men to me, therefore you shall not eat any meat that is torn by animals in the field. You shall cast it to the dogs.",
+      "ko": "너희는 내게 거룩한 사람이 될찌니 들에서 짐승에게 찢긴 것의 고기를 먹지 말고 개에게 던질찌니라",
+      "source_text_hash": "9cc98d6255f9993ff770a31b458d2da71df21b9319efa829c12e9a7b568d8841",
+      "translation_text_hash": "b818f83b779a9af4bc4f2d9312d33fd2571a675b9ad66a4e9d9ac622daeab2ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내게 거룩한 사람이 될찌니 들에서 짐승에게 찢긴 것의 고기를 먹지 말고 개에게 던질찌니라"
+      ],
+      "raw_text_hashes": [
+        "b818f83b779a9af4bc4f2d9312d33fd2571a675b9ad66a4e9d9ac622daeab2ac"
+      ]
+    }
+  ]
+}

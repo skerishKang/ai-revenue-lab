@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:006",
+  "unit_ordinal": 319,
+  "unit_label": "2KI 6",
+  "book_code": "2KI",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:6:1",
+      "sequence": 9676,
+      "chapter_label": "2KI 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "The sons of the prophets said to Elisha, “See now, the place where we live and meet with you is too small for us.",
+      "ko": "선지자의 생도가 엘리사에게 이르되 보소서 우리가 당신과 함께 거한 곳이 우리에게는 좁으니",
+      "source_text_hash": "6babf8539fb0987621b6514492e486ef386a22768bfe9603d0e39202f81cac37",
+      "translation_text_hash": "9cd1021275ed81f58b9d5ea1e730c83e2ad85fca3b2226a206ea2db0fd47b3c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자의 생도가 엘리사에게 이르되 보소서 우리가 당신과 함께 거한 곳이 우리에게는 좁으니"
+      ],
+      "raw_text_hashes": [
+        "9cd1021275ed81f58b9d5ea1e730c83e2ad85fca3b2226a206ea2db0fd47b3c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:2",
+      "sequence": 9677,
+      "chapter_label": "2KI 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "Please let us go to the Jordan, and each man take a beam from there, and let’s make us a place there, where we may live.” He answered, “Go!”",
+      "ko": "우리가 요단으로 가서 거기서 각각 한 재목을 취하여 그곳에 우리의 거할 처소를 세우사이다 엘리사가 가로되 가라",
+      "source_text_hash": "8a2461b5e65125acac04f51abd105bfd9913d98d86d008fe876edc621b49c245",
+      "translation_text_hash": "0dce4da512bec37efab3f3d84e21f53f1a4efdc3f452843f4194925cb868daf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 요단으로 가서 거기서 각각 한 재목을 취하여 그곳에 우리의 거할 처소를 세우사이다 엘리사가 가로되 가라"
+      ],
+      "raw_text_hashes": [
+        "0dce4da512bec37efab3f3d84e21f53f1a4efdc3f452843f4194925cb868daf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:3",
+      "sequence": 9678,
+      "chapter_label": "2KI 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "One said, “Please be pleased to go with your servants.” He answered, “I will go.”",
+      "ko": "그 하나가 가로되 청컨대 당신도 종들과 함께하소서 엘리사가 가로되 내가 가리라 하고",
+      "source_text_hash": "92eba7968e94b834a2b6abbb16ec02605f316fc4bb52806124654fa7c996e32a",
+      "translation_text_hash": "7fd9a651c6f9f5e8f8c4b531372c7a3cb5ef5552367798ccee9753622421442a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 하나가 가로되 청컨대 당신도 종들과 함께하소서 엘리사가 가로되 내가 가리라 하고"
+      ],
+      "raw_text_hashes": [
+        "7fd9a651c6f9f5e8f8c4b531372c7a3cb5ef5552367798ccee9753622421442a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:4",
+      "sequence": 9679,
+      "chapter_label": "2KI 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "So he went with them. When they came to the Jordan, they cut down wood.",
+      "ko": "드디어 저희와 함께 가니라 무리가 요단에 이르러 나무를 베더니",
+      "source_text_hash": "125580b07d72b9ee4c3af99b6aee2e7b2ab6500eb804049a6c541fef97f489d0",
+      "translation_text_hash": "91cbbae5bb0e6e7c5172511137def8b2b85ccb32ed7d0fed1215f65f7969a827",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드디어 저희와 함께 가니라 무리가 요단에 이르러 나무를 베더니"
+      ],
+      "raw_text_hashes": [
+        "91cbbae5bb0e6e7c5172511137def8b2b85ccb32ed7d0fed1215f65f7969a827"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:5",
+      "sequence": 9680,
+      "chapter_label": "2KI 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "But as one was cutting down a tree, the ax head fell into the water. Then he cried out and said, “Alas, my master! For it was borrowed.”",
+      "ko": "한 사람이 나무를 벨 때에 도끼가 자루에서 빠져 물에 떨어진지라 이에 외쳐 가로되 아아, 내 주여 이는 빌어온 것이니이다",
+      "source_text_hash": "a18a96a00de377a977825cb74f4cfd1d2aa78ffad5f3a40b81b2ab0ee55967d5",
+      "translation_text_hash": "77928fedfba725e4732456ffc60cce59dd5b9902572f1ea457f880162adb321a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 나무를 벨 때에 도끼가 자루에서 빠져 물에 떨어진지라 이에 외쳐 가로되 아아, 내 주여 이는 빌어온 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "77928fedfba725e4732456ffc60cce59dd5b9902572f1ea457f880162adb321a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:6",
+      "sequence": 9681,
+      "chapter_label": "2KI 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "The man of God asked, “Where did it fall?” He showed him the place. He cut down a stick, threw it in there, and made the iron float.",
+      "ko": "하나님의 사람이 가로되 어디 빠졌느냐 하매 그곳을 보이는지라 엘리사가 나무가지를 베어 물에 던져서 도끼로 떠오르게 하고",
+      "source_text_hash": "ce43dd04767371c2810cc1714cdc0da6f9e9400b4d13e304ca0b7ed96475415e",
+      "translation_text_hash": "462313e45facc58a7e88fcd34bdd3efc9e26cbcb34669496cfe5ceea38faa960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람이 가로되 어디 빠졌느냐 하매 그곳을 보이는지라 엘리사가 나무가지를 베어 물에 던져서 도끼로 떠오르게 하고"
+      ],
+      "raw_text_hashes": [
+        "462313e45facc58a7e88fcd34bdd3efc9e26cbcb34669496cfe5ceea38faa960"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:7",
+      "sequence": 9682,
+      "chapter_label": "2KI 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "He said, “Take it.” So he put out his hand and took it.",
+      "ko": "가로되 너는 취하라 그 사람이 손을 내밀어 취하니라",
+      "source_text_hash": "a38db368043082fa9fff5e0bb903d08af6c6e09d0009814a38d274430b136170",
+      "translation_text_hash": "b47f6d743e3b9cc15ce6ed6b90fb3536301b36b9b6a965fc17131e23261da9bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 너는 취하라 그 사람이 손을 내밀어 취하니라"
+      ],
+      "raw_text_hashes": [
+        "b47f6d743e3b9cc15ce6ed6b90fb3536301b36b9b6a965fc17131e23261da9bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:8",
+      "sequence": 9683,
+      "chapter_label": "2KI 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "Now the king of Syria was at war against Israel; and he took counsel with his servants, saying, “My camp will be in such and such a place.”",
+      "ko": "때에 아람 왕이 이스라엘로 더불어 싸우며 그 신복들과 의논하여 이르기를 우리가 아무데 아무데 진을 치리라 하였더니",
+      "source_text_hash": "f9afa2684d9954d5e156174109cf4d38f7f4789f7cad0fb587b2c0379928bc18",
+      "translation_text_hash": "8924fb0a0daf4299bedbdca37151c2be7d6999ff096c50cdb28f9b630bbcdc7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 아람 왕이 이스라엘로 더불어 싸우며 그 신복들과 의논하여 이르기를 우리가 아무데 아무데 진을 치리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "8924fb0a0daf4299bedbdca37151c2be7d6999ff096c50cdb28f9b630bbcdc7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:9",
+      "sequence": 9684,
+      "chapter_label": "2KI 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "The man of God sent to the king of Israel, saying, “Beware that you not pass this place, for the Syrians are coming down there.”",
+      "ko": "하나님의 사람이 이스라엘 왕에게 기별하여 가로되 왕은 삼가 아무 곳으로 지나가지 마소서 아람 사람이 그곳으로 나오나이다",
+      "source_text_hash": "54de55270d2c1bbc8bcc23ba8fd22b1f580ec49b48d42f4041eb1619a9172c0a",
+      "translation_text_hash": "388fc661f172d106f32006431fc8b06efe061fad0569d93e4266bd9cb1d873a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람이 이스라엘 왕에게 기별하여 가로되 왕은 삼가 아무 곳으로 지나가지 마소서 아람 사람이 그곳으로 나오나이다"
+      ],
+      "raw_text_hashes": [
+        "388fc661f172d106f32006431fc8b06efe061fad0569d93e4266bd9cb1d873a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:10",
+      "sequence": 9685,
+      "chapter_label": "2KI 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "The king of Israel sent to the place which the man of God told him and warned him of; and he saved himself there, not once or twice.",
+      "ko": "이스라엘 왕이 하나님의 사람의 자기에게 고하여 경계한 곳으로 사람을 보내어 방비하기가 한 두번이 아닌지라",
+      "source_text_hash": "1feffebd7fe5d314ef0d305354edc5d196bb1b6dba37b71af946a88a3bb85db8",
+      "translation_text_hash": "d652df98865b068ca02fa0287d7a2f8932b02d77958dbaf918ac21412913b3e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 하나님의 사람의 자기에게 고하여 경계한 곳으로 사람을 보내어 방비하기가 한 두번이 아닌지라"
+      ],
+      "raw_text_hashes": [
+        "d652df98865b068ca02fa0287d7a2f8932b02d77958dbaf918ac21412913b3e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:11",
+      "sequence": 9686,
+      "chapter_label": "2KI 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "The king of Syria’s heart was very troubled about this. He called his servants, and said to them, “Won’t you show me which of us is for the king of Israel?”",
+      "ko": "이러므로 아람 왕의 마음이 번뇌하여 그 신복들을 불러 이르되 우리 중에 누가 이스라엘 왕의 내응이 된 것을 내게 고하지 아니하느냐",
+      "source_text_hash": "05c38a9057ba4a51ec03c066e4172e6414cb79b17df8329c3992d39b09603b56",
+      "translation_text_hash": "36ea0d1531175e65e600b21b43eed4410bdecb7df3ad7ecaa74cad14d3d9f6e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 아람 왕의 마음이 번뇌하여 그 신복들을 불러 이르되 우리 중에 누가 이스라엘 왕의 내응이 된 것을 내게 고하지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "36ea0d1531175e65e600b21b43eed4410bdecb7df3ad7ecaa74cad14d3d9f6e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:12",
+      "sequence": 9687,
+      "chapter_label": "2KI 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "One of his servants said, “No, my lord, O king; but Elisha, the prophet who is in Israel, tells the king of Israel the words that you speak in your bedroom.”",
+      "ko": "그 신복 중에 하나가 가로되 우리 주 왕이여 아니로소이다 오직 이스라엘 선지자 엘리사가 왕이 침실에서 하신 말씀이라도 이스라엘 왕에게 고하나이다",
+      "source_text_hash": "6e6a9cf7e456d89e7fb2a3e0cfadbd9b398ab379331e6a860a3091056ecb97d0",
+      "translation_text_hash": "dfc331e62c762981ec53de17729d42daa7f8fe288713d635722f101bd569c335",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신복 중에 하나가 가로되 우리 주 왕이여 아니로소이다 오직 이스라엘 선지자 엘리사가 왕이 침실에서 하신 말씀이라도 이스라엘 왕에게 고하나이다"
+      ],
+      "raw_text_hashes": [
+        "dfc331e62c762981ec53de17729d42daa7f8fe288713d635722f101bd569c335"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:13",
+      "sequence": 9688,
+      "chapter_label": "2KI 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "He said, “Go and see where he is, that I may send and get him.” He was told, “Behold, he is in Dothan.”",
+      "ko": "왕이 가로되 너희는 가서 엘리사가 어디 있나 보라 내가 보내어 잡으리라 혹이 왕에게 고하여 가로되 엘리사가 도단에 있나이다",
+      "source_text_hash": "f80a319f39bc4cfd67ad7f85493f645b49badfe82b714ab48f9f211d66731f55",
+      "translation_text_hash": "1f51966149a0b752690824d3ddf8afe81ad958905a45c0cd5dc5675d117a4fa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 너희는 가서 엘리사가 어디 있나 보라 내가 보내어 잡으리라 혹이 왕에게 고하여 가로되 엘리사가 도단에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "1f51966149a0b752690824d3ddf8afe81ad958905a45c0cd5dc5675d117a4fa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:14",
+      "sequence": 9689,
+      "chapter_label": "2KI 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore he sent horses, chariots, and a great army there. They came by night and surrounded the city.",
+      "ko": "왕이 이에 말과 병거와 많은 군사를 보내매 저희가 밤에 가서 그 성을 에워쌌더라",
+      "source_text_hash": "9973d4a1a26a8f8e71b5e597b9834d69e2b3b711b9a092662fd881f5d624ff9f",
+      "translation_text_hash": "da1b468f079f06719270ea9cc5f018c03b8203514e39a53484a7a8def45772e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이에 말과 병거와 많은 군사를 보내매 저희가 밤에 가서 그 성을 에워쌌더라"
+      ],
+      "raw_text_hashes": [
+        "da1b468f079f06719270ea9cc5f018c03b8203514e39a53484a7a8def45772e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:15",
+      "sequence": 9690,
+      "chapter_label": "2KI 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "When the servant of the man of God had risen early and gone out, behold, an army with horses and chariots was around the city. His servant said to him, “Alas, my master! What shall we do?”",
+      "ko": "하나님의 사람의 수종드는 자가 일찌기 일어나서 나가보니 군사와 말과 병거가 성을 에워쌌는지라 그 사환이 엘리사에게 고하되 아아, 내 주여 우리가 어찌하리이까",
+      "source_text_hash": "a44cef79fbe2b5ca558b7df8f3230f4505267b0e2d3630d014180d7bc248f9ec",
+      "translation_text_hash": "569b3d2fb71b5556c562ed54138a5c1560165239d2cb3dcd9ce3aa179850efb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람의 수종드는 자가 일찌기 일어나서 나가보니 군사와 말과 병거가 성을 에워쌌는지라 그 사환이 엘리사에게 고하되 아아, 내 주여 우리가 어찌하리이까"
+      ],
+      "raw_text_hashes": [
+        "569b3d2fb71b5556c562ed54138a5c1560165239d2cb3dcd9ce3aa179850efb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:16",
+      "sequence": 9691,
+      "chapter_label": "2KI 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "He answered, “Don’t be afraid, for those who are with us are more than those who are with them.”",
+      "ko": "대답하되 두려워하지 말라 우리와 함께한 자가 저와 함께한 자보다 많으니라 하고",
+      "source_text_hash": "b0d4266ae2680af8ea502394000e14377ac8194a033a132c340d5321355121c6",
+      "translation_text_hash": "f8f9e4d21fccc9647b4515d18841bb0765f5976ae135bef7f2850fbd70f0da14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 두려워하지 말라 우리와 함께한 자가 저와 함께한 자보다 많으니라 하고"
+      ],
+      "raw_text_hashes": [
+        "f8f9e4d21fccc9647b4515d18841bb0765f5976ae135bef7f2850fbd70f0da14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:17",
+      "sequence": 9692,
+      "chapter_label": "2KI 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "Elisha prayed, and said, “LORD, please open his eyes, that he may see.” the LORD opened the young man’s eyes, and he saw; and behold, the mountain was full of horses and chariots of fire around Elisha.",
+      "ko": "기도하여 가로되 여호와여 원컨대 저의 눈을 열어서 보게 하옵소서 하니 여호와께서 그 사환의 눈을 여시매 저가 보니 불말과 불병거가 산에 가득하여 엘리사를 둘렀더라",
+      "source_text_hash": "cc9272d7bf9055baaad9aeca702f5c9804d37f3dd5a81de4a3870e6437c72fa9",
+      "translation_text_hash": "09b6385d014a9c86c4cf85b81d4f33481ce0fd8bcc3afbe059f316e8e2632fa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기도하여 가로되 여호와여 원컨대 저의 눈을 열어서 보게 하옵소서 하니 여호와께서 그 사환의 눈을 여시매 저가 보니 불말과 불병거가 산에 가득하여 엘리사를 둘렀더라"
+      ],
+      "raw_text_hashes": [
+        "09b6385d014a9c86c4cf85b81d4f33481ce0fd8bcc3afbe059f316e8e2632fa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:18",
+      "sequence": 9693,
+      "chapter_label": "2KI 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "When they came down to him, Elisha prayed to the LORD, and said, “Please strike this people with blindness.” He struck them with blindness according to Elisha’s word.",
+      "ko": "아람 사람이 엘리사에게 내려오매 엘리사가 여호와께 기도하여 가로되 원컨대 저 무리의 눈을 어둡게 하옵소서 하매 엘리사의 말대로 그 눈을 어둡게 하신지라",
+      "source_text_hash": "6d75e931899160c17036b9667642839b3a878edff4b782778f2e112b35dddbce",
+      "translation_text_hash": "908d0a4854dbbc69d8a6c79abfb14c51951f4a8ce6ed522394559410fbaf8da5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 사람이 엘리사에게 내려오매 엘리사가 여호와께 기도하여 가로되 원컨대 저 무리의 눈을 어둡게 하옵소서 하매 엘리사의 말대로 그 눈을 어둡게 하신지라"
+      ],
+      "raw_text_hashes": [
+        "908d0a4854dbbc69d8a6c79abfb14c51951f4a8ce6ed522394559410fbaf8da5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:19",
+      "sequence": 9694,
+      "chapter_label": "2KI 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "Elisha said to them, “This is not the way, neither is this the city. Follow me, and I will bring you to the man whom you seek.” He led them to Samaria.",
+      "ko": "엘리사가 저희에게 이르되 이는 그 길이 아니요 이는 그 성도 아니니 나를 따라 오라 내가 너희를 인도하여 너희의 찾는 사람에게로 나아가리라 하고 저희를 인도하여 사마리아에 이르니라",
+      "source_text_hash": "6fe5c93f015abdce2c5c838f0c03e35e0acee1c8bd94f0baa1597f99dbdf521f",
+      "translation_text_hash": "68fddd2ee6d2d9826c545662435442efe701eb169f49871aff73d43fab7d0c9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 저희에게 이르되 이는 그 길이 아니요 이는 그 성도 아니니 나를 따라 오라 내가 너희를 인도하여 너희의 찾는 사람에게로 나아가리라 하고 저희를 인도하여 사마리아에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "68fddd2ee6d2d9826c545662435442efe701eb169f49871aff73d43fab7d0c9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:20",
+      "sequence": 9695,
+      "chapter_label": "2KI 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "When they had come into Samaria, Elisha said, “LORD, open these men’s eyes, that they may see.” The LORD opened their eyes, and they saw; and behold, they were in the middle of Samaria.",
+      "ko": "사마리아에 들어갈 때에 엘리사가 가로되 여호와여 이 무리의 눈을 열어서 보게 하옵소서 하니 여호와께서 저희의 눈을 여시매 저희가 보니 자기가 사마리아 가운데 있더라",
+      "source_text_hash": "a17a8a82ba8f990974802838cb3c9ff8f74343e1aa1b690c2693c17ce3caa288",
+      "translation_text_hash": "f2d1adb822a67776078edb2fa10bbf0daeddfe98b9d38902e65b3d85e8c50ce1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아에 들어갈 때에 엘리사가 가로되 여호와여 이 무리의 눈을 열어서 보게 하옵소서 하니 여호와께서 저희의 눈을 여시매 저희가 보니 자기가 사마리아 가운데 있더라"
+      ],
+      "raw_text_hashes": [
+        "f2d1adb822a67776078edb2fa10bbf0daeddfe98b9d38902e65b3d85e8c50ce1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:21",
+      "sequence": 9696,
+      "chapter_label": "2KI 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "The king of Israel said to Elisha, when he saw them, “My father, shall I strike them? Shall I strike them?”",
+      "ko": "이스라엘 왕이 저희를 보고 엘리사에게 이르되 내 아버지여 내가 치리이까 내가 치리이까",
+      "source_text_hash": "7f9d489d522d4012657b09a5d33d98680a73d3ebfc0f5d30091a6ecbeb13a228",
+      "translation_text_hash": "92ac59e47d200e7ac652c7bbd89056d73724b880388b55b72127312361c07656",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 저희를 보고 엘리사에게 이르되 내 아버지여 내가 치리이까 내가 치리이까"
+      ],
+      "raw_text_hashes": [
+        "92ac59e47d200e7ac652c7bbd89056d73724b880388b55b72127312361c07656"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:22",
+      "sequence": 9697,
+      "chapter_label": "2KI 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "He answered, “You shall not strike them. Would you strike those whom you have taken captive with your sword and with your bow? Set bread and water before them, that they may eat and drink, then go to their master.”",
+      "ko": "대답하되 치지 마소서 칼과 활로 사로잡은 자인들 어찌 치리이까 떡과 물을 그 앞에 두어 먹고 마시게 하고 그 주인에게로 돌려 보내소서",
+      "source_text_hash": "bf9a071da637bb2d5899087e9ed3efb72735dff09483f1a82aa74845027609de",
+      "translation_text_hash": "533572a0b105c84829bfa50391869a32cc5ecbb632ea57e0d7ec1282005ca803",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 치지 마소서 칼과 활로 사로잡은 자인들 어찌 치리이까 떡과 물을 그 앞에 두어 먹고 마시게 하고 그 주인에게로 돌려 보내소서"
+      ],
+      "raw_text_hashes": [
+        "533572a0b105c84829bfa50391869a32cc5ecbb632ea57e0d7ec1282005ca803"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:23",
+      "sequence": 9698,
+      "chapter_label": "2KI 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "He prepared a great feast for them. After they ate and drank, he sent them away and they went to their master. So the bands of Syria stopped raiding the land of Israel.",
+      "ko": "왕이 위하여 식물을 많이 베풀고 저희가 먹고 마시매 놓아보내니 저희가 그 주인에게로 돌아가니라 이로부터 아람 군사의 부대가 다시는 이스라엘 땅에 들어오지 못하니라",
+      "source_text_hash": "04880b9515b30b930ed428f64fcfd1262ebcb8ae6638109cf1193902fabccc14",
+      "translation_text_hash": "d40d6e00eefd3809266ff80e851466eca997bc9a11d78dc6b913078fcf421d9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 위하여 식물을 많이 베풀고 저희가 먹고 마시매 놓아보내니 저희가 그 주인에게로 돌아가니라 이로부터 아람 군사의 부대가 다시는 이스라엘 땅에 들어오지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "d40d6e00eefd3809266ff80e851466eca997bc9a11d78dc6b913078fcf421d9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:24",
+      "sequence": 9699,
+      "chapter_label": "2KI 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "After this, Benhadad king of Syria gathered all his army, and went up and besieged Samaria.",
+      "ko": "이 후에 아람 왕 벤하닷이 그 온 군대를 모아 올라와서 사마리아를 에워싸니",
+      "source_text_hash": "9b4709aaa7f86f4d03c20cabd514a82b502ff2276d867d8d02f635bc6f6b43e6",
+      "translation_text_hash": "638f9aacd8c53f12077c21ebb840adc6d03d08c2cc963c6c6919e18d6514d6f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 아람 왕 벤하닷이 그 온 군대를 모아 올라와서 사마리아를 에워싸니"
+      ],
+      "raw_text_hashes": [
+        "638f9aacd8c53f12077c21ebb840adc6d03d08c2cc963c6c6919e18d6514d6f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:25",
+      "sequence": 9700,
+      "chapter_label": "2KI 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "There was a great famine in Samaria. Behold, they besieged it until a donkey’s head was sold for eighty pieces of silver, and the fourth part of a kab of dove’s dung for five pieces of silver.",
+      "ko": "아람 사람이 사마리아를 에워싸므로 성중이 크게 주려서 나귀 머리 하나에 은 팔십 세겔이요 합분태 사분 일 갑에 은 다섯 세겔이라",
+      "source_text_hash": "ccb579ec380f88a49d3202c2a148e1ffbde368de80c5ea495e2620c2bdabed90",
+      "translation_text_hash": "5b0ef4718eed98646deea5623cb7fb1bbb80946cef6cfbad4b5152033075f1b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 사람이 사마리아를 에워싸므로 성중이 크게 주려서 나귀 머리 하나에 은 팔십 세겔이요 합분태 사분 일 갑에 은 다섯 세겔이라"
+      ],
+      "raw_text_hashes": [
+        "5b0ef4718eed98646deea5623cb7fb1bbb80946cef6cfbad4b5152033075f1b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:26",
+      "sequence": 9701,
+      "chapter_label": "2KI 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "As the king of Israel was passing by on the wall, a woman cried to him, saying, “Help, my lord, O king!”",
+      "ko": "이스라엘 왕이 성 위로 통과할 때에 한 여인이 외쳐 가로되 나의 주 왕이여 도우소서",
+      "source_text_hash": "90c2e46ec7c2edc6d1dfb7e59360dde94d272e87e5a48e2b55f60bd964bb6567",
+      "translation_text_hash": "7e423e065393f26eef993996fff8bd2063720f4ef44b8930fbe2bcab31111b32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 성 위로 통과할 때에 한 여인이 외쳐 가로되 나의 주 왕이여 도우소서"
+      ],
+      "raw_text_hashes": [
+        "7e423e065393f26eef993996fff8bd2063720f4ef44b8930fbe2bcab31111b32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:27",
+      "sequence": 9702,
+      "chapter_label": "2KI 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "He said, “If the LORD doesn’t help you, where could I get help for you? From the threshing floor, or from the wine press?”",
+      "ko": "왕이 가로되 여호와께서 너를 돕지 아니하시면 내가 무엇으로 너를 도우랴 타작마당으로 말미암아 하겠느냐 포도주 틀로 말미암아 하겠느냐",
+      "source_text_hash": "7401203e692964b731730203ea591f020d1c32a5cc9eed997522c99ff03913a3",
+      "translation_text_hash": "d4e8679724f98e674da03e9739be2a886b2c56f81741e349bc02ad4d91368ce8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 여호와께서 너를 돕지 아니하시면 내가 무엇으로 너를 도우랴 타작마당으로 말미암아 하겠느냐 포도주 틀로 말미암아 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "d4e8679724f98e674da03e9739be2a886b2c56f81741e349bc02ad4d91368ce8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:28",
+      "sequence": 9703,
+      "chapter_label": "2KI 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "Then the king asked her, “What is your problem?” She answered, “This woman said to me, ‘Give your son, that we may eat him today, and we will eat my son tomorrow.’",
+      "ko": "또 가로되 무슨 일이냐 여인이 대답하되 이 여인이 내게 이르기를 네 아들을 내라 우리가 오늘날 먹고 내일은 내 아들을 먹자 하매",
+      "source_text_hash": "e1b02674fd07379a7d3704f263f2e0f783b8ddd0418a163eeaaf0fafdd491976",
+      "translation_text_hash": "518f9663a8a3cd5d81d00cf80dbf95cd9fba13286748d2099fa37b0c4a1e0f9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 무슨 일이냐 여인이 대답하되 이 여인이 내게 이르기를 네 아들을 내라 우리가 오늘날 먹고 내일은 내 아들을 먹자 하매"
+      ],
+      "raw_text_hashes": [
+        "518f9663a8a3cd5d81d00cf80dbf95cd9fba13286748d2099fa37b0c4a1e0f9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:29",
+      "sequence": 9704,
+      "chapter_label": "2KI 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "So we boiled my son and ate him; and I said to her on the next day, ‘Give up your son, that we may eat him;’ and she has hidden her son.”",
+      "ko": "우리가 드디어 내 아들을 삶아 먹었더니 이튿날에 내가 이르되 네 아들을 내라 우리가 먹으리라 하나 저가 그 아들을 숨겼나이다",
+      "source_text_hash": "b46cc93d5419a885ebb392c6ed2c7b22f10ee5df9b957ca445d528b14c5951af",
+      "translation_text_hash": "0022e51209a341c1670f5d3deec37fc86c59e2991d7d930c4e973f19e19c28f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 드디어 내 아들을 삶아 먹었더니 이튿날에 내가 이르되 네 아들을 내라 우리가 먹으리라 하나 저가 그 아들을 숨겼나이다"
+      ],
+      "raw_text_hashes": [
+        "0022e51209a341c1670f5d3deec37fc86c59e2991d7d930c4e973f19e19c28f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:30",
+      "sequence": 9705,
+      "chapter_label": "2KI 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "When the king heard the words of the woman, he tore his clothes. Now he was passing by on the wall, and the people looked, and behold, he had sackcloth underneath on his body.",
+      "ko": "왕이 그 여인의 말을 듣고 자기 옷을 찢으니라 저가 성 위로 지나갈 때에 백성이 본즉 그 속살에 굵은 베를 입었더라",
+      "source_text_hash": "3cd3faff36a0fd1594eb8466bbe9ca64fd02356fd5421723fe9079a914c76da2",
+      "translation_text_hash": "689c698e498dd5bc0baac0176f937b179fa2a10d1b0eee0b4db7b1bad739a44a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그 여인의 말을 듣고 자기 옷을 찢으니라 저가 성 위로 지나갈 때에 백성이 본즉 그 속살에 굵은 베를 입었더라"
+      ],
+      "raw_text_hashes": [
+        "689c698e498dd5bc0baac0176f937b179fa2a10d1b0eee0b4db7b1bad739a44a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:31",
+      "sequence": 9706,
+      "chapter_label": "2KI 6",
+      "verse_label": "31",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 31
+        }
+      ],
+      "en": "Then he said, “God do so to me, and more also, if the head of Elisha the son of Shaphat stays on him today.”",
+      "ko": "왕이 가로되 사밧의 아들 엘리사의 머리가 오늘날 그 몸에 붙어 있으면 하나님이 내게 벌 위에 벌을 내리실찌로다 하니라",
+      "source_text_hash": "c1ef771f2f6f76e0d0880679869041fb77a9894476d28f3ba15481c4b3c25285",
+      "translation_text_hash": "36329de44764d22f33dae028bd7e23cd00600219048ff6c76daec9f0df09bb14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 사밧의 아들 엘리사의 머리가 오늘날 그 몸에 붙어 있으면 하나님이 내게 벌 위에 벌을 내리실찌로다 하니라"
+      ],
+      "raw_text_hashes": [
+        "36329de44764d22f33dae028bd7e23cd00600219048ff6c76daec9f0df09bb14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:32",
+      "sequence": 9707,
+      "chapter_label": "2KI 6",
+      "verse_label": "32",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 32
+        }
+      ],
+      "en": "But Elisha was sitting in his house, and the elders were sitting with him. Then the king sent a man from before him; but before the messenger came to him, he said to the elders, “Do you see how this son of a murderer has sent to take away my head? Behold, when the messenger comes, shut the door, and hold the door shut against him. Isn’t the sound of his master’s feet behind him?”",
+      "ko": "그 때에 엘리사가 그 집에 앉았고 장로들이 저와 함께 앉았는데 왕이 자기 처소에서 사람을 보내었더니 그 사자가 이르기 전에 엘리사가 장로들에게 이르되 너희는 이 살인한 자의 자식이 내 머리를 취하려고 사람을 보내는 것을 보느냐 너희는 보다가 사자가 오거든 문을 닫고 문 안에 들이지 말라 그 주인의 발소리가 그 뒤에서 나지 아니하느냐 하고",
+      "source_text_hash": "5fd457b617ce8526a13d721b4caf5af4fea8bf2df28322f4b88c6ea5a09b6d75",
+      "translation_text_hash": "088fb2ea6ca30f455ba48ff05119447586df238f5d0b0dad17915f4776357edb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 엘리사가 그 집에 앉았고 장로들이 저와 함께 앉았는데 왕이 자기 처소에서 사람을 보내었더니 그 사자가 이르기 전에 엘리사가 장로들에게 이르되 너희는 이 살인한 자의 자식이 내 머리를 취하려고 사람을 보내는 것을 보느냐 너희는 보다가 사자가 오거든 문을 닫고 문 안에 들이지 말라 그 주인의 발소리가 그 뒤에서 나지 아니하느냐 하고"
+      ],
+      "raw_text_hashes": [
+        "088fb2ea6ca30f455ba48ff05119447586df238f5d0b0dad17915f4776357edb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:6:33",
+      "sequence": 9708,
+      "chapter_label": "2KI 6",
+      "verse_label": "33",
+      "locator": {
+        "book": "2KI",
+        "chapter": 6,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 6,
+          "verse": 33
+        }
+      ],
+      "en": "While he was still talking with them, behold, the messenger came down to him. Then he said, “Behold, this evil is from the LORD. Why should I wait for the LORD any longer?”",
+      "ko": "무리와 말씀할 때에 그 사자가 이르니라 왕이 가로되 이 재앙이 여호와께로부터 나왔으니 어찌 더 여호와를 기다리리요",
+      "source_text_hash": "ba9030dbd738b228a1e0bbe38831b7efc863317845fec140f4f78bb5cf09cac8",
+      "translation_text_hash": "45d7a7b248c08190a3d04ebb94be4149071b875a4ac1b0575950c0e1373a29c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리와 말씀할 때에 그 사자가 이르니라 왕이 가로되 이 재앙이 여호와께로부터 나왔으니 어찌 더 여호와를 기다리리요"
+      ],
+      "raw_text_hashes": [
+        "45d7a7b248c08190a3d04ebb94be4149071b875a4ac1b0575950c0e1373a29c5"
+      ]
+    }
+  ]
+}

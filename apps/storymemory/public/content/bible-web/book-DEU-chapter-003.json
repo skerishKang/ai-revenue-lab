@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:003",
+  "unit_ordinal": 156,
+  "unit_label": "DEU 3",
+  "book_code": "DEU",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:3:1",
+      "sequence": 4977,
+      "chapter_label": "DEU 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Then we turned, and went up the way to Bashan. Og the king of Bashan came out against us, he and all his people, to battle at Edrei.",
+      "ko": "우리가 돌이켜 바산으로 올라가매 바산 왕 옥이 그 모든 백성을 거느리고 나와서 우리를 대적하여 에드레이에서 싸우는지라",
+      "source_text_hash": "e1cdfc57cf9710974425e79f22abdc398775902e4ba093b2a141b8d69a691561",
+      "translation_text_hash": "701d146c25fdd7c0859cc45efe3d2f4e4f75d77f6a759b734e046335a777459f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 돌이켜 바산으로 올라가매 바산 왕 옥이 그 모든 백성을 거느리고 나와서 우리를 대적하여 에드레이에서 싸우는지라"
+      ],
+      "raw_text_hashes": [
+        "701d146c25fdd7c0859cc45efe3d2f4e4f75d77f6a759b734e046335a777459f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:2",
+      "sequence": 4978,
+      "chapter_label": "DEU 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD said to me, “Don’t fear him; for I have delivered him, with all his people and his land, into your hand. You shall do to him as you did to Sihon king of the Amorites, who lived at Heshbon.”",
+      "ko": "여호와께서 내게 이르시되 그를 두려워 말라 내가 그와 그 모든 백성과 그 땅을 네 손에 붙였으니 네가 헤스본에 거하던 아모리 족속의 왕 시혼에게 행한 것과 같이 그에게도 행할 것이니라 하시고",
+      "source_text_hash": "86af07def6edb101b88c6ad04c6e3a712c8181e8224627062f44430006634eb2",
+      "translation_text_hash": "03ab9630016c100769229d3582512cb6d6604a0d72c28bddc63068a232e76011",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 그를 두려워 말라 내가 그와 그 모든 백성과 그 땅을 네 손에 붙였으니 네가 헤스본에 거하던 아모리 족속의 왕 시혼에게 행한 것과 같이 그에게도 행할 것이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "03ab9630016c100769229d3582512cb6d6604a0d72c28bddc63068a232e76011"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:3",
+      "sequence": 4979,
+      "chapter_label": "DEU 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "So the LORD our God also delivered into our hand Og, the king of Bashan, and all his people. We struck him until no one was left to him remaining.",
+      "ko": "우리 하나님 여호와께서 바산 왕 옥과 그 모든 백성을 우리 손에 붙이시매 우리가 그들을 쳐서 한 사람도 남기지 아니하였느니라",
+      "source_text_hash": "e0f14d7c5d90ec8eefbc8461f281a20ff787ea55bf3a864770553419fbb4870b",
+      "translation_text_hash": "4cf244dfb5a5f2cdbb25a82e0bcd4ed1e309ede883e6fb2ee5a47b747735075d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와께서 바산 왕 옥과 그 모든 백성을 우리 손에 붙이시매 우리가 그들을 쳐서 한 사람도 남기지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "4cf244dfb5a5f2cdbb25a82e0bcd4ed1e309ede883e6fb2ee5a47b747735075d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:4",
+      "sequence": 4980,
+      "chapter_label": "DEU 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "We took all his cities at that time. There was not a city which we didn’t take from them: sixty cities, all the region of Argob, the kingdom of Og in Bashan.",
+      "ko": "그 때에 우리가 그들에게서 빼앗지 아니한 성읍이 하나도 없이 다 빼앗았는데 그 성읍이 육십이니 곧 아르곱 온 지방이요 바산에 있는 옥의 나라이라",
+      "source_text_hash": "2a7413c8b6adf9562adcbec153279a2e74157180d8ee47f86b5b761758480bbc",
+      "translation_text_hash": "f10fc6c8707eb2201979746d244f113b90c5a18efcc4ac033da02cbf3de53d80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 우리가 그들에게서 빼앗지 아니한 성읍이 하나도 없이 다 빼앗았는데 그 성읍이 육십이니 곧 아르곱 온 지방이요 바산에 있는 옥의 나라이라"
+      ],
+      "raw_text_hashes": [
+        "f10fc6c8707eb2201979746d244f113b90c5a18efcc4ac033da02cbf3de53d80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:5",
+      "sequence": 4981,
+      "chapter_label": "DEU 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "All these were cities fortified with high walls, gates, and bars, in addition to a great many villages without walls.",
+      "ko": "그 모든 성읍에 높은 성벽이 둘려 있고 문과 빗장이 있어 견고하며 그 외에 성벽 없는 고을이 심히 많았느니라",
+      "source_text_hash": "c790787d3d8937304ed1e036b86912b403511dc1d95368906b3aadfa714c10b1",
+      "translation_text_hash": "620112acc1a3bfca6f2c156fda85d3c5f10bf2bec20b9413012a1a1612dea882",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 성읍에 높은 성벽이 둘려 있고 문과 빗장이 있어 견고하며 그 외에 성벽 없는 고을이 심히 많았느니라"
+      ],
+      "raw_text_hashes": [
+        "620112acc1a3bfca6f2c156fda85d3c5f10bf2bec20b9413012a1a1612dea882"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:6",
+      "sequence": 4982,
+      "chapter_label": "DEU 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "We utterly destroyed them, as we did to Sihon king of Heshbon, utterly destroying every inhabited city, with the women and the little ones.",
+      "ko": "우리가 헤스본 왕 시혼에게 행한 것과 같이 그 성읍들을 진멸하되 각 성읍의 남녀와 유아를 진멸하였으나",
+      "source_text_hash": "405e8cfc604ce62d2f04c24ac778506c4e5ce3c50dd557f92d18801fa8194ac2",
+      "translation_text_hash": "c1ea086de6fb9bf942838a3793726994b72a7b8b9ad0a30fbba5b8c3f9cec9cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 헤스본 왕 시혼에게 행한 것과 같이 그 성읍들을 진멸하되 각 성읍의 남녀와 유아를 진멸하였으나"
+      ],
+      "raw_text_hashes": [
+        "c1ea086de6fb9bf942838a3793726994b72a7b8b9ad0a30fbba5b8c3f9cec9cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:7",
+      "sequence": 4983,
+      "chapter_label": "DEU 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "But all the livestock, and the plunder of the cities, we took for plunder for ourselves.",
+      "ko": "오직 모든 육축과 그 성읍들에서 탈취한 것은 우리의 소유로 삼았으며",
+      "source_text_hash": "6eea69b9bfdbebe0014d5496ba5239d8533c4b6c053a27a98d84a80fc664d8f4",
+      "translation_text_hash": "2a8415258aa5ba619201b49c5ed2ab13c01422622674834513c71d389ba80eb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 모든 육축과 그 성읍들에서 탈취한 것은 우리의 소유로 삼았으며"
+      ],
+      "raw_text_hashes": [
+        "2a8415258aa5ba619201b49c5ed2ab13c01422622674834513c71d389ba80eb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:8",
+      "sequence": 4984,
+      "chapter_label": "DEU 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "We took the land at that time out of the hand of the two kings of the Amorites who were beyond the Jordan, from the valley of the Arnon to Mount Hermon.",
+      "ko": "그 때에 우리가 요단강 이편 땅을 아르논 골짜기에서부터 헤르몬산에까지 아모리 족속의 두 왕에게서 취하였으니",
+      "source_text_hash": "0044194661591b9fb73f0fb35d1ecd0ce5ed2fee2ac807c5b7c283b4ae2a6b20",
+      "translation_text_hash": "77d6c7567057ac9394a71b31df1a41c67d7c729249d1f9ab0117612a081af42d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 우리가 요단강 이편 땅을 아르논 골짜기에서부터 헤르몬산에까지 아모리 족속의 두 왕에게서 취하였으니"
+      ],
+      "raw_text_hashes": [
+        "77d6c7567057ac9394a71b31df1a41c67d7c729249d1f9ab0117612a081af42d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:9",
+      "sequence": 4985,
+      "chapter_label": "DEU 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "(The Sidonians call Hermon Sirion, and the Amorites call it Senir.)",
+      "ko": "(헤르몬산을 시돈 사람은 시룐이라 칭하고 아모리 족속은 스닐이라 칭하였느니라)",
+      "source_text_hash": "cf5240d1b58a9fb0e641463819e3843fee1ca9362d3d9d06c69ed23e75a31a99",
+      "translation_text_hash": "de487b77e61611d1981b0ac177ff4818e97f732c4e8182e5e8cd3eb2437109dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(헤르몬산을 시돈 사람은 시룐이라 칭하고 아모리 족속은 스닐이라 칭하였느니라)"
+      ],
+      "raw_text_hashes": [
+        "de487b77e61611d1981b0ac177ff4818e97f732c4e8182e5e8cd3eb2437109dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:10",
+      "sequence": 4986,
+      "chapter_label": "DEU 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "We took all the cities of the plain, and all Gilead, and all Bashan, to Salecah and Edrei, cities of the kingdom of Og in Bashan.",
+      "ko": "우리의 취한 것은 평원의 모든 성읍과 길르앗 온 땅과 바산의 온 땅 곧 옥의 나라 바산의 성읍 살르가와 에드레이까지니라",
+      "source_text_hash": "83652856e3d2dec982c352edc00a6d398c55de030c6d96fb3c0e8962fbacb333",
+      "translation_text_hash": "8aa5ceae3ed5aa6bcff8c55e302356b966514530d4ce5bd27c8764be2ecd917b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 취한 것은 평원의 모든 성읍과 길르앗 온 땅과 바산의 온 땅 곧 옥의 나라 바산의 성읍 살르가와 에드레이까지니라"
+      ],
+      "raw_text_hashes": [
+        "8aa5ceae3ed5aa6bcff8c55e302356b966514530d4ce5bd27c8764be2ecd917b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:11",
+      "sequence": 4987,
+      "chapter_label": "DEU 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "(For only Og king of Bashan remained of the remnant of the Rephaim. Behold, his bedstead was a bedstead of iron. Isn’t it in Rabbah of the children of Ammon? Nine cubits was its length, and four cubits its width, after the cubit of a man.)",
+      "ko": "(르바임 족속의 남은 자는 바산 왕 옥뿐이었으며 그의 침상은 철 침상이라 지금 오히려 암몬 족속의 랍바에 있지 아니하냐 그것을 사람의 보통 규빗으로 재면 그 장이 아홉 규빗이요 광이 네 규빗이니라)",
+      "source_text_hash": "c0c9a709e2efdf5076e04ea5eff64265a284f86bd4679455183b7af55ffc95ca",
+      "translation_text_hash": "1d2f4100b88682105c359010e9c18431f8c12823fab0c41e209afb35d7d36c7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(르바임 족속의 남은 자는 바산 왕 옥뿐이었으며 그의 침상은 철 침상이라 지금 오히려 암몬 족속의 랍바에 있지 아니하냐 그것을 사람의 보통 규빗으로 재면 그 장이 아홉 규빗이요 광이 네 규빗이니라)"
+      ],
+      "raw_text_hashes": [
+        "1d2f4100b88682105c359010e9c18431f8c12823fab0c41e209afb35d7d36c7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:12",
+      "sequence": 4988,
+      "chapter_label": "DEU 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "This land we took in possession at that time: from Aroer, which is by the valley of the Arnon, and half the hill country of Gilead with its cities, I gave to the Reubenites and to the Gadites;",
+      "ko": "그 때에 우리가 이 땅을 얻으매 아르논 골짜기 곁에 아로엘에서부터 길르앗 산지 절반과 그 성읍들을 내가 르우벤 자손과 갓 자손에게 주었고",
+      "source_text_hash": "26f17c36b5ac4fd487c0e795feff35e4219ceaa4b127261f1be6f4f818f1da11",
+      "translation_text_hash": "f4f410e83642ce80f8cc5443df425be3deb96fbbded2b0f64e5c3ff2d471849c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 우리가 이 땅을 얻으매 아르논 골짜기 곁에 아로엘에서부터 길르앗 산지 절반과 그 성읍들을 내가 르우벤 자손과 갓 자손에게 주었고"
+      ],
+      "raw_text_hashes": [
+        "f4f410e83642ce80f8cc5443df425be3deb96fbbded2b0f64e5c3ff2d471849c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:13",
+      "sequence": 4989,
+      "chapter_label": "DEU 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "and the rest of Gilead, and all Bashan, the kingdom of Og, I gave to the half-tribe of Manasseh—all the region of Argob, even all Bashan. (The same is called the land of Rephaim.",
+      "ko": "길르앗의 남은 땅과 옥의 나라이었던 아르곱 온 지방 곧 온 바산으로는 내가 므낫세 반 지파에게 주었노라 (바산을 옛적에는 르바임의 땅이라 칭하더니",
+      "source_text_hash": "231354c8f366cf063fe84e69731bdbd3dedabd0986936f20e60a13943c165e41",
+      "translation_text_hash": "8154eee41594f67ea56dfad3b4f0bd6d325cee288a00a8c75427b9806fca04c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗의 남은 땅과 옥의 나라이었던 아르곱 온 지방 곧 온 바산으로는 내가 므낫세 반 지파에게 주었노라 (바산을 옛적에는 르바임의 땅이라 칭하더니"
+      ],
+      "raw_text_hashes": [
+        "8154eee41594f67ea56dfad3b4f0bd6d325cee288a00a8c75427b9806fca04c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:14",
+      "sequence": 4990,
+      "chapter_label": "DEU 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "Jair the son of Manasseh took all the region of Argob, to the border of the Geshurites and the Maacathites, and called them, even Bashan, after his own name, Havvoth Jair, to this day.)",
+      "ko": "므낫세의 아들 야일이 그술 족속과 마아갓 족속의 경계까지의 아르곱 온 지방을 취하고 자기의 이름으로 이 바산을 하봇야일이라 칭하여 오늘까지 이르느니라)",
+      "source_text_hash": "d252703328c0cafabca3ec92850de1103bd7189f80f5b455e4dd25d709e7464f",
+      "translation_text_hash": "423d24226aa66640d37308e0f4d8a9a845ea5bce2ec8327f48103bdb12af588f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세의 아들 야일이 그술 족속과 마아갓 족속의 경계까지의 아르곱 온 지방을 취하고 자기의 이름으로 이 바산을 하봇야일이라 칭하여 오늘까지 이르느니라)"
+      ],
+      "raw_text_hashes": [
+        "423d24226aa66640d37308e0f4d8a9a845ea5bce2ec8327f48103bdb12af588f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:15",
+      "sequence": 4991,
+      "chapter_label": "DEU 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "I gave Gilead to Machir.",
+      "ko": "내가 마길에게 길르앗을 주었고",
+      "source_text_hash": "6bc4a49791730c7df3f71ae22e733a7f4b70e35d4fd6dedaca4c4624b05675fe",
+      "translation_text_hash": "70ea7b383b9a3e06f6f9b3abf161620685dc2913d787ab302aa68f9c306e297a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 마길에게 길르앗을 주었고"
+      ],
+      "raw_text_hashes": [
+        "70ea7b383b9a3e06f6f9b3abf161620685dc2913d787ab302aa68f9c306e297a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:16",
+      "sequence": 4992,
+      "chapter_label": "DEU 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "To the Reubenites and to the Gadites I gave from Gilead even to the valley of the Arnon, the middle of the valley, and its border, even to the river Jabbok, which is the border of the children of Ammon;",
+      "ko": "르우벤 자손과 갓 자손에게는 길르앗에서부터 아르논 골짜기까지 주었으되 그 골짜기의 중앙으로 지경을 정하였으니 곧 암몬 자손의 지경 얍복강까지며",
+      "source_text_hash": "9c74869d7de8152300d221549d85c05a3899f92ea3c09205a5583880c95f2736",
+      "translation_text_hash": "071772ab2ea505326cd0785953703030140077de4f536c59b1c4217b9277ce59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손과 갓 자손에게는 길르앗에서부터 아르논 골짜기까지 주었으되 그 골짜기의 중앙으로 지경을 정하였으니 곧 암몬 자손의 지경 얍복강까지며"
+      ],
+      "raw_text_hashes": [
+        "071772ab2ea505326cd0785953703030140077de4f536c59b1c4217b9277ce59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:17",
+      "sequence": 4993,
+      "chapter_label": "DEU 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "the Arabah also, and the Jordan and its border, from Chinnereth even to the sea of the Arabah, the Salt Sea, under the slopes of Pisgah eastward.",
+      "ko": "또는 아라바와 요단과 그 가요 긴네렛에서 아라바 바다 곧 염해와 비스가 산록에 이르기까지의 동편 지경이니라",
+      "source_text_hash": "d42241979d69b8bcb5cac8ad3ec79716b69919557d7f37732d8dafb8ebb6bf77",
+      "translation_text_hash": "1545ea3ce47a06f04e16342d751aa6bd5ecf58df4cf6e0ac6e41511b1790c9b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또는 아라바와 요단과 그 가요 긴네렛에서 아라바 바다 곧 염해와 비스가 산록에 이르기까지의 동편 지경이니라"
+      ],
+      "raw_text_hashes": [
+        "1545ea3ce47a06f04e16342d751aa6bd5ecf58df4cf6e0ac6e41511b1790c9b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:18",
+      "sequence": 4994,
+      "chapter_label": "DEU 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "I commanded you at that time, saying, “The LORD your God has given you this land to possess it. All of you men of valor shall pass over armed before your brothers, the children of Israel.",
+      "ko": "그 때에 내가 이 땅을 받은 너희에게 명하여 이르기를 너희의 하나님 여호와께서 이 땅을 너희에게 주어 기업이 되게 하셨은즉 너희 군인들은 무장하고 너희의 형제 이스라엘 자손의 선봉이 되어 건너가되",
+      "source_text_hash": "d5629e77bee2da88743155c2bef59f34d826850af8f4383d33a89b3a0d28282d",
+      "translation_text_hash": "27e27b288eec96b70b44dba1231d88d8803ba7d383b8c89dd3d15e70091a778c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 이 땅을 받은 너희에게 명하여 이르기를 너희의 하나님 여호와께서 이 땅을 너희에게 주어 기업이 되게 하셨은즉 너희 군인들은 무장하고 너희의 형제 이스라엘 자손의 선봉이 되어 건너가되"
+      ],
+      "raw_text_hashes": [
+        "27e27b288eec96b70b44dba1231d88d8803ba7d383b8c89dd3d15e70091a778c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:19",
+      "sequence": 4995,
+      "chapter_label": "DEU 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "But your wives, and your little ones, and your livestock, (I know that you have much livestock), shall live in your cities which I have given you,",
+      "ko": "너희에게 육축이 많은줄 내가 아노니 너희의 처자와 육축은 내가 너희에게 준 성읍에 머무르라",
+      "source_text_hash": "56cb49eff1ac71d6ac50df3aad33cc4f6f45bfa60f4349cded620026007be4e7",
+      "translation_text_hash": "12f82c66163299ba0cef6d47adb70c070dcaec2ded9c6cd1f63178b0268002fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게 육축이 많은줄 내가 아노니 너희의 처자와 육축은 내가 너희에게 준 성읍에 머무르라"
+      ],
+      "raw_text_hashes": [
+        "12f82c66163299ba0cef6d47adb70c070dcaec2ded9c6cd1f63178b0268002fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:20",
+      "sequence": 4996,
+      "chapter_label": "DEU 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "until the LORD gives rest to your brothers, as to you, and they also possess the land which the LORD your God gives them beyond the Jordan. Then you shall each return to his own possession, which I have given you.”",
+      "ko": "여호와께서 너희에게 주신것 같이 너희 형제에게도 안식을 주시리니 그들도 요단 저편에서 너희 하나님 여호와의 주시는 땅을 얻어 기업을 삼기에 이르거든 너희는 각기 내가 준 기업으로 돌아갈 것이니라 하고",
+      "source_text_hash": "4cf73cb434a970887c39cca9e7a40658c5b17aa3d7b3cf505b4299525f7cda96",
+      "translation_text_hash": "4882a323a8362951fe2071d4825f861f3d7deba797d8a4a56d5af160c5b83f56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희에게 주신것 같이 너희 형제에게도 안식을 주시리니 그들도 요단 저편에서 너희 하나님 여호와의 주시는 땅을 얻어 기업을 삼기에 이르거든 너희는 각기 내가 준 기업으로 돌아갈 것이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "4882a323a8362951fe2071d4825f861f3d7deba797d8a4a56d5af160c5b83f56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:21",
+      "sequence": 4997,
+      "chapter_label": "DEU 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "I commanded Joshua at that time, saying, “Your eyes have seen all that the LORD your God has done to these two kings. So shall the LORD do to all the kingdoms where you go over.",
+      "ko": "그 때에 내가 여호수아에게 명하여 이르기를 너희 하나님 여호와께서 이 두 왕에게 행하신 모든 일을 네가 목도하였거니와 네가 가는 모든 나라에도 여호와께서 이와 같이 행하시리니",
+      "source_text_hash": "8e4f76321ddfc8ab458f956a613d3a6c512b948d766a96344800d16b8e9fdb92",
+      "translation_text_hash": "6a17c9c74072aaeb0eabcddd508ab4d74ce2368323e52c887f7f3b2cf5304f33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 여호수아에게 명하여 이르기를 너희 하나님 여호와께서 이 두 왕에게 행하신 모든 일을 네가 목도하였거니와 네가 가는 모든 나라에도 여호와께서 이와 같이 행하시리니"
+      ],
+      "raw_text_hashes": [
+        "6a17c9c74072aaeb0eabcddd508ab4d74ce2368323e52c887f7f3b2cf5304f33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:22",
+      "sequence": 4998,
+      "chapter_label": "DEU 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "You shall not fear them; for the LORD your God himself fights for you.”",
+      "ko": "너희는 그들을 두려워하지 말라 너희 하나님 여호와 그가 너희를 위하여 싸우시리라 하였노라",
+      "source_text_hash": "e6e56aa8d61924c07f98c65a873b6113dc754cd8f799bf5e773e604471740f2a",
+      "translation_text_hash": "a9db3a79a2309e450b40c8de8c0c2b9a937428078492efc71181a969210f3b53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그들을 두려워하지 말라 너희 하나님 여호와 그가 너희를 위하여 싸우시리라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "a9db3a79a2309e450b40c8de8c0c2b9a937428078492efc71181a969210f3b53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:23",
+      "sequence": 4999,
+      "chapter_label": "DEU 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "I begged GOD at that time, saying,",
+      "ko": "그 때에 내가 여호와께 간구하기를",
+      "source_text_hash": "bb2128200bf4624c7693124f7d709a3646ed9eb8acf897641f7602f0a699aad8",
+      "translation_text_hash": "f07078a32e58da70809d6ba17f51a8954b151ffa19c5d1e4445f9b6a41235292",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 여호와께 간구하기를"
+      ],
+      "raw_text_hashes": [
+        "f07078a32e58da70809d6ba17f51a8954b151ffa19c5d1e4445f9b6a41235292"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:24",
+      "sequence": 5000,
+      "chapter_label": "DEU 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "“Lord GOD, you have begun to show your servant your greatness, and your strong hand. For what god is there in heaven or in earth that can do works like yours, and mighty acts like yours?",
+      "ko": "주 여호와여 주께서 주의 크심과 주의 권능을 주의 종에게 나타내시기를 시작하셨사오니 천지간에 무슨 신이 능히 주의 행하신 일 곧 주의 큰 능력으로 행하신 일 같이 행할 수 있으리이까",
+      "source_text_hash": "04c830ef04fad00460645ee36bf85232814895991d3c420213ec865adfa2c057",
+      "translation_text_hash": "6da3d74b99f689186e599080fc71f80bf183fd1070c123f3387670991d206afa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와여 주께서 주의 크심과 주의 권능을 주의 종에게 나타내시기를 시작하셨사오니 천지간에 무슨 신이 능히 주의 행하신 일 곧 주의 큰 능력으로 행하신 일 같이 행할 수 있으리이까"
+      ],
+      "raw_text_hashes": [
+        "6da3d74b99f689186e599080fc71f80bf183fd1070c123f3387670991d206afa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:25",
+      "sequence": 5001,
+      "chapter_label": "DEU 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "Please let me go over and see the good land that is beyond the Jordan, that fine mountain, and Lebanon.”",
+      "ko": "구하옵나니 나로 건너가게 하사 요단 저편에 있는 아름다운 땅, 아름다운 산과 레바논을 보게 하옵소서 하되",
+      "source_text_hash": "0dd935d8a2341c3f7d4a26fb36fcfd4a7cf3acdeee2e1f21c004f7c310ca5096",
+      "translation_text_hash": "cdb9cfa4b243d36929f9e6b54011d379034ddf7b2a465dad49e886445a09c1ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구하옵나니 나로 건너가게 하사 요단 저편에 있는 아름다운 땅, 아름다운 산과 레바논을 보게 하옵소서 하되"
+      ],
+      "raw_text_hashes": [
+        "cdb9cfa4b243d36929f9e6b54011d379034ddf7b2a465dad49e886445a09c1ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:26",
+      "sequence": 5002,
+      "chapter_label": "DEU 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "But the LORD was angry with me because of you, and didn’t listen to me. The LORD said to me, “That is enough! Speak no more to me of this matter.",
+      "ko": "여호와께서 너희의 연고로 내게 진노하사 내 말을 듣지 아니하시고 내게 이르시기를 그만해도 족하니 이 일로 다시 내게 말하지 말라",
+      "source_text_hash": "22c28917f862f23a3b0672e56c9a067b7c5fa1e6ea5b93a6f4880b0d6b7f31e1",
+      "translation_text_hash": "35e98c9f8e294b6d1df0bcb1416d7b4ce4e686e9f07528f06baa0b24a8b17ce0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희의 연고로 내게 진노하사 내 말을 듣지 아니하시고 내게 이르시기를 그만해도 족하니 이 일로 다시 내게 말하지 말라"
+      ],
+      "raw_text_hashes": [
+        "35e98c9f8e294b6d1df0bcb1416d7b4ce4e686e9f07528f06baa0b24a8b17ce0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:27",
+      "sequence": 5003,
+      "chapter_label": "DEU 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "Go up to the top of Pisgah, and lift up your eyes westward, and northward, and southward, and eastward, and see with your eyes; for you shall not go over this Jordan.",
+      "ko": "너는 비스가산 꼭대기에 올라가서 눈을 들어 동서 남북을 바라고 네 눈으로 그 땅을 보라 네가 이 요단을 건너지 못할 것임이니라",
+      "source_text_hash": "3be83b58ee1df2de88bbccd7d25e3f3bce6fac05dc671144540a30bfe8c0f241",
+      "translation_text_hash": "2a58b0d25517fcdb2dee7391dac7cbb907a5f7d25ae65abe5a9471ad9a555f3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 비스가산 꼭대기에 올라가서 눈을 들어 동서 남북을 바라고 네 눈으로 그 땅을 보라 네가 이 요단을 건너지 못할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "2a58b0d25517fcdb2dee7391dac7cbb907a5f7d25ae65abe5a9471ad9a555f3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:28",
+      "sequence": 5004,
+      "chapter_label": "DEU 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "But commission Joshua, and encourage him, and strengthen him; for he shall go over before this people, and he shall cause them to inherit the land which you shall see.”",
+      "ko": "너는 여호수아에게 명하고 그를 담대케 하며 그를 강경케 하라 그는 이 백성을 거느리고 건너가서 네가 볼 땅을 그들로 기업으로 얻게 하리라 하셨느니라",
+      "source_text_hash": "2a40960c5894f6be65573e43a4325807adaf9d6b73226fb34c3a8aa71a3337e5",
+      "translation_text_hash": "2f4b9e439d3cd9f12c96a24fbe5d664f912e8766b97bcaabb04165d93aa64351",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여호수아에게 명하고 그를 담대케 하며 그를 강경케 하라 그는 이 백성을 거느리고 건너가서 네가 볼 땅을 그들로 기업으로 얻게 하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "2f4b9e439d3cd9f12c96a24fbe5d664f912e8766b97bcaabb04165d93aa64351"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:3:29",
+      "sequence": 5005,
+      "chapter_label": "DEU 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "So we stayed in the valley near Beth Peor.",
+      "ko": "그때에 우리가 벧브올 맞은편 골짜기에 거하였었느니라",
+      "source_text_hash": "ed25043bb5f8ae52330656ff95c576f50291ee66e3b2ef37d0867449852cab79",
+      "translation_text_hash": "df6941cb9f714ac00b027bab08b57e56200bae4848e36a555e0d16b72b3d90b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그때에 우리가 벧브올 맞은편 골짜기에 거하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "df6941cb9f714ac00b027bab08b57e56200bae4848e36a555e0d16b72b3d90b7"
+      ]
+    }
+  ]
+}

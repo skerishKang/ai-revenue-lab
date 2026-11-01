@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:021",
+  "unit_ordinal": 138,
+  "unit_label": "NUM 21",
+  "book_code": "NUM",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:21:1",
+      "sequence": 4342,
+      "chapter_label": "NUM 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "The Canaanite, the king of Arad, who lived in the South, heard that Israel came by the way of Atharim. He fought against Israel, and took some of them captive.",
+      "ko": "남방에 거하는 가나안 사람 곧 아랏의 왕이 이스라엘이 아다림 길로 온다 함을 듣고 이스라엘을 쳐서 그 중 몇 사람을 사로잡은지라",
+      "source_text_hash": "63f1b49994a29ea28615afc379c408ac21cd5c0127cb5e0d027bdfd3f43aab06",
+      "translation_text_hash": "b0c8d49e3d4a442d72fe1e81519ac1b5a61fdae5935f2841d5423787ea109cc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남방에 거하는 가나안 사람 곧 아랏의 왕이 이스라엘이 아다림 길로 온다 함을 듣고 이스라엘을 쳐서 그 중 몇 사람을 사로잡은지라"
+      ],
+      "raw_text_hashes": [
+        "b0c8d49e3d4a442d72fe1e81519ac1b5a61fdae5935f2841d5423787ea109cc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:2",
+      "sequence": 4343,
+      "chapter_label": "NUM 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "Israel vowed a vow to the LORD, and said, “If you will indeed deliver this people into my hand, then I will utterly destroy their cities.”",
+      "ko": "이스라엘이 여호와께 서원하여 가로되 주께서 만일 이 백성을 내 손에 붙이시면 내가 그들의 성읍을 다 멸하리이다",
+      "source_text_hash": "39ab3f20e4c931256374430b5dd7ca1c90adc9e80f6e4c8dc7f981ed1437f62c",
+      "translation_text_hash": "1cc892193af24809bea794ee090ab25270cf48127caeb92d627a34d9bf0e1b0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 여호와께 서원하여 가로되 주께서 만일 이 백성을 내 손에 붙이시면 내가 그들의 성읍을 다 멸하리이다"
+      ],
+      "raw_text_hashes": [
+        "1cc892193af24809bea794ee090ab25270cf48127caeb92d627a34d9bf0e1b0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:3",
+      "sequence": 4344,
+      "chapter_label": "NUM 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD listened to the voice of Israel, and delivered up the Canaanites; and they utterly destroyed them and their cities. The name of the place was called Hormah.",
+      "ko": "여호와께서 이스라엘의 소리를 들으시고 가나안 사람을 붙이시매 그들과 그 성읍을 다 멸하니라 그러므로 그곳 이름을 호르마라 하였더라",
+      "source_text_hash": "2b0abbc3e7f36a745960cb2b04923267b26032f291ec71d969fcb05472b38d2c",
+      "translation_text_hash": "7afba26b227dcf37e7264bc6b86ccd566eec672f67a0981963151d4cfbb9c38f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘의 소리를 들으시고 가나안 사람을 붙이시매 그들과 그 성읍을 다 멸하니라 그러므로 그곳 이름을 호르마라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "7afba26b227dcf37e7264bc6b86ccd566eec672f67a0981963151d4cfbb9c38f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:4",
+      "sequence": 4345,
+      "chapter_label": "NUM 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "They traveled from Mount Hor by the way to the Red Sea, to go around the land of Edom. The soul of the people was very discouraged because of the journey.",
+      "ko": "백성이 호르산에서 진행하여 홍해 길로 좇아 에돔 땅을 둘러 행하려 하였다가 길로 인하여 백성의 마음이 상하니라",
+      "source_text_hash": "35e0d2ac96ddeb16647ee23fc4ace65b734ce030cd3aa1b346039c6522294f1f",
+      "translation_text_hash": "cdb736da962d7bbc8ec3d4c53c96f1b1b92b24c36bc00b8db125fca1709b6a59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 호르산에서 진행하여 홍해 길로 좇아 에돔 땅을 둘러 행하려 하였다가 길로 인하여 백성의 마음이 상하니라"
+      ],
+      "raw_text_hashes": [
+        "cdb736da962d7bbc8ec3d4c53c96f1b1b92b24c36bc00b8db125fca1709b6a59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:5",
+      "sequence": 4346,
+      "chapter_label": "NUM 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "The people spoke against God and against Moses: “Why have you brought us up out of Egypt to die in the wilderness? For there is no bread, there is no water, and our soul loathes this disgusting food!”",
+      "ko": "백성이 하나님과 모세를 향하여 원망하되 어찌하여 우리를 애굽에서 인도하여 올려서 이 광야에서 죽게 하는고 이곳에는 식물도 없고 물도 없도다 우리 마음이 이 박한 식물을 싫어하노라 하매",
+      "source_text_hash": "6e527abb7c47f3115e2bb2e8108a5cb9ab8653ceaf414fb769a50c82f1730a0b",
+      "translation_text_hash": "2da38425c8f04e7bcb39dbfedd7198ac5b311a1565a8453f6fac8b7a10d679f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 하나님과 모세를 향하여 원망하되 어찌하여 우리를 애굽에서 인도하여 올려서 이 광야에서 죽게 하는고 이곳에는 식물도 없고 물도 없도다 우리 마음이 이 박한 식물을 싫어하노라 하매"
+      ],
+      "raw_text_hashes": [
+        "2da38425c8f04e7bcb39dbfedd7198ac5b311a1565a8453f6fac8b7a10d679f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:6",
+      "sequence": 4347,
+      "chapter_label": "NUM 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD sent venomous snakes among the people, and they bit the people. Many people of Israel died.",
+      "ko": "여호와께서 불뱀들을 백성 중에 보내어 백성을 물게 하시므로 이스라엘 백성 중에 죽은 자가 많은지라",
+      "source_text_hash": "ec727319d97a5f82575d411781c21efa41e2e9e4c7a24582d8310b6f24b40116",
+      "translation_text_hash": "313e48def45fb0c2fc05c6aa76a9aad3af68d32bc5730e5497125c36a024c731",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 불뱀들을 백성 중에 보내어 백성을 물게 하시므로 이스라엘 백성 중에 죽은 자가 많은지라"
+      ],
+      "raw_text_hashes": [
+        "313e48def45fb0c2fc05c6aa76a9aad3af68d32bc5730e5497125c36a024c731"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:7",
+      "sequence": 4348,
+      "chapter_label": "NUM 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "The people came to Moses, and said, “We have sinned, because we have spoken against the LORD and against you. Pray to the LORD, that he take away the serpents from us.” Moses prayed for the people.",
+      "ko": "백성이 모세에게 이르러 가로되 우리가 여호와와 당신을 향하여 원망하므로 범죄하였사오니 여호와께 기도하여 이 뱀들을 우리에게서 떠나게 하소서 모세가 백성을 위하여 기도하매",
+      "source_text_hash": "337716cb2caff72bd4439154af67217ad0ae9335fe750805e78fef8eb8b81a99",
+      "translation_text_hash": "a417009b01e15e7c53c1022e0cb78203e0bc569aaebd760882b39df7f8c53b94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 모세에게 이르러 가로되 우리가 여호와와 당신을 향하여 원망하므로 범죄하였사오니 여호와께 기도하여 이 뱀들을 우리에게서 떠나게 하소서 모세가 백성을 위하여 기도하매"
+      ],
+      "raw_text_hashes": [
+        "a417009b01e15e7c53c1022e0cb78203e0bc569aaebd760882b39df7f8c53b94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:8",
+      "sequence": 4349,
+      "chapter_label": "NUM 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD said to Moses, “Make a venomous snake, and set it on a pole. It shall happen that everyone who is bitten, when he sees it, shall live.”",
+      "ko": "여호와께서 모세에게 이르시되 불뱀을 만들어 장대 위에 달라 물린 자마다 그것을 보면 살리라",
+      "source_text_hash": "dc195623a6bf6abd6b36aa3effe2fbd182e145386f9cbb5c401f0fd30882ce39",
+      "translation_text_hash": "06315aabc59aabbb5eb1b75d82de6208f3f94405bdd9f09bc06bf7b0c4c2ab21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 불뱀을 만들어 장대 위에 달라 물린 자마다 그것을 보면 살리라"
+      ],
+      "raw_text_hashes": [
+        "06315aabc59aabbb5eb1b75d82de6208f3f94405bdd9f09bc06bf7b0c4c2ab21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:9",
+      "sequence": 4350,
+      "chapter_label": "NUM 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "Moses made a serpent of bronze, and set it on the pole. If a serpent had bitten any man, when he looked at the serpent of bronze, he lived.",
+      "ko": "모세가 놋뱀을 만들어 장대 위에 다니 뱀에게 물린 자마다 놋뱀을 쳐다본즉 살더라",
+      "source_text_hash": "e06d55f88a9e0d43acb96799183dc94531378a93a69a3a06f02e839337f3b7f6",
+      "translation_text_hash": "b8e434c5ebfa64ff6a604c38a88dc14c6c01bf7e53ca44a3d04e23db97ff0a0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 놋뱀을 만들어 장대 위에 다니 뱀에게 물린 자마다 놋뱀을 쳐다본즉 살더라"
+      ],
+      "raw_text_hashes": [
+        "b8e434c5ebfa64ff6a604c38a88dc14c6c01bf7e53ca44a3d04e23db97ff0a0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:10",
+      "sequence": 4351,
+      "chapter_label": "NUM 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "The children of Israel traveled, and encamped in Oboth.",
+      "ko": "이스라엘 자손이 진행하여 오봇에 진 쳤고",
+      "source_text_hash": "a6885d59a0d833b875625d2f63ce801c1b5af1b3945998a1bf7b8f3eae4d9e43",
+      "translation_text_hash": "8851f115156f8a3ba456ac127202c30b0f56812efbbf61a89a5460474011ac97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 진행하여 오봇에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "8851f115156f8a3ba456ac127202c30b0f56812efbbf61a89a5460474011ac97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:11",
+      "sequence": 4352,
+      "chapter_label": "NUM 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "They traveled from Oboth, and encamped at Iyeabarim, in the wilderness which is before Moab, toward the sunrise.",
+      "ko": "오봇에서 진행하여 모압 앞 해 돋는 편 광야 이예아바림에 진 쳤고",
+      "source_text_hash": "08bd7c7733b75619f89e331386dc644f2010c6c640dad2dd49dd8fb67362d072",
+      "translation_text_hash": "2ca7f0f8a02697f9e9aee964a9f2cf93404c10a591f46fe8be0b5fb1d4e744cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오봇에서 진행하여 모압 앞 해 돋는 편 광야 이예아바림에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "2ca7f0f8a02697f9e9aee964a9f2cf93404c10a591f46fe8be0b5fb1d4e744cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:12",
+      "sequence": 4353,
+      "chapter_label": "NUM 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "From there they traveled, and encamped in the valley of Zered.",
+      "ko": "거기서 진행하여 세렛 골짜기에 진 쳤고",
+      "source_text_hash": "e1dd86973185e6c0164dbce2d09e911cf406ac417571a7f0725c631874436ff0",
+      "translation_text_hash": "05603bd40f65843f0020c05eaa4d9cf5e6571529157ab27436755852e94bb4d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 진행하여 세렛 골짜기에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "05603bd40f65843f0020c05eaa4d9cf5e6571529157ab27436755852e94bb4d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:13",
+      "sequence": 4354,
+      "chapter_label": "NUM 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "From there they traveled, and encamped on the other side of the Arnon, which is in the wilderness that comes out of the border of the Amorites; for the Arnon is the border of Moab, between Moab and the Amorites.",
+      "ko": "거기서 진행하여 아모리인의 지경에서 흘러 나와서 광야에 이른 아르논 건너편에 진 쳤으니 아르논은 모압과 아모리 사이에서 모압의 경계가 된 것이라",
+      "source_text_hash": "8fa9f205cf88f24ed19c1073d448b5c45d2c063cce6ae9c87df75739674b190c",
+      "translation_text_hash": "bb1947d382e337fe4bd40eb9760ffdb0656cbe8794974de31bd14c9bd0487f16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 진행하여 아모리인의 지경에서 흘러 나와서 광야에 이른 아르논 건너편에 진 쳤으니 아르논은 모압과 아모리 사이에서 모압의 경계가 된 것이라"
+      ],
+      "raw_text_hashes": [
+        "bb1947d382e337fe4bd40eb9760ffdb0656cbe8794974de31bd14c9bd0487f16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:14",
+      "sequence": 4355,
+      "chapter_label": "NUM 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore it is said in The Book of the Wars of the LORD, “Vaheb in Suphah, the valleys of the Arnon,",
+      "ko": "이러므로 여호와의 전쟁기에 일렀으되 수바의 와헙과 아르논 골짜기와",
+      "source_text_hash": "2339103b50992e8155c177be8c2c7ffdcbf2d43cb586e2ca4b03b93a6509ce64",
+      "translation_text_hash": "d03573419323dcbf63964f1bd12b9782d9b6a03d971eced2d20431cf64633a78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 여호와의 전쟁기에 일렀으되 수바의 와헙과 아르논 골짜기와"
+      ],
+      "raw_text_hashes": [
+        "d03573419323dcbf63964f1bd12b9782d9b6a03d971eced2d20431cf64633a78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:15",
+      "sequence": 4356,
+      "chapter_label": "NUM 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "the slope of the valleys that incline toward the dwelling of Ar, leans on the border of Moab.”",
+      "ko": "모든 골짜기의 비탈은 아르 고을을 향하여 기울어지고 모압의 경계에 닿았도다 하였더라",
+      "source_text_hash": "4dad8a4db42399d0200aeb9deeaa6000d7eac634da2f407e34f6203906b6e648",
+      "translation_text_hash": "c4a3e095c22133b1de1a78ee9ffe7ce4515af3a7f1a1a3ac1805f496839f2f99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 골짜기의 비탈은 아르 고을을 향하여 기울어지고 모압의 경계에 닿았도다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "c4a3e095c22133b1de1a78ee9ffe7ce4515af3a7f1a1a3ac1805f496839f2f99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:16",
+      "sequence": 4357,
+      "chapter_label": "NUM 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "From there they traveled to Beer; that is the well of which the LORD said to Moses, “Gather the people together, and I will give them water.”",
+      "ko": "거기서 브엘에 이르니 브엘은 여호와께서 모세에게 명하시기를 백성을 모으라 내가 그들에게 물을 주리라 하시던 우물이라",
+      "source_text_hash": "fa9d071b74174d01dc2aa381b071ff1ee01c5e39f515845bb93015ef0d0d9d84",
+      "translation_text_hash": "1998ac745c8243d4a2611b8d00eff22ee4881a78ec4c0b5f6fa9eb9b3d52f9f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 브엘에 이르니 브엘은 여호와께서 모세에게 명하시기를 백성을 모으라 내가 그들에게 물을 주리라 하시던 우물이라"
+      ],
+      "raw_text_hashes": [
+        "1998ac745c8243d4a2611b8d00eff22ee4881a78ec4c0b5f6fa9eb9b3d52f9f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:17",
+      "sequence": 4358,
+      "chapter_label": "NUM 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "Then Israel sang this song: “Spring up, well! Sing to it,",
+      "ko": "그 때에 이스라엘이 노래하여 가로되 우물 물아 솟아나라 너희는 그것을 노래하라",
+      "source_text_hash": "99f6655da10f568e59629eb1f52ed4b3814a7ec0d8258c604babb1bc2bb7775f",
+      "translation_text_hash": "e90d7d74339ee6036e8c1d9fb55d6109178d8c55999bc1ddb94dfc3e86cd2c36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 이스라엘이 노래하여 가로되 우물 물아 솟아나라 너희는 그것을 노래하라"
+      ],
+      "raw_text_hashes": [
+        "e90d7d74339ee6036e8c1d9fb55d6109178d8c55999bc1ddb94dfc3e86cd2c36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:18",
+      "sequence": 4359,
+      "chapter_label": "NUM 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "the well, which the princes dug, which the nobles of the people dug, with the scepter, and with their poles.” From the wilderness they traveled to Mattanah;",
+      "ko": "이 우물은 족장들이 팠고 백성의 귀인들이 홀과 지팡이로 판 것이로다 하였더라 광야에서 맛다나에 이르렀고",
+      "source_text_hash": "92413c7915faac46e1524091227a25385df4f82238ef049cb5a2f357586eaef7",
+      "translation_text_hash": "4b104d216cabfecbf64cf32aa7e1234245c2b24d862dd230c1d221cfc549cfd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 우물은 족장들이 팠고 백성의 귀인들이 홀과 지팡이로 판 것이로다 하였더라 광야에서 맛다나에 이르렀고"
+      ],
+      "raw_text_hashes": [
+        "4b104d216cabfecbf64cf32aa7e1234245c2b24d862dd230c1d221cfc549cfd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:19",
+      "sequence": 4360,
+      "chapter_label": "NUM 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "and from Mattanah to Nahaliel; and from Nahaliel to Bamoth;",
+      "ko": "맛다나에서 나할리엘에 이르렀고 나할리엘에서 바못에 이르렀고",
+      "source_text_hash": "c6f79316cc0cfb5c18f20a195d5067bb90c5209befd7d33dac0d13a8f1c5ccc1",
+      "translation_text_hash": "0719a2faf6ab9396ecf15318ed47e68469373e657dfee7361f8614b59fe41652",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맛다나에서 나할리엘에 이르렀고 나할리엘에서 바못에 이르렀고"
+      ],
+      "raw_text_hashes": [
+        "0719a2faf6ab9396ecf15318ed47e68469373e657dfee7361f8614b59fe41652"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:20",
+      "sequence": 4361,
+      "chapter_label": "NUM 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "and from Bamoth to the valley that is in the field of Moab, to the top of Pisgah, which looks down on the desert.",
+      "ko": "바못에서 모압 들에 있는 골짜기에 이르러 광야가 내려다 보이는 비스가산 꼭대기에 이르렀더라",
+      "source_text_hash": "1826d50b7596db108f729a263ac5a8d46da2d9ef0c75c1be96b2d901dbfd7f9a",
+      "translation_text_hash": "4e4ef534b90609e6859f3fc679ea4dd42b9ea16797f6740b582a11430d92f9cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바못에서 모압 들에 있는 골짜기에 이르러 광야가 내려다 보이는 비스가산 꼭대기에 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "4e4ef534b90609e6859f3fc679ea4dd42b9ea16797f6740b582a11430d92f9cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:21",
+      "sequence": 4362,
+      "chapter_label": "NUM 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "Israel sent messengers to Sihon king of the Amorites, saying,",
+      "ko": "이스라엘이 아모리 왕 시혼에게 사자를 보내어 가로되",
+      "source_text_hash": "f6d3d540956023efd6846fca2e3a6cb427d2f839d070a2f452d055f2704ac19c",
+      "translation_text_hash": "db2ae738acffd48fa74bbef1f2cc1e142c42fd25162058c7388a897d6f9a3850",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 아모리 왕 시혼에게 사자를 보내어 가로되"
+      ],
+      "raw_text_hashes": [
+        "db2ae738acffd48fa74bbef1f2cc1e142c42fd25162058c7388a897d6f9a3850"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:22",
+      "sequence": 4363,
+      "chapter_label": "NUM 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "“Let me pass through your land. We will not turn away into field or vineyard. We will not drink of the water of the wells. We will go by the king’s highway, until we have passed your border.”",
+      "ko": "우리로 당신의 땅을 통과하게 하소서 우리가 밭에든지 포도원에든지 들어가지 아니하며 우물 물도 공히 마시지 아니하고 우리가 당신의 지경에서 다 나가기까지 왕의 대로로만 통행하리이다 하나",
+      "source_text_hash": "1f44e0adcf5f46b36431e5ce1a259381be91bb84525ad135e9db1b562d7d4259",
+      "translation_text_hash": "9d465563c28855e60e63321a37077484afdf5227c1d2cc70afac1257b3eac093",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리로 당신의 땅을 통과하게 하소서 우리가 밭에든지 포도원에든지 들어가지 아니하며 우물 물도 공히 마시지 아니하고 우리가 당신의 지경에서 다 나가기까지 왕의 대로로만 통행하리이다 하나"
+      ],
+      "raw_text_hashes": [
+        "9d465563c28855e60e63321a37077484afdf5227c1d2cc70afac1257b3eac093"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:23",
+      "sequence": 4364,
+      "chapter_label": "NUM 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "Sihon would not allow Israel to pass through his border, but Sihon gathered all his people together, and went out against Israel into the wilderness, and came to Jahaz. He fought against Israel.",
+      "ko": "시혼이 자기 지경으로 이스라엘의 통과함을 용납하지 아니하고 그 백성을 다 모아 이스라엘을 치러 광야로 나와서 야하스에 이르러 이스라엘을 치므로",
+      "source_text_hash": "fb4dc86f75120fddbe553715e29b0042ed972f4823ab6284b985965d47cbc416",
+      "translation_text_hash": "f368c0a8e5e60546feab454a57f9be033a34c439bdb631be67708ee3617edc73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시혼이 자기 지경으로 이스라엘의 통과함을 용납하지 아니하고 그 백성을 다 모아 이스라엘을 치러 광야로 나와서 야하스에 이르러 이스라엘을 치므로"
+      ],
+      "raw_text_hashes": [
+        "f368c0a8e5e60546feab454a57f9be033a34c439bdb631be67708ee3617edc73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:24",
+      "sequence": 4365,
+      "chapter_label": "NUM 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "Israel struck him with the edge of the sword, and possessed his land from the Arnon to the Jabbok, even to the children of Ammon; for the border of the children of Ammon was fortified.",
+      "ko": "이스라엘이 칼날로 그들을 쳐서 파하고 그 땅을 아르논부터 얍복까지 점령하여 암몬 자손에게까지 미치니 암몬 자손의 경계는 견고하더라",
+      "source_text_hash": "9b15276bcfec0211ccc3a9b9fcf3ba7f21735cc79a89c7d36241e013d952ad0b",
+      "translation_text_hash": "f6b2298aecbd1850297a69e472a056def48cf30bda6c318132fb5f99224079db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 칼날로 그들을 쳐서 파하고 그 땅을 아르논부터 얍복까지 점령하여 암몬 자손에게까지 미치니 암몬 자손의 경계는 견고하더라"
+      ],
+      "raw_text_hashes": [
+        "f6b2298aecbd1850297a69e472a056def48cf30bda6c318132fb5f99224079db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:25",
+      "sequence": 4366,
+      "chapter_label": "NUM 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "Israel took all these cities. Israel lived in all the cities of the Amorites, in Heshbon, and in all its villages.",
+      "ko": "이스라엘이 이같이 그 모든 성읍을 취하고 그 아모리인의 모든 성읍 헤스본과 그 모든 촌락에 거하였으니",
+      "source_text_hash": "3a9af6bbb59ff524dfebf1c65f47958177179d00acfbb5c0e7039d6c5eb2361b",
+      "translation_text_hash": "bf5361b05339bb24e3fa2cc5947c9a3df4c26a3c155c219adca22c0089d3dd90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 이같이 그 모든 성읍을 취하고 그 아모리인의 모든 성읍 헤스본과 그 모든 촌락에 거하였으니"
+      ],
+      "raw_text_hashes": [
+        "bf5361b05339bb24e3fa2cc5947c9a3df4c26a3c155c219adca22c0089d3dd90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:26",
+      "sequence": 4367,
+      "chapter_label": "NUM 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "For Heshbon was the city of Sihon the king of the Amorites, who had fought against the former king of Moab, and taken all his land out of his hand, even to the Arnon.",
+      "ko": "헤스본은 아모리인의 왕 시혼의 도성이라 시혼이 모압 전왕을 치고 그 모든 땅을 아르논까지 그 손에서 탈취하였었더라",
+      "source_text_hash": "8b5a3212f6b577581da015c7e8dd3850e0fea4a435e1d087c262b995f1a603b5",
+      "translation_text_hash": "1895eaf014d4749dc6579ce0ede45121d2f6908efe827aeaf2e4954eda185bcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본은 아모리인의 왕 시혼의 도성이라 시혼이 모압 전왕을 치고 그 모든 땅을 아르논까지 그 손에서 탈취하였었더라"
+      ],
+      "raw_text_hashes": [
+        "1895eaf014d4749dc6579ce0ede45121d2f6908efe827aeaf2e4954eda185bcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:27",
+      "sequence": 4368,
+      "chapter_label": "NUM 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "Therefore those who speak in proverbs say, “Come to Heshbon. Let the city of Sihon be built and established;",
+      "ko": "그러므로 시인이 읊어 가로되 너희는 헤스본으로 올찌어다 시혼의 성을 세워 견고히 할찌어다",
+      "source_text_hash": "ebc80ebcbcd9c3f03a6e597d911602cde074583bf800b58ede319a5a5bc6e476",
+      "translation_text_hash": "93fe88268d278a03486c36ca4683dfbc42179e0d6b0bad99b5ecc77fae2d8ac0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 시인이 읊어 가로되 너희는 헤스본으로 올찌어다 시혼의 성을 세워 견고히 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "93fe88268d278a03486c36ca4683dfbc42179e0d6b0bad99b5ecc77fae2d8ac0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:28",
+      "sequence": 4369,
+      "chapter_label": "NUM 21",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 28
+        }
+      ],
+      "en": "for a fire has gone out of Heshbon, a flame from the city of Sihon. It has devoured Ar of Moab, The lords of the high places of the Arnon.",
+      "ko": "헤스본에서 불이 나오며 시혼의 성에서 화염이 나와서 모압의 아르를 삼키며 아르논 높은 곳의 주인을 멸하였도다",
+      "source_text_hash": "e98ab20c8d7530c8288ae704b6a5b9ad0427a53768de9e4ed7f393825dc454bf",
+      "translation_text_hash": "a17f5159d38bcde6e1ad0abfce2a4f70456949e8228ac21ad072930683071689",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본에서 불이 나오며 시혼의 성에서 화염이 나와서 모압의 아르를 삼키며 아르논 높은 곳의 주인을 멸하였도다"
+      ],
+      "raw_text_hashes": [
+        "a17f5159d38bcde6e1ad0abfce2a4f70456949e8228ac21ad072930683071689"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:29",
+      "sequence": 4370,
+      "chapter_label": "NUM 21",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 29
+        }
+      ],
+      "en": "Woe to you, Moab! You are undone, people of Chemosh! He has given his sons as fugitives, and his daughters into captivity, to Sihon king of the Amorites.",
+      "ko": "모압아 네가 화를 당하였도다 그모스의 백성아 네가 멸망하였도다 그가 그 아들들로 도망케 하였고 그 딸들로 아모리인의 왕 시혼의 포로가 되게 하였도다",
+      "source_text_hash": "c19bf1e95c04869bde7681e5f69cd5b24fd12619e4680994dbfc17ba1d803e73",
+      "translation_text_hash": "527629665991c52f905cc44ac49a70bf3797742dbfdb11d19dfeb35a5b05d465",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압아 네가 화를 당하였도다 그모스의 백성아 네가 멸망하였도다 그가 그 아들들로 도망케 하였고 그 딸들로 아모리인의 왕 시혼의 포로가 되게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "527629665991c52f905cc44ac49a70bf3797742dbfdb11d19dfeb35a5b05d465"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:30",
+      "sequence": 4371,
+      "chapter_label": "NUM 21",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 30
+        }
+      ],
+      "en": "We have shot at them. Heshbon has perished even to Dibon. We have laid waste even to Nophah, Which reaches to Medeba.”",
+      "ko": "우리가 그들을 쏘아서 헤스본을 디본까지 멸하였고 메드바에 가까운 노바까지 황폐케 하였도다 하였더라",
+      "source_text_hash": "4b4b3dbf01c1fc82ebbec73bf8620040db6281082618b0766526102bfce1f1dd",
+      "translation_text_hash": "f8a892bd69c9f4c1187a2d836e6d727b738fa6c5ae27d48cb979456062bf78a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그들을 쏘아서 헤스본을 디본까지 멸하였고 메드바에 가까운 노바까지 황폐케 하였도다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "f8a892bd69c9f4c1187a2d836e6d727b738fa6c5ae27d48cb979456062bf78a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:31",
+      "sequence": 4372,
+      "chapter_label": "NUM 21",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 31
+        }
+      ],
+      "en": "Thus Israel lived in the land of the Amorites.",
+      "ko": "이스라엘이 아모리인의 땅에 거하였더니",
+      "source_text_hash": "38e393499d7786d30f594f728f6c86f8f6abc30eed7ca0773305dc3d988655eb",
+      "translation_text_hash": "56c418e5ed0b9f0388ed06d1a1b3f8cee12be7a853094f1127cd3427d2313974",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 아모리인의 땅에 거하였더니"
+      ],
+      "raw_text_hashes": [
+        "56c418e5ed0b9f0388ed06d1a1b3f8cee12be7a853094f1127cd3427d2313974"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:32",
+      "sequence": 4373,
+      "chapter_label": "NUM 21",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 32
+        }
+      ],
+      "en": "Moses sent to spy out Jazer. They took its villages, and drove out the Amorites who were there.",
+      "ko": "모세가 또 보내어 야셀을 정탐케 하고 그 촌락들을 취하고 그곳에 있던 아모리인을 몰아 내었더라",
+      "source_text_hash": "0ef41d5bb3401f620f673586421ba7aa048b22ad851bb36fedb2a70fe6c10ca7",
+      "translation_text_hash": "b392932e8b74d4f74ac90fc076337de7916eb51e075f19bf8eeb206a739e92fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 또 보내어 야셀을 정탐케 하고 그 촌락들을 취하고 그곳에 있던 아모리인을 몰아 내었더라"
+      ],
+      "raw_text_hashes": [
+        "b392932e8b74d4f74ac90fc076337de7916eb51e075f19bf8eeb206a739e92fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:33",
+      "sequence": 4374,
+      "chapter_label": "NUM 21",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 33
+        }
+      ],
+      "en": "They turned and went up by the way of Bashan. Og the king of Bashan went out against them, he and all his people, to battle at Edrei.",
+      "ko": "돌이켜 바산 길로 올라가매 바산 왕 옥이 그 백성을 다 거느리고 나와서 그들을 맞아 에드레이에서 싸우려 하는지라",
+      "source_text_hash": "9085a8b839f2ea82a177b74727f20cab01f64c2f2b6d235b92b2d48e24c9a972",
+      "translation_text_hash": "242c3d9bfc9ab7ae0800b4725b5a3746553b985141dbdf73583a361193b0d1ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌이켜 바산 길로 올라가매 바산 왕 옥이 그 백성을 다 거느리고 나와서 그들을 맞아 에드레이에서 싸우려 하는지라"
+      ],
+      "raw_text_hashes": [
+        "242c3d9bfc9ab7ae0800b4725b5a3746553b985141dbdf73583a361193b0d1ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:34",
+      "sequence": 4375,
+      "chapter_label": "NUM 21",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 34
+        }
+      ],
+      "en": "The LORD said to Moses, “Don’t fear him, for I have delivered him into your hand, with all his people, and his land. You shall do to him as you did to Sihon king of the Amorites, who lived at Heshbon.”",
+      "ko": "여호와께서 모세에게 이르시되 그를 두려워 말라 내가 그와 그 백성과 그 땅을 네 손에 붙였나니 너는 헤스본에 거하던 아모리인의 왕 시혼에게 행한것 같이 그에게도 행할찌니라",
+      "source_text_hash": "a3f5967fdbf0923d27fd12da7d137cb6fdcf0cfa7e6db6d9e8c80181d425d354",
+      "translation_text_hash": "2d224af49989a635e9a363895c76e7a558650c81ba634593a8b359552f7def78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 그를 두려워 말라 내가 그와 그 백성과 그 땅을 네 손에 붙였나니 너는 헤스본에 거하던 아모리인의 왕 시혼에게 행한것 같이 그에게도 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "2d224af49989a635e9a363895c76e7a558650c81ba634593a8b359552f7def78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:21:35",
+      "sequence": 4376,
+      "chapter_label": "NUM 21",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 21,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 21,
+          "verse": 35
+        }
+      ],
+      "en": "So they struck him, with his sons and all his people, until there were no survivors; and they possessed his land.",
+      "ko": "이에 그와 그 아들들과 그 백성을 다 쳐서 한 사람도 남기지 아니하고 그 땅을 점령하였더라",
+      "source_text_hash": "0bed9faf0a9e0020b6c94005008e98dec19482d116f02b1caa072f2e054ff491",
+      "translation_text_hash": "7af1ed2e5b92201984b947247342db8fb460f6a694b39af70d0e296e71b17cc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그와 그 아들들과 그 백성을 다 쳐서 한 사람도 남기지 아니하고 그 땅을 점령하였더라"
+      ],
+      "raw_text_hashes": [
+        "7af1ed2e5b92201984b947247342db8fb460f6a694b39af70d0e296e71b17cc0"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1709 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:024",
+  "unit_ordinal": 997,
+  "unit_label": "LUK 24",
+  "book_code": "LUK",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:24:1",
+      "sequence": 25992,
+      "chapter_label": "LUK 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "But on the first day of the week, at early dawn, they and some others came to the tomb, bringing the spices which they had prepared.",
+      "ko": "안식후 첫날 새벽에 이 여자들이 그 예비한 향품을 가지고 무덤에 가서",
+      "source_text_hash": "b87457510572558f97ceffc7ea77b82e54dcc6a3cf43528cfd875aa23ff5b5dd",
+      "translation_text_hash": "a7e53608cf8c0212bbc9355adbf3e7e6b14dbd5971d057ec5cd7c9133bf829cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식후 첫날 새벽에 이 여자들이 그 예비한 향품을 가지고 무덤에 가서"
+      ],
+      "raw_text_hashes": [
+        "a7e53608cf8c0212bbc9355adbf3e7e6b14dbd5971d057ec5cd7c9133bf829cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:2",
+      "sequence": 25993,
+      "chapter_label": "LUK 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "They found the stone rolled away from the tomb.",
+      "ko": "돌이 무덤에서 굴려 옮기운 것을 보고",
+      "source_text_hash": "4e82f5ad5869a24f5d797f78ec5f56e5458eadbe9a6d8a284e18ec5eebafca3c",
+      "translation_text_hash": "ef0a4e4cb812185bb0d9ad8619bb74f0c10fb82f069507ae39c5dc8a0ae739ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌이 무덤에서 굴려 옮기운 것을 보고"
+      ],
+      "raw_text_hashes": [
+        "ef0a4e4cb812185bb0d9ad8619bb74f0c10fb82f069507ae39c5dc8a0ae739ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:3",
+      "sequence": 25994,
+      "chapter_label": "LUK 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "They entered in, and didn’t find the Lord Jesus’ body.",
+      "ko": "들어가니 주 예수의 시체가 뵈지 아니하더라",
+      "source_text_hash": "b8fe7773089155fff6b445d983be617d594b31ad1b17a75fcff6e56cdb0def83",
+      "translation_text_hash": "5c5ab3e31895e7c369eef345bd8808dede542f3af854d3a5ca758ce0783510fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들어가니 주 예수의 시체가 뵈지 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "5c5ab3e31895e7c369eef345bd8808dede542f3af854d3a5ca758ce0783510fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:4",
+      "sequence": 25995,
+      "chapter_label": "LUK 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "While they were greatly perplexed about this, behold, two men stood by them in dazzling clothing.",
+      "ko": "이를 인하여 근심할 때에 문득 찬란한 옷을 입은 두 사람이 곁에 섰는지라",
+      "source_text_hash": "99a126396e05e5b0d891b8abe81763d9b3c64839d6f1f7b0de04480a3914e616",
+      "translation_text_hash": "986231e679683754a75cc6c66c0ab122a3e85eb647cc8745f38ac599295aeb04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 인하여 근심할 때에 문득 찬란한 옷을 입은 두 사람이 곁에 섰는지라"
+      ],
+      "raw_text_hashes": [
+        "986231e679683754a75cc6c66c0ab122a3e85eb647cc8745f38ac599295aeb04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:5",
+      "sequence": 25996,
+      "chapter_label": "LUK 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "Becoming terrified, they bowed their faces down to the earth. The men said to them, “Why do you seek the living among the dead?",
+      "ko": "여자들이 두려워 얼굴을 땅에 대니 두 사람이 이르되 어찌하여 산 자를 죽은 자 가운데서 찾느냐",
+      "source_text_hash": "cc8b496e9eeb8f90028df46571a15104b66b90c856119c5f5ef7ac1e9ec8d0e6",
+      "translation_text_hash": "f5b43c70249033ca29c7d450ed700912f20f6d5f3936a09bf99b64d31c5bca37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자들이 두려워 얼굴을 땅에 대니 두 사람이 이르되 어찌하여 산 자를 죽은 자 가운데서 찾느냐"
+      ],
+      "raw_text_hashes": [
+        "f5b43c70249033ca29c7d450ed700912f20f6d5f3936a09bf99b64d31c5bca37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:6",
+      "sequence": 25997,
+      "chapter_label": "LUK 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "He isn’t here, but is risen. Remember what he told you when he was still in Galilee,",
+      "ko": "여기 계시지 않고 살아나셨느니라 갈릴리에 계실 때에 너희에게 어떻게 말씀하신 것을 기억하라",
+      "source_text_hash": "06e516818153d7b477da28ab74cf55d271f3dd6e9fc39823ac96a7320a9c5619",
+      "translation_text_hash": "fcb55b88957c6f192fdb495da455900d030f8afbfe1ebc574b4445e0d2230cbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여기 계시지 않고 살아나셨느니라 갈릴리에 계실 때에 너희에게 어떻게 말씀하신 것을 기억하라"
+      ],
+      "raw_text_hashes": [
+        "fcb55b88957c6f192fdb495da455900d030f8afbfe1ebc574b4445e0d2230cbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:7",
+      "sequence": 25998,
+      "chapter_label": "LUK 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "saying that the Son of Man must be delivered up into the hands of sinful men and be crucified, and the third day rise again?”",
+      "ko": "이르시기를 인자가 죄인의 손에 넘기워 십자가에 못 박히고 제 삼일에 다시 살아나야 하리라 하셨느니라 한대",
+      "source_text_hash": "951015b638451fa31ba4b078a155b19476ca5eb62354a0572e818fb9ec6d4023",
+      "translation_text_hash": "201bc6f6e2142f68113f469d9ec0fc24a526ae059f07116686b9357b10213a89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시기를 인자가 죄인의 손에 넘기워 십자가에 못 박히고 제 삼일에 다시 살아나야 하리라 하셨느니라 한대"
+      ],
+      "raw_text_hashes": [
+        "201bc6f6e2142f68113f469d9ec0fc24a526ae059f07116686b9357b10213a89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:8",
+      "sequence": 25999,
+      "chapter_label": "LUK 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "They remembered his words,",
+      "ko": "저희가 예수의 말씀을 기억하고",
+      "source_text_hash": "2b41ffc533d899c4bf6ee350a8cc5b401ef0d91eb6f6404d55438baee36405b9",
+      "translation_text_hash": "11c273b86a72d25fe3488ecdf8f1db85e8353b64cacd387bfb9e85a9d3a2d2cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수의 말씀을 기억하고"
+      ],
+      "raw_text_hashes": [
+        "11c273b86a72d25fe3488ecdf8f1db85e8353b64cacd387bfb9e85a9d3a2d2cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:9",
+      "sequence": 26000,
+      "chapter_label": "LUK 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "returned from the tomb, and told all these things to the eleven and to all the rest.",
+      "ko": "무덤에서 돌아가 이 모든 것을 열 한 사도와 모든 다른 이에게 고하니",
+      "source_text_hash": "92d58be06305b2e62cf72469c66f28628453b68eef66b4886ffede61b1c69711",
+      "translation_text_hash": "cfe736a7677208d75316c1acf3b25af96f140bd3a11649a6ca5ea6b586ab22b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무덤에서 돌아가 이 모든 것을 열 한 사도와 모든 다른 이에게 고하니"
+      ],
+      "raw_text_hashes": [
+        "cfe736a7677208d75316c1acf3b25af96f140bd3a11649a6ca5ea6b586ab22b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:10",
+      "sequence": 26001,
+      "chapter_label": "LUK 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "Now they were Mary Magdalene, Joanna, and Mary the mother of James. The other women with them told these things to the apostles.",
+      "ko": "(이 여자들은 막달라 마리아와 요안나와 야고보의 모친 마리아라 또 저희와 함께한 다른 여자들도 이것을 사도들에게 고하니라)",
+      "source_text_hash": "7231104f47388d6f0bebb1ebad7fac6e1d2a92f9a6d690d35789031cd12d892a",
+      "translation_text_hash": "07d28c3e2ad088a4ee56bbc936ae1bd6ef9387ab3eefdbf6731a0b6d31fc1c6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(이 여자들은 막달라 마리아와 요안나와 야고보의 모친 마리아라 또 저희와 함께한 다른 여자들도 이것을 사도들에게 고하니라)"
+      ],
+      "raw_text_hashes": [
+        "07d28c3e2ad088a4ee56bbc936ae1bd6ef9387ab3eefdbf6731a0b6d31fc1c6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:11",
+      "sequence": 26002,
+      "chapter_label": "LUK 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "These words seemed to them to be nonsense, and they didn’t believe them.",
+      "ko": "사도들은 저희 말이 허탄한듯이 뵈어 믿지 아니하나",
+      "source_text_hash": "762a9a6ec27f25cc391c282dd9e5fafd9f8dd9e513331dd632443592c54da6ca",
+      "translation_text_hash": "005856b7dbcb28e1fdeca1e834a08043347f22348286cc71675982ce67ce6a4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들은 저희 말이 허탄한듯이 뵈어 믿지 아니하나"
+      ],
+      "raw_text_hashes": [
+        "005856b7dbcb28e1fdeca1e834a08043347f22348286cc71675982ce67ce6a4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:12",
+      "sequence": 26003,
+      "chapter_label": "LUK 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "But Peter got up and ran to the tomb. Stooping and looking in, he saw the strips of linen lying by themselves, and he departed to his home, wondering what had happened.",
+      "ko": "베드로는 일어나 무덤에 달려가서 구푸려 들여다 보니 세마포만 보이는지라 그 된 일을 기이히 여기며 집으로 돌아가니라",
+      "source_text_hash": "31699d873dcabee16bd963030bec366d0a0605c09124f0c739ee428101bd8cc2",
+      "translation_text_hash": "6b74fe9fbfef8b5fe66ab983d1d609548ad1442f4b0607c3e82c5c81cd65c6b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로는 일어나 무덤에 달려가서 구푸려 들여다 보니 세마포만 보이는지라 그 된 일을 기이히 여기며 집으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "6b74fe9fbfef8b5fe66ab983d1d609548ad1442f4b0607c3e82c5c81cd65c6b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:13",
+      "sequence": 26004,
+      "chapter_label": "LUK 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "Behold, two of them were going that very day to a village named Emmaus, which was sixty stadia from Jerusalem.",
+      "ko": "그 날에 저희 중 둘이 예루살렘에서 이십 오리 되는 엠마오라 하는 촌으로 가면서",
+      "source_text_hash": "e231f477124b8cc6588cf8dba2fe954cfa13ea00802b59bb1de4b7c1db6042b7",
+      "translation_text_hash": "0b1101ff34bd9188dd8f74e0b03b0266b539f9b2002afe6ed02bc70c7fe66df5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 저희 중 둘이 예루살렘에서 이십 오리 되는 엠마오라 하는 촌으로 가면서"
+      ],
+      "raw_text_hashes": [
+        "0b1101ff34bd9188dd8f74e0b03b0266b539f9b2002afe6ed02bc70c7fe66df5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:14",
+      "sequence": 26005,
+      "chapter_label": "LUK 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "They talked with each other about all of these things which had happened.",
+      "ko": "이 모든 된 일을 서로 이야기하더라",
+      "source_text_hash": "79bd40babc019c869dfe533b076cc8640cdd5af7cbc34357a735a3f461cfcdb7",
+      "translation_text_hash": "658134606aa4d747258e272a8384595b60733b02ffbdffe6f9cdbae4481dc55e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 된 일을 서로 이야기하더라"
+      ],
+      "raw_text_hashes": [
+        "658134606aa4d747258e272a8384595b60733b02ffbdffe6f9cdbae4481dc55e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:15",
+      "sequence": 26006,
+      "chapter_label": "LUK 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "While they talked and questioned together, Jesus himself came near, and went with them.",
+      "ko": "저희가 서로 이야기하며 문의할 때에 예수께서 가까이 이르러 저희와 동행하시나",
+      "source_text_hash": "0d9042f4144c79f1f93ccd1bc85ec981fc4582e6bf9613ace9f37acc1bd3c8f0",
+      "translation_text_hash": "c772aae5bed89a3c7c95c055be11e9f061661079755b999a653cb4b774091473",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 서로 이야기하며 문의할 때에 예수께서 가까이 이르러 저희와 동행하시나"
+      ],
+      "raw_text_hashes": [
+        "c772aae5bed89a3c7c95c055be11e9f061661079755b999a653cb4b774091473"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:16",
+      "sequence": 26007,
+      "chapter_label": "LUK 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "But their eyes were kept from recognizing him.",
+      "ko": "저희의 눈이 가리워져서 그인줄 알아보지 못하거늘",
+      "source_text_hash": "7a320e98ed6508fa865276291ddc756ca60826379bc344fc30f60b7a29c7ef59",
+      "translation_text_hash": "7326d1865f06af7f28687c1e3a03b27fbf1dda76494de6474e0f33eef6406e6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 눈이 가리워져서 그인줄 알아보지 못하거늘"
+      ],
+      "raw_text_hashes": [
+        "7326d1865f06af7f28687c1e3a03b27fbf1dda76494de6474e0f33eef6406e6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:17",
+      "sequence": 26008,
+      "chapter_label": "LUK 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "He said to them, “What are you talking about as you walk, and are sad?”",
+      "ko": "예수께서 이르시되 너희가 길 가면서 서로 주고 받고 하는 이야기가 무엇이냐 하시니 두 사람이 슬픈 빛을 띠고 머물러 서더라",
+      "source_text_hash": "2e03e8ca0e92ee7171aef74783c73ed6b7cde82d3d11588d3ae81d13beee5076",
+      "translation_text_hash": "cbca3f44bd566911cd9ff54c8666e39963ae5eae6bf475e421c13b2e4e5cae4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 너희가 길 가면서 서로 주고 받고 하는 이야기가 무엇이냐 하시니 두 사람이 슬픈 빛을 띠고 머물러 서더라"
+      ],
+      "raw_text_hashes": [
+        "cbca3f44bd566911cd9ff54c8666e39963ae5eae6bf475e421c13b2e4e5cae4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:18",
+      "sequence": 26009,
+      "chapter_label": "LUK 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "One of them, named Cleopas, answered him, “Are you the only stranger in Jerusalem who doesn’t know the things which have happened there in these days?”",
+      "ko": "그 한 사람인 글로바라 하는 자가 대답하여 가로되 당신이 예루살렘에 우거하면서 근일 거기서 된 일을 홀로 알지 못하느뇨",
+      "source_text_hash": "6100f7c17588b18778fce1936fafc7c67605f8a2ea305e3b78f0c94c183e31b6",
+      "translation_text_hash": "bfac7f95706ef853a6771649c0c87596d487543bee44b4145549d284bb927a87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 한 사람인 글로바라 하는 자가 대답하여 가로되 당신이 예루살렘에 우거하면서 근일 거기서 된 일을 홀로 알지 못하느뇨"
+      ],
+      "raw_text_hashes": [
+        "bfac7f95706ef853a6771649c0c87596d487543bee44b4145549d284bb927a87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:19",
+      "sequence": 26010,
+      "chapter_label": "LUK 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "He said to them, “What things?”They said to him, “The things concerning Jesus the Nazarene, who was a prophet mighty in deed and word before God and all the people;",
+      "ko": "가라사대 무슨 일이뇨 가로되 나사렛 예수의 일이니 그는 하나님과 모든 백성 앞에서 말과 일에 능하신 선지자여늘",
+      "source_text_hash": "96eb15b931a1650e3c11af0cb1b727f0a09a8eadb75a4e4fd2a8b3e13c0a2b56",
+      "translation_text_hash": "e535677ac3b65266fc3e083bd5771c2f8366eb9cf8438873b5a2fd925352852b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 무슨 일이뇨 가로되 나사렛 예수의 일이니 그는 하나님과 모든 백성 앞에서 말과 일에 능하신 선지자여늘"
+      ],
+      "raw_text_hashes": [
+        "e535677ac3b65266fc3e083bd5771c2f8366eb9cf8438873b5a2fd925352852b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:20",
+      "sequence": 26011,
+      "chapter_label": "LUK 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "and how the chief priests and our rulers delivered him up to be condemned to death, and crucified him.",
+      "ko": "우리 대제사장들과 관원들이 사형 판결에 넘겨주어 십자가에 못 박았느니라",
+      "source_text_hash": "19ef0c96dfccf00ac7ac0fe4adde4b32b55a6b9fe12d0952095a2aa46a6d07b5",
+      "translation_text_hash": "843a7bddfd30f24f5bf5f54eb08a569029eba83d12b001f44b589292eb886276",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 대제사장들과 관원들이 사형 판결에 넘겨주어 십자가에 못 박았느니라"
+      ],
+      "raw_text_hashes": [
+        "843a7bddfd30f24f5bf5f54eb08a569029eba83d12b001f44b589292eb886276"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:21",
+      "sequence": 26012,
+      "chapter_label": "LUK 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "But we were hoping that it was he who would redeem Israel. Yes, and besides all this, it is now the third day since these things happened.",
+      "ko": "우리는 이 사람이 이스라엘을 구속할 자라고 바랐노라 이뿐 아니라 이 일이 된지가 사흘째요",
+      "source_text_hash": "02fa51cf47ae1a739768fa24e64acfa5f7b6f69d493f61793c9c8112a15320fd",
+      "translation_text_hash": "e207583a84d32dfc7ebd8a081e3d06518b188851d2679c2b3ae421b356aee94c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 이 사람이 이스라엘을 구속할 자라고 바랐노라 이뿐 아니라 이 일이 된지가 사흘째요"
+      ],
+      "raw_text_hashes": [
+        "e207583a84d32dfc7ebd8a081e3d06518b188851d2679c2b3ae421b356aee94c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:22",
+      "sequence": 26013,
+      "chapter_label": "LUK 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "Also, certain women of our company amazed us, having arrived early at the tomb;",
+      "ko": "또한 우리 중에 어떤 여자들이 우리로 놀라게 하였으니 이는 저희가 새벽에 무덤에 갔다가",
+      "source_text_hash": "a6e54c63429d630a5bc4d0b205eb5e600b7243facc24183950651e56a070b546",
+      "translation_text_hash": "8a49be8a5e57cbe23224da5cf3a1a30b487cbff62be63f18c4ac6ad867d8ac9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 우리 중에 어떤 여자들이 우리로 놀라게 하였으니 이는 저희가 새벽에 무덤에 갔다가"
+      ],
+      "raw_text_hashes": [
+        "8a49be8a5e57cbe23224da5cf3a1a30b487cbff62be63f18c4ac6ad867d8ac9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:23",
+      "sequence": 26014,
+      "chapter_label": "LUK 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "and when they didn’t find his body, they came saying that they had also seen a vision of angels, who said that he was alive.",
+      "ko": "그의 시체는 보지 못하고 와서 그가 살으셨다 하는 천사들의 나타남을 보았다 함이라",
+      "source_text_hash": "e4a9be18c93e48b3944d3b58833f6802398fbc8fa8b6105f8ae5986dfc347602",
+      "translation_text_hash": "ae35551c16413656b9e5a7613fedc1fef591ec4931fdf4234241001612833f3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 시체는 보지 못하고 와서 그가 살으셨다 하는 천사들의 나타남을 보았다 함이라"
+      ],
+      "raw_text_hashes": [
+        "ae35551c16413656b9e5a7613fedc1fef591ec4931fdf4234241001612833f3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:24",
+      "sequence": 26015,
+      "chapter_label": "LUK 24",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 24
+        }
+      ],
+      "en": "Some of us went to the tomb and found it just like the women had said, but they didn’t see him.”",
+      "ko": "또 우리와 함께한 자 중에 두어 사람이 무덤에 가 과연 여자들의 말한 바와 같음을 보았으나 예수는 보지 못하였느니라 하거늘",
+      "source_text_hash": "78842237ccc56c53eb07b504b3febd061e931439de2629f3da8e891f0b08a42a",
+      "translation_text_hash": "bf88f70684fd4d973aff80ff2bab3e41748c278d6c3bea4232c3787657d1e0c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 우리와 함께한 자 중에 두어 사람이 무덤에 가 과연 여자들의 말한 바와 같음을 보았으나 예수는 보지 못하였느니라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "bf88f70684fd4d973aff80ff2bab3e41748c278d6c3bea4232c3787657d1e0c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:25",
+      "sequence": 26016,
+      "chapter_label": "LUK 24",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 25
+        }
+      ],
+      "en": "He said to them, “Foolish people, and slow of heart to believe in all that the prophets have spoken!",
+      "ko": "가라사대 미련하고 선지자들의 말한 모든 것을 마음에 더디 믿는 자들이여",
+      "source_text_hash": "f293b56344d1fe584d4fe739c3e7db685be7a76ea6e5ce2e84e2e7d784b55f3e",
+      "translation_text_hash": "1bbee885a72fa77c2da65ea0105929a439b9f3e2189e444efa113dea7fc8aaa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 미련하고 선지자들의 말한 모든 것을 마음에 더디 믿는 자들이여"
+      ],
+      "raw_text_hashes": [
+        "1bbee885a72fa77c2da65ea0105929a439b9f3e2189e444efa113dea7fc8aaa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:26",
+      "sequence": 26017,
+      "chapter_label": "LUK 24",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 26
+        }
+      ],
+      "en": "Didn’t the Christ have to suffer these things and to enter into his glory?”",
+      "ko": "그리스도가 이런 고난을 받고 자기의 영광에 들어가야 할 것이 아니냐 하시고",
+      "source_text_hash": "b131917dd0ed346f304028ee92cce6ffa5bc85589f6aba30c846fd485e802cb8",
+      "translation_text_hash": "217ce90de8b929063ce60037da2ddd2154989f294385c36a07d9a5739dc0f090",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도가 이런 고난을 받고 자기의 영광에 들어가야 할 것이 아니냐 하시고"
+      ],
+      "raw_text_hashes": [
+        "217ce90de8b929063ce60037da2ddd2154989f294385c36a07d9a5739dc0f090"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:27",
+      "sequence": 26018,
+      "chapter_label": "LUK 24",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 27
+        }
+      ],
+      "en": "Beginning from Moses and from all the prophets, he explained to them in all the Scriptures the things concerning himself.",
+      "ko": "이에 모세와 및 모든 선지자의 글로 시작하여 모든 성경에 쓴바 자기에 관한 것을 자세히 설명하시니라",
+      "source_text_hash": "3321b049c410f7caa80c084131105ebcb9ec2e6e6c293e125a1091d9d8cd0bdd",
+      "translation_text_hash": "cb9ed447ded3d8675bcd4728c37040538188e3345c6827bebdf3543c0f9fef5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모세와 및 모든 선지자의 글로 시작하여 모든 성경에 쓴바 자기에 관한 것을 자세히 설명하시니라"
+      ],
+      "raw_text_hashes": [
+        "cb9ed447ded3d8675bcd4728c37040538188e3345c6827bebdf3543c0f9fef5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:28",
+      "sequence": 26019,
+      "chapter_label": "LUK 24",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 28
+        }
+      ],
+      "en": "They came near to the village where they were going, and he acted like he would go further.",
+      "ko": "저희의 가는 촌에 가까이 가매 예수는 더 가려하는것 같이 하시니",
+      "source_text_hash": "ed1c3009f7800b7ce608e84a662ecf8c89009c83663aed8abd500b6e4c319771",
+      "translation_text_hash": "372d417ab739c5a94ed4deef586e988435e37de03e5cf9840ffabb2b58ea88d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 가는 촌에 가까이 가매 예수는 더 가려하는것 같이 하시니"
+      ],
+      "raw_text_hashes": [
+        "372d417ab739c5a94ed4deef586e988435e37de03e5cf9840ffabb2b58ea88d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:29",
+      "sequence": 26020,
+      "chapter_label": "LUK 24",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 29
+        }
+      ],
+      "en": "They urged him, saying, “Stay with us, for it is almost evening, and the day is almost over.” He went in to stay with them.",
+      "ko": "저희가 강권하여 가로되 우리와 함께 유하사이다 때가 저물어가고 날이 이미 기울었나이다 하니 이에 저희와 함께 유하러 들어 가시니라",
+      "source_text_hash": "953896526a6e2574c5bd15058f24a9109e91b720d95635132b91c53fbe0f2b19",
+      "translation_text_hash": "7c23463add261b3258ba5df0f6174b762f41e25ac7108d8a0e7521ba6c14c76f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 강권하여 가로되 우리와 함께 유하사이다 때가 저물어가고 날이 이미 기울었나이다 하니 이에 저희와 함께 유하러 들어 가시니라"
+      ],
+      "raw_text_hashes": [
+        "7c23463add261b3258ba5df0f6174b762f41e25ac7108d8a0e7521ba6c14c76f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:30",
+      "sequence": 26021,
+      "chapter_label": "LUK 24",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 30
+        }
+      ],
+      "en": "When he had sat down at the table with them, he took the bread and gave thanks. Breaking it, he gave it to them.",
+      "ko": "저희와 함께 음식 잡수실 때에 떡을 가지사 축사하시고 떼어 저희에게 주시매",
+      "source_text_hash": "0c8be00396ee8a71d052145a437b0a9d47960f6fd9b15da68e19dbe6562085cb",
+      "translation_text_hash": "253b07524e4f5016b11bbcb07a634bc99894766cc6483725adbfac0832848b59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희와 함께 음식 잡수실 때에 떡을 가지사 축사하시고 떼어 저희에게 주시매"
+      ],
+      "raw_text_hashes": [
+        "253b07524e4f5016b11bbcb07a634bc99894766cc6483725adbfac0832848b59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:31",
+      "sequence": 26022,
+      "chapter_label": "LUK 24",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 31
+        }
+      ],
+      "en": "Their eyes were opened and they recognized him; then he vanished out of their sight.",
+      "ko": "저희 눈이 밝아져 그인줄 알아 보더니 예수는 저희에게 보이지 아니하시는지라",
+      "source_text_hash": "8ebdafd97c0b4313c98463b5faa8e674e22a029743a8fa200fcecc1bc2c03c67",
+      "translation_text_hash": "7e845f6ccdeeb0158a42112dc4515dd00f6ef980bc6555fbf5a27b11bed308ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 눈이 밝아져 그인줄 알아 보더니 예수는 저희에게 보이지 아니하시는지라"
+      ],
+      "raw_text_hashes": [
+        "7e845f6ccdeeb0158a42112dc4515dd00f6ef980bc6555fbf5a27b11bed308ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:32",
+      "sequence": 26023,
+      "chapter_label": "LUK 24",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 32
+        }
+      ],
+      "en": "They said to one another, “Weren’t our hearts burning within us while he spoke to us along the way, and while he opened the Scriptures to us?”",
+      "ko": "저희가 서로 말하되 길에서 우리에게 말씀하시고 우리에게 성경을 풀어 주실 때에 우리 속에서 마음이 뜨겁지 아니하더냐 하고",
+      "source_text_hash": "b62a03838aca5d593f2dffd85d9786b79010d12d3f20fc9784aaec8e1ffa673c",
+      "translation_text_hash": "0fd30d9bc4cbb423c2fe11bfb0a674d59e593824bbd2ee5ae3a023622cc59f4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 서로 말하되 길에서 우리에게 말씀하시고 우리에게 성경을 풀어 주실 때에 우리 속에서 마음이 뜨겁지 아니하더냐 하고"
+      ],
+      "raw_text_hashes": [
+        "0fd30d9bc4cbb423c2fe11bfb0a674d59e593824bbd2ee5ae3a023622cc59f4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:33",
+      "sequence": 26024,
+      "chapter_label": "LUK 24",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 33
+        }
+      ],
+      "en": "They rose up that very hour, returned to Jerusalem, and found the eleven gathered together, and those who were with them,",
+      "ko": "곧 그시로 일어나 예루살렘에 돌아가 보니 열 한 사도와 및 그와 함께한 자들이 모여 있어",
+      "source_text_hash": "9c1e743900f8c0922af1917bfc6914618f7c898fb1624b207590307ec9de2bf1",
+      "translation_text_hash": "de055702c2a809ff32017b91f69bf8d1ebca2e3363c665cc8113f6fcd0fae45d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그시로 일어나 예루살렘에 돌아가 보니 열 한 사도와 및 그와 함께한 자들이 모여 있어"
+      ],
+      "raw_text_hashes": [
+        "de055702c2a809ff32017b91f69bf8d1ebca2e3363c665cc8113f6fcd0fae45d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:34",
+      "sequence": 26025,
+      "chapter_label": "LUK 24",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 34
+        }
+      ],
+      "en": "saying, “The Lord is risen indeed, and has appeared to Simon!”",
+      "ko": "말하기를 주께서 과연 살아나시고 시몬에게 나타나셨다 하는지라",
+      "source_text_hash": "c4cdb0b1493f075e1e320264e25892eec2468643cf6c338813d54f242971927e",
+      "translation_text_hash": "1384f9285d9ffdeb28b5cbbceaab825aec532611e1789eee1f0650072e3aa341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 주께서 과연 살아나시고 시몬에게 나타나셨다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "1384f9285d9ffdeb28b5cbbceaab825aec532611e1789eee1f0650072e3aa341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:35",
+      "sequence": 26026,
+      "chapter_label": "LUK 24",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 35
+        }
+      ],
+      "en": "They related the things that happened along the way, and how he was recognized by them in the breaking of the bread.",
+      "ko": "두 사람도 길에서 된 일과 예수께서 떡을 떼심으로 자기들에게 알려지신 것을 말하더라",
+      "source_text_hash": "7e77a593166f2004b3e6db417b83a76ab2f15688c0246ffc7d1f8a815fcf905a",
+      "translation_text_hash": "e084912f7cab7b786fdd1898fdd16e9a8a48015a3fff117b72320996f09be76a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람도 길에서 된 일과 예수께서 떡을 떼심으로 자기들에게 알려지신 것을 말하더라"
+      ],
+      "raw_text_hashes": [
+        "e084912f7cab7b786fdd1898fdd16e9a8a48015a3fff117b72320996f09be76a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:36",
+      "sequence": 26027,
+      "chapter_label": "LUK 24",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 36
+        }
+      ],
+      "en": "As they said these things, Jesus himself stood among them, and said to them, “Peace be to you.”",
+      "ko": "이 말을 할 때에 예수께서 친히 그 가운데 서서 가라사대 너희에게 평강이 있을찌어다 하시니",
+      "source_text_hash": "666fef2b19f477ddd19c46be169b37448eef6229fd58029e37e1096c42e89b16",
+      "translation_text_hash": "5a4cd38ea8e8e59ac9ab58019c4cf10658946f034cf5b9c6cdcc58337f8dd0b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말을 할 때에 예수께서 친히 그 가운데 서서 가라사대 너희에게 평강이 있을찌어다 하시니"
+      ],
+      "raw_text_hashes": [
+        "5a4cd38ea8e8e59ac9ab58019c4cf10658946f034cf5b9c6cdcc58337f8dd0b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:37",
+      "sequence": 26028,
+      "chapter_label": "LUK 24",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 37
+        }
+      ],
+      "en": "But they were terrified and filled with fear, and supposed that they had seen a spirit.",
+      "ko": "저희가 놀라고 무서워하여 그 보는 것을 영으로 생각하는지라",
+      "source_text_hash": "77fecd313ad81b267f24ce8461e1ea5921446840bb6dc0d0c725f44a44575b77",
+      "translation_text_hash": "7349d76c32b6d05e2259a7aec65c32e17adaab24800cb588a2c0958d36da33ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 놀라고 무서워하여 그 보는 것을 영으로 생각하는지라"
+      ],
+      "raw_text_hashes": [
+        "7349d76c32b6d05e2259a7aec65c32e17adaab24800cb588a2c0958d36da33ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:38",
+      "sequence": 26029,
+      "chapter_label": "LUK 24",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 38
+        }
+      ],
+      "en": "He said to them, “Why are you troubled? Why do doubts arise in your hearts?",
+      "ko": "예수께서 가라사대 어찌하여 두려워하며 어찌하여 마음에 의심이 일어나느냐",
+      "source_text_hash": "c8311b5a486214c2b84fee6e8c52a9ff10ade5c8656ae3d3984cd420728f7a8b",
+      "translation_text_hash": "1d7dbd6f4099f1adb148e6b5c9999ab52e9b2a90c6f5b98966681967596add89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 어찌하여 두려워하며 어찌하여 마음에 의심이 일어나느냐"
+      ],
+      "raw_text_hashes": [
+        "1d7dbd6f4099f1adb148e6b5c9999ab52e9b2a90c6f5b98966681967596add89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:39",
+      "sequence": 26030,
+      "chapter_label": "LUK 24",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 39
+        }
+      ],
+      "en": "See my hands and my feet, that it is truly me. Touch me and see, for a spirit doesn’t have flesh and bones, as you see that I have.”",
+      "ko": "내 손과 발을 보고 나인줄 알라 또 나를 만져보라 영은 살과 뼈가 없으되 너희 보는 바와 같이 나는 있느니라",
+      "source_text_hash": "3d0cd5e15d4a670b3cf7099749f3738a76c6b1604084b6799947098479340166",
+      "translation_text_hash": "203a25a965c78dd5d87c699ff50b8890da3c3141f2a60f32c1c532e8a1469a74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 손과 발을 보고 나인줄 알라 또 나를 만져보라 영은 살과 뼈가 없으되 너희 보는 바와 같이 나는 있느니라"
+      ],
+      "raw_text_hashes": [
+        "203a25a965c78dd5d87c699ff50b8890da3c3141f2a60f32c1c532e8a1469a74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:40",
+      "sequence": 26031,
+      "chapter_label": "LUK 24",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 40
+        }
+      ],
+      "en": "When he had said this, he showed them his hands and his feet.",
+      "ko": "이 말씀을 하시고 손과 발을 보이시나",
+      "source_text_hash": "d5a8cfaf391dd2d6e0633ebd71053e4820c2c900d17fcd1344daeda8128c2fd3",
+      "translation_text_hash": "a823c36ebd11f067d38b224ec23e02dd67a4e6f29a4b6f4d22b96ea8e0f44938",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하시고 손과 발을 보이시나"
+      ],
+      "raw_text_hashes": [
+        "a823c36ebd11f067d38b224ec23e02dd67a4e6f29a4b6f4d22b96ea8e0f44938"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:41",
+      "sequence": 26032,
+      "chapter_label": "LUK 24",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 41
+        }
+      ],
+      "en": "While they still didn’t believe for joy, and wondered, he said to them, “Do you have anything here to eat?”",
+      "ko": "저희가 너무 기쁘므로 오히려 믿지 못하고 기이히 여길 때에 이르시되 여기 무슨 먹을 것이 있느냐 하시니",
+      "source_text_hash": "ed669ef2932b6370c2a883316b40b9f90ae5ab4082298b5eca624ae6c4e8470c",
+      "translation_text_hash": "458fdbcac9ffd6bcf6ceb5706bac06b06d6c2399d40526fb2c48cc6b83184165",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 너무 기쁘므로 오히려 믿지 못하고 기이히 여길 때에 이르시되 여기 무슨 먹을 것이 있느냐 하시니"
+      ],
+      "raw_text_hashes": [
+        "458fdbcac9ffd6bcf6ceb5706bac06b06d6c2399d40526fb2c48cc6b83184165"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:42",
+      "sequence": 26033,
+      "chapter_label": "LUK 24",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 42
+        }
+      ],
+      "en": "They gave him a piece of a broiled fish and some honeycomb.",
+      "ko": "이에 구운 생선 한 토막을 드리매",
+      "source_text_hash": "22f8c24080bca11a8575059320abc262bb448dbfc20911c0e1387a5e36b3069d",
+      "translation_text_hash": "0a8bf9fd3334cadbed2d52ec2f29cd6a020caefd20b0e0e566682f91970be989",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 구운 생선 한 토막을 드리매"
+      ],
+      "raw_text_hashes": [
+        "0a8bf9fd3334cadbed2d52ec2f29cd6a020caefd20b0e0e566682f91970be989"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:43",
+      "sequence": 26034,
+      "chapter_label": "LUK 24",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 43
+        }
+      ],
+      "en": "He took them, and ate in front of them.",
+      "ko": "받으사 그 앞에서 잡수시더라",
+      "source_text_hash": "72ca77bc1ff1271d6c136728057b5f818650cf575a0998184d110d495a4141df",
+      "translation_text_hash": "55b251f99684106d10001f1e1942b068397e60ded5ba2a913efc541c0351177e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "받으사 그 앞에서 잡수시더라"
+      ],
+      "raw_text_hashes": [
+        "55b251f99684106d10001f1e1942b068397e60ded5ba2a913efc541c0351177e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:44",
+      "sequence": 26035,
+      "chapter_label": "LUK 24",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 44
+        }
+      ],
+      "en": "He said to them, “This is what I told you while I was still with you, that all things which are written in the law of Moses, the prophets, and the psalms concerning me must be fulfilled.”",
+      "ko": "또 이르시되 내가 너희와 함께 있을 때에 너희에게 말한바 곧 모세의 율법과 선지자의 글과 시편에 나를 가리켜 기록된 모든 것이 이루어져야 하리라 한 말이 이것이라 하시고",
+      "source_text_hash": "af8f01da0abd509be6db0105344b593857b4f6f4a25845becc459223853fd4ef",
+      "translation_text_hash": "7b36ff6aa8a4f2c364274ec3b47b2913f9d56366a5a469d7dbc8a54d9d80dcf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르시되 내가 너희와 함께 있을 때에 너희에게 말한바 곧 모세의 율법과 선지자의 글과 시편에 나를 가리켜 기록된 모든 것이 이루어져야 하리라 한 말이 이것이라 하시고"
+      ],
+      "raw_text_hashes": [
+        "7b36ff6aa8a4f2c364274ec3b47b2913f9d56366a5a469d7dbc8a54d9d80dcf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:45",
+      "sequence": 26036,
+      "chapter_label": "LUK 24",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 45
+        }
+      ],
+      "en": "Then he opened their minds, that they might understand the Scriptures.",
+      "ko": "이에 저희 마음을 열어 성경을 깨닫게 하시고",
+      "source_text_hash": "8e0dcd35f567761234ad5fa37f6a2d65c9bcd5dd9dd934790ac2cb1236f17da2",
+      "translation_text_hash": "33855fe12c15563855dd65044133d7f824163f985b5ac13b64aede5ac0269e05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희 마음을 열어 성경을 깨닫게 하시고"
+      ],
+      "raw_text_hashes": [
+        "33855fe12c15563855dd65044133d7f824163f985b5ac13b64aede5ac0269e05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:46",
+      "sequence": 26037,
+      "chapter_label": "LUK 24",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 46
+        }
+      ],
+      "en": "He said to them, “Thus it is written, and thus it was necessary for the Christ to suffer and to rise from the dead the third day,",
+      "ko": "또 이르시되 이같이 그리스도가 고난을 받고 제 삼일에 죽은 자 가운데서 살아날 것과",
+      "source_text_hash": "9a6322d172dc7018e520b6f01cdd90ac527cc920f745bead310a58fa04f0eec6",
+      "translation_text_hash": "f918528c1ad4b717f8df5e47fc16c4fa725bcb0e3d0431c17cfb0208e4dd1586",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르시되 이같이 그리스도가 고난을 받고 제 삼일에 죽은 자 가운데서 살아날 것과"
+      ],
+      "raw_text_hashes": [
+        "f918528c1ad4b717f8df5e47fc16c4fa725bcb0e3d0431c17cfb0208e4dd1586"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:47",
+      "sequence": 26038,
+      "chapter_label": "LUK 24",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 47
+        }
+      ],
+      "en": "and that repentance and remission of sins should be preached in his name to all the nations, beginning at Jerusalem.",
+      "ko": "또 그의 이름으로 죄 사함을 얻게 하는 회개가 예루살렘으로부터 시작하여 모든 족속에게 전파될 것이 기록되었으니",
+      "source_text_hash": "d37d53bb7b9b0c50e7cc17916c63f8eaa7196cef964f937c682a5efdd5e00284",
+      "translation_text_hash": "5df175bce15ae7b5cb995eed771948ce2932dd6ab8cf683fe2ce175cc19cc197",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그의 이름으로 죄 사함을 얻게 하는 회개가 예루살렘으로부터 시작하여 모든 족속에게 전파될 것이 기록되었으니"
+      ],
+      "raw_text_hashes": [
+        "5df175bce15ae7b5cb995eed771948ce2932dd6ab8cf683fe2ce175cc19cc197"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:48",
+      "sequence": 26039,
+      "chapter_label": "LUK 24",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 48
+        }
+      ],
+      "en": "You are witnesses of these things.",
+      "ko": "너희는 이 모든 일의 증인이라",
+      "source_text_hash": "9394816de76828c366124df71d2f34e94c3e2068017e474780d041d4cd5ee25a",
+      "translation_text_hash": "071a82bbe8d2bc21e95f92d59c6386e052c0b127b3070cd5833b2cfbc4383e6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 모든 일의 증인이라"
+      ],
+      "raw_text_hashes": [
+        "071a82bbe8d2bc21e95f92d59c6386e052c0b127b3070cd5833b2cfbc4383e6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:49",
+      "sequence": 26040,
+      "chapter_label": "LUK 24",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 49
+        }
+      ],
+      "en": "Behold, I send out the promise of my Father on you. But wait in the city of Jerusalem until you are clothed with power from on high.”",
+      "ko": "볼찌어다 내가 내 아버지의 약속하신 것을 너희에게 보내리니 너희는 위로부터 능력을 입히울 때까지 이 성에 유하라 하시니라",
+      "source_text_hash": "ed8d26751aa9f28b55a0b90b63c9711916185ad4238b48d59033e5369470640b",
+      "translation_text_hash": "57dccb46199f8ea6c1fc7455217bb6fb5eba3e76f4f179cb3389965b2a42de02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "볼찌어다 내가 내 아버지의 약속하신 것을 너희에게 보내리니 너희는 위로부터 능력을 입히울 때까지 이 성에 유하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "57dccb46199f8ea6c1fc7455217bb6fb5eba3e76f4f179cb3389965b2a42de02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:50",
+      "sequence": 26041,
+      "chapter_label": "LUK 24",
+      "verse_label": "50",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 50
+        }
+      ],
+      "en": "He led them out as far as Bethany, and he lifted up his hands and blessed them.",
+      "ko": "예수께서 저희를 데리고 베다니 앞까지 나가사 손을 들어 저희에게 축복하시더니",
+      "source_text_hash": "fc575ecefdde4b23828cff8d326b560dec557451ae455056fad6d443dcf702de",
+      "translation_text_hash": "ef141e0c69a659f14658641ceb661e904c905022472b0c753ed2a10da42e9d37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희를 데리고 베다니 앞까지 나가사 손을 들어 저희에게 축복하시더니"
+      ],
+      "raw_text_hashes": [
+        "ef141e0c69a659f14658641ceb661e904c905022472b0c753ed2a10da42e9d37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:51",
+      "sequence": 26042,
+      "chapter_label": "LUK 24",
+      "verse_label": "51",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 51
+        }
+      ],
+      "en": "While he blessed them, he withdrew from them and was carried up into heaven.",
+      "ko": "축복하실 때에 저희를 떠나 [하늘로 올리우]시니",
+      "source_text_hash": "2ad573487c834d160fbec7e053650055ebc16bcb779e4bd05c2ad16d8525cfcf",
+      "translation_text_hash": "38d0923c8684a9a490d8f1486b7232002a70d3030458b6c37cfcbcf729eca75d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "축복하실 때에 저희를 떠나 [하늘로 올리우]시니"
+      ],
+      "raw_text_hashes": [
+        "38d0923c8684a9a490d8f1486b7232002a70d3030458b6c37cfcbcf729eca75d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:52",
+      "sequence": 26043,
+      "chapter_label": "LUK 24",
+      "verse_label": "52",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 52
+        }
+      ],
+      "en": "They worshiped him and returned to Jerusalem with great joy,",
+      "ko": "저희가 [그에게 경배하고] 큰 기쁨으로 예루살렘에 돌아가",
+      "source_text_hash": "63f5fcdcb88d2b598cbdecfb064fd49dde74910ed0441cb4bd6664b7b1a4846c",
+      "translation_text_hash": "8df52f87d370075c100ca436730848150a1717c78e24f1ffcf63628ff10b500b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 [그에게 경배하고] 큰 기쁨으로 예루살렘에 돌아가"
+      ],
+      "raw_text_hashes": [
+        "8df52f87d370075c100ca436730848150a1717c78e24f1ffcf63628ff10b500b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:24:53",
+      "sequence": 26044,
+      "chapter_label": "LUK 24",
+      "verse_label": "53",
+      "locator": {
+        "book": "LUK",
+        "chapter": 24,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 24,
+          "verse": 53
+        }
+      ],
+      "en": "and were continually in the temple, praising and blessing God. Amen.",
+      "ko": "늘 성전에 있어 하나님을 찬송하니라",
+      "source_text_hash": "8c1d9399ac5b28bb80141da924b9c39ba57f00e2ccd899bf883789898bea63c4",
+      "translation_text_hash": "53a9b920c7ad42f38f4a7e9ec965af5c9d9fc677a93a50bf9f78906ed3bb6a70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늘 성전에 있어 하나님을 찬송하니라"
+      ],
+      "raw_text_hashes": [
+        "53a9b920c7ad42f38f4a7e9ec965af5c9d9fc677a93a50bf9f78906ed3bb6a70"
+      ]
+    }
+  ]
+}

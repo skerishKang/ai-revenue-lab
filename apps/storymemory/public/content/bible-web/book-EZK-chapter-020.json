@@ -1,0 +1,1581 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:020",
+  "unit_ordinal": 822,
+  "unit_label": "EZK 20",
+  "book_code": "EZK",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:20:1",
+      "sequence": 20897,
+      "chapter_label": "EZK 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "In the seventh year, in the fifth month, the tenth day of the month, some of the elders of Israel came to inquire of the LORD, and sat before me.",
+      "ko": "제 칠년 오월 십일에 이스라엘 장로 두어사람이 여호와께 물으려고 와서 내 앞에 앉으니",
+      "source_text_hash": "29a4e11931a405a4c2a6a2ca4bf730c146d341d5d1c338b3f495927ee5617898",
+      "translation_text_hash": "39cfefb95448b2a2a42ad37bf2c28707e86cf1b27284c94b7dd62fbf84fad414",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠년 오월 십일에 이스라엘 장로 두어사람이 여호와께 물으려고 와서 내 앞에 앉으니"
+      ],
+      "raw_text_hashes": [
+        "39cfefb95448b2a2a42ad37bf2c28707e86cf1b27284c94b7dd62fbf84fad414"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:2",
+      "sequence": 20898,
+      "chapter_label": "EZK 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:3",
+      "sequence": 20899,
+      "chapter_label": "EZK 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "“Son of man, speak to the elders of Israel, and tell them, ‘The Lord GOD says: “Is it to inquire of me that you have come? As I live,” says the Lord GOD, “I will not be inquired of by you.”’",
+      "ko": "인자야 이스라엘 장로들에게 고하여 이르기를 주 여호와의 말씀에 너희가 내게 물으려고 왔느냐 나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 너희가 내게 묻기를 내가 용납지 아니하리라 하셨다 하라",
+      "source_text_hash": "e2fd58242fab3e244742633212198d42597658adb15132e36c42a1d4e5f59cbe",
+      "translation_text_hash": "43bb1c9cd272982d6a9f8f1364ddc68895e2f12d48061ef55459cc422f6f900a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 이스라엘 장로들에게 고하여 이르기를 주 여호와의 말씀에 너희가 내게 물으려고 왔느냐 나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 너희가 내게 묻기를 내가 용납지 아니하리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "43bb1c9cd272982d6a9f8f1364ddc68895e2f12d48061ef55459cc422f6f900a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:4",
+      "sequence": 20900,
+      "chapter_label": "EZK 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "“Will you judge them, son of man? Will you judge them? Cause them to know the abominations of their fathers.",
+      "ko": "인자야 네가 그들을 국문하려느냐 네가 그들을 국문하려느냐 너는 그들로 그 열조의 가증한 일을 알게 하여",
+      "source_text_hash": "e1e5175e836a253f9ed9ef0a20f765ddf6f858880f490e4b145078ac5cffe29d",
+      "translation_text_hash": "b632c08e977e935634fc58a449bb7b82902e26c345d8d99a8dab875325d97e5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 네가 그들을 국문하려느냐 네가 그들을 국문하려느냐 너는 그들로 그 열조의 가증한 일을 알게 하여"
+      ],
+      "raw_text_hashes": [
+        "b632c08e977e935634fc58a449bb7b82902e26c345d8d99a8dab875325d97e5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:5",
+      "sequence": 20901,
+      "chapter_label": "EZK 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "Tell them, ‘The Lord GOD says: “In the day when I chose Israel, and swore to the offspring of the house of Jacob, and made myself known to them in the land of Egypt, when I swore to them, saying, ‘I am the LORD your God;’",
+      "ko": "이르기를 주 여호와의 말씀에 옛날에 내가 이스라엘을 택하고 야곱 집의 후예를 향하여 맹세하고 애굽 땅에서 그들에게 나타나서 맹세하여 이르기를 나는 여호와 너희 하나님이라 하였었노라",
+      "source_text_hash": "7b5c1fe5d3accb310418cba12b27c1bfe9fe0606a64c51f2c8f27b2a009d6220",
+      "translation_text_hash": "27b7b713f39e3f6495b644be4d28abbf97314202f1c2828692ab184d2ed33192",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 주 여호와의 말씀에 옛날에 내가 이스라엘을 택하고 야곱 집의 후예를 향하여 맹세하고 애굽 땅에서 그들에게 나타나서 맹세하여 이르기를 나는 여호와 너희 하나님이라 하였었노라"
+      ],
+      "raw_text_hashes": [
+        "27b7b713f39e3f6495b644be4d28abbf97314202f1c2828692ab184d2ed33192"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:6",
+      "sequence": 20902,
+      "chapter_label": "EZK 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "in that day I swore to them to bring them out of the land of Egypt into a land that I had searched out for them, flowing with milk and honey, which is the glory of all lands.",
+      "ko": "그 날에 내가 그들에게 맹세하기를 애굽 땅에서 인도하여 내어서 그들을 위하여 찾아 두었던 땅 곧 젖과 꿀이 흐르는 땅이요 모든 땅 중의 아름다운 곳에 이르게 하리라 하고",
+      "source_text_hash": "ea3b3de0936fed82f2c42532e87ae9e50364a9f00c62787f3648750619ea0579",
+      "translation_text_hash": "6ba55c94248388f2267344a5fe5e0d4374298161cf2c18d18ed4b83dbbb1fd8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 내가 그들에게 맹세하기를 애굽 땅에서 인도하여 내어서 그들을 위하여 찾아 두었던 땅 곧 젖과 꿀이 흐르는 땅이요 모든 땅 중의 아름다운 곳에 이르게 하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "6ba55c94248388f2267344a5fe5e0d4374298161cf2c18d18ed4b83dbbb1fd8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:7",
+      "sequence": 20903,
+      "chapter_label": "EZK 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "I said to them, ‘Each of you throw away the abominations of his eyes. Don’t defile yourselves with the idols of Egypt. I am the LORD your God.’",
+      "ko": "또 그들에게 이르기를 너희는 눈을 드는바 가증한 것을 각기 버리고 애굽의 우상들로 스스로 더럽히지 말라 나는 여호와 너희 하나님이니라 하였으나",
+      "source_text_hash": "3be090dd85d72ede6fbc8ea77114198b110467253b8ef3637d58464e3ec1aab0",
+      "translation_text_hash": "14fdb032606c2af1b40e14cf44b88584828d4ee45b9fe389d2d35436d007a734",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들에게 이르기를 너희는 눈을 드는바 가증한 것을 각기 버리고 애굽의 우상들로 스스로 더럽히지 말라 나는 여호와 너희 하나님이니라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "14fdb032606c2af1b40e14cf44b88584828d4ee45b9fe389d2d35436d007a734"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:8",
+      "sequence": 20904,
+      "chapter_label": "EZK 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "“‘“But they rebelled against me and wouldn’t listen to me. They didn’t all throw away the abominations of their eyes. They also didn’t forsake the idols of Egypt. Then I said I would pour out my wrath on them, to accomplish my anger against them in the middle of the land of Egypt.",
+      "ko": "그들이 내게 패역하여 내 말을 즐겨 듣지 아니하고 그 눈을 드는바 가증한 것을 각기 버리지 아니하며 애굽의 우상들을 떠나지 아니하므로 내가 말하기를 내가 애굽 땅에서 나의 분을 그들의 위에 쏟으며 노를 그들에게 이루리라 하였었노라",
+      "source_text_hash": "26443a960574c0f90604d5382423e4d009cc0fdd1f819dcd572e492f5f51ddba",
+      "translation_text_hash": "0fba4e94fb5c12fcfa7e2a7eb48652d172fc67e1d351fb8c390bdd278e03b6a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 내게 패역하여 내 말을 즐겨 듣지 아니하고 그 눈을 드는바 가증한 것을 각기 버리지 아니하며 애굽의 우상들을 떠나지 아니하므로 내가 말하기를 내가 애굽 땅에서 나의 분을 그들의 위에 쏟으며 노를 그들에게 이루리라 하였었노라"
+      ],
+      "raw_text_hashes": [
+        "0fba4e94fb5c12fcfa7e2a7eb48652d172fc67e1d351fb8c390bdd278e03b6a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:9",
+      "sequence": 20905,
+      "chapter_label": "EZK 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "But I worked for my name’s sake, that it should not be profaned in the sight of the nations among which they were, in whose sight I made myself known to them in bringing them out of the land of Egypt.",
+      "ko": "그러나 내가 그들의 거하는 이방인의 목전에서 그들에게 나타나서 그들을 애굽 땅에서 인도하여 내었었나니 이는 내 이름을 위함이라 내 이름을 그 이방인의 목전에서 더럽히지 않으려하여 행하였음이로라",
+      "source_text_hash": "bf2945dc86eccc36269cf864d0cca6af889fc6e3821b9c962ea87815aa477f0f",
+      "translation_text_hash": "cee4dbcd9ee8736fddd4654d7ba596f61458979411fe1fbd7265b5ec570143a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 그들의 거하는 이방인의 목전에서 그들에게 나타나서 그들을 애굽 땅에서 인도하여 내었었나니 이는 내 이름을 위함이라 내 이름을 그 이방인의 목전에서 더럽히지 않으려하여 행하였음이로라"
+      ],
+      "raw_text_hashes": [
+        "cee4dbcd9ee8736fddd4654d7ba596f61458979411fe1fbd7265b5ec570143a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:10",
+      "sequence": 20906,
+      "chapter_label": "EZK 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "So I caused them to go out of the land of Egypt and brought them into the wilderness.",
+      "ko": "그러므로 내가 그들로 애굽 땅에서 나와서 광야에 이르게 하고",
+      "source_text_hash": "ecf09416e0d42306c2e49c384c3c6b5854b37dcdac3653eafef18b5b28d183e4",
+      "translation_text_hash": "dec38f26dae093bb2d38e996b82e36bec979eb6210fe98f540ac25a3e5132660",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 그들로 애굽 땅에서 나와서 광야에 이르게 하고"
+      ],
+      "raw_text_hashes": [
+        "dec38f26dae093bb2d38e996b82e36bec979eb6210fe98f540ac25a3e5132660"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:11",
+      "sequence": 20907,
+      "chapter_label": "EZK 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "I gave them my statutes and showed them my ordinances, which if a man does, he will live in them.",
+      "ko": "사람이 준행하면 그로 인하여 삶을 얻을 내 율례를 주며 내 규례를 알게 하였고",
+      "source_text_hash": "af40e72651952a736d2181fbab1942be14b2e82cc2b07d991a39a939e2ab197d",
+      "translation_text_hash": "3753e3cd6b95c209d440a7c5e5529e77fb5d03ab8dd67b505f7d6613ad0aa037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 준행하면 그로 인하여 삶을 얻을 내 율례를 주며 내 규례를 알게 하였고"
+      ],
+      "raw_text_hashes": [
+        "3753e3cd6b95c209d440a7c5e5529e77fb5d03ab8dd67b505f7d6613ad0aa037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:12",
+      "sequence": 20908,
+      "chapter_label": "EZK 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "Moreover also I gave them my Sabbaths, to be a sign between me and them, that they might know that I am the LORD who sanctifies them.",
+      "ko": "또 나는 그들을 거룩하게 하는 여호와인줄 알게 하려 하여 내가 내 안식일을 주어 그들과 나 사이에 표징을 삼았었노라",
+      "source_text_hash": "81bafff45b6d8f822daea9dced890572d2175c435760360054c677276e53f82e",
+      "translation_text_hash": "44466391677af92baa8db049dfdd70690a44f8ac3d2bf717105bc09dc00c649e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 나는 그들을 거룩하게 하는 여호와인줄 알게 하려 하여 내가 내 안식일을 주어 그들과 나 사이에 표징을 삼았었노라"
+      ],
+      "raw_text_hashes": [
+        "44466391677af92baa8db049dfdd70690a44f8ac3d2bf717105bc09dc00c649e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:13",
+      "sequence": 20909,
+      "chapter_label": "EZK 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "“‘“But the house of Israel rebelled against me in the wilderness. They didn’t walk in my statutes and they rejected my ordinances, which if a man keeps, he shall live in them. They greatly profaned my Sabbaths. Then I said I would pour out my wrath on them in the wilderness, to consume them.",
+      "ko": "그러나 이스라엘 족속이 광야에서 내게 패역하여 사람이 준행하면 그로 인하여 삶을 얻을 나의 율례를 준행치 아니하며 나의 규례를 멸시하였고 나의 안식일을 크게 더럽혔으므로 내가 이르기를 내가 내 분노를 광야에서 그들의 위에 쏟아 멸하리라 하였으나",
+      "source_text_hash": "6cc309c65f4e31c12d922f081c22a5bf083d1e9d8c58c8297eb7e49921c59020",
+      "translation_text_hash": "6189abe29add1569f28bafee8d14a590884a523a8f3b5ad97e77c72e9812c6f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이스라엘 족속이 광야에서 내게 패역하여 사람이 준행하면 그로 인하여 삶을 얻을 나의 율례를 준행치 아니하며 나의 규례를 멸시하였고 나의 안식일을 크게 더럽혔으므로 내가 이르기를 내가 내 분노를 광야에서 그들의 위에 쏟아 멸하리라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "6189abe29add1569f28bafee8d14a590884a523a8f3b5ad97e77c72e9812c6f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:14",
+      "sequence": 20910,
+      "chapter_label": "EZK 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "But I worked for my name’s sake, that it should not be profaned in the sight of the nations, in whose sight I brought them out.",
+      "ko": "내가 내 이름을 위하여 달리 행하였었나니 내가 그들을 인도하여 내는 것을 목도한 열국 앞에서 내 이름을 더럽히지 아니하려 하였음이로라",
+      "source_text_hash": "19eae61f7a50d67463e6fc5f527760c5fd701b23fbdd79b9b46dd81f91c2c16f",
+      "translation_text_hash": "53b452e460852bd0b3b3ea38ead0fd92df3d0c0112c334dc9e9c07bb98fcf008",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 이름을 위하여 달리 행하였었나니 내가 그들을 인도하여 내는 것을 목도한 열국 앞에서 내 이름을 더럽히지 아니하려 하였음이로라"
+      ],
+      "raw_text_hashes": [
+        "53b452e460852bd0b3b3ea38ead0fd92df3d0c0112c334dc9e9c07bb98fcf008"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:15",
+      "sequence": 20911,
+      "chapter_label": "EZK 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "Moreover also I swore to them in the wilderness that I would not bring them into the land which I had given them, flowing with milk and honey, which is the glory of all lands,",
+      "ko": "또 내가 광야에서 그들에게 맹세하기를 내가 그들에게 허한 땅 곧 젖과 꿀이 흐르는 땅이요 모든 땅 중의 아름다운 곳으로 그들을 인도하여 들이지 아니하리라 한 것은",
+      "source_text_hash": "54c945bc7d443a66e1173f499d945770fc78402db6df0799e0d84e1c536c1be7",
+      "translation_text_hash": "a194eeb06efd49a0455a956565c152a4eea947580321571beb5f0a06c92e9237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 광야에서 그들에게 맹세하기를 내가 그들에게 허한 땅 곧 젖과 꿀이 흐르는 땅이요 모든 땅 중의 아름다운 곳으로 그들을 인도하여 들이지 아니하리라 한 것은"
+      ],
+      "raw_text_hashes": [
+        "a194eeb06efd49a0455a956565c152a4eea947580321571beb5f0a06c92e9237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:16",
+      "sequence": 20912,
+      "chapter_label": "EZK 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "because they rejected my ordinances, and didn’t walk in my statutes, and profaned my Sabbaths; for their heart went after their idols.",
+      "ko": "그들이 마음으로 우상을 좇아 나의 규례를 업신여기며 나의 율례를 행치 아니하며 나의 안식일을 더럽혔음이니라",
+      "source_text_hash": "bc0cb5290c92e9b90d5795c3483f3298b22a8749b549b56400c9dcb3e0060db6",
+      "translation_text_hash": "4423d32d8891f3a284fd2f900097afdb9938d85d3284affaecc7db1260b4a521",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 마음으로 우상을 좇아 나의 규례를 업신여기며 나의 율례를 행치 아니하며 나의 안식일을 더럽혔음이니라"
+      ],
+      "raw_text_hashes": [
+        "4423d32d8891f3a284fd2f900097afdb9938d85d3284affaecc7db1260b4a521"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:17",
+      "sequence": 20913,
+      "chapter_label": "EZK 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "Nevertheless my eye spared them, and I didn’t destroy them. I didn’t make a full end of them in the wilderness.",
+      "ko": "그러나 내가 그들을 아껴 보아 광야에서 멸하여 아주 없이 하지 아니하였었노라",
+      "source_text_hash": "47a99cfa72d8eabf5d517bc2dd94c61d674a5a9b6f0507180887560ca6847aab",
+      "translation_text_hash": "4188f08b61981675f9f7a3c5aa98bf33351a723d02097efaab2b9c9e5bf26249",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 그들을 아껴 보아 광야에서 멸하여 아주 없이 하지 아니하였었노라"
+      ],
+      "raw_text_hashes": [
+        "4188f08b61981675f9f7a3c5aa98bf33351a723d02097efaab2b9c9e5bf26249"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:18",
+      "sequence": 20914,
+      "chapter_label": "EZK 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "I said to their children in the wilderness, ‘Don’t walk in the statutes of your fathers. Don’t observe their ordinances or defile yourselves with their idols.",
+      "ko": "내가 광야에서 그들의 자손에게 이르기를 너희 열조의 율례를 좇지 말며 그 규례를 지키지 말며 그 우상들로 스스로 더럽히지 말라",
+      "source_text_hash": "8d3b20f8e5a0182dfb0eabd6446ba7f0512a4cacb94602c384e1f95d9281bcb8",
+      "translation_text_hash": "e1c525a0f39ec372226bd52f816aece357d28fefe2a89e71ac27a8646c868b8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 광야에서 그들의 자손에게 이르기를 너희 열조의 율례를 좇지 말며 그 규례를 지키지 말며 그 우상들로 스스로 더럽히지 말라"
+      ],
+      "raw_text_hashes": [
+        "e1c525a0f39ec372226bd52f816aece357d28fefe2a89e71ac27a8646c868b8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:19",
+      "sequence": 20915,
+      "chapter_label": "EZK 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "I am the LORD your God. Walk in my statutes, keep my ordinances, and do them.",
+      "ko": "나는 여호와 너희 하나님이라 너희는 나의 율례를 좇으며 나의 규례를 지켜 행하고",
+      "source_text_hash": "8e5dd02828670aa0383f1f0569fb7e0f7a2809fdcce38544b4dfb748d0a87715",
+      "translation_text_hash": "8593deab1135902cde6a4fcfb7208e7467a2ee764787c65a362dd591f8991dc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 여호와 너희 하나님이라 너희는 나의 율례를 좇으며 나의 규례를 지켜 행하고"
+      ],
+      "raw_text_hashes": [
+        "8593deab1135902cde6a4fcfb7208e7467a2ee764787c65a362dd591f8991dc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:20",
+      "sequence": 20916,
+      "chapter_label": "EZK 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "Make my Sabbaths holy. They shall be a sign between me and you, that you may know that I am the LORD your God.’",
+      "ko": "또 나의 안식일을 거룩하게 할찌어다 이것이 나와 너희 사이에 표징이 되어 너희로 내가 여호와 너희 하나님인줄 알게 하리라 하였었노라",
+      "source_text_hash": "32e6076fa8db76cf012759440636c8a9d7a568e1f05c04cbc3b2214d079d9729",
+      "translation_text_hash": "0e3404a649c289b9a637abdbf120995e471954f2db21d0254a15af995a9f1c6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 나의 안식일을 거룩하게 할찌어다 이것이 나와 너희 사이에 표징이 되어 너희로 내가 여호와 너희 하나님인줄 알게 하리라 하였었노라"
+      ],
+      "raw_text_hashes": [
+        "0e3404a649c289b9a637abdbf120995e471954f2db21d0254a15af995a9f1c6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:21",
+      "sequence": 20917,
+      "chapter_label": "EZK 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "“‘“But the children rebelled against me. They didn’t walk in my statutes, and didn’t keep my ordinances to do them, which if a man does, he shall live in them. They profaned my Sabbaths. Then I said I would pour out my wrath on them, to accomplish my anger against them in the wilderness.",
+      "ko": "그러나 그 자손이 내게 패역하여 사람이 준행하면 그로 인하여 삶을 얻을 나의 율례를 좇지 아니하며 나의 규례를 지켜 행하지 아니하였고 나의 안식일을 더럽혔는지라 이에 내가 이르기를 내가 광야에서 내 분을 그들의 위에 쏟으며 내 노를 그들에게 이루리라 하였으나",
+      "source_text_hash": "21f7732c92b00e30849505b9cdd6f47d4ba788d3e405e5f374b0606c929dcdd2",
+      "translation_text_hash": "c2da9e0f9d4ad1bec466fdb49b1a3b3e50382ec218a7a2c650c68cbf170f7755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 자손이 내게 패역하여 사람이 준행하면 그로 인하여 삶을 얻을 나의 율례를 좇지 아니하며 나의 규례를 지켜 행하지 아니하였고 나의 안식일을 더럽혔는지라 이에 내가 이르기를 내가 광야에서 내 분을 그들의 위에 쏟으며 내 노를 그들에게 이루리라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "c2da9e0f9d4ad1bec466fdb49b1a3b3e50382ec218a7a2c650c68cbf170f7755"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:22",
+      "sequence": 20918,
+      "chapter_label": "EZK 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "Nevertheless I withdrew my hand and worked for my name’s sake, that it should not be profaned in the sight of the nations, in whose sight I brought them out.",
+      "ko": "내가 내 이름을 위하여 내 손을 금하고 달리 행하였었나니 내가 그들을 인도하여 내는 것을 목도한 열국 앞에서 내 이름을 더럽히지 아니하려 하였음이로라",
+      "source_text_hash": "d4e225b23ee8c071f914140fdeacbcd67b240d747290deb50466bd003a87402f",
+      "translation_text_hash": "f0a7bb5e02dba8c14bf6a42f02385563558c398c4a116ca60a16dd1ed0519616",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 이름을 위하여 내 손을 금하고 달리 행하였었나니 내가 그들을 인도하여 내는 것을 목도한 열국 앞에서 내 이름을 더럽히지 아니하려 하였음이로라"
+      ],
+      "raw_text_hashes": [
+        "f0a7bb5e02dba8c14bf6a42f02385563558c398c4a116ca60a16dd1ed0519616"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:23",
+      "sequence": 20919,
+      "chapter_label": "EZK 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "Moreover I swore to them in the wilderness, that I would scatter them among the nations and disperse them through the countries,",
+      "ko": "또 내가 광야에서 그들에게 맹세하기를 내가 그들을 이방인 중에 흩으며 열방 중에 헤치리라 하였었나니",
+      "source_text_hash": "2586ddf4cddbb2fca8883758530bd3764c2d862965467a0c4a9db9110c982042",
+      "translation_text_hash": "1dabd5f4f4c206bfc5b663612dffb7c08fde83d9f1b9f5b61d92f5ea43f52ade",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 광야에서 그들에게 맹세하기를 내가 그들을 이방인 중에 흩으며 열방 중에 헤치리라 하였었나니"
+      ],
+      "raw_text_hashes": [
+        "1dabd5f4f4c206bfc5b663612dffb7c08fde83d9f1b9f5b61d92f5ea43f52ade"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:24",
+      "sequence": 20920,
+      "chapter_label": "EZK 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "because they had not executed my ordinances, but had rejected my statutes, and had profaned my Sabbaths, and their eyes were after their fathers’ idols.",
+      "ko": "이는 그들이 나의 규례를 행치 아니하며 나의 율례를 멸시하며 내 안식일을 더럽히고 눈으로 그 열조의 우상들을 사모함이며",
+      "source_text_hash": "f330388e6ad10862b63089da4115ca23b3102ee4f1f73a99206c0bbcd75ae558",
+      "translation_text_hash": "d8cd0c8b41e5f43030759fc64eb891a0783f404741ed014cdf416ddb885f4284",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그들이 나의 규례를 행치 아니하며 나의 율례를 멸시하며 내 안식일을 더럽히고 눈으로 그 열조의 우상들을 사모함이며"
+      ],
+      "raw_text_hashes": [
+        "d8cd0c8b41e5f43030759fc64eb891a0783f404741ed014cdf416ddb885f4284"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:25",
+      "sequence": 20921,
+      "chapter_label": "EZK 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "Moreover also I gave them statutes that were not good, and ordinances in which they couldn’t live.",
+      "ko": "또 내가 그들에게 선치 못한 율례와 능히 살게 하지 못할 규례를 주었고",
+      "source_text_hash": "c9998546c6fa9a3c9710c15090394a4c4cd957f5502a94d71619d78bbb9f0059",
+      "translation_text_hash": "741a407717c92616467522e70515d5cbf4c3019b3743ac7d23935d0ed9991ad7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 그들에게 선치 못한 율례와 능히 살게 하지 못할 규례를 주었고"
+      ],
+      "raw_text_hashes": [
+        "741a407717c92616467522e70515d5cbf4c3019b3743ac7d23935d0ed9991ad7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:26",
+      "sequence": 20922,
+      "chapter_label": "EZK 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "I polluted them in their own gifts, in that they caused all that opens the womb to pass through the fire, that I might make them desolate, to the end that they might know that I am the LORD.”’",
+      "ko": "그들이 장자를 다 화제로 드리는 그 예물로 내가 그들을 더럽혔음은 그들로 멸망케 하여 나를 여호와인줄 알게하려 하였음이니라",
+      "source_text_hash": "93021d36b64fe9ff29ea0f20a33594cd0d6132f04bbd1f7966e8107657ede223",
+      "translation_text_hash": "231b21f0ac55360bf3caf54b99b54f621e2f943d594c6b0a814e1c12416435b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 장자를 다 화제로 드리는 그 예물로 내가 그들을 더럽혔음은 그들로 멸망케 하여 나를 여호와인줄 알게하려 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "231b21f0ac55360bf3caf54b99b54f621e2f943d594c6b0a814e1c12416435b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:27",
+      "sequence": 20923,
+      "chapter_label": "EZK 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "“Therefore, son of man, speak to the house of Israel, and tell them, ‘The Lord GOD says: “Moreover, in this your fathers have blasphemed me, in that they have committed a trespass against me.",
+      "ko": "그런즉 인자야 이스라엘 족속에게 고하여 이르기를 주 여호와의 말씀에 너희 열조가 또 내게 범죄하여 나를 욕되게 하였느니라",
+      "source_text_hash": "e368f054cef3fe4633a8a832e48edd09caf6a799ffe4d55425e39a6c277aa869",
+      "translation_text_hash": "8f6923d1879b259ed2541a90c67c25ce38d9b1abb6203e935fa2d3a06add35f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 인자야 이스라엘 족속에게 고하여 이르기를 주 여호와의 말씀에 너희 열조가 또 내게 범죄하여 나를 욕되게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "8f6923d1879b259ed2541a90c67c25ce38d9b1abb6203e935fa2d3a06add35f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:28",
+      "sequence": 20924,
+      "chapter_label": "EZK 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "For when I had brought them into the land which I swore to give to them, then they saw every high hill and every thick tree, and they offered there their sacrifices, and there they presented the provocation of their offering. There they also made their pleasant aroma, and there they poured out their drink offerings.",
+      "ko": "내가 그들에게 주기로 맹세한 땅으로 그들을 인도하여 들였더니 그들이 모든 높은 산과 모든 무성한 나무를 보고 거기서 제사를 드리고 격노케 하는 제물을 올리며 거기서 또 분향하고 전제를 부어 드린지라",
+      "source_text_hash": "4706ca385d068803a1394d4a73cac6711d14445dc07b8e30b5efc3a47bb3130c",
+      "translation_text_hash": "2f3e0e0ffa1cffe244c65a7b2751a75a183c7d61a9304eddccaec301830be521",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들에게 주기로 맹세한 땅으로 그들을 인도하여 들였더니 그들이 모든 높은 산과 모든 무성한 나무를 보고 거기서 제사를 드리고 격노케 하는 제물을 올리며 거기서 또 분향하고 전제를 부어 드린지라"
+      ],
+      "raw_text_hashes": [
+        "2f3e0e0ffa1cffe244c65a7b2751a75a183c7d61a9304eddccaec301830be521"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:29",
+      "sequence": 20925,
+      "chapter_label": "EZK 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "Then I said to them, ‘What does the high place where you go mean?’ So its name is called Bamah to this day.”’",
+      "ko": "이에 내가 그들에게 이르기를 너희가 다니는 산당이 무엇이냐 하였노라 (그것을 오늘날까지 바마라 일컫느니라)",
+      "source_text_hash": "41c7b6fa642c82041f2e77ea7b14aefcb14ee323031af26ffbb309c971c5344d",
+      "translation_text_hash": "0c8957e361d2e67e7621e8191ac01d41669b00856ffd1ddae076ca2dbbed2cad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 그들에게 이르기를 너희가 다니는 산당이 무엇이냐 하였노라 (그것을 오늘날까지 바마라 일컫느니라)"
+      ],
+      "raw_text_hashes": [
+        "0c8957e361d2e67e7621e8191ac01d41669b00856ffd1ddae076ca2dbbed2cad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:30",
+      "sequence": 20926,
+      "chapter_label": "EZK 20",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 30
+        }
+      ],
+      "en": "“Therefore tell the house of Israel, ‘The Lord GOD says: “Do you pollute yourselves in the way of your fathers? Do you play the prostitute after their abominations?",
+      "ko": "그러므로 너는 이스라엘 족속에게 이르기를 주 여호와의 말씀에 너희가 열조의 풍속을 따라 스스로 더럽히며 그 모든 가증한 것을 좇아 행음하느냐",
+      "source_text_hash": "d020666a1b0a522f3cc6ccb48bfede3806a848fa29555e97ef08083c711b677c",
+      "translation_text_hash": "cdd7a457473914562135e6d8ca3857b6054e71dfbdd91f7d5f7066338ef4edbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 이스라엘 족속에게 이르기를 주 여호와의 말씀에 너희가 열조의 풍속을 따라 스스로 더럽히며 그 모든 가증한 것을 좇아 행음하느냐"
+      ],
+      "raw_text_hashes": [
+        "cdd7a457473914562135e6d8ca3857b6054e71dfbdd91f7d5f7066338ef4edbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:31",
+      "sequence": 20927,
+      "chapter_label": "EZK 20",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 31
+        }
+      ],
+      "en": "When you offer your gifts, when you make your sons pass through the fire, do you pollute yourselves with all your idols to this day? Should I be inquired of by you, house of Israel? As I live, says the Lord GOD, I will not be inquired of by you!",
+      "ko": "너희가 또 너희 아들로 화제를 삼아 예물로 드려 오늘날까지 우상들로 스스로 더럽히느냐 이스라엘 족속아 너희가 내게 묻기를 내가 용납하겠느냐 나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 너희가 내게 묻기를 내가 용납지 아니하리라",
+      "source_text_hash": "b78bb3617d4156f3010d97b0e1f52062e9d4108b116d6f4249d0294d8aa51f6e",
+      "translation_text_hash": "abfd2b2558dd9f6b39ae488feb52baf7105695fb54e08a585373c2fea41e087d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 또 너희 아들로 화제를 삼아 예물로 드려 오늘날까지 우상들로 스스로 더럽히느냐 이스라엘 족속아 너희가 내게 묻기를 내가 용납하겠느냐 나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 너희가 내게 묻기를 내가 용납지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "abfd2b2558dd9f6b39ae488feb52baf7105695fb54e08a585373c2fea41e087d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:32",
+      "sequence": 20928,
+      "chapter_label": "EZK 20",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 32
+        }
+      ],
+      "en": "“‘“That which comes into your mind will not be at all, in that you say, ‘We will be as the nations, as the families of the countries, to serve wood and stone.’",
+      "ko": "너희가 스스로 이르기를 우리가 이방인 곧 열국 족속 같이 되어서 목석을 숭배하리라 하거니와 너희 마음에 품은 것을 결코 이루지 못하리라",
+      "source_text_hash": "49b4d5c7371fafeb3e2c45f2371b8858d40b11d8580f5a6bb2174e77da653863",
+      "translation_text_hash": "3cbffa31e6a38aa9e3f3befc9791b11db04e59e038b782f34b305c872ffb816a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 스스로 이르기를 우리가 이방인 곧 열국 족속 같이 되어서 목석을 숭배하리라 하거니와 너희 마음에 품은 것을 결코 이루지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "3cbffa31e6a38aa9e3f3befc9791b11db04e59e038b782f34b305c872ffb816a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:33",
+      "sequence": 20929,
+      "chapter_label": "EZK 20",
+      "verse_label": "33",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 33
+        }
+      ],
+      "en": "As I live,” says the Lord GOD, “surely with a mighty hand, with an outstretched arm, and with wrath poured out, I will be king over you.",
+      "ko": "나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 내가 능한 손과 편 팔로 분노를 쏟아 너희를 단정코 다스릴찌라",
+      "source_text_hash": "04b206fef85a39049bedda328a84a7bf3110c55da457b363351c79c2ca4535a6",
+      "translation_text_hash": "ff50a47f50a61aaccbdd3d3a6257bd7576f1fa5fe164e176ad4ca6bde2ed062c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 나의 삶을 두고 맹세하노니 내가 능한 손과 편 팔로 분노를 쏟아 너희를 단정코 다스릴찌라"
+      ],
+      "raw_text_hashes": [
+        "ff50a47f50a61aaccbdd3d3a6257bd7576f1fa5fe164e176ad4ca6bde2ed062c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:34",
+      "sequence": 20930,
+      "chapter_label": "EZK 20",
+      "verse_label": "34",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 34
+        }
+      ],
+      "en": "I will bring you out from the peoples, and will gather you out of the countries in which you are scattered with a mighty hand, with an outstretched arm, and with wrath poured out.",
+      "ko": "능한 손과 편 팔로 분노를 쏟아 너희를 열국 중에서 나오게 하며 너희의 흩어진 열방 중에서 모아내고",
+      "source_text_hash": "47c373f66d305e8d7806a5178afc795b9f9048fd66095ce44b67abe1499dbc85",
+      "translation_text_hash": "c654c5bdf4109123f060be4c4dcfda1a2529e31f21abadb1fe9d31ec63add27e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "능한 손과 편 팔로 분노를 쏟아 너희를 열국 중에서 나오게 하며 너희의 흩어진 열방 중에서 모아내고"
+      ],
+      "raw_text_hashes": [
+        "c654c5bdf4109123f060be4c4dcfda1a2529e31f21abadb1fe9d31ec63add27e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:35",
+      "sequence": 20931,
+      "chapter_label": "EZK 20",
+      "verse_label": "35",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 35
+        }
+      ],
+      "en": "I will bring you into the wilderness of the peoples, and there I will enter into judgment with you face to face.",
+      "ko": "너희를 인도하여 열국 광야에 이르러 거기서 너희를 대면하여 국문하되",
+      "source_text_hash": "f39303357e8a669932a5d52a8d2c123f0c6d72640c762036735defd3f23b93f5",
+      "translation_text_hash": "bedfa697281cc236b20ceaf6642ca162387c9680bcf218890f550c3edf13292b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 인도하여 열국 광야에 이르러 거기서 너희를 대면하여 국문하되"
+      ],
+      "raw_text_hashes": [
+        "bedfa697281cc236b20ceaf6642ca162387c9680bcf218890f550c3edf13292b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:36",
+      "sequence": 20932,
+      "chapter_label": "EZK 20",
+      "verse_label": "36",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 36
+        }
+      ],
+      "en": "Just as I entered into judgment with your fathers in the wilderness of the land of Egypt, so I will enter into judgment with you,” says the Lord GOD.",
+      "ko": "내가 애굽 땅 광야에서 너희 열조를 국문한 것 같이 너희를 국문하리라 나 주 여호와의 말이니라",
+      "source_text_hash": "947bbe28402f529aaf902c9aa9aef59cf4d0d97a5af266264a1ac44d1de855c1",
+      "translation_text_hash": "40822a83656125ca4f8a8e8e3c862daf2f04472c339c8384bbcdedf90c2341d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽 땅 광야에서 너희 열조를 국문한 것 같이 너희를 국문하리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "40822a83656125ca4f8a8e8e3c862daf2f04472c339c8384bbcdedf90c2341d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:37",
+      "sequence": 20933,
+      "chapter_label": "EZK 20",
+      "verse_label": "37",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 37
+        }
+      ],
+      "en": "“I will cause you to pass under the rod, and I will bring you into the bond of the covenant.",
+      "ko": "내가 너희를 막대기 아래로 지나게 하며 언약의 줄로 매려니와",
+      "source_text_hash": "63472ef5e87e3b176bb1ebdf9676fd073b15c094d5fb92bb705122dabde8a888",
+      "translation_text_hash": "02507d7f33d5b8df043584f1c86d7e032b49424076f1464d0cd01676dee5d09f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 막대기 아래로 지나게 하며 언약의 줄로 매려니와"
+      ],
+      "raw_text_hashes": [
+        "02507d7f33d5b8df043584f1c86d7e032b49424076f1464d0cd01676dee5d09f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:38",
+      "sequence": 20934,
+      "chapter_label": "EZK 20",
+      "verse_label": "38",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 38
+        }
+      ],
+      "en": "I will purge out from among you the rebels and those who disobey me. I will bring them out of the land where they live, but they shall not enter into the land of Israel. Then you will know that I am the LORD.”",
+      "ko": "너희 가운데서 패역한 자와 내게 범죄한 자를 모두 제하여 버릴찌라 그들을 그 우거하던 땅에서는 나오게 하여도 이스라엘 땅에는 들어가지 못하게 하리니 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "c6e75337bc010dbb51f2a6a903bf22d24c22a480c2364f92edb4e61fee6fc7f1",
+      "translation_text_hash": "e7be04d5dba8024bc5ca85013f63eaeb4bbf215a147dbf4cb0197df4e3dc3303",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 가운데서 패역한 자와 내게 범죄한 자를 모두 제하여 버릴찌라 그들을 그 우거하던 땅에서는 나오게 하여도 이스라엘 땅에는 들어가지 못하게 하리니 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "e7be04d5dba8024bc5ca85013f63eaeb4bbf215a147dbf4cb0197df4e3dc3303"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:39",
+      "sequence": 20935,
+      "chapter_label": "EZK 20",
+      "verse_label": "39",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 39
+        }
+      ],
+      "en": "“‘As for you, house of Israel, the Lord GOD says: “Go, everyone serve his idols, and hereafter also, if you will not listen to me; but you shall no more profane my holy name with your gifts and with your idols.",
+      "ko": "나 주 여호와가 말하노라 이스라엘 족속아 너희가 내 말을 듣지 아니하려거든 가서 각각 그 우상을 섬기고 이 후에도 그리하려무나 마는 다시는 너희 예물과 너희 우상들로 내 거룩한 이름을 더럽히지 말찌니라",
+      "source_text_hash": "0105d84f7c00acf8638c33aebadb78479a22685f9cf3f3a339dc7ee1ff41ec61",
+      "translation_text_hash": "f55dde6b8a420a64649bab7f3b45da17afd06b63ce008b5c8ef2daa18c351242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 이스라엘 족속아 너희가 내 말을 듣지 아니하려거든 가서 각각 그 우상을 섬기고 이 후에도 그리하려무나 마는 다시는 너희 예물과 너희 우상들로 내 거룩한 이름을 더럽히지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "f55dde6b8a420a64649bab7f3b45da17afd06b63ce008b5c8ef2daa18c351242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:40",
+      "sequence": 20936,
+      "chapter_label": "EZK 20",
+      "verse_label": "40",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 40
+        }
+      ],
+      "en": "For in my holy mountain, in the mountain of the height of Israel,” says the Lord GOD, “there all the house of Israel, all of them, shall serve me in the land. There I will accept them, and there I will require your offerings and the first fruits of your offerings, with all your holy things.",
+      "ko": "나 주 여호와가 말하노라 이스라엘 온 족속이 그 땅에 있어서 내 거룩한 산 곧 이스라엘의 높은 산에서 다 나를 섬기리니 거기서 내가 그들을 기쁘게 받을찌라 거기서 너희 예물과 너희 천신하는 첫 열매와 너희 모든 성물을 요구하리라",
+      "source_text_hash": "2f82ed4469506bf19dc95da00c879d2523fccae59f99ea3602a3da8f4339ab7e",
+      "translation_text_hash": "f5d5aead960c3a4837eee49a4d945766318447af31ae857bc1e8a317dd817a37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 이스라엘 온 족속이 그 땅에 있어서 내 거룩한 산 곧 이스라엘의 높은 산에서 다 나를 섬기리니 거기서 내가 그들을 기쁘게 받을찌라 거기서 너희 예물과 너희 천신하는 첫 열매와 너희 모든 성물을 요구하리라"
+      ],
+      "raw_text_hashes": [
+        "f5d5aead960c3a4837eee49a4d945766318447af31ae857bc1e8a317dd817a37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:41",
+      "sequence": 20937,
+      "chapter_label": "EZK 20",
+      "verse_label": "41",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 41
+        }
+      ],
+      "en": "I will accept you as a pleasant aroma when I bring you out from the peoples and gather you out of the countries in which you have been scattered. I will be sanctified in you in the sight of the nations.",
+      "ko": "내가 너희를 인도하여 열국 중에서 나오게 하고 너희의 흩어진 열방 중에서 모아낼 때에 내가 너희를 향기로 받고 내가 또 너희로 말미암아 내 거룩함을 열국의 목전에서 나타낼 것이며",
+      "source_text_hash": "26585c947012157d3e59c4fb9b7baff94713bf4232593b5ef76d24d006a4bcc6",
+      "translation_text_hash": "cb72111a2662fa17c48f8b5ae2aee82ebc906a8b2b9572eb05d6b1aa181eb436",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 인도하여 열국 중에서 나오게 하고 너희의 흩어진 열방 중에서 모아낼 때에 내가 너희를 향기로 받고 내가 또 너희로 말미암아 내 거룩함을 열국의 목전에서 나타낼 것이며"
+      ],
+      "raw_text_hashes": [
+        "cb72111a2662fa17c48f8b5ae2aee82ebc906a8b2b9572eb05d6b1aa181eb436"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:42",
+      "sequence": 20938,
+      "chapter_label": "EZK 20",
+      "verse_label": "42",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 42
+        }
+      ],
+      "en": "You will know that I am the LORD when I bring you into the land of Israel, into the country which I swore to give to your fathers.",
+      "ko": "내가 너희 열조에게 주기로 맹세한 땅 곧 이스라엘 땅으로 너희를 인도하여 들일 때에 너희가 나를 여호와인줄 알고",
+      "source_text_hash": "0e035eebd915fb93743c2cbfeeee9128becbc5e06ae618ea2fbee186cea6f404",
+      "translation_text_hash": "d4bd1b2d484cac502a1110a8d5e5e1616931184e1264623da4e1014fd44a7f4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 열조에게 주기로 맹세한 땅 곧 이스라엘 땅으로 너희를 인도하여 들일 때에 너희가 나를 여호와인줄 알고"
+      ],
+      "raw_text_hashes": [
+        "d4bd1b2d484cac502a1110a8d5e5e1616931184e1264623da4e1014fd44a7f4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:43",
+      "sequence": 20939,
+      "chapter_label": "EZK 20",
+      "verse_label": "43",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 43
+        }
+      ],
+      "en": "There you will remember your ways, and all your deeds in which you have polluted yourselves. Then you will loathe yourselves in your own sight for all your evils that you have committed.",
+      "ko": "거기서 너희의 길과 스스로 더럽힌 모든 행위를 기억하고 이미 행한 모든 악을 인하여 스스로 미워하리라",
+      "source_text_hash": "6c3a041fdcde49e2b65c476f28501be9e44482afd5e64abf7b4763ce438d37a6",
+      "translation_text_hash": "dff0a9b84c53c3a5b9ef5f82d6f0cf4d99c068ec6ac01a7721c3d9fc542aa2ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 너희의 길과 스스로 더럽힌 모든 행위를 기억하고 이미 행한 모든 악을 인하여 스스로 미워하리라"
+      ],
+      "raw_text_hashes": [
+        "dff0a9b84c53c3a5b9ef5f82d6f0cf4d99c068ec6ac01a7721c3d9fc542aa2ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:44",
+      "sequence": 20940,
+      "chapter_label": "EZK 20",
+      "verse_label": "44",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 44
+        }
+      ],
+      "en": "You will know that I am the LORD, when I have dealt with you for my name’s sake, not according to your evil ways, nor according to your corrupt doings, you house of Israel,” says the Lord GOD.’”",
+      "ko": "이스라엘 족속아 내가 너희의 악한 길과 더러운 행위대로 하지 아니하고 내 이름을 위하여 행한 후에야 너희가 나를 여호와인줄 알리라 나 주 여호와의 말이니라 하셨다 하라",
+      "source_text_hash": "d5ff10cfeb8d3da5a74ce4a7772f82342bd6691d91fccaebe31c42dda7c5d56d",
+      "translation_text_hash": "1941ebe7e98f32b68568c44ec25e17a91d70f9ec7cfade971c8a89160bee14b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속아 내가 너희의 악한 길과 더러운 행위대로 하지 아니하고 내 이름을 위하여 행한 후에야 너희가 나를 여호와인줄 알리라 나 주 여호와의 말이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "1941ebe7e98f32b68568c44ec25e17a91d70f9ec7cfade971c8a89160bee14b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:45",
+      "sequence": 20941,
+      "chapter_label": "EZK 20",
+      "verse_label": "45",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 45
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:46",
+      "sequence": 20942,
+      "chapter_label": "EZK 20",
+      "verse_label": "46",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 46
+        }
+      ],
+      "en": "“Son of man, set your face toward the south, and preach toward the south, and prophesy against the forest of the field in the south.",
+      "ko": "인자야 너는 얼굴을 남으로 향하라 남으로 향하여 소리내어 남방들의 삼림을 쳐서 예언하라",
+      "source_text_hash": "aa1da3743398c76f8c9c7a9145def107130076f16e19edef556bfbd86191d51b",
+      "translation_text_hash": "5f3d2424d2d63ea09776d3f7ec043e9c0a4b458b7780b7689c84212651c9e090",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 얼굴을 남으로 향하라 남으로 향하여 소리내어 남방들의 삼림을 쳐서 예언하라"
+      ],
+      "raw_text_hashes": [
+        "5f3d2424d2d63ea09776d3f7ec043e9c0a4b458b7780b7689c84212651c9e090"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:47",
+      "sequence": 20943,
+      "chapter_label": "EZK 20",
+      "verse_label": "47",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 47
+        }
+      ],
+      "en": "Tell the forest of the south, ‘Hear the LORD’s word: The Lord GOD says, “Behold, I will kindle a fire in you, and it will devour every green tree in you, and every dry tree. The burning flame will not be quenched, and all faces from the south to the north will be burned by it.",
+      "ko": "남방 삼림에게 이르기를 여호와의 말씀을 들을찌어다 주 여호와의 말씀에 내가 너의 가운데 불을 일으켜 모든 푸른 나무와 모든 마른 나무를 멸하리니 맹렬한 불꽃이 꺼지지 아니하고 남에서 북까지 모든 얼굴이 그슬릴찌라",
+      "source_text_hash": "28561cd132f23f62a47399448d7ddb98c756d0b16c7670ba4a6ef1459fde4b2e",
+      "translation_text_hash": "f84c8a7fb37ac591aaf238785b58e951da9527796a9cb8daca43f990c66c2f32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남방 삼림에게 이르기를 여호와의 말씀을 들을찌어다 주 여호와의 말씀에 내가 너의 가운데 불을 일으켜 모든 푸른 나무와 모든 마른 나무를 멸하리니 맹렬한 불꽃이 꺼지지 아니하고 남에서 북까지 모든 얼굴이 그슬릴찌라"
+      ],
+      "raw_text_hashes": [
+        "f84c8a7fb37ac591aaf238785b58e951da9527796a9cb8daca43f990c66c2f32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:48",
+      "sequence": 20944,
+      "chapter_label": "EZK 20",
+      "verse_label": "48",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 48
+        }
+      ],
+      "en": "All flesh will see that I, the LORD, have kindled it. It will not be quenched.”’”",
+      "ko": "무릇 혈기 있는 자는 나 여호와가 그 불을 일으킨 줄을 알리니 그것이 꺼지지 아니하리라 하셨다 하라 하시기로",
+      "source_text_hash": "7978499eee769343bae1a5a04734f9b4fc970ec8bd71abedeb7687cb3cb40b22",
+      "translation_text_hash": "a3116dbc89e07da4aa68e405afd9dae9bb2bf5a2d873342c2da62ccbd74808c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 혈기 있는 자는 나 여호와가 그 불을 일으킨 줄을 알리니 그것이 꺼지지 아니하리라 하셨다 하라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "a3116dbc89e07da4aa68e405afd9dae9bb2bf5a2d873342c2da62ccbd74808c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:20:49",
+      "sequence": 20945,
+      "chapter_label": "EZK 20",
+      "verse_label": "49",
+      "locator": {
+        "book": "EZK",
+        "chapter": 20,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 20,
+          "verse": 49
+        }
+      ],
+      "en": "Then I said, “Ah Lord GOD! They say of me, ‘Isn’t he a speaker of parables?’”",
+      "ko": "내가 가로되 오호라 주 여호와여 그들이 나를 가리켜 말하기를 그는 비유로 말하는 자가 아니냐 하나이다 하니라",
+      "source_text_hash": "b826c60f10394dddeb712284270dbbf174d424458178ab257c1dd8e7fbba1f9c",
+      "translation_text_hash": "cd03a8ab1c21355928b27ed7a34c2be5ca9c084d5a80ef1ab224778b294300b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가로되 오호라 주 여호와여 그들이 나를 가리켜 말하기를 그는 비유로 말하는 자가 아니냐 하나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "cd03a8ab1c21355928b27ed7a34c2be5ca9c084d5a80ef1ab224778b294300b4"
+      ]
+    }
+  ]
+}

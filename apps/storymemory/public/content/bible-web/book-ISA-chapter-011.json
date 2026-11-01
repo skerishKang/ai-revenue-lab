@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:011",
+  "unit_ordinal": 690,
+  "unit_label": "ISA 11",
+  "book_code": "ISA",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:11:1",
+      "sequence": 17886,
+      "chapter_label": "ISA 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "A shoot will come out of the stock of Jesse, and a branch out of his roots will bear fruit.",
+      "ko": "이새의 줄기에서 한 싹이 나며 그 뿌리에서 한 가지가 나서 결실할 것이요",
+      "source_text_hash": "21fba0efc74fc33d65faf83e48dde0054c0ebbc6d752f6a4ae9478711e868003",
+      "translation_text_hash": "019914d5048ffa20995c5b9b3150790a7f231cf45d528f5807cb9a8b073fcc12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이새의 줄기에서 한 싹이 나며 그 뿌리에서 한 가지가 나서 결실할 것이요"
+      ],
+      "raw_text_hashes": [
+        "019914d5048ffa20995c5b9b3150790a7f231cf45d528f5807cb9a8b073fcc12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:2",
+      "sequence": 17887,
+      "chapter_label": "ISA 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD’s Spirit will rest on him: the spirit of wisdom and understanding, the spirit of counsel and might, the spirit of knowledge and of the fear of the LORD.",
+      "ko": "여호와의 신 곧 지혜와 총명의 신이요 모략과 재능의 신이요 지식과 여호와를 경외하는 신이 그 위에 강림하시리니",
+      "source_text_hash": "5037b06b20a6c1c03466b529c26a7436aa1e561863c431214cced5a6c39b6ec6",
+      "translation_text_hash": "deb9fed4608815b349591c141cc3c666230cc1d5f630177f50d2c0111684c708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 신 곧 지혜와 총명의 신이요 모략과 재능의 신이요 지식과 여호와를 경외하는 신이 그 위에 강림하시리니"
+      ],
+      "raw_text_hashes": [
+        "deb9fed4608815b349591c141cc3c666230cc1d5f630177f50d2c0111684c708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:3",
+      "sequence": 17888,
+      "chapter_label": "ISA 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "His delight will be in the fear of the LORD. He will not judge by the sight of his eyes, neither decide by the hearing of his ears;",
+      "ko": "그가 여호와를 경외함으로 즐거움을 삼을 것이며 그 눈에 보이는대로 심판치 아니하며 귀에 들리는대로 판단치 아니하며",
+      "source_text_hash": "70a4ec393193136bac428026f2572c5d9ce25348fee4de6b6a70796da57547c8",
+      "translation_text_hash": "c7e94b18495eb1e46c75d9163d4e01ffe2a5f5e1cb384e26c1eea55d45ca12b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 여호와를 경외함으로 즐거움을 삼을 것이며 그 눈에 보이는대로 심판치 아니하며 귀에 들리는대로 판단치 아니하며"
+      ],
+      "raw_text_hashes": [
+        "c7e94b18495eb1e46c75d9163d4e01ffe2a5f5e1cb384e26c1eea55d45ca12b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:4",
+      "sequence": 17889,
+      "chapter_label": "ISA 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "but he will judge the poor with righteousness, and decide with equity for the humble of the earth. He will strike the earth with the rod of his mouth; and with the breath of his lips he will kill the wicked.",
+      "ko": "공의로 빈핍한 자를 심판하며 정직으로 세상의 겸손한 자를 판단할 것이며 그 입의 막대기로 세상을 치며 입술의 기운으로 악인을 죽일 것이며",
+      "source_text_hash": "ddae1ca0d3f8771ac7bc888efa45e8b78e9519402c7406855126f461ada46e7b",
+      "translation_text_hash": "54489443e36aa16bbae56705f1765447c53bb87f65e221c585e4e8d77de9abea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공의로 빈핍한 자를 심판하며 정직으로 세상의 겸손한 자를 판단할 것이며 그 입의 막대기로 세상을 치며 입술의 기운으로 악인을 죽일 것이며"
+      ],
+      "raw_text_hashes": [
+        "54489443e36aa16bbae56705f1765447c53bb87f65e221c585e4e8d77de9abea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:5",
+      "sequence": 17890,
+      "chapter_label": "ISA 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "Righteousness will be the belt around his waist, and faithfulness the belt around his waist.",
+      "ko": "공의로 그 허리띠를 삼으며 성실로 몸의 띠를 삼으리라",
+      "source_text_hash": "d5d0b03d0c268bfec4bc97de51e238f73ebf4b0bd05ac82c1b1902938630f481",
+      "translation_text_hash": "3fcc3f5e09dc648cb728998d6a91ed677f87ee1441b8d237e9b18a5bee325ff8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공의로 그 허리띠를 삼으며 성실로 몸의 띠를 삼으리라"
+      ],
+      "raw_text_hashes": [
+        "3fcc3f5e09dc648cb728998d6a91ed677f87ee1441b8d237e9b18a5bee325ff8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:6",
+      "sequence": 17891,
+      "chapter_label": "ISA 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "The wolf will live with the lamb, and the leopard will lie down with the young goat, the calf, the young lion, and the fattened calf together; and a little child will lead them.",
+      "ko": "그 때에 이리가 어린 양과 함께 거하며 표범이 어린 염소와 함께 누우며 송아지와 어린 사자와 살찐 짐승이 함께 있어 어린 아이에게 끌리며",
+      "source_text_hash": "78f7588a28d9ed7dec708d6a8587f4673dc3563bd0a512d4b33a0b69e9d17521",
+      "translation_text_hash": "bfb928cff52c52635157f1ba9ac956deaca2d4058968a14f38872b3fd36732f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 이리가 어린 양과 함께 거하며 표범이 어린 염소와 함께 누우며 송아지와 어린 사자와 살찐 짐승이 함께 있어 어린 아이에게 끌리며"
+      ],
+      "raw_text_hashes": [
+        "bfb928cff52c52635157f1ba9ac956deaca2d4058968a14f38872b3fd36732f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:7",
+      "sequence": 17892,
+      "chapter_label": "ISA 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "The cow and the bear will graze. Their young ones will lie down together. The lion will eat straw like the ox.",
+      "ko": "암소와 곰이 함께 먹으며 그것들의 새끼가 함께 엎드리며 사자가 소처럼 풀을 먹을 것이며",
+      "source_text_hash": "7905043770cde66f00cc609ee4efcf54321a0db28dbe8f5bc7e6c1ea69bb980a",
+      "translation_text_hash": "7e2a3ba7d569deb4ee1b3996cefbd70dff72d08e4066a871217f2b2f9d3d2d9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암소와 곰이 함께 먹으며 그것들의 새끼가 함께 엎드리며 사자가 소처럼 풀을 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "7e2a3ba7d569deb4ee1b3996cefbd70dff72d08e4066a871217f2b2f9d3d2d9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:8",
+      "sequence": 17893,
+      "chapter_label": "ISA 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "The nursing child will play near a cobra’s hole, and the weaned child will put his hand on the viper’s den.",
+      "ko": "젖먹는 아이가 독사의 구멍에서 장난하며 젖뗀 어린 아이가 독사의 굴에 손을 넣을 것이라",
+      "source_text_hash": "03b740a614d5a7f2b3a3781a8ce07d0d269bf79871f609c7f51d34fbee865970",
+      "translation_text_hash": "b03b07c73c44768b8cd571bef080dfd012f3f0beff5ee563bb374c7d90765cf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젖먹는 아이가 독사의 구멍에서 장난하며 젖뗀 어린 아이가 독사의 굴에 손을 넣을 것이라"
+      ],
+      "raw_text_hashes": [
+        "b03b07c73c44768b8cd571bef080dfd012f3f0beff5ee563bb374c7d90765cf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:9",
+      "sequence": 17894,
+      "chapter_label": "ISA 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "They will not hurt nor destroy in all my holy mountain; for the earth will be full of the knowledge of the LORD, as the waters cover the sea.",
+      "ko": "나의 거룩한 산 모든 곳에서 해됨도 없고 상함도 없을 것이니 이는 물이 바다를 덮음 같이 여호와를 아는 지식이 세상에 충만할 것임이니라",
+      "source_text_hash": "b2d15181c21a028e7fd172dca147fcb96e79088a8c06c753d95561d85f74411f",
+      "translation_text_hash": "e85aa4924f655aab49f411cab68fceaa9c83173c6c4a98e8da285dff249d6731",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 거룩한 산 모든 곳에서 해됨도 없고 상함도 없을 것이니 이는 물이 바다를 덮음 같이 여호와를 아는 지식이 세상에 충만할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "e85aa4924f655aab49f411cab68fceaa9c83173c6c4a98e8da285dff249d6731"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:10",
+      "sequence": 17895,
+      "chapter_label": "ISA 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "It will happen in that day that the nations will seek the root of Jesse, who stands as a banner of the peoples; and his resting place will be glorious.",
+      "ko": "그 날에 이새의 뿌리에서 한 싹이 나서 만민의 기호로 설 것이요 열방이 그에게로 돌아오리니 그 거한 곳이 영화로우리라",
+      "source_text_hash": "336e7e957d55f4f4288e6e5a3c1cef508d59d6cc0d3f86e407d8b8bca81cc85d",
+      "translation_text_hash": "f53f22205f5ac698423c0dce2549c5a11bee1fe2f68896e098cd13cd1b38ada0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 이새의 뿌리에서 한 싹이 나서 만민의 기호로 설 것이요 열방이 그에게로 돌아오리니 그 거한 곳이 영화로우리라"
+      ],
+      "raw_text_hashes": [
+        "f53f22205f5ac698423c0dce2549c5a11bee1fe2f68896e098cd13cd1b38ada0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:11",
+      "sequence": 17896,
+      "chapter_label": "ISA 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "It will happen in that day that the Lord will set his hand again the second time to recover the remnant that is left of his people from Assyria, from Egypt, from Pathros, from Cush, from Elam, from Shinar, from Hamath, and from the islands of the sea.",
+      "ko": "그 날에 주께서 다시 손을 펴사 그 남은 백성을 앗수르와 애굽과 바드로스와 구스와 엘람과 시날과 하맛과 바다 섬들에서 돌아오게 하실 것이라",
+      "source_text_hash": "6ccd7a4f94ccc09e9655d33b0e0483e53b5755d982d6225287a1b3d119f971df",
+      "translation_text_hash": "5714117323d9fffd1b20a5456d274bbbafd2a67e29a62c6094dcb58c9ee83be6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 주께서 다시 손을 펴사 그 남은 백성을 앗수르와 애굽과 바드로스와 구스와 엘람과 시날과 하맛과 바다 섬들에서 돌아오게 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "5714117323d9fffd1b20a5456d274bbbafd2a67e29a62c6094dcb58c9ee83be6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:12",
+      "sequence": 17897,
+      "chapter_label": "ISA 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "He will set up a banner for the nations, and will assemble the outcasts of Israel, and gather together the dispersed of Judah from the four corners of the earth.",
+      "ko": "여호와께서 열방을 향하여 기호를 세우시고 이스라엘의 쫓긴 자를 모으시며 땅 사방에서 유다의 이산한 자를 모으시리니",
+      "source_text_hash": "89840cfb58aabca1ea50594e2fd3a77405c35869c640c45ed2f743756e150144",
+      "translation_text_hash": "9933d1cee744202fe20318c6d54e7eac10d23321218d39739808d50bf8497816",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 열방을 향하여 기호를 세우시고 이스라엘의 쫓긴 자를 모으시며 땅 사방에서 유다의 이산한 자를 모으시리니"
+      ],
+      "raw_text_hashes": [
+        "9933d1cee744202fe20318c6d54e7eac10d23321218d39739808d50bf8497816"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:13",
+      "sequence": 17898,
+      "chapter_label": "ISA 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "The envy also of Ephraim will depart, and those who persecute Judah will be cut off. Ephraim won’t envy Judah, and Judah won’t persecute Ephraim.",
+      "ko": "에브라임의 투기는 없어지고 유다를 괴롭게 하던 자는 끊어지며 에브라임은 유다를 투기하지 아니하며 유다는 에브라임을 괴롭게 하지 아니할 것이요",
+      "source_text_hash": "d40319f50b4fadc8ab1d5e0695e6fc7ffd22fbddfa8411f9153bd98c2cf6c3f7",
+      "translation_text_hash": "4594fd3d7b81d1faa7a7ec6679e1ae31feb15e3c099002008c44fc23e8b99e4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임의 투기는 없어지고 유다를 괴롭게 하던 자는 끊어지며 에브라임은 유다를 투기하지 아니하며 유다는 에브라임을 괴롭게 하지 아니할 것이요"
+      ],
+      "raw_text_hashes": [
+        "4594fd3d7b81d1faa7a7ec6679e1ae31feb15e3c099002008c44fc23e8b99e4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:14",
+      "sequence": 17899,
+      "chapter_label": "ISA 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "They will fly down on the shoulders of the Philistines on the west. Together they will plunder the children of the east. They will extend their power over Edom and Moab, and the children of Ammon will obey them.",
+      "ko": "그들이 서으로 블레셋 사람의 어깨에 날아앉고 함께 동방 백성을 노략하며 에돔과 모압에 손을 대며 암몬 자손을 자기에게 복종시키리라",
+      "source_text_hash": "b8f050ad6b99c293d1eefb7d724600a654ddceca106d693cece8b94f73e59f56",
+      "translation_text_hash": "3d5567577bae3069394b7b74606466223f750e32b31b4a39d2c600b482d43ff9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 서으로 블레셋 사람의 어깨에 날아앉고 함께 동방 백성을 노략하며 에돔과 모압에 손을 대며 암몬 자손을 자기에게 복종시키리라"
+      ],
+      "raw_text_hashes": [
+        "3d5567577bae3069394b7b74606466223f750e32b31b4a39d2c600b482d43ff9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:15",
+      "sequence": 17900,
+      "chapter_label": "ISA 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD will utterly destroy the tongue of the Egyptian sea; and with his scorching wind he will wave his hand over the River, and will split it into seven streams, and cause men to march over in sandals.",
+      "ko": "여호와께서 애굽 해고를 말리우시고 손을 유브라데 하수 위에 흔들어 뜨거운 바람을 일으켜서 그 하수를 쳐서 일곱 갈래로 나눠 신 신고 건너가게 하실 것이라",
+      "source_text_hash": "b446ccf29b1d2a8bd118b2a917ea122e803d9d8e6d09217dcd98fae6c38ad6d6",
+      "translation_text_hash": "3b3d611a6c346f5a59222b1175759466b2663e616a65a31ce74ed6c569d2d83e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 애굽 해고를 말리우시고 손을 유브라데 하수 위에 흔들어 뜨거운 바람을 일으켜서 그 하수를 쳐서 일곱 갈래로 나눠 신 신고 건너가게 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "3b3d611a6c346f5a59222b1175759466b2663e616a65a31ce74ed6c569d2d83e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:11:16",
+      "sequence": 17901,
+      "chapter_label": "ISA 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "There will be a highway for the remnant that is left of his people from Assyria, like there was for Israel in the day that he came up out of the land of Egypt.",
+      "ko": "그의 남아 있는 백성을 위하여 앗수르에서부터 돌아오는 대로가 있게 하시되 이스라엘이 애굽 땅에서 나오던 날과 같게 하시리라",
+      "source_text_hash": "4918a94aba4133f38135108768dedc92c97bb830ac5f161960638c3bdab3f2aa",
+      "translation_text_hash": "6dc9d57f238eee6115b697b18b6e9347482bbbf3dbc27906935ef5b6f77cf2af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 남아 있는 백성을 위하여 앗수르에서부터 돌아오는 대로가 있게 하시되 이스라엘이 애굽 땅에서 나오던 날과 같게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "6dc9d57f238eee6115b697b18b6e9347482bbbf3dbc27906935ef5b6f77cf2af"
+      ]
+    }
+  ]
+}

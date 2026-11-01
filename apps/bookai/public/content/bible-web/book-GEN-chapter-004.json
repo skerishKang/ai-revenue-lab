@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:004",
+  "unit_ordinal": 4,
+  "unit_label": "GEN 4",
+  "book_code": "GEN",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:4:1",
+      "sequence": 81,
+      "chapter_label": "GEN 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "The man knew Eve his wife. She conceived, and gave birth to Cain, and said, “I have gotten a man with the LORD’s help.”",
+      "ko": "아담이 그 아내 하와와 동침하매 하와가 잉태하여 가인을 낳고 이르되 내가 여호와로 말미암아 득남하였다 하니라",
+      "source_text_hash": "40571f8448ac997cc9926356f343bccb5d44d5e4aeceb3fd0ecdd2f64552f332",
+      "translation_text_hash": "a1ffbc7987371cf497158e537cb51849e0930d5a1b6f61875f3c18b984f7a41b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담이 그 아내 하와와 동침하매 하와가 잉태하여 가인을 낳고 이르되 내가 여호와로 말미암아 득남하였다 하니라"
+      ],
+      "raw_text_hashes": [
+        "a1ffbc7987371cf497158e537cb51849e0930d5a1b6f61875f3c18b984f7a41b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:2",
+      "sequence": 82,
+      "chapter_label": "GEN 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Again she gave birth, to Cain’s brother Abel. Abel was a keeper of sheep, but Cain was a tiller of the ground.",
+      "ko": "그가 또 가인의 아우 아벨을 낳았는데 아벨은 양 치는 자이었고 가인은 농사하는 자이었더라",
+      "source_text_hash": "e8810f75390b5078300ea552d1d297ff5f3152037b48227b941e4aba1728c80d",
+      "translation_text_hash": "cf2b4d358e853bbf5fea85bf5cc537058b00c33f4ddbf6462cba0fb072c0aec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 가인의 아우 아벨을 낳았는데 아벨은 양 치는 자이었고 가인은 농사하는 자이었더라"
+      ],
+      "raw_text_hashes": [
+        "cf2b4d358e853bbf5fea85bf5cc537058b00c33f4ddbf6462cba0fb072c0aec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:3",
+      "sequence": 83,
+      "chapter_label": "GEN 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "As time passed, Cain brought an offering to the LORD from the fruit of the ground.",
+      "ko": "세월이 지난 후에 가인은 땅의 소산으로 제물을 삼아 여호와께 드렸고",
+      "source_text_hash": "b21f49563aefa021830405d5d6439c04fc0beb0fb12b3f1d711bcf69aa702705",
+      "translation_text_hash": "165489c8ab1698817c900418e4091ba2fe86683912e1461d4a094019389dc28e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세월이 지난 후에 가인은 땅의 소산으로 제물을 삼아 여호와께 드렸고"
+      ],
+      "raw_text_hashes": [
+        "165489c8ab1698817c900418e4091ba2fe86683912e1461d4a094019389dc28e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:4",
+      "sequence": 84,
+      "chapter_label": "GEN 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Abel also brought some of the firstborn of his flock and of its fat. The LORD respected Abel and his offering,",
+      "ko": "아벨은 자기도 양의 첫 새끼와 그 기름으로 드렸더니 여호와께서 아벨과 그 제물은 열납하셨으나",
+      "source_text_hash": "9eb3eff055d3184fd91d8fffdb37681fb40bcb3000a441f2d7a136930b15e8af",
+      "translation_text_hash": "89a92e0614b742acf7365f22ea847b1da0ff30c454cf607e172eac6c5d37798b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아벨은 자기도 양의 첫 새끼와 그 기름으로 드렸더니 여호와께서 아벨과 그 제물은 열납하셨으나"
+      ],
+      "raw_text_hashes": [
+        "89a92e0614b742acf7365f22ea847b1da0ff30c454cf607e172eac6c5d37798b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:5",
+      "sequence": 85,
+      "chapter_label": "GEN 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "but he didn’t respect Cain and his offering. Cain was very angry, and the expression on his face fell.",
+      "ko": "가인과 그 제물은 열납하지 아니하신지라 가인이 심히 분하여 안색이 변하니",
+      "source_text_hash": "a8e13f923a15fa5ceddecc03c4fccd2fd68a900462bfe1540d48ced3f629135d",
+      "translation_text_hash": "8210582559f7a8e461a4c90e4f346e2d55a108944e72c0b4751d92586b69fe0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가인과 그 제물은 열납하지 아니하신지라 가인이 심히 분하여 안색이 변하니"
+      ],
+      "raw_text_hashes": [
+        "8210582559f7a8e461a4c90e4f346e2d55a108944e72c0b4751d92586b69fe0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:6",
+      "sequence": 86,
+      "chapter_label": "GEN 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD said to Cain, “Why are you angry? Why has the expression of your face fallen?",
+      "ko": "여호와께서 가인에게 이르시되 네가 분하여 함은 어찜이며 안색이 변함은 어찜이뇨",
+      "source_text_hash": "2758d189a9e955141881a0f0a8a0b4dcea3b836794ceab25899ea54569db41ed",
+      "translation_text_hash": "410a2d68f2b3d8e8a404be84755de19eb625f42e04dff61d9bf6a869c2b3ff89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가인에게 이르시되 네가 분하여 함은 어찜이며 안색이 변함은 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "410a2d68f2b3d8e8a404be84755de19eb625f42e04dff61d9bf6a869c2b3ff89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:7",
+      "sequence": 87,
+      "chapter_label": "GEN 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "If you do well, won’t it be lifted up? If you don’t do well, sin crouches at the door. Its desire is for you, but you are to rule over it.”",
+      "ko": "네가 선을 행하면 어찌 낯을 들지 못하겠느냐 선을 행치 아니하면 죄가 문에 엎드리느니라 죄의 소원은 네게 있으나 너는 죄를 다스릴찌니라",
+      "source_text_hash": "45bd71ff9038b1c203d4bd68ad04bd373a4ed14e5208f43d954b847569a7e674",
+      "translation_text_hash": "1e7c387c9f6ee7de531d8dbc33fca28172795f0eace66df0ac37a02ae9c62222",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 선을 행하면 어찌 낯을 들지 못하겠느냐 선을 행치 아니하면 죄가 문에 엎드리느니라 죄의 소원은 네게 있으나 너는 죄를 다스릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "1e7c387c9f6ee7de531d8dbc33fca28172795f0eace66df0ac37a02ae9c62222"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:8",
+      "sequence": 88,
+      "chapter_label": "GEN 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Cain said to Abel, his brother, “Let’s go into the field.” While they were in the field, Cain rose up against Abel, his brother, and killed him.",
+      "ko": "가인이 그 아우 아벨에게 고하니라 그 후 그들이 들에 있을 때에 가인이 그 아우 아벨을 쳐 죽이니라",
+      "source_text_hash": "270386e76eaeb8757fb0cf77a55f9d2fe5e62cc8522fac61f3b15f188ccd04a5",
+      "translation_text_hash": "d79e75fb1533c614326ae80a65cd3d2fd387ecdb8c42756302a5d72a486a2d85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가인이 그 아우 아벨에게 고하니라 그 후 그들이 들에 있을 때에 가인이 그 아우 아벨을 쳐 죽이니라"
+      ],
+      "raw_text_hashes": [
+        "d79e75fb1533c614326ae80a65cd3d2fd387ecdb8c42756302a5d72a486a2d85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:9",
+      "sequence": 89,
+      "chapter_label": "GEN 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD said to Cain, “Where is Abel, your brother?” He said, “I don’t know. Am I my brother’s keeper?”",
+      "ko": "여호와께서 가인에게 이르시되 네 아우 아벨이 어디 있느냐 그가 가로되 내가 알지 못하나이다 내가 내 아우를 지키는 자니이까",
+      "source_text_hash": "98e890ec67fd71dc6399a4fe37e0357258c6ea3da5f15bced4998e4a8d69b2bc",
+      "translation_text_hash": "777031a495963726b0cce91655838c10f039f71ea27077c217805a9e3b04f57e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가인에게 이르시되 네 아우 아벨이 어디 있느냐 그가 가로되 내가 알지 못하나이다 내가 내 아우를 지키는 자니이까"
+      ],
+      "raw_text_hashes": [
+        "777031a495963726b0cce91655838c10f039f71ea27077c217805a9e3b04f57e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:10",
+      "sequence": 90,
+      "chapter_label": "GEN 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD said, “What have you done? The voice of your brother’s blood cries to me from the ground.",
+      "ko": "가라사대 네가 무엇을 하였느냐 네 아우의 핏소리가 땅에서부터 내게 호소하느니라",
+      "source_text_hash": "74130c648761d2a2ca92c2b6e4f560a2190cd8adc34cf7ec6ff876b74bf8d937",
+      "translation_text_hash": "69c6416c91aea21805dd8feb5c307d0edd9a9ef3218b605ea8072f47736b1958",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 네가 무엇을 하였느냐 네 아우의 핏소리가 땅에서부터 내게 호소하느니라"
+      ],
+      "raw_text_hashes": [
+        "69c6416c91aea21805dd8feb5c307d0edd9a9ef3218b605ea8072f47736b1958"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:11",
+      "sequence": 91,
+      "chapter_label": "GEN 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Now you are cursed because of the ground, which has opened its mouth to receive your brother’s blood from your hand.",
+      "ko": "땅이 그 입을 벌려 네 손에서부터 네 아우의 피를 받았은즉 네가 땅에서 저주를 받으리니",
+      "source_text_hash": "59f4e508b80c35c0c236cb7bd1698ab7ad218e263fade4b01a2d56e3367932bc",
+      "translation_text_hash": "58c149f0c8a7a92533f1524b0df3b24abafa045b338ef4e5aabb56dbd5f5bda4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 그 입을 벌려 네 손에서부터 네 아우의 피를 받았은즉 네가 땅에서 저주를 받으리니"
+      ],
+      "raw_text_hashes": [
+        "58c149f0c8a7a92533f1524b0df3b24abafa045b338ef4e5aabb56dbd5f5bda4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:12",
+      "sequence": 92,
+      "chapter_label": "GEN 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "From now on, when you till the ground, it won’t yield its strength to you. You will be a fugitive and a wanderer on the earth.”",
+      "ko": "네가 밭 갈아도 땅이 다시는 그 효력을 네게 주지 아니할 것이요 너는 땅에서 피하며 유리하는 자가 되리라",
+      "source_text_hash": "2b715411e5e5d573acdba4b366eaf7acba85e9010300546ac82ef52ffa00aa0c",
+      "translation_text_hash": "243dbec7f0c9622df52cfeeca64aa7db3c6efe6184b21f95187d30c134ffe3f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 밭 갈아도 땅이 다시는 그 효력을 네게 주지 아니할 것이요 너는 땅에서 피하며 유리하는 자가 되리라"
+      ],
+      "raw_text_hashes": [
+        "243dbec7f0c9622df52cfeeca64aa7db3c6efe6184b21f95187d30c134ffe3f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:13",
+      "sequence": 93,
+      "chapter_label": "GEN 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Cain said to the LORD, “My punishment is greater than I can bear.",
+      "ko": "가인이 여호와께 고하되 내 죄벌이 너무 중하여 견딜 수 없나이다",
+      "source_text_hash": "725e2b4e25bb6ee33b667a95ddeb7ce4c5b5b57bfaabe5de497095fab93c4c92",
+      "translation_text_hash": "965817a2c677738bf0051f070eda97a45024f7b2419d61761fde62c54f71bf49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가인이 여호와께 고하되 내 죄벌이 너무 중하여 견딜 수 없나이다"
+      ],
+      "raw_text_hashes": [
+        "965817a2c677738bf0051f070eda97a45024f7b2419d61761fde62c54f71bf49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:14",
+      "sequence": 94,
+      "chapter_label": "GEN 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Behold, you have driven me out today from the surface of the ground. I will be hidden from your face, and I will be a fugitive and a wanderer on the earth. Whoever finds me will kill me.”",
+      "ko": "주께서 오늘 이 지면에서 나를 쫓아 내시온즉 내가 주의 낯을 뵈옵지 못하리니 내가 땅에서 피하며 유리하는 자가 될찌라 무릇 나를 만나는 자가 나를 죽이겠나이다",
+      "source_text_hash": "b88c9c6855e208fa7e690536c68a2a2a7d33f6ebe46cc3080a0b0e761a6ffaa3",
+      "translation_text_hash": "1378abe3ddffd98e69b6efcc8eb7d13c94b7b0b01089a6c832698b385e83db9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 오늘 이 지면에서 나를 쫓아 내시온즉 내가 주의 낯을 뵈옵지 못하리니 내가 땅에서 피하며 유리하는 자가 될찌라 무릇 나를 만나는 자가 나를 죽이겠나이다"
+      ],
+      "raw_text_hashes": [
+        "1378abe3ddffd98e69b6efcc8eb7d13c94b7b0b01089a6c832698b385e83db9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:15",
+      "sequence": 95,
+      "chapter_label": "GEN 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD said to him, “Therefore whoever slays Cain, vengeance will be taken on him sevenfold.” The LORD appointed a sign for Cain, so that anyone finding him would not strike him.",
+      "ko": "여호와께서 그에게 이르시되 그렇지 않다 가인을 죽이는 자는 벌을 칠배나 받으리라 하시고 가인에게 표를 주사 만나는 누구에게든지 죽임을 면케 하시니라",
+      "source_text_hash": "e48709d8fa18e40822b86d8a2d4cf40b140a17350a370eea66b5272254b052c6",
+      "translation_text_hash": "600aa38d3ba472badde46a0f4be623f65a4e3d6b8af76b198667f1cc3a237dcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그에게 이르시되 그렇지 않다 가인을 죽이는 자는 벌을 칠배나 받으리라 하시고 가인에게 표를 주사 만나는 누구에게든지 죽임을 면케 하시니라"
+      ],
+      "raw_text_hashes": [
+        "600aa38d3ba472badde46a0f4be623f65a4e3d6b8af76b198667f1cc3a237dcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:16",
+      "sequence": 96,
+      "chapter_label": "GEN 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "Cain left the LORD’s presence, and lived in the land of Nod, east of Eden.",
+      "ko": "가인이 여호와의 앞을 떠나 나가 에덴 동편 놋 땅에 거하였더니",
+      "source_text_hash": "4d8d0e29c5970a2265c4553cf3b85fb0537da49470bc0353302a0faa9f488f65",
+      "translation_text_hash": "91f4e07a69e22428a3077413d8a8f6537970cf3223f5c16e059c0be6cb3f05c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가인이 여호와의 앞을 떠나 나가 에덴 동편 놋 땅에 거하였더니"
+      ],
+      "raw_text_hashes": [
+        "91f4e07a69e22428a3077413d8a8f6537970cf3223f5c16e059c0be6cb3f05c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:17",
+      "sequence": 97,
+      "chapter_label": "GEN 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "Cain knew his wife. She conceived, and gave birth to Enoch. He built a city, and named the city after the name of his son, Enoch.",
+      "ko": "아내와 동침하니 그가 잉태하여 에녹을 낳은지라 가인이 성을 쌓고 그 아들의 이름으로 성을 이름하여 에녹이라 하였더라",
+      "source_text_hash": "5fac9d03c5c227175823e829b38d0abf783b148f28a6812a0006575d1cd3ba28",
+      "translation_text_hash": "643a9eb67046d00990dd2245c014eee2ad663dfdd45eb3f5738b0be4bbd6f800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아내와 동침하니 그가 잉태하여 에녹을 낳은지라 가인이 성을 쌓고 그 아들의 이름으로 성을 이름하여 에녹이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "643a9eb67046d00990dd2245c014eee2ad663dfdd45eb3f5738b0be4bbd6f800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:18",
+      "sequence": 98,
+      "chapter_label": "GEN 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Irad was born to Enoch. Irad became the father of Mehujael. Mehujael became the father of Methushael. Methushael became the father of Lamech.",
+      "ko": "에녹이 이랏을 낳았고 이랏은 므후야엘을 낳았고 므후야엘은 므드사엘을 낳았고 므드사엘은 라멕을 낳았더라",
+      "source_text_hash": "0223dacab2f9bef2077f0e52ec6b80b73b7e0053ab77819666e73378a4784802",
+      "translation_text_hash": "172811625dcd5e597b67d5dca45bf99a991e5643226878c8a05c9967959b8d1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에녹이 이랏을 낳았고 이랏은 므후야엘을 낳았고 므후야엘은 므드사엘을 낳았고 므드사엘은 라멕을 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "172811625dcd5e597b67d5dca45bf99a991e5643226878c8a05c9967959b8d1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:19",
+      "sequence": 99,
+      "chapter_label": "GEN 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "Lamech took two wives: the name of the first one was Adah, and the name of the second one was Zillah.",
+      "ko": "라멕이 두 아내를 취하였으니 하나의 이름은 아다요 하나의 이름은 씰라며",
+      "source_text_hash": "bbb5f8084dc819063fd3ac1367c7839f9e9993d343017dae2d342b8051f31958",
+      "translation_text_hash": "cf4e174dc707bcc20c5553f3dfb7858335453213623c1c0f883479290dd44d97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라멕이 두 아내를 취하였으니 하나의 이름은 아다요 하나의 이름은 씰라며"
+      ],
+      "raw_text_hashes": [
+        "cf4e174dc707bcc20c5553f3dfb7858335453213623c1c0f883479290dd44d97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:20",
+      "sequence": 100,
+      "chapter_label": "GEN 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Adah gave birth to Jabal, who was the father of those who dwell in tents and have livestock.",
+      "ko": "아다는 야발을 낳았으니 그는 장막에 거하여 육축 치는 자의 조상이 되었고",
+      "source_text_hash": "1302570572baae04523648fe63db82a8a9e59c916fabbe80c36414acec9523b7",
+      "translation_text_hash": "cc196388d66d555e1b1b6e9b4e00e947d9c30a3c60bcbd12cc671c2acc0cd34f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아다는 야발을 낳았으니 그는 장막에 거하여 육축 치는 자의 조상이 되었고"
+      ],
+      "raw_text_hashes": [
+        "cc196388d66d555e1b1b6e9b4e00e947d9c30a3c60bcbd12cc671c2acc0cd34f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:21",
+      "sequence": 101,
+      "chapter_label": "GEN 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "His brother’s name was Jubal, who was the father of all who handle the harp and pipe.",
+      "ko": "그 아우의 이름은 유발이니 그는 수금과 퉁소를 잡는 모든 자의 조상이 되었으며",
+      "source_text_hash": "324083d610a39944d7994fcf11a2849ffe63ef353aaaf2aa067afdb1edddf54d",
+      "translation_text_hash": "84c26c56394800a48ff234fe9329e69b8b495f824c377e7e8b6cbeb80070f089",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아우의 이름은 유발이니 그는 수금과 퉁소를 잡는 모든 자의 조상이 되었으며"
+      ],
+      "raw_text_hashes": [
+        "84c26c56394800a48ff234fe9329e69b8b495f824c377e7e8b6cbeb80070f089"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:22",
+      "sequence": 102,
+      "chapter_label": "GEN 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "Zillah also gave birth to Tubal Cain, the forger of every cutting instrument of bronze and iron. Tubal Cain’s sister was Naamah.",
+      "ko": "씰라는 두발가인을 낳았으니 그는 동철로 각양 날카로운 기계를 만드는 자요 두발가인의 누이는 나아마이었더라",
+      "source_text_hash": "82d2fbe03db39a63799a3e1946fc8dce22195bd47d69acfe598a2d4e6e9c5bcb",
+      "translation_text_hash": "d14df302ea75e53bf007c969d2d3da0b67c94f86942020be29b858afdd191361",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "씰라는 두발가인을 낳았으니 그는 동철로 각양 날카로운 기계를 만드는 자요 두발가인의 누이는 나아마이었더라"
+      ],
+      "raw_text_hashes": [
+        "d14df302ea75e53bf007c969d2d3da0b67c94f86942020be29b858afdd191361"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:23",
+      "sequence": 103,
+      "chapter_label": "GEN 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "Lamech said to his wives, “Adah and Zillah, hear my voice. You wives of Lamech, listen to my speech, for I have slain a man for wounding me, a young man for bruising me.",
+      "ko": "라멕이 아내들에게 이르되 아다와 씰라여 내 소리를 들으라 라멕의 아내들이여 내 말을 들으라 나의 창상을 인하여 내가 사람을 죽였고 나의 상함을 인하여 소년을 죽였도다",
+      "source_text_hash": "972c6580682329002e09658047bf7df2f3f73a27bd88d2d934e14b25c8633696",
+      "translation_text_hash": "caac3d47e316c86dcc626bc38b19b517f54190caeaf11a1d9982de61d8d69f6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라멕이 아내들에게 이르되 아다와 씰라여 내 소리를 들으라 라멕의 아내들이여 내 말을 들으라 나의 창상을 인하여 내가 사람을 죽였고 나의 상함을 인하여 소년을 죽였도다"
+      ],
+      "raw_text_hashes": [
+        "caac3d47e316c86dcc626bc38b19b517f54190caeaf11a1d9982de61d8d69f6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:24",
+      "sequence": 104,
+      "chapter_label": "GEN 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "If Cain will be avenged seven times, truly Lamech seventy-seven times.”",
+      "ko": "가인을 위하여는 벌이 칠배일찐대 라멕을 위하여는 벌이 칠십 칠배이리로다 하였더라",
+      "source_text_hash": "3dde7d4aba968462acf9f452f65fa8304bd5ffd92d028dbef1572d043f45a8e0",
+      "translation_text_hash": "985f3b96b214bab8a982a98d6c4b7f40467d765266a1b613306a4ba92f000211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가인을 위하여는 벌이 칠배일찐대 라멕을 위하여는 벌이 칠십 칠배이리로다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "985f3b96b214bab8a982a98d6c4b7f40467d765266a1b613306a4ba92f000211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:25",
+      "sequence": 105,
+      "chapter_label": "GEN 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "Adam knew his wife again. She gave birth to a son, and named him Seth, saying, “for God has given me another child instead of Abel, for Cain killed him.”",
+      "ko": "아담이 다시 아내와 동침하매 그가 아들을 낳아 그 이름을 셋이라 하였으니 이는 하나님이 내게 가인의 죽인 아벨 대신에 다른 씨를 주셨다 함이며",
+      "source_text_hash": "443cdaa8ee20d45e3af6f5a093c0e864a94f7e5a21bf7aed3a0c5d1d6eecc9f5",
+      "translation_text_hash": "8f15ea46795f9e4e8e4c6720654643121e0b840df962341fe9154e01e25728ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담이 다시 아내와 동침하매 그가 아들을 낳아 그 이름을 셋이라 하였으니 이는 하나님이 내게 가인의 죽인 아벨 대신에 다른 씨를 주셨다 함이며"
+      ],
+      "raw_text_hashes": [
+        "8f15ea46795f9e4e8e4c6720654643121e0b840df962341fe9154e01e25728ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:4:26",
+      "sequence": 106,
+      "chapter_label": "GEN 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "A son was also born to Seth, and he named him Enosh. At that time men began to call on the LORD’s name.",
+      "ko": "셋도 아들을 낳고 그 이름을 에노스라 하였으며 그 때에 사람들이 비로소 여호와의 이름을 불렀더라",
+      "source_text_hash": "bae54ef4f30f0c5e106ff3f40adb7065b844f2fa8901d9522a4dc6dfdde243f0",
+      "translation_text_hash": "2cb7f28c72981ff1391c32c9964067a9e6a1fa6f93ba6b5d568a5dcd0bab49f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셋도 아들을 낳고 그 이름을 에노스라 하였으며 그 때에 사람들이 비로소 여호와의 이름을 불렀더라"
+      ],
+      "raw_text_hashes": [
+        "2cb7f28c72981ff1391c32c9964067a9e6a1fa6f93ba6b5d568a5dcd0bab49f8"
+      ]
+    }
+  ]
+}

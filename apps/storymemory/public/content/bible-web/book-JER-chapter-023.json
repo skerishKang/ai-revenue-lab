@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:023",
+  "unit_ordinal": 768,
+  "unit_label": "JER 23",
+  "book_code": "JER",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:23:1",
+      "sequence": 19486,
+      "chapter_label": "JER 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "“Woe to the shepherds who destroy and scatter the sheep of my pasture!” says the LORD.",
+      "ko": "나 여호와가 말하노라 내 목장의 양 무리를 멸하며 흩는 목자에게 화 있으리라",
+      "source_text_hash": "507156990d88038bb679114860fadce8016d6f23ee6d5efefcb8809093972f63",
+      "translation_text_hash": "816c3d1e146e141e4bba231c8724201e7fb2ffcc57416f257ac4dcdfd9734a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내 목장의 양 무리를 멸하며 흩는 목자에게 화 있으리라"
+      ],
+      "raw_text_hashes": [
+        "816c3d1e146e141e4bba231c8724201e7fb2ffcc57416f257ac4dcdfd9734a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:2",
+      "sequence": 19487,
+      "chapter_label": "JER 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "Therefore the LORD, the God of Israel, says against the shepherds who feed my people: “You have scattered my flock, driven them away, and have not visited them. Behold, I will visit on you the evil of your doings,” says the LORD.",
+      "ko": "그러므로 이스라엘 하나님 나 여호와가 내 백성을 기르는 목자에게 이같이 말하노라 너희가 내 양무리를 흩으며 그것을 몰아내고 돌아보지 아니하였도다 보라 내가 너희의 악행을 인하여 너희에게 보응하리라 여호와의 말이니라",
+      "source_text_hash": "5dbafbaa078cf801cfdc681c947ce6223ac5a1bf2051a4c09568e8c97fcaadf8",
+      "translation_text_hash": "65b2e8c6b434c3a67387aab1d2029ad5107522b3ef80a03858f604b9b29a07ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이스라엘 하나님 나 여호와가 내 백성을 기르는 목자에게 이같이 말하노라 너희가 내 양무리를 흩으며 그것을 몰아내고 돌아보지 아니하였도다 보라 내가 너희의 악행을 인하여 너희에게 보응하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "65b2e8c6b434c3a67387aab1d2029ad5107522b3ef80a03858f604b9b29a07ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:3",
+      "sequence": 19488,
+      "chapter_label": "JER 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "“I will gather the remnant of my flock out of all the countries where I have driven them, and will bring them again to their folds; and they will be fruitful and multiply.",
+      "ko": "내가 내 양 무리의 남은 자를 그 몰려갔던 모든 지방에서 모아내어 다시 그 우리로 돌아오게 하리니 그들의 생육이 번성할 것이며",
+      "source_text_hash": "f43613e1f0b5d9c9ca4c3533ea3db77130e476e85c165ace3752da328b3a6331",
+      "translation_text_hash": "d8bf300977b4df5b8ef4a9525b723839a7dc2bc51d4b242bef098df66c18b47f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 양 무리의 남은 자를 그 몰려갔던 모든 지방에서 모아내어 다시 그 우리로 돌아오게 하리니 그들의 생육이 번성할 것이며"
+      ],
+      "raw_text_hashes": [
+        "d8bf300977b4df5b8ef4a9525b723839a7dc2bc51d4b242bef098df66c18b47f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:4",
+      "sequence": 19489,
+      "chapter_label": "JER 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "I will set up shepherds over them who will feed them. They will no longer be afraid or dismayed, neither will any be lacking,” says the LORD.",
+      "ko": "내가 그들을 기르는 목자들을 그들 위에 세우리니 그들이 다시는 두려워 하거나 놀라거나 축이 나지 아니하리라 여호와의 말이니라",
+      "source_text_hash": "a86ac8d98b26589c9be649fdf54535c1c6c3ed091cef954c06ec898ecbd9985b",
+      "translation_text_hash": "f71f0c1e157ccc2418030110b0822dfa81f88044581aee2a7f51475c71b4e364",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 기르는 목자들을 그들 위에 세우리니 그들이 다시는 두려워 하거나 놀라거나 축이 나지 아니하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "f71f0c1e157ccc2418030110b0822dfa81f88044581aee2a7f51475c71b4e364"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:5",
+      "sequence": 19490,
+      "chapter_label": "JER 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "“Behold, the days come,” says the LORD, “that I will raise to David a righteous Branch; and he will reign as king and deal wisely, and will execute justice and righteousness in the land.",
+      "ko": "나 여호와가 말하노라 보라 때가 이르리니 내가 다윗에게 한 의로운 가지를 일으킬 것이라 그가 왕이 되어 지혜롭게 행사하며 세상에서 공평과 정의를 행할 것이며",
+      "source_text_hash": "2419ba8bcdc57ef18265a2d0fdf33277041832e8b4385d4188043c05c8aeb774",
+      "translation_text_hash": "3b7623cc3aa0f4b04c9b2b74b9865891adac954df8f5026609d057cf88b33f0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 보라 때가 이르리니 내가 다윗에게 한 의로운 가지를 일으킬 것이라 그가 왕이 되어 지혜롭게 행사하며 세상에서 공평과 정의를 행할 것이며"
+      ],
+      "raw_text_hashes": [
+        "3b7623cc3aa0f4b04c9b2b74b9865891adac954df8f5026609d057cf88b33f0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:6",
+      "sequence": 19491,
+      "chapter_label": "JER 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "In his days Judah will be saved, and Israel will dwell safely. This is his name by which he will be called: The LORD our righteousness.",
+      "ko": "그의 날에 유다는 구원을 얻겠고 이스라엘은 평안히 거할 것이며 그 이름은 여호와 우리의 의라 일컬음을 받으리라",
+      "source_text_hash": "818f5880090dd440f1ed4f34d715f2beb715fd623c3cf87b1bf79e25ba2b1786",
+      "translation_text_hash": "0051f3a059c7100273f5f2a7ab0b6f64ff193a3c257634bd7f798df595a9239a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 날에 유다는 구원을 얻겠고 이스라엘은 평안히 거할 것이며 그 이름은 여호와 우리의 의라 일컬음을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "0051f3a059c7100273f5f2a7ab0b6f64ff193a3c257634bd7f798df595a9239a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:7",
+      "sequence": 19492,
+      "chapter_label": "JER 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "“Therefore, behold, the days come,” says the LORD, “that they will no more say, ‘As the LORD lives, who brought up the children of Israel out of the land of Egypt;’",
+      "ko": "그러므로 나 여호와가 말하노라 보라 날이 이르리니 그들이 다시는 이스라엘 자손을 애굽 땅에서 인도하여 내신 여호와의 사심으로 맹세하지 아니하고",
+      "source_text_hash": "14f12c8f31c7a3fb339bdeb219e2c35d58cfc8a8a1770faaf977568404621a4d",
+      "translation_text_hash": "89a1d972afe6ddc643c6f095db3b43a24a40c3ad3648008ba064e2c2dcbd2e49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 여호와가 말하노라 보라 날이 이르리니 그들이 다시는 이스라엘 자손을 애굽 땅에서 인도하여 내신 여호와의 사심으로 맹세하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "89a1d972afe6ddc643c6f095db3b43a24a40c3ad3648008ba064e2c2dcbd2e49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:8",
+      "sequence": 19493,
+      "chapter_label": "JER 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "but, ‘As the LORD lives, who brought up and who led the offspring of the house of Israel out of the north country, and from all the countries where I had driven them.’ Then they will dwell in their own land.”",
+      "ko": "이스라엘 집 자손을 북방 땅, 그 모든 쫓겨났던 나라에서 인도하여 내신 여호와의 사심으로 맹세할 것이며 그들이 자기 땅에 거하리라 하시니라",
+      "source_text_hash": "845b80e06032a3c6527b5fb02bfa1ec44da81d1dfdc4d6b9dd15e02682785507",
+      "translation_text_hash": "eaaf3870a71a204cc3b246aa99984a3a6c9c560e30336565355613cd25859bf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 집 자손을 북방 땅, 그 모든 쫓겨났던 나라에서 인도하여 내신 여호와의 사심으로 맹세할 것이며 그들이 자기 땅에 거하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "eaaf3870a71a204cc3b246aa99984a3a6c9c560e30336565355613cd25859bf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:9",
+      "sequence": 19494,
+      "chapter_label": "JER 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "Concerning the prophets: My heart within me is broken. All my bones shake. I am like a drunken man, and like a man whom wine has overcome, because of the LORD, and because of his holy words.",
+      "ko": "선지자들에 대한 말씀이라 내 중심이 상하며 내 모든 뼈가 떨리며 내가 취한 사람 같으며 포도주에 잡힌 사람 같으니 이는 여호와와 그 거룩한 말씀을 인함이라",
+      "source_text_hash": "10e996065a8c642d5f68415598bde9c1900fce154f9dae7b739408b5fc2886a3",
+      "translation_text_hash": "0c85d840183285ed4692a13a31ac523971461f20f2abebccc97742a56175c9a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자들에 대한 말씀이라 내 중심이 상하며 내 모든 뼈가 떨리며 내가 취한 사람 같으며 포도주에 잡힌 사람 같으니 이는 여호와와 그 거룩한 말씀을 인함이라"
+      ],
+      "raw_text_hashes": [
+        "0c85d840183285ed4692a13a31ac523971461f20f2abebccc97742a56175c9a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:10",
+      "sequence": 19495,
+      "chapter_label": "JER 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "“For the land is full of adulterers; for because of the curse the land mourns. The pastures of the wilderness have dried up. Their course is evil, and their might is not right;",
+      "ko": "이 땅에 행음하는 자가 가득하도다 저주로 인하여 땅이 슬퍼하며 광야의 초장들이 마르나니 그들의 행위가 악하고 힘쓰는 것이 정직하지 못함이로다",
+      "source_text_hash": "3181bbb89fd160827b5541d6b3de6bc5f1d2dc4900eeff0e1a394afe426163d0",
+      "translation_text_hash": "c72f208e46dc617e4abbea9bfcbe799b3abdda69f2759540b70dd4e96446d071",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅에 행음하는 자가 가득하도다 저주로 인하여 땅이 슬퍼하며 광야의 초장들이 마르나니 그들의 행위가 악하고 힘쓰는 것이 정직하지 못함이로다"
+      ],
+      "raw_text_hashes": [
+        "c72f208e46dc617e4abbea9bfcbe799b3abdda69f2759540b70dd4e96446d071"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:11",
+      "sequence": 19496,
+      "chapter_label": "JER 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "for both prophet and priest are profane. Yes, in my house I have found their wickedness,” says the LORD.",
+      "ko": "여호와께서 말씀하시되 선지자와 제사장이 다 사특한지라 내가 내 집에서도 그들의 악을 발견하였노라",
+      "source_text_hash": "7a3adda887b154eeb25dc6ec0f53ebf93b45059e12dda4d8e285cd91f6d976b9",
+      "translation_text_hash": "dd2a2bab7d68dbc3ef06eb3e38e23b6524225fbb7e04eeeacb3f021916694d8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 선지자와 제사장이 다 사특한지라 내가 내 집에서도 그들의 악을 발견하였노라"
+      ],
+      "raw_text_hashes": [
+        "dd2a2bab7d68dbc3ef06eb3e38e23b6524225fbb7e04eeeacb3f021916694d8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:12",
+      "sequence": 19497,
+      "chapter_label": "JER 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore their way will be to them as slippery places in the darkness. They will be driven on, and fall therein; for I will bring evil on them, even the year of their visitation,” says the LORD.",
+      "ko": "그러므로 그들의 길이 그들에게 흑암 중에 미끄러운 곳과 같이 되고 그들이 밀침을 받아 그 길에 엎드러질 것이라 그들을 벌하는 해에 내가 그들에게 재앙을 내리리라 여호와의 말이니라",
+      "source_text_hash": "2bbbcbab5fbec63b251270ca1ebe12eb9fcd4b6a8231513b5aefdf263e1c0092",
+      "translation_text_hash": "554fb8e723a780dc26bd504a8dea4db6b61ead973225426bfdd97439a024517c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그들의 길이 그들에게 흑암 중에 미끄러운 곳과 같이 되고 그들이 밀침을 받아 그 길에 엎드러질 것이라 그들을 벌하는 해에 내가 그들에게 재앙을 내리리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "554fb8e723a780dc26bd504a8dea4db6b61ead973225426bfdd97439a024517c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:13",
+      "sequence": 19498,
+      "chapter_label": "JER 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "“I have seen folly in the prophets of Samaria. They prophesied by Baal, and caused my people Israel to err.",
+      "ko": "내가 사마리아 선지자들 중에 우매함이 있음을 보았나니 그들은 바알을 의탁하고 예언하여 내 백성 이스라엘을 그릇되게 하였고",
+      "source_text_hash": "7e5287285436c74123c4cb18a7808274680b22adf89a5739337baf4b0f4fb738",
+      "translation_text_hash": "751f21d94678948fbee981ea3d77f0aee256cf6069687e5d2ef622f58735b640",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사마리아 선지자들 중에 우매함이 있음을 보았나니 그들은 바알을 의탁하고 예언하여 내 백성 이스라엘을 그릇되게 하였고"
+      ],
+      "raw_text_hashes": [
+        "751f21d94678948fbee981ea3d77f0aee256cf6069687e5d2ef622f58735b640"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:14",
+      "sequence": 19499,
+      "chapter_label": "JER 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "In the prophets of Jerusalem I have also seen a horrible thing: they commit adultery and walk in lies. They strengthen the hands of evildoers, so that no one returns from his wickedness. They have all become to me as Sodom, and its inhabitants as Gomorrah.”",
+      "ko": "내가 예루살렘 선지자들 중에도 가증한 일이 있음을 보았나니 그들은 간음을 행하며 행악자의 손을 굳게 하여 사람으로 그 악에서 돌이킴이 없게 하였은즉 그들은 다 내 앞에서 소돔 사람과 다름이 없고 그 거민은 고모라 사람과 다름이 없느니라",
+      "source_text_hash": "f8b7f9d409f9aa0d070c9d6ef770eee9f67af9a53c9b13040244fa4e788f9af9",
+      "translation_text_hash": "d988eba3448dad0e84961594e2649a5b5856437dd295f7ace6f6aa1564d8278f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 예루살렘 선지자들 중에도 가증한 일이 있음을 보았나니 그들은 간음을 행하며 행악자의 손을 굳게 하여 사람으로 그 악에서 돌이킴이 없게 하였은즉 그들은 다 내 앞에서 소돔 사람과 다름이 없고 그 거민은 고모라 사람과 다름이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "d988eba3448dad0e84961594e2649a5b5856437dd295f7ace6f6aa1564d8278f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:15",
+      "sequence": 19500,
+      "chapter_label": "JER 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "Therefore the LORD of Armies says concerning the prophets: “Behold, I will feed them with wormwood, and make them drink poisoned water; for from the prophets of Jerusalem ungodliness has gone out into all the land.”",
+      "ko": "그러므로 만군의 여호와 내가 선지자에 대하여 이같이 말하노라 보라 내가 그들에게 쑥을 먹이며 독한 물을 마시우리니 이는 사악이 예루살렘 선지자들에게로서 나와서 온 땅에 퍼짐이라 하시니라",
+      "source_text_hash": "4e2742ffecd6f248ed6ed29e945a80b7624e90115af90bd0498dbd176d315125",
+      "translation_text_hash": "e2527dd3fa992a0873632d7b1cfff810453ddf511b869785da3052373c1aa421",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 만군의 여호와 내가 선지자에 대하여 이같이 말하노라 보라 내가 그들에게 쑥을 먹이며 독한 물을 마시우리니 이는 사악이 예루살렘 선지자들에게로서 나와서 온 땅에 퍼짐이라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "e2527dd3fa992a0873632d7b1cfff810453ddf511b869785da3052373c1aa421"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:16",
+      "sequence": 19501,
+      "chapter_label": "JER 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD of Armies says, “Don’t listen to the words of the prophets who prophesy to you. They teach you vanity. They speak a vision of their own heart, and not out of the mouth of the LORD.",
+      "ko": "만군의 여호와께서 이같이 말씀하시되 너희에게 예언하는 선지자들의 말을 듣지 말라 그들은 너희에게 헛된 것을 가르치나니 그들의 말한 묵시는 자기 마음으로 말미암은 것이요 여호와의 입에서 나온 것이 아니니라",
+      "source_text_hash": "56872f62178d1102288ba36874fbc1af33f0cd19794a71f4d23665a3277c5762",
+      "translation_text_hash": "23a81a4015209ae042e13221b3b45df77de4a4058ea0d09ae628ac3490bf7ae9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 이같이 말씀하시되 너희에게 예언하는 선지자들의 말을 듣지 말라 그들은 너희에게 헛된 것을 가르치나니 그들의 말한 묵시는 자기 마음으로 말미암은 것이요 여호와의 입에서 나온 것이 아니니라"
+      ],
+      "raw_text_hashes": [
+        "23a81a4015209ae042e13221b3b45df77de4a4058ea0d09ae628ac3490bf7ae9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:17",
+      "sequence": 19502,
+      "chapter_label": "JER 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "They say continually to those who despise me, ‘The LORD has said, “You will have peace;”’ and to everyone who walks in the stubbornness of his own heart they say, ‘No evil will come on you.’",
+      "ko": "항상 그들이 나를 멸시하는 자에게 이르기를 너희가 평안하리라 여호와의 말씀이니라 하며 또 자기 마음의 강퍅한대로 행하는 모든 사람에게 이르기를 재앙이 너희에게 임하지 아니하리라 하였느니라",
+      "source_text_hash": "cbc03a8aaed093aef52d9067e312c6c24a8690337649930cb908c788cc400aa8",
+      "translation_text_hash": "e4f5e6e97e4d6158ed521ae7a5bd8e2912f826fed1a9f516659e5f457021a03a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 그들이 나를 멸시하는 자에게 이르기를 너희가 평안하리라 여호와의 말씀이니라 하며 또 자기 마음의 강퍅한대로 행하는 모든 사람에게 이르기를 재앙이 너희에게 임하지 아니하리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e4f5e6e97e4d6158ed521ae7a5bd8e2912f826fed1a9f516659e5f457021a03a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:18",
+      "sequence": 19503,
+      "chapter_label": "JER 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "For who has stood in the council of the LORD, that he should perceive and hear his word? Who has listened to my word, and heard it?",
+      "ko": "누가 여호와의 회의에 참예하여 그 말을 알아들었으며 누가 귀를 기울여 그 말을 들었느뇨",
+      "source_text_hash": "beef15d6eb3b066274b155ec54b154a0243e515081342533c0d4c051ec5ad8bf",
+      "translation_text_hash": "abde5a9e4a60f6a233fb38f98027d3b72a6904f4816ccaa853dc8e1b311921b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 여호와의 회의에 참예하여 그 말을 알아들었으며 누가 귀를 기울여 그 말을 들었느뇨"
+      ],
+      "raw_text_hashes": [
+        "abde5a9e4a60f6a233fb38f98027d3b72a6904f4816ccaa853dc8e1b311921b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:19",
+      "sequence": 19504,
+      "chapter_label": "JER 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "Behold, the LORD’s storm, his wrath, has gone out. Yes, a whirling storm! It will burst on the head of the wicked.",
+      "ko": "보라 나 여호와의 노가 발하여 폭풍과 회리바람처럼 악인의 머리를 칠 것이라",
+      "source_text_hash": "234bf5614fa848abcbfd5283425b398d41459f0d21f6e832f8cd6bbf0194da7e",
+      "translation_text_hash": "d5c85e004a327d50837bf936942c12714c887e123807143948ce884c2b3f9d0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 나 여호와의 노가 발하여 폭풍과 회리바람처럼 악인의 머리를 칠 것이라"
+      ],
+      "raw_text_hashes": [
+        "d5c85e004a327d50837bf936942c12714c887e123807143948ce884c2b3f9d0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:20",
+      "sequence": 19505,
+      "chapter_label": "JER 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD’s anger will not return until he has executed and performed the intents of his heart. In the latter days, you will understand it perfectly.",
+      "ko": "나 여호와의 노는 내 마음의 뜻하는바를 행하여 이루기까지는 쉬지 아니하나니 너희가 말일에 그것을 완전히 깨달으리라",
+      "source_text_hash": "eebc59966a481732ba08a76f910f39b59525d11cc1b35d3a7863293de72e0e82",
+      "translation_text_hash": "25bd95aa8b8965f6edfa0044a46a8d9d6babcb610b026e2e3e096c1512650a83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와의 노는 내 마음의 뜻하는바를 행하여 이루기까지는 쉬지 아니하나니 너희가 말일에 그것을 완전히 깨달으리라"
+      ],
+      "raw_text_hashes": [
+        "25bd95aa8b8965f6edfa0044a46a8d9d6babcb610b026e2e3e096c1512650a83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:21",
+      "sequence": 19506,
+      "chapter_label": "JER 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "I didn’t send these prophets, yet they ran. I didn’t speak to them, yet they prophesied.",
+      "ko": "이 선지자들은 내가 보내지 아니하였어도 달음질하며 내가 그들에게 이르지 아니하였어도 예언하였은즉",
+      "source_text_hash": "ca126538319badef07169026492c090b1718cfa1ae8c281121bd2a0b17dd7c6b",
+      "translation_text_hash": "e952ab3bb71660565b48f68186cb55d0a945be32ea03ea106b500e41afd7035b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 선지자들은 내가 보내지 아니하였어도 달음질하며 내가 그들에게 이르지 아니하였어도 예언하였은즉"
+      ],
+      "raw_text_hashes": [
+        "e952ab3bb71660565b48f68186cb55d0a945be32ea03ea106b500e41afd7035b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:22",
+      "sequence": 19507,
+      "chapter_label": "JER 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "But if they had stood in my council, then they would have caused my people to hear my words, and would have turned them from their evil way, and from the evil of their doings.",
+      "ko": "그들이 만일 나의 회의에 참예하였더면 내 백성에게 내 말을 들려서 그들로 악한 길과 악한 행위에서 돌이키게 하였으리라",
+      "source_text_hash": "849115303c118bd73df28f8925f3bb6dbbac5ca28aa26590bff8dea0471ec6ae",
+      "translation_text_hash": "4f9a3d463a03d2df65f338ab4718d3f4c539f05630d5ef29c7f64bed461b97f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 만일 나의 회의에 참예하였더면 내 백성에게 내 말을 들려서 그들로 악한 길과 악한 행위에서 돌이키게 하였으리라"
+      ],
+      "raw_text_hashes": [
+        "4f9a3d463a03d2df65f338ab4718d3f4c539f05630d5ef29c7f64bed461b97f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:23",
+      "sequence": 19508,
+      "chapter_label": "JER 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "“Am I a God at hand,” says the LORD, “and not a God afar off?",
+      "ko": "나 여호와가 말하노라 나는 가까운데 하나님이요 먼데 하나님은 아니냐",
+      "source_text_hash": "90ea2f587d2f5b3e539ec290d0508c321c22b4b50d45dd4fe7da46310cf7e445",
+      "translation_text_hash": "8cc14f2aadf85d016a4702316cab7aa2c68dd18b849e62c14849cd0acbe10e0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 나는 가까운데 하나님이요 먼데 하나님은 아니냐"
+      ],
+      "raw_text_hashes": [
+        "8cc14f2aadf85d016a4702316cab7aa2c68dd18b849e62c14849cd0acbe10e0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:24",
+      "sequence": 19509,
+      "chapter_label": "JER 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "Can anyone hide himself in secret places so that I can’t see him?” says the LORD. “Don’t I fill heaven and earth?” says the LORD.",
+      "ko": "나 여호와가 말하노라 사람이 내게 보이지 아니하려고 누가 자기를 은밀한 곳에 숨길 수 있겠느냐 나 여호와가 말하노라 나는 천지에 충만하지 아니하냐",
+      "source_text_hash": "c495fa2896daeca8e3077bfb13dfe35a501aad3d3f9e4333ce3e5fa1b92be4e8",
+      "translation_text_hash": "d0f29adec909b613ae647f19b8b2475d01641c0c6d13c2f0acf69f8d53540cfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 사람이 내게 보이지 아니하려고 누가 자기를 은밀한 곳에 숨길 수 있겠느냐 나 여호와가 말하노라 나는 천지에 충만하지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "d0f29adec909b613ae647f19b8b2475d01641c0c6d13c2f0acf69f8d53540cfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:25",
+      "sequence": 19510,
+      "chapter_label": "JER 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "“I have heard what the prophets have said, who prophesy lies in my name, saying, ‘I had a dream! I had a dream!’",
+      "ko": "내 이름으로 거짓을 예언하는 선지자들의 말에 내가 몽사를 얻었다 몽사를 얻었다 함을 내가 들었노라",
+      "source_text_hash": "95ce98c458db81b33b5dc32fd1e36ef16d88e72bde08f69470f463e14a094b0e",
+      "translation_text_hash": "bc7459b9d045652d6dcdf4f14a053077ac471e1a0b15703287b12c06a524eace",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 이름으로 거짓을 예언하는 선지자들의 말에 내가 몽사를 얻었다 몽사를 얻었다 함을 내가 들었노라"
+      ],
+      "raw_text_hashes": [
+        "bc7459b9d045652d6dcdf4f14a053077ac471e1a0b15703287b12c06a524eace"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:26",
+      "sequence": 19511,
+      "chapter_label": "JER 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "How long will this be in the heart of the prophets who prophesy lies, even the prophets of the deceit of their own heart?",
+      "ko": "거짓을 예언하는 선지자들이 언제까지 이 마음을 품겠느냐 그들은 그 마음의 간교한 것을 예언하느니라",
+      "source_text_hash": "fb7ed820ec0e121c2093b72ffb0ed3ac927a2b5a6079b56e9a9e6f9d72210545",
+      "translation_text_hash": "21a351e43ca308eefdc60af11868af3e786cac823633d2993bcf9fa197a81a03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓을 예언하는 선지자들이 언제까지 이 마음을 품겠느냐 그들은 그 마음의 간교한 것을 예언하느니라"
+      ],
+      "raw_text_hashes": [
+        "21a351e43ca308eefdc60af11868af3e786cac823633d2993bcf9fa197a81a03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:27",
+      "sequence": 19512,
+      "chapter_label": "JER 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "They intend to cause my people to forget my name by their dreams which they each tell his neighbor, as their fathers forgot my name because of Baal.",
+      "ko": "그들이 서로 몽사를 말하니 그 생각인즉 그들의 열조가 바알로 인하여 내 이름을 잊어버린 것 같이 내 백성으로 내 이름을 잊게 하려 함이로다",
+      "source_text_hash": "252445a7c1663a2aa7033df95d775ec2c2d52f16349700efe23dc364dbd2f899",
+      "translation_text_hash": "8cb61c00c8a1f1d7ed12a09a9f76bf8e71b6b8d82ea2e0f21621698d3f71aca6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 서로 몽사를 말하니 그 생각인즉 그들의 열조가 바알로 인하여 내 이름을 잊어버린 것 같이 내 백성으로 내 이름을 잊게 하려 함이로다"
+      ],
+      "raw_text_hashes": [
+        "8cb61c00c8a1f1d7ed12a09a9f76bf8e71b6b8d82ea2e0f21621698d3f71aca6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:28",
+      "sequence": 19513,
+      "chapter_label": "JER 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "The prophet who has a dream, let him tell a dream; and he who has my word, let him speak my word faithfully. What is the straw to the wheat?” says the LORD.",
+      "ko": "나 여호와가 말하노라 몽사를 얻은 선지자는 몽사를 말할 것이요 내 말을 받은 자는 성실함으로 내 말을 말할 것이라 겨와 밀을 어찌 비교하겠느냐",
+      "source_text_hash": "ae425d6ea8f22cefbf36b6b2479f59fa1a895f25d0d9e164faaeafbe8fa912c0",
+      "translation_text_hash": "fe42d1ec63b933128ad4e7adb534c8df14f9811e90fed0da1513e83765161ad5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 몽사를 얻은 선지자는 몽사를 말할 것이요 내 말을 받은 자는 성실함으로 내 말을 말할 것이라 겨와 밀을 어찌 비교하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "fe42d1ec63b933128ad4e7adb534c8df14f9811e90fed0da1513e83765161ad5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:29",
+      "sequence": 19514,
+      "chapter_label": "JER 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "“Isn’t my word like fire?” says the LORD; “and like a hammer that breaks the rock in pieces?",
+      "ko": "나 여호와가 말하노라 내 말이 불 같지 아니하냐 반석을 쳐서 부스러뜨리는 방망이 같지 아니하냐",
+      "source_text_hash": "4978758f4453a96a6237fc5606bfc27738cbbce89654882dca71b18825755209",
+      "translation_text_hash": "a64d797c6a2bebf1b39c1370c28ad6805aaf8de5e8840fcb4d3b2ece642515da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내 말이 불 같지 아니하냐 반석을 쳐서 부스러뜨리는 방망이 같지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "a64d797c6a2bebf1b39c1370c28ad6805aaf8de5e8840fcb4d3b2ece642515da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:30",
+      "sequence": 19515,
+      "chapter_label": "JER 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "“Therefore behold, I am against the prophets,” says the LORD, “who each steal my words from his neighbor.",
+      "ko": "나 여호와가 말하노라 그러므로 보라 서로 내 말을 도적질하는 선지자들을 내가 치리라",
+      "source_text_hash": "61cffad54a8202ee84aca0da9e6db5b2426549f5f7217224cbbed21c92555dfc",
+      "translation_text_hash": "c93f6c38a898e1260aca1320c594036056a11fa30a95f9427815ab58598cfa3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그러므로 보라 서로 내 말을 도적질하는 선지자들을 내가 치리라"
+      ],
+      "raw_text_hashes": [
+        "c93f6c38a898e1260aca1320c594036056a11fa30a95f9427815ab58598cfa3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:31",
+      "sequence": 19516,
+      "chapter_label": "JER 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "Behold, I am against the prophets,” says the LORD, “who use their tongues, and say, ‘He says.’",
+      "ko": "나 여호와가 말하노라 보라 그들이 혀를 놀려 그가 말씀하셨다 하는 선지자들을 내가 치리라",
+      "source_text_hash": "831af948ebe926800bda2de73cc788cce0faaa06d3111cf7bd8b96f8a294f4ac",
+      "translation_text_hash": "86ec5699c8461b5d98e4ce5daf83a4ac07206d09be28ea4fb2688f8a3c694143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 보라 그들이 혀를 놀려 그가 말씀하셨다 하는 선지자들을 내가 치리라"
+      ],
+      "raw_text_hashes": [
+        "86ec5699c8461b5d98e4ce5daf83a4ac07206d09be28ea4fb2688f8a3c694143"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:32",
+      "sequence": 19517,
+      "chapter_label": "JER 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "Behold, I am against those who prophesy lying dreams,” says the LORD, “who tell them, and cause my people to err by their lies, and by their vain boasting; yet I didn’t send them or command them. They don’t profit this people at all,” says the LORD.",
+      "ko": "나 여호와가 말하노라 보라 거짓 몽사를 예언하여 이르며 거짓과 헛된 자만으로 내 백성을 미혹하게 하는 자를 내가 치리라 내가 그들을 보내지 아니하였으며 명하지 아니하였나니 그들이 이 백성에게 아무 유익이 없느니라 여호와의 말이니라",
+      "source_text_hash": "8829c23c51244fb646d014d6df7b0369737765514971d8129b3f641f3d0d8dd9",
+      "translation_text_hash": "58852b29aa4244568ca9b2e0c8b02a3b70a455c62552194f3a295f26309438cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 보라 거짓 몽사를 예언하여 이르며 거짓과 헛된 자만으로 내 백성을 미혹하게 하는 자를 내가 치리라 내가 그들을 보내지 아니하였으며 명하지 아니하였나니 그들이 이 백성에게 아무 유익이 없느니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "58852b29aa4244568ca9b2e0c8b02a3b70a455c62552194f3a295f26309438cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:33",
+      "sequence": 19518,
+      "chapter_label": "JER 23",
+      "verse_label": "33",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 33
+        }
+      ],
+      "en": "“When this people, or the prophet, or a priest, asks you, saying, ‘What is the message from the LORD?’ Then you shall tell them, ‘“What message? I will cast you off,” says the LORD.’",
+      "ko": "이 백성이나 선지자나 제사장이 네게 물어 이르기를 여호와의 엄중한 말씀이 무엇이뇨 하거든 너는 그들에게 대답하기를 엄중한 말씀이 무엇이냐 하느냐 여호와의 말씀에 내가 너희를 버리리라 하셨고",
+      "source_text_hash": "afc338d7983531e6a0d1a9a6d6e8fba066f226963e6fd02f35fcc66ad46b0351",
+      "translation_text_hash": "656bc6901b1fd712ff1b85770a50c0b3c240e4be58fd6d05015a765027e0d1c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성이나 선지자나 제사장이 네게 물어 이르기를 여호와의 엄중한 말씀이 무엇이뇨 하거든 너는 그들에게 대답하기를 엄중한 말씀이 무엇이냐 하느냐 여호와의 말씀에 내가 너희를 버리리라 하셨고"
+      ],
+      "raw_text_hashes": [
+        "656bc6901b1fd712ff1b85770a50c0b3c240e4be58fd6d05015a765027e0d1c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:34",
+      "sequence": 19519,
+      "chapter_label": "JER 23",
+      "verse_label": "34",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 34
+        }
+      ],
+      "en": "As for the prophet, the priest, and the people, who say, ‘The message from the LORD,’ I will even punish that man and his household.",
+      "ko": "또 여호와의 엄중한 말씀이라 하는 선지자에게나 제사장에게나 백성에게는 내가 그 사람과 그 집에 벌하리라 하셨다 하고",
+      "source_text_hash": "5a1f4ec0ea87bce15957469be275565ebf7dc9af3e3e03fba35268bc702801f7",
+      "translation_text_hash": "eb0139c0aa7bd5c53700ce6b999d2bfb9ae14027fe2b2d20ccc16cdb53671a02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와의 엄중한 말씀이라 하는 선지자에게나 제사장에게나 백성에게는 내가 그 사람과 그 집에 벌하리라 하셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "eb0139c0aa7bd5c53700ce6b999d2bfb9ae14027fe2b2d20ccc16cdb53671a02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:35",
+      "sequence": 19520,
+      "chapter_label": "JER 23",
+      "verse_label": "35",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 35
+        }
+      ],
+      "en": "You will say everyone to his neighbor, and everyone to his brother, ‘What has the LORD answered?’ and, ‘What has the LORD said?’",
+      "ko": "너는 또 말 하기를 너희는 서로 이웃과 형제에게 묻기를 여호와께서 무엇이라 응답하셨으며 무엇이라 말씀하셨느뇨 하고",
+      "source_text_hash": "fb8b5bdb4f5f4e8460252bb89b6acf22071a1f33c54a63b2e2bd618f3e9d7c85",
+      "translation_text_hash": "4660b318057efe147144b2bc49f5ac7532e0c1f50f06e2914ce22c575cc87291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 말 하기를 너희는 서로 이웃과 형제에게 묻기를 여호와께서 무엇이라 응답하셨으며 무엇이라 말씀하셨느뇨 하고"
+      ],
+      "raw_text_hashes": [
+        "4660b318057efe147144b2bc49f5ac7532e0c1f50f06e2914ce22c575cc87291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:36",
+      "sequence": 19521,
+      "chapter_label": "JER 23",
+      "verse_label": "36",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 36
+        }
+      ],
+      "en": "You will mention the message from the LORD no more, for every man’s own word has become his message; for you have perverted the words of the living God, of the LORD of Armies, our God.",
+      "ko": "다시는 여호와의 엄중한 말씀이라 말하지 말라 각 사람의 말이 자기에게 중벌이 되리니 이는 너희가 사시는 하나님, 만군의 여호와 우리 하나님의 말씀을 망령되이 씀이니라 하고",
+      "source_text_hash": "77375d49bd6f4f2e8b908fd546b166d4c19e9d17d05c70cc7eec143953d00cdf",
+      "translation_text_hash": "28de8450d283e5e353f36f7153c065c23eb9cb821c1e5fbb5180ca2eb6302ffd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시는 여호와의 엄중한 말씀이라 말하지 말라 각 사람의 말이 자기에게 중벌이 되리니 이는 너희가 사시는 하나님, 만군의 여호와 우리 하나님의 말씀을 망령되이 씀이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "28de8450d283e5e353f36f7153c065c23eb9cb821c1e5fbb5180ca2eb6302ffd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:37",
+      "sequence": 19522,
+      "chapter_label": "JER 23",
+      "verse_label": "37",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 37
+        }
+      ],
+      "en": "You will say to the prophet, ‘What has the LORD answered you?’ and, ‘What has the LORD spoken?’",
+      "ko": "너는 또 선지자에게 말하기를 여호와께서 네게 무엇이라 대답하셨으며 여호와께서 무엇이라 말씀 하셨느뇨",
+      "source_text_hash": "14683ece4013fefc542b36731d6cbda4bb1f27c3a032476144fe5c271266dacb",
+      "translation_text_hash": "46e16879b46bccc8bf7202b194e27086be4c1ca452caf09a9cd622b9b67b9993",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 선지자에게 말하기를 여호와께서 네게 무엇이라 대답하셨으며 여호와께서 무엇이라 말씀 하셨느뇨"
+      ],
+      "raw_text_hashes": [
+        "46e16879b46bccc8bf7202b194e27086be4c1ca452caf09a9cd622b9b67b9993"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:38",
+      "sequence": 19523,
+      "chapter_label": "JER 23",
+      "verse_label": "38",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 38
+        }
+      ],
+      "en": "Although you say, ‘The message from the LORD,’ therefore the LORD says: ‘Because you say this word, “The message from the LORD,” and I have sent to you, telling you not to say, “The message from the LORD,”",
+      "ko": "너희는 여호와의 엄중한 말씀이라 말하도다 그러므로 여호와께서 가라사대 내가 너희에게 보내어 여호와의 엄중한 말씀이라 하지 말라 하였어도 너희가 여호와의 엄중한 말씀이라 하였은즉",
+      "source_text_hash": "e218d8786a3f1b222c10dfe32781829d260c19a50eceae16635f55d15d8cb6cc",
+      "translation_text_hash": "c653f069d8a9d7dfe65a9c354466a507684fbeec6af52fdc127226d22d73f375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 여호와의 엄중한 말씀이라 말하도다 그러므로 여호와께서 가라사대 내가 너희에게 보내어 여호와의 엄중한 말씀이라 하지 말라 하였어도 너희가 여호와의 엄중한 말씀이라 하였은즉"
+      ],
+      "raw_text_hashes": [
+        "c653f069d8a9d7dfe65a9c354466a507684fbeec6af52fdc127226d22d73f375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:39",
+      "sequence": 19524,
+      "chapter_label": "JER 23",
+      "verse_label": "39",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 39
+        }
+      ],
+      "en": "therefore behold, I will utterly forget you, and I will cast you off with the city that I gave to you and to your fathers, away from my presence.",
+      "ko": "내가 너희를 온전히 잊어버리며 내가 너희와 너희 열조에게 준 이 성읍을 내 앞에서 내어버려",
+      "source_text_hash": "bc672a7e9bfe6ca9f4287dcde8d3ee8f9927028496d979e83107de267ed644ae",
+      "translation_text_hash": "d5ebbdecb699aad7b519eb9026574d8f385d537dcca9306f8fbbe66525d69be9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 온전히 잊어버리며 내가 너희와 너희 열조에게 준 이 성읍을 내 앞에서 내어버려"
+      ],
+      "raw_text_hashes": [
+        "d5ebbdecb699aad7b519eb9026574d8f385d537dcca9306f8fbbe66525d69be9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:23:40",
+      "sequence": 19525,
+      "chapter_label": "JER 23",
+      "verse_label": "40",
+      "locator": {
+        "book": "JER",
+        "chapter": 23,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 23,
+          "verse": 40
+        }
+      ],
+      "en": "I will bring an everlasting reproach on you, and a perpetual shame, which will not be forgotten.’”",
+      "ko": "너희로 영원한 치욕과 잊지 못할 영구한 수치를 당케 하리라 하셨다 할찌니라",
+      "source_text_hash": "903bb225ee51b6cd1491e3644f355fe88667295c3abc50d4bf679958369bd682",
+      "translation_text_hash": "76dc684167422123893902da64bac6fc6358e8d9a8d6666e324aee5f1b1d9a97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희로 영원한 치욕과 잊지 못할 영구한 수치를 당케 하리라 하셨다 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "76dc684167422123893902da64bac6fc6358e8d9a8d6666e324aee5f1b1d9a97"
+      ]
+    }
+  ]
+}

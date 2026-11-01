@@ -1,0 +1,2157 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:024",
+  "unit_ordinal": 24,
+  "unit_label": "GEN 24",
+  "book_code": "GEN",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:24:1",
+      "sequence": 593,
+      "chapter_label": "GEN 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "Abraham was old, and well advanced in age. The LORD had blessed Abraham in all things.",
+      "ko": "아브라함이 나이 많아 늙었고 여호와께서 그의 범사에 복을 주셨더라",
+      "source_text_hash": "ba7bbc3081c10417940f4a11baa614ab4fe26cd462982b8e64a9cf340f3098e4",
+      "translation_text_hash": "4aef3ce33560f9ca73d9a08f4e842b8ca852663199ac3e423872860ce5a5d429",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 나이 많아 늙었고 여호와께서 그의 범사에 복을 주셨더라"
+      ],
+      "raw_text_hashes": [
+        "4aef3ce33560f9ca73d9a08f4e842b8ca852663199ac3e423872860ce5a5d429"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:2",
+      "sequence": 594,
+      "chapter_label": "GEN 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "Abraham said to his servant, the elder of his house, who ruled over all that he had, “Please put your hand under my thigh.",
+      "ko": "아브라함이 자기 집 모든 소유를 맡은 늙은 종에게 이르되 청컨대 네 손을 내 환도뼈 밑에 넣으라",
+      "source_text_hash": "eaf49f85ffeecc9d85a5b5d7942aadde7dac34b743e9033aea3c46a0c58add4d",
+      "translation_text_hash": "7b4c8e0fc852c62be4018d1fa814603bbeeac3b6ef85887083e68ab149fe5fa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 자기 집 모든 소유를 맡은 늙은 종에게 이르되 청컨대 네 손을 내 환도뼈 밑에 넣으라"
+      ],
+      "raw_text_hashes": [
+        "7b4c8e0fc852c62be4018d1fa814603bbeeac3b6ef85887083e68ab149fe5fa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:3",
+      "sequence": 595,
+      "chapter_label": "GEN 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "I will make you swear by the LORD, the God of heaven and the God of the earth, that you shall not take a wife for my son of the daughters of the Canaanites, among whom I live.",
+      "ko": "내가 너로 하늘의 하나님, 땅의 하나님이신 여호와를 가리켜 맹세하게 하노니 너는 나의 거하는 이 지방 가나안 족속의 딸 중에서 내 아들을 위하여 아내를 택하지 말고",
+      "source_text_hash": "0f0c0adac4824f5e9456122829a98102eece6d0ca342cbd5f9dea3710aed99f5",
+      "translation_text_hash": "ec1b9d3127fc79c86e386f8739c290eaac052694caedd7974894ee7be17d443f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너로 하늘의 하나님, 땅의 하나님이신 여호와를 가리켜 맹세하게 하노니 너는 나의 거하는 이 지방 가나안 족속의 딸 중에서 내 아들을 위하여 아내를 택하지 말고"
+      ],
+      "raw_text_hashes": [
+        "ec1b9d3127fc79c86e386f8739c290eaac052694caedd7974894ee7be17d443f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:4",
+      "sequence": 596,
+      "chapter_label": "GEN 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "But you shall go to my country, and to my relatives, and take a wife for my son Isaac.”",
+      "ko": "내 고향 내 족속에게로 가서 내 아들 이삭을 위하여 아내를 택하라",
+      "source_text_hash": "7cd776b02b1d97259ab80ec427250fa5ef9554a9a470e9503f97ad42ee63cb74",
+      "translation_text_hash": "f70637a82797112593664c5bf5303140b2488e8301c48293278ed49b729b365b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 고향 내 족속에게로 가서 내 아들 이삭을 위하여 아내를 택하라"
+      ],
+      "raw_text_hashes": [
+        "f70637a82797112593664c5bf5303140b2488e8301c48293278ed49b729b365b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:5",
+      "sequence": 597,
+      "chapter_label": "GEN 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "The servant said to him, “What if the woman isn’t willing to follow me to this land? Must I bring your son again to the land you came from?”",
+      "ko": "종이 가로되 여자가 나를 좇아 이 땅으로 오고자 아니하거든 내가 주인의 아들을 주인의 나오신 땅으로 인도하여 돌아가리이까",
+      "source_text_hash": "23d6e502b4d1f03afb9f5171e91b970179fb012e1c6408987c9af3ecf06fe167",
+      "translation_text_hash": "80645b09e5dbfae9b9594571976f53ed9d42b940bf0a55e6568739f5c8a32c2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 가로되 여자가 나를 좇아 이 땅으로 오고자 아니하거든 내가 주인의 아들을 주인의 나오신 땅으로 인도하여 돌아가리이까"
+      ],
+      "raw_text_hashes": [
+        "80645b09e5dbfae9b9594571976f53ed9d42b940bf0a55e6568739f5c8a32c2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:6",
+      "sequence": 598,
+      "chapter_label": "GEN 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "Abraham said to him, “Beware that you don’t bring my son there again.",
+      "ko": "아브라함이 그에게 이르되 삼가 내 아들을 그리로 데리고 돌아가지 말라",
+      "source_text_hash": "b6ce4ee7f8311628fd30e598e897b29b5a75cd4bfaa0838dd928431d0dac09f7",
+      "translation_text_hash": "f68054fb01782cca21f1824d70dda04acdd57c1d29dfb175d20d79600f9b385f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 그에게 이르되 삼가 내 아들을 그리로 데리고 돌아가지 말라"
+      ],
+      "raw_text_hashes": [
+        "f68054fb01782cca21f1824d70dda04acdd57c1d29dfb175d20d79600f9b385f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:7",
+      "sequence": 599,
+      "chapter_label": "GEN 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD, the God of heaven—who took me from my father’s house, and from the land of my birth, who spoke to me, and who swore to me, saying, ‘I will give this land to your offspring—he will send his angel before you, and you shall take a wife for my son from there.",
+      "ko": "하늘의 하나님 여호와께서 나를 내 아버지의 집과 내 본토에서 떠나게 하시고 내게 말씀하시며 내게 맹세하여 이르시기를 이 땅을 네 씨에게 주리라 하셨으니 그가 그 사자를 네 앞서 보내실찌라 네가 거기서 내 아들을 위하여 아내를 택할찌니라",
+      "source_text_hash": "353f1af4dc95bd54be6b6827271280a5348876d30dd79eaa6f19f4ad3f52d05a",
+      "translation_text_hash": "34c1012682608b4e88523db407784b942b2411d3e07973d92ac9a7f43288ecce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘의 하나님 여호와께서 나를 내 아버지의 집과 내 본토에서 떠나게 하시고 내게 말씀하시며 내게 맹세하여 이르시기를 이 땅을 네 씨에게 주리라 하셨으니 그가 그 사자를 네 앞서 보내실찌라 네가 거기서 내 아들을 위하여 아내를 택할찌니라"
+      ],
+      "raw_text_hashes": [
+        "34c1012682608b4e88523db407784b942b2411d3e07973d92ac9a7f43288ecce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:8",
+      "sequence": 600,
+      "chapter_label": "GEN 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "If the woman isn’t willing to follow you, then you shall be clear from this oath to me. Only you shall not bring my son there again.”",
+      "ko": "만일 여자가 너를 좇아 오고자 아니하면 나의 이 맹세가 너와 상관이 없나니 오직 내 아들을 데리고 그리로 가지 말찌니라",
+      "source_text_hash": "b19dc4c95a04ee33cde7ad3e35d139939467775923276c8687bca7eade01a23c",
+      "translation_text_hash": "1c6f3cc7cb9f69f79f70116f0209f4f517093ffc758c7781ec026a70e02a8825",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 여자가 너를 좇아 오고자 아니하면 나의 이 맹세가 너와 상관이 없나니 오직 내 아들을 데리고 그리로 가지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "1c6f3cc7cb9f69f79f70116f0209f4f517093ffc758c7781ec026a70e02a8825"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:9",
+      "sequence": 601,
+      "chapter_label": "GEN 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "The servant put his hand under the thigh of Abraham his master, and swore to him concerning this matter.",
+      "ko": "종이 이에 주인 아브라함의 환도뼈 아래 손을 넣고 이 일에 대하여 그에게 맹세하였더라",
+      "source_text_hash": "5740c3b5316bdd293da1b7c34231ff0ff56679e040dfa861f53d79df5ac345e0",
+      "translation_text_hash": "4b89a6f519358d71f9f1f73712b1347f831e82aab353492f7f3a66e7b0893391",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 이에 주인 아브라함의 환도뼈 아래 손을 넣고 이 일에 대하여 그에게 맹세하였더라"
+      ],
+      "raw_text_hashes": [
+        "4b89a6f519358d71f9f1f73712b1347f831e82aab353492f7f3a66e7b0893391"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:10",
+      "sequence": 602,
+      "chapter_label": "GEN 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "The servant took ten of his master’s camels, and departed, having a variety of good things of his master’s with him. He arose, and went to Mesopotamia, to the city of Nahor.",
+      "ko": "이에 종이 그 주인의 약대 중 열 필을 취하고 떠났는데 곧 그 주인의 모든 좋은 것을 가지고 떠나 메소보다미아로 가서 나홀의 성에 이르러",
+      "source_text_hash": "90628097cc19d65caf74b8889e0ed6baec4affc8da2610df0d3bfddb83acdfd9",
+      "translation_text_hash": "cdb68e384ab5b49f9a22fb954d9d860770e5eedd9dbdb0ceab1c6f891e95bef1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 종이 그 주인의 약대 중 열 필을 취하고 떠났는데 곧 그 주인의 모든 좋은 것을 가지고 떠나 메소보다미아로 가서 나홀의 성에 이르러"
+      ],
+      "raw_text_hashes": [
+        "cdb68e384ab5b49f9a22fb954d9d860770e5eedd9dbdb0ceab1c6f891e95bef1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:11",
+      "sequence": 603,
+      "chapter_label": "GEN 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "He made the camels kneel down outside the city by the well of water at the time of evening, the time that women go out to draw water.",
+      "ko": "그 약대를 성밖 우물 곁에 꿇렸으니 저녁때라 여인들이 물을 길러 나올 때이었더라",
+      "source_text_hash": "fc8a498f33df8f8a64d14a74b66267ad0cb9f1bd12ac9109ee50756c7ac8c9fb",
+      "translation_text_hash": "e2ce91d4d6a4d528b4c3262253e92c03f6282d1c2a86d29ac3f8242a223abd96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 약대를 성밖 우물 곁에 꿇렸으니 저녁때라 여인들이 물을 길러 나올 때이었더라"
+      ],
+      "raw_text_hashes": [
+        "e2ce91d4d6a4d528b4c3262253e92c03f6282d1c2a86d29ac3f8242a223abd96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:12",
+      "sequence": 604,
+      "chapter_label": "GEN 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "He said, “LORD, the God of my master Abraham, please give me success today, and show kindness to my master Abraham.",
+      "ko": "그가 가로되 우리 주인 아브라함의 하나님 여호와여 원컨대 오늘날 나로 순적히 만나게 하사 나의 주인 아브라함에게 은혜를 베푸시옵소서",
+      "source_text_hash": "d5ef5aa4e4553af6e23c24ad045033c6da7c302d23b7e346d2cda2a60ebc14e4",
+      "translation_text_hash": "637a27e16886de41f9904e678c1e723706eee92b3c912178294e1881f7eaebf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가로되 우리 주인 아브라함의 하나님 여호와여 원컨대 오늘날 나로 순적히 만나게 하사 나의 주인 아브라함에게 은혜를 베푸시옵소서"
+      ],
+      "raw_text_hashes": [
+        "637a27e16886de41f9904e678c1e723706eee92b3c912178294e1881f7eaebf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:13",
+      "sequence": 605,
+      "chapter_label": "GEN 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "Behold, I am standing by the spring of water. The daughters of the men of the city are coming out to draw water.",
+      "ko": "성중 사람의 딸들이 물 길러 나오겠사오니 내가 우물 곁에 섰다가",
+      "source_text_hash": "1b910e2a4a18b1bbc9ea9bf18caf7d3b3347a14ba957f52dbaf0cad3c2e50787",
+      "translation_text_hash": "4c2f7d6e979ef01c04229facb0d8f20d4b5794e84c1ffae8bd40f278ba362278",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성중 사람의 딸들이 물 길러 나오겠사오니 내가 우물 곁에 섰다가"
+      ],
+      "raw_text_hashes": [
+        "4c2f7d6e979ef01c04229facb0d8f20d4b5794e84c1ffae8bd40f278ba362278"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:14",
+      "sequence": 606,
+      "chapter_label": "GEN 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "Let it happen, that the young lady to whom I will say, ‘Please let down your pitcher, that I may drink,’ then she says, ‘Drink, and I will also give your camels a drink,’—let her be the one you have appointed for your servant Isaac. By this I will know that you have shown kindness to my master.”",
+      "ko": "한 소녀에게 이르기를 청컨대 너는 물 항아리를 기울여 나로 마시게 하라 하리니 그의 대답이 마시라 내가 당신의 약대에게도 마시우리라 하면 그는 주께서 주의 종 이삭을 위하여 정하신 자라 이로 인하여 주께서 나의 주인에게 은혜 베푸심을 내가 알겠나이다",
+      "source_text_hash": "af672ad271e86e431c5b279ae247cc612ea8a87c748a14ff879196baa3c511c0",
+      "translation_text_hash": "7723f6c050060dc6e8a7e69db642067f7db82924c647526342c725c9128a22bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 소녀에게 이르기를 청컨대 너는 물 항아리를 기울여 나로 마시게 하라 하리니 그의 대답이 마시라 내가 당신의 약대에게도 마시우리라 하면 그는 주께서 주의 종 이삭을 위하여 정하신 자라 이로 인하여 주께서 나의 주인에게 은혜 베푸심을 내가 알겠나이다"
+      ],
+      "raw_text_hashes": [
+        "7723f6c050060dc6e8a7e69db642067f7db82924c647526342c725c9128a22bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:15",
+      "sequence": 607,
+      "chapter_label": "GEN 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "Before he had finished speaking, behold, Rebekah came out, who was born to Bethuel the son of Milcah, the wife of Nahor, Abraham’s brother, with her pitcher on her shoulder.",
+      "ko": "말을 마치지 못하여서 리브가가 물 항아리를 어깨에 메고 나오니 그는 아브라함의 동생 나홀의 아내 밀가의 아들 브두엘의 소생이라",
+      "source_text_hash": "e671d62057078e2b6c18cd3e511ec734dc800d758c06b0bfe8f3936f982951d2",
+      "translation_text_hash": "8292b0cdfdc607ad175e400b4b3e36b5f24c26eb695e9c0113eb00df0461a4f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말을 마치지 못하여서 리브가가 물 항아리를 어깨에 메고 나오니 그는 아브라함의 동생 나홀의 아내 밀가의 아들 브두엘의 소생이라"
+      ],
+      "raw_text_hashes": [
+        "8292b0cdfdc607ad175e400b4b3e36b5f24c26eb695e9c0113eb00df0461a4f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:16",
+      "sequence": 608,
+      "chapter_label": "GEN 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "The young lady was very beautiful to look at, a virgin. No man had known her. She went down to the spring, filled her pitcher, and came up.",
+      "ko": "그 소녀는 보기에 심히 아리땁고 지금까지 남자가 가까이 하지아니한 처녀더라 그가 우물에 내려가서 물을 그 물 항아리에 채워가지고 올라오는지라",
+      "source_text_hash": "bc3fbc189fb2537678728d3e30c0f5815dfa703a8177120846038f722c85aa95",
+      "translation_text_hash": "d97a8b54d84eec96b94c7128590b197562086079cf869597d8665e7a51078498",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소녀는 보기에 심히 아리땁고 지금까지 남자가 가까이 하지아니한 처녀더라 그가 우물에 내려가서 물을 그 물 항아리에 채워가지고 올라오는지라"
+      ],
+      "raw_text_hashes": [
+        "d97a8b54d84eec96b94c7128590b197562086079cf869597d8665e7a51078498"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:17",
+      "sequence": 609,
+      "chapter_label": "GEN 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "The servant ran to meet her, and said, “Please give me a drink, a little water from your pitcher.”",
+      "ko": "종이 마주달려가서 가로되 청컨대 네 물 항아리의 물을 내게 조금 마시우라",
+      "source_text_hash": "c8f71cdd0630702d577fd0effdd6609da4e753cb8432bf6aebeebc1def3fd707",
+      "translation_text_hash": "417175216aad75c620e683dcfba5d791336498629c91854ab93a7637a2a31a0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 마주달려가서 가로되 청컨대 네 물 항아리의 물을 내게 조금 마시우라"
+      ],
+      "raw_text_hashes": [
+        "417175216aad75c620e683dcfba5d791336498629c91854ab93a7637a2a31a0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:18",
+      "sequence": 610,
+      "chapter_label": "GEN 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "She said, “Drink, my lord.” She hurried, and let down her pitcher on her hand, and gave him a drink.",
+      "ko": "그가 가로되 주여 마시소서 하며 급히 그 물 항아리를 손에 내려 마시게 하고",
+      "source_text_hash": "8f3646439ca242046dd9817cd11303104e949225b97b9599f83d669163f3e71e",
+      "translation_text_hash": "d53ca1d0e454166f7acdc732fdb384f37ab8556efcaa195201e9a402ac2196e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가로되 주여 마시소서 하며 급히 그 물 항아리를 손에 내려 마시게 하고"
+      ],
+      "raw_text_hashes": [
+        "d53ca1d0e454166f7acdc732fdb384f37ab8556efcaa195201e9a402ac2196e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:19",
+      "sequence": 611,
+      "chapter_label": "GEN 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "When she had finished giving him a drink, she said, “I will also draw for your camels, until they have finished drinking.”",
+      "ko": "마시우기를 다하고 가로되 당신의 약대도 위하여 물을 길어 그것들로 배불리 마시게 하리이다 하고",
+      "source_text_hash": "9d836a3a7ef0b7bb33d416b33edba27e5412000782731b538cc08d43a0219261",
+      "translation_text_hash": "9577e74adadbf5c0dd6e427e3fa0d85f1c41a3131ad42ac83d5d9b672b7ac779",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마시우기를 다하고 가로되 당신의 약대도 위하여 물을 길어 그것들로 배불리 마시게 하리이다 하고"
+      ],
+      "raw_text_hashes": [
+        "9577e74adadbf5c0dd6e427e3fa0d85f1c41a3131ad42ac83d5d9b672b7ac779"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:20",
+      "sequence": 612,
+      "chapter_label": "GEN 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "She hurried, and emptied her pitcher into the trough, and ran again to the well to draw, and drew for all his camels.",
+      "ko": "급히 물 항아리의 물을 구유에 붓고 다시 길으려고 우물로 달려가서 모든 약대를 위하여 긷는지라",
+      "source_text_hash": "aaf7f0c67bfae9ffe14d9a30a6f3d38e47fc982f015727e7bf9f74ccec03b9c1",
+      "translation_text_hash": "e0c51ee1df2f6392afc0697f34b7f96b16a7dbdd62def3dde7bb483a1e6fe0fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "급히 물 항아리의 물을 구유에 붓고 다시 길으려고 우물로 달려가서 모든 약대를 위하여 긷는지라"
+      ],
+      "raw_text_hashes": [
+        "e0c51ee1df2f6392afc0697f34b7f96b16a7dbdd62def3dde7bb483a1e6fe0fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:21",
+      "sequence": 613,
+      "chapter_label": "GEN 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "The man looked steadfastly at her, remaining silent, to know whether the LORD had made his journey prosperous or not.",
+      "ko": "그 사람이 그를 묵묵히 주목하며 여호와께서 과연 평탄한 길을 주신 여부를 알고자 하더니",
+      "source_text_hash": "8c6ec91eada662a3e6b30bedf39d0a5dc25175888d861dcd97c7650607603e66",
+      "translation_text_hash": "64bdfc45cbd3da7feee8341090d693b9a24ce9c412dc77ff291d312ec008c20d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 그를 묵묵히 주목하며 여호와께서 과연 평탄한 길을 주신 여부를 알고자 하더니"
+      ],
+      "raw_text_hashes": [
+        "64bdfc45cbd3da7feee8341090d693b9a24ce9c412dc77ff291d312ec008c20d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:22",
+      "sequence": 614,
+      "chapter_label": "GEN 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "As the camels had finished drinking, the man took a golden ring of half a shekel weight, and two bracelets for her hands of ten shekels weight of gold,",
+      "ko": "약대가 마시기를 다하매 그가 반 세겔중 금고리 한개와 열 세겔중 금 손목고리 한 쌍을 그에게 주며",
+      "source_text_hash": "6c04b61b2565a4803268753f6362578918da399588f27fcd6fc1d0bda90d11ac",
+      "translation_text_hash": "2197ceabd4a7ed87d1fe2da8c87ae3eb1f36b8b75b04343a31bd1bc0708d4592",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "약대가 마시기를 다하매 그가 반 세겔중 금고리 한개와 열 세겔중 금 손목고리 한 쌍을 그에게 주며"
+      ],
+      "raw_text_hashes": [
+        "2197ceabd4a7ed87d1fe2da8c87ae3eb1f36b8b75b04343a31bd1bc0708d4592"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:23",
+      "sequence": 615,
+      "chapter_label": "GEN 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "and said, “Whose daughter are you? Please tell me. Is there room in your father’s house for us to stay?”",
+      "ko": "가로되 네가 뉘 딸이냐 청컨대 내게 고하라 네 부친의 집에 우리 유숙할 곳이 있느냐",
+      "source_text_hash": "f3757572d49572e386002da087d68f886729103f347b916031581179714b6357",
+      "translation_text_hash": "ecc4154a7a9f0e2984d2b4a2cfb3f20f92cfcf89888bec65740b4f44cd084688",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 네가 뉘 딸이냐 청컨대 내게 고하라 네 부친의 집에 우리 유숙할 곳이 있느냐"
+      ],
+      "raw_text_hashes": [
+        "ecc4154a7a9f0e2984d2b4a2cfb3f20f92cfcf89888bec65740b4f44cd084688"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:24",
+      "sequence": 616,
+      "chapter_label": "GEN 24",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 24
+        }
+      ],
+      "en": "She said to him, “I am the daughter of Bethuel the son of Milcah, whom she bore to Nahor.”",
+      "ko": "그 여자가 그에게 이르되 나는 밀가가 나홀에게 낳은 아들 브두엘의 딸이니이다",
+      "source_text_hash": "537f9eb1de933fa161cc93164a99b180facf8e7b715d541922c0562917f725c8",
+      "translation_text_hash": "cbf9303e0cc4d2c9d3ca2744ea57c512d07501e004e18420887ff0e3034febb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자가 그에게 이르되 나는 밀가가 나홀에게 낳은 아들 브두엘의 딸이니이다"
+      ],
+      "raw_text_hashes": [
+        "cbf9303e0cc4d2c9d3ca2744ea57c512d07501e004e18420887ff0e3034febb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:25",
+      "sequence": 617,
+      "chapter_label": "GEN 24",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 25
+        }
+      ],
+      "en": "She said moreover to him, “We have both straw and feed enough, and room to lodge in.”",
+      "ko": "또 가로되 우리에게 짚과 보리가 족하며 유숙할 곳도 있나이다",
+      "source_text_hash": "c9246ae7b91267e4b1ecbae74873f69d164b10a051faff985a28befd48141fba",
+      "translation_text_hash": "304e14c243410101cc84e0a8b67f5bc23a54775953f68b4f536e9665ceea0efe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 우리에게 짚과 보리가 족하며 유숙할 곳도 있나이다"
+      ],
+      "raw_text_hashes": [
+        "304e14c243410101cc84e0a8b67f5bc23a54775953f68b4f536e9665ceea0efe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:26",
+      "sequence": 618,
+      "chapter_label": "GEN 24",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 26
+        }
+      ],
+      "en": "The man bowed his head, and worshiped the LORD.",
+      "ko": "이에 그 사람이 머리를 숙여 여호와께 경배하고",
+      "source_text_hash": "1fbaae02569d229552e7a24c2c85b90d9888a9e5222d81dec735eaa009720907",
+      "translation_text_hash": "da3cedb02f316a7b71dadbf9ed094d57395c3e72a9d44b76872e2c765acab39c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 사람이 머리를 숙여 여호와께 경배하고"
+      ],
+      "raw_text_hashes": [
+        "da3cedb02f316a7b71dadbf9ed094d57395c3e72a9d44b76872e2c765acab39c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:27",
+      "sequence": 619,
+      "chapter_label": "GEN 24",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 27
+        }
+      ],
+      "en": "He said, “Blessed be the LORD, the God of my master Abraham, who has not forsaken his loving kindness and his truth toward my master. As for me, the LORD has led me on the way to the house of my master’s relatives.”",
+      "ko": "가로되 나의 주인 아브라함의 하나님 여호와를 찬송하나이다 나의 주인에게 주의 인자와 성실을 끊이지 아니하셨사오며 여호와께서 길에서 나를 인도하사 내 주인의 동생집에 이르게 하셨나이다 하니라",
+      "source_text_hash": "4ec391ad98a6fc6e525d35b681cf9f21d73ec6b12c2abbc56a88b452a5fdc342",
+      "translation_text_hash": "f29215b986ab63f31bdbaa9bcdd692745475b7f898697630a9849c45705df5cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 나의 주인 아브라함의 하나님 여호와를 찬송하나이다 나의 주인에게 주의 인자와 성실을 끊이지 아니하셨사오며 여호와께서 길에서 나를 인도하사 내 주인의 동생집에 이르게 하셨나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "f29215b986ab63f31bdbaa9bcdd692745475b7f898697630a9849c45705df5cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:28",
+      "sequence": 620,
+      "chapter_label": "GEN 24",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 28
+        }
+      ],
+      "en": "The young lady ran, and told her mother’s house about these words.",
+      "ko": "소녀가 달려가서 이 일을 어미 집에 고하였더니",
+      "source_text_hash": "fd63ddb415a5f09c54a413c5422df70a00c783135ea5b859e3742fcec77e2cf1",
+      "translation_text_hash": "af5629b6cada8914aa2e992c70f76adfc7bb1012ea6966000ebb7810d515da8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소녀가 달려가서 이 일을 어미 집에 고하였더니"
+      ],
+      "raw_text_hashes": [
+        "af5629b6cada8914aa2e992c70f76adfc7bb1012ea6966000ebb7810d515da8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:29",
+      "sequence": 621,
+      "chapter_label": "GEN 24",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 29
+        }
+      ],
+      "en": "Rebekah had a brother, and his name was Laban. Laban ran out to the man, to the spring.",
+      "ko": "리브가에게 오라비가 있어 이름은 라반이라 그가 우물로 달려가 그 사람에게 이르니",
+      "source_text_hash": "ace959d0c3189269bd04567bccac236cc2373fc86aedb070371780bdea114625",
+      "translation_text_hash": "359ea3a9a2143150d92054e5640ab622aa62e06bd4f4e30c515e2600ab9e3f9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가에게 오라비가 있어 이름은 라반이라 그가 우물로 달려가 그 사람에게 이르니"
+      ],
+      "raw_text_hashes": [
+        "359ea3a9a2143150d92054e5640ab622aa62e06bd4f4e30c515e2600ab9e3f9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:30",
+      "sequence": 622,
+      "chapter_label": "GEN 24",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 30
+        }
+      ],
+      "en": "When he saw the ring, and the bracelets on his sister’s hands, and when he heard the words of Rebekah his sister, saying, “This is what the man said to me,” he came to the man. Behold, he was standing by the camels at the spring.",
+      "ko": "그가 그 누이의 고리와 그 손의 손목고리를 보고 또 그 누이 리브가가 그 사람이 자기에게 이같이 말하더라 함을 듣고 그 사람에게로 나아감이라 때에 그가 우물가 약대 곁에 섰더라",
+      "source_text_hash": "9402aaf6e353ea7bfa728c5bd634e156d7ff345ef6a62a90a5e5d97feba48103",
+      "translation_text_hash": "791fedd10a60953ad2ccd9bb37927885297b6ca85621cacd6e1de4009a81b38f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 누이의 고리와 그 손의 손목고리를 보고 또 그 누이 리브가가 그 사람이 자기에게 이같이 말하더라 함을 듣고 그 사람에게로 나아감이라 때에 그가 우물가 약대 곁에 섰더라"
+      ],
+      "raw_text_hashes": [
+        "791fedd10a60953ad2ccd9bb37927885297b6ca85621cacd6e1de4009a81b38f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:31",
+      "sequence": 623,
+      "chapter_label": "GEN 24",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 31
+        }
+      ],
+      "en": "He said, “Come in, you blessed of the LORD. Why do you stand outside? For I have prepared the house, and room for the camels.”",
+      "ko": "라반이 가로되 여호와께 복을 받은 자여 들어오소서 어찌 밖에 섰나이까 내가 방과 약대의 처소를 예비하였나이다",
+      "source_text_hash": "8711be2570f1cfd3427d38a3ecfc157c194e6ddb3ae87f5cc0a5ad605c7ded8a",
+      "translation_text_hash": "115afc936f75c1cb2d9b29b26167b1c2c7d5a5033b3f39a2dedc32913ca6de34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반이 가로되 여호와께 복을 받은 자여 들어오소서 어찌 밖에 섰나이까 내가 방과 약대의 처소를 예비하였나이다"
+      ],
+      "raw_text_hashes": [
+        "115afc936f75c1cb2d9b29b26167b1c2c7d5a5033b3f39a2dedc32913ca6de34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:32",
+      "sequence": 624,
+      "chapter_label": "GEN 24",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 32
+        }
+      ],
+      "en": "The man came into the house, and he unloaded the camels. He gave straw and feed for the camels, and water to wash his feet and the feet of the men who were with him.",
+      "ko": "그 사람이 집으로 들어가매 라반이 약대의 짐을 부리고 짚과 보리를 약대에게 주고 그 사람의 발과 그 종자의 발 씻을 물을 주고",
+      "source_text_hash": "4e09c414e424da9102242a48f20feb7f93f4ad6c2b4a4c1a44846e2c28b7c103",
+      "translation_text_hash": "f24df6e368716a2efb0be442ea188ff0ac45c1b5d511709587a57022f877d07a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 집으로 들어가매 라반이 약대의 짐을 부리고 짚과 보리를 약대에게 주고 그 사람의 발과 그 종자의 발 씻을 물을 주고"
+      ],
+      "raw_text_hashes": [
+        "f24df6e368716a2efb0be442ea188ff0ac45c1b5d511709587a57022f877d07a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:33",
+      "sequence": 625,
+      "chapter_label": "GEN 24",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 33
+        }
+      ],
+      "en": "Food was set before him to eat, but he said, “I will not eat until I have told my message.” Laban said, “Speak on.”",
+      "ko": "그 앞에 식물을 베푸니 그 사람이 가로되 내가 내 일을 진술하기 전에는 먹지 아니하겠나이다 라반이 가로되 말하소서",
+      "source_text_hash": "bf9831e1691c0595c67d72407624ea1d3b05c96162746cffcb72b1ecef18003b",
+      "translation_text_hash": "fc9107ab9d1a1a75b7172bd326fd85f7c4d206e9965be0bde3c378dd4f0bbb87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앞에 식물을 베푸니 그 사람이 가로되 내가 내 일을 진술하기 전에는 먹지 아니하겠나이다 라반이 가로되 말하소서"
+      ],
+      "raw_text_hashes": [
+        "fc9107ab9d1a1a75b7172bd326fd85f7c4d206e9965be0bde3c378dd4f0bbb87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:34",
+      "sequence": 626,
+      "chapter_label": "GEN 24",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 34
+        }
+      ],
+      "en": "He said, “I am Abraham’s servant.",
+      "ko": "그가 가로되 나는 아브라함의 종이니이다",
+      "source_text_hash": "ac1c2a972c7b87d9c3c9729c61387c0a6dd389513e501c4717d085b7f36dd979",
+      "translation_text_hash": "a3b4979ca88e42df08c8f32617ba60308ecf6f131c294a7c38bba39deeba2c19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가로되 나는 아브라함의 종이니이다"
+      ],
+      "raw_text_hashes": [
+        "a3b4979ca88e42df08c8f32617ba60308ecf6f131c294a7c38bba39deeba2c19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:35",
+      "sequence": 627,
+      "chapter_label": "GEN 24",
+      "verse_label": "35",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 35
+        }
+      ],
+      "en": "The LORD has blessed my master greatly. He has become great. The LORD has given him flocks and herds, silver and gold, male servants and female servants, and camels and donkeys.",
+      "ko": "여호와께서 나의 주인에게 크게 복을 주어 창성케 하시되 우양과 은금과 노비와 약대와 나귀를 그에게 주셨고",
+      "source_text_hash": "da84992cfc910fbb2332c534ada57c537f4b365f99438144f73e0a2bb8858ddd",
+      "translation_text_hash": "7afcef83f91407d34b2f3b0daa649cb477b048c3a0171a42ae31a78a1543d347",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 나의 주인에게 크게 복을 주어 창성케 하시되 우양과 은금과 노비와 약대와 나귀를 그에게 주셨고"
+      ],
+      "raw_text_hashes": [
+        "7afcef83f91407d34b2f3b0daa649cb477b048c3a0171a42ae31a78a1543d347"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:36",
+      "sequence": 628,
+      "chapter_label": "GEN 24",
+      "verse_label": "36",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 36
+        }
+      ],
+      "en": "Sarah, my master’s wife, bore a son to my master when she was old. He has given all that he has to him.",
+      "ko": "나의 주인의 부인 사라가 노년에 나의 주인에게 아들을 낳으매 주인이 그 모든 소유를 그 아들에게 주었나이다",
+      "source_text_hash": "f6d32b9c161d7ef1b5ec02180d3da3a7c385ade411a9763f095cab6f5076b294",
+      "translation_text_hash": "798b6af1888114efb42bb6af180c111bbed52f02fbb349dd872ae287e002a0ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 주인의 부인 사라가 노년에 나의 주인에게 아들을 낳으매 주인이 그 모든 소유를 그 아들에게 주었나이다"
+      ],
+      "raw_text_hashes": [
+        "798b6af1888114efb42bb6af180c111bbed52f02fbb349dd872ae287e002a0ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:37",
+      "sequence": 629,
+      "chapter_label": "GEN 24",
+      "verse_label": "37",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 37
+        }
+      ],
+      "en": "My master made me swear, saying, ‘You shall not take a wife for my son from the daughters of the Canaanites, in whose land I live,",
+      "ko": "나의 주인이 나로 맹세하게 하여 가로되 너는 내 아들을 위하여 나 사는 땅 가나안 족속의 딸 중에서 아내를 택하지 말고",
+      "source_text_hash": "f9abd7c16daab6799e459cbbaa5346bdf011079818bb5e83ec2dfe711c817777",
+      "translation_text_hash": "4bc0ddda69147514779e745ac5bf37cf41d87954edf9b1fa464f824aa5ad88c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 주인이 나로 맹세하게 하여 가로되 너는 내 아들을 위하여 나 사는 땅 가나안 족속의 딸 중에서 아내를 택하지 말고"
+      ],
+      "raw_text_hashes": [
+        "4bc0ddda69147514779e745ac5bf37cf41d87954edf9b1fa464f824aa5ad88c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:38",
+      "sequence": 630,
+      "chapter_label": "GEN 24",
+      "verse_label": "38",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 38
+        }
+      ],
+      "en": "but you shall go to my father’s house, and to my relatives, and take a wife for my son.’",
+      "ko": "내 아비 집, 내 족속에게로 가서 내 아들을 위하여 아내를 택하라 하시기로",
+      "source_text_hash": "88d7c3ffe81f17c494bea7af935258e1faa3fd0fe5c44cffd840667cae0500dc",
+      "translation_text_hash": "3ab156ce35e7e798ca5768878c96672d7086d93e6259d6554a0ee7d1dcca5b83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아비 집, 내 족속에게로 가서 내 아들을 위하여 아내를 택하라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "3ab156ce35e7e798ca5768878c96672d7086d93e6259d6554a0ee7d1dcca5b83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:39",
+      "sequence": 631,
+      "chapter_label": "GEN 24",
+      "verse_label": "39",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 39
+        }
+      ],
+      "en": "I asked my master, ‘What if the woman will not follow me?’",
+      "ko": "내가 내 주인에게 말씀하되 혹 여자가 나를 좇지 아니하면 어찌하리이까 한즉",
+      "source_text_hash": "c20740ba018645675f956e7de13c3c9a52f9d23a6a30bcf780f3343ae01f717a",
+      "translation_text_hash": "6ba192370c1e798b1d8744d255968bd753c6f33f1da6f1f2b7a974f7ce727822",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 주인에게 말씀하되 혹 여자가 나를 좇지 아니하면 어찌하리이까 한즉"
+      ],
+      "raw_text_hashes": [
+        "6ba192370c1e798b1d8744d255968bd753c6f33f1da6f1f2b7a974f7ce727822"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:40",
+      "sequence": 632,
+      "chapter_label": "GEN 24",
+      "verse_label": "40",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 40
+        }
+      ],
+      "en": "He said to me, ‘The LORD, before whom I walk, will send his angel with you, and prosper your way. You shall take a wife for my son from my relatives, and of my father’s house.",
+      "ko": "주인이 내게 이르되 나의 섬기는 여호와께서 그 사자를 너와 함께 보내어 네게 평탄한 길을 주시리니 너는 내 족속 중 내 아비 집에서 내 아들을 위하여 아내를 택할 것이니라",
+      "source_text_hash": "17ad3ad2d44e607f6dea05ee445ee2ac6502dc02f75d55d957b895f86f9dfac3",
+      "translation_text_hash": "7e8afe0aa940f698da8fc13ad629157b2bf7c9c0f0792b98fecb706e586db1d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 내게 이르되 나의 섬기는 여호와께서 그 사자를 너와 함께 보내어 네게 평탄한 길을 주시리니 너는 내 족속 중 내 아비 집에서 내 아들을 위하여 아내를 택할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "7e8afe0aa940f698da8fc13ad629157b2bf7c9c0f0792b98fecb706e586db1d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:41",
+      "sequence": 633,
+      "chapter_label": "GEN 24",
+      "verse_label": "41",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 41
+        }
+      ],
+      "en": "Then you will be clear from my oath, when you come to my relatives. If they don’t give her to you, you shall be clear from my oath.’",
+      "ko": "네가 내 족속에게 이를 때에는 네가 내 맹세와 상관이 없으리라 설혹 그들이 네게 주지 아니할찌라도 네가 내 맹세와 상관이 없으리라 하시기로",
+      "source_text_hash": "b2306762e2905ce5504076c2a40f96632459ffff60d59454e4650066fe28778c",
+      "translation_text_hash": "ad7bc42f8c272ddcc73f568efd40a9ff74285a3dce297239bf4b0fc8250f5f09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 내 족속에게 이를 때에는 네가 내 맹세와 상관이 없으리라 설혹 그들이 네게 주지 아니할찌라도 네가 내 맹세와 상관이 없으리라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "ad7bc42f8c272ddcc73f568efd40a9ff74285a3dce297239bf4b0fc8250f5f09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:42",
+      "sequence": 634,
+      "chapter_label": "GEN 24",
+      "verse_label": "42",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 42
+        }
+      ],
+      "en": "I came today to the spring, and said, ‘The LORD, the God of my master Abraham, if now you do prosper my way which I go—",
+      "ko": "내가 오늘 우물에 이르러 말씀하기를 나의 주인 아브라함의 하나님 여호와여 만일 나의 행하는 길에 형통함을 주실찐대",
+      "source_text_hash": "fb607c4d900a0cc5de9544eafc43d826a1d14731141806c6dd53bc2b056cdbb3",
+      "translation_text_hash": "1e4a79f890243cbbb9a9ba6ee407708c74a5927ac90fae76eecc2969bfea36a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오늘 우물에 이르러 말씀하기를 나의 주인 아브라함의 하나님 여호와여 만일 나의 행하는 길에 형통함을 주실찐대"
+      ],
+      "raw_text_hashes": [
+        "1e4a79f890243cbbb9a9ba6ee407708c74a5927ac90fae76eecc2969bfea36a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:43",
+      "sequence": 635,
+      "chapter_label": "GEN 24",
+      "verse_label": "43",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 43
+        }
+      ],
+      "en": "behold, I am standing by this spring of water. Let it happen, that the maiden who comes out to draw, to whom I will say, “Please give me a little water from your pitcher to drink,”",
+      "ko": "내가 이 우물 곁에 섰다가 청년 여자가 물을 길러 오거든 내가 그에게 청하기를 너는 물 항아리의 물을 내게 조금 마시우라 하여",
+      "source_text_hash": "d1d72203b861b5f53c4b97e80063419ebb45083b82ebbdc63120550d92371bf2",
+      "translation_text_hash": "0a358f693ce72a5103f4964608895f02325a80d6bb50a75c5c155f95deac807a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 우물 곁에 섰다가 청년 여자가 물을 길러 오거든 내가 그에게 청하기를 너는 물 항아리의 물을 내게 조금 마시우라 하여"
+      ],
+      "raw_text_hashes": [
+        "0a358f693ce72a5103f4964608895f02325a80d6bb50a75c5c155f95deac807a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:44",
+      "sequence": 636,
+      "chapter_label": "GEN 24",
+      "verse_label": "44",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 44
+        }
+      ],
+      "en": "then she tells me, “Drink, and I will also draw for your camels,”—let her be the woman whom the LORD has appointed for my master’s son.’",
+      "ko": "그의 대답이 당신은 마시라 내가 또 당신의 약대를 위하여도 길으리라 하면 그 여자는 여호와께서 나의 주인의 아들을 위하여 정하여 주신 자가 되리이다 하며",
+      "source_text_hash": "1370c94ef17b99fb3eb15373b35702f5154739ce31d48b3641ec414433e1d145",
+      "translation_text_hash": "5fd2e48693aec3240ba02afdeb90e2eee8e7f9b0b0accb3debf9e5671b56f3de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 대답이 당신은 마시라 내가 또 당신의 약대를 위하여도 길으리라 하면 그 여자는 여호와께서 나의 주인의 아들을 위하여 정하여 주신 자가 되리이다 하며"
+      ],
+      "raw_text_hashes": [
+        "5fd2e48693aec3240ba02afdeb90e2eee8e7f9b0b0accb3debf9e5671b56f3de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:45",
+      "sequence": 637,
+      "chapter_label": "GEN 24",
+      "verse_label": "45",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 45
+        }
+      ],
+      "en": "Before I had finished speaking in my heart, behold, Rebekah came out with her pitcher on her shoulder. She went down to the spring, and drew. I said to her, ‘Please let me drink.’",
+      "ko": "내가 묵도하기를 마치지 못하여 리브가가 물 항아리를 어깨에 메고 나와서 우물로 내려와 긷기로 내가 그에게 이르기를 청컨대 내게 마시우라 한즉",
+      "source_text_hash": "e7b5eea90e7ed1015b6f58514275c1c52794fe3f589d8dddf6a7f8050d071c8a",
+      "translation_text_hash": "ba595a8b04b07a51dbd3e3dbb13b3551ec28f4f673ab061ab1e9faf62556a6de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 묵도하기를 마치지 못하여 리브가가 물 항아리를 어깨에 메고 나와서 우물로 내려와 긷기로 내가 그에게 이르기를 청컨대 내게 마시우라 한즉"
+      ],
+      "raw_text_hashes": [
+        "ba595a8b04b07a51dbd3e3dbb13b3551ec28f4f673ab061ab1e9faf62556a6de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:46",
+      "sequence": 638,
+      "chapter_label": "GEN 24",
+      "verse_label": "46",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 46
+        }
+      ],
+      "en": "She hurried and let down her pitcher from her shoulder, and said, ‘Drink, and I will also give your camels a drink.’ So I drank, and she also gave the camels a drink.",
+      "ko": "그가 급히 물 항아리를 어깨에서 내리며 가로되 마시라 내가 당신의 약대에게도 마시우리라 하기로 내가 마시매 그가 또 약대에게도 마시운지라",
+      "source_text_hash": "4933c28e7fed452ea489b30b3ce9f450ff5d875a43e4f081333ef8e35f1a0dde",
+      "translation_text_hash": "e2d4d31c289bcc4150c715900f5d74a1abad0e724f810a82a847f6c9cd505801",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 급히 물 항아리를 어깨에서 내리며 가로되 마시라 내가 당신의 약대에게도 마시우리라 하기로 내가 마시매 그가 또 약대에게도 마시운지라"
+      ],
+      "raw_text_hashes": [
+        "e2d4d31c289bcc4150c715900f5d74a1abad0e724f810a82a847f6c9cd505801"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:47",
+      "sequence": 639,
+      "chapter_label": "GEN 24",
+      "verse_label": "47",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 47
+        }
+      ],
+      "en": "I asked her, and said, ‘Whose daughter are you?’ She said, ‘The daughter of Bethuel, Nahor’s son, whom Milcah bore to him.’ I put the ring on her nose, and the bracelets on her hands.",
+      "ko": "내가 그에게 묻기를 네가 뉘 딸이뇨 한즉 가로되 밀가가 나홀에게 낳은 브두엘의 딸이라 하기로 내가 고리를 그 코에 꿰고 손목고리를 그 손에 끼우고",
+      "source_text_hash": "23689986ca1cce6942246ab6ac0c3b12d00a757b7849c8d0c3b28bc7c2e0d940",
+      "translation_text_hash": "2b0936c65ed80e084cc49e70ca0244a674ec36fd1b821a281ef36508f96d29b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그에게 묻기를 네가 뉘 딸이뇨 한즉 가로되 밀가가 나홀에게 낳은 브두엘의 딸이라 하기로 내가 고리를 그 코에 꿰고 손목고리를 그 손에 끼우고"
+      ],
+      "raw_text_hashes": [
+        "2b0936c65ed80e084cc49e70ca0244a674ec36fd1b821a281ef36508f96d29b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:48",
+      "sequence": 640,
+      "chapter_label": "GEN 24",
+      "verse_label": "48",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 48
+        }
+      ],
+      "en": "I bowed my head, and worshiped the LORD, and blessed the LORD, the God of my master Abraham, who had led me in the right way to take my master’s brother’s daughter for his son.",
+      "ko": "나의 주인 아브라함의 하나님 여호와께서 나를 바른 길로 인도하사 나의 주인의 동생의 딸을 그 아들을 위하여 택하게 하셨으므로 내가 머리를 숙여 그에게 경배하고 찬송하였나이다",
+      "source_text_hash": "0c2083f68bbf5c2601448d1af4504704df1aa5bc69bb6ee817ad4d0a3f3c6f46",
+      "translation_text_hash": "9c1a8306b561231050931a38bee15a22f58c8cc74588ca6094648829aece2f0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 주인 아브라함의 하나님 여호와께서 나를 바른 길로 인도하사 나의 주인의 동생의 딸을 그 아들을 위하여 택하게 하셨으므로 내가 머리를 숙여 그에게 경배하고 찬송하였나이다"
+      ],
+      "raw_text_hashes": [
+        "9c1a8306b561231050931a38bee15a22f58c8cc74588ca6094648829aece2f0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:49",
+      "sequence": 641,
+      "chapter_label": "GEN 24",
+      "verse_label": "49",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 49
+        }
+      ],
+      "en": "Now if you will deal kindly and truly with my master, tell me. If not, tell me, that I may turn to the right hand, or to the left.”",
+      "ko": "이제 당신들이 인자와 진실로 나의 주인을 대접하려거든 내게 고하시고 그렇지 않을찌라도 내게 고하여 나로 좌우간 행하게 하소서",
+      "source_text_hash": "f6758aafe2601ec4c634b95cf8d23c11cf54d2b6e2e99fbbda51a861c3095abb",
+      "translation_text_hash": "bab96e4bf37f7b2266d69efde1154731ca3c63a4111f043fa08916949653aaf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 당신들이 인자와 진실로 나의 주인을 대접하려거든 내게 고하시고 그렇지 않을찌라도 내게 고하여 나로 좌우간 행하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "bab96e4bf37f7b2266d69efde1154731ca3c63a4111f043fa08916949653aaf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:50",
+      "sequence": 642,
+      "chapter_label": "GEN 24",
+      "verse_label": "50",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 50
+        }
+      ],
+      "en": "Then Laban and Bethuel answered, “The thing proceeds from the LORD. We can’t speak to you bad or good.",
+      "ko": "라반과 브두엘이 대답하여 가로되 이 일이 여호와께로 말미암았으니 우리는 가부를 말할 수 없노라",
+      "source_text_hash": "d429bbbab31b121a9c49e85fa9a52b1df52b476b4009f78ff45b9ef490e7db8e",
+      "translation_text_hash": "fc0e20b7c00a2f95520644f5746c30fa8a49c179524b2c9a034cc7b7433bae8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라반과 브두엘이 대답하여 가로되 이 일이 여호와께로 말미암았으니 우리는 가부를 말할 수 없노라"
+      ],
+      "raw_text_hashes": [
+        "fc0e20b7c00a2f95520644f5746c30fa8a49c179524b2c9a034cc7b7433bae8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:51",
+      "sequence": 643,
+      "chapter_label": "GEN 24",
+      "verse_label": "51",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 51
+        }
+      ],
+      "en": "Behold, Rebekah is before you. Take her, and go, and let her be your master’s son’s wife, as the LORD has spoken.”",
+      "ko": "리브가가 그대 앞에 있으니 데리고 가서 여호와의 명대로 그로 그대의 주인의 아들의 아내가 되게 하라",
+      "source_text_hash": "c85dc340c813d0ebaa94619f0c6cfad56d57e35d76a2c6b671ab7e974387bb66",
+      "translation_text_hash": "a87eedd4f472dac24fb9b06b878e08fa6524cd43de73cff2b6f69d5be27206ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가가 그대 앞에 있으니 데리고 가서 여호와의 명대로 그로 그대의 주인의 아들의 아내가 되게 하라"
+      ],
+      "raw_text_hashes": [
+        "a87eedd4f472dac24fb9b06b878e08fa6524cd43de73cff2b6f69d5be27206ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:52",
+      "sequence": 644,
+      "chapter_label": "GEN 24",
+      "verse_label": "52",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 52
+        }
+      ],
+      "en": "When Abraham’s servant heard their words, he bowed himself down to the earth to the LORD.",
+      "ko": "아브라함의 종이 그들의 말을 듣고 땅에 엎드리어 여호와께 절하고",
+      "source_text_hash": "7d25296600ff66fc7ed21ea5c81fc619f0c0bdcb03d359ffb39189f86bed8e21",
+      "translation_text_hash": "fad4428d0aa9da4bfc31c209a982a2a7f2e67fafc8a97290068c36c256a4fcef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함의 종이 그들의 말을 듣고 땅에 엎드리어 여호와께 절하고"
+      ],
+      "raw_text_hashes": [
+        "fad4428d0aa9da4bfc31c209a982a2a7f2e67fafc8a97290068c36c256a4fcef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:53",
+      "sequence": 645,
+      "chapter_label": "GEN 24",
+      "verse_label": "53",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 53
+        }
+      ],
+      "en": "The servant brought out jewels of silver, and jewels of gold, and clothing, and gave them to Rebekah. He also gave precious things to her brother and her mother.",
+      "ko": "은금 패물과 의복을 꺼내어 리브가에게 주고 그 오라비와 어미에게도 보물을 주니라",
+      "source_text_hash": "1ace35bb22b8dadcf69fb1472b7b1bb5605187883674535573e5cbf56e0e99cb",
+      "translation_text_hash": "feaaede070535bfce25b6211f59b8d4dedaccbace04a4151b36e0eb2e2feec18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은금 패물과 의복을 꺼내어 리브가에게 주고 그 오라비와 어미에게도 보물을 주니라"
+      ],
+      "raw_text_hashes": [
+        "feaaede070535bfce25b6211f59b8d4dedaccbace04a4151b36e0eb2e2feec18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:54",
+      "sequence": 646,
+      "chapter_label": "GEN 24",
+      "verse_label": "54",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 54
+        }
+      ],
+      "en": "They ate and drank, he and the men who were with him, and stayed all night. They rose up in the morning, and he said, “Send me away to my master.”",
+      "ko": "이에 그들 곧 종과 종자들이 먹고 마시고 유숙하고 아침에 일어나서 그가 가로되 나를 보내어 내 주인에게로 돌아가게 하소서",
+      "source_text_hash": "3e2420c7429873978b735825bf79b78d5e154a1235362c90f6570a197acc091a",
+      "translation_text_hash": "07c50c3061736cd409f75003d8945db130c1376b7a4b14d638f3825bfd8e7d16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그들 곧 종과 종자들이 먹고 마시고 유숙하고 아침에 일어나서 그가 가로되 나를 보내어 내 주인에게로 돌아가게 하소서"
+      ],
+      "raw_text_hashes": [
+        "07c50c3061736cd409f75003d8945db130c1376b7a4b14d638f3825bfd8e7d16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:55",
+      "sequence": 647,
+      "chapter_label": "GEN 24",
+      "verse_label": "55",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 55
+        }
+      ],
+      "en": "Her brother and her mother said, “Let the young lady stay with us a few days, at least ten. After that she will go.”",
+      "ko": "리브가의 오라비와 그 어미가 가로되 소녀로 며칠을 적어도 열흘을 우리와 함께 있게 하라 그 후에 그가 갈 것이니라",
+      "source_text_hash": "d3c1ccc8077ba79a2240d0b74edb0d9e95c70d7e0703e69ee1fb8f487fd0dec9",
+      "translation_text_hash": "894178fd79bc38d2e5afc88fad6f51bbd4c6f2b258b4b4e5af7ecf2f6b96731f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가의 오라비와 그 어미가 가로되 소녀로 며칠을 적어도 열흘을 우리와 함께 있게 하라 그 후에 그가 갈 것이니라"
+      ],
+      "raw_text_hashes": [
+        "894178fd79bc38d2e5afc88fad6f51bbd4c6f2b258b4b4e5af7ecf2f6b96731f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:56",
+      "sequence": 648,
+      "chapter_label": "GEN 24",
+      "verse_label": "56",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 56
+        }
+      ],
+      "en": "He said to them, “Don’t hinder me, since the LORD has prospered my way. Send me away that I may go to my master.”",
+      "ko": "그 사람이 그들에게 이르되 나를 만류치 마소서 여호와께서 내게 형통한 길을 주셨으니 나를 보내어 내 주인에게로 돌아가게 하소서",
+      "source_text_hash": "330575a324866b6a514cf80391366d742c0fc18ace601bc0ffddc9d68ebff75e",
+      "translation_text_hash": "3c34cbf5e11b81bf1ba60f7c0de8112513477926ad8a55b03db2363b84847ad3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 그들에게 이르되 나를 만류치 마소서 여호와께서 내게 형통한 길을 주셨으니 나를 보내어 내 주인에게로 돌아가게 하소서"
+      ],
+      "raw_text_hashes": [
+        "3c34cbf5e11b81bf1ba60f7c0de8112513477926ad8a55b03db2363b84847ad3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:57",
+      "sequence": 649,
+      "chapter_label": "GEN 24",
+      "verse_label": "57",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 57
+        }
+      ],
+      "en": "They said, “We will call the young lady, and ask her.”",
+      "ko": "그들이 가로되 우리가 소녀를 불러 그에게 물으리라 하고",
+      "source_text_hash": "23ca3c0ba7a852ad6fc934c46e635d8ede2f8366ff5ad9c8124e8884239890b7",
+      "translation_text_hash": "636e8afbb1aa0905b78782b1a54b71c3785548161dc3b8f2baa2b76ee444f3f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 우리가 소녀를 불러 그에게 물으리라 하고"
+      ],
+      "raw_text_hashes": [
+        "636e8afbb1aa0905b78782b1a54b71c3785548161dc3b8f2baa2b76ee444f3f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:58",
+      "sequence": 650,
+      "chapter_label": "GEN 24",
+      "verse_label": "58",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 58
+        }
+      ],
+      "en": "They called Rebekah, and said to her, “Will you go with this man?” She said, “I will go.”",
+      "ko": "리브가를 불러 그에게 이르되 네가 이 사람과 함께 가려느냐 그가 대답하되 가겠나이다",
+      "source_text_hash": "73cdcea51bc006cd37cd0608f46b60585ec8ae49908aeeb2a60cdd14476cac74",
+      "translation_text_hash": "c2b66feeb9426f50955e32189c8d3ba65a86c630e38c0cc95ffd8ecad163d4d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가를 불러 그에게 이르되 네가 이 사람과 함께 가려느냐 그가 대답하되 가겠나이다"
+      ],
+      "raw_text_hashes": [
+        "c2b66feeb9426f50955e32189c8d3ba65a86c630e38c0cc95ffd8ecad163d4d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:59",
+      "sequence": 651,
+      "chapter_label": "GEN 24",
+      "verse_label": "59",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 59
+        }
+      ],
+      "en": "They sent away Rebekah, their sister, with her nurse, Abraham’s servant, and his men.",
+      "ko": "그들이 그 누이 리브가와 그의 유모와 아브라함의 종과 종자들을 보내며",
+      "source_text_hash": "a02b230172ef3832e4c02abb8c99415291a1f32670af5734f88372047163f290",
+      "translation_text_hash": "bb3b44df181a244f8a03f61d3e49c4d99cb923d0fecab10e9ca7d23ac8ff466e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 누이 리브가와 그의 유모와 아브라함의 종과 종자들을 보내며"
+      ],
+      "raw_text_hashes": [
+        "bb3b44df181a244f8a03f61d3e49c4d99cb923d0fecab10e9ca7d23ac8ff466e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:60",
+      "sequence": 652,
+      "chapter_label": "GEN 24",
+      "verse_label": "60",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 60
+        }
+      ],
+      "en": "They blessed Rebekah, and said to her, “Our sister, may you be the mother of thousands of ten thousands, and let your offspring possess the gate of those who hate them.”",
+      "ko": "리브가에게 축복하여 가로되 우리 누이여 너는 천만인의 어미가 될찌어다 네 씨로 그 원수의 성문을 얻게 할찌어다",
+      "source_text_hash": "609091d4b7196fc922f128df79d3048b0c324601e45efdb80a6190a16b9d4f24",
+      "translation_text_hash": "f0e33497bdd7a924c49998534bb29f1142d4ccc3c9a3c81a7bfbea0da26854d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가에게 축복하여 가로되 우리 누이여 너는 천만인의 어미가 될찌어다 네 씨로 그 원수의 성문을 얻게 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "f0e33497bdd7a924c49998534bb29f1142d4ccc3c9a3c81a7bfbea0da26854d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:61",
+      "sequence": 653,
+      "chapter_label": "GEN 24",
+      "verse_label": "61",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 61
+        }
+      ],
+      "en": "Rebekah arose with her ladies. They rode on the camels, and followed the man. The servant took Rebekah, and went his way.",
+      "ko": "리브가가 일어나 비자와 함께 약대를 타고 그 사람을 따라가니 종이 리브가를 데리고 가니라",
+      "source_text_hash": "cd27b13ca94c980bca9c730be41a8810a66b68bc5dc52be685f0800391c6b89b",
+      "translation_text_hash": "7097188ae0cd1d41c40a4496534caa38aea040b82414ed33f97d9a361b3c8525",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가가 일어나 비자와 함께 약대를 타고 그 사람을 따라가니 종이 리브가를 데리고 가니라"
+      ],
+      "raw_text_hashes": [
+        "7097188ae0cd1d41c40a4496534caa38aea040b82414ed33f97d9a361b3c8525"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:62",
+      "sequence": 654,
+      "chapter_label": "GEN 24",
+      "verse_label": "62",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 62
+        }
+      ],
+      "en": "Isaac came from the way of Beer Lahai Roi, for he lived in the land of the South.",
+      "ko": "때에 이삭이 브엘 라해로이에서 왔으니 그가 남방에 거하였었음이라",
+      "source_text_hash": "deed19e6f26d0e2686e8ef73b8e799586bf49b0592b2d61698efa0bcc8bc9f03",
+      "translation_text_hash": "a12fb89dc034114d3a7762b619d329400ff48b0dc146244438cbdc6c5be46eaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 이삭이 브엘 라해로이에서 왔으니 그가 남방에 거하였었음이라"
+      ],
+      "raw_text_hashes": [
+        "a12fb89dc034114d3a7762b619d329400ff48b0dc146244438cbdc6c5be46eaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:63",
+      "sequence": 655,
+      "chapter_label": "GEN 24",
+      "verse_label": "63",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 63
+        }
+      ],
+      "en": "Isaac went out to meditate in the field at the evening. He lifted up his eyes and looked. Behold, there were camels coming.",
+      "ko": "이삭이 저물 때에 들에 나가 묵상하다가 눈을 들어 보매 약대들이 오더라",
+      "source_text_hash": "8e7ef6f041e8fcb06161009e8941ba2e1c2d6aa976d9ea6910b18d4bbcd9e6b9",
+      "translation_text_hash": "aaffe08e99f6c8050fc1a83f84adba1964e8a202f6f3e671a363635b8340dff5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 저물 때에 들에 나가 묵상하다가 눈을 들어 보매 약대들이 오더라"
+      ],
+      "raw_text_hashes": [
+        "aaffe08e99f6c8050fc1a83f84adba1964e8a202f6f3e671a363635b8340dff5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:64",
+      "sequence": 656,
+      "chapter_label": "GEN 24",
+      "verse_label": "64",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 64
+        }
+      ],
+      "en": "Rebekah lifted up her eyes, and when she saw Isaac, she got off the camel.",
+      "ko": "리브가가 눈을 들어 이삭을 바라보고 약대에서 내려",
+      "source_text_hash": "59516325c46cda7d44d73caa87d99b648f67247df8c0f45c4cec265010936cac",
+      "translation_text_hash": "074f46330fff818958f88fc2bf89c12ed8189822352db002526f477f4b0a17e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가가 눈을 들어 이삭을 바라보고 약대에서 내려"
+      ],
+      "raw_text_hashes": [
+        "074f46330fff818958f88fc2bf89c12ed8189822352db002526f477f4b0a17e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:65",
+      "sequence": 657,
+      "chapter_label": "GEN 24",
+      "verse_label": "65",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 65
+        }
+      ],
+      "en": "She said to the servant, “Who is the man who is walking in the field to meet us?” The servant said, “It is my master.” She took her veil, and covered herself.",
+      "ko": "종에게 말하되 들에서 배회하다가 우리에게로 마주 오는 자가 누구뇨 종이 가로되 이는 내 주인이니이다 리브가가 면박을 취하여 스스로 가리우더라",
+      "source_text_hash": "8948b29998b09d4762debc05e4e8073b1645631ea6ae39a5af5878334afa7da8",
+      "translation_text_hash": "a80a436c1e3ff7d907a2409b9bf351143d43a01da4de2851269d4e105e89eb4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종에게 말하되 들에서 배회하다가 우리에게로 마주 오는 자가 누구뇨 종이 가로되 이는 내 주인이니이다 리브가가 면박을 취하여 스스로 가리우더라"
+      ],
+      "raw_text_hashes": [
+        "a80a436c1e3ff7d907a2409b9bf351143d43a01da4de2851269d4e105e89eb4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:66",
+      "sequence": 658,
+      "chapter_label": "GEN 24",
+      "verse_label": "66",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 66
+        }
+      ],
+      "en": "The servant told Isaac all the things that he had done.",
+      "ko": "종이 그 행한 일을 다 이삭에게 고하매",
+      "source_text_hash": "9cfe4977f4bf3b73e0bc5b51297458c5f4963cb418ff29417b592e683102e42d",
+      "translation_text_hash": "9d1adf4c80297cf1ed29432f9bb35b2dd871afc54578682acfa835916c7c07b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 그 행한 일을 다 이삭에게 고하매"
+      ],
+      "raw_text_hashes": [
+        "9d1adf4c80297cf1ed29432f9bb35b2dd871afc54578682acfa835916c7c07b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:24:67",
+      "sequence": 659,
+      "chapter_label": "GEN 24",
+      "verse_label": "67",
+      "locator": {
+        "book": "GEN",
+        "chapter": 24,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 24,
+          "verse": 67
+        }
+      ],
+      "en": "Isaac brought her into his mother Sarah’s tent, and took Rebekah, and she became his wife. He loved her. So Isaac was comforted after his mother’s death.",
+      "ko": "이삭이 리브가를 인도하여 모친 사라의 장막으로 들이고 그를 취하여 아내를 삼고 사랑하였으니 이삭이 모친 상사 후에 위로를 얻었더라",
+      "source_text_hash": "6235edaf1ff1aa4a828227304d23ef11873887d2227a5644d544b80386c78c98",
+      "translation_text_hash": "e9069392a4ed599404fdb49bfaaa304ee56ffc1bfdad14570ce01979d4dbd9bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 리브가를 인도하여 모친 사라의 장막으로 들이고 그를 취하여 아내를 삼고 사랑하였으니 이삭이 모친 상사 후에 위로를 얻었더라"
+      ],
+      "raw_text_hashes": [
+        "e9069392a4ed599404fdb49bfaaa304ee56ffc1bfdad14570ce01979d4dbd9bb"
+      ]
+    }
+  ]
+}

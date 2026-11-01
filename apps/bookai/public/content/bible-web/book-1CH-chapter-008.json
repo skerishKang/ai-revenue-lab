@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:008",
+  "unit_ordinal": 346,
+  "unit_label": "1CH 8",
+  "book_code": "1CH",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:8:1",
+      "sequence": 10577,
+      "chapter_label": "1CH 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Benjamin became the father of Bela his firstborn, Ashbel the second, Aharah the third,",
+      "ko": "베냐민의 낳은 자는 맏아들 벨라와 둘째 아스벨과 세째 아하라와",
+      "source_text_hash": "449c4a6241156ea5fbe74c8b6f659398a926da7789c5242a9aade6ed5e29a11f",
+      "translation_text_hash": "9812b9662569694e2566db9b2e2b3e2b70aeccd66973bd23c38a8d25c8b24dd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민의 낳은 자는 맏아들 벨라와 둘째 아스벨과 세째 아하라와"
+      ],
+      "raw_text_hashes": [
+        "9812b9662569694e2566db9b2e2b3e2b70aeccd66973bd23c38a8d25c8b24dd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:2",
+      "sequence": 10578,
+      "chapter_label": "1CH 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "Nohah the fourth, and Rapha the fifth.",
+      "ko": "네째 노하와 다섯째 라바며",
+      "source_text_hash": "7fef4625397e62ab91886c9a0c9a33ae50c0f624faa45fc83077691c73ce1bac",
+      "translation_text_hash": "a702ffb3237d19f8b8c29a528a27777b23a8f6214d806879d20de16d7a958ffd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째 노하와 다섯째 라바며"
+      ],
+      "raw_text_hashes": [
+        "a702ffb3237d19f8b8c29a528a27777b23a8f6214d806879d20de16d7a958ffd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:3",
+      "sequence": 10579,
+      "chapter_label": "1CH 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Bela had sons: Addar, Gera, Abihud,",
+      "ko": "벨라에게 아들들이 있으니 곧 앗달과 게라와 아비훗과",
+      "source_text_hash": "b7e84fe5c775165061771b5cf493624ea3b2b237b5d74f42fc675197e6a147a3",
+      "translation_text_hash": "5464babb1276565de8108d29e4a2cae62a09a6215b2de3eb8b1f84b610bb0dba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨라에게 아들들이 있으니 곧 앗달과 게라와 아비훗과"
+      ],
+      "raw_text_hashes": [
+        "5464babb1276565de8108d29e4a2cae62a09a6215b2de3eb8b1f84b610bb0dba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:4",
+      "sequence": 10580,
+      "chapter_label": "1CH 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Abishua, Naaman, Ahoah,",
+      "ko": "아비수아와 나아만과 아호아와",
+      "source_text_hash": "2775dd8ba548b57ac4e869d2859caae53b7a00b8dbdc1818d64b568e33f3b7eb",
+      "translation_text_hash": "836cf3c33768fa09349a97b029f3e361c171264035eace33ca00fdf8fee66bde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비수아와 나아만과 아호아와"
+      ],
+      "raw_text_hashes": [
+        "836cf3c33768fa09349a97b029f3e361c171264035eace33ca00fdf8fee66bde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:5",
+      "sequence": 10581,
+      "chapter_label": "1CH 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Gera, Shephuphan, and Huram.",
+      "ko": "게라와 스부반과 후람이며",
+      "source_text_hash": "6e4a765c71b472f811f388a81d009ba8a07c841e2cc8c42a9bc7350efca6af32",
+      "translation_text_hash": "82aad6c09741cf20123fa2bac88d10850f9f59466b017908371eab8c2835ecfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게라와 스부반과 후람이며"
+      ],
+      "raw_text_hashes": [
+        "82aad6c09741cf20123fa2bac88d10850f9f59466b017908371eab8c2835ecfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:6",
+      "sequence": 10582,
+      "chapter_label": "1CH 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "These are the sons of Ehud. These are the heads of fathers’ households of the inhabitants of Geba, who were carried captive to Manahath:",
+      "ko": "에훗의 아들들은 이러하니라 저희는 게바 거민의 족장으로서 사로잡아 마나핫으로 가되",
+      "source_text_hash": "48bd6c7fa5a7df52346f6bcafef19dd290867750cb7fc00a6a88aeac06400571",
+      "translation_text_hash": "5f39f7de2b10db16f92c04474046358d5a26ba162543fe47e89f95458c9911a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에훗의 아들들은 이러하니라 저희는 게바 거민의 족장으로서 사로잡아 마나핫으로 가되"
+      ],
+      "raw_text_hashes": [
+        "5f39f7de2b10db16f92c04474046358d5a26ba162543fe47e89f95458c9911a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:7",
+      "sequence": 10583,
+      "chapter_label": "1CH 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Naaman, Ahijah, and Gera, who carried them captive; and he became the father of Uzza and Ahihud.",
+      "ko": "곧 나아만과 아히야와 게라를 사로잡아 갔고 그가 또 웃사와 아히훗을 낳았으며",
+      "source_text_hash": "bef9ac1c57a8944691b77b8d5f686a29c6f38c3bcdaa9c46c0108ae6c1bc9f30",
+      "translation_text_hash": "f3154d587768003f1c56372d899ee5c0635d0c4a7b1b5b1d0132a8cacf116958",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 나아만과 아히야와 게라를 사로잡아 갔고 그가 또 웃사와 아히훗을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "f3154d587768003f1c56372d899ee5c0635d0c4a7b1b5b1d0132a8cacf116958"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:8",
+      "sequence": 10584,
+      "chapter_label": "1CH 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Shaharaim became the father of children in the field of Moab, after he had sent them away. Hushim and Baara were his wives.",
+      "ko": "사하라임은 두 아내 후심과 바아라를 내어보낸 후에 모압 땅에서 자녀를 낳았으니",
+      "source_text_hash": "9caee5d651ae2be37dec7d8ced4fd9e944af85508227104fb5b8bc94b21e4bcb",
+      "translation_text_hash": "20a65e21f3796c8fb6acd56a5fa96ac427771c0b6f5e2cffab74cffdea4519e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사하라임은 두 아내 후심과 바아라를 내어보낸 후에 모압 땅에서 자녀를 낳았으니"
+      ],
+      "raw_text_hashes": [
+        "20a65e21f3796c8fb6acd56a5fa96ac427771c0b6f5e2cffab74cffdea4519e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:9",
+      "sequence": 10585,
+      "chapter_label": "1CH 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "By Hodesh his wife, he became the father of Jobab, Zibia, Mesha, Malcam,",
+      "ko": "그 아내 호데스에게서 낳은 자는 요밥과 시비야와 메사와 말감과",
+      "source_text_hash": "8a14313facaece1e0626ec169eda5afe7fbc1200228a0f89f2fac99d0906b5d6",
+      "translation_text_hash": "388b89a450756937e877a920e0aed74ef3188870ac9721f4bcfbbdbd145186b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아내 호데스에게서 낳은 자는 요밥과 시비야와 메사와 말감과"
+      ],
+      "raw_text_hashes": [
+        "388b89a450756937e877a920e0aed74ef3188870ac9721f4bcfbbdbd145186b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:10",
+      "sequence": 10586,
+      "chapter_label": "1CH 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Jeuz, Shachia, and Mirmah. These were his sons, heads of fathers’ households.",
+      "ko": "여우스와 사갸와 미르마라 이 아들들은 족장이며",
+      "source_text_hash": "5d4bc689b8fcff3a746ddd2c13b5820e4deb986ac6e8d5b5ccbd6bb998e19410",
+      "translation_text_hash": "cbeeace86b4e357db767fbad307d81eab291595417ec7bdc5e4ccd7543d0c1d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여우스와 사갸와 미르마라 이 아들들은 족장이며"
+      ],
+      "raw_text_hashes": [
+        "cbeeace86b4e357db767fbad307d81eab291595417ec7bdc5e4ccd7543d0c1d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:11",
+      "sequence": 10587,
+      "chapter_label": "1CH 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "By Hushim, he became the father of Abitub and Elpaal.",
+      "ko": "또 그 아내 후심에게서 아비둡과 엘바알을 낳았으며",
+      "source_text_hash": "2d2a61fa3da0346656c2d3dd433b5371a5085aea494fa52490ffe70a6c807118",
+      "translation_text_hash": "f3ad483834d91cb7e87022dff1d6b529a084f0aab8ae234ac4d000fdf86c303b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 아내 후심에게서 아비둡과 엘바알을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "f3ad483834d91cb7e87022dff1d6b529a084f0aab8ae234ac4d000fdf86c303b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:12",
+      "sequence": 10588,
+      "chapter_label": "1CH 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "The sons of Elpaal: Eber, Misham, and Shemed, who built Ono and Lod, with its towns;",
+      "ko": "엘바알의 아들들은 에벨과 미삼과 세멧이니 저는 오노와 롯과 그 향리를 세웠고",
+      "source_text_hash": "14f69f63a4e1a0af024cdaed0869290c14d30e52850cf6abfa7bae41d7a2b753",
+      "translation_text_hash": "d7007ebfddd489873ad0a6136d1d12fd8463dbe6cb16125aa198179cd48238a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘바알의 아들들은 에벨과 미삼과 세멧이니 저는 오노와 롯과 그 향리를 세웠고"
+      ],
+      "raw_text_hashes": [
+        "d7007ebfddd489873ad0a6136d1d12fd8463dbe6cb16125aa198179cd48238a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:13",
+      "sequence": 10589,
+      "chapter_label": "1CH 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "and Beriah and Shema, who were heads of fathers’ households of the inhabitants of Aijalon, who put to flight the inhabitants of Gath;",
+      "ko": "또 브리아와 세마니 저희는 아얄론 거민의 족장이 되어 가드 거민을 쫓아내었더라",
+      "source_text_hash": "a513409bd29882a5a28776b26bb7a57708518493ccc1b5f42740f7a04cdb28f2",
+      "translation_text_hash": "19956954809f8b7d55c2db335de465753fd47e98b4c1ec242cd0f18612f1142a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 브리아와 세마니 저희는 아얄론 거민의 족장이 되어 가드 거민을 쫓아내었더라"
+      ],
+      "raw_text_hashes": [
+        "19956954809f8b7d55c2db335de465753fd47e98b4c1ec242cd0f18612f1142a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:14",
+      "sequence": 10590,
+      "chapter_label": "1CH 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "and Ahio, Shashak, Jeremoth,",
+      "ko": "아히요와 사삭과 여레못과",
+      "source_text_hash": "0afa1d46314590d0553e7e3525ec642a1d62034ba39129d1de07812609acd85f",
+      "translation_text_hash": "d85db6bba78eb64840c4a7b8da405b1af0eaeefa78668289fad29ebb2d544ef4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히요와 사삭과 여레못과"
+      ],
+      "raw_text_hashes": [
+        "d85db6bba78eb64840c4a7b8da405b1af0eaeefa78668289fad29ebb2d544ef4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:15",
+      "sequence": 10591,
+      "chapter_label": "1CH 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "Zebadiah, Arad, Eder,",
+      "ko": "스바댜와 아랏과 에델과",
+      "source_text_hash": "ec60e5b158f927080f370fd51dadf7bf5fc0dca5f3cf28314e90eebba8b1a0ab",
+      "translation_text_hash": "01ae506b61afb327eb3e4cc184e2b9e628ac8cd3c62df11e4a7157a3c9f1380e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바댜와 아랏과 에델과"
+      ],
+      "raw_text_hashes": [
+        "01ae506b61afb327eb3e4cc184e2b9e628ac8cd3c62df11e4a7157a3c9f1380e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:16",
+      "sequence": 10592,
+      "chapter_label": "1CH 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "Michael, Ishpah, Joha, the sons of Beriah,",
+      "ko": "미가엘과 이스바와 요하는 다 브리아의 아들들이요",
+      "source_text_hash": "6267291529e5d2336f381a635396c5abdfcd0cb491682f147b2e9278c6470795",
+      "translation_text_hash": "7c96a604da4b3bc424e7c89ff1df316cd40e11511f1401674b0adca5ee1d9b81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가엘과 이스바와 요하는 다 브리아의 아들들이요"
+      ],
+      "raw_text_hashes": [
+        "7c96a604da4b3bc424e7c89ff1df316cd40e11511f1401674b0adca5ee1d9b81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:17",
+      "sequence": 10593,
+      "chapter_label": "1CH 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "Zebadiah, Meshullam, Hizki, Heber,",
+      "ko": "스바댜와 므술람과 히스기와 헤벨과",
+      "source_text_hash": "4380be635d728cda5fc3c11d26bffbf9df74702215807247b988c8fcaf765c59",
+      "translation_text_hash": "97c546b286a7a8ab4ef7fe252f6e3a6a80628f618625e45931b66e09a0fb4fff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바댜와 므술람과 히스기와 헤벨과"
+      ],
+      "raw_text_hashes": [
+        "97c546b286a7a8ab4ef7fe252f6e3a6a80628f618625e45931b66e09a0fb4fff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:18",
+      "sequence": 10594,
+      "chapter_label": "1CH 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Ishmerai, Izliah, Jobab, the sons of Elpaal,",
+      "ko": "이스므래와 이슬리아와 요밥은 다 엘바알의 아들들이요",
+      "source_text_hash": "f75f164366170cf3d6f1c9f5f2500a55971c1da84d3889b29281a6cd21d72d96",
+      "translation_text_hash": "6774101d7c004e483616f6139c3bffdfc34951c05801a208eb4074c129a58fc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스므래와 이슬리아와 요밥은 다 엘바알의 아들들이요"
+      ],
+      "raw_text_hashes": [
+        "6774101d7c004e483616f6139c3bffdfc34951c05801a208eb4074c129a58fc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:19",
+      "sequence": 10595,
+      "chapter_label": "1CH 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "Jakim, Zichri, Zabdi,",
+      "ko": "야김과 시그리와 삽디와",
+      "source_text_hash": "4ce1d4467fd2dd88f4ed25dbe4d7fa32ee7cd806db7d60ab81761e0dc3257fea",
+      "translation_text_hash": "22d0c5b55f4ce689184f615c8696f83d045594eae012983e44a6d172d26b4440",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야김과 시그리와 삽디와"
+      ],
+      "raw_text_hashes": [
+        "22d0c5b55f4ce689184f615c8696f83d045594eae012983e44a6d172d26b4440"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:20",
+      "sequence": 10596,
+      "chapter_label": "1CH 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "Elienai, Zillethai, Eliel,",
+      "ko": "엘리에내와 실르대와 엘리엘과",
+      "source_text_hash": "2fc11c4a5987e46ab94e2e4872be13fd619ec90247d19c26813d825f80d04208",
+      "translation_text_hash": "f8f2ef9f85f36e66964405473d42ce0ce5081247f3a104d63398799e50076daf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리에내와 실르대와 엘리엘과"
+      ],
+      "raw_text_hashes": [
+        "f8f2ef9f85f36e66964405473d42ce0ce5081247f3a104d63398799e50076daf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:21",
+      "sequence": 10597,
+      "chapter_label": "1CH 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "Adaiah, Beraiah, Shimrath, the sons of Shimei,",
+      "ko": "아다야와 브라야와 시므랏은 다 시므이의 아들들이요",
+      "source_text_hash": "626ec0b3523e531fd69f964219e579aec7eed97def1383f38551156a5a74b6dc",
+      "translation_text_hash": "f204d7578871c6f0ef0c8a3b5e1e1a38c600e1b04111da5e4d5c5723f7bdeee4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아다야와 브라야와 시므랏은 다 시므이의 아들들이요"
+      ],
+      "raw_text_hashes": [
+        "f204d7578871c6f0ef0c8a3b5e1e1a38c600e1b04111da5e4d5c5723f7bdeee4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:22",
+      "sequence": 10598,
+      "chapter_label": "1CH 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "Ishpan, Eber, Eliel,",
+      "ko": "이스반과 에벨과 엘리엘과",
+      "source_text_hash": "52f84cf2e368702f41fbd50ce44f7a038d0bd8118fd218170d844dd5c17d5ccb",
+      "translation_text_hash": "ca9b26d3aab15c61db5b508640064276be2c237f8762909e6a26d3bb8db486b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스반과 에벨과 엘리엘과"
+      ],
+      "raw_text_hashes": [
+        "ca9b26d3aab15c61db5b508640064276be2c237f8762909e6a26d3bb8db486b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:23",
+      "sequence": 10599,
+      "chapter_label": "1CH 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "Abdon, Zichri, Hanan,",
+      "ko": "압돈과 시그리와 하난과",
+      "source_text_hash": "ba66590fe77977e3b9e236a74210eeeb6cee6db62fd9ac71fd25d78b924b3f85",
+      "translation_text_hash": "caa0d310ce2cf075cbc65bd4020fd7705cc6df9c48e65bc21b7ca8ec3a8a6eb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압돈과 시그리와 하난과"
+      ],
+      "raw_text_hashes": [
+        "caa0d310ce2cf075cbc65bd4020fd7705cc6df9c48e65bc21b7ca8ec3a8a6eb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:24",
+      "sequence": 10600,
+      "chapter_label": "1CH 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "Hananiah, Elam, Anthothijah,",
+      "ko": "하나냐와 엘람과 안도디야와",
+      "source_text_hash": "9671d0b16884d71eba3f1bda6ebc183acbe375afea4638b0bb07aec92de6e98a",
+      "translation_text_hash": "0d645b9b1d196f0e437ec5289e16ef9b49dca36530fa16ec48ab1d7ce4054608",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나냐와 엘람과 안도디야와"
+      ],
+      "raw_text_hashes": [
+        "0d645b9b1d196f0e437ec5289e16ef9b49dca36530fa16ec48ab1d7ce4054608"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:25",
+      "sequence": 10601,
+      "chapter_label": "1CH 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "Iphdeiah, Penuel, the sons of Shashak,",
+      "ko": "이브드야와 브누엘은 다 사삭의 아들들이요",
+      "source_text_hash": "e104060364476efa826fe11482019ac15949a57d377ada1f1db53cbc72edf8e9",
+      "translation_text_hash": "5277dd61df4b8652f585daa52fb4c9c68ed76e02599321416f17d705ce51e6b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이브드야와 브누엘은 다 사삭의 아들들이요"
+      ],
+      "raw_text_hashes": [
+        "5277dd61df4b8652f585daa52fb4c9c68ed76e02599321416f17d705ce51e6b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:26",
+      "sequence": 10602,
+      "chapter_label": "1CH 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "Shamsherai, Shehariah, Athaliah,",
+      "ko": "삼스래와 스하랴와 아달랴와",
+      "source_text_hash": "b7bc1d0e4ecb9f5eb46e818afe587a228e6684f4e17c1ce4c0438f0a39c14b8d",
+      "translation_text_hash": "e786561987eeec8dbe1c10735168984b97081901de1f0bad348db5f97ca96937",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼스래와 스하랴와 아달랴와"
+      ],
+      "raw_text_hashes": [
+        "e786561987eeec8dbe1c10735168984b97081901de1f0bad348db5f97ca96937"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:27",
+      "sequence": 10603,
+      "chapter_label": "1CH 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "Jaareshiah, Elijah, Zichri, and the sons of Jeroham.",
+      "ko": "야아레시야와 엘리야와 시그리는 다 여로함의 아들들이니",
+      "source_text_hash": "9d7de06ead004dd4ebd2eeac58dcd73823fcbc2571ea2bd9ab522d7c0c4f95a0",
+      "translation_text_hash": "6da9730ceaf4a34768e12c40ec7980a5ab6ae253ee873cf2570b371c7183368e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야아레시야와 엘리야와 시그리는 다 여로함의 아들들이니"
+      ],
+      "raw_text_hashes": [
+        "6da9730ceaf4a34768e12c40ec7980a5ab6ae253ee873cf2570b371c7183368e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:28",
+      "sequence": 10604,
+      "chapter_label": "1CH 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "These were heads of fathers’ households throughout their generations, chief men. These lived in Jerusalem.",
+      "ko": "이는 다 족장이요 대대로 두목이라 예루살렘에 거하였더라",
+      "source_text_hash": "0285968c8603128463efccc8dd923f5236f7c13cb54fb80d76e283a63298ed39",
+      "translation_text_hash": "46833f37d821c7cb21bb26fd43f21337f3cd66cda07d63de1413a3dbd66c7ee0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다 족장이요 대대로 두목이라 예루살렘에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "46833f37d821c7cb21bb26fd43f21337f3cd66cda07d63de1413a3dbd66c7ee0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:29",
+      "sequence": 10605,
+      "chapter_label": "1CH 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "The father of Gibeon, whose wife’s name was Maacah, lived in Gibeon",
+      "ko": "기브온의 조상 여이엘은 기브온에 거하였으니 그 아내의 이름은 마아가며",
+      "source_text_hash": "3cf5bcc37a0d6485c231c45c27a01c549080a89c40402fff73aa8d12d65d0e11",
+      "translation_text_hash": "74100777e45206a5d7a247e1c108cb45dfdd8c549c8e75f17a6098ca69ad822a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브온의 조상 여이엘은 기브온에 거하였으니 그 아내의 이름은 마아가며"
+      ],
+      "raw_text_hashes": [
+        "74100777e45206a5d7a247e1c108cb45dfdd8c549c8e75f17a6098ca69ad822a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:30",
+      "sequence": 10606,
+      "chapter_label": "1CH 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "with his firstborn son Abdon, Zur, Kish, Baal, Nadab,",
+      "ko": "장자는 압돈이요 다음은 술과 기스와 바알과 나답과",
+      "source_text_hash": "f611ded5cc88c94aebbbf9607ff8a01eb0a076b807216db3cff0d1c6e823b8ca",
+      "translation_text_hash": "c29fef53491e2758a502c0ec48f5d0806834af8cdc80755c0f9dc6ec2232f56a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장자는 압돈이요 다음은 술과 기스와 바알과 나답과"
+      ],
+      "raw_text_hashes": [
+        "c29fef53491e2758a502c0ec48f5d0806834af8cdc80755c0f9dc6ec2232f56a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:31",
+      "sequence": 10607,
+      "chapter_label": "1CH 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "Gedor, Ahio, Zecher,",
+      "ko": "그돌과 아히오와 세겔이며",
+      "source_text_hash": "ad6617bbd235fc5e27ea6372c50f01783889daddc45bc13ecd4b9c43fef6ecd4",
+      "translation_text_hash": "0713ec6e167906ab66a38dc4806b9b72ccd008649946e37b9268c3ce844fb7ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그돌과 아히오와 세겔이며"
+      ],
+      "raw_text_hashes": [
+        "0713ec6e167906ab66a38dc4806b9b72ccd008649946e37b9268c3ce844fb7ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:32",
+      "sequence": 10608,
+      "chapter_label": "1CH 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "and Mikloth, who became the father of Shimeah. They also lived with their families in Jerusalem, near their relatives.",
+      "ko": "미글롯은 시므아를 낳았으며 이 무리가 그 형제로 더불어 서로 대하여 예루살렘에 거하였더라",
+      "source_text_hash": "5507bea309c7ad5b21ea3e4b59c3bcd13adb99d7c044975f022fa407afc71f34",
+      "translation_text_hash": "2c87642105e281af23e4c4cc978cef9a042aaf6b0797cdaba38ed641367db149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미글롯은 시므아를 낳았으며 이 무리가 그 형제로 더불어 서로 대하여 예루살렘에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "2c87642105e281af23e4c4cc978cef9a042aaf6b0797cdaba38ed641367db149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:33",
+      "sequence": 10609,
+      "chapter_label": "1CH 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "Ner became the father of Kish. Kish became the father of Saul. Saul became the father of Jonathan, Malchishua, Abinadab, and Eshbaal.",
+      "ko": "넬은 기스를 낳았고 기스는 사울을 낳았고 사울은 요나단과 말기수아와 아비나답과 에스바알을 낳았으며",
+      "source_text_hash": "15c7f0bd26511b42bff1e1d97e7cd285caa9f581017bd02c7380c7304dc43923",
+      "translation_text_hash": "f18b328ac9f69c9c2621bc8a2fb9bb28cd4335d1422073548d91c4463b02f4a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "넬은 기스를 낳았고 기스는 사울을 낳았고 사울은 요나단과 말기수아와 아비나답과 에스바알을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "f18b328ac9f69c9c2621bc8a2fb9bb28cd4335d1422073548d91c4463b02f4a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:34",
+      "sequence": 10610,
+      "chapter_label": "1CH 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "The son of Jonathan was Merib-baal. Merib-baal became the father of Micah.",
+      "ko": "요나단의 아들은 므립바알이라 므립바알이 미가를 낳았고",
+      "source_text_hash": "0638c59a2079a88968dc2448aa6625fa0df815b14dc334e10f9d190e6aad2498",
+      "translation_text_hash": "23adde26ec0145a189f4eacad51dc5325d4a1e4d1de02fc60a8bcfa225b2c2ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단의 아들은 므립바알이라 므립바알이 미가를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "23adde26ec0145a189f4eacad51dc5325d4a1e4d1de02fc60a8bcfa225b2c2ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:35",
+      "sequence": 10611,
+      "chapter_label": "1CH 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "The sons of Micah: Pithon, Melech, Tarea, and Ahaz.",
+      "ko": "미가의 아들들은 비돈과 멜렉과 다레아와 아하스며",
+      "source_text_hash": "36aa2b033faeaaf82ad5dce0eb260ab059fd18d3a82a5d73131b4787c34dc5d8",
+      "translation_text_hash": "007617cf8a467b17f69f8e6121a9e1d198f23101d4f6bc18a8b2354f5056d4f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가의 아들들은 비돈과 멜렉과 다레아와 아하스며"
+      ],
+      "raw_text_hashes": [
+        "007617cf8a467b17f69f8e6121a9e1d198f23101d4f6bc18a8b2354f5056d4f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:36",
+      "sequence": 10612,
+      "chapter_label": "1CH 8",
+      "verse_label": "36",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 36
+        }
+      ],
+      "en": "Ahaz became the father of Jehoaddah. Jehoaddah became the father of Alemeth, Azmaveth, and Zimri. Zimri became the father of Moza.",
+      "ko": "아하스는 여호앗다를 낳았고 여호앗다는 알레멧과 아스마웻과 시므리를 낳았고 시므리는 모사를 낳았고",
+      "source_text_hash": "960e58fb917c91be6782e6cdf82a6c95bd79ac0964186cce82269630585d9905",
+      "translation_text_hash": "de24d0bdc359675253cc248cd26bf78a509442ae53443ad295f05c403154d9d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스는 여호앗다를 낳았고 여호앗다는 알레멧과 아스마웻과 시므리를 낳았고 시므리는 모사를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "de24d0bdc359675253cc248cd26bf78a509442ae53443ad295f05c403154d9d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:37",
+      "sequence": 10613,
+      "chapter_label": "1CH 8",
+      "verse_label": "37",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 37
+        }
+      ],
+      "en": "Moza became the father of Binea. Raphah was his son, Eleasah his son, and Azel his son.",
+      "ko": "모사는 비느아를 낳았으며 비느아의 아들은 라바요 그 아들은 엘르아사요 그 아들은 아셀이며",
+      "source_text_hash": "324ed6cb366dee4df5f2ed22c236db2ba9539dbe7bf800649ea73a229a39646e",
+      "translation_text_hash": "7ed7091aab5388e5de159f5fa7742ad8d49b76a094049ca150261129b25bc5ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모사는 비느아를 낳았으며 비느아의 아들은 라바요 그 아들은 엘르아사요 그 아들은 아셀이며"
+      ],
+      "raw_text_hashes": [
+        "7ed7091aab5388e5de159f5fa7742ad8d49b76a094049ca150261129b25bc5ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:38",
+      "sequence": 10614,
+      "chapter_label": "1CH 8",
+      "verse_label": "38",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 38
+        }
+      ],
+      "en": "Azel had six sons, whose names are these: Azrikam, Bocheru, Ishmael, Sheariah, Obadiah, and Hanan. All these were the sons of Azel.",
+      "ko": "아셀에게 여섯 아들이 있어 그 이름이 이러하니 아스리감과 보그루와 이스마엘과 스아랴와 오바댜와 하난이라 아셀의 모든 아들이 이러하며",
+      "source_text_hash": "4ea5c648ab4b1c97e7ab2c1164f0f0b1b337ff388e414486b9e1fc4803ae8a04",
+      "translation_text_hash": "f9b5d5fdd409db3639caeebc9f38aa80a37a9220f9b2576023f90e83ff78414b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀에게 여섯 아들이 있어 그 이름이 이러하니 아스리감과 보그루와 이스마엘과 스아랴와 오바댜와 하난이라 아셀의 모든 아들이 이러하며"
+      ],
+      "raw_text_hashes": [
+        "f9b5d5fdd409db3639caeebc9f38aa80a37a9220f9b2576023f90e83ff78414b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:39",
+      "sequence": 10615,
+      "chapter_label": "1CH 8",
+      "verse_label": "39",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 39
+        }
+      ],
+      "en": "The sons of Eshek his brother: Ulam his firstborn, Jeush the second, and Eliphelet the third.",
+      "ko": "그 아우 에섹의 아들은 이러하니 그 장자는 울람이요 둘째는 여우스요 세째는 엘리벨렛이며",
+      "source_text_hash": "892b8fc2491dadd02ce87aeeddbfa79f2f84c4cfbe9c9b70c655d938f0d65637",
+      "translation_text_hash": "ca4fa95edc173f562693a453948be491c9282ebbb95374ce413027a257707a06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아우 에섹의 아들은 이러하니 그 장자는 울람이요 둘째는 여우스요 세째는 엘리벨렛이며"
+      ],
+      "raw_text_hashes": [
+        "ca4fa95edc173f562693a453948be491c9282ebbb95374ce413027a257707a06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:8:40",
+      "sequence": 10616,
+      "chapter_label": "1CH 8",
+      "verse_label": "40",
+      "locator": {
+        "book": "1CH",
+        "chapter": 8,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 8,
+          "verse": 40
+        }
+      ],
+      "en": "The sons of Ulam were mighty men of valor, archers, and had many sons, and grandsons, one hundred fifty. All these were of the sons of Benjamin.",
+      "ko": "울람의 아들은 다 큰 용사요 활을 잘 쏘는 자라 아들과 손자가 많아 모두 일백 오십인이었더라 베냐민의 자손들은 이러하였더라",
+      "source_text_hash": "b8a89f2835f617ee13fb06eeb5990cb07d3858f3a4de20624e2a66512446e1db",
+      "translation_text_hash": "41a362451ab4d99045638106c9486b750ab3c65257105b9e94349b0074c24667",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "울람의 아들은 다 큰 용사요 활을 잘 쏘는 자라 아들과 손자가 많아 모두 일백 오십인이었더라 베냐민의 자손들은 이러하였더라"
+      ],
+      "raw_text_hashes": [
+        "41a362451ab4d99045638106c9486b750ab3c65257105b9e94349b0074c24667"
+      ]
+    }
+  ]
+}

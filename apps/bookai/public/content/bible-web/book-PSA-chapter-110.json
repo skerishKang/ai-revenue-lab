@@ -1,0 +1,237 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:110",
+  "unit_ordinal": 588,
+  "unit_label": "PSA 110",
+  "book_code": "PSA",
+  "chapter_number": 110,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:110:1",
+      "sequence": 15788,
+      "chapter_label": "PSA 110",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 110,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 110,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD says to my Lord, “Sit at my right hand, until I make your enemies your footstool for your feet.”",
+      "ko": "여호와께서 내 주에게 말씀하시기를 내가 네 원수로 네 발등상 되게 하기까지 너는 내 우편에 앉으라 하셨도다",
+      "source_text_hash": "b2b57f042bd000d5120f915c0048946715f176237e5de700a49e06872aa688fd",
+      "translation_text_hash": "d3a1d70bd2e6a314ceea04a42fb577815c59d33ac6f20c62104c089cb59b5752",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내 주에게 말씀하시기를 내가 네 원수로 네 발등상 되게 하기까지 너는 내 우편에 앉으라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "d3a1d70bd2e6a314ceea04a42fb577815c59d33ac6f20c62104c089cb59b5752"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:110:2",
+      "sequence": 15789,
+      "chapter_label": "PSA 110",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 110,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 110,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD will send out the rod of your strength out of Zion. Rule among your enemies.",
+      "ko": "여호와께서 시온에서부터 주의 권능의 홀을 내어 보내시리니 주는 원수 중에서 다스리소서",
+      "source_text_hash": "3d6c4414b05d746e297c3e04f500b08ed6b7a6c2ddd5fd0cee675f9c1874815e",
+      "translation_text_hash": "95601f45805d3945e954c32e1902aa9b755c88d2f598f187f226a81092b6a65e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 시온에서부터 주의 권능의 홀을 내어 보내시리니 주는 원수 중에서 다스리소서"
+      ],
+      "raw_text_hashes": [
+        "95601f45805d3945e954c32e1902aa9b755c88d2f598f187f226a81092b6a65e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:110:3",
+      "sequence": 15790,
+      "chapter_label": "PSA 110",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 110,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 110,
+          "verse": 3
+        }
+      ],
+      "en": "Your people offer themselves willingly in the day of your power, in holy array. Out of the womb of the morning, you have the dew of your youth.",
+      "ko": "주의 권능의 날에 주의 백성이 거룩한 옷을 입고 즐거이 헌신하니 새벽 이슬 같은 주의 청년들이 주께 나오는도다",
+      "source_text_hash": "18b977d1d1bfb3aa2fc167fc4c0e1770809b7de1091383127cd40e8b71d4866d",
+      "translation_text_hash": "9de5b546d9e79e23b9d0167cf8363dcedded048453387d22211fe46c70b374e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 권능의 날에 주의 백성이 거룩한 옷을 입고 즐거이 헌신하니 새벽 이슬 같은 주의 청년들이 주께 나오는도다"
+      ],
+      "raw_text_hashes": [
+        "9de5b546d9e79e23b9d0167cf8363dcedded048453387d22211fe46c70b374e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:110:4",
+      "sequence": 15791,
+      "chapter_label": "PSA 110",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 110,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 110,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD has sworn, and will not change his mind: “You are a priest forever in the order of Melchizedek.”",
+      "ko": "여호와는 맹세하고 변치 아니하시리라 이르시기를 너는 멜기세덱의 반차를 좇아 영원한 제사장이라 하셨도다",
+      "source_text_hash": "292568c125360922cd925558b96c375d2b4b6e039ce5b1a84ad0470ef4f6b648",
+      "translation_text_hash": "9d74670042a6f1918f503442209fa79d9618d9ec125fdb4647d946bb0258f687",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 맹세하고 변치 아니하시리라 이르시기를 너는 멜기세덱의 반차를 좇아 영원한 제사장이라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "9d74670042a6f1918f503442209fa79d9618d9ec125fdb4647d946bb0258f687"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:110:5",
+      "sequence": 15792,
+      "chapter_label": "PSA 110",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 110,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 110,
+          "verse": 5
+        }
+      ],
+      "en": "The Lord is at your right hand. He will crush kings in the day of his wrath.",
+      "ko": "주의 우편에 계신 주께서 그 노하시는 날에 열왕을 쳐서 파하실 것이라",
+      "source_text_hash": "762b3ce490fe0b3bef77c86c1c42080bfd97aab1d4844bbb6e27533998969a47",
+      "translation_text_hash": "1660ca9acc2ad8cf1f9707e362facab0d740db5b93cf38df060dacfd4847b6f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 우편에 계신 주께서 그 노하시는 날에 열왕을 쳐서 파하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "1660ca9acc2ad8cf1f9707e362facab0d740db5b93cf38df060dacfd4847b6f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:110:6",
+      "sequence": 15793,
+      "chapter_label": "PSA 110",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 110,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 110,
+          "verse": 6
+        }
+      ],
+      "en": "He will judge among the nations. He will heap up dead bodies. He will crush the ruler of the whole earth.",
+      "ko": "열방 중에 판단하여 시체로 가득하게 하시고 여러 나라의 머리를 쳐서 파하시며",
+      "source_text_hash": "97107a0b8a72630c2b4f4fe22cac846fb07257eb6696fe9afd1444529cb01bb6",
+      "translation_text_hash": "32addfe80522cff467e5d1305561989c88dbf0491ef4210a285f9b45206b77ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방 중에 판단하여 시체로 가득하게 하시고 여러 나라의 머리를 쳐서 파하시며"
+      ],
+      "raw_text_hashes": [
+        "32addfe80522cff467e5d1305561989c88dbf0491ef4210a285f9b45206b77ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:110:7",
+      "sequence": 15794,
+      "chapter_label": "PSA 110",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 110,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 110,
+          "verse": 7
+        }
+      ],
+      "en": "He will drink of the brook on the way; therefore he will lift up his head.",
+      "ko": "길가의 시냇물을 마시고 인하여 그 머리를 드시리로다",
+      "source_text_hash": "a133e87858e7ea6a58c49b6d0d71e6f3d4c0ff4b0bba69eafb6ae3cfe2fa612c",
+      "translation_text_hash": "e78ae897b85693ce850eb0d9d1b7badf2093e9db24eab9b4f0c5212a8b180ef7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길가의 시냇물을 마시고 인하여 그 머리를 드시리로다"
+      ],
+      "raw_text_hashes": [
+        "e78ae897b85693ce850eb0d9d1b7badf2093e9db24eab9b4f0c5212a8b180ef7"
+      ]
+    }
+  ]
+}

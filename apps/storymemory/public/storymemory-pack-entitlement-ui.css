@@ -1,0 +1,6 @@
+.pack-entitlement-launch{margin-top:8px;width:100%;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:inherit;border-radius:10px;padding:9px 10px;font:inherit;cursor:pointer}
+.pack-entitlement-panel{margin-top:8px;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px;background:rgba(8,11,18,.72)}
+.pack-entitlement-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}.pack-entitlement-head small{opacity:.65}
+.pack-entitlement-row{padding:9px 0;border-top:1px solid rgba(255,255,255,.08)}.pack-entitlement-row:first-child{border-top:0}.pack-entitlement-row strong{display:block}.pack-entitlement-meta{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.pack-entitlement-chip{font-size:11px;padding:3px 6px;border-radius:999px;border:1px solid rgba(255,255,255,.12);opacity:.82}.pack-entitlement-chip.ok{border-color:rgba(116,220,157,.42)}
+.pack-entitlement-actions{display:flex;gap:6px;flex-wrap:wrap}.pack-entitlement-actions button{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:inherit;border-radius:8px;padding:6px 8px;cursor:pointer}.pack-entitlement-actions button:disabled{opacity:.45;cursor:not-allowed}
+.pack-entitlement-status{font-size:12px;line-height:1.45;opacity:.76;margin-top:8px}.pack-entitlement-warning{color:#ffd7a3}

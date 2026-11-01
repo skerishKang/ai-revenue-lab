@@ -1,0 +1,1869 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:015",
+  "unit_ordinal": 1077,
+  "unit_label": "1CO 15",
+  "book_code": "1CO",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:15:1",
+      "sequence": 28716,
+      "chapter_label": "1CO 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "Now I declare to you, brothers, the Good News which I preached to you, which also you received, in which you also stand,",
+      "ko": "형제들아 내가 너희에게 전한 복음을 너희로 알게 하노니 이는 너희가 받은 것이요 또 그 가운데 선 것이라",
+      "source_text_hash": "ef8defef459ece6db6c35b674b10b01e2f94741721d64532c4ed46e57c39499a",
+      "translation_text_hash": "c36e249d6f5f059c2d169fa7be4eb1c0311dd3b99918c1a8168b48ec08b90417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 너희에게 전한 복음을 너희로 알게 하노니 이는 너희가 받은 것이요 또 그 가운데 선 것이라"
+      ],
+      "raw_text_hashes": [
+        "c36e249d6f5f059c2d169fa7be4eb1c0311dd3b99918c1a8168b48ec08b90417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:2",
+      "sequence": 28717,
+      "chapter_label": "1CO 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "by which also you are saved, if you hold firmly the word which I preached to you—unless you believed in vain.",
+      "ko": "너희가 만일 나의 전한 그 말을 굳게 지키고 헛되이 믿지 아니하였으면 이로 말미암아 구원을 얻으리라",
+      "source_text_hash": "96798d53d7798fd863cf8e568be5565d5a7fba82245437b615b883886350c428",
+      "translation_text_hash": "2bfba968428b9063e5fb87eb82deda8edcd10ae63160d1e6afb7bf626843a85d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 나의 전한 그 말을 굳게 지키고 헛되이 믿지 아니하였으면 이로 말미암아 구원을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "2bfba968428b9063e5fb87eb82deda8edcd10ae63160d1e6afb7bf626843a85d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:3",
+      "sequence": 28718,
+      "chapter_label": "1CO 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "For I delivered to you first of all that which I also received: that Christ died for our sins according to the Scriptures,",
+      "ko": "내가 받은 것을 먼저 너희에게 전하였노니 이는 성경대로 그리스도께서 우리 죄를 위하여 죽으시고",
+      "source_text_hash": "0ed6aac8488b8748e2acd55bfd6617b7c86ae8db52ee00a3b0e6cadb3332e641",
+      "translation_text_hash": "da9dcd2bdbf73104d2a11d068c929d19198f69a7a11e0ab21bc7da2e6990bdf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 받은 것을 먼저 너희에게 전하였노니 이는 성경대로 그리스도께서 우리 죄를 위하여 죽으시고"
+      ],
+      "raw_text_hashes": [
+        "da9dcd2bdbf73104d2a11d068c929d19198f69a7a11e0ab21bc7da2e6990bdf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:4",
+      "sequence": 28719,
+      "chapter_label": "1CO 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "that he was buried, that he was raised on the third day according to the Scriptures,",
+      "ko": "장사 지낸바 되었다가 성경대로 사흘만에 다시 살아나사",
+      "source_text_hash": "24393faa40c4b87c9f3cdb3a0be436212d33fe8443ae0510347c37f9ba27d759",
+      "translation_text_hash": "36a588897733e93b3f921c339d67c5dc1dfcd55c2fc30c384a0833ce48530fce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장사 지낸바 되었다가 성경대로 사흘만에 다시 살아나사"
+      ],
+      "raw_text_hashes": [
+        "36a588897733e93b3f921c339d67c5dc1dfcd55c2fc30c384a0833ce48530fce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:5",
+      "sequence": 28720,
+      "chapter_label": "1CO 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "and that he appeared to Cephas, then to the twelve.",
+      "ko": "게바에게 보이시고 후에 열 두 제자에게와",
+      "source_text_hash": "31b5173617ba9f334561507f07a20787a90f835d0bc304d338342f763eb0ac35",
+      "translation_text_hash": "242f80042388357db988a8f774258167fedc29ec5b48bd9f5efff33f7396a9e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게바에게 보이시고 후에 열 두 제자에게와"
+      ],
+      "raw_text_hashes": [
+        "242f80042388357db988a8f774258167fedc29ec5b48bd9f5efff33f7396a9e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:6",
+      "sequence": 28721,
+      "chapter_label": "1CO 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "Then he appeared to over five hundred brothers at once, most of whom remain until now, but some have also fallen asleep.",
+      "ko": "그 후에 오백여 형제에게 일시에 보이셨나니 그 중에 지금까지 태반이나 살아 있고 어떤이는 잠들었으며",
+      "source_text_hash": "e71e01b4411317323f67f11e2798ac4aea7175de55953812e58ff1d7eec99f57",
+      "translation_text_hash": "b9aa89be906f69f5bad02d564a6ffba2a15d0a9bf446f8c19016a28aa5e20c47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 오백여 형제에게 일시에 보이셨나니 그 중에 지금까지 태반이나 살아 있고 어떤이는 잠들었으며"
+      ],
+      "raw_text_hashes": [
+        "b9aa89be906f69f5bad02d564a6ffba2a15d0a9bf446f8c19016a28aa5e20c47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:7",
+      "sequence": 28722,
+      "chapter_label": "1CO 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "Then he appeared to James, then to all the apostles,",
+      "ko": "그 후에 야고보에게 보이셨으며 그 후에 모든 사도에게와",
+      "source_text_hash": "c410b4e44655b014ccb3202e055231a5ad2b1ec73bce4987b0f819c1c28a2548",
+      "translation_text_hash": "8ac7d8077788c50a4e98eb1baabbfb692180c5001d9cf424a799954d978df9c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 야고보에게 보이셨으며 그 후에 모든 사도에게와"
+      ],
+      "raw_text_hashes": [
+        "8ac7d8077788c50a4e98eb1baabbfb692180c5001d9cf424a799954d978df9c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:8",
+      "sequence": 28723,
+      "chapter_label": "1CO 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "and last of all, as to the child born at the wrong time, he appeared to me also.",
+      "ko": "맨 나중에 만삭되지 못하여 난 자 같은 내게도 보이셨느니라",
+      "source_text_hash": "8746d9a3e84efc479e49fe617dc01c85ea9ba94f0b913ca41dc1e5491f5d07e5",
+      "translation_text_hash": "6c7f4b15fe028e3af855c5b07296ae007f6b8bc359e4e7a7e3ee26551a5f8071",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맨 나중에 만삭되지 못하여 난 자 같은 내게도 보이셨느니라"
+      ],
+      "raw_text_hashes": [
+        "6c7f4b15fe028e3af855c5b07296ae007f6b8bc359e4e7a7e3ee26551a5f8071"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:9",
+      "sequence": 28724,
+      "chapter_label": "1CO 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "For I am the least of the apostles, who is not worthy to be called an apostle, because I persecuted the assembly of God.",
+      "ko": "나는 사도 중에 지극히 작은 자라 내가 하나님의 교회를 핍박하였으므로 사도라 칭함을 받기에 감당치 못할 자로라",
+      "source_text_hash": "9529fca38595d00ad9b4bc0975d34961db8294f432e01e64bd24c79cc0937c27",
+      "translation_text_hash": "8f523e4e872a2ee783876e5f28ac5ec3eaa4993b3ea3ebb85ae111148bd00d28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 사도 중에 지극히 작은 자라 내가 하나님의 교회를 핍박하였으므로 사도라 칭함을 받기에 감당치 못할 자로라"
+      ],
+      "raw_text_hashes": [
+        "8f523e4e872a2ee783876e5f28ac5ec3eaa4993b3ea3ebb85ae111148bd00d28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:10",
+      "sequence": 28725,
+      "chapter_label": "1CO 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "But by the grace of God I am what I am. His grace which was given to me was not futile, but I worked more than all of them; yet not I, but the grace of God which was with me.",
+      "ko": "그러나 나의 나 된 것은 하나님의 은혜로 된 것이니 내게 주신 그의 은혜가 헛되지 아니하여 내가 모든 사도보다 더 많이 수고하였으나 내가 아니요 오직 나와 함께하신 하나님의 은혜로라",
+      "source_text_hash": "0d97749bc854dc774a3829e56345f35b46286e1a7843d774c698b8e9c154f5e2",
+      "translation_text_hash": "928775abcb115e2b90c90b1a84f578440a8e4d0dd1e1126aed8fd564498c3134",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나의 나 된 것은 하나님의 은혜로 된 것이니 내게 주신 그의 은혜가 헛되지 아니하여 내가 모든 사도보다 더 많이 수고하였으나 내가 아니요 오직 나와 함께하신 하나님의 은혜로라"
+      ],
+      "raw_text_hashes": [
+        "928775abcb115e2b90c90b1a84f578440a8e4d0dd1e1126aed8fd564498c3134"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:11",
+      "sequence": 28726,
+      "chapter_label": "1CO 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "Whether then it is I or they, so we preach, and so you believed.",
+      "ko": "그러므로 내나 저희나 이같이 전파하매 너희도 이같이 믿었느니라",
+      "source_text_hash": "ac7dbeb03bba7e296573147617fd447fbc5137e76bf97a624a1c648d2cb3a70f",
+      "translation_text_hash": "fe5087cab9e6522b11052a38c0a83440570ec95db3d6d14e0c98818a5f67bd9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내나 저희나 이같이 전파하매 너희도 이같이 믿었느니라"
+      ],
+      "raw_text_hashes": [
+        "fe5087cab9e6522b11052a38c0a83440570ec95db3d6d14e0c98818a5f67bd9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:12",
+      "sequence": 28727,
+      "chapter_label": "1CO 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "Now if Christ is preached, that he has been raised from the dead, how do some among you say that there is no resurrection of the dead?",
+      "ko": "그리스도께서 죽은 자 가운데서 다시 살아나셨다 전파되었거늘 너희 중에서 어떤이들은 어찌하여 죽은 자 가운데서 부활이 없다 하느냐",
+      "source_text_hash": "84cf78dac841899b2405e006ba9e6a83ca7be8d5c4c2fa4b1b58acf4dd8c2852",
+      "translation_text_hash": "0440d26df8e9814f793e244573481aa92180f5604921007bded314dd214e3e76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 죽은 자 가운데서 다시 살아나셨다 전파되었거늘 너희 중에서 어떤이들은 어찌하여 죽은 자 가운데서 부활이 없다 하느냐"
+      ],
+      "raw_text_hashes": [
+        "0440d26df8e9814f793e244573481aa92180f5604921007bded314dd214e3e76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:13",
+      "sequence": 28728,
+      "chapter_label": "1CO 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "But if there is no resurrection of the dead, neither has Christ been raised.",
+      "ko": "만일 죽은 자의 부활이 없으면 그리스도도 다시 살지 못하셨으리라",
+      "source_text_hash": "fa72ac9b1a97acf82363127bd0c8e118d1a7c9c6bd8aaee9e83842ce1d42656e",
+      "translation_text_hash": "443e6c5a6f23bfa5835ff0c190547cf939fe0495ff0bedfb80dc1d879dc26568",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 죽은 자의 부활이 없으면 그리스도도 다시 살지 못하셨으리라"
+      ],
+      "raw_text_hashes": [
+        "443e6c5a6f23bfa5835ff0c190547cf939fe0495ff0bedfb80dc1d879dc26568"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:14",
+      "sequence": 28729,
+      "chapter_label": "1CO 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "If Christ has not been raised, then our preaching is in vain and your faith also is in vain.",
+      "ko": "그리스도께서 만일 다시 살지 못하셨으면 우리의 전파하는 것도 헛것이요 또 너희 믿음도 헛것이며",
+      "source_text_hash": "cb4e724d0f9f8ec6338f3d9e61009a3929cf4f46eaab350d1ca1911af4d73d0b",
+      "translation_text_hash": "ba14ffc216f66e881ca8a3a57b7e9a2d28a83a90975bd2ab9e3636404caa54ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 만일 다시 살지 못하셨으면 우리의 전파하는 것도 헛것이요 또 너희 믿음도 헛것이며"
+      ],
+      "raw_text_hashes": [
+        "ba14ffc216f66e881ca8a3a57b7e9a2d28a83a90975bd2ab9e3636404caa54ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:15",
+      "sequence": 28730,
+      "chapter_label": "1CO 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "Yes, we are also found false witnesses of God, because we testified about God that he raised up Christ, whom he didn’t raise up if it is true that the dead are not raised.",
+      "ko": "또 우리가 하나님의 거짓 증인으로 발견되리니 우리가 하나님이 그리스도를 다시 살리셨다고 증거하였음이라 만일 죽은 자가 다시 사는 것이 없으면 하나님이 그리스도를 다시 살리시지 아니하셨으리라",
+      "source_text_hash": "c4bfde5c428845d62801a45f6d935d375101ad94e90a3486796240d0df38f9ec",
+      "translation_text_hash": "b5057fe2fbf8e233528ea8992a1fdc0ccc575cdad49cbcd74a50f254c8c85839",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 우리가 하나님의 거짓 증인으로 발견되리니 우리가 하나님이 그리스도를 다시 살리셨다고 증거하였음이라 만일 죽은 자가 다시 사는 것이 없으면 하나님이 그리스도를 다시 살리시지 아니하셨으리라"
+      ],
+      "raw_text_hashes": [
+        "b5057fe2fbf8e233528ea8992a1fdc0ccc575cdad49cbcd74a50f254c8c85839"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:16",
+      "sequence": 28731,
+      "chapter_label": "1CO 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "For if the dead aren’t raised, neither has Christ been raised.",
+      "ko": "만일 죽은 자가 다시 사는 것이 없으면 그리스도도 다시 사신 것이 없었을 터이요",
+      "source_text_hash": "4c4c656ab70e014f6e6744e14211b428dec582ffd7a0bbdcc0c5bb818f7d7d41",
+      "translation_text_hash": "c2bae23aaa4f45edf6d165b0e20ddb8c178c9a3da2ab737b731c0a40287d1ae7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 죽은 자가 다시 사는 것이 없으면 그리스도도 다시 사신 것이 없었을 터이요"
+      ],
+      "raw_text_hashes": [
+        "c2bae23aaa4f45edf6d165b0e20ddb8c178c9a3da2ab737b731c0a40287d1ae7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:17",
+      "sequence": 28732,
+      "chapter_label": "1CO 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "If Christ has not been raised, your faith is vain; you are still in your sins.",
+      "ko": "그리스도께서 다시 사신 것이 없으면 너희의 믿음도 헛되고 너희가 여전히 죄 가운데 있을 것이요",
+      "source_text_hash": "a3e7378568f1d5841fdabf87f62099a238bdd14c34cb770fbf509a05025bc049",
+      "translation_text_hash": "f0c95e62201d5a049190b068b2a2bed079ba481db44009ccd177df0b7162e7ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 다시 사신 것이 없으면 너희의 믿음도 헛되고 너희가 여전히 죄 가운데 있을 것이요"
+      ],
+      "raw_text_hashes": [
+        "f0c95e62201d5a049190b068b2a2bed079ba481db44009ccd177df0b7162e7ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:18",
+      "sequence": 28733,
+      "chapter_label": "1CO 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "Then they also who are fallen asleep in Christ have perished.",
+      "ko": "또한 그리스도 안에서 잠자는 자도 망하였으리니",
+      "source_text_hash": "6cefbdb81c83eb07c7f7948faedaf3b459bd6d663d7a80de0d42c97feab20077",
+      "translation_text_hash": "7e01c4641728b7968d7f2f7841a29e494c38c0a077d5ef95bb29cc22bd7f5173",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 그리스도 안에서 잠자는 자도 망하였으리니"
+      ],
+      "raw_text_hashes": [
+        "7e01c4641728b7968d7f2f7841a29e494c38c0a077d5ef95bb29cc22bd7f5173"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:19",
+      "sequence": 28734,
+      "chapter_label": "1CO 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "If we have only hoped in Christ in this life, we are of all men most pitiable.",
+      "ko": "만일 그리스도 안에서 우리의 바라는 것이 다만 이생 뿐이면 모든 사람 가운데 우리가 더욱 불쌍한 자리라",
+      "source_text_hash": "59fbc61fc8f50df60cdd50be47285d3f56c48dfd30f403a41e7547d0f2fd99ad",
+      "translation_text_hash": "a60f3c9874b745ab8bc45e51970cad6051fa42f7fd65443d021036724fe0ab91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그리스도 안에서 우리의 바라는 것이 다만 이생 뿐이면 모든 사람 가운데 우리가 더욱 불쌍한 자리라"
+      ],
+      "raw_text_hashes": [
+        "a60f3c9874b745ab8bc45e51970cad6051fa42f7fd65443d021036724fe0ab91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:20",
+      "sequence": 28735,
+      "chapter_label": "1CO 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "But now Christ has been raised from the dead. He became the first fruit of those who are asleep.",
+      "ko": "그러나 이제 그리스도께서 죽은 자 가운데서 다시 살아 잠자는 자들의 첫 열매가 되셨도다",
+      "source_text_hash": "a6694ff9d8c6c8913a0e0d7201cca6b63ee63782222d868afba7ce0ddc8716c8",
+      "translation_text_hash": "8a353e979a8601ffdf18e80473ca69c0c5e0161fc45a5c897aead076ea2cf66b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이제 그리스도께서 죽은 자 가운데서 다시 살아 잠자는 자들의 첫 열매가 되셨도다"
+      ],
+      "raw_text_hashes": [
+        "8a353e979a8601ffdf18e80473ca69c0c5e0161fc45a5c897aead076ea2cf66b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:21",
+      "sequence": 28736,
+      "chapter_label": "1CO 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "For since death came by man, the resurrection of the dead also came by man.",
+      "ko": "사망이 사람으로 말미암았으니 죽은 자의 부활도 사람으로 말미암는도다",
+      "source_text_hash": "01a1f433e0f3487453600122e8ce0d0f3ff01075d0437118f4087fd10b6e3120",
+      "translation_text_hash": "c025d7114c7b61f5a623727651ff4713bf15c0a03c94aabd1f9fc01070747136",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망이 사람으로 말미암았으니 죽은 자의 부활도 사람으로 말미암는도다"
+      ],
+      "raw_text_hashes": [
+        "c025d7114c7b61f5a623727651ff4713bf15c0a03c94aabd1f9fc01070747136"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:22",
+      "sequence": 28737,
+      "chapter_label": "1CO 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "For as in Adam all die, so also in Christ all will be made alive.",
+      "ko": "아담 안에서 모든 사람이 죽은것 같이 그리스도 안에서 모든 사람이 삶을 얻으리라",
+      "source_text_hash": "4e479649f8d0411dd91a6a83c4745051220d333db70e90eda4b55231a79b1a87",
+      "translation_text_hash": "ccd25798abf9061bf62bd5a4953212c41432998f70a93074c8c96af7650e9176",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담 안에서 모든 사람이 죽은것 같이 그리스도 안에서 모든 사람이 삶을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "ccd25798abf9061bf62bd5a4953212c41432998f70a93074c8c96af7650e9176"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:23",
+      "sequence": 28738,
+      "chapter_label": "1CO 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "But each in his own order: Christ the first fruits, then those who are Christ’s at his coming.",
+      "ko": "그러나 각각 자기 차례대로 되리니 먼저는 첫 열매인 그리스도요 다음에는 그리스도 강림하실 때에 그에게 붙은 자요",
+      "source_text_hash": "7633404c5bee029475b9515003c5378ec75f9ca43ed0029dcedde6a86c55a855",
+      "translation_text_hash": "b209258e6596b1ad9a57fbe0f2a8bf462e9d1069c7f883c84d6dc79f2c620869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 각각 자기 차례대로 되리니 먼저는 첫 열매인 그리스도요 다음에는 그리스도 강림하실 때에 그에게 붙은 자요"
+      ],
+      "raw_text_hashes": [
+        "b209258e6596b1ad9a57fbe0f2a8bf462e9d1069c7f883c84d6dc79f2c620869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:24",
+      "sequence": 28739,
+      "chapter_label": "1CO 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "Then the end comes, when he will deliver up the Kingdom to God the Father, when he will have abolished all rule and all authority and power.",
+      "ko": "그 후에는 나중이니 저가 모든 정사와 모든 권세와 능력을 멸하시고 나라를 아버지 하나님께 바칠 때라",
+      "source_text_hash": "0c85a2db27c8add779d7a71e8b16c4919c7e392bdfb6b90eb44690bb9a261e6b",
+      "translation_text_hash": "f468416addb94d8814dd6fcfc716fff65bc5beab9952d19e96810ca8303228b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에는 나중이니 저가 모든 정사와 모든 권세와 능력을 멸하시고 나라를 아버지 하나님께 바칠 때라"
+      ],
+      "raw_text_hashes": [
+        "f468416addb94d8814dd6fcfc716fff65bc5beab9952d19e96810ca8303228b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:25",
+      "sequence": 28740,
+      "chapter_label": "1CO 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "For he must reign until he has put all his enemies under his feet.",
+      "ko": "저가 모든 원수를 그 발아래 둘 때까지 불가불 왕노릇 하시리니",
+      "source_text_hash": "7fdb3c2ed1020a0b045d3591ffc6b1113f1b9868bec673df26a1cfca617a46f4",
+      "translation_text_hash": "658e526ab659a9f6538f94aeb4d319642112e576310da153356aea068d2b960e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 모든 원수를 그 발아래 둘 때까지 불가불 왕노릇 하시리니"
+      ],
+      "raw_text_hashes": [
+        "658e526ab659a9f6538f94aeb4d319642112e576310da153356aea068d2b960e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:26",
+      "sequence": 28741,
+      "chapter_label": "1CO 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "The last enemy that will be abolished is death.",
+      "ko": "맨 나중에 멸망 받을 원수는 사망이니라",
+      "source_text_hash": "b9b3e5655895da682ae1fe121ff3e817b38404ebba58bcc05f982bc28c272877",
+      "translation_text_hash": "3065dc36ba56f301b5053d1cbc4654b98830edcffc79e64bc3b45834d6fe6b31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맨 나중에 멸망 받을 원수는 사망이니라"
+      ],
+      "raw_text_hashes": [
+        "3065dc36ba56f301b5053d1cbc4654b98830edcffc79e64bc3b45834d6fe6b31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:27",
+      "sequence": 28742,
+      "chapter_label": "1CO 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "For, “He put all things in subjection under his feet.” But when he says, “All things are put in subjection”, it is evident that he is excepted who subjected all things to him.",
+      "ko": "만물을 저의 발아래 두셨다 하셨으니 만물을 아래 둔다 말씀하실 때에 만물을 저의 아래 두신 이가 그 중에 들지 아니한 것이 분명하도다",
+      "source_text_hash": "0801042d96f64a2f3d4e978d2c660755285ff486cf33d22235a1f836ef3df579",
+      "translation_text_hash": "e244b77cc8739e9ebfcfddda242ba5e739e57919b6c5b0d2f0b1f5fa77d80582",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만물을 저의 발아래 두셨다 하셨으니 만물을 아래 둔다 말씀하실 때에 만물을 저의 아래 두신 이가 그 중에 들지 아니한 것이 분명하도다"
+      ],
+      "raw_text_hashes": [
+        "e244b77cc8739e9ebfcfddda242ba5e739e57919b6c5b0d2f0b1f5fa77d80582"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:28",
+      "sequence": 28743,
+      "chapter_label": "1CO 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "When all things have been subjected to him, then the Son will also himself be subjected to him who subjected all things to him, that God may be all in all.",
+      "ko": "만물을 저에게 복종하게 하신 때에는 아들 자신도 그 때에 만물을 자기에게 복종케 하신 이에게 복종케 되리니 이는 하나님이 만유의 주로서 만유 안에 계시려 하심이라",
+      "source_text_hash": "5ce9e546a99c82cc4df9b9f1b18dc4fcc68c4e85c2f7a22a0e7a5eb6de1623ec",
+      "translation_text_hash": "a0906b672c73a952e8ec923fc5e0524f8cc38971868131d2fea74f65593a8341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만물을 저에게 복종하게 하신 때에는 아들 자신도 그 때에 만물을 자기에게 복종케 하신 이에게 복종케 되리니 이는 하나님이 만유의 주로서 만유 안에 계시려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "a0906b672c73a952e8ec923fc5e0524f8cc38971868131d2fea74f65593a8341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:29",
+      "sequence": 28744,
+      "chapter_label": "1CO 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "Or else what will they do who are baptized for the dead? If the dead aren’t raised at all, why then are they baptized for the dead?",
+      "ko": "만일 죽은 자들이 도무지 다시 살지 못하면 죽은 자들을 위하여 세례 받는 자들이 무엇을 하겠느냐 어찌하여 저희를 위하여 세례를 받느뇨",
+      "source_text_hash": "837979ec8436905402fb692ee264edb5a718b84e6999116185661be3b864554a",
+      "translation_text_hash": "4b5bbce3aeb40e198300b8e2e573e6dae4d6bf9c8eba9f668102110509652842",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 죽은 자들이 도무지 다시 살지 못하면 죽은 자들을 위하여 세례 받는 자들이 무엇을 하겠느냐 어찌하여 저희를 위하여 세례를 받느뇨"
+      ],
+      "raw_text_hashes": [
+        "4b5bbce3aeb40e198300b8e2e573e6dae4d6bf9c8eba9f668102110509652842"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:30",
+      "sequence": 28745,
+      "chapter_label": "1CO 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "Why do we also stand in jeopardy every hour?",
+      "ko": "또 어찌하여 우리가 때마다 위험을 무릅쓰리요",
+      "source_text_hash": "1e4140fdad592449e99311e1f148231309a18a682671d54457eb62b82f09a395",
+      "translation_text_hash": "fb654528fc199b15dabd60ca24d147ca2832069a951a4ab2723719b70c6b66f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어찌하여 우리가 때마다 위험을 무릅쓰리요"
+      ],
+      "raw_text_hashes": [
+        "fb654528fc199b15dabd60ca24d147ca2832069a951a4ab2723719b70c6b66f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:31",
+      "sequence": 28746,
+      "chapter_label": "1CO 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "I affirm, by the boasting in you which I have in Christ Jesus our Lord, I die daily.",
+      "ko": "형제들아 내가 그리스도 예수 우리 주 안에서 가진바 너희에게 대한 나의 자랑을 두고 단언하노니 나는 날마다 죽노라",
+      "source_text_hash": "8340f996826e6a5332ccabb024ef12961973585f2f1d066a0db0850d1b65a18d",
+      "translation_text_hash": "d50296d03111c40a246b0fb574abc88bc9dfd410cf2245f324b47c0c4f4cf92d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 그리스도 예수 우리 주 안에서 가진바 너희에게 대한 나의 자랑을 두고 단언하노니 나는 날마다 죽노라"
+      ],
+      "raw_text_hashes": [
+        "d50296d03111c40a246b0fb574abc88bc9dfd410cf2245f324b47c0c4f4cf92d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:32",
+      "sequence": 28747,
+      "chapter_label": "1CO 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "If I fought with animals at Ephesus for human purposes, what does it profit me? If the dead are not raised, then “let’s eat and drink, for tomorrow we die.”",
+      "ko": "내가 범인처럼 에베소에서 맹수로 더불어 싸웠으면 내게 무슨 유익이 있느뇨 죽은 자가 다시 살지 못할 것이면 내일 죽을터이니 먹고 마시자 하리라",
+      "source_text_hash": "ffb8822d932a020603e560a4cedd598d0082118fc24047c1e765eef7898def02",
+      "translation_text_hash": "5f294f0b1b19ce020f7fa74704259cce871fcd604adc73f3b32cc86a091a43a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 범인처럼 에베소에서 맹수로 더불어 싸웠으면 내게 무슨 유익이 있느뇨 죽은 자가 다시 살지 못할 것이면 내일 죽을터이니 먹고 마시자 하리라"
+      ],
+      "raw_text_hashes": [
+        "5f294f0b1b19ce020f7fa74704259cce871fcd604adc73f3b32cc86a091a43a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:33",
+      "sequence": 28748,
+      "chapter_label": "1CO 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "Don’t be deceived! “Evil companionships corrupt good morals.”",
+      "ko": "속지 말라 악한 동무들은 선한 행실을 더럽히나니",
+      "source_text_hash": "5a3868391754677bec10341baf311b7ca67becd2aa536f467ff346a38163fbdc",
+      "translation_text_hash": "f92b68665c09e7f13a270ce766bf9bd58cbaf7dfacfa74f7679f38363cf2868b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속지 말라 악한 동무들은 선한 행실을 더럽히나니"
+      ],
+      "raw_text_hashes": [
+        "f92b68665c09e7f13a270ce766bf9bd58cbaf7dfacfa74f7679f38363cf2868b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:34",
+      "sequence": 28749,
+      "chapter_label": "1CO 15",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 34
+        }
+      ],
+      "en": "Wake up righteously and don’t sin, for some have no knowledge of God. I say this to your shame.",
+      "ko": "깨어 의를 행하고 죄를 짓지 말라 하나님을 알지 못하는 자가 있기로 내가 너희를 부끄럽게 하기 위하여 말하노라",
+      "source_text_hash": "dafc831c57a0c43fb33026ef0285e09f11e7028800e087a9b27a23d6cf09f093",
+      "translation_text_hash": "c96ec3f3ccfb5382b9105dedac11e219c82bfa7e3cd99de1f2b9577d94c9fe0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨어 의를 행하고 죄를 짓지 말라 하나님을 알지 못하는 자가 있기로 내가 너희를 부끄럽게 하기 위하여 말하노라"
+      ],
+      "raw_text_hashes": [
+        "c96ec3f3ccfb5382b9105dedac11e219c82bfa7e3cd99de1f2b9577d94c9fe0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:35",
+      "sequence": 28750,
+      "chapter_label": "1CO 15",
+      "verse_label": "35",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 35
+        }
+      ],
+      "en": "But someone will say, “How are the dead raised?” and, “With what kind of body do they come?”",
+      "ko": "누가 묻기를 죽은 자들이 어떻게 다시 살며 어떠한 몸으로 오느냐 하리니",
+      "source_text_hash": "451cbc2dcd304c222419f32ae46cfeaf749a76d44c5ceae19e63e36273eb5a61",
+      "translation_text_hash": "c5a92aebcdb4840b32119f41633fa588c6d7fed1d9b58f6dda98ab758b3a9c6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 묻기를 죽은 자들이 어떻게 다시 살며 어떠한 몸으로 오느냐 하리니"
+      ],
+      "raw_text_hashes": [
+        "c5a92aebcdb4840b32119f41633fa588c6d7fed1d9b58f6dda98ab758b3a9c6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:36",
+      "sequence": 28751,
+      "chapter_label": "1CO 15",
+      "verse_label": "36",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 36
+        }
+      ],
+      "en": "You foolish one, that which you yourself sow is not made alive unless it dies.",
+      "ko": "어리석은 자여 너의 뿌리는 씨가 죽지 않으면 살아나지 못하겠고",
+      "source_text_hash": "33948ef772727e2a8de19acc863760a593ec522a3dd2014b9b9482104be1076b",
+      "translation_text_hash": "0e37a7e888c6364b509b0538fcf73b00c7d45e7bc1bb36dbb3924b8ef6cb9d41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어리석은 자여 너의 뿌리는 씨가 죽지 않으면 살아나지 못하겠고"
+      ],
+      "raw_text_hashes": [
+        "0e37a7e888c6364b509b0538fcf73b00c7d45e7bc1bb36dbb3924b8ef6cb9d41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:37",
+      "sequence": 28752,
+      "chapter_label": "1CO 15",
+      "verse_label": "37",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 37
+        }
+      ],
+      "en": "That which you sow, you don’t sow the body that will be, but a bare grain, maybe of wheat, or of some other kind.",
+      "ko": "또 너의 뿌리는 것은 장래 형체를 뿌리는 것이 아니요 다만 밀이나 다른 것의 알갱이 뿐이로되",
+      "source_text_hash": "34bbe493667389049d81ed11a819bbbbd9b5c774799f699ed73fcedc2c5478a2",
+      "translation_text_hash": "58ef11afb6db484efcbe5bdf007e8017843205eaa3b21088df6d3fe35d6387ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너의 뿌리는 것은 장래 형체를 뿌리는 것이 아니요 다만 밀이나 다른 것의 알갱이 뿐이로되"
+      ],
+      "raw_text_hashes": [
+        "58ef11afb6db484efcbe5bdf007e8017843205eaa3b21088df6d3fe35d6387ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:38",
+      "sequence": 28753,
+      "chapter_label": "1CO 15",
+      "verse_label": "38",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 38
+        }
+      ],
+      "en": "But God gives it a body even as it pleased him, and to each seed a body of its own.",
+      "ko": "하나님이 그 뜻대로 저에게 형체를 주시되 각 종자에게 그 형체를 주시느니라",
+      "source_text_hash": "4298dfbe76de91d04c3d0db2bd3ff213fe29bb6c5a8ccadccf49f37c0c741898",
+      "translation_text_hash": "50708aad5b808b60773ee8654fbe41f1356995de786d4ed7c0f80b30e303bcb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 뜻대로 저에게 형체를 주시되 각 종자에게 그 형체를 주시느니라"
+      ],
+      "raw_text_hashes": [
+        "50708aad5b808b60773ee8654fbe41f1356995de786d4ed7c0f80b30e303bcb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:39",
+      "sequence": 28754,
+      "chapter_label": "1CO 15",
+      "verse_label": "39",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 39
+        }
+      ],
+      "en": "All flesh is not the same flesh, but there is one flesh of men, another flesh of animals, another of fish, and another of birds.",
+      "ko": "육체는 다 같은 육체가 아니니 하나는 사람의 육체요 하나는 짐승의 육체요 하나는 새의 육체요 하나는 물고기의 육체라",
+      "source_text_hash": "fb7c6f2e204fc6827576a859fac944ee69695ad318bc499da948c0e9d7337ad7",
+      "translation_text_hash": "ab9961a5323f34c893aa43373b6459c8d8bbf9811344f94b68b9dec6f68f9c6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육체는 다 같은 육체가 아니니 하나는 사람의 육체요 하나는 짐승의 육체요 하나는 새의 육체요 하나는 물고기의 육체라"
+      ],
+      "raw_text_hashes": [
+        "ab9961a5323f34c893aa43373b6459c8d8bbf9811344f94b68b9dec6f68f9c6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:40",
+      "sequence": 28755,
+      "chapter_label": "1CO 15",
+      "verse_label": "40",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 40
+        }
+      ],
+      "en": "There are also celestial bodies and terrestrial bodies; but the glory of the celestial differs from that of the terrestrial.",
+      "ko": "하늘에 속한 형체도 있고 땅에 속한 형체도 있으나 하늘에 속한 자의 영광이 따로 있고 땅에 속한 자의 영광이 따로 있으니",
+      "source_text_hash": "aef867f178ee24ecd124692c6999302268c542f9125ab047b7859b3d0acad396",
+      "translation_text_hash": "cdbbd8f450efbc5cbd6434a308839aad0042815d4e00e218b5e1df9c3add04e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 속한 형체도 있고 땅에 속한 형체도 있으나 하늘에 속한 자의 영광이 따로 있고 땅에 속한 자의 영광이 따로 있으니"
+      ],
+      "raw_text_hashes": [
+        "cdbbd8f450efbc5cbd6434a308839aad0042815d4e00e218b5e1df9c3add04e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:41",
+      "sequence": 28756,
+      "chapter_label": "1CO 15",
+      "verse_label": "41",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 41
+        }
+      ],
+      "en": "There is one glory of the sun, another glory of the moon, and another glory of the stars; for one star differs from another star in glory.",
+      "ko": "해의 영광도 다르며 달의 영광도 다르며 별의 영광도 다른데 별과 별의 영광이 다르도다",
+      "source_text_hash": "cf2f476dcf4f63674388ddc15563253e89d2da9feae6c26b33b8265c95cb5f49",
+      "translation_text_hash": "15649954f420c46d84b79b91aa6e2bc33c79e331b3e6b24693aae6b2ca51bec4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해의 영광도 다르며 달의 영광도 다르며 별의 영광도 다른데 별과 별의 영광이 다르도다"
+      ],
+      "raw_text_hashes": [
+        "15649954f420c46d84b79b91aa6e2bc33c79e331b3e6b24693aae6b2ca51bec4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:42",
+      "sequence": 28757,
+      "chapter_label": "1CO 15",
+      "verse_label": "42",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 42
+        }
+      ],
+      "en": "So also is the resurrection of the dead. The body is sown perishable; it is raised imperishable.",
+      "ko": "죽은 자의 부활도 이와 같으니 썩을 것으로 심고 썩지 아니할 것으로 다시 살며",
+      "source_text_hash": "0c6bda82a17721b4edef39dd4236bf43cdf3661095b4cf6b65ea82a5984fa3d0",
+      "translation_text_hash": "36fa519a74a8d9795e1429ab7f0e70243e23b1f28bc0cf45263d11c139d15d95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자의 부활도 이와 같으니 썩을 것으로 심고 썩지 아니할 것으로 다시 살며"
+      ],
+      "raw_text_hashes": [
+        "36fa519a74a8d9795e1429ab7f0e70243e23b1f28bc0cf45263d11c139d15d95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:43",
+      "sequence": 28758,
+      "chapter_label": "1CO 15",
+      "verse_label": "43",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 43
+        }
+      ],
+      "en": "It is sown in dishonor; it is raised in glory. It is sown in weakness; it is raised in power.",
+      "ko": "욕된 것으로 심고 영광스러운 것으로 다시 살며 약한 것으로 심고 강한 것으로 다시 살며",
+      "source_text_hash": "a1c00636e14c8653be5051995994f45ae2a2c77f6ddc3d6f5d6c89feb45d3557",
+      "translation_text_hash": "ff0b7085f3a3ab455a1d4973c9b38a47a0ee171b60b6475805a1451165b10c0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욕된 것으로 심고 영광스러운 것으로 다시 살며 약한 것으로 심고 강한 것으로 다시 살며"
+      ],
+      "raw_text_hashes": [
+        "ff0b7085f3a3ab455a1d4973c9b38a47a0ee171b60b6475805a1451165b10c0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:44",
+      "sequence": 28759,
+      "chapter_label": "1CO 15",
+      "verse_label": "44",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 44
+        }
+      ],
+      "en": "It is sown a natural body; it is raised a spiritual body. There is a natural body and there is also a spiritual body.",
+      "ko": "육의 몸으로 심고 신령한 몸으로 다시 사나니 육의 몸이 있은즉 또 신령한 몸이 있느니라",
+      "source_text_hash": "82250666d08a2f5a150a5e9682041894e8856a770312348ee1587d2ea45cd159",
+      "translation_text_hash": "4a1ebf7b74ee109781e7d852ac890188e6cc1128ecf0cd7fb7d6b72408e3fbd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육의 몸으로 심고 신령한 몸으로 다시 사나니 육의 몸이 있은즉 또 신령한 몸이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "4a1ebf7b74ee109781e7d852ac890188e6cc1128ecf0cd7fb7d6b72408e3fbd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:45",
+      "sequence": 28760,
+      "chapter_label": "1CO 15",
+      "verse_label": "45",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 45
+        }
+      ],
+      "en": "So also it is written, “The first man Adam became a living soul.” The last Adam became a life-giving spirit.",
+      "ko": "기록된바 첫 사람 아담은 산 영이 되었다 함과 같이 마지막 아담은 살려 주는 영이 되었나니",
+      "source_text_hash": "bbaa186f9035af9a9a876a2af3f6232a70d1cd93b9d0c17188cba31df0cb6dd8",
+      "translation_text_hash": "fb703161eb1ba70e2737f97c8d8585c0c1c84adaa6cf5a0de774fdf05e3dda89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 첫 사람 아담은 산 영이 되었다 함과 같이 마지막 아담은 살려 주는 영이 되었나니"
+      ],
+      "raw_text_hashes": [
+        "fb703161eb1ba70e2737f97c8d8585c0c1c84adaa6cf5a0de774fdf05e3dda89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:46",
+      "sequence": 28761,
+      "chapter_label": "1CO 15",
+      "verse_label": "46",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 46
+        }
+      ],
+      "en": "However, that which is spiritual isn’t first, but that which is natural, then that which is spiritual.",
+      "ko": "그러나 먼저는 신령한 자가 아니요 육 있는 자요 그 다음에 신령한 자니라",
+      "source_text_hash": "b034a3fe65e50f1a7383d88a26e375ec78b899187ce858a9c6021a241d181b19",
+      "translation_text_hash": "c37c4ea5049d6bb184c38c6508d50a06839779c2ec63c3c95a56cb29566e3cb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 먼저는 신령한 자가 아니요 육 있는 자요 그 다음에 신령한 자니라"
+      ],
+      "raw_text_hashes": [
+        "c37c4ea5049d6bb184c38c6508d50a06839779c2ec63c3c95a56cb29566e3cb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:47",
+      "sequence": 28762,
+      "chapter_label": "1CO 15",
+      "verse_label": "47",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 47
+        }
+      ],
+      "en": "The first man is of the earth, made of dust. The second man is the Lord from heaven.",
+      "ko": "첫 사람은 땅에서 났으니 흙에 속한 자이거니와 둘째 사람은 하늘에서 나셨느니라",
+      "source_text_hash": "565b96e855a5fc39cb869f100e39510db3d9498ea3f2420a11e7a3af2a131dd8",
+      "translation_text_hash": "9c45de8755375fc2085f70853c90d3d83aacabae473d3ec9172488f2ee695617",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫 사람은 땅에서 났으니 흙에 속한 자이거니와 둘째 사람은 하늘에서 나셨느니라"
+      ],
+      "raw_text_hashes": [
+        "9c45de8755375fc2085f70853c90d3d83aacabae473d3ec9172488f2ee695617"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:48",
+      "sequence": 28763,
+      "chapter_label": "1CO 15",
+      "verse_label": "48",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 48
+        }
+      ],
+      "en": "As is the one made of dust, such are those who are also made of dust; and as is the heavenly, such are they also that are heavenly.",
+      "ko": "무릇 흙에 속한 자는 저 흙에 속한 자들과 같고 무릇 하늘에 속한 자는 저 하늘에 속한 자들과 같으니",
+      "source_text_hash": "86c5b88cf6f36b932dd430987588b4040b3c617d5a7f2480c9c6dc5b52d6ad82",
+      "translation_text_hash": "20f27969f8062f1bf0d972a116562728d57c5382e7541dbe805554363bbd1831",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 흙에 속한 자는 저 흙에 속한 자들과 같고 무릇 하늘에 속한 자는 저 하늘에 속한 자들과 같으니"
+      ],
+      "raw_text_hashes": [
+        "20f27969f8062f1bf0d972a116562728d57c5382e7541dbe805554363bbd1831"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:49",
+      "sequence": 28764,
+      "chapter_label": "1CO 15",
+      "verse_label": "49",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 49
+        }
+      ],
+      "en": "As we have borne the image of those made of dust, let’s also bear the image of the heavenly.",
+      "ko": "우리가 흙에 속한 자의 형상을 입은것 같이 또한 하늘에 속한 자의 형상을 입으리라",
+      "source_text_hash": "aa411b4d4afe786a6a2306965f56046272511e740e1e6116f055857158a3e0bb",
+      "translation_text_hash": "68cff39e43f7443c9212c63e7fc0fcda7e0fe33c57cec99d849cbb902f60f58b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 흙에 속한 자의 형상을 입은것 같이 또한 하늘에 속한 자의 형상을 입으리라"
+      ],
+      "raw_text_hashes": [
+        "68cff39e43f7443c9212c63e7fc0fcda7e0fe33c57cec99d849cbb902f60f58b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:50",
+      "sequence": 28765,
+      "chapter_label": "1CO 15",
+      "verse_label": "50",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 50
+        }
+      ],
+      "en": "Now I say this, brothers, that flesh and blood can’t inherit God’s Kingdom; neither does the perishable inherit imperishable.",
+      "ko": "형제들아 내가 이것을 말하노니 혈과 육은 하나님 나라를 유업으로 받을 수 없고 또한 썩은 것은 썩지 아니한 것을 유업으로 받지 못하느니라",
+      "source_text_hash": "b4542652457a0fa104971fd22789c4a1126076d2801ba2b1df83bdf29ebdf6e6",
+      "translation_text_hash": "b0c3e9c333f4c61a9b0674e1c3433e7b6d78aa34028f0245424abe7f46a028dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 이것을 말하노니 혈과 육은 하나님 나라를 유업으로 받을 수 없고 또한 썩은 것은 썩지 아니한 것을 유업으로 받지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "b0c3e9c333f4c61a9b0674e1c3433e7b6d78aa34028f0245424abe7f46a028dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:51",
+      "sequence": 28766,
+      "chapter_label": "1CO 15",
+      "verse_label": "51",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 51
+        }
+      ],
+      "en": "Behold, I tell you a mystery. We will not all sleep, but we will all be changed,",
+      "ko": "보라 내가 너희에게 비밀을 말하노니 우리가 다 잠잘 것이 아니요 마지막 나팔에 순식간에 홀연히 다 변화하리니",
+      "source_text_hash": "5ba5ad7d0c1cbbc752311f873307ee1499aa32822ead0402842620ac9065b6ec",
+      "translation_text_hash": "4cd7004dac3360a39c2386e16a954c9de5a76b32ff991415e06cdb2258049639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 너희에게 비밀을 말하노니 우리가 다 잠잘 것이 아니요 마지막 나팔에 순식간에 홀연히 다 변화하리니"
+      ],
+      "raw_text_hashes": [
+        "4cd7004dac3360a39c2386e16a954c9de5a76b32ff991415e06cdb2258049639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:52",
+      "sequence": 28767,
+      "chapter_label": "1CO 15",
+      "verse_label": "52",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 52
+        }
+      ],
+      "en": "in a moment, in the twinkling of an eye, at the last trumpet. For the trumpet will sound and the dead will be raised incorruptible, and we will be changed.",
+      "ko": "나팔 소리가 나매 죽은 자들이 썩지 아니할 것으로 다시 살고 우리도 변화하리라",
+      "source_text_hash": "2b43ccef264a0005c3bd67ec4946ea803ae5746cd06fb4da493caf7299e7a909",
+      "translation_text_hash": "394a537792cc0f0897696806340a40a6aaa759a95c6d5d3eebbf706ba89b8806",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나팔 소리가 나매 죽은 자들이 썩지 아니할 것으로 다시 살고 우리도 변화하리라"
+      ],
+      "raw_text_hashes": [
+        "394a537792cc0f0897696806340a40a6aaa759a95c6d5d3eebbf706ba89b8806"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:53",
+      "sequence": 28768,
+      "chapter_label": "1CO 15",
+      "verse_label": "53",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 53
+        }
+      ],
+      "en": "For this perishable body must become imperishable, and this mortal must put on immortality.",
+      "ko": "이 썩을 것이 불가불 썩지 아니할 것을 입겠고 이 죽을 것이 죽지 아니함을 입으리로다",
+      "source_text_hash": "cd16eb8306bb58af9a8a3ae0cfa76e168363a061d6b82617ab6911257703133a",
+      "translation_text_hash": "fecce4d095b006cd9a16906da3a82989552fa7d2e14c01e522b41238e57f8c01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 썩을 것이 불가불 썩지 아니할 것을 입겠고 이 죽을 것이 죽지 아니함을 입으리로다"
+      ],
+      "raw_text_hashes": [
+        "fecce4d095b006cd9a16906da3a82989552fa7d2e14c01e522b41238e57f8c01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:54",
+      "sequence": 28769,
+      "chapter_label": "1CO 15",
+      "verse_label": "54",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 54
+        }
+      ],
+      "en": "But when this perishable body will have become imperishable, and this mortal will have put on immortality, then what is written will happen: “Death is swallowed up in victory.”",
+      "ko": "이 썩을 것이 썩지 아니함을 입고 이 죽을 것이 죽지 아니함을 입을 때에는 사망이 이김의 삼킨바 되리라고 기록된 말씀이 응하리라",
+      "source_text_hash": "c46dfab43cee21cdee7d2b74ac145ddae1440b2bb2de6db63afed05526040a89",
+      "translation_text_hash": "ef06eee45d7eb413721471efab92585f924f2e285105d80b8c876d9911d12830",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 썩을 것이 썩지 아니함을 입고 이 죽을 것이 죽지 아니함을 입을 때에는 사망이 이김의 삼킨바 되리라고 기록된 말씀이 응하리라"
+      ],
+      "raw_text_hashes": [
+        "ef06eee45d7eb413721471efab92585f924f2e285105d80b8c876d9911d12830"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:55",
+      "sequence": 28770,
+      "chapter_label": "1CO 15",
+      "verse_label": "55",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 55
+        }
+      ],
+      "en": "“Death, where is your sting? Hades, where is your victory?”",
+      "ko": "사망아 너의 이기는 것이 어디 있느냐 사망아 너의 쏘는 것이 어디 있느냐",
+      "source_text_hash": "dcf084c2a5c8b2b19e4f3dcc5fc68ea53a60c4c2f1ed85c95a6552351ed95bd4",
+      "translation_text_hash": "4f4e47d57a195c552418b455c3bcac8d507f5ddee0d63d97c98cac05c99a6143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망아 너의 이기는 것이 어디 있느냐 사망아 너의 쏘는 것이 어디 있느냐"
+      ],
+      "raw_text_hashes": [
+        "4f4e47d57a195c552418b455c3bcac8d507f5ddee0d63d97c98cac05c99a6143"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:56",
+      "sequence": 28771,
+      "chapter_label": "1CO 15",
+      "verse_label": "56",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 56
+        }
+      ],
+      "en": "The sting of death is sin, and the power of sin is the law.",
+      "ko": "사망의 쏘는 것은 죄요 죄의 권능은 율법이라",
+      "source_text_hash": "a77b29a8aaa2d574743bcaab04745abd4ceb41295192014f14547dc0c1a2540e",
+      "translation_text_hash": "7085c6e0b1d429a573c3e463a3ac9ba6b9c38c6bd96dcebf27910418dc119929",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망의 쏘는 것은 죄요 죄의 권능은 율법이라"
+      ],
+      "raw_text_hashes": [
+        "7085c6e0b1d429a573c3e463a3ac9ba6b9c38c6bd96dcebf27910418dc119929"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:57",
+      "sequence": 28772,
+      "chapter_label": "1CO 15",
+      "verse_label": "57",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 57
+        }
+      ],
+      "en": "But thanks be to God, who gives us the victory through our Lord Jesus Christ.",
+      "ko": "우리 주 예수 그리스도로 말미암아 우리에게 이김을 주시는 하나님께 감사하노니",
+      "source_text_hash": "b6566389032b85f5e93a0df3ce6ed6976acc226979a1a9a2d01a30f402b1ac5d",
+      "translation_text_hash": "5bd20ccf68f8462cffaf50484fcb107a2145b3b1eee48c73ad42dad10337c98e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도로 말미암아 우리에게 이김을 주시는 하나님께 감사하노니"
+      ],
+      "raw_text_hashes": [
+        "5bd20ccf68f8462cffaf50484fcb107a2145b3b1eee48c73ad42dad10337c98e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:15:58",
+      "sequence": 28773,
+      "chapter_label": "1CO 15",
+      "verse_label": "58",
+      "locator": {
+        "book": "1CO",
+        "chapter": 15,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 15,
+          "verse": 58
+        }
+      ],
+      "en": "Therefore, my beloved brothers, be steadfast, immovable, always abounding in the Lord’s work, because you know that your labor is not in vain in the Lord.",
+      "ko": "그러므로 내 사랑하는 형제들아 견고하며 흔들리지 말며 항상 주의 일에 더욱 힘쓰는 자들이 되라 이는 너희 수고가 주 안에서 헛되지 않은 줄을 앎이니라",
+      "source_text_hash": "f6917aea858e3bfdda98ebfffeb726b1f444a316db8664c1e50456a532145623",
+      "translation_text_hash": "4c19908f4992baf417db8ee4f8ea76915b5a171da8921d116756cfdeac77fdec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내 사랑하는 형제들아 견고하며 흔들리지 말며 항상 주의 일에 더욱 힘쓰는 자들이 되라 이는 너희 수고가 주 안에서 헛되지 않은 줄을 앎이니라"
+      ],
+      "raw_text_hashes": [
+        "4c19908f4992baf417db8ee4f8ea76915b5a171da8921d116756cfdeac77fdec"
+      ]
+    }
+  ]
+}

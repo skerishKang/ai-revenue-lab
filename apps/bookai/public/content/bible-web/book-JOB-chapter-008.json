@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:008",
+  "unit_ordinal": 444,
+  "unit_label": "JOB 8",
+  "book_code": "JOB",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:8:1",
+      "sequence": 13031,
+      "chapter_label": "JOB 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Then Bildad the Shuhite answered,",
+      "ko": "수아 사람 빌닷이 대답하여 가로되",
+      "source_text_hash": "67c49b3e7f7c75f5594dfe212f400cf5e70568b04fc043f5373212bd6b6f5bf3",
+      "translation_text_hash": "c88d7d6144add62c85ace8f00f311a628b7d3a7ea3ec17ad983548c66c94b71d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수아 사람 빌닷이 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "c88d7d6144add62c85ace8f00f311a628b7d3a7ea3ec17ad983548c66c94b71d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:2",
+      "sequence": 13032,
+      "chapter_label": "JOB 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "“How long will you speak these things? Shall the words of your mouth be a mighty wind?",
+      "ko": "네가 어느 때까지 이런 말을 하겠으며 어느 때까지 네 입의 말이 광풍과 같겠는가",
+      "source_text_hash": "6978c2257e84222dff1721be1512e7f294e68d036a1712dc4010276225fe8d76",
+      "translation_text_hash": "0422c9b421885e69a2b470304a5cb2c93a8c38380a9498ecb537f510e24d9e90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어느 때까지 이런 말을 하겠으며 어느 때까지 네 입의 말이 광풍과 같겠는가"
+      ],
+      "raw_text_hashes": [
+        "0422c9b421885e69a2b470304a5cb2c93a8c38380a9498ecb537f510e24d9e90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:3",
+      "sequence": 13033,
+      "chapter_label": "JOB 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Does God pervert justice? Or does the Almighty pervert righteousness?",
+      "ko": "하나님이 어찌 심판을 굽게 하시겠으며 전능하신이가 어찌 공의를 굽게 하시겠는가",
+      "source_text_hash": "93d48c38aaa9595bb5e415276b9962c2c3a50e7df6266449145de8eb12219e99",
+      "translation_text_hash": "3275cd8b2e01db3f936e4173846422fd4d4e46dd56f94a2f5e31d6f1f88605e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 어찌 심판을 굽게 하시겠으며 전능하신이가 어찌 공의를 굽게 하시겠는가"
+      ],
+      "raw_text_hashes": [
+        "3275cd8b2e01db3f936e4173846422fd4d4e46dd56f94a2f5e31d6f1f88605e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:4",
+      "sequence": 13034,
+      "chapter_label": "JOB 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "If your children have sinned against him, he has delivered them into the hand of their disobedience.",
+      "ko": "네 자녀들이 주께 득죄하였으므로 주께서 그들을 그 죄에 붙이셨나니",
+      "source_text_hash": "4f6e75ffa129791c9547b4a0595d6ca09e9716758cc34f55ae31f7984a5befce",
+      "translation_text_hash": "a26e8437b664f62c324ff3e95c678c30423b1dd0b059e3507542d69573feadde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자녀들이 주께 득죄하였으므로 주께서 그들을 그 죄에 붙이셨나니"
+      ],
+      "raw_text_hashes": [
+        "a26e8437b664f62c324ff3e95c678c30423b1dd0b059e3507542d69573feadde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:5",
+      "sequence": 13035,
+      "chapter_label": "JOB 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "If you want to seek God diligently, make your supplication to the Almighty.",
+      "ko": "네가 만일 하나님을 부지런히 구하며 전능하신이에게 빌고",
+      "source_text_hash": "333b10738462ff1121b270ae064f39b50996dca151edbaff6cc46a46bd9b5dbd",
+      "translation_text_hash": "bc6ab4c21039987d9c709637d0e8901822f8688422a92fde1b36c875841d99d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 하나님을 부지런히 구하며 전능하신이에게 빌고"
+      ],
+      "raw_text_hashes": [
+        "bc6ab4c21039987d9c709637d0e8901822f8688422a92fde1b36c875841d99d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:6",
+      "sequence": 13036,
+      "chapter_label": "JOB 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "If you were pure and upright, surely now he would awaken for you, and make the habitation of your righteousness prosperous.",
+      "ko": "또 청결하고 정직하면 정녕 너를 돌아보시고 네 의로운 집으로 형통하게 하실 것이라",
+      "source_text_hash": "d17de2200126037f180563e13b6dcf24e7a4f343aba58bcc3912b4078ea68d25",
+      "translation_text_hash": "874a6bb165362e8b32746b9fa6ea4feaa5df064fe2fcf2577df81734fb31d77a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 청결하고 정직하면 정녕 너를 돌아보시고 네 의로운 집으로 형통하게 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "874a6bb165362e8b32746b9fa6ea4feaa5df064fe2fcf2577df81734fb31d77a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:7",
+      "sequence": 13037,
+      "chapter_label": "JOB 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Though your beginning was small, yet your latter end would greatly increase.",
+      "ko": "네 시작은 미약하였으나 네 나중은 심히 창대하리라",
+      "source_text_hash": "598f9874a7bdff2db03b558b8da28114f0b1ac8fab2c297fc83d5173a4c21ef2",
+      "translation_text_hash": "06fc49722bde27fbeedd72cde38ba38f8bf30a1f8450eef6c6962ce2934c5388",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 시작은 미약하였으나 네 나중은 심히 창대하리라"
+      ],
+      "raw_text_hashes": [
+        "06fc49722bde27fbeedd72cde38ba38f8bf30a1f8450eef6c6962ce2934c5388"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:8",
+      "sequence": 13038,
+      "chapter_label": "JOB 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "“Please inquire of past generations. Find out about the learning of their fathers.",
+      "ko": "청컨대 너는 옛시대 사람에게 물으며 열조의 터득한 일을 배울찌어다",
+      "source_text_hash": "f6b735545953f66800a5b3f356368b7b814091824ad7d8c1e56ace7fa4a70e63",
+      "translation_text_hash": "9858ed7d1d83b059df710915c795323b59b4bd32f617616f129cb1a78adb0d9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청컨대 너는 옛시대 사람에게 물으며 열조의 터득한 일을 배울찌어다"
+      ],
+      "raw_text_hashes": [
+        "9858ed7d1d83b059df710915c795323b59b4bd32f617616f129cb1a78adb0d9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:9",
+      "sequence": 13039,
+      "chapter_label": "JOB 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "(For we are but of yesterday, and know nothing, because our days on earth are a shadow.)",
+      "ko": "(우리는 어제부터 있었을 뿐이라 지식이 망매하니 세상에 있는 날이 그림자와 같으니라)",
+      "source_text_hash": "1e605fec772c97bd08a219cda0558ac5bb308fc90ab71890db1153c981c5e998",
+      "translation_text_hash": "857156f277ca25409b24599dffac22aaf93efb7bc28188d47fab7241fdea0416",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(우리는 어제부터 있었을 뿐이라 지식이 망매하니 세상에 있는 날이 그림자와 같으니라)"
+      ],
+      "raw_text_hashes": [
+        "857156f277ca25409b24599dffac22aaf93efb7bc28188d47fab7241fdea0416"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:10",
+      "sequence": 13040,
+      "chapter_label": "JOB 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Shall they not teach you, tell you, and utter words out of their heart?",
+      "ko": "그들이 네게 가르쳐 이르지 아니하겠느냐 그 마음에서 나는 말을 발하지 아니하겠느냐",
+      "source_text_hash": "e9b0fff86319f6c533ba41dfcd5fe84fb874f29f39179ee195efa0430d1b919b",
+      "translation_text_hash": "ff8c79bbc352afa9f56a084721b84874338757ae318d3f2ab20b5df619d4e2c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 네게 가르쳐 이르지 아니하겠느냐 그 마음에서 나는 말을 발하지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "ff8c79bbc352afa9f56a084721b84874338757ae318d3f2ab20b5df619d4e2c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:11",
+      "sequence": 13041,
+      "chapter_label": "JOB 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "“Can the papyrus grow up without mire? Can the rushes grow without water?",
+      "ko": "왕골이 진펄이 아니고 나겠으며 갈대가 물 없이 자라겠느냐",
+      "source_text_hash": "1ad5584afc95f4d8c4c353c4b3b2268838a2663b30ea9387c0afb6440de660a7",
+      "translation_text_hash": "c7ae827abbb1789e2bf82ae4d5909366d34bcfc16c938f8c7a82921e9e80c365",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕골이 진펄이 아니고 나겠으며 갈대가 물 없이 자라겠느냐"
+      ],
+      "raw_text_hashes": [
+        "c7ae827abbb1789e2bf82ae4d5909366d34bcfc16c938f8c7a82921e9e80c365"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:12",
+      "sequence": 13042,
+      "chapter_label": "JOB 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "While it is yet in its greenness, not cut down, it withers before any other reed.",
+      "ko": "이런 것은 푸르러도 아직 벨 때 되기 전에 다른 풀보다 일찌기 마르느니라",
+      "source_text_hash": "e21c66f564b7b2a9aafa01ea17e9346744d779e8cb434bf50c1e1f5998dc655f",
+      "translation_text_hash": "9f675b55a722d1a5b396ae7af1291dc413c6793ba3e3286940881a3d28eb18ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것은 푸르러도 아직 벨 때 되기 전에 다른 풀보다 일찌기 마르느니라"
+      ],
+      "raw_text_hashes": [
+        "9f675b55a722d1a5b396ae7af1291dc413c6793ba3e3286940881a3d28eb18ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:13",
+      "sequence": 13043,
+      "chapter_label": "JOB 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "So are the paths of all who forget God. The hope of the godless man will perish,",
+      "ko": "하나님을 잊어버리는 자의 길은 다 이와 같고 사곡한 자의 소망은 없어지리니",
+      "source_text_hash": "2bae901259a116006574de992c5ab98b63307c737e20a75012f923e353befcff",
+      "translation_text_hash": "79b849710a892db1a33bd4694852b0199a43e8bb8521200790ae304d133529d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님을 잊어버리는 자의 길은 다 이와 같고 사곡한 자의 소망은 없어지리니"
+      ],
+      "raw_text_hashes": [
+        "79b849710a892db1a33bd4694852b0199a43e8bb8521200790ae304d133529d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:14",
+      "sequence": 13044,
+      "chapter_label": "JOB 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "whose confidence will break apart, whose trust is a spider’s web.",
+      "ko": "그 믿는 것이 끊어지고 그 의지하는 것이 거미줄 같은즉",
+      "source_text_hash": "2f00740e57a4a84584a7b8261eb78b0a6d80bdf4d0e521a7bc6379c5a1574859",
+      "translation_text_hash": "dc186a48281331e2d3b70a24897e89aa3bf1e2dd593aa232f0322ef1291832d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 믿는 것이 끊어지고 그 의지하는 것이 거미줄 같은즉"
+      ],
+      "raw_text_hashes": [
+        "dc186a48281331e2d3b70a24897e89aa3bf1e2dd593aa232f0322ef1291832d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:15",
+      "sequence": 13045,
+      "chapter_label": "JOB 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "He will lean on his house, but it will not stand. He will cling to it, but it will not endure.",
+      "ko": "그 집을 의지할찌라도 집이 서지 못하고 굳게 잡아도 집이 보존되지 못하리라",
+      "source_text_hash": "31eb850b8e79c239bf4f5d8d9f74e18c8a9b0bf2a783202e6297535b31cea256",
+      "translation_text_hash": "e16dacb4fe0262f8fb93cb2079c281121bf162a6c7a28bc9e572d3895211ee67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집을 의지할찌라도 집이 서지 못하고 굳게 잡아도 집이 보존되지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "e16dacb4fe0262f8fb93cb2079c281121bf162a6c7a28bc9e572d3895211ee67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:16",
+      "sequence": 13046,
+      "chapter_label": "JOB 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "He is green before the sun. His shoots go out along his garden.",
+      "ko": "식물이 일광을 받고 푸르러서 그 가지가 동산에 벋어가며",
+      "source_text_hash": "61aba786feac79ccf5e829d94cf5bd208247da9d7069be59319328b4acca208d",
+      "translation_text_hash": "b29c492bea37e589c961a39f995b1a5d8c7c402f69096507c7d661efe6da3b72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "식물이 일광을 받고 푸르러서 그 가지가 동산에 벋어가며"
+      ],
+      "raw_text_hashes": [
+        "b29c492bea37e589c961a39f995b1a5d8c7c402f69096507c7d661efe6da3b72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:17",
+      "sequence": 13047,
+      "chapter_label": "JOB 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "His roots are wrapped around the rock pile. He sees the place of stones.",
+      "ko": "그 뿌리가 돌 무더기에 서리어서 돌 가운데로 들어 갔을찌라도",
+      "source_text_hash": "06d2cdebb32a2ab2dfa0b73ac551bcdbac2538cc097b9e16098a84a362dd5c4d",
+      "translation_text_hash": "4e0375da6d63ad3e16506a124ca5fb8d9b7bed8ded1be458bd8ae2f716d31f62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 뿌리가 돌 무더기에 서리어서 돌 가운데로 들어 갔을찌라도"
+      ],
+      "raw_text_hashes": [
+        "4e0375da6d63ad3e16506a124ca5fb8d9b7bed8ded1be458bd8ae2f716d31f62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:18",
+      "sequence": 13048,
+      "chapter_label": "JOB 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "If he is destroyed from his place, then it will deny him, saying, ‘I have not seen you.’",
+      "ko": "그곳에서 뽑히면 그 자리도 모르는체하고 이르기를 내가 너를 보지 못하였다 하리니",
+      "source_text_hash": "2e569066a95f9402bc9358010490344a8abf60cbfc96f02c3efc2ca68799d3a5",
+      "translation_text_hash": "2cb41a7ad7aec6dcc65586ba5a4a59f0593c5aa988e48aeb84bf24df2ce497c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그곳에서 뽑히면 그 자리도 모르는체하고 이르기를 내가 너를 보지 못하였다 하리니"
+      ],
+      "raw_text_hashes": [
+        "2cb41a7ad7aec6dcc65586ba5a4a59f0593c5aa988e48aeb84bf24df2ce497c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:19",
+      "sequence": 13049,
+      "chapter_label": "JOB 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "Behold, this is the joy of his way. Out of the earth, others will spring.",
+      "ko": "그 길의 희락은 이와 같고 그 후에 다른 것이 흙에서 나리라",
+      "source_text_hash": "4cd19b5303ef08f4d1442410a2ee1b0533374c602cc7b23085f482304b63de5a",
+      "translation_text_hash": "193e4c6b13ea5cb6e750dcd3272b3dff398516843ec3356fe21f1334253eb9d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 길의 희락은 이와 같고 그 후에 다른 것이 흙에서 나리라"
+      ],
+      "raw_text_hashes": [
+        "193e4c6b13ea5cb6e750dcd3272b3dff398516843ec3356fe21f1334253eb9d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:20",
+      "sequence": 13050,
+      "chapter_label": "JOB 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "“Behold, God will not cast away a blameless man, neither will he uphold the evildoers.",
+      "ko": "하나님은 순전한 사람을 버리지 아니하시고 악한 자를 붙들어 주지 아니하신즉",
+      "source_text_hash": "a8caedae780eb06794408ad23d4ee2e3c0a3f349b5ff2cf0611dee0be316392d",
+      "translation_text_hash": "3714e2221072d6a91130af5f9a42627a117194f2549dd188657f5f037e396cc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 순전한 사람을 버리지 아니하시고 악한 자를 붙들어 주지 아니하신즉"
+      ],
+      "raw_text_hashes": [
+        "3714e2221072d6a91130af5f9a42627a117194f2549dd188657f5f037e396cc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:21",
+      "sequence": 13051,
+      "chapter_label": "JOB 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "He will still fill your mouth with laughter, your lips with shouting.",
+      "ko": "웃음으로 네 입에, 즐거운 소리로 네 입술에 채우시리니",
+      "source_text_hash": "0b06faa9d5cf008c4b17683c33859abb456f1c8de4fcb2614b2d9a633d422916",
+      "translation_text_hash": "04cd691bf1441dce4dccb5ed37e9fd752dc3bdbf0db54ecc3a6b0249e33061eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃음으로 네 입에, 즐거운 소리로 네 입술에 채우시리니"
+      ],
+      "raw_text_hashes": [
+        "04cd691bf1441dce4dccb5ed37e9fd752dc3bdbf0db54ecc3a6b0249e33061eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:8:22",
+      "sequence": 13052,
+      "chapter_label": "JOB 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "Those who hate you will be clothed with shame. The tent of the wicked will be no more.”",
+      "ko": "너를 미워하는 자는 부끄러움을 입을 것이라 악인의 장막은 없어지리라",
+      "source_text_hash": "900db87026a124c1277244c50bbae842c4b4a368f58953c55365bd6e827d5505",
+      "translation_text_hash": "1737eb7a64d394949f52dc6f0a4a85d60bd4baf4750528ccb5317868c1990cee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 미워하는 자는 부끄러움을 입을 것이라 악인의 장막은 없어지리라"
+      ],
+      "raw_text_hashes": [
+        "1737eb7a64d394949f52dc6f0a4a85d60bd4baf4750528ccb5317868c1990cee"
+      ]
+    }
+  ]
+}

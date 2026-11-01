@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:018",
+  "unit_ordinal": 1036,
+  "unit_label": "ACT 18",
+  "book_code": "ACT",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:18:1",
+      "sequence": 27556,
+      "chapter_label": "ACT 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "After these things Paul departed from Athens and came to Corinth.",
+      "ko": "이 후에 바울이 아덴을 떠나 고린도에 이르러",
+      "source_text_hash": "c5fb71a68e3608df396ea4d2a8f528950d582ba151df5e4e81629aabbb8f9084",
+      "translation_text_hash": "3438d39d553c0497c23bb2b341d0ae1eca00fb8fd3bc5bfb10e444937d28d6e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 바울이 아덴을 떠나 고린도에 이르러"
+      ],
+      "raw_text_hashes": [
+        "3438d39d553c0497c23bb2b341d0ae1eca00fb8fd3bc5bfb10e444937d28d6e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:2",
+      "sequence": 27557,
+      "chapter_label": "ACT 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "He found a certain Jew named Aquila, a man of Pontus by race, who had recently come from Italy with his wife Priscilla, because Claudius had commanded all the Jews to depart from Rome. He came to them,",
+      "ko": "아굴라라 하는 본도에서 난 유대인 하나를 만나니 글라우디오가 모든 유대인을 명하여 로마에서 떠나라 한고로 그가 그 아내 브리스길라와 함께 이달리야로부터 새로 온지라 바울이 그들에게 가매",
+      "source_text_hash": "f552f3dcf02cb5141f59d3323d8cefc8751205e41809e274535a6f031742445f",
+      "translation_text_hash": "43fed60824c5a47b766f3d5cae2dde6594dc22e74cc76e89f5f76529af5e1bfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아굴라라 하는 본도에서 난 유대인 하나를 만나니 글라우디오가 모든 유대인을 명하여 로마에서 떠나라 한고로 그가 그 아내 브리스길라와 함께 이달리야로부터 새로 온지라 바울이 그들에게 가매"
+      ],
+      "raw_text_hashes": [
+        "43fed60824c5a47b766f3d5cae2dde6594dc22e74cc76e89f5f76529af5e1bfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:3",
+      "sequence": 27558,
+      "chapter_label": "ACT 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "and because he practiced the same trade, he lived with them and worked, for by trade they were tent makers.",
+      "ko": "업이 같으므로 함께 거하여 일을 하니 그 업은 장막을 만드는 것이더라",
+      "source_text_hash": "e41b78d99f50402de86468276389cc5a767dfcfeaa93bb19fcd680a9a7e4a088",
+      "translation_text_hash": "fa5ce83793ad068740ac7d299bad7ed5241bf479034701e9e8022bb94dae713e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "업이 같으므로 함께 거하여 일을 하니 그 업은 장막을 만드는 것이더라"
+      ],
+      "raw_text_hashes": [
+        "fa5ce83793ad068740ac7d299bad7ed5241bf479034701e9e8022bb94dae713e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:4",
+      "sequence": 27559,
+      "chapter_label": "ACT 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "He reasoned in the synagogue every Sabbath and persuaded Jews and Greeks.",
+      "ko": "안식일마다 바울이 회당에서 강론하고 유대인과 헬라인을 권면하니라",
+      "source_text_hash": "01ad8ab61c9949e15ae1fd6d2e12b73a23a6e3c0c110123c923bca06ca8b34d1",
+      "translation_text_hash": "46ce1b89c47cdca1361c2895b8756d53f779af7a208409b52c107d920e20874c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일마다 바울이 회당에서 강론하고 유대인과 헬라인을 권면하니라"
+      ],
+      "raw_text_hashes": [
+        "46ce1b89c47cdca1361c2895b8756d53f779af7a208409b52c107d920e20874c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:5",
+      "sequence": 27560,
+      "chapter_label": "ACT 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "When Silas and Timothy came down from Macedonia, Paul was compelled by the Spirit, testifying to the Jews that Jesus was the Christ.",
+      "ko": "실라와 디모데가 마게도냐로서 내려오매 바울이 하나님의 말씀에 붙잡혀 유대인들에게 예수는 그리스도라 밝히 증거하니",
+      "source_text_hash": "36a6eea9230153d366e5a8af890d786d5e3a68a7cca8d69bcc50c814bcbb58a9",
+      "translation_text_hash": "e5f078f5b34415d79095225ea89ff6b347714caa46dc9cfbc889f5b453cf6597",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "실라와 디모데가 마게도냐로서 내려오매 바울이 하나님의 말씀에 붙잡혀 유대인들에게 예수는 그리스도라 밝히 증거하니"
+      ],
+      "raw_text_hashes": [
+        "e5f078f5b34415d79095225ea89ff6b347714caa46dc9cfbc889f5b453cf6597"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:6",
+      "sequence": 27561,
+      "chapter_label": "ACT 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "When they opposed him and blasphemed, he shook out his clothing and said to them, “Your blood be on your own heads! I am clean. From now on, I will go to the Gentiles!”",
+      "ko": "저희가 대적하여 훼방하거늘 바울이 옷을 떨어 가로되 너희 피가 너희 머리로 돌아갈 것이요 나는 깨끗하니라 이 후에는 이방인에게로 가리라 하고",
+      "source_text_hash": "29801bdcda68c6baf23eef1c09251e7caf00ff4fc6184721d8374066d6404cbb",
+      "translation_text_hash": "2e9ecaa8d2e2ee846803a467c225cf47c59e116d1c835e512d9497cd84f4d2b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 대적하여 훼방하거늘 바울이 옷을 떨어 가로되 너희 피가 너희 머리로 돌아갈 것이요 나는 깨끗하니라 이 후에는 이방인에게로 가리라 하고"
+      ],
+      "raw_text_hashes": [
+        "2e9ecaa8d2e2ee846803a467c225cf47c59e116d1c835e512d9497cd84f4d2b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:7",
+      "sequence": 27562,
+      "chapter_label": "ACT 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "He departed there and went into the house of a certain man named Justus, one who worshiped God, whose house was next door to the synagogue.",
+      "ko": "거기서 옮겨 하나님을 공경하는 디도 유스도라 하는 사람의 집에 들어가니 그 집이 회당 옆이라",
+      "source_text_hash": "a76e9e6a2eebd051272fa2cb8d2e739717f904d977f245c1fcb80c7bbcfa0288",
+      "translation_text_hash": "03d07dda42a8b2ae8f8bd9075d218b1f6e124ea14623c799cdff3b9d0bc482cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 옮겨 하나님을 공경하는 디도 유스도라 하는 사람의 집에 들어가니 그 집이 회당 옆이라"
+      ],
+      "raw_text_hashes": [
+        "03d07dda42a8b2ae8f8bd9075d218b1f6e124ea14623c799cdff3b9d0bc482cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:8",
+      "sequence": 27563,
+      "chapter_label": "ACT 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "Crispus, the ruler of the synagogue, believed in the Lord with all his house. Many of the Corinthians, when they heard, believed and were baptized.",
+      "ko": "또 회당장 그리스보가 온 집으로 더불어 주를 믿으며 수다한 고린도 사람도 듣고 믿어 세례를 받더라",
+      "source_text_hash": "8153cfcb27647a6a7642c486f357387bea4862ea239ad860aed119f757dd0d86",
+      "translation_text_hash": "05e44e8b99a45dba54aa0ef145cb57b72409352a123fe5ad14c83d9d0c343c67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 회당장 그리스보가 온 집으로 더불어 주를 믿으며 수다한 고린도 사람도 듣고 믿어 세례를 받더라"
+      ],
+      "raw_text_hashes": [
+        "05e44e8b99a45dba54aa0ef145cb57b72409352a123fe5ad14c83d9d0c343c67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:9",
+      "sequence": 27564,
+      "chapter_label": "ACT 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "The Lord said to Paul in the night by a vision, “Don’t be afraid, but speak and don’t be silent;",
+      "ko": "밤에 주께서 환상 가운데 바울에게 말씀하시되 두려워하지 말며 잠잠하지 말고 말하라",
+      "source_text_hash": "cdc4789acbdd22aa52facabc0869b3ea16678ac2e0936e32f448197487a88bf8",
+      "translation_text_hash": "ba5ecbb709e74415a12ca622872868bdc572688557bd371e40f91e7ee58e6edf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 주께서 환상 가운데 바울에게 말씀하시되 두려워하지 말며 잠잠하지 말고 말하라"
+      ],
+      "raw_text_hashes": [
+        "ba5ecbb709e74415a12ca622872868bdc572688557bd371e40f91e7ee58e6edf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:10",
+      "sequence": 27565,
+      "chapter_label": "ACT 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "for I am with you, and no one will attack you to harm you, for I have many people in this city.”",
+      "ko": "내가 너와 함께 있으매 아무 사람도 너를 대적하여 해롭게 할 자가 없을 것이니 이는 이 성중에 내 백성이 많음이라 하시더라",
+      "source_text_hash": "edda693bb8796c8c11e251fa406bc68468af9e23aa5075f7aedc20883337825b",
+      "translation_text_hash": "0ea1b438a8ea7dde77244c9c6e8e7aa32b0699cc7de732d66a69aaf007bf672d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너와 함께 있으매 아무 사람도 너를 대적하여 해롭게 할 자가 없을 것이니 이는 이 성중에 내 백성이 많음이라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "0ea1b438a8ea7dde77244c9c6e8e7aa32b0699cc7de732d66a69aaf007bf672d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:11",
+      "sequence": 27566,
+      "chapter_label": "ACT 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "He lived there a year and six months, teaching the word of God among them.",
+      "ko": "일년 육개월을 유하며 그들 가운데서 하나님의 말씀을 가르치니라",
+      "source_text_hash": "46334d054bdab6b69e9b8fe616e9668fb3f0ce8dd49c6e0313c5a588c3acef38",
+      "translation_text_hash": "612a7132f0a3a2229608bfdb9c6f87918e6d3dca669db3067123cf5415c8e4cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일년 육개월을 유하며 그들 가운데서 하나님의 말씀을 가르치니라"
+      ],
+      "raw_text_hashes": [
+        "612a7132f0a3a2229608bfdb9c6f87918e6d3dca669db3067123cf5415c8e4cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:12",
+      "sequence": 27567,
+      "chapter_label": "ACT 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "But when Gallio was proconsul of Achaia, the Jews with one accord rose up against Paul and brought him before the judgment seat,",
+      "ko": "갈리오가 아가야 총독 되었을 때에 유대인이 일제히 일어나 바울을 대적하여 재판 자리로 데리고 와서",
+      "source_text_hash": "65ca96de55a1b635da4d4fa10762d2f8b6ff90c6af41b8f99e94b3dd94e3602d",
+      "translation_text_hash": "5fc74c659719c1e1fd84c520564a6e7251b0be4a7df93d237609a280bc522a85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈리오가 아가야 총독 되었을 때에 유대인이 일제히 일어나 바울을 대적하여 재판 자리로 데리고 와서"
+      ],
+      "raw_text_hashes": [
+        "5fc74c659719c1e1fd84c520564a6e7251b0be4a7df93d237609a280bc522a85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:13",
+      "sequence": 27568,
+      "chapter_label": "ACT 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "saying, “This man persuades men to worship God contrary to the law.”",
+      "ko": "말하되 이 사람이 율법을 어기어 하나님을 공경하라고 사람들을 권한다 하거늘",
+      "source_text_hash": "581387c80711939a287b93cecfb70c68b55d8f0281d6e64a23103fe55793cd23",
+      "translation_text_hash": "0c4b19010689b3772fc68789ceb31290290308d38f231e898d481da6e2b04c4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하되 이 사람이 율법을 어기어 하나님을 공경하라고 사람들을 권한다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "0c4b19010689b3772fc68789ceb31290290308d38f231e898d481da6e2b04c4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:14",
+      "sequence": 27569,
+      "chapter_label": "ACT 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "But when Paul was about to open his mouth, Gallio said to the Jews, “If indeed it were a matter of wrong or of wicked crime, you Jews, it would be reasonable that I should bear with you;",
+      "ko": "바울이 입을 열고자 할 때에 갈리오가 유대인들에게 이르되 너희 유대인들아 만일 무슨 부정한 일이나 괴악한 행동이었으면 내가 너희 말을 들어주는 것이 가하거니와",
+      "source_text_hash": "22fe40178417aabfdbd4d0f373c6e927bb936ee0769c7549c126299cf2afbd4a",
+      "translation_text_hash": "abfc13a98af33f35b304b84a8936b2491db4eea686407200de8794933cb03627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 입을 열고자 할 때에 갈리오가 유대인들에게 이르되 너희 유대인들아 만일 무슨 부정한 일이나 괴악한 행동이었으면 내가 너희 말을 들어주는 것이 가하거니와"
+      ],
+      "raw_text_hashes": [
+        "abfc13a98af33f35b304b84a8936b2491db4eea686407200de8794933cb03627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:15",
+      "sequence": 27570,
+      "chapter_label": "ACT 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "but if they are questions about words and names and your own law, look to it yourselves. For I don’t want to be a judge of these matters.”",
+      "ko": "만일 문제가 언어와 명칭과 너희 법에 관한 것이면 너희가 스스로 처리하라 나는 이러한 일에 재판장 되기를 원치 아니하노라 하고",
+      "source_text_hash": "1036627d31cfa28757378109827cc37469f6418e00a59acebb39abd2042f6e2f",
+      "translation_text_hash": "c85540bc6326d5bc63f33a123ace53d32de676d237309bac33c3d4d8838d2139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 문제가 언어와 명칭과 너희 법에 관한 것이면 너희가 스스로 처리하라 나는 이러한 일에 재판장 되기를 원치 아니하노라 하고"
+      ],
+      "raw_text_hashes": [
+        "c85540bc6326d5bc63f33a123ace53d32de676d237309bac33c3d4d8838d2139"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:16",
+      "sequence": 27571,
+      "chapter_label": "ACT 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "So he drove them from the judgment seat.",
+      "ko": "저희를 재판 자리에서 쫓아내니",
+      "source_text_hash": "de76abcf79603fc95548f9c112faca1fa439b67380ef3e5920353b2bc1e28bca",
+      "translation_text_hash": "1bef4bdc6aad261cc4f9659dec3542c2ebf12128d0c5ec52d2335ebbebc7180f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 재판 자리에서 쫓아내니"
+      ],
+      "raw_text_hashes": [
+        "1bef4bdc6aad261cc4f9659dec3542c2ebf12128d0c5ec52d2335ebbebc7180f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:17",
+      "sequence": 27572,
+      "chapter_label": "ACT 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "Then all the Greeks seized Sosthenes, the ruler of the synagogue, and beat him before the judgment seat. Gallio didn’t care about any of these things.",
+      "ko": "모든 사람이 회당장 소스데네를 잡아 재판 자리 앞에서 때리되 갈리오가 이 일을 상관치 아니하니라",
+      "source_text_hash": "257778de5be3e1209fe8a34247d32ddd6ec93440f6c5ac9e392962df83ea75fe",
+      "translation_text_hash": "2d4440b5301e35f043ae6f50de61a2c742bb356b927af4dc4b35c938ffd70cef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람이 회당장 소스데네를 잡아 재판 자리 앞에서 때리되 갈리오가 이 일을 상관치 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "2d4440b5301e35f043ae6f50de61a2c742bb356b927af4dc4b35c938ffd70cef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:18",
+      "sequence": 27573,
+      "chapter_label": "ACT 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "Paul, having stayed after this many more days, took his leave of the brothers, and sailed from there for Syria, together with Priscilla and Aquila. He shaved his head in Cenchreae, for he had a vow.",
+      "ko": "바울은 더 여러 날 유하다가 형제들을 작별하고 배 타고 수리아로 떠나갈쌔 브리스길라와 아굴라도 함께 하더라 바울이 일찍 서원이 있으므로 겐그레아에서 머리를 깎았더라",
+      "source_text_hash": "75ed289355d442aa96324e3fe0c0a2cf3e47b98eaa7634d5d829c9e0d0fef4d1",
+      "translation_text_hash": "7f6b9510bd72a8ccc6cfcbff7c82feef5a1600ec8b8a30071354b12c0aeddd9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울은 더 여러 날 유하다가 형제들을 작별하고 배 타고 수리아로 떠나갈쌔 브리스길라와 아굴라도 함께 하더라 바울이 일찍 서원이 있으므로 겐그레아에서 머리를 깎았더라"
+      ],
+      "raw_text_hashes": [
+        "7f6b9510bd72a8ccc6cfcbff7c82feef5a1600ec8b8a30071354b12c0aeddd9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:19",
+      "sequence": 27574,
+      "chapter_label": "ACT 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "He came to Ephesus, and he left them there; but he himself entered into the synagogue and reasoned with the Jews.",
+      "ko": "에베소에 와서 저희를 거기 머물러 두고 자기는 회당에 들어가서 유대인들과 변론하니",
+      "source_text_hash": "ab51f4ed3dba37331544819e92cc24e254e0b13f4ac011323bbd6e283ec77e0e",
+      "translation_text_hash": "f72f95531c9f86e076670c921a72bf6daf20aadcbc49b8d3f741428f16b42fc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에베소에 와서 저희를 거기 머물러 두고 자기는 회당에 들어가서 유대인들과 변론하니"
+      ],
+      "raw_text_hashes": [
+        "f72f95531c9f86e076670c921a72bf6daf20aadcbc49b8d3f741428f16b42fc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:20",
+      "sequence": 27575,
+      "chapter_label": "ACT 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "When they asked him to stay with them a longer time, he declined;",
+      "ko": "여러 사람이 더 오래 있기를 청하되 허락지 아니하고",
+      "source_text_hash": "7aba0d55af9e965780fade07b46bac59221d528c788653bee2a03ef82e748877",
+      "translation_text_hash": "f650fb41d216039bbdada7d499801ad30bc8c6e6ddf196c32d1c72524ddeeaec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 사람이 더 오래 있기를 청하되 허락지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "f650fb41d216039bbdada7d499801ad30bc8c6e6ddf196c32d1c72524ddeeaec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:21",
+      "sequence": 27576,
+      "chapter_label": "ACT 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "but taking his leave of them, he said, “I must by all means keep this coming feast in Jerusalem, but I will return again to you if God wills.” Then he set sail from Ephesus.",
+      "ko": "작별하여 가로되 만일 하나님의 뜻이면 너희에게 돌아오리라 하고 배를 타고 에베소를 떠나",
+      "source_text_hash": "df60729d0a89c3c972507189854e35ea9766c99c01a17839ed1763eef3ea3fd5",
+      "translation_text_hash": "730a5e2e24358bc5feec09b53edb6e15524ccee56b31704db2051ab7d6493d81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "작별하여 가로되 만일 하나님의 뜻이면 너희에게 돌아오리라 하고 배를 타고 에베소를 떠나"
+      ],
+      "raw_text_hashes": [
+        "730a5e2e24358bc5feec09b53edb6e15524ccee56b31704db2051ab7d6493d81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:22",
+      "sequence": 27577,
+      "chapter_label": "ACT 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "When he had landed at Caesarea, he went up and greeted the assembly, and went down to Antioch.",
+      "ko": "가이사랴에서 상륙하여 올라가 교회의 안부를 물은 후에 안디옥으로 내려가서",
+      "source_text_hash": "4007ff6ddd83da0a2b767f86145ca4e90ffcbab65030923961920d916dc35232",
+      "translation_text_hash": "547db44658f71d9f3a4d68d918e3c87de6aaba23a1e58b7c1d797e329ca03cf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가이사랴에서 상륙하여 올라가 교회의 안부를 물은 후에 안디옥으로 내려가서"
+      ],
+      "raw_text_hashes": [
+        "547db44658f71d9f3a4d68d918e3c87de6aaba23a1e58b7c1d797e329ca03cf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:23",
+      "sequence": 27578,
+      "chapter_label": "ACT 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "Having spent some time there, he departed and went through the region of Galatia and Phrygia, in order, establishing all the disciples.",
+      "ko": "얼마 있다가 떠나 갈라디아와 브루기아 땅을 차례로 다니며 모든 제자를 굳게 하니라",
+      "source_text_hash": "5dda684e7db35957116dc5016eb7c740420fa48d5e53dba379fa22146317f49e",
+      "translation_text_hash": "ef585b1eb17f0345a47519e7fb014d78fd1617aad38a841b787959ece29ea955",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "얼마 있다가 떠나 갈라디아와 브루기아 땅을 차례로 다니며 모든 제자를 굳게 하니라"
+      ],
+      "raw_text_hashes": [
+        "ef585b1eb17f0345a47519e7fb014d78fd1617aad38a841b787959ece29ea955"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:24",
+      "sequence": 27579,
+      "chapter_label": "ACT 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "Now a certain Jew named Apollos, an Alexandrian by race, an eloquent man, came to Ephesus. He was mighty in the Scriptures.",
+      "ko": "알렉산드리아에서 난 아볼로라 하는 유대인이 에베소에 이르니 이 사람은 학문이 많고 성경에 능한 자라",
+      "source_text_hash": "b2ffffd7e9c650dca50e73123b268bca75e91d8435be609e735cf7fa3fb8f631",
+      "translation_text_hash": "f95f2f05045d2a9fd8fe2a70fb44a41d5db1ec8751cc854d18d33099b3808f57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "알렉산드리아에서 난 아볼로라 하는 유대인이 에베소에 이르니 이 사람은 학문이 많고 성경에 능한 자라"
+      ],
+      "raw_text_hashes": [
+        "f95f2f05045d2a9fd8fe2a70fb44a41d5db1ec8751cc854d18d33099b3808f57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:25",
+      "sequence": 27580,
+      "chapter_label": "ACT 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "This man had been instructed in the way of the Lord; and being fervent in spirit, he spoke and taught accurately the things concerning Jesus, although he knew only the baptism of John.",
+      "ko": "그가 일찍 주의 도를 배워 열심으로 예수에 관한 것을 자세히 말하며 가르치나 요한의 세례만 알 따름이라",
+      "source_text_hash": "c4639393efbee0e1fa34998820f71077c37850ec5d6ee4b45a21e0b87f8035cd",
+      "translation_text_hash": "8a805527be043d4b209d138bdbb8d983db257ff4d7410df322d6d63e6d80ac09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 일찍 주의 도를 배워 열심으로 예수에 관한 것을 자세히 말하며 가르치나 요한의 세례만 알 따름이라"
+      ],
+      "raw_text_hashes": [
+        "8a805527be043d4b209d138bdbb8d983db257ff4d7410df322d6d63e6d80ac09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:26",
+      "sequence": 27581,
+      "chapter_label": "ACT 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "He began to speak boldly in the synagogue. But when Priscilla and Aquila heard him, they took him aside, and explained to him the way of God more accurately.",
+      "ko": "그가 회당에서 담대히 말하기를 시작하거늘 브리스길라와 아굴라가 듣고 데려다가 하나님의 도를 더 자세히 풀어 이르더라",
+      "source_text_hash": "ebbf36cd13335b9581c718301aa84394d4c2c4ce1490c097149ea52913411496",
+      "translation_text_hash": "23dde29d43eb3eb58a966afa26fc7d82d61feb8c7a4362b32787136dc8c678f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 회당에서 담대히 말하기를 시작하거늘 브리스길라와 아굴라가 듣고 데려다가 하나님의 도를 더 자세히 풀어 이르더라"
+      ],
+      "raw_text_hashes": [
+        "23dde29d43eb3eb58a966afa26fc7d82d61feb8c7a4362b32787136dc8c678f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:27",
+      "sequence": 27582,
+      "chapter_label": "ACT 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "When he had determined to pass over into Achaia, the brothers encouraged him; and wrote to the disciples to receive him. When he had come, he greatly helped those who had believed through grace;",
+      "ko": "아볼로가 아가야로 건너가고자 하니 형제들이 저를 장려하며 제자들에게 편지하여 영접하라 하였더니 저가 가매 은혜로 말미암아 믿은 자들에게 많은 유익을 주니",
+      "source_text_hash": "d28c8f8e301913b1709eec6dbcedf580c5db9e734187e93799b816bf684d8d67",
+      "translation_text_hash": "05de864ee57f05947dec0858a6d430426c20342e0f19948132c5fcfaff1aabb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아볼로가 아가야로 건너가고자 하니 형제들이 저를 장려하며 제자들에게 편지하여 영접하라 하였더니 저가 가매 은혜로 말미암아 믿은 자들에게 많은 유익을 주니"
+      ],
+      "raw_text_hashes": [
+        "05de864ee57f05947dec0858a6d430426c20342e0f19948132c5fcfaff1aabb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:18:28",
+      "sequence": 27583,
+      "chapter_label": "ACT 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "for he powerfully refuted the Jews, publicly showing by the Scriptures that Jesus was the Christ.",
+      "ko": "이는 성경으로써 예수는 그리스도라고 증거하여 공중 앞에서 유력하게 유대인의 말을 이김일러라",
+      "source_text_hash": "0b6f647da89e593728c8a543dc31b46381719efa2ff3947667a37d29e61c8f66",
+      "translation_text_hash": "7d034072d552b144bb0cac69b014e6c623544e566e7855855062b659b117e68a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 성경으로써 예수는 그리스도라고 증거하여 공중 앞에서 유력하게 유대인의 말을 이김일러라"
+      ],
+      "raw_text_hashes": [
+        "7d034072d552b144bb0cac69b014e6c623544e566e7855855062b659b117e68a"
+      ]
+    }
+  ]
+}

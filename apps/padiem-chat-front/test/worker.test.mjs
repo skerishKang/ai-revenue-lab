@@ -146,25 +146,63 @@ test("com2 down: reads get the maintenance page in static mode", async () => {
   assert.equal(await response.text(), MAINTENANCE_HTML);
 });
 
-test("a 5xx read also falls back, and the short health cache skips com2 next time", async () => {
+test("repeated API 503 responses pass through without poisoning other reads", async () => {
+  const fetchImpl = recordingFetch((request) => {
+    const path = new URL(request.url).pathname;
+    return path === "/api/pc/pairings" || path === "/api/chat/custom/credential"
+      ? new Response('{"error":"component unavailable"}', { status: 503, headers: { "content-type": "application/json" } })
+      : new Response('{"authenticated":true}', { status: 200 });
+  });
+  const handle = createFront({ fetchImpl });
+  for (const path of ["/api/pc/pairings", "/api/chat/custom/credential", "/api/pc/pairings"]) {
+    const response = await handle(new Request("https://chat.padiem.net" + path), baseEnv());
+    assert.equal(response.status, 503);
+    assert.equal(await response.text(), '{"error":"component unavailable"}');
+    assert.equal(response.headers.get("x-padiem-front"), null);
+  }
+  const auth = await handle(new Request("https://chat.padiem.net/api/auth/status"), baseEnv());
+  assert.equal(auth.status, 200);
+  assert.equal(await auth.text(), '{"authenticated":true}');
+  assert.equal(fetchImpl.calls.length, 4);
+});
+
+test("a local signing failure fails closed without poisoning origin health", async () => {
+  let signingFailures = 1;
+  let calls = 0;
+  const handle = realCreateFront({
+    sign: async (request) => {
+      if (signingFailures-- > 0) throw new Error("missing signing configuration");
+      return new Headers(request.headers);
+    },
+    fetchImpl: async () => { calls += 1; return new Response("ok"); },
+  });
+  assert.equal((await handle(reader(), baseEnv())).status, 503);
+  assert.equal(calls, 0);
+  assert.equal((await handle(reader(), baseEnv())).status, 200);
+  assert.equal(calls, 1);
+});
+
+test("failed /health probe opens the short cache and later retries", async () => {
   let now = 1_000;
-  const fetchImpl = recordingFetch(() => new Response("bad", { status: 502 }));
-  const chatWorker = { calls: 0, async fetch() { this.calls += 1; return new Response("python"); } };
+  let healthStatus = 503;
+  const fetchImpl = recordingFetch((request) =>
+    new URL(request.url).pathname === "/health"
+      ? new Response("health", { status: healthStatus })
+      : new Response("auth", { status: 200 })
+  );
   const handle = createFront({ fetchImpl, now: () => now });
-  const env = baseEnv({ FALLBACK_MODE: "service", CHAT_WORKER: chatWorker, HEALTH_TTL_MS: "10000" });
+  const env = baseEnv({ HEALTH_TTL_MS: "10000" });
+  const health = () => new Request("https://chat.padiem.net/health");
 
-  await handle(reader(), env);
+  assert.equal((await handle(health(), env)).headers.get("x-padiem-front"), "read_fallback_static");
+  now += 5_000;
+  assert.equal((await handle(reader(), env)).headers.get("x-padiem-front"), "read_fallback_static");
   assert.equal(fetchImpl.calls.length, 1);
-  assert.equal(chatWorker.calls, 1);
-
-  now += 5_000; // inside the cache window
-  await handle(reader(), env);
-  assert.equal(fetchImpl.calls.length, 1, "com2 must be skipped while unhealthy");
-  assert.equal(chatWorker.calls, 2);
-
-  now += 10_000; // cache expired → try com2 again
-  await handle(reader(), env);
-  assert.equal(fetchImpl.calls.length, 2);
+  now += 10_000;
+  healthStatus = 200;
+  assert.equal((await handle(health(), env)).status, 200);
+  assert.equal((await handle(reader(), env)).status, 200);
+  assert.equal(fetchImpl.calls.length, 3);
 });
 
 test("writes before canonical may fall back; after canonical they never reach Python", async () => {
@@ -192,14 +230,16 @@ test("writes before canonical may fall back; after canonical they never reach Py
   assert.equal(chatWorker.calls, 1, "a canonical write must never fall back to the Python Worker");
 });
 
-test("a canonical write that gets a 5xx is refused, not passed through", async () => {
-  const fetchImpl = recordingFetch(() => new Response("bad", { status: 500 }));
-  const handle = createFront({ fetchImpl });
+test("a canonical write returns the upstream 5xx unchanged", async () => {
+  const upstream = new Response('{"error":"unavailable"}', { status: 500 });
+  const chatWorker = { calls: 0, async fetch() { this.calls += 1; return new Response("python"); } };
+  const handle = createFront({ fetchImpl: recordingFetch(() => upstream) });
   const response = await handle(new Request("https://chat.padiem.net/api/chat/stream", {
     method: "POST", body: "{}",
-  }), baseEnv({ COM2_CANONICAL: "writes", FALLBACK_MODE: "service" }));
-  assert.equal(response.status, 503);
-  assert.equal(response.headers.get("x-padiem-front"), "write_com2_canonical_refused");
+  }), baseEnv({ COM2_CANONICAL: "writes", FALLBACK_MODE: "service", CHAT_WORKER: chatWorker }));
+  assert.equal(response, upstream);
+  assert.equal(await response.text(), '{"error":"unavailable"}');
+  assert.equal(chatWorker.calls, 0);
 });
 
 test("the worker stays inside a proxy-only CPU shape", () => {
@@ -228,4 +268,34 @@ test("static assets stay on Cloudflare and dynamic requests use real signing", a
   assert.equal((await handle(api, env)).status, 200);
   assert.match(fetchImpl.calls[0].headers.get("x-padiem-edge-proof"), /^v1=[0-9a-f]{64}$/);
   assert.notEqual(fetchImpl.calls[0].headers.get("x-padiem-edge-proof"), "forged");
+});
+
+test("front vars match the verified non-secret production contract", () => {
+  // Snapshot of production version b45fb8f5-7cad-4c0c-9a3b-ef5ae55e18cf,
+  // verified 2026-11-01. Secrets are deliberately excluded.
+  const expected = {
+    FRONT_ORIGIN: "https://chat-com2.padiem.net",
+    FALLBACK_MODE: "static",
+    COM2_CANONICAL: "writes",
+    HEALTH_TTL_MS: "10000",
+    UPSTREAM_TIMEOUT_MS: "8000",
+    API_READ_TIMEOUT_MS: "30000",
+  };
+  const config = readFileSync(join(HERE, "..", "wrangler.toml"), "utf8");
+  const sections = config.split(/^\[vars\]\s*$/m);
+  assert.equal(sections.length, 2, "wrangler.toml must declare exactly one [vars]");
+  const varsText = sections[1].split(/^\[/m)[0];
+  const configured = {};
+  for (const line of varsText.split(/\r?\n/)) {
+    if (!line.trim() || line.trimStart().startsWith("#")) continue;
+    const match = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*("(?:[^"\\]|\\.)*")\s*(?:#.*)?$/);
+    assert.ok(match, "invalid or unsupported [vars] line: " + line);
+    assert.equal(Object.hasOwn(configured, match[1]), false, "duplicate variable " + match[1]);
+    configured[match[1]] = JSON.parse(match[2]);
+  }
+  assert.deepEqual(configured, expected);
+  // Supply the current non-secret live vars as JSON for an actual live comparison.
+  if (process.env.PADIEM_FRONT_LIVE_VARS_JSON) {
+    assert.deepEqual(configured, JSON.parse(process.env.PADIEM_FRONT_LIVE_VARS_JSON));
+  }
 });

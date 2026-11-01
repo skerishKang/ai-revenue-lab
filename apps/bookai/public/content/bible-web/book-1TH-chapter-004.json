@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TH:chapter:004",
+  "unit_ordinal": 1115,
+  "unit_label": "1TH 4",
+  "book_code": "1TH",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TH:4:1",
+      "sequence": 29601,
+      "chapter_label": "1TH 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Finally then, brothers, we beg and exhort you in the Lord Jesus, that as you received from us how you ought to walk and to please God, that you abound more and more.",
+      "ko": "종말로 형제들아 우리가 주 예수 안에서 너희에게 구하고 권면하노니 너희가 마땅히 어떻게 행하며 하나님께 기쁘시게 할 것을 우리에게 받았으니 곧 너희 행하는 바라 더욱 많이 힘쓰라",
+      "source_text_hash": "b16cd16126d1f0801d832f54de1cc4e598abf29531c98911380a014ece138063",
+      "translation_text_hash": "76f66d05a90ad31f3c1bf307ca4fcd90fb45f526669afa4038d4398b31dccf67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종말로 형제들아 우리가 주 예수 안에서 너희에게 구하고 권면하노니 너희가 마땅히 어떻게 행하며 하나님께 기쁘시게 할 것을 우리에게 받았으니 곧 너희 행하는 바라 더욱 많이 힘쓰라"
+      ],
+      "raw_text_hashes": [
+        "76f66d05a90ad31f3c1bf307ca4fcd90fb45f526669afa4038d4398b31dccf67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:2",
+      "sequence": 29602,
+      "chapter_label": "1TH 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "For you know what instructions we gave you through the Lord Jesus.",
+      "ko": "우리가 주 예수로 말미암아 너희에게 무슨 명령으로 준 것을 너희가 아느니라",
+      "source_text_hash": "062f16911526587bbab0d56468cee46fb8fe04f4863b4884d0edbd7936137794",
+      "translation_text_hash": "f445c5fbc2ad036ffb379a7039c39083257366648c1eb471fb08bd68048d9598",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 주 예수로 말미암아 너희에게 무슨 명령으로 준 것을 너희가 아느니라"
+      ],
+      "raw_text_hashes": [
+        "f445c5fbc2ad036ffb379a7039c39083257366648c1eb471fb08bd68048d9598"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:3",
+      "sequence": 29603,
+      "chapter_label": "1TH 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "For this is the will of God: your sanctification, that you abstain from sexual immorality,",
+      "ko": "하나님의 뜻은 이것이니 너희의 거룩함이라 곧 음란을 버리고",
+      "source_text_hash": "d66c72af4ab2e9be69663f101bca13fc83ad11ce08cb300b8d84abc0318684f2",
+      "translation_text_hash": "64ca625a31b27bcb1517d41fc84db10dcb9483360a267b005ef08dc4dabc6bbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 뜻은 이것이니 너희의 거룩함이라 곧 음란을 버리고"
+      ],
+      "raw_text_hashes": [
+        "64ca625a31b27bcb1517d41fc84db10dcb9483360a267b005ef08dc4dabc6bbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:4",
+      "sequence": 29604,
+      "chapter_label": "1TH 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "that each one of you know how to control his own body in sanctification and honor,",
+      "ko": "각각 거룩함과 존귀함으로 자기의 아내 취할 줄을 알고",
+      "source_text_hash": "0686072cd388b36a488dc4c0d317adca63171c230303acb0d86bf1987bcb03aa",
+      "translation_text_hash": "5d4c0b1d1769885cd037f9d744b2b5b3ce463a99f8c793ad03c82afb90cbb10c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각각 거룩함과 존귀함으로 자기의 아내 취할 줄을 알고"
+      ],
+      "raw_text_hashes": [
+        "5d4c0b1d1769885cd037f9d744b2b5b3ce463a99f8c793ad03c82afb90cbb10c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:5",
+      "sequence": 29605,
+      "chapter_label": "1TH 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "not in the passion of lust, even as the Gentiles who don’t know God,",
+      "ko": "하나님을 모르는 이방인과 같이 색욕을 좇지 말고",
+      "source_text_hash": "e4579498140fe7b5e05d8b2898ab0d35274694afafe25035060f9ce6501ae3a7",
+      "translation_text_hash": "b335bfb4166242c1fa363ca3a96517ffe426d96e407dc5bb79e7833da0a0abe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님을 모르는 이방인과 같이 색욕을 좇지 말고"
+      ],
+      "raw_text_hashes": [
+        "b335bfb4166242c1fa363ca3a96517ffe426d96e407dc5bb79e7833da0a0abe8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:6",
+      "sequence": 29606,
+      "chapter_label": "1TH 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "that no one should take advantage of and wrong a brother or sister in this matter; because the Lord is an avenger in all these things, as also we forewarned you and testified.",
+      "ko": "이 일에 분수를 넘어서 형제를 해하지 말라 이는 우리가 너희에게 미리 말하고 증거한 것과 같이 이 모든 일에 주께서 신원하여 주심이니라",
+      "source_text_hash": "cb4bcc58b98172b4e69e716159d635e15187dda7ec74e45d262ca0118650c0c4",
+      "translation_text_hash": "de086075866ecbcacd8e9b03ad5ebfe6c2ccb5bb2be66b03b086c4e223eceab4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일에 분수를 넘어서 형제를 해하지 말라 이는 우리가 너희에게 미리 말하고 증거한 것과 같이 이 모든 일에 주께서 신원하여 주심이니라"
+      ],
+      "raw_text_hashes": [
+        "de086075866ecbcacd8e9b03ad5ebfe6c2ccb5bb2be66b03b086c4e223eceab4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:7",
+      "sequence": 29607,
+      "chapter_label": "1TH 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "For God called us not for uncleanness, but in sanctification.",
+      "ko": "하나님이 우리를 부르심은 부정케 하심이 아니요 거룩케 하심이니",
+      "source_text_hash": "07d005caf666230a6c38d0410f59a73bed1ceaf20720b395e56cc009957bb691",
+      "translation_text_hash": "f6702e976cc7efc031a3b70e137a55bf692daae7aab652e008f0cfb839e5f760",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 우리를 부르심은 부정케 하심이 아니요 거룩케 하심이니"
+      ],
+      "raw_text_hashes": [
+        "f6702e976cc7efc031a3b70e137a55bf692daae7aab652e008f0cfb839e5f760"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:8",
+      "sequence": 29608,
+      "chapter_label": "1TH 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore he who rejects this doesn’t reject man, but God, who has also given his Holy Spirit to you.",
+      "ko": "그러므로 저버리는 자는 사람을 저버림이 아니요 너희에게 그의 성령을 주신 하나님을 저버림이니라",
+      "source_text_hash": "eeb1ecd9bb34b92e1ddebaf9559d831792706be266a33cd450eb4c617698bf0c",
+      "translation_text_hash": "477133cae3529e3f528338dab8aac21d0ade811ce81c32dde721c4fe54d65185",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 저버리는 자는 사람을 저버림이 아니요 너희에게 그의 성령을 주신 하나님을 저버림이니라"
+      ],
+      "raw_text_hashes": [
+        "477133cae3529e3f528338dab8aac21d0ade811ce81c32dde721c4fe54d65185"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:9",
+      "sequence": 29609,
+      "chapter_label": "1TH 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "But concerning brotherly love, you have no need that one write to you. For you yourselves are taught by God to love one another,",
+      "ko": "형제 사랑에 관하여는 너희에게 쓸것이 없음은 너희가 친히 하나님의 가르치심을 받아 서로 사랑함이라",
+      "source_text_hash": "bc42629a0b83aa4bf9e772e5cc0ac634a5b2987df7e8e5dbd24db122305dd195",
+      "translation_text_hash": "58bd893d1ee77cafaa11c9da2d5479896d0182c938677d9bba55252fafdc0629",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제 사랑에 관하여는 너희에게 쓸것이 없음은 너희가 친히 하나님의 가르치심을 받아 서로 사랑함이라"
+      ],
+      "raw_text_hashes": [
+        "58bd893d1ee77cafaa11c9da2d5479896d0182c938677d9bba55252fafdc0629"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:10",
+      "sequence": 29610,
+      "chapter_label": "1TH 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "for indeed you do it toward all the brothers who are in all Macedonia. But we exhort you, brothers, that you abound more and more;",
+      "ko": "너희가 온 마게도냐 모든 형제를 대하여 과연 이것을 행하도다 형제들아 권하노니 더 많이 하고",
+      "source_text_hash": "eddd590831c53277b04ccff593c80be38174d536cafb9dc21c625cd2728df979",
+      "translation_text_hash": "55fb19a0aa4ca92ea394da899d653e8bf92ded1a9fd8fd9699b5bab6c71cf2aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 온 마게도냐 모든 형제를 대하여 과연 이것을 행하도다 형제들아 권하노니 더 많이 하고"
+      ],
+      "raw_text_hashes": [
+        "55fb19a0aa4ca92ea394da899d653e8bf92ded1a9fd8fd9699b5bab6c71cf2aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:11",
+      "sequence": 29611,
+      "chapter_label": "1TH 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "and that you make it your ambition to lead a quiet life, and to do your own business, and to work with your own hands, even as we instructed you,",
+      "ko": "또 너희에게 명한것 같이 종용하여 자기 일을 하고 너희 손으로 일하기를 힘쓰라",
+      "source_text_hash": "45a190b5838d29cede1e4460fb6796406fb7220fd02ce932746388fbb8b390f1",
+      "translation_text_hash": "a3da5e6dd280087f2f07d49dfac7fa4ee694357107ef2ea67c8149af94d7380e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희에게 명한것 같이 종용하여 자기 일을 하고 너희 손으로 일하기를 힘쓰라"
+      ],
+      "raw_text_hashes": [
+        "a3da5e6dd280087f2f07d49dfac7fa4ee694357107ef2ea67c8149af94d7380e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:12",
+      "sequence": 29612,
+      "chapter_label": "1TH 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "that you may walk properly toward those who are outside, and may have need of nothing.",
+      "ko": "이는 외인을 대하여 단정히 행하고 또한 아무 궁핍함이 없게 하려 함이라",
+      "source_text_hash": "4b84c8d0eb5ca55141290e6f880b14b33f3b5ec057c4b9d928caeb49cfbf8c63",
+      "translation_text_hash": "7cf1cdb70c567459620e3d4f0b933782d919af5b328142ea66191d9f8af6bab6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 외인을 대하여 단정히 행하고 또한 아무 궁핍함이 없게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "7cf1cdb70c567459620e3d4f0b933782d919af5b328142ea66191d9f8af6bab6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:13",
+      "sequence": 29613,
+      "chapter_label": "1TH 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "But we don’t want you to be ignorant, brothers, concerning those who have fallen asleep, so that you don’t grieve like the rest, who have no hope.",
+      "ko": "형제들아 자는 자들에 관하여는 너희가 알지 못함을 우리가 원치 아니하노니 이는 소망 없는 다른이와 같이 슬퍼하지 않게 하려 함이라",
+      "source_text_hash": "3c4df50f7e041b453d099935532d0a98897212c7fd624ada2bc829ab50de6237",
+      "translation_text_hash": "73afdfaccc64f57165db026a92ac73e64d0b93343576e0f4b96006da132b470b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 자는 자들에 관하여는 너희가 알지 못함을 우리가 원치 아니하노니 이는 소망 없는 다른이와 같이 슬퍼하지 않게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "73afdfaccc64f57165db026a92ac73e64d0b93343576e0f4b96006da132b470b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:14",
+      "sequence": 29614,
+      "chapter_label": "1TH 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "For if we believe that Jesus died and rose again, even so God will bring with him those who have fallen asleep in Jesus.",
+      "ko": "우리가 예수의 죽었다가 다시 사심을 믿을찐대 이와 같이 예수 안에서 자는 자들도 하나님이 저와 함께 데리고 오시리라",
+      "source_text_hash": "e7b78b1961d29aaf53633af37783adf3356ac635a519c54e02ae017669ad5cdc",
+      "translation_text_hash": "e74fdd75c691e630eb32429ad338ab105585720449c572d9c95365d9690a43bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 예수의 죽었다가 다시 사심을 믿을찐대 이와 같이 예수 안에서 자는 자들도 하나님이 저와 함께 데리고 오시리라"
+      ],
+      "raw_text_hashes": [
+        "e74fdd75c691e630eb32429ad338ab105585720449c572d9c95365d9690a43bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:15",
+      "sequence": 29615,
+      "chapter_label": "1TH 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "For this we tell you by the word of the Lord, that we who are alive, who are left until the coming of the Lord, will in no way precede those who have fallen asleep.",
+      "ko": "우리가 주의 말씀으로 너희에게 이것을 말하노니 주 강림하실 때까지 우리 살아 남아 있는 자도 자는 자보다 결단코 앞서지 못하리라",
+      "source_text_hash": "854d0dba2438eaf387b73e5f35fcee0a03d6c30ba136054fab20f1b6a1623f21",
+      "translation_text_hash": "9cd30717b0819b3c2498add3a56001458ded30d600d82dab07b0acb58141e21c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 주의 말씀으로 너희에게 이것을 말하노니 주 강림하실 때까지 우리 살아 남아 있는 자도 자는 자보다 결단코 앞서지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "9cd30717b0819b3c2498add3a56001458ded30d600d82dab07b0acb58141e21c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:16",
+      "sequence": 29616,
+      "chapter_label": "1TH 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "For the Lord himself will descend from heaven with a shout, with the voice of the archangel and with God’s trumpet. The dead in Christ will rise first,",
+      "ko": "주께서 호령과 천사장의 소리와 하나님의 나팔로 친히 하늘로 좇아 강림하시리니 그리스도 안에서 죽은 자들이 먼저 일어나고",
+      "source_text_hash": "391cdae6a4992c5b9e2177548bf37851f817e482c52dd7b1c46abcd6a4faa77a",
+      "translation_text_hash": "758cc535eca81ad2f6361b14dbe8d99c88faf6be903843318d365694895d07de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 호령과 천사장의 소리와 하나님의 나팔로 친히 하늘로 좇아 강림하시리니 그리스도 안에서 죽은 자들이 먼저 일어나고"
+      ],
+      "raw_text_hashes": [
+        "758cc535eca81ad2f6361b14dbe8d99c88faf6be903843318d365694895d07de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:17",
+      "sequence": 29617,
+      "chapter_label": "1TH 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "then we who are alive, who are left, will be caught up together with them in the clouds to meet the Lord in the air. So we will be with the Lord forever.",
+      "ko": "그 후에 우리 살아 남은 자도 저희와 함께 구름 속으로 끌어 올려 공중에서 주를 영접하게 하시리니 그리하여 우리가 항상 주와 함께 있으리라",
+      "source_text_hash": "611f74cc5ec3135a899c17ac622a114917523324a98bcdb3c444f8571e258b9a",
+      "translation_text_hash": "ecec7369ba3aeb4c5d6cdb6684b611ef021a49198528a9d056c8c07113d9bcb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 우리 살아 남은 자도 저희와 함께 구름 속으로 끌어 올려 공중에서 주를 영접하게 하시리니 그리하여 우리가 항상 주와 함께 있으리라"
+      ],
+      "raw_text_hashes": [
+        "ecec7369ba3aeb4c5d6cdb6684b611ef021a49198528a9d056c8c07113d9bcb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TH:4:18",
+      "sequence": 29618,
+      "chapter_label": "1TH 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "1TH",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1TH",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Therefore comfort one another with these words.",
+      "ko": "그러므로 이 여러 말로 서로 위로하라",
+      "source_text_hash": "1ff9de3544a08ca969acc7c93cd7afbb5abb626cd12d4bb6ddec5ed3dc97e24a",
+      "translation_text_hash": "64b6b867d7ecfccad5060f0f4fa5bd12ae8147406d3e8cebef3007ee9d6b9387",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이 여러 말로 서로 위로하라"
+      ],
+      "raw_text_hashes": [
+        "64b6b867d7ecfccad5060f0f4fa5bd12ae8147406d3e8cebef3007ee9d6b9387"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:032",
+  "unit_ordinal": 711,
+  "unit_label": "ISA 32",
+  "book_code": "ISA",
+  "chapter_number": 32,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:32:1",
+      "sequence": 18261,
+      "chapter_label": "ISA 32",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 1
+        }
+      ],
+      "en": "Behold, a king shall reign in righteousness, and princes shall rule in justice.",
+      "ko": "보라 장차 한 왕이 의로 통치할 것이요 방백들이 공평으로 정사할 것이며",
+      "source_text_hash": "3049fcc5155c5bc4b5d427e8ef43f5306e617556f6cf8ab1957db9e9891dadf4",
+      "translation_text_hash": "ce6b5007f0739a28734b66d84d86938d2972f1fe2aaabd89026b8b3915a25f7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 장차 한 왕이 의로 통치할 것이요 방백들이 공평으로 정사할 것이며"
+      ],
+      "raw_text_hashes": [
+        "ce6b5007f0739a28734b66d84d86938d2972f1fe2aaabd89026b8b3915a25f7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:2",
+      "sequence": 18262,
+      "chapter_label": "ISA 32",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 2
+        }
+      ],
+      "en": "A man shall be as a hiding place from the wind, and a covert from the storm, as streams of water in a dry place, as the shade of a large rock in a weary land.",
+      "ko": "또 그 사람은 광풍을 피하는 곳, 폭우를 가리우는 곳 같을 것이며 마른 땅에 냇물 같을 것이며 곤비한 땅에 큰 바위 그늘 같으리니",
+      "source_text_hash": "3d0252fbbf45cfe9e174a1abcd43b890f091d37b5655c3a5a53213ad011e781b",
+      "translation_text_hash": "e1af163010d5755a78aee213476f1e0de0d94c001f3a7519bfcd07b11ff99c51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 사람은 광풍을 피하는 곳, 폭우를 가리우는 곳 같을 것이며 마른 땅에 냇물 같을 것이며 곤비한 땅에 큰 바위 그늘 같으리니"
+      ],
+      "raw_text_hashes": [
+        "e1af163010d5755a78aee213476f1e0de0d94c001f3a7519bfcd07b11ff99c51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:3",
+      "sequence": 18263,
+      "chapter_label": "ISA 32",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 3
+        }
+      ],
+      "en": "The eyes of those who see will not be dim, and the ears of those who hear will listen.",
+      "ko": "보는 자의 눈이 감기지 아니할 것이요 듣는 자의 귀가 기울어질 것이며",
+      "source_text_hash": "0cc78216f3b15d61025ae8ff34725d7753e729581281f125c6df11c48a7c352d",
+      "translation_text_hash": "2dad307daf7c2bf3eda5127c0eeaf6b59108c1a26cefe9090863ead6975dc79d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보는 자의 눈이 감기지 아니할 것이요 듣는 자의 귀가 기울어질 것이며"
+      ],
+      "raw_text_hashes": [
+        "2dad307daf7c2bf3eda5127c0eeaf6b59108c1a26cefe9090863ead6975dc79d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:4",
+      "sequence": 18264,
+      "chapter_label": "ISA 32",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 4
+        }
+      ],
+      "en": "The heart of the rash will understand knowledge, and the tongue of the stammerers will be ready to speak plainly.",
+      "ko": "조급한 자의 마음이 지식을 깨닫고 어눌한 자의 혀가 민첩하여 말을 분명히 할 것이라",
+      "source_text_hash": "1b21f59d9ca29347f0951208c586c43483b79077a98f8cb34932a8201d4ddc44",
+      "translation_text_hash": "1447da3ec778e001cb978ff395865c35e1ea995c787bc8d8e267d1aded3e869d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조급한 자의 마음이 지식을 깨닫고 어눌한 자의 혀가 민첩하여 말을 분명히 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "1447da3ec778e001cb978ff395865c35e1ea995c787bc8d8e267d1aded3e869d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:5",
+      "sequence": 18265,
+      "chapter_label": "ISA 32",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 5
+        }
+      ],
+      "en": "The fool will no longer be called noble, nor the scoundrel be highly respected.",
+      "ko": "어리석은 자를 다시 존귀하다 칭하지 아니하겠고 궤휼한 자를 다시 정대하다 말하지 아니하리니",
+      "source_text_hash": "f74cec995bae184710143156e46aef75ad4d4081b325a545c47425774acecd78",
+      "translation_text_hash": "a35bf09e2da470e32d81d052efef9a51ad60c29e34e899b29acce7a79ea0a773",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어리석은 자를 다시 존귀하다 칭하지 아니하겠고 궤휼한 자를 다시 정대하다 말하지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "a35bf09e2da470e32d81d052efef9a51ad60c29e34e899b29acce7a79ea0a773"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:6",
+      "sequence": 18266,
+      "chapter_label": "ISA 32",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 6
+        }
+      ],
+      "en": "For the fool will speak folly, and his heart will work iniquity, to practice profanity, and to utter error against the LORD, to make empty the soul of the hungry, and to cause the drink of the thirsty to fail.",
+      "ko": "이는 어리석은 자는 어리석은 것을 말하며 그 마음에 불의를 품어 간사를 행하며 패역한 말로 여호와를 거스리며 주린 자의 심령을 비게 하며 목마른 자의 마시는 것을 없어지게 함이며",
+      "source_text_hash": "06344278ae4e858172f2613c3c2dd9b5ed1dd1f49c66e67f6ff92f9ee25994c6",
+      "translation_text_hash": "01a2fbd669b762a91408f06a8f304c6338a21115f71925368e530e209a2ce0c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 어리석은 자는 어리석은 것을 말하며 그 마음에 불의를 품어 간사를 행하며 패역한 말로 여호와를 거스리며 주린 자의 심령을 비게 하며 목마른 자의 마시는 것을 없어지게 함이며"
+      ],
+      "raw_text_hashes": [
+        "01a2fbd669b762a91408f06a8f304c6338a21115f71925368e530e209a2ce0c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:7",
+      "sequence": 18267,
+      "chapter_label": "ISA 32",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 7
+        }
+      ],
+      "en": "The ways of the scoundrel are evil. He devises wicked plans to destroy the humble with lying words, even when the needy speaks right.",
+      "ko": "궤휼한 자는 그 그릇이 악하여 악한 계획을 베풀어 거짓말로 가련한 자를 멸하며 빈핍한 자가 말을 바르게 할찌라도 그리함이어니와",
+      "source_text_hash": "89050b79f6ec2ffbf9d8a387bdf95cc7e00de9cbb27c9f73f8e9fb28f6c197ca",
+      "translation_text_hash": "0fc76fa5de8c0b1841d5ab4bae478ad193e079ec42ea9872dc748209fc6300f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궤휼한 자는 그 그릇이 악하여 악한 계획을 베풀어 거짓말로 가련한 자를 멸하며 빈핍한 자가 말을 바르게 할찌라도 그리함이어니와"
+      ],
+      "raw_text_hashes": [
+        "0fc76fa5de8c0b1841d5ab4bae478ad193e079ec42ea9872dc748209fc6300f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:8",
+      "sequence": 18268,
+      "chapter_label": "ISA 32",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 8
+        }
+      ],
+      "en": "But the noble devises noble things, and he will continue in noble things.",
+      "ko": "고명한 자는 고명한 일을 도모하나니 그는 항상 고명한 일에 서리라",
+      "source_text_hash": "5c041784d30791e26d5466146ac7a04b62d916f83b8f58106367138e318fd271",
+      "translation_text_hash": "d27b856cf718070677bea5ca8b3b05eddf308176a373a1f3a9624b6705bf68a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고명한 자는 고명한 일을 도모하나니 그는 항상 고명한 일에 서리라"
+      ],
+      "raw_text_hashes": [
+        "d27b856cf718070677bea5ca8b3b05eddf308176a373a1f3a9624b6705bf68a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:9",
+      "sequence": 18269,
+      "chapter_label": "ISA 32",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 9
+        }
+      ],
+      "en": "Rise up, you women who are at ease! Hear my voice! You careless daughters, give ear to my speech!",
+      "ko": "너희 안일한 부녀들아 일어나 내 목소리를 들을찌어다 너희 염려 없는 딸들아 내 말에 귀를 기울일찌어다",
+      "source_text_hash": "3523f52bf41e9343d7528f48c2556bf2e8671e9d5483db43a930e2e769555202",
+      "translation_text_hash": "0ea2fa3316f500549ecba426710bfb26425eb16862d9ed3ada8251b49d766a31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 안일한 부녀들아 일어나 내 목소리를 들을찌어다 너희 염려 없는 딸들아 내 말에 귀를 기울일찌어다"
+      ],
+      "raw_text_hashes": [
+        "0ea2fa3316f500549ecba426710bfb26425eb16862d9ed3ada8251b49d766a31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:10",
+      "sequence": 18270,
+      "chapter_label": "ISA 32",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 10
+        }
+      ],
+      "en": "For days beyond a year you will be troubled, you careless women; for the vintage will fail. The harvest won’t come.",
+      "ko": "너희 염려 없는 여자들아 일년 남짓이 지나면 너희가 당황하여 하리니 포도 수확이 없으며 열매 거두는 기한이 이르지 않을 것임이니라",
+      "source_text_hash": "eaf14bab63def9ccd7cdd684ccc381e409543f6994fd63519074472d5acbf21a",
+      "translation_text_hash": "19d30522e7c008ecd4725f035e84c32c98a86f9cfe85fa7aec7a12aab9690d67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 염려 없는 여자들아 일년 남짓이 지나면 너희가 당황하여 하리니 포도 수확이 없으며 열매 거두는 기한이 이르지 않을 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "19d30522e7c008ecd4725f035e84c32c98a86f9cfe85fa7aec7a12aab9690d67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:11",
+      "sequence": 18271,
+      "chapter_label": "ISA 32",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 11
+        }
+      ],
+      "en": "Tremble, you women who are at ease! Be troubled, you careless ones! Strip yourselves, make yourselves naked, and put sackcloth on your waist.",
+      "ko": "너희 안일한 여자들아 떨찌어다 너희 염려 없는 자들아 당황하여 할찌어다 옷을 벗어 몸을 드러내고 베로 허리를 동일찌어다",
+      "source_text_hash": "ad93b13cc8daf67b975092c673047f10d0468c1b959483c7462d5b296134137c",
+      "translation_text_hash": "7a86d65ae279759938ea3d6901dd32d6d8a6269447cdd1c05173568a91cb3bb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 안일한 여자들아 떨찌어다 너희 염려 없는 자들아 당황하여 할찌어다 옷을 벗어 몸을 드러내고 베로 허리를 동일찌어다"
+      ],
+      "raw_text_hashes": [
+        "7a86d65ae279759938ea3d6901dd32d6d8a6269447cdd1c05173568a91cb3bb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:12",
+      "sequence": 18272,
+      "chapter_label": "ISA 32",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 12
+        }
+      ],
+      "en": "Beat your breasts for the pleasant fields, for the fruitful vine.",
+      "ko": "좋은 밭을 위하며 열매 많은 포도나무를 위하여 가슴을 치게 될 것이니라",
+      "source_text_hash": "f860c050b24884280cf9ce6b8721fcc7daf6306e5d7295c5265aab29ebad1e86",
+      "translation_text_hash": "6666233d8145a8b2a1ab5e96deb9df121fcae67d48808fdeb860c4da58f48ee4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좋은 밭을 위하며 열매 많은 포도나무를 위하여 가슴을 치게 될 것이니라"
+      ],
+      "raw_text_hashes": [
+        "6666233d8145a8b2a1ab5e96deb9df121fcae67d48808fdeb860c4da58f48ee4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:13",
+      "sequence": 18273,
+      "chapter_label": "ISA 32",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 13
+        }
+      ],
+      "en": "Thorns and briers will come up on my people’s land; yes, on all the houses of joy in the joyous city.",
+      "ko": "형극과 질려가 내 백성의 땅에 나며 희락의 성읍, 기뻐하는 모든 집에 나리니",
+      "source_text_hash": "aab3a976aaa85f65454712c853bad7856a119c1ae2f511be23cd35514e2d9279",
+      "translation_text_hash": "10140afc7826c4e49e8c6adcc0903ed1afc96f9183d5b247fb51488e14238232",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형극과 질려가 내 백성의 땅에 나며 희락의 성읍, 기뻐하는 모든 집에 나리니"
+      ],
+      "raw_text_hashes": [
+        "10140afc7826c4e49e8c6adcc0903ed1afc96f9183d5b247fb51488e14238232"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:14",
+      "sequence": 18274,
+      "chapter_label": "ISA 32",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 14
+        }
+      ],
+      "en": "For the palace will be forsaken. The populous city will be deserted. The hill and the watchtower will be for dens forever, a delight for wild donkeys, a pasture of flocks,",
+      "ko": "대저 궁전이 폐한바 되며 인구 많던 성읍이 적막하며 산과 망대가 영영히 굴혈이 되며 들 나귀의 즐겨하는 곳과 양떼의 풀 먹는 곳이 될 것임이어니와",
+      "source_text_hash": "8b7e747c7ca4daca81e818114d56389d1ba424ab8fcc861723b3c3ed0aba2903",
+      "translation_text_hash": "00e59702e863eb4a6562f872adfd4c57afbf1a885a0badc6fc2bedcab9568137",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 궁전이 폐한바 되며 인구 많던 성읍이 적막하며 산과 망대가 영영히 굴혈이 되며 들 나귀의 즐겨하는 곳과 양떼의 풀 먹는 곳이 될 것임이어니와"
+      ],
+      "raw_text_hashes": [
+        "00e59702e863eb4a6562f872adfd4c57afbf1a885a0badc6fc2bedcab9568137"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:15",
+      "sequence": 18275,
+      "chapter_label": "ISA 32",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 15
+        }
+      ],
+      "en": "until the Spirit is poured on us from on high, and the wilderness becomes a fruitful field, and the fruitful field is considered a forest.",
+      "ko": "필경은 위에서부터 성신을 우리에게 부어주시리니 광야가 아름다운 밭이 되며 아름다운 밭을 삼림으로 여기게 되리라",
+      "source_text_hash": "b354be69c42a2f3cf4521427443ab3be39b16534fdd33df9187e7ff675bb37d6",
+      "translation_text_hash": "818c2043ba5014a726948e79966bd973f5bacfaed3d897decc0ca02513d99ef9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "필경은 위에서부터 성신을 우리에게 부어주시리니 광야가 아름다운 밭이 되며 아름다운 밭을 삼림으로 여기게 되리라"
+      ],
+      "raw_text_hashes": [
+        "818c2043ba5014a726948e79966bd973f5bacfaed3d897decc0ca02513d99ef9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:16",
+      "sequence": 18276,
+      "chapter_label": "ISA 32",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 16
+        }
+      ],
+      "en": "Then justice will dwell in the wilderness; and righteousness will remain in the fruitful field.",
+      "ko": "그 때에 공평이 광야에 거하며 의가 아름다운 밭에 있으리니",
+      "source_text_hash": "6ba63fade02e401afb70e443389e5dd25bd72c631be1fd9244b372c6a8d63796",
+      "translation_text_hash": "c8587171bcef5b27a61941fbfc1bc0ae5f81c79b9bf43574da85485c562d36d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 공평이 광야에 거하며 의가 아름다운 밭에 있으리니"
+      ],
+      "raw_text_hashes": [
+        "c8587171bcef5b27a61941fbfc1bc0ae5f81c79b9bf43574da85485c562d36d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:17",
+      "sequence": 18277,
+      "chapter_label": "ISA 32",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 17
+        }
+      ],
+      "en": "The work of righteousness will be peace, and the effect of righteousness, quietness and confidence forever.",
+      "ko": "의의 공효는 화평이요 의의 결과는 영원한 평안과 안전이라",
+      "source_text_hash": "e547a173eaa4ae7effbf107bc06760464e07aa77da70f6b81b0af21d797e7403",
+      "translation_text_hash": "591d59a8773db5a4288fbaba100e46eedffe7b40e4bc3dbe773a38ec0021a99b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의의 공효는 화평이요 의의 결과는 영원한 평안과 안전이라"
+      ],
+      "raw_text_hashes": [
+        "591d59a8773db5a4288fbaba100e46eedffe7b40e4bc3dbe773a38ec0021a99b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:18",
+      "sequence": 18278,
+      "chapter_label": "ISA 32",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 18
+        }
+      ],
+      "en": "My people will live in a peaceful habitation, in safe dwellings, and in quiet resting places,",
+      "ko": "내 백성이 화평한 집과 안전한 거처와 종용히 쉬는 곳에 있으려니와",
+      "source_text_hash": "100e4e936c8e7e8e3bd4c02c84c5a02eb17255fa47eac56410b1616e535c8b62",
+      "translation_text_hash": "272e77eab92b15b6f112e18265e8d35a3a4fce15dc2fcca89a65c58000f9091d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성이 화평한 집과 안전한 거처와 종용히 쉬는 곳에 있으려니와"
+      ],
+      "raw_text_hashes": [
+        "272e77eab92b15b6f112e18265e8d35a3a4fce15dc2fcca89a65c58000f9091d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:19",
+      "sequence": 18279,
+      "chapter_label": "ISA 32",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 19
+        }
+      ],
+      "en": "though hail flattens the forest, and the city is leveled completely.",
+      "ko": "먼저 그 삼림은 우박에 상하고 성읍은 파괴되리라",
+      "source_text_hash": "4a4fd849e5dbe7a95f9b088a4e8087168d0ab3086634b8dadeb3f06185361663",
+      "translation_text_hash": "63b0bf0569cec281b2b8fe35abed2b1e3e12ab9dd4628b3068130481f0e794d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼저 그 삼림은 우박에 상하고 성읍은 파괴되리라"
+      ],
+      "raw_text_hashes": [
+        "63b0bf0569cec281b2b8fe35abed2b1e3e12ab9dd4628b3068130481f0e794d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:32:20",
+      "sequence": 18280,
+      "chapter_label": "ISA 32",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 32,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 32,
+          "verse": 20
+        }
+      ],
+      "en": "Blessed are you who sow beside all waters, who send out the feet of the ox and the donkey.",
+      "ko": "모든 물가에 씨를 뿌리고 소와 나귀를 그리로 모는 너희는 복이 있느니라",
+      "source_text_hash": "b1ad1f530c37dfc7b340135acf868890d63a47af0640b487404058b09bb6a1b2",
+      "translation_text_hash": "8492e8affb6ed7ce2a4048b56054e54e2018cf0d79299d152103204646018a72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 물가에 씨를 뿌리고 소와 나귀를 그리로 모는 너희는 복이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "8492e8affb6ed7ce2a4048b56054e54e2018cf0d79299d152103204646018a72"
+      ]
+    }
+  ]
+}

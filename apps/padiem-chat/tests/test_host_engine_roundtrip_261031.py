@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import socket
 import subprocess
 import sys
@@ -30,6 +31,8 @@ from pathlib import Path
 import pytest
 import uvicorn
 
+from _host_b14_proof import TEST_SECRET, reject_invalid_proof
+
 REPO = Path(__file__).resolve().parents[3]
 ENGINE_DIR = REPO / "apps" / "padiem-ai-engine"
 CHAT_DIR = REPO / "apps" / "padiem-chat"
@@ -39,7 +42,7 @@ CREDENTIAL = "s" * 40
 
 
 def _child_path() -> str:
-    return ";".join(
+    return os.pathsep.join(
         str(path)
         for path in (
             ENGINE_DIR,
@@ -87,6 +90,8 @@ class _B14:
             body += message.get("body", b"")
             if not message.get("more_body"):
                 break
+        if await reject_invalid_proof(scope, body, send):
+            return
         self.calls.append(scope["path"])
         if scope["path"].endswith("stream-preview"):
             await send(
@@ -189,11 +194,11 @@ def engine_host(tmp_path_factory, request):
         unavailable_socket = socket.socket()
         unavailable_socket.bind(("127.0.0.1", 0))
         upstream_port = unavailable_socket.getsockname()[1]
-    import os
-
     env = dict(os.environ)
+    env.pop("B14_SECRET_DIR", None)
     env.update(
         {
+            "PADIEM_B14_SERVICE_PROOF_SECRET": TEST_SECRET if getattr(request, "param", True) else "",
             "PADIEM_ENGINE_CPYTHON_HOST": "1",
             "P01_HOST": "127.0.0.1",
             "P01_PORT": str(engine_port),
@@ -403,3 +408,53 @@ async def test_the_engine_refuses_a_wrong_credential(engine_host) -> None:
             session_id="c1",
         ):
             pass
+
+
+async def test_fake_b14_requires_body_bound_current_proof() -> None:
+    import hashlib
+    import hmac
+
+    import httpx
+
+    b14 = _B14()
+    body = b'{"model":"host-model"}'
+    stamp = str(int(time.time()))
+    proof = hmac.new(
+        TEST_SECRET.encode(), stamp.encode() + b"." + body, hashlib.sha256
+    ).hexdigest()
+    headers = {"x-padiem-b14-time": stamp, "x-padiem-b14-proof": proof}
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=b14), base_url="http://synthetic"
+    ) as client:
+        missing = await client.post("/api/pilot/v1/chat/completions", content=body)
+        tampered = await client.post(
+            "/api/pilot/v1/chat/completions", headers=headers, content=body + b" "
+        )
+        accepted = await client.post(
+            "/api/pilot/v1/chat/completions", headers=headers, content=body
+        )
+    assert missing.status_code == tampered.status_code == 401
+    assert accepted.status_code == 200
+    assert len(b14.calls) == 1
+
+
+@pytest.mark.parametrize("engine_host", [False], indirect=True)
+async def test_missing_b14_proof_secret_fails_before_upstream(engine_host) -> None:
+    from app.orchestration_bridge import B62OrchestrationError
+
+    bridge = _bridge(_client(engine_host["origin"]))
+    with pytest.raises(B62OrchestrationError) as refused:
+        async for _ in bridge.start_stream(
+            user_id="u1",
+            messages=[{"role": "user", "content": "안녕"}],
+            skill=_skill(),
+            model_id="host-model",
+            user_text="안녕",
+            conversation_id="c-no-secret",
+            pc_tools=None,
+            subject_id=None,
+            session_id="c-no-secret",
+        ):
+            pass
+    assert refused.value.code == "upstream_unavailable"
+    assert engine_host["b14"].calls == []

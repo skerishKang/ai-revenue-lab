@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:013",
+  "unit_ordinal": 1146,
+  "unit_label": "HEB 13",
+  "book_code": "HEB",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:13:1",
+      "sequence": 30239,
+      "chapter_label": "HEB 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "Let brotherly love continue.",
+      "ko": "형제 사랑하기를 계속하고",
+      "source_text_hash": "fc4a85f776007bc46e36cbbb91d905c3b72007f3903d005248d50ac86739f7ba",
+      "translation_text_hash": "6d3090b7c2ae4ceb7e474aa014ccc65aed6a54c9d0063fa9a37aa838d8307e95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제 사랑하기를 계속하고"
+      ],
+      "raw_text_hashes": [
+        "6d3090b7c2ae4ceb7e474aa014ccc65aed6a54c9d0063fa9a37aa838d8307e95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:2",
+      "sequence": 30240,
+      "chapter_label": "HEB 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "Don’t forget to show hospitality to strangers, for in doing so, some have entertained angels without knowing it.",
+      "ko": "손님 대접하기를 잊지 말라 이로써 부지중에 천사들을 대접한 이들이 있었느니라",
+      "source_text_hash": "148466545ff93c47ba9c7e59b754270f460946b23a52ccd870fbe22d7f236013",
+      "translation_text_hash": "1323caceb8d8ade6f6bd4b4b81685b39997d32cbf16d023f462d5a39005b0813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손님 대접하기를 잊지 말라 이로써 부지중에 천사들을 대접한 이들이 있었느니라"
+      ],
+      "raw_text_hashes": [
+        "1323caceb8d8ade6f6bd4b4b81685b39997d32cbf16d023f462d5a39005b0813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:3",
+      "sequence": 30241,
+      "chapter_label": "HEB 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "Remember those who are in bonds, as bound with them, and those who are ill-treated, since you are also in the body.",
+      "ko": "자기도 함께 갇힌것 같이 갇힌 자를 생각하고 자기도 몸을 가졌은즉 학대 받는 자를 생각하라",
+      "source_text_hash": "3b1a3c1828cf2d31d6644a4b889967d4c4e2481676ee0e1a47c6d2a8c68528ef",
+      "translation_text_hash": "88230248572f90bc34ca2291ca35ca4610f6f2ee15f2ad2bb06b3b45ea7cec21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기도 함께 갇힌것 같이 갇힌 자를 생각하고 자기도 몸을 가졌은즉 학대 받는 자를 생각하라"
+      ],
+      "raw_text_hashes": [
+        "88230248572f90bc34ca2291ca35ca4610f6f2ee15f2ad2bb06b3b45ea7cec21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:4",
+      "sequence": 30242,
+      "chapter_label": "HEB 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "Let marriage be held in honor among all, and let the bed be undefiled; but God will judge the sexually immoral and adulterers.",
+      "ko": "모든 사람은 혼인을 귀히 여기고 침소를 더럽히지 않게 하라 음행하는 자들과 간음하는 자들을 하나님이 심판하시리라",
+      "source_text_hash": "d3701c962cc25f67dfb7b559d520f3ef77e729c74707f0eba67792ae9e9c065d",
+      "translation_text_hash": "eb488ec525adca2642f45c7e8ed26f7e9f09774a099839d312d63b04eb50d0ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람은 혼인을 귀히 여기고 침소를 더럽히지 않게 하라 음행하는 자들과 간음하는 자들을 하나님이 심판하시리라"
+      ],
+      "raw_text_hashes": [
+        "eb488ec525adca2642f45c7e8ed26f7e9f09774a099839d312d63b04eb50d0ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:5",
+      "sequence": 30243,
+      "chapter_label": "HEB 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Be free from the love of money, content with such things as you have, for he has said, “I will in no way leave you, neither will I in any way forsake you.”",
+      "ko": "돈을 사랑치 말고 있는 바를 족한 줄로 알라 그가 친히 말씀하시기를 내가 과연 너희를 버리지 아니하고 과연 너희를 떠나지 아니하리라 하셨느니라",
+      "source_text_hash": "991ae6ce1074a0dc199b789023f92730fc66fcb6987d43fefd5b5d237c802cb9",
+      "translation_text_hash": "3184f0b29085ec18ba3bc03ef9e70cd793b633c220d74242646c0bc985634356",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돈을 사랑치 말고 있는 바를 족한 줄로 알라 그가 친히 말씀하시기를 내가 과연 너희를 버리지 아니하고 과연 너희를 떠나지 아니하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "3184f0b29085ec18ba3bc03ef9e70cd793b633c220d74242646c0bc985634356"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:6",
+      "sequence": 30244,
+      "chapter_label": "HEB 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "So that with good courage we say, “The Lord is my helper. I will not fear. What can man do to me?”",
+      "ko": "그러므로 우리가 담대히 가로되 주는 나를 돕는 자시니 내가 무서워 아니하겠노라 사람이 내게 어찌하리요 하노라",
+      "source_text_hash": "f7c9f38dc5d5c2718132a11c037004afe2e51d80fcedf8872d99eece95894169",
+      "translation_text_hash": "b992e86de9e8b91c41bb6f925a94da78718bbd6c434c9c4ec7a9abdbbf3393a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리가 담대히 가로되 주는 나를 돕는 자시니 내가 무서워 아니하겠노라 사람이 내게 어찌하리요 하노라"
+      ],
+      "raw_text_hashes": [
+        "b992e86de9e8b91c41bb6f925a94da78718bbd6c434c9c4ec7a9abdbbf3393a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:7",
+      "sequence": 30245,
+      "chapter_label": "HEB 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Remember your leaders, men who spoke to you the word of God, and considering the results of their conduct, imitate their faith.",
+      "ko": "하나님의 말씀을 너희에게 이르고 너희를 인도하던 자들을 생각하며 저희 행실의 종말을 주의하여 보고 저희 믿음을 본받으라",
+      "source_text_hash": "d22c4a43e0d978453380bfd8d637391b21b71f154ce7ac5fd2cb92eb345ab02e",
+      "translation_text_hash": "27f89b41ec8809292ce14771942294dc31cc28bf314a21401c519be4c541c5d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 말씀을 너희에게 이르고 너희를 인도하던 자들을 생각하며 저희 행실의 종말을 주의하여 보고 저희 믿음을 본받으라"
+      ],
+      "raw_text_hashes": [
+        "27f89b41ec8809292ce14771942294dc31cc28bf314a21401c519be4c541c5d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:8",
+      "sequence": 30246,
+      "chapter_label": "HEB 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "Jesus Christ is the same yesterday, today, and forever.",
+      "ko": "예수 그리스도는 어제나 오늘이나 영원토록 동일하시니라",
+      "source_text_hash": "98f801ac44e27f20150fdf5da10d5a584c38fe8f4eb5904d91ae412130e87858",
+      "translation_text_hash": "4ede469323b83c665b624f8b7a464e61ac12a8cb5bff01d9355cfc1118b17894",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수 그리스도는 어제나 오늘이나 영원토록 동일하시니라"
+      ],
+      "raw_text_hashes": [
+        "4ede469323b83c665b624f8b7a464e61ac12a8cb5bff01d9355cfc1118b17894"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:9",
+      "sequence": 30247,
+      "chapter_label": "HEB 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t be carried away by various and strange teachings, for it is good that the heart be established by grace, not by foods, through which those who were so occupied were not benefited.",
+      "ko": "여러가지 다른 교훈에 끌리지 말라 마음은 은혜로써 굳게 함이 아름답고 식물로써 할 것이 아니니 식물로 말미암아 행한 자는 유익을 얻지 못하였느니라",
+      "source_text_hash": "93aad9df19a72ce7f21d7fba9fb7af86cd36e20656b9301cfcc87812af54aa2b",
+      "translation_text_hash": "ca6cfd948714493e5dc64ecbe59bf12a934bae81cbd02eb619235143a3fa0479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러가지 다른 교훈에 끌리지 말라 마음은 은혜로써 굳게 함이 아름답고 식물로써 할 것이 아니니 식물로 말미암아 행한 자는 유익을 얻지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ca6cfd948714493e5dc64ecbe59bf12a934bae81cbd02eb619235143a3fa0479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:10",
+      "sequence": 30248,
+      "chapter_label": "HEB 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "We have an altar from which those who serve the holy tabernacle have no right to eat.",
+      "ko": "우리에게 제단이 있는데 그 위에 있는 제물은 장막에서 섬기는 자들이 이 제단에서 먹을 권이 없나니",
+      "source_text_hash": "a70c7989760e1d808c5ac107900786b80fdb5eca25d0bbe2556b23f6a904f7d7",
+      "translation_text_hash": "51e3fd7fb58a5db544ea9133e80b44b305cc3b50373ea3f963696bbab550fac8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 제단이 있는데 그 위에 있는 제물은 장막에서 섬기는 자들이 이 제단에서 먹을 권이 없나니"
+      ],
+      "raw_text_hashes": [
+        "51e3fd7fb58a5db544ea9133e80b44b305cc3b50373ea3f963696bbab550fac8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:11",
+      "sequence": 30249,
+      "chapter_label": "HEB 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "For the bodies of those animals, whose blood is brought into the holy place by the high priest as an offering for sin, are burned outside of the camp.",
+      "ko": "이는 죄를 위한 짐승의 피는 대제사장이 가지고 성소에 들어가고 그 육체는 영문 밖에서 불사름이니라",
+      "source_text_hash": "d48f7206a4819aa7d4c0c91c61526957d0d12cdc5aa09b9439a20f146971c842",
+      "translation_text_hash": "b95096906899ea81edafba32b981ed7be7b2fa97260db11c64d458a191671111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 죄를 위한 짐승의 피는 대제사장이 가지고 성소에 들어가고 그 육체는 영문 밖에서 불사름이니라"
+      ],
+      "raw_text_hashes": [
+        "b95096906899ea81edafba32b981ed7be7b2fa97260db11c64d458a191671111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:12",
+      "sequence": 30250,
+      "chapter_label": "HEB 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore Jesus also, that he might sanctify the people through his own blood, suffered outside of the gate.",
+      "ko": "그러므로 예수도 자기 피로써 백성을 거룩케 하려고 성문 밖에서 고난을 받으셨느니라",
+      "source_text_hash": "613b135dfd0e9572b4df3c672f926bb8cc306c4d7a2318bc00274eeb7d291f6a",
+      "translation_text_hash": "6fdc73d42e1b3050ecf0b08219a756b61fdc687aba0bd0c85e0b3487a2561a51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 예수도 자기 피로써 백성을 거룩케 하려고 성문 밖에서 고난을 받으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "6fdc73d42e1b3050ecf0b08219a756b61fdc687aba0bd0c85e0b3487a2561a51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:13",
+      "sequence": 30251,
+      "chapter_label": "HEB 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "Let’s therefore go out to him outside of the camp, bearing his reproach.",
+      "ko": "그런즉 우리는 그 능욕을 지고 영문 밖으로 그에게 나아가자",
+      "source_text_hash": "cc0f66c01f141ea168cbbe0dba660f0e4d73833ae07100e16e43088f8e6ae41c",
+      "translation_text_hash": "4c9290c030cf76877d3ba710db242854b4268d0f758bc13edd369c93317e1fab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 우리는 그 능욕을 지고 영문 밖으로 그에게 나아가자"
+      ],
+      "raw_text_hashes": [
+        "4c9290c030cf76877d3ba710db242854b4268d0f758bc13edd369c93317e1fab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:14",
+      "sequence": 30252,
+      "chapter_label": "HEB 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "For we don’t have here an enduring city, but we seek that which is to come.",
+      "ko": "우리가 여기는 영구한 도성이 없고 오직 장차 올 것을 찾나니",
+      "source_text_hash": "807da56476fd8a38dbe2f9d7126942f2766c0ea94977948dfd97ddce50e9711c",
+      "translation_text_hash": "ada9210ece6f779473c9cff0bc35bbc05a5a9ce38735111712c97df7cbadf2e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 여기는 영구한 도성이 없고 오직 장차 올 것을 찾나니"
+      ],
+      "raw_text_hashes": [
+        "ada9210ece6f779473c9cff0bc35bbc05a5a9ce38735111712c97df7cbadf2e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:15",
+      "sequence": 30253,
+      "chapter_label": "HEB 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Through him, then, let’s offer up a sacrifice of praise to God continually, that is, the fruit of lips which proclaim allegiance to his name.",
+      "ko": "이러므로 우리가 예수로 말미암아 항상 찬미의 제사를 하나님께 드리자 이는 그 이름을 증거하는 입술의 열매니라",
+      "source_text_hash": "f3452f1eeb3a322e24ab75993a59ad630b1ea21e7b4ed0e2043b360bb5ac160d",
+      "translation_text_hash": "5e37692b4c9b408a2b9e2d37916316a0cede86701e784fbbad05303e9e6a134f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리가 예수로 말미암아 항상 찬미의 제사를 하나님께 드리자 이는 그 이름을 증거하는 입술의 열매니라"
+      ],
+      "raw_text_hashes": [
+        "5e37692b4c9b408a2b9e2d37916316a0cede86701e784fbbad05303e9e6a134f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:16",
+      "sequence": 30254,
+      "chapter_label": "HEB 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "But don’t forget to be doing good and sharing, for with such sacrifices God is well pleased.",
+      "ko": "오직 선을 행함과 서로 나눠주기를 잊지 말라 이같은 제사는 하나님이 기뻐하시느니라",
+      "source_text_hash": "f57c2576a70ca6ca436090e86229de96240f401c470f732556663624f33725d3",
+      "translation_text_hash": "8abb79945eadd7ac5ceacf0a08156b816c15d6b021048a6cbc7ea18f360d324b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 선을 행함과 서로 나눠주기를 잊지 말라 이같은 제사는 하나님이 기뻐하시느니라"
+      ],
+      "raw_text_hashes": [
+        "8abb79945eadd7ac5ceacf0a08156b816c15d6b021048a6cbc7ea18f360d324b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:17",
+      "sequence": 30255,
+      "chapter_label": "HEB 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Obey your leaders and submit to them, for they watch on behalf of your souls, as those who will give account, that they may do this with joy and not with groaning, for that would be unprofitable for you.",
+      "ko": "너희를 인도하는 자들에게 순종하고 복종하라 저희는 너희 영혼을 위하여 경성하기를 자기가 회계할 자인것 같이 하느니라 저희로 하여금 즐거움으로 이것을 하게 하고 근심으로 하게 말라 그렇지 않으면 너희에게 유익이 없느니라",
+      "source_text_hash": "899baf4776b82bb38b8681d995bc737de5119d18ed8f1fce8188b03026f3e113",
+      "translation_text_hash": "b77c23c0b496331f9aec327c388638d439a66f0e407bc3c8de081d0b84abd342",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 인도하는 자들에게 순종하고 복종하라 저희는 너희 영혼을 위하여 경성하기를 자기가 회계할 자인것 같이 하느니라 저희로 하여금 즐거움으로 이것을 하게 하고 근심으로 하게 말라 그렇지 않으면 너희에게 유익이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "b77c23c0b496331f9aec327c388638d439a66f0e407bc3c8de081d0b84abd342"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:18",
+      "sequence": 30256,
+      "chapter_label": "HEB 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "Pray for us, for we are persuaded that we have a good conscience, desiring to live honorably in all things.",
+      "ko": "우리를 위하여 기도하라 우리가 모든 일에 선하게 행하려 하므로 우리에게 선한 양심이 있는 줄을 확신하노니",
+      "source_text_hash": "ca47ef095565e24c8c5ad845ec9b6b03fe8254faadcd8516ef843222612589a8",
+      "translation_text_hash": "3cf309624e97109cabbd04b396a3bd8a1320cd9c85a951a60aaee78fee28248c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 위하여 기도하라 우리가 모든 일에 선하게 행하려 하므로 우리에게 선한 양심이 있는 줄을 확신하노니"
+      ],
+      "raw_text_hashes": [
+        "3cf309624e97109cabbd04b396a3bd8a1320cd9c85a951a60aaee78fee28248c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:19",
+      "sequence": 30257,
+      "chapter_label": "HEB 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "I strongly urge you to do this, that I may be restored to you sooner.",
+      "ko": "내가 더 속히 너희에게 돌아가기를 위하여 너희 기도함을 더욱 원하노라",
+      "source_text_hash": "1475c1e1a5b06657af3f6464c1d08d7e662ab6cc05dc90861e65802520ddec0b",
+      "translation_text_hash": "47e01acb5cbe459863a6b049bb54bb99d9384df22ed32175194e2c0279f0c97b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 더 속히 너희에게 돌아가기를 위하여 너희 기도함을 더욱 원하노라"
+      ],
+      "raw_text_hashes": [
+        "47e01acb5cbe459863a6b049bb54bb99d9384df22ed32175194e2c0279f0c97b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:20",
+      "sequence": 30258,
+      "chapter_label": "HEB 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "Now may the God of peace, who brought again from the dead the great shepherd of the sheep with the blood of an eternal covenant, our Lord Jesus,",
+      "ko": "양의 큰 목자이신 우리 주 예수를 영원한 언약의 피로 죽은 자 가운데서 이끌어 내신 평강의 하나님이",
+      "source_text_hash": "1a014b4c93a2822253ac59b3a88c00f2d83ecfe6b8c4ea27b37004d3c73eac12",
+      "translation_text_hash": "d3984fae57e721c60d36b27dba4b7245e4c485fccd96d21c4cf2879ef1329d59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "양의 큰 목자이신 우리 주 예수를 영원한 언약의 피로 죽은 자 가운데서 이끌어 내신 평강의 하나님이"
+      ],
+      "raw_text_hashes": [
+        "d3984fae57e721c60d36b27dba4b7245e4c485fccd96d21c4cf2879ef1329d59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:21",
+      "sequence": 30259,
+      "chapter_label": "HEB 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "make you complete in every good work to do his will, working in you that which is well pleasing in his sight, through Jesus Christ, to whom be the glory forever and ever. Amen.",
+      "ko": "모든 선한 일에 너희를 온전케 하사 자기 뜻을 행하게 하시고 그 앞에 즐거운 것을 예수 그리스도로 말미암아 우리 속에 이루시기를 원하노라 영광이 그에게 세세무궁토록 있을찌어다 아멘",
+      "source_text_hash": "3b80737fba2368c5ba1778d5e29f6a79fdf9a25941797a5c500f44ff6c4e70d7",
+      "translation_text_hash": "6c19e110cd1c594251a864ae8615b1fcf016d64b1b40367e5bceaf11ecf80a88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 선한 일에 너희를 온전케 하사 자기 뜻을 행하게 하시고 그 앞에 즐거운 것을 예수 그리스도로 말미암아 우리 속에 이루시기를 원하노라 영광이 그에게 세세무궁토록 있을찌어다 아멘"
+      ],
+      "raw_text_hashes": [
+        "6c19e110cd1c594251a864ae8615b1fcf016d64b1b40367e5bceaf11ecf80a88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:22",
+      "sequence": 30260,
+      "chapter_label": "HEB 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "But I exhort you, brothers, endure the word of exhortation, for I have written to you in few words.",
+      "ko": "형제들아 내가 너희를 권하노니 권면의 말을 용납하라 내가 간단히 너희에게 썼느니라",
+      "source_text_hash": "e56bdac077fbf0da3b17205840056b7957ded0c38cd1f187b13ffac8918c08a7",
+      "translation_text_hash": "09b5f1053440db46ea85e1185281cb9be128d6816430060b0ce6f3102cbfaa68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 너희를 권하노니 권면의 말을 용납하라 내가 간단히 너희에게 썼느니라"
+      ],
+      "raw_text_hashes": [
+        "09b5f1053440db46ea85e1185281cb9be128d6816430060b0ce6f3102cbfaa68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:23",
+      "sequence": 30261,
+      "chapter_label": "HEB 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "Know that our brother Timothy has been freed, with whom, if he comes shortly, I will see you.",
+      "ko": "우리 형제 디모데가 놓인 것을 너희가 알라 그가 속히 오면 내가 저와 함께 가서 너희를 보리라",
+      "source_text_hash": "c1100eba5e0507e43b89bcc49b3495acc38f9f4ce62b5e99eb5b99ec468a34ee",
+      "translation_text_hash": "ec118d6b057c3b3037c3e28b9e0e0ff770e117eb76255d4b07e46944f1230cc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 형제 디모데가 놓인 것을 너희가 알라 그가 속히 오면 내가 저와 함께 가서 너희를 보리라"
+      ],
+      "raw_text_hashes": [
+        "ec118d6b057c3b3037c3e28b9e0e0ff770e117eb76255d4b07e46944f1230cc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:24",
+      "sequence": 30262,
+      "chapter_label": "HEB 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "Greet all of your leaders and all the saints. The Italians greet you.",
+      "ko": "너희를 인도하는 자와 및 모든 성도에게 문안하라 이달리야에서 온 자들도 너희에게 문안하느니라",
+      "source_text_hash": "1aa9ff5f70149228b0847dea7c8df0faecd41770cae7367f3cf6ec5af2397fce",
+      "translation_text_hash": "6f546ab2f6ee234a11bcc1fd7abd7b88991ad692d07b6b61925947deae207e4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 인도하는 자와 및 모든 성도에게 문안하라 이달리야에서 온 자들도 너희에게 문안하느니라"
+      ],
+      "raw_text_hashes": [
+        "6f546ab2f6ee234a11bcc1fd7abd7b88991ad692d07b6b61925947deae207e4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:13:25",
+      "sequence": 30263,
+      "chapter_label": "HEB 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "HEB",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "Grace be with you all. Amen.",
+      "ko": "은혜가 너희 모든 사람에게 있을찌어다",
+      "source_text_hash": "7396a1d4f1957d332d1e7131446d345b97708154a96328a207deabfe026cc338",
+      "translation_text_hash": "2b3e39f92de691e7f518b14c11810dab9c06922bae8825e2abb39a499da5820e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은혜가 너희 모든 사람에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "2b3e39f92de691e7f518b14c11810dab9c06922bae8825e2abb39a499da5820e"
+      ]
+    }
+  ]
+}

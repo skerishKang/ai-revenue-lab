@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:006",
+  "unit_ordinal": 1024,
+  "unit_label": "ACT 6",
+  "book_code": "ACT",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:6:1",
+      "sequence": 27102,
+      "chapter_label": "ACT 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Now in those days, when the number of the disciples was multiplying, a complaint arose from the Hellenists against the Hebrews, because their widows were neglected in the daily service.",
+      "ko": "그 때에 제자가 더 많아졌는데 헬라파 유대인들이 자기의 과부들이 그 매일 구제에 빠지므로 히브리파 사람을 원망한대",
+      "source_text_hash": "cfc8c4339a45986f2cd7ad46c95f2a39e6e2abd2704f20e102037467f2d59f8b",
+      "translation_text_hash": "0f6a5c4310927015931d193db36f2be97bdff0f657b7b487220991a780ded0f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 제자가 더 많아졌는데 헬라파 유대인들이 자기의 과부들이 그 매일 구제에 빠지므로 히브리파 사람을 원망한대"
+      ],
+      "raw_text_hashes": [
+        "0f6a5c4310927015931d193db36f2be97bdff0f657b7b487220991a780ded0f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:2",
+      "sequence": 27103,
+      "chapter_label": "ACT 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "The twelve summoned the multitude of the disciples and said, “It is not appropriate for us to forsake the word of God and serve tables.",
+      "ko": "열 두 사도가 모든 제자를 불러 이르되 우리가 하나님의 말씀을 제쳐 놓고 공궤를 일삼는 것이 마땅치 아니하니",
+      "source_text_hash": "7f922868ea13e47f3a1b87631241b3f605284ccd6847c267efde2df731336c0d",
+      "translation_text_hash": "82139151af984c84a85e67ae113e63524a4f17cadb6b708543712ff7c3cbd72d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 두 사도가 모든 제자를 불러 이르되 우리가 하나님의 말씀을 제쳐 놓고 공궤를 일삼는 것이 마땅치 아니하니"
+      ],
+      "raw_text_hashes": [
+        "82139151af984c84a85e67ae113e63524a4f17cadb6b708543712ff7c3cbd72d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:3",
+      "sequence": 27104,
+      "chapter_label": "ACT 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore, select from among you, brothers, seven men of good report, full of the Holy Spirit and of wisdom, whom we may appoint over this business.",
+      "ko": "형제들아 너희 가운데서 성령과 지혜가 충만하여 칭찬 듣는 사람 일곱을 택하라 우리가 이 일을 저희에게 맡기고",
+      "source_text_hash": "c20b992c8175441cfb052bcee638a994d545ab7b1d14124608382a2a487a1166",
+      "translation_text_hash": "0844bab3512658290bc57262562f7cccbf830f0a826d0c9d2b7009521317cd81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희 가운데서 성령과 지혜가 충만하여 칭찬 듣는 사람 일곱을 택하라 우리가 이 일을 저희에게 맡기고"
+      ],
+      "raw_text_hashes": [
+        "0844bab3512658290bc57262562f7cccbf830f0a826d0c9d2b7009521317cd81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:4",
+      "sequence": 27105,
+      "chapter_label": "ACT 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "But we will continue steadfastly in prayer and in the ministry of the word.”",
+      "ko": "우리는 기도하는 것과 말씀 전하는 것을 전무하리라 하니",
+      "source_text_hash": "12730410512e6a0d108e048ad9a1b751b39fcd393829230f4a919c3c3fc79b0e",
+      "translation_text_hash": "7ae11b217e01c7271fa5a4f6eeb14ae7ae50d61df308cba969c87d2d58a12d04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 기도하는 것과 말씀 전하는 것을 전무하리라 하니"
+      ],
+      "raw_text_hashes": [
+        "7ae11b217e01c7271fa5a4f6eeb14ae7ae50d61df308cba969c87d2d58a12d04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:5",
+      "sequence": 27106,
+      "chapter_label": "ACT 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "These words pleased the whole multitude. They chose Stephen, a man full of faith and of the Holy Spirit, Philip, Prochorus, Nicanor, Timon, Parmenas, and Nicolaus, a proselyte of Antioch,",
+      "ko": "온 무리가 이 말을 기뻐하여 믿음과 성령이 충만한 사람 스데반과 또 빌립과 브로고로와 니가노르와 디몬과 바메나와 유대교에 입교한 안디옥 사람 니골라를 택하여",
+      "source_text_hash": "6ed8c7a7007b65e05f5aa9ca90e2bd91302b5c3b60b6889790bd4c38a7fcc943",
+      "translation_text_hash": "178574f024c1c6a68afb231b16842b70dc06db6f6b64973234e2267693e878c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 무리가 이 말을 기뻐하여 믿음과 성령이 충만한 사람 스데반과 또 빌립과 브로고로와 니가노르와 디몬과 바메나와 유대교에 입교한 안디옥 사람 니골라를 택하여"
+      ],
+      "raw_text_hashes": [
+        "178574f024c1c6a68afb231b16842b70dc06db6f6b64973234e2267693e878c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:6",
+      "sequence": 27107,
+      "chapter_label": "ACT 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "whom they set before the apostles. When they had prayed, they laid their hands on them.",
+      "ko": "사도들 앞에 세우니 사도들이 기도하고 그들에게 안수하니라",
+      "source_text_hash": "70691580a493fd8ae2d3da440b22f6665d0505596cdc49edcf054c09d775e764",
+      "translation_text_hash": "6542bd756e54eff17b83f3a9724a875eaaa41efdda04c62a8c8066e2199393be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들 앞에 세우니 사도들이 기도하고 그들에게 안수하니라"
+      ],
+      "raw_text_hashes": [
+        "6542bd756e54eff17b83f3a9724a875eaaa41efdda04c62a8c8066e2199393be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:7",
+      "sequence": 27108,
+      "chapter_label": "ACT 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "The word of God increased and the number of the disciples greatly multiplied in Jerusalem. A great company of the priests were obedient to the faith.",
+      "ko": "하나님의 말씀이 점점 왕성하여 예루살렘에 있는 제자의 수가 더 심히 많아지고 허다한 제사장의 무리도 이 도에 복종하니라",
+      "source_text_hash": "c5f1c6d6bf3c51873775cf142864386496463507fa2e6ca3b814b28f627ffd7b",
+      "translation_text_hash": "750bfe59898179ee0498bc7ead22a055f1025d6e4e9875ac47b4587255d9b13b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 말씀이 점점 왕성하여 예루살렘에 있는 제자의 수가 더 심히 많아지고 허다한 제사장의 무리도 이 도에 복종하니라"
+      ],
+      "raw_text_hashes": [
+        "750bfe59898179ee0498bc7ead22a055f1025d6e4e9875ac47b4587255d9b13b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:8",
+      "sequence": 27109,
+      "chapter_label": "ACT 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "Stephen, full of faith and power, performed great wonders and signs among the people.",
+      "ko": "스데반이 은혜와 권능이 충만하여 큰 기사와 표적을 민간에 행하니",
+      "source_text_hash": "152ba377a566ecd058bbfa1eb2d710bbd5ff61d4d4512c8291e04f671a8c399c",
+      "translation_text_hash": "096bf7d85f6444b5b53fbd171a6d1e710d94435fad28852c259546e0a0287997",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스데반이 은혜와 권능이 충만하여 큰 기사와 표적을 민간에 행하니"
+      ],
+      "raw_text_hashes": [
+        "096bf7d85f6444b5b53fbd171a6d1e710d94435fad28852c259546e0a0287997"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:9",
+      "sequence": 27110,
+      "chapter_label": "ACT 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "But some of those who were of the synagogue called “The Libertines”, and of the Cyrenians, of the Alexandrians, and of those of Cilicia and Asia arose, disputing with Stephen.",
+      "ko": "리버디노 구레네인, 알렉산드리아인, 길리기아와 아시아에서 온 사람들의 회당이라는 각 회당에서 어떤자들이 일어나 스데반으로 더불어 변론할쌔",
+      "source_text_hash": "3d9ea13c3871cc9194ea31b78960f8eab4b8dbdce352a0fd17b39d68ad9bb93d",
+      "translation_text_hash": "b59dfae325db45a5f8c883f68acf277eb5a9a62a8b688d8e4d525bf6375b1bc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리버디노 구레네인, 알렉산드리아인, 길리기아와 아시아에서 온 사람들의 회당이라는 각 회당에서 어떤자들이 일어나 스데반으로 더불어 변론할쌔"
+      ],
+      "raw_text_hashes": [
+        "b59dfae325db45a5f8c883f68acf277eb5a9a62a8b688d8e4d525bf6375b1bc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:10",
+      "sequence": 27111,
+      "chapter_label": "ACT 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "They weren’t able to withstand the wisdom and the Spirit by which he spoke.",
+      "ko": "스데반이 지혜와 성령으로 말함을 저희가 능히 당치 못하여",
+      "source_text_hash": "551a445962793d7008a8968800699f8edd7b442cd4fa5b3820586e1ec08c47a7",
+      "translation_text_hash": "bf48fadac249970a42a8413fe806e82541566247be44782bed9f523a544fe69b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스데반이 지혜와 성령으로 말함을 저희가 능히 당치 못하여"
+      ],
+      "raw_text_hashes": [
+        "bf48fadac249970a42a8413fe806e82541566247be44782bed9f523a544fe69b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:11",
+      "sequence": 27112,
+      "chapter_label": "ACT 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Then they secretly induced men to say, “We have heard him speak blasphemous words against Moses and God.”",
+      "ko": "사람들을 가르쳐 말시키되 이 사람이 모세와 및 하나님을 모독하는 말 하는 것을 우리가 들었노라 하게 하고",
+      "source_text_hash": "e029637af345b19a796ed5c5a814fbc01679a611025fb1decf8dcfe6050dccbc",
+      "translation_text_hash": "516a0e531d838bd22d45b87ade8f63198ff4cea8b2b506002857e508565ca656",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들을 가르쳐 말시키되 이 사람이 모세와 및 하나님을 모독하는 말 하는 것을 우리가 들었노라 하게 하고"
+      ],
+      "raw_text_hashes": [
+        "516a0e531d838bd22d45b87ade8f63198ff4cea8b2b506002857e508565ca656"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:12",
+      "sequence": 27113,
+      "chapter_label": "ACT 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "They stirred up the people, the elders, and the scribes, and came against him and seized him, then brought him in to the council,",
+      "ko": "백성과 장로와 서기관들을 충동시켜 와서 잡아 가지고 공회에 이르러",
+      "source_text_hash": "c355d7a71b445fc45c3d0efc79f82e265c3a0acd68164f0b1614e8a294f3f4eb",
+      "translation_text_hash": "9221ff247568d12d1b9362c1c8b9ce8d3abda4af8ef2b0f8258ac2e397931117",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성과 장로와 서기관들을 충동시켜 와서 잡아 가지고 공회에 이르러"
+      ],
+      "raw_text_hashes": [
+        "9221ff247568d12d1b9362c1c8b9ce8d3abda4af8ef2b0f8258ac2e397931117"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:13",
+      "sequence": 27114,
+      "chapter_label": "ACT 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "and set up false witnesses who said, “This man never stops speaking blasphemous words against this holy place and the law.",
+      "ko": "거짓 증인들을 세우니 가로되 이 사람이 이 거룩한 곳과 율법을 거스려 말하기를 마지 아니하는도다",
+      "source_text_hash": "82aef1b4297aa46278cd3bcd9920cbbdc0cdf8151fa5bf2e04e78183ee75b7ff",
+      "translation_text_hash": "9f1c578d9114cf04c73d28ee5a0cc5b6e9d032cdb4a9ec8ecbe1cb2940576abe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 증인들을 세우니 가로되 이 사람이 이 거룩한 곳과 율법을 거스려 말하기를 마지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "9f1c578d9114cf04c73d28ee5a0cc5b6e9d032cdb4a9ec8ecbe1cb2940576abe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:14",
+      "sequence": 27115,
+      "chapter_label": "ACT 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "For we have heard him say that this Jesus of Nazareth will destroy this place, and will change the customs which Moses delivered to us.”",
+      "ko": "그의 말에 이 나사렛 예수가 이곳을 헐고 또 모세가 우리에게 전하여 준 규례를 고치겠다 함을 우리가 들었노라 하거늘",
+      "source_text_hash": "3ecdcbcd083ee4ec9d5257145392719c98c8de944108285c0fe43bce15c837db",
+      "translation_text_hash": "41a24b835d76e346e2af8e5656b68708a19c4507e995a8e82b36cb1f4861d00f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 말에 이 나사렛 예수가 이곳을 헐고 또 모세가 우리에게 전하여 준 규례를 고치겠다 함을 우리가 들었노라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "41a24b835d76e346e2af8e5656b68708a19c4507e995a8e82b36cb1f4861d00f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:6:15",
+      "sequence": 27116,
+      "chapter_label": "ACT 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "All who sat in the council, fastening their eyes on him, saw his face like it was the face of an angel.",
+      "ko": "공회 중에 앉은 사람들이 다 스데반을 주목하여 보니 그 얼굴이 천사의 얼굴과 같더라",
+      "source_text_hash": "030116eebc78fb6cf591bcf368e54bec732a56f3f87a29ebc8c056366510c247",
+      "translation_text_hash": "a0377cf5280e3fb57646d2691584af3872698c07c3924cdc0c6a6f28e6dbfac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공회 중에 앉은 사람들이 다 스데반을 주목하여 보니 그 얼굴이 천사의 얼굴과 같더라"
+      ],
+      "raw_text_hashes": [
+        "a0377cf5280e3fb57646d2691584af3872698c07c3924cdc0c6a6f28e6dbfac5"
+      ]
+    }
+  ]
+}

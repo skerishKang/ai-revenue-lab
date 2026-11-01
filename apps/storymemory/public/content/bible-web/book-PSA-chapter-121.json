@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:121",
+  "unit_ordinal": 599,
+  "unit_label": "PSA 121",
+  "book_code": "PSA",
+  "chapter_number": 121,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:121:1",
+      "sequence": 16083,
+      "chapter_label": "PSA 121",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 121,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 121,
+          "verse": 1
+        }
+      ],
+      "en": "I will lift up my eyes to the hills. Where does my help come from?",
+      "ko": "내가 산을 향하여 눈을 들리라 나의 도움이 어디서 올꼬",
+      "source_text_hash": "5f902fdd3afd96519ae5798e1b04efbd29295798a7d9d5eaca1e98ec8b1da437",
+      "translation_text_hash": "e2f2cb64809b51ce2482aaf49e007207631a0fbf6141669c9bd9028a9e3fafb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 산을 향하여 눈을 들리라 나의 도움이 어디서 올꼬"
+      ],
+      "raw_text_hashes": [
+        "e2f2cb64809b51ce2482aaf49e007207631a0fbf6141669c9bd9028a9e3fafb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:121:2",
+      "sequence": 16084,
+      "chapter_label": "PSA 121",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 121,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 121,
+          "verse": 2
+        }
+      ],
+      "en": "My help comes from the LORD, who made heaven and earth.",
+      "ko": "나의 도움이 천지를 지으신 여호와에게서로다",
+      "source_text_hash": "169b1e37353cfb693ddb775ba9e8f4dc0d4a2a408dc154e998e44597e7e0af38",
+      "translation_text_hash": "ca8711f616aed3d35a002906c3abd2c1770010281351846c1efce69390cdb48e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 도움이 천지를 지으신 여호와에게서로다"
+      ],
+      "raw_text_hashes": [
+        "ca8711f616aed3d35a002906c3abd2c1770010281351846c1efce69390cdb48e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:121:3",
+      "sequence": 16085,
+      "chapter_label": "PSA 121",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 121,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 121,
+          "verse": 3
+        }
+      ],
+      "en": "He will not allow your foot to be moved. He who keeps you will not slumber.",
+      "ko": "여호와께서 너로 실족지 않게 하시며 너를 지키시는 자가 졸지 아니하시리로다",
+      "source_text_hash": "a16c9454b17146d019e74fe3128f9d42e5f2ad54f755de6547d6ae4a579fdc33",
+      "translation_text_hash": "6173da2504a361b39c9f241ecb5ab16f4951eb5e3d52e957e973640841d283f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너로 실족지 않게 하시며 너를 지키시는 자가 졸지 아니하시리로다"
+      ],
+      "raw_text_hashes": [
+        "6173da2504a361b39c9f241ecb5ab16f4951eb5e3d52e957e973640841d283f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:121:4",
+      "sequence": 16086,
+      "chapter_label": "PSA 121",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 121,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 121,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, he who keeps Israel will neither slumber nor sleep.",
+      "ko": "이스라엘을 지키시는 자는 졸지도 아니하고 주무시지도 아니하시리로다",
+      "source_text_hash": "d981ef562219d7ea882a723e164e140cadab489ee733dcea40aa3d80b9a75df5",
+      "translation_text_hash": "112ac289f63b5e6883e77401ae92fb2f16366f82ddc28d9933a1d683ea60e9b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘을 지키시는 자는 졸지도 아니하고 주무시지도 아니하시리로다"
+      ],
+      "raw_text_hashes": [
+        "112ac289f63b5e6883e77401ae92fb2f16366f82ddc28d9933a1d683ea60e9b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:121:5",
+      "sequence": 16087,
+      "chapter_label": "PSA 121",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 121,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 121,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD is your keeper. The LORD is your shade on your right hand.",
+      "ko": "여호와는 너를 지키시는 자라 여호와께서 네 우편에서 네 그늘이 되시나니",
+      "source_text_hash": "f25ae53231ae975420652efeb622c16725d25f5b8062c77a00d6de55c4dd41d2",
+      "translation_text_hash": "d8d23316685418688c71e9dd9ae01926f69ec012edf8ace7244bf3c2229e3292",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 너를 지키시는 자라 여호와께서 네 우편에서 네 그늘이 되시나니"
+      ],
+      "raw_text_hashes": [
+        "d8d23316685418688c71e9dd9ae01926f69ec012edf8ace7244bf3c2229e3292"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:121:6",
+      "sequence": 16088,
+      "chapter_label": "PSA 121",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 121,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 121,
+          "verse": 6
+        }
+      ],
+      "en": "The sun will not harm you by day, nor the moon by night.",
+      "ko": "낮의 해가 너를 상치 아니하며 밤의 달도 너를 해치 아니하리로다",
+      "source_text_hash": "71e109796ea48a7c70bda511277b7527d47865f215d9de95ef079ea845c204e6",
+      "translation_text_hash": "08ccf9e36b16740f42cb95edaafab05f391f49bfa5cdc4ee7d4a0f2b59691cf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮의 해가 너를 상치 아니하며 밤의 달도 너를 해치 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "08ccf9e36b16740f42cb95edaafab05f391f49bfa5cdc4ee7d4a0f2b59691cf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:121:7",
+      "sequence": 16089,
+      "chapter_label": "PSA 121",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 121,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 121,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD will keep you from all evil. He will keep your soul.",
+      "ko": "여호와께서 너를 지켜 모든 환난을 면케 하시며 또 네 영혼을 지키시리로다",
+      "source_text_hash": "1e82a2ef3f7db519a95ce116c6a01e42a7e710af59f4aef7d7895c288ea4603e",
+      "translation_text_hash": "350757bdba2301b96d515cb7896bc3648181a244a6c1306a75b52f5ce109c99c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너를 지켜 모든 환난을 면케 하시며 또 네 영혼을 지키시리로다"
+      ],
+      "raw_text_hashes": [
+        "350757bdba2301b96d515cb7896bc3648181a244a6c1306a75b52f5ce109c99c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:121:8",
+      "sequence": 16090,
+      "chapter_label": "PSA 121",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 121,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 121,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD will keep your going out and your coming in, from this time forward, and forever more.",
+      "ko": "여호와께서 너의 출입을 지금부터 영원까지 지키시리로다",
+      "source_text_hash": "abf805d568433eaa4751face06dbfd955559c58e7baaa2c1cf2e17c7dd6bb829",
+      "translation_text_hash": "5478b1d50b24f5809299fe15ee6ecdede34e419dd771b49b9c8e677e39f70987",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너의 출입을 지금부터 영원까지 지키시리로다"
+      ],
+      "raw_text_hashes": [
+        "5478b1d50b24f5809299fe15ee6ecdede34e419dd771b49b9c8e677e39f70987"
+      ]
+    }
+  ]
+}

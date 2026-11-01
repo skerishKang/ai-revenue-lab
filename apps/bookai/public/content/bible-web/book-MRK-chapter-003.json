@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:003",
+  "unit_ordinal": 960,
+  "unit_label": "MRK 3",
+  "book_code": "MRK",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:3:1",
+      "sequence": 24290,
+      "chapter_label": "MRK 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "He entered again into the synagogue, and there was a man there whose hand was withered.",
+      "ko": "예수께서 다시 회당에 들어가시니 한편 손 마른 사람이 거기 있는지라",
+      "source_text_hash": "e7636760924721205aa9f248f79c5e61933ca560511459f73e2848b9fd371960",
+      "translation_text_hash": "4188d33e7cc0b64385486e25669b23280faabc0d03d9dfd1aaabe829ba24eb9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 다시 회당에 들어가시니 한편 손 마른 사람이 거기 있는지라"
+      ],
+      "raw_text_hashes": [
+        "4188d33e7cc0b64385486e25669b23280faabc0d03d9dfd1aaabe829ba24eb9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:2",
+      "sequence": 24291,
+      "chapter_label": "MRK 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "They watched him, whether he would heal him on the Sabbath day, that they might accuse him.",
+      "ko": "사람들이 예수를 송사하려 하여 안식일에 그 사람을 고치시는가 엿보거늘",
+      "source_text_hash": "2b35360d9dc50c0c657128e714b0b8e575343e7575dac7b7b9cc5cc4cf1d3470",
+      "translation_text_hash": "c0f90350249c6e93e5f3747e5167f9fc13f1b35735b7b6392a3b9ab4d9526fcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 예수를 송사하려 하여 안식일에 그 사람을 고치시는가 엿보거늘"
+      ],
+      "raw_text_hashes": [
+        "c0f90350249c6e93e5f3747e5167f9fc13f1b35735b7b6392a3b9ab4d9526fcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:3",
+      "sequence": 24292,
+      "chapter_label": "MRK 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "He said to the man whose hand was withered, “Stand up.”",
+      "ko": "예수께서 손 마른 사람에게 이르시되 한 가운데 일어서라 하시고",
+      "source_text_hash": "c38aed4fabb2e417e291bb4ee068cb888b4b7c5257bb47fe80164b8ec555c534",
+      "translation_text_hash": "1fc48c45f8c5024fee9da4e6e183eb100b0c4b7c3e8ba4bb46aaf8fc20a695ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 손 마른 사람에게 이르시되 한 가운데 일어서라 하시고"
+      ],
+      "raw_text_hashes": [
+        "1fc48c45f8c5024fee9da4e6e183eb100b0c4b7c3e8ba4bb46aaf8fc20a695ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:4",
+      "sequence": 24293,
+      "chapter_label": "MRK 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "He said to them, “Is it lawful on the Sabbath day to do good or to do harm? To save a life or to kill?”But they were silent.",
+      "ko": "저희에게 이르시되 안식일에 선을 행하는 것과 악을 행하는 것, 생명을 구하는 것과 죽이는 것, 어느 것이 옳으냐 하시니 저희가 잠잠하거늘",
+      "source_text_hash": "e12efc05ff8a3df3889717881622cd7b1271862ab2e42894109a5aa6a2e97acd",
+      "translation_text_hash": "cda5056c3b52342feb4d3297dec5fa2aa2a0df32bbe0f3e02fcc69f1871fe5c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 이르시되 안식일에 선을 행하는 것과 악을 행하는 것, 생명을 구하는 것과 죽이는 것, 어느 것이 옳으냐 하시니 저희가 잠잠하거늘"
+      ],
+      "raw_text_hashes": [
+        "cda5056c3b52342feb4d3297dec5fa2aa2a0df32bbe0f3e02fcc69f1871fe5c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:5",
+      "sequence": 24294,
+      "chapter_label": "MRK 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "When he had looked around at them with anger, being grieved at the hardening of their hearts, he said to the man, “Stretch out your hand.” He stretched it out, and his hand was restored as healthy as the other.",
+      "ko": "저희 마음의 완악함을 근심하사 노하심으로 저희를 둘러 보시고 그 사람에게 이르시되 네 손을 내밀라 하시니 그가 내밀매 그 손이 회복되었더라",
+      "source_text_hash": "6d12d6d5820ab5b5cc19bb74a3d5c92f7548a9cc14bc48ec7dc99dafca87d266",
+      "translation_text_hash": "4f5d4c3075ee7b113b817242477fc72f53d9ac3327dfee8ed814b3b7dc9118cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 마음의 완악함을 근심하사 노하심으로 저희를 둘러 보시고 그 사람에게 이르시되 네 손을 내밀라 하시니 그가 내밀매 그 손이 회복되었더라"
+      ],
+      "raw_text_hashes": [
+        "4f5d4c3075ee7b113b817242477fc72f53d9ac3327dfee8ed814b3b7dc9118cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:6",
+      "sequence": 24295,
+      "chapter_label": "MRK 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "The Pharisees went out, and immediately conspired with the Herodians against him, how they might destroy him.",
+      "ko": "바리새인들이 나가서 곧 헤롯당과 함께 어떻게 하여 예수를 죽일꼬 의논하니라",
+      "source_text_hash": "7cafa30d24fb9ee2a7a5e3506bef1f28e5d882a79df38ba74f242df929f5331c",
+      "translation_text_hash": "8151ca4b226be4a90cdacb228b97fb616c6527ef7bf8850c51918cffc2b1ca52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 나가서 곧 헤롯당과 함께 어떻게 하여 예수를 죽일꼬 의논하니라"
+      ],
+      "raw_text_hashes": [
+        "8151ca4b226be4a90cdacb228b97fb616c6527ef7bf8850c51918cffc2b1ca52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:7",
+      "sequence": 24296,
+      "chapter_label": "MRK 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Jesus withdrew to the sea with his disciples; and a great multitude followed him from Galilee, from Judea,",
+      "ko": "예수께서 제자들과 함께 바다로 물러가시니 갈릴리에서 큰 무리가 좇으며",
+      "source_text_hash": "4de1ded8762619834a4725569dc8503feda7fb0ab65feaf82f42a4535e9ecf69",
+      "translation_text_hash": "04cf21c77448d695dba38151673cb2dfb026b1f8ef497bb347d027013c0ecf07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 제자들과 함께 바다로 물러가시니 갈릴리에서 큰 무리가 좇으며"
+      ],
+      "raw_text_hashes": [
+        "04cf21c77448d695dba38151673cb2dfb026b1f8ef497bb347d027013c0ecf07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:8",
+      "sequence": 24297,
+      "chapter_label": "MRK 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "from Jerusalem, from Idumaea, beyond the Jordan, and those from around Tyre and Sidon. A great multitude, hearing what great things he did, came to him.",
+      "ko": "유대와 예루살렘과 이두매와 요단강 건너편과 또 두로와 시돈 근처에서 허다한 무리가 그의 하신 큰 일을 듣고 나아오는지라",
+      "source_text_hash": "7e9e8a53fa7357f88a1924963c5c8862c78263d9842820b46abab991235ff809",
+      "translation_text_hash": "e9e7d9c5525d0e6d8383e043c74a8059a4bc7fe40894f4167aadccbc59d72d9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대와 예루살렘과 이두매와 요단강 건너편과 또 두로와 시돈 근처에서 허다한 무리가 그의 하신 큰 일을 듣고 나아오는지라"
+      ],
+      "raw_text_hashes": [
+        "e9e7d9c5525d0e6d8383e043c74a8059a4bc7fe40894f4167aadccbc59d72d9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:9",
+      "sequence": 24298,
+      "chapter_label": "MRK 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "He spoke to his disciples that a little boat should stay near him because of the crowd, so that they wouldn’t press on him.",
+      "ko": "예수께서 무리의 에워싸 미는 것을 면키 위하여 작은 배를 등대하도록 제자들에게 명하셨으니",
+      "source_text_hash": "9005b45366a3b96e0ea3daf56b38f04e024e65384cfb71c98d2187fb0c6f27d7",
+      "translation_text_hash": "673d6ceb6789b1f6b0774c2808ee4961fad7b1992d0eebb30950835347c51bc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 무리의 에워싸 미는 것을 면키 위하여 작은 배를 등대하도록 제자들에게 명하셨으니"
+      ],
+      "raw_text_hashes": [
+        "673d6ceb6789b1f6b0774c2808ee4961fad7b1992d0eebb30950835347c51bc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:10",
+      "sequence": 24299,
+      "chapter_label": "MRK 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "For he had healed many, so that as many as had diseases pressed on him that they might touch him.",
+      "ko": "이는 많은 사람을 고치셨으므로 병에 고생하는 자들이 예수를 만지고자 하여 핍근히 함이더라",
+      "source_text_hash": "cb2464d8c400048e76997f96ea1d9702f6c2a80dc6cad253d2e039d15c3ee6ac",
+      "translation_text_hash": "b1dc8fe17a258041524d0b8c93859c44403ca12f9b8158cec63dac9ee8a68021",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 많은 사람을 고치셨으므로 병에 고생하는 자들이 예수를 만지고자 하여 핍근히 함이더라"
+      ],
+      "raw_text_hashes": [
+        "b1dc8fe17a258041524d0b8c93859c44403ca12f9b8158cec63dac9ee8a68021"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:11",
+      "sequence": 24300,
+      "chapter_label": "MRK 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "The unclean spirits, whenever they saw him, fell down before him and cried, “You are the Son of God!”",
+      "ko": "더러운 귀신들도 어느 때든지 예수를 보면 그 앞에 엎드려 부르짖어 가로되 당신은 하나님의 아들이니이다 하니",
+      "source_text_hash": "e3f04e5a24c290df2bcf2a362e84027dfb637595a8c39a94bc52964058f19633",
+      "translation_text_hash": "38971600620de725d3eaebcc5e25ab83b6abef7fe6ccc78e8fcc2f6397be91cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러운 귀신들도 어느 때든지 예수를 보면 그 앞에 엎드려 부르짖어 가로되 당신은 하나님의 아들이니이다 하니"
+      ],
+      "raw_text_hashes": [
+        "38971600620de725d3eaebcc5e25ab83b6abef7fe6ccc78e8fcc2f6397be91cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:12",
+      "sequence": 24301,
+      "chapter_label": "MRK 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "He sternly warned them that they should not make him known.",
+      "ko": "예수께서 자기를 나타내지 말라고 많이 경계하시니라",
+      "source_text_hash": "52bb5372f439b9e864ca7024f2f3663fbbed6420c5881dd2f489b9d633c1d104",
+      "translation_text_hash": "7b971e686a908070c301f9d75aa8c39303a41b87ea2926af46eef4097e2dd969",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 자기를 나타내지 말라고 많이 경계하시니라"
+      ],
+      "raw_text_hashes": [
+        "7b971e686a908070c301f9d75aa8c39303a41b87ea2926af46eef4097e2dd969"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:13",
+      "sequence": 24302,
+      "chapter_label": "MRK 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "He went up into the mountain and called to himself those whom he wanted, and they went to him.",
+      "ko": "또 산에 오르사 자기의 원하는 자들을 부르시니 나아온지라",
+      "source_text_hash": "4daab768982acae851bb0cc57793809aa37d36523ba2a34956609a6fb711a6db",
+      "translation_text_hash": "4aaed7422ca492468e9a6de68f5c5301e11f31e9bc840564536f598bac2cd3de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 산에 오르사 자기의 원하는 자들을 부르시니 나아온지라"
+      ],
+      "raw_text_hashes": [
+        "4aaed7422ca492468e9a6de68f5c5301e11f31e9bc840564536f598bac2cd3de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:14",
+      "sequence": 24303,
+      "chapter_label": "MRK 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "He appointed twelve, that they might be with him, and that he might send them out to preach",
+      "ko": "이에 열 둘을 세우셨으니 이는 자기와 함께 있게 하시고 또 보내사 전도도 하며",
+      "source_text_hash": "0bef31fbe8a0f25b78c7c589616308425741edf3443e0cb8c2540f50d97d6f8e",
+      "translation_text_hash": "73af3934bee6adb24c31c8bb4de2cbd7cf402850d526fa64b21ec33a609bdf01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 열 둘을 세우셨으니 이는 자기와 함께 있게 하시고 또 보내사 전도도 하며"
+      ],
+      "raw_text_hashes": [
+        "73af3934bee6adb24c31c8bb4de2cbd7cf402850d526fa64b21ec33a609bdf01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:15",
+      "sequence": 24304,
+      "chapter_label": "MRK 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "and to have authority to heal sicknesses and to cast out demons:",
+      "ko": "귀신을 내어쫓는 권세도 있게 하려 하심이러라",
+      "source_text_hash": "b2ecb708314df58f12011cad894e3dcefd0150b7bcec292851eb5d72479b4fe8",
+      "translation_text_hash": "d745f27ecb6e9d50183af9afe43bbee2d3b0f6d2c11e44cd14758cb4a8188932",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀신을 내어쫓는 권세도 있게 하려 하심이러라"
+      ],
+      "raw_text_hashes": [
+        "d745f27ecb6e9d50183af9afe43bbee2d3b0f6d2c11e44cd14758cb4a8188932"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:16",
+      "sequence": 24305,
+      "chapter_label": "MRK 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Simon (to whom he gave the name Peter);",
+      "ko": "이 열 둘을 세우셨으니 시몬에게는 베드로란 이름을 더하셨고",
+      "source_text_hash": "0e8b7dd3a1ecfb03a26ee81a1f629ab3d38e4f45cacb40670746b01c20b096db",
+      "translation_text_hash": "ff7ef883918674f79a1d48c1ad76fd596938fcb9573f382312b28281c8444163",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 열 둘을 세우셨으니 시몬에게는 베드로란 이름을 더하셨고"
+      ],
+      "raw_text_hashes": [
+        "ff7ef883918674f79a1d48c1ad76fd596938fcb9573f382312b28281c8444163"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:17",
+      "sequence": 24306,
+      "chapter_label": "MRK 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "James the son of Zebedee; and John, the brother of James, (whom he called Boanerges, which means, Sons of Thunder);",
+      "ko": "또 세베대의 아들 야고보와 야고보의 형제 요한이니 이 둘에게는 보아너게 곧 우뢰의 아들이란 이름을 더하셨으며",
+      "source_text_hash": "76237d86b2b0b729fb7383cb47a63e617cb913bb2a89a9a3aed744c6ace6a29a",
+      "translation_text_hash": "6af83142af19cea9ade39a1d6b76bbbc8d5163c7bae62a8a9c2c45e3cd1e0e29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 세베대의 아들 야고보와 야고보의 형제 요한이니 이 둘에게는 보아너게 곧 우뢰의 아들이란 이름을 더하셨으며"
+      ],
+      "raw_text_hashes": [
+        "6af83142af19cea9ade39a1d6b76bbbc8d5163c7bae62a8a9c2c45e3cd1e0e29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:18",
+      "sequence": 24307,
+      "chapter_label": "MRK 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Andrew; Philip; Bartholomew; Matthew; Thomas; James, the son of Alphaeus; Thaddaeus; Simon the Zealot;",
+      "ko": "또 안드레와 빌립과 바돌로매와 마태와 도마와 알패오의 아들 야고보와 및 다대오와 가나안인 시몬이며",
+      "source_text_hash": "d9b6eb713a568eeac006a0511d450dd43a3f50c3ec704e7d00b51a1bfe037189",
+      "translation_text_hash": "b342470367e1c527dab903070e24fbc2ce66b7befe1b34d3c6f154654e2e95e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 안드레와 빌립과 바돌로매와 마태와 도마와 알패오의 아들 야고보와 및 다대오와 가나안인 시몬이며"
+      ],
+      "raw_text_hashes": [
+        "b342470367e1c527dab903070e24fbc2ce66b7befe1b34d3c6f154654e2e95e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:19",
+      "sequence": 24308,
+      "chapter_label": "MRK 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "and Judas Iscariot, who also betrayed him. Then he came into a house.",
+      "ko": "또 가룟 유다니 이는 예수를 판 자러라",
+      "source_text_hash": "17b1cf5b3e2eb978b3697a5d1f2035f2e7d5212a266b931b786466a44033ddc9",
+      "translation_text_hash": "5162885a6de68b577d17a26c52c3cec62b20e19ea0531e9bca3e81525b6c2106",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가룟 유다니 이는 예수를 판 자러라"
+      ],
+      "raw_text_hashes": [
+        "5162885a6de68b577d17a26c52c3cec62b20e19ea0531e9bca3e81525b6c2106"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:20",
+      "sequence": 24309,
+      "chapter_label": "MRK 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "The multitude came together again, so that they could not so much as eat bread.",
+      "ko": "집에 들어가시니 무리가 다시 모이므로 식사할 겨를도 없는지라",
+      "source_text_hash": "2fa63ea4ec7d6f1ba2c28bc38ed2b6e8369de5e47666118de155873d454f04ed",
+      "translation_text_hash": "16fce6c9379bb7af65e23f8f088e9bc65f7e9fef9e830792cebd2bcfdb4ca9ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집에 들어가시니 무리가 다시 모이므로 식사할 겨를도 없는지라"
+      ],
+      "raw_text_hashes": [
+        "16fce6c9379bb7af65e23f8f088e9bc65f7e9fef9e830792cebd2bcfdb4ca9ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:21",
+      "sequence": 24310,
+      "chapter_label": "MRK 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "When his friends heard it, they went out to seize him; for they said, “He is insane.”",
+      "ko": "예수의 친속들이 듣고 붙들러 나오니 이는 그가 미쳤다 함일러라",
+      "source_text_hash": "a15dc5b1516e6b18a0755ab52cbf52fc22cc9dafbe33063f8a77dc5453823818",
+      "translation_text_hash": "0607a34ac6e1187785ee44e67183754511a2d6d22fbeff9d08eb5dff4d6ca962",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 친속들이 듣고 붙들러 나오니 이는 그가 미쳤다 함일러라"
+      ],
+      "raw_text_hashes": [
+        "0607a34ac6e1187785ee44e67183754511a2d6d22fbeff9d08eb5dff4d6ca962"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:22",
+      "sequence": 24311,
+      "chapter_label": "MRK 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "The scribes who came down from Jerusalem said, “He has Beelzebul,” and, “By the prince of the demons he casts out the demons.”",
+      "ko": "예루살렘에서 내려온 서기관들은 저가 바알세불을 지폈다 하며 또 귀신의 왕을 힘입어 귀신을 쫓아낸다 하니",
+      "source_text_hash": "2ee23772887c2272b9f051c206c64923311049eb8c93fecbd61c1537d793901b",
+      "translation_text_hash": "fcce2df08e5c9ff43dc545655d0f0bfd635faaea448c06337cedfa81b92ad263",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에서 내려온 서기관들은 저가 바알세불을 지폈다 하며 또 귀신의 왕을 힘입어 귀신을 쫓아낸다 하니"
+      ],
+      "raw_text_hashes": [
+        "fcce2df08e5c9ff43dc545655d0f0bfd635faaea448c06337cedfa81b92ad263"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:23",
+      "sequence": 24312,
+      "chapter_label": "MRK 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "He summoned them and said to them in parables, “How can Satan cast out Satan?",
+      "ko": "예수께서 저희를 불러다가 비유로 말씀하시되 사단이 어찌 사단을 쫓아낼 수 있느냐",
+      "source_text_hash": "6f9b4838792bcb8bebd87e6e6e3023953387833359fccb08aba5432f0af7a881",
+      "translation_text_hash": "d2d837b3006b23ec54a0009017161c40da33c11eaf9b72d1b2e4b8611c15c624",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희를 불러다가 비유로 말씀하시되 사단이 어찌 사단을 쫓아낼 수 있느냐"
+      ],
+      "raw_text_hashes": [
+        "d2d837b3006b23ec54a0009017161c40da33c11eaf9b72d1b2e4b8611c15c624"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:24",
+      "sequence": 24313,
+      "chapter_label": "MRK 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "If a kingdom is divided against itself, that kingdom cannot stand.",
+      "ko": "또 만일 나라가 스스로 분쟁하면 그 나라가 설 수 없고",
+      "source_text_hash": "ec60a9eb471ed09ad0ff008482badfb73694f86212cae375e36624174f6f1634",
+      "translation_text_hash": "2627c46f080563166e2da2dae03d7063f306bbdc56f3b93f3ddce0171a4b7b0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 만일 나라가 스스로 분쟁하면 그 나라가 설 수 없고"
+      ],
+      "raw_text_hashes": [
+        "2627c46f080563166e2da2dae03d7063f306bbdc56f3b93f3ddce0171a4b7b0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:25",
+      "sequence": 24314,
+      "chapter_label": "MRK 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "If a house is divided against itself, that house cannot stand.",
+      "ko": "만일 집이 스스로 분쟁하면 그 집이 설 수 없고",
+      "source_text_hash": "f8ff4c06458b505829aa759afaa1ba756cd1e8418904cf67e42f92e1156b9c9e",
+      "translation_text_hash": "45451954c43fc584a634d9e878d18362f79dcc4fd22da8510fa9184141b1971e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 집이 스스로 분쟁하면 그 집이 설 수 없고"
+      ],
+      "raw_text_hashes": [
+        "45451954c43fc584a634d9e878d18362f79dcc4fd22da8510fa9184141b1971e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:26",
+      "sequence": 24315,
+      "chapter_label": "MRK 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "If Satan has risen up against himself, and is divided, he can’t stand, but has an end.",
+      "ko": "만일 사단이 자기를 거스려 일어나 분쟁하면 설 수 없고 이에 망하느니라",
+      "source_text_hash": "a292aae42bfc9473457a5b711261475c1cbeb80b2cb889fea2b40c57126a4d29",
+      "translation_text_hash": "4fa595a09a26d4d86b1d651f1f42a6095488a0fc73b89a04d3fd88c370255a53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 사단이 자기를 거스려 일어나 분쟁하면 설 수 없고 이에 망하느니라"
+      ],
+      "raw_text_hashes": [
+        "4fa595a09a26d4d86b1d651f1f42a6095488a0fc73b89a04d3fd88c370255a53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:27",
+      "sequence": 24316,
+      "chapter_label": "MRK 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "But no one can enter into the house of the strong man to plunder unless he first binds the strong man; then he will plunder his house.",
+      "ko": "사람이 먼저 강한 자를 결박지 않고는 그 강한 자의 집에 들어가 세간을 늑탈치 못하리니 결박한 후에야 그 집을 늑탈하리라",
+      "source_text_hash": "c64f2ce07ac248fcaa40f1b866caa73481139af99358062128e3cd45dd9c1a2b",
+      "translation_text_hash": "2abdc9855819c9182580febc00a2266819fa8efdce5916c1100f9927fcbd7edf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 먼저 강한 자를 결박지 않고는 그 강한 자의 집에 들어가 세간을 늑탈치 못하리니 결박한 후에야 그 집을 늑탈하리라"
+      ],
+      "raw_text_hashes": [
+        "2abdc9855819c9182580febc00a2266819fa8efdce5916c1100f9927fcbd7edf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:28",
+      "sequence": 24317,
+      "chapter_label": "MRK 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "“Most certainly I tell you, all sins of the descendants of man will be forgiven, including their blasphemies with which they may blaspheme;",
+      "ko": "내가 진실로 너희에게 이르노니 사람의 모든 죄와 무릇 훼방하는 훼방은 사하심을 얻되",
+      "source_text_hash": "ffaff4ac845b0e90cea4b916fbedcb670bf143796637ee7fa240b4d4454a3810",
+      "translation_text_hash": "7827c9085df4ee81bbb6ea97cab20c3dce8573501fa18c2f215422ffa1873317",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 이르노니 사람의 모든 죄와 무릇 훼방하는 훼방은 사하심을 얻되"
+      ],
+      "raw_text_hashes": [
+        "7827c9085df4ee81bbb6ea97cab20c3dce8573501fa18c2f215422ffa1873317"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:29",
+      "sequence": 24318,
+      "chapter_label": "MRK 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "but whoever may blaspheme against the Holy Spirit never has forgiveness, but is subject to eternal condemnation.”",
+      "ko": "누구든지 성령을 훼방하는 자는 사하심을 영원히 얻지 못하고 영원한 죄에 처하느니라 하시니",
+      "source_text_hash": "82ec870861eaab523755942f07b40267ad5037ffacf607f8503e8a15835e4c04",
+      "translation_text_hash": "4dbc9ad7e136f25e8c3733e00e91777b040ff491c9e3c5157a24396ce252d6c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 성령을 훼방하는 자는 사하심을 영원히 얻지 못하고 영원한 죄에 처하느니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "4dbc9ad7e136f25e8c3733e00e91777b040ff491c9e3c5157a24396ce252d6c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:30",
+      "sequence": 24319,
+      "chapter_label": "MRK 3",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 30
+        }
+      ],
+      "en": "—because they said, “He has an unclean spirit.”",
+      "ko": "이는 저희가 말하기를 더러운 귀신이 들렸다 함이러라",
+      "source_text_hash": "5d771ff6eb8fe746baebfaf64a174ccb3331bc9c949970bae10b50adac39c9ca",
+      "translation_text_hash": "091261d09282b3fd087455689b5c21d8fef5c79a33d32733c52fa0178b2d1fc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희가 말하기를 더러운 귀신이 들렸다 함이러라"
+      ],
+      "raw_text_hashes": [
+        "091261d09282b3fd087455689b5c21d8fef5c79a33d32733c52fa0178b2d1fc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:31",
+      "sequence": 24320,
+      "chapter_label": "MRK 3",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 31
+        }
+      ],
+      "en": "His mother and his brothers came, and standing outside, they sent to him, calling him.",
+      "ko": "때에 예수의 모친과 동생들이 와서 밖에 서서 사람을 보내어 예수를 부르니",
+      "source_text_hash": "67773c63566f64a92292ef019a9d009946dd46d311b73aa8d08bc2a50cd43f7f",
+      "translation_text_hash": "c07c964b21f8bedd827d2c36980aca93585f1f29f029846299dbb37452681d60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 예수의 모친과 동생들이 와서 밖에 서서 사람을 보내어 예수를 부르니"
+      ],
+      "raw_text_hashes": [
+        "c07c964b21f8bedd827d2c36980aca93585f1f29f029846299dbb37452681d60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:32",
+      "sequence": 24321,
+      "chapter_label": "MRK 3",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 32
+        }
+      ],
+      "en": "A multitude was sitting around him, and they told him, “Behold, your mother, your brothers, and your sisters are outside looking for you.”",
+      "ko": "무리가 예수를 둘러 앉았다가 여짜오되 보소서 당신의 모친과 동생들과 누이들이 밖에서 찾나이다",
+      "source_text_hash": "9ba1a9096d5414e31443d23fb6db35abfff4048cbc71fb5d8dddd1cf8b3ed36b",
+      "translation_text_hash": "6c039b0a5a91afe77b505253a117aea63db7fa59b60e3be347ed8bf59b8d0725",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 예수를 둘러 앉았다가 여짜오되 보소서 당신의 모친과 동생들과 누이들이 밖에서 찾나이다"
+      ],
+      "raw_text_hashes": [
+        "6c039b0a5a91afe77b505253a117aea63db7fa59b60e3be347ed8bf59b8d0725"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:33",
+      "sequence": 24322,
+      "chapter_label": "MRK 3",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 33
+        }
+      ],
+      "en": "He answered them, “Who are my mother and my brothers?”",
+      "ko": "대답하시되 누가 내 모친이며 동생들이냐 하시고",
+      "source_text_hash": "07fd84665c2a74e313fc63e3f1c1d4943e095abc0466a635d3f284b4c42a74a3",
+      "translation_text_hash": "a270214b791a53f3afa22ec6e945cb54cb8a99146416c67fcdf4efc0f8535f26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하시되 누가 내 모친이며 동생들이냐 하시고"
+      ],
+      "raw_text_hashes": [
+        "a270214b791a53f3afa22ec6e945cb54cb8a99146416c67fcdf4efc0f8535f26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:34",
+      "sequence": 24323,
+      "chapter_label": "MRK 3",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 34
+        }
+      ],
+      "en": "Looking around at those who sat around him, he said, “Behold, my mother and my brothers!",
+      "ko": "둘러 앉은 자들을 둘러 보시며 가라사대 내 모친과 내 동생들을 보라",
+      "source_text_hash": "3d717748cf235a55802830a945e518a011171fd566cb591dc696dad4ad8b39e1",
+      "translation_text_hash": "5b5a201734c4d6aa7e9e6c6e8feda7550d0bd612b8c8186f68cb5e0052a9955b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘러 앉은 자들을 둘러 보시며 가라사대 내 모친과 내 동생들을 보라"
+      ],
+      "raw_text_hashes": [
+        "5b5a201734c4d6aa7e9e6c6e8feda7550d0bd612b8c8186f68cb5e0052a9955b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:3:35",
+      "sequence": 24324,
+      "chapter_label": "MRK 3",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 3,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 3,
+          "verse": 35
+        }
+      ],
+      "en": "For whoever does the will of God is my brother, my sister, and mother.”",
+      "ko": "누구든지 하나님의 뜻대로 하는 자는 내 형제요 자매요 모친이니라",
+      "source_text_hash": "28ab0891c79e47987416266577126a93b629d20696fd72c99dcec419253300fb",
+      "translation_text_hash": "8452f9316bddbc49141ba72416cc6b18295a94c42086c78df41f1cc11f3c01a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 하나님의 뜻대로 하는 자는 내 형제요 자매요 모친이니라"
+      ],
+      "raw_text_hashes": [
+        "8452f9316bddbc49141ba72416cc6b18295a94c42086c78df41f1cc11f3c01a6"
+      ]
+    }
+  ]
+}

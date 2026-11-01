@@ -17,7 +17,9 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 QUESTION = "오늘 할 일을 세 가지로 정리해줘"
 PARTIAL = "먼저 가장 중요한 일 하나를 정하고,"
-ERROR_MESSAGE = "연결이 잠시 불안정합니다. 다시 시도해 주세요."
+ERROR_MESSAGE = "지금은 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요."
+ERROR_CODE = "provider_server_error"
+SERVER_MESSAGE = "server exception must not appear"
 RECOVERED = "가장 중요한 일 하나, 짧게 끝낼 일 하나, 휴식 하나로 나눠보세요."
 FOLLOWUP = "그중 첫 번째 일부터 시작하는 방법도 알려줘"
 FOLLOWUP_ANSWER = "첫 번째 일을 10분 안에 할 수 있는 가장 작은 단계로 나눠 바로 시작해 보세요."
@@ -96,7 +98,7 @@ async def _install_api(page: Page, state: FixtureState) -> None:
                 "event: delta\n"
                 f"data: {_json({'delta': PARTIAL})}\n\n"
                 "event: error\n"
-                f"data: {_json({'error': {'message': ERROR_MESSAGE}})}\n\n"
+                f"data: {_json({'error': {'code': ERROR_CODE, 'message': SERVER_MESSAGE}})}\n\n"
             )
         elif index == 2:
             if body != state.stream_posts[0]:
@@ -173,6 +175,12 @@ async def _run(page: Page, *, label: str, width: int, height: int) -> dict[str, 
     await _wait_text(page, "#messageList", PARTIAL)
     await _wait_text(page, "#messageList .error-box", "답변을 불러오지 못했습니다.")
     await _wait_text(page, "#messageList .error-box", ERROR_MESSAGE)
+    note = page.locator("#messageList .error-box .error-code")
+    await note.wait_for(state="visible")
+    assert (await note.inner_text()).strip() == "참고 코드: " + ERROR_CODE
+    box = page.locator("#messageList .error-box")
+    assert SERVER_MESSAGE not in await box.inner_text()
+    assert all(ERROR_CODE not in text for text in await box.locator("p").all_inner_texts())
     await page.locator("#messageList .retry-button", has_text="다시 시도").wait_for(state="visible")
     await page.wait_for_function(
         "() => Array.from(document.querySelectorAll('#messageList [data-runtime-label]')).some(node => node.textContent.trim() === '연결 오류')",

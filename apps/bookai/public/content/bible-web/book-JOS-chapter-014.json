@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:014",
+  "unit_ordinal": 201,
+  "unit_label": "JOS 14",
+  "book_code": "JOS",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:14:1",
+      "sequence": 6189,
+      "chapter_label": "JOS 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "These are the inheritances which the children of Israel took in the land of Canaan, which Eleazar the priest, Joshua the son of Nun, and the heads of the fathers’ houses of the tribes of the children of Israel, distributed to them,",
+      "ko": "이스라엘 자손이 가나안 땅에서 취한 기업 곧 제사장 엘르아살과 눈의 아들 여호수아와 이스라엘 자손 지파의 족장들이 분배한 것이 이 아래와 같으니라",
+      "source_text_hash": "ca270dc240cb795a5f708b789e7acf4a7d58305a947fca586f3d617c052d0396",
+      "translation_text_hash": "2daf4754a9d9c9828746cfe9f18c11f776238a182525b6d01c5502432971ce86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 가나안 땅에서 취한 기업 곧 제사장 엘르아살과 눈의 아들 여호수아와 이스라엘 자손 지파의 족장들이 분배한 것이 이 아래와 같으니라"
+      ],
+      "raw_text_hashes": [
+        "2daf4754a9d9c9828746cfe9f18c11f776238a182525b6d01c5502432971ce86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:2",
+      "sequence": 6190,
+      "chapter_label": "JOS 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "by the lot of their inheritance, as the LORD commanded by Moses, for the nine tribes, and for the half-tribe.",
+      "ko": "여호와께서 모세에게 명하신 대로 그들의 기업을 제비 뽑아 아홉 지파와 반 지파에게 주었으니",
+      "source_text_hash": "b4fc6c6e8cf11b310583859b8e75b16629cd48d37c615fad36b696fcd7a713eb",
+      "translation_text_hash": "1fc19046bc40de7cc243c37c2ad9cb47516af2117771c37841419a1e8e34087c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 명하신 대로 그들의 기업을 제비 뽑아 아홉 지파와 반 지파에게 주었으니"
+      ],
+      "raw_text_hashes": [
+        "1fc19046bc40de7cc243c37c2ad9cb47516af2117771c37841419a1e8e34087c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:3",
+      "sequence": 6191,
+      "chapter_label": "JOS 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "For Moses had given the inheritance of the two tribes and the half-tribe beyond the Jordan; but to the Levites he gave no inheritance among them.",
+      "ko": "두 지파와 반 지파의 기업은 모세가 요단 저편에서 주었음이요 레위 자손에게는 그들 가운데서 기업을 주지 아니하였으니",
+      "source_text_hash": "1e68d4179452d32be86272134ec81e84f6c91b2c87821c582e1fc0c4cb5dc0ba",
+      "translation_text_hash": "b89a08890a98b1e251680d74420ab2126e4f501e8b9e14e730fe4e29c8fdbfce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 지파와 반 지파의 기업은 모세가 요단 저편에서 주었음이요 레위 자손에게는 그들 가운데서 기업을 주지 아니하였으니"
+      ],
+      "raw_text_hashes": [
+        "b89a08890a98b1e251680d74420ab2126e4f501e8b9e14e730fe4e29c8fdbfce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:4",
+      "sequence": 6192,
+      "chapter_label": "JOS 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "For the children of Joseph were two tribes, Manasseh and Ephraim. They gave no portion to the Levites in the land, except cities to dwell in, with their pasture lands for their livestock and for their property.",
+      "ko": "요셉 자손은 므낫세와 에브라임의 두 지파가 되었음이라 이 땅에서 레위 사람에게 아무 분깃도 주지 아니하고 오직 거할 성읍들과 가축과 재물을 둘 들만 줄 뿐으로",
+      "source_text_hash": "cdd53a69dac8387ab8000383ceca89f5b9f81614b18223af1d82ed960c5fd976",
+      "translation_text_hash": "4697224e83cac7e24ca2ece10e530b7549cd4eb00fbb1d51fb37a45593ed1db3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉 자손은 므낫세와 에브라임의 두 지파가 되었음이라 이 땅에서 레위 사람에게 아무 분깃도 주지 아니하고 오직 거할 성읍들과 가축과 재물을 둘 들만 줄 뿐으로"
+      ],
+      "raw_text_hashes": [
+        "4697224e83cac7e24ca2ece10e530b7549cd4eb00fbb1d51fb37a45593ed1db3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:5",
+      "sequence": 6193,
+      "chapter_label": "JOS 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "The children of Israel did as the LORD commanded Moses, and they divided the land.",
+      "ko": "이스라엘 자손이 여호와께서 모세에게 명하신것과 같이 행하여 그 땅을 나누었더라",
+      "source_text_hash": "b84f095f0c4d374b4cacca78fb98df2910cd3cb996146bd1c052dac20e3f2bbd",
+      "translation_text_hash": "d3383e89e90633dc3a795f20955f68341056ed9b77f5353325b76b360f834c38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와께서 모세에게 명하신것과 같이 행하여 그 땅을 나누었더라"
+      ],
+      "raw_text_hashes": [
+        "d3383e89e90633dc3a795f20955f68341056ed9b77f5353325b76b360f834c38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:6",
+      "sequence": 6194,
+      "chapter_label": "JOS 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "Then the children of Judah came near to Joshua in Gilgal. Caleb the son of Jephunneh the Kenizzite said to him, “You know the thing that the LORD spoke to Moses the man of God concerning me and concerning you in Kadesh Barnea.",
+      "ko": "때에 유다 자손이 길갈에 있는 여호수아에게 나아오고 그니스 사람 여분네의 아들 갈렙이 여호수아에게 말하되 여호와께서 가데스 바네아에서 나와 당신에게 대하여 하나님의 사람 모세에게 이르신 일을 당신이 아시는 바라",
+      "source_text_hash": "4a06f84028a5696d0d20427fce1a9faae7e657d21f90ecef8cbc4ae9e07191b2",
+      "translation_text_hash": "b236830b215fe37ed43c438c6dc88c13a884ef62f3561e248491cec87663fbdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 유다 자손이 길갈에 있는 여호수아에게 나아오고 그니스 사람 여분네의 아들 갈렙이 여호수아에게 말하되 여호와께서 가데스 바네아에서 나와 당신에게 대하여 하나님의 사람 모세에게 이르신 일을 당신이 아시는 바라"
+      ],
+      "raw_text_hashes": [
+        "b236830b215fe37ed43c438c6dc88c13a884ef62f3561e248491cec87663fbdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:7",
+      "sequence": 6195,
+      "chapter_label": "JOS 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "I was forty years old when Moses the servant of the LORD sent me from Kadesh Barnea to spy out the land. I brought him word again as it was in my heart.",
+      "ko": "내 나이 사십세에 여호와의 종 모세가 가데스 바네아에서 나를 보내어 이 땅을 정탐케 하므로 내 마음에 성실한대로 그에게 보고하였고",
+      "source_text_hash": "c76b69f66240bde34ea1fab3832ad84bce25d14f7f440d6746a59473adc77efc",
+      "translation_text_hash": "a53414797f9a55b2008cf8a9833483a47ae971bbbcd7da472b4ce778e49a949b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 나이 사십세에 여호와의 종 모세가 가데스 바네아에서 나를 보내어 이 땅을 정탐케 하므로 내 마음에 성실한대로 그에게 보고하였고"
+      ],
+      "raw_text_hashes": [
+        "a53414797f9a55b2008cf8a9833483a47ae971bbbcd7da472b4ce778e49a949b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:8",
+      "sequence": 6196,
+      "chapter_label": "JOS 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "Nevertheless, my brothers who went up with me made the heart of the people melt; but I wholly followed the LORD my God.",
+      "ko": "나와 함께 올라갔던 내 형제들은 백성의 간담을 녹게 하였으나 나는 나의 하나님 여호와를 온전히 좇았으므로",
+      "source_text_hash": "10ab5ccbf5b53258f20fe0ff3e7239bfdeb60febe85dff582c80d79256bb163a",
+      "translation_text_hash": "d52772de39d52f8f688e5cedf9ce04a76fd37d3f16ab7e0b99cc4d8121fc7ae5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 함께 올라갔던 내 형제들은 백성의 간담을 녹게 하였으나 나는 나의 하나님 여호와를 온전히 좇았으므로"
+      ],
+      "raw_text_hashes": [
+        "d52772de39d52f8f688e5cedf9ce04a76fd37d3f16ab7e0b99cc4d8121fc7ae5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:9",
+      "sequence": 6197,
+      "chapter_label": "JOS 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "Moses swore on that day, saying, ‘Surely the land where you walked shall be an inheritance to you and to your children forever, because you have wholly followed the LORD my God.’",
+      "ko": "그 날에 모세가 맹세하여 가로되 네가 나의 하나님 여호와를 온전히 좇았은즉 네 발로 밟는 땅은 영영히 너와 네 자손의 기업이 되리라 하였나이다",
+      "source_text_hash": "342df861e2273da6f5cb3fd8d32f5ea8646012a8092edefe858f96f6aa5f4f0f",
+      "translation_text_hash": "2e28b6d1fba8cbb7eabe90060dcafec77fdb58d26cf3d432cae9d3177984e375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 모세가 맹세하여 가로되 네가 나의 하나님 여호와를 온전히 좇았은즉 네 발로 밟는 땅은 영영히 너와 네 자손의 기업이 되리라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "2e28b6d1fba8cbb7eabe90060dcafec77fdb58d26cf3d432cae9d3177984e375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:10",
+      "sequence": 6198,
+      "chapter_label": "JOS 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "“Now, behold, the LORD has kept me alive, as he spoke, these forty-five years, from the time that the LORD spoke this word to Moses, while Israel walked in the wilderness. Now, behold, I am eighty-five years old, today.",
+      "ko": "이제 보소서 여호와께서 이 말씀을 모세에게 이르신 때로부터 이스라엘이 광야에 행한 이 사십 오년 동안을 여호와께서 말씀하신대로 나를 생존케 하셨나이다 오늘날 내가 팔십 오세로되",
+      "source_text_hash": "ccfe087e5c45a2c3dcfe5f66eaafbfa98ca2610f03bd045692261625132c1c20",
+      "translation_text_hash": "c74cdf0b8e2f5dd6e5c8d97833276b451b30912609ca827c490f7bc2e50be948",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 보소서 여호와께서 이 말씀을 모세에게 이르신 때로부터 이스라엘이 광야에 행한 이 사십 오년 동안을 여호와께서 말씀하신대로 나를 생존케 하셨나이다 오늘날 내가 팔십 오세로되"
+      ],
+      "raw_text_hashes": [
+        "c74cdf0b8e2f5dd6e5c8d97833276b451b30912609ca827c490f7bc2e50be948"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:11",
+      "sequence": 6199,
+      "chapter_label": "JOS 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "As yet I am as strong today as I was in the day that Moses sent me. As my strength was then, even so is my strength now for war, to go out and to come in.",
+      "ko": "모세가 나를 보내던 날과 같이 오늘날 오히려 강건하니 나의 힘이 그때나 이제나 일반이라 싸움에나 출입에 감당할 수 있사온즉",
+      "source_text_hash": "82215d87d3a39d8346b94dde528a3ad7cba638319159dedcc4b1fc57f1a82c30",
+      "translation_text_hash": "cda7f8b9652dfce4009db09bd23040a6cb52451d1715e9d3a92cd5bd9de32b84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 나를 보내던 날과 같이 오늘날 오히려 강건하니 나의 힘이 그때나 이제나 일반이라 싸움에나 출입에 감당할 수 있사온즉"
+      ],
+      "raw_text_hashes": [
+        "cda7f8b9652dfce4009db09bd23040a6cb52451d1715e9d3a92cd5bd9de32b84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:12",
+      "sequence": 6200,
+      "chapter_label": "JOS 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "Now therefore give me this hill country, of which the LORD spoke in that day; for you heard in that day how the Anakim were there, and great and fortified cities. It may be that the LORD will be with me, and I shall drive them out, as the LORD said.”",
+      "ko": "그날에 여호와께서 말씀하신 이 산지를 내게 주소서 당신도 그날에 들으셨거니와 그곳에는 아낙 사람이 있고 그 성읍들은 크고 견고할찌라도 여호와께서 혹시 나와 함께 하시면 내가 필경 여호와의 말씀하신대로 그들을 쫓아내리이다",
+      "source_text_hash": "07757c25c73cc68f3d46ba1a7c397a6957f861245b079895b45c384e70518ba1",
+      "translation_text_hash": "5fbe3175e5d93615f1a5cb4eb88dde1d14944056e016666600d7b8176cf2e8e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그날에 여호와께서 말씀하신 이 산지를 내게 주소서 당신도 그날에 들으셨거니와 그곳에는 아낙 사람이 있고 그 성읍들은 크고 견고할찌라도 여호와께서 혹시 나와 함께 하시면 내가 필경 여호와의 말씀하신대로 그들을 쫓아내리이다"
+      ],
+      "raw_text_hashes": [
+        "5fbe3175e5d93615f1a5cb4eb88dde1d14944056e016666600d7b8176cf2e8e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:13",
+      "sequence": 6201,
+      "chapter_label": "JOS 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "Joshua blessed him; and he gave Hebron to Caleb the son of Jephunneh for an inheritance.",
+      "ko": "여호수아가 여분네의 아들 갈렙을 위하여 축복하고 헤브론을 그에게 주어 기업을 삼게 하매",
+      "source_text_hash": "eba42ea8752bdc5dffcded71450e7ef4ddef4f0dcb2345a338be0a51590a0e22",
+      "translation_text_hash": "43712341515c30e473c56f3d1c0813913e50b31eb0a49682cc6bec25704c5020",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 여분네의 아들 갈렙을 위하여 축복하고 헤브론을 그에게 주어 기업을 삼게 하매"
+      ],
+      "raw_text_hashes": [
+        "43712341515c30e473c56f3d1c0813913e50b31eb0a49682cc6bec25704c5020"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:14",
+      "sequence": 6202,
+      "chapter_label": "JOS 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore Hebron became the inheritance of Caleb the son of Jephunneh the Kenizzite to this day, because he followed the LORD, the God of Israel wholeheartedly.",
+      "ko": "헤브론이 그니스 사람 여분네의 아들 갈렙의 기업이 되어 오늘날까지 이르렀으니 이는 그가 이스라엘의 하나님 여호와를 온전히 좇았음이며",
+      "source_text_hash": "db9ae9a43d5eda14a1ffaa90ed51b9406821551d3e27071e7d0e354e6227672f",
+      "translation_text_hash": "5608a797eb4ed16b745d8387d30a6b8853b28967774500af700655d19f3ec96b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤브론이 그니스 사람 여분네의 아들 갈렙의 기업이 되어 오늘날까지 이르렀으니 이는 그가 이스라엘의 하나님 여호와를 온전히 좇았음이며"
+      ],
+      "raw_text_hashes": [
+        "5608a797eb4ed16b745d8387d30a6b8853b28967774500af700655d19f3ec96b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:14:15",
+      "sequence": 6203,
+      "chapter_label": "JOS 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "Now the name of Hebron before was Kiriath Arba, after the greatest man among the Anakim. Then the land had rest from war.",
+      "ko": "헤브론의 옛 이름은 기럇 아르바라 아르바는 아낙 사람 가운데 가장 큰 사람이었더라 그 땅에 전쟁이 그쳤더라",
+      "source_text_hash": "34d7fc08652452650b895984513d8275438fb3d8a0859fcfc516f7fd6452448f",
+      "translation_text_hash": "ceffcb09a8e0cd720ad31754aed9a44a105e430c8941b32045cee185b28ca561",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤브론의 옛 이름은 기럇 아르바라 아르바는 아낙 사람 가운데 가장 큰 사람이었더라 그 땅에 전쟁이 그쳤더라"
+      ],
+      "raw_text_hashes": [
+        "ceffcb09a8e0cd720ad31754aed9a44a105e430c8941b32045cee185b28ca561"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1261 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:008",
+  "unit_ordinal": 1026,
+  "unit_label": "ACT 8",
+  "book_code": "ACT",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:8:1",
+      "sequence": 27177,
+      "chapter_label": "ACT 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Saul was consenting to his death. A great persecution arose against the assembly which was in Jerusalem in that day. They were all scattered abroad throughout the regions of Judea and Samaria, except for the apostles.",
+      "ko": "사울이 그의 죽임 당함을 마땅히 여기더라 그 날에 예루살렘에 있는 교회에 큰 핍박이 나서 사도 외에는 다 유대와 사마리아 모든 땅으로 흩어지니라",
+      "source_text_hash": "7aad429b6d3278135c58e642f205a687f46209a6bc87b9f329147525b9a74746",
+      "translation_text_hash": "59e2e9a30c3ead6e24625567285c592a02b32e24e9cf5c449170bdc583263f6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 그의 죽임 당함을 마땅히 여기더라 그 날에 예루살렘에 있는 교회에 큰 핍박이 나서 사도 외에는 다 유대와 사마리아 모든 땅으로 흩어지니라"
+      ],
+      "raw_text_hashes": [
+        "59e2e9a30c3ead6e24625567285c592a02b32e24e9cf5c449170bdc583263f6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:2",
+      "sequence": 27178,
+      "chapter_label": "ACT 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "Devout men buried Stephen and lamented greatly over him.",
+      "ko": "경건한 사람들이 스데반을 장사하고 위하여 크게 울더라",
+      "source_text_hash": "fbb0d7f3ab4a756d6a49088d608494401ee5eba8ad1a8dfdc1d80e813aaedfab",
+      "translation_text_hash": "301dee6fed9c398ce5527a66126b4ce7d4a74083d014e0655f77280eb932cf49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "경건한 사람들이 스데반을 장사하고 위하여 크게 울더라"
+      ],
+      "raw_text_hashes": [
+        "301dee6fed9c398ce5527a66126b4ce7d4a74083d014e0655f77280eb932cf49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:3",
+      "sequence": 27179,
+      "chapter_label": "ACT 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "But Saul ravaged the assembly, entering into every house and dragged both men and women off to prison.",
+      "ko": "사울이 교회를 잔멸할쌔 각집에 들어가 남녀를 끌어다가 옥에 넘기니라",
+      "source_text_hash": "6ccbb0126a3b7da81862d86cc9bb8f491eb046c2d77a3a3f2211e3beef07529c",
+      "translation_text_hash": "7497b4063aba2b6855f2f2ff2c3828f49d3098e3d365a5da981f9b30137be182",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 교회를 잔멸할쌔 각집에 들어가 남녀를 끌어다가 옥에 넘기니라"
+      ],
+      "raw_text_hashes": [
+        "7497b4063aba2b6855f2f2ff2c3828f49d3098e3d365a5da981f9b30137be182"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:4",
+      "sequence": 27180,
+      "chapter_label": "ACT 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Therefore those who were scattered abroad went around preaching the word.",
+      "ko": "그 흩어진 사람들이 두루 다니며 복음의 말씀을 전할쌔",
+      "source_text_hash": "a9d45a61ee9dcac64de041bd5e19fb31f9212c8bbda94f7e5b8b0b74e025c5da",
+      "translation_text_hash": "34b59399d79e5461756ab5e709c10dd7344334096307b6827d2450cfdeb52bee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 흩어진 사람들이 두루 다니며 복음의 말씀을 전할쌔"
+      ],
+      "raw_text_hashes": [
+        "34b59399d79e5461756ab5e709c10dd7344334096307b6827d2450cfdeb52bee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:5",
+      "sequence": 27181,
+      "chapter_label": "ACT 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Philip went down to the city of Samaria and proclaimed to them the Christ.",
+      "ko": "빌립이 사마리아 성에 내려가 그리스도를 백성에게 전파하니",
+      "source_text_hash": "d36b2f35db9eff3955c637b46add92f679add7953fed0e6a391500f5b6cbf819",
+      "translation_text_hash": "ab691d2c0e4c8c3594f18a9ae295439f0c12c60ea52d9af524180c7ad8db4155",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립이 사마리아 성에 내려가 그리스도를 백성에게 전파하니"
+      ],
+      "raw_text_hashes": [
+        "ab691d2c0e4c8c3594f18a9ae295439f0c12c60ea52d9af524180c7ad8db4155"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:6",
+      "sequence": 27182,
+      "chapter_label": "ACT 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "The multitudes listened with one accord to the things that were spoken by Philip when they heard and saw the signs which he did.",
+      "ko": "무리가 빌립의 말도 듣고 행하는 표적도 보고 일심으로 그의 말하는 것을 좇더라",
+      "source_text_hash": "933feed1b79dee43dbd715d536045d1c8ffd8b553deaf8c0d5f2478bcf3b4e4a",
+      "translation_text_hash": "c5f300abfc9bb4cf7cb85a69f5224b993fa42f98309e3a6512b454a8332adc03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 빌립의 말도 듣고 행하는 표적도 보고 일심으로 그의 말하는 것을 좇더라"
+      ],
+      "raw_text_hashes": [
+        "c5f300abfc9bb4cf7cb85a69f5224b993fa42f98309e3a6512b454a8332adc03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:7",
+      "sequence": 27183,
+      "chapter_label": "ACT 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "For unclean spirits came out of many of those who had them. They came out, crying with a loud voice. Many who had been paralyzed and lame were healed.",
+      "ko": "많은 사람에게 붙었던 더러운 귀신들이 크게 소리를 지르며 나가고 또 많은 중풍병자와 앉은뱅이가 나으니",
+      "source_text_hash": "37609f044413fcb14519467f3a260a63c4c903cb95885938e7e865c3af66b286",
+      "translation_text_hash": "cb66e61181c79710f6ccc7739386dd022b9f9222c3790cd650e4f3c62d08b41e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 사람에게 붙었던 더러운 귀신들이 크게 소리를 지르며 나가고 또 많은 중풍병자와 앉은뱅이가 나으니"
+      ],
+      "raw_text_hashes": [
+        "cb66e61181c79710f6ccc7739386dd022b9f9222c3790cd650e4f3c62d08b41e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:8",
+      "sequence": 27184,
+      "chapter_label": "ACT 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "There was great joy in that city.",
+      "ko": "그 성에 큰 기쁨이 있더라",
+      "source_text_hash": "85ff3745293a1819cf5bd553935e8648249c53faa095a946e746b2d0d4ab29fd",
+      "translation_text_hash": "3ecefe029f85481b78ce7fe6fcc6cbb60e857072df6220425ba1d6f91149db08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성에 큰 기쁨이 있더라"
+      ],
+      "raw_text_hashes": [
+        "3ecefe029f85481b78ce7fe6fcc6cbb60e857072df6220425ba1d6f91149db08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:9",
+      "sequence": 27185,
+      "chapter_label": "ACT 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "But there was a certain man, Simon by name, who used to practice sorcery in the city and amazed the people of Samaria, making himself out to be some great one,",
+      "ko": "그 성에 시몬이라 하는 사람이 전부터 있어 마술을 행하여 사마리아 백성을 놀라게 하며 자칭 큰 자라 하니",
+      "source_text_hash": "33f196adf8c4d9c0db994101108865c007cbca4ffc2418750310fc1573ca59e8",
+      "translation_text_hash": "7bf2d716e52a4027d6e2a5aceaf5306e74ad1f66c77d1495c80c76ca104c927d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성에 시몬이라 하는 사람이 전부터 있어 마술을 행하여 사마리아 백성을 놀라게 하며 자칭 큰 자라 하니"
+      ],
+      "raw_text_hashes": [
+        "7bf2d716e52a4027d6e2a5aceaf5306e74ad1f66c77d1495c80c76ca104c927d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:10",
+      "sequence": 27186,
+      "chapter_label": "ACT 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "to whom they all listened, from the least to the greatest, saying, “This man is that great power of God.”",
+      "ko": "낮은 사람부터 높은 사람까지 다 청종하여 가로되 이 사람은 크다 일컫는 하나님의 능력이라 하더라",
+      "source_text_hash": "9d17241fad3d336a9e5ef3802b2f09414b0e52e4442b9c6b875b806a980d0e8c",
+      "translation_text_hash": "9f248891572935c1d35eba93b927acf8dffec8506e84526229d9a8040c50c157",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮은 사람부터 높은 사람까지 다 청종하여 가로되 이 사람은 크다 일컫는 하나님의 능력이라 하더라"
+      ],
+      "raw_text_hashes": [
+        "9f248891572935c1d35eba93b927acf8dffec8506e84526229d9a8040c50c157"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:11",
+      "sequence": 27187,
+      "chapter_label": "ACT 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "They listened to him because for a long time he had amazed them with his sorceries.",
+      "ko": "오래 동안 그 마술에 놀랐으므로 저희가 청종하더니",
+      "source_text_hash": "cf06c16c4df0693b5c0ebda6e64f35db94532a55d98c8c3c84d10b8500e9f977",
+      "translation_text_hash": "975249012b10dd413fe8a63322c173f69ebfc329d09b135aab783cb792bcc514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오래 동안 그 마술에 놀랐으므로 저희가 청종하더니"
+      ],
+      "raw_text_hashes": [
+        "975249012b10dd413fe8a63322c173f69ebfc329d09b135aab783cb792bcc514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:12",
+      "sequence": 27188,
+      "chapter_label": "ACT 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "But when they believed Philip preaching good news concerning God’s Kingdom and the name of Jesus Christ, they were baptized, both men and women.",
+      "ko": "빌립이 하나님 나라와 및 예수 그리스도의 이름에 관하여 전도함을 저희가 믿고 남녀가 다 세례를 받으니",
+      "source_text_hash": "236f9bac9617c402fdfe707580ec9024cc80f606318371897f322fe3a3a5268e",
+      "translation_text_hash": "1b032c84f28796cf26e21767e5702dce179b7cd25a06b82a999109c989c47b5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립이 하나님 나라와 및 예수 그리스도의 이름에 관하여 전도함을 저희가 믿고 남녀가 다 세례를 받으니"
+      ],
+      "raw_text_hashes": [
+        "1b032c84f28796cf26e21767e5702dce179b7cd25a06b82a999109c989c47b5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:13",
+      "sequence": 27189,
+      "chapter_label": "ACT 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "Simon himself also believed. Being baptized, he continued with Philip. Seeing signs and great miracles occurring, he was amazed.",
+      "ko": "시몬도 믿고 세례를 받은 후에 전심으로 빌립을 따라 다니며 그 나타나는 표적과 큰 능력을 보고 놀라니라",
+      "source_text_hash": "b7e2fba2ad13a7e275cec1ebbae18a0857275bdaa8bfa4b6600b14069911c8bc",
+      "translation_text_hash": "5543e48c1cb37425d9fdeb979c22f08a366c378cb79d4daa2e32b44691f5d32b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬도 믿고 세례를 받은 후에 전심으로 빌립을 따라 다니며 그 나타나는 표적과 큰 능력을 보고 놀라니라"
+      ],
+      "raw_text_hashes": [
+        "5543e48c1cb37425d9fdeb979c22f08a366c378cb79d4daa2e32b44691f5d32b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:14",
+      "sequence": 27190,
+      "chapter_label": "ACT 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "Now when the apostles who were at Jerusalem heard that Samaria had received the word of God, they sent Peter and John to them,",
+      "ko": "예루살렘에 있는 사도들이 사마리아도 하나님의 말씀을 받았다 함을 듣고 베드로와 요한을 보내매",
+      "source_text_hash": "74e452fce0bf383bbcbf9ef044e6c4e8252f7a6f740e2c50c34e821309250ada",
+      "translation_text_hash": "9f87ee584b35da520c9703debc871cf1f06c36b57cded0689cee51f9ac12d56b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 있는 사도들이 사마리아도 하나님의 말씀을 받았다 함을 듣고 베드로와 요한을 보내매"
+      ],
+      "raw_text_hashes": [
+        "9f87ee584b35da520c9703debc871cf1f06c36b57cded0689cee51f9ac12d56b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:15",
+      "sequence": 27191,
+      "chapter_label": "ACT 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "who, when they had come down, prayed for them, that they might receive the Holy Spirit;",
+      "ko": "그들이 내려가서 저희를 위하여 성령 받기를 기도하니",
+      "source_text_hash": "f6a15c318f126e3e1fa93b914716876239206788b06c5e09d6a50fe17b3bce2c",
+      "translation_text_hash": "dd6b261c26d7f85ab27dbf15faff445486af42952b38174fcf1d2ca3bf89c95f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 내려가서 저희를 위하여 성령 받기를 기도하니"
+      ],
+      "raw_text_hashes": [
+        "dd6b261c26d7f85ab27dbf15faff445486af42952b38174fcf1d2ca3bf89c95f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:16",
+      "sequence": 27192,
+      "chapter_label": "ACT 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "for as yet he had fallen on none of them. They had only been baptized in the name of Christ Jesus.",
+      "ko": "이는 아직 한 사람에게도 성령 내리신 일이 없고 오직 주 예수의 이름으로 세례만 받을 뿐이러라",
+      "source_text_hash": "415dbc19e54d97f8f8939cb74417d857872b5ca969408db3d588fbf3cbed704d",
+      "translation_text_hash": "45a2c63482dcaa4a993bd4d51bbfa6e95234092955dfafdb07bd8e8c5271f22b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 아직 한 사람에게도 성령 내리신 일이 없고 오직 주 예수의 이름으로 세례만 받을 뿐이러라"
+      ],
+      "raw_text_hashes": [
+        "45a2c63482dcaa4a993bd4d51bbfa6e95234092955dfafdb07bd8e8c5271f22b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:17",
+      "sequence": 27193,
+      "chapter_label": "ACT 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "Then they laid their hands on them, and they received the Holy Spirit.",
+      "ko": "이에 두 사도가 저희에게 안수하매 성령을 받는지라",
+      "source_text_hash": "bfbd4f0bc54a8e243197f6221815e08deb7468c21803f29f3d81cd75b2eb7c5d",
+      "translation_text_hash": "4c2f94c33893b91cddc2df3b8e81bf9a89a844263ef5722e26d7d15ac867fdaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 두 사도가 저희에게 안수하매 성령을 받는지라"
+      ],
+      "raw_text_hashes": [
+        "4c2f94c33893b91cddc2df3b8e81bf9a89a844263ef5722e26d7d15ac867fdaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:18",
+      "sequence": 27194,
+      "chapter_label": "ACT 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Now when Simon saw that the Holy Spirit was given through the laying on of the apostles’ hands, he offered them money,",
+      "ko": "시몬이 사도들의 안수함으로 성령 받는 것을 보고 돈을 드려",
+      "source_text_hash": "409e997935b658d7865ef2b97c118e2c8864483c38aa9b885b31adb8e796436f",
+      "translation_text_hash": "26977629744feeb9966ed29a881d5520a654c517e268fe5b09bef71f01f41316",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬이 사도들의 안수함으로 성령 받는 것을 보고 돈을 드려"
+      ],
+      "raw_text_hashes": [
+        "26977629744feeb9966ed29a881d5520a654c517e268fe5b09bef71f01f41316"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:19",
+      "sequence": 27195,
+      "chapter_label": "ACT 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "saying, “Give me also this power, that whomever I lay my hands on may receive the Holy Spirit.”",
+      "ko": "가로되 이 권능을 내게도 주어 누구든지 내가 안수하는 사람은 성령을 받게 하여 주소서 하니",
+      "source_text_hash": "3513d94b785e7fede24d5b639c0d7f964d0858c706f59ffcd2830eec1e48ab94",
+      "translation_text_hash": "52d857955fefd9e6311a162c62e8471d12c087be541a44dd39f5646eafc2279f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 이 권능을 내게도 주어 누구든지 내가 안수하는 사람은 성령을 받게 하여 주소서 하니"
+      ],
+      "raw_text_hashes": [
+        "52d857955fefd9e6311a162c62e8471d12c087be541a44dd39f5646eafc2279f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:20",
+      "sequence": 27196,
+      "chapter_label": "ACT 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "But Peter said to him, “May your silver perish with you, because you thought you could obtain the gift of God with money!",
+      "ko": "베드로가 가로되 네가 하나님의 선물을 돈 주고 살 줄로 생각하였으니 네 은과 네가 함께 망할찌어다",
+      "source_text_hash": "0834322e5fd0dfcf8b57157a64d73c0c75e565c11a8802003828ec8267de183e",
+      "translation_text_hash": "f79703b2facc4d6af1d261884004bfbfae9cffbd85fd639ff4c7ab97f983c809",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 네가 하나님의 선물을 돈 주고 살 줄로 생각하였으니 네 은과 네가 함께 망할찌어다"
+      ],
+      "raw_text_hashes": [
+        "f79703b2facc4d6af1d261884004bfbfae9cffbd85fd639ff4c7ab97f983c809"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:21",
+      "sequence": 27197,
+      "chapter_label": "ACT 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "You have neither part nor lot in this matter, for your heart isn’t right before God.",
+      "ko": "하나님 앞에서 네 마음이 바르지 못하니 이 도에는 네가 관계도 없고 분깃 될 것도 없느니라",
+      "source_text_hash": "89c1f4ce1918e29cd6f45ba6bcc38c7c449d62afd69026ae8fae38ac9c381c3b",
+      "translation_text_hash": "019cec48841e22881e980767eee111e1cda44b24157af402e1bc2076e7a8f953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 앞에서 네 마음이 바르지 못하니 이 도에는 네가 관계도 없고 분깃 될 것도 없느니라"
+      ],
+      "raw_text_hashes": [
+        "019cec48841e22881e980767eee111e1cda44b24157af402e1bc2076e7a8f953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:22",
+      "sequence": 27198,
+      "chapter_label": "ACT 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "Repent therefore of this, your wickedness, and ask God if perhaps the thought of your heart may be forgiven you.",
+      "ko": "그러므로 너의 이 악함을 회개하고 주께 기도하라 혹 마음에 품은 것을 사하여 주시리라",
+      "source_text_hash": "30b941b866be5853a60feec9aa94122a34383697cf0872cc18583db29166e16a",
+      "translation_text_hash": "57a75b687a8b9fc6cf36b08d80d54109ba62e91a55a29ad5dff28a58f3980b47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너의 이 악함을 회개하고 주께 기도하라 혹 마음에 품은 것을 사하여 주시리라"
+      ],
+      "raw_text_hashes": [
+        "57a75b687a8b9fc6cf36b08d80d54109ba62e91a55a29ad5dff28a58f3980b47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:23",
+      "sequence": 27199,
+      "chapter_label": "ACT 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "For I see that you are in the poison of bitterness and in the bondage of iniquity.”",
+      "ko": "내가 보니 너는 악독이 가득하며 불의에 매인바 되었도다",
+      "source_text_hash": "fc0ba1e31827aa479bc5ef10f38f7c0e2a8ca7c0fed93a773417ce9bee0b288b",
+      "translation_text_hash": "b3c3c98a8bdc54e4c796f912a94c8c519920dcb3f630a252da7cf5d74dc6b4a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보니 너는 악독이 가득하며 불의에 매인바 되었도다"
+      ],
+      "raw_text_hashes": [
+        "b3c3c98a8bdc54e4c796f912a94c8c519920dcb3f630a252da7cf5d74dc6b4a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:24",
+      "sequence": 27200,
+      "chapter_label": "ACT 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "Simon answered, “Pray for me to the Lord, that none of the things which you have spoken happen to me.”",
+      "ko": "시몬이 대답하여 가로되 나를 위하여 주께 기도하여 말한 것이 하나도 내게 임하지 말게 하소서 하니라",
+      "source_text_hash": "a310d2aea7ff4c2b2157c4950178b95222a426d7e417d364c5d19448d73b366b",
+      "translation_text_hash": "a9b352e046c6a08c718089118136068197dc73a7c0e714084947bcc57e3004ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬이 대답하여 가로되 나를 위하여 주께 기도하여 말한 것이 하나도 내게 임하지 말게 하소서 하니라"
+      ],
+      "raw_text_hashes": [
+        "a9b352e046c6a08c718089118136068197dc73a7c0e714084947bcc57e3004ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:25",
+      "sequence": 27201,
+      "chapter_label": "ACT 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "They therefore, when they had testified and spoken the word of the Lord, returned to Jerusalem, and preached the Good News to many villages of the Samaritans.",
+      "ko": "두 사도가 주의 말씀을 증거하여 말한 후 예루살렘으로 돌아갈새 사마리아인의 여러 촌에서 복음을 전하니라",
+      "source_text_hash": "3d5724dbf7e6c264586e561b00855d416de736172407044cd5f210e3c21c5d99",
+      "translation_text_hash": "37d2c0ad4e622a493ec37da3a448bbbc7a79bac600866d2aedf3ce53c280961e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사도가 주의 말씀을 증거하여 말한 후 예루살렘으로 돌아갈새 사마리아인의 여러 촌에서 복음을 전하니라"
+      ],
+      "raw_text_hashes": [
+        "37d2c0ad4e622a493ec37da3a448bbbc7a79bac600866d2aedf3ce53c280961e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:26",
+      "sequence": 27202,
+      "chapter_label": "ACT 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "Then an angel of the Lord spoke to Philip, saying, “Arise, and go toward the south to the way that goes down from Jerusalem to Gaza. This is a desert.”",
+      "ko": "주의 사자가 빌립더러 일러 가로되 일어나서 남으로 향하여 예루살렘에서 가사로 내려가는 길까지 가라 하니 그 길은 광야라",
+      "source_text_hash": "62947be89e57607c7034ad44a7e03e7170e7ab5b0771c3722fcd8812335bc399",
+      "translation_text_hash": "dba6fad1b05c4507a529b846021815ede298d083abc7d1e42c2dbf282f701906",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 사자가 빌립더러 일러 가로되 일어나서 남으로 향하여 예루살렘에서 가사로 내려가는 길까지 가라 하니 그 길은 광야라"
+      ],
+      "raw_text_hashes": [
+        "dba6fad1b05c4507a529b846021815ede298d083abc7d1e42c2dbf282f701906"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:27",
+      "sequence": 27203,
+      "chapter_label": "ACT 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "He arose and went; and behold, there was a man of Ethiopia, a eunuch of great authority under Candace, queen of the Ethiopians, who was over all her treasure, who had come to Jerusalem to worship.",
+      "ko": "일어나 가서 보니 에디오피아 사람 곧 에디오피아 여왕 간다게의 모든 국고를 맡은 큰 권세가 있는 내시가 예배하러 예루살렘에 왔다가",
+      "source_text_hash": "1d991c247aca66433a9289c50e84714b528b87c076ae1b4341be50d02690790d",
+      "translation_text_hash": "022e9518b742c8e0a1d433e6c649e5138dc1e2dd7499b38833db3583ad275a03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 가서 보니 에디오피아 사람 곧 에디오피아 여왕 간다게의 모든 국고를 맡은 큰 권세가 있는 내시가 예배하러 예루살렘에 왔다가"
+      ],
+      "raw_text_hashes": [
+        "022e9518b742c8e0a1d433e6c649e5138dc1e2dd7499b38833db3583ad275a03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:28",
+      "sequence": 27204,
+      "chapter_label": "ACT 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "He was returning and sitting in his chariot, and was reading the prophet Isaiah.",
+      "ko": "돌아 가는데 병거를 타고 선지자 이사야의 글을 읽더라",
+      "source_text_hash": "f1bf8feb4210ce15f0f26de62aa5b58d417c06c20e1c2a790c1c3579c46787f4",
+      "translation_text_hash": "143d17f57a55e3644d95213d03e774411cc6361f322cb280ffc90c99235a7285",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌아 가는데 병거를 타고 선지자 이사야의 글을 읽더라"
+      ],
+      "raw_text_hashes": [
+        "143d17f57a55e3644d95213d03e774411cc6361f322cb280ffc90c99235a7285"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:29",
+      "sequence": 27205,
+      "chapter_label": "ACT 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "The Spirit said to Philip, “Go near, and join yourself to this chariot.”",
+      "ko": "성령이 빌립더러 이르시되 이 병거로 가까이 나아가라 하시거늘",
+      "source_text_hash": "6081210794a12c1495fa70f7289fa68ce0571f96c078c7372ce56e969abc57b3",
+      "translation_text_hash": "1118a8f57a49ccfbc33640c1511ba695a85a0b62fb80e3731f254a70094fab37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령이 빌립더러 이르시되 이 병거로 가까이 나아가라 하시거늘"
+      ],
+      "raw_text_hashes": [
+        "1118a8f57a49ccfbc33640c1511ba695a85a0b62fb80e3731f254a70094fab37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:30",
+      "sequence": 27206,
+      "chapter_label": "ACT 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "Philip ran to him, and heard him reading Isaiah the prophet, and said, “Do you understand what you are reading?”",
+      "ko": "빌립이 달려가서 선지자 이사야의 글 읽는 것을 듣고 말하되 읽는 것을 깨닫느뇨",
+      "source_text_hash": "9079f6c19464fc4e53db2557c117b3050a5638d83b2c7dd601e7c19097b0bdf9",
+      "translation_text_hash": "cba822e7215b645d7d016627c76c2fbe40e5ba31932dc367cee131e32cf38bfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립이 달려가서 선지자 이사야의 글 읽는 것을 듣고 말하되 읽는 것을 깨닫느뇨"
+      ],
+      "raw_text_hashes": [
+        "cba822e7215b645d7d016627c76c2fbe40e5ba31932dc367cee131e32cf38bfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:31",
+      "sequence": 27207,
+      "chapter_label": "ACT 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "He said, “How can I, unless someone explains it to me?” He begged Philip to come up and sit with him.",
+      "ko": "대답하되 지도하는 사람이 없으니 어찌 깨달을 수 있느뇨 하고 빌립을 청하여 병거에 올라 같이 앉으라 하니라",
+      "source_text_hash": "7b3468978e73aef63219769a7194059ad9c73a5c2be33c8703164ab7c96e5be4",
+      "translation_text_hash": "aff9afd0830f18c109cef67460735f163bc9e9afa5dd96e019a383d2398c9d38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 지도하는 사람이 없으니 어찌 깨달을 수 있느뇨 하고 빌립을 청하여 병거에 올라 같이 앉으라 하니라"
+      ],
+      "raw_text_hashes": [
+        "aff9afd0830f18c109cef67460735f163bc9e9afa5dd96e019a383d2398c9d38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:32",
+      "sequence": 27208,
+      "chapter_label": "ACT 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "Now the passage of the Scripture which he was reading was this, “He was led as a sheep to the slaughter. As a lamb before his shearer is silent, so he doesn’t open his mouth.",
+      "ko": "읽는 성경 귀절은 이것이니 일렀으되 저가 사지로 가는 양과 같이 끌리었고 털 깎는 자 앞에 있는 어린 양의 잠잠함과 같이 그 입을 열지 아니하였도다",
+      "source_text_hash": "495c93fa29af7bc6f639aea58085be99e7b6eee501a99a3c06ac040f97fd43e1",
+      "translation_text_hash": "cd06195cf9c1c6bb9bb525eefc2ad0d9c1a65e620c155d43916fc6d53cd6506f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "읽는 성경 귀절은 이것이니 일렀으되 저가 사지로 가는 양과 같이 끌리었고 털 깎는 자 앞에 있는 어린 양의 잠잠함과 같이 그 입을 열지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "cd06195cf9c1c6bb9bb525eefc2ad0d9c1a65e620c155d43916fc6d53cd6506f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:33",
+      "sequence": 27209,
+      "chapter_label": "ACT 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "In his humiliation, his judgment was taken away. Who will declare His generation? For his life is taken from the earth.”",
+      "ko": "낮을 때에 공변된 판단을 받지 못하였으니 누가 가히 그 세대를 말하리요 그 생명이 땅에서 빼앗김이로다 하였거늘",
+      "source_text_hash": "6d2143635e5390106ff229d5b7137ab1aca75b4565951256765e6ab8a913a3c6",
+      "translation_text_hash": "e129bd5557e4c81d56166545c79d89664964fdcad8567b22661be659d283f79b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮을 때에 공변된 판단을 받지 못하였으니 누가 가히 그 세대를 말하리요 그 생명이 땅에서 빼앗김이로다 하였거늘"
+      ],
+      "raw_text_hashes": [
+        "e129bd5557e4c81d56166545c79d89664964fdcad8567b22661be659d283f79b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:34",
+      "sequence": 27210,
+      "chapter_label": "ACT 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "The eunuch answered Philip, “Who is the prophet talking about? About himself, or about someone else?”",
+      "ko": "내시가 빌립더러 말하되 청컨대 묻노니 선지자가 이 말 한 것이 누구를 가리킴이뇨 자기를 가리킴이뇨 타인을 가리킴이뇨",
+      "source_text_hash": "100db3ca0e82578077c794ab0fb429eaf579f51c0761b07be8afb317b3652c9a",
+      "translation_text_hash": "b35970225158cff221dc49bc2de8b31dd9de878ca460ca609426aa29e5b25a88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내시가 빌립더러 말하되 청컨대 묻노니 선지자가 이 말 한 것이 누구를 가리킴이뇨 자기를 가리킴이뇨 타인을 가리킴이뇨"
+      ],
+      "raw_text_hashes": [
+        "b35970225158cff221dc49bc2de8b31dd9de878ca460ca609426aa29e5b25a88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:35",
+      "sequence": 27211,
+      "chapter_label": "ACT 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "Philip opened his mouth, and beginning from this Scripture, preached to him about Jesus.",
+      "ko": "빌립이 입을 열어 이 글에서 시작하여 예수를 가르쳐 복음을 전하니",
+      "source_text_hash": "6a3c223f486a6701c442b020d1cfa0d57acd80f541a3c8c654310c791eb34473",
+      "translation_text_hash": "8d3e75ed8ff70d9d7a63cc9e67e2fe3b2be117fea7f624d9a2c36ae4013930a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립이 입을 열어 이 글에서 시작하여 예수를 가르쳐 복음을 전하니"
+      ],
+      "raw_text_hashes": [
+        "8d3e75ed8ff70d9d7a63cc9e67e2fe3b2be117fea7f624d9a2c36ae4013930a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:36",
+      "sequence": 27212,
+      "chapter_label": "ACT 8",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 36
+        }
+      ],
+      "en": "As they went on the way, they came to some water; and the eunuch said, “Behold, here is water. What is keeping me from being baptized?”",
+      "ko": "길 가다가 물 있는 곳에 이르러 내시가 말하되 보라 물이 있으니 내가 세례를 받음에 무슨 거리낌이 있느뇨",
+      "source_text_hash": "5ee20df9b536fd80ac7efdbffa747582521c0d4ce47e028c346450994087f12f",
+      "translation_text_hash": "1f6077507c2d14f8fc53fc115c8191cc25bbf7125d44ad529522fabd4ba51f41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길 가다가 물 있는 곳에 이르러 내시가 말하되 보라 물이 있으니 내가 세례를 받음에 무슨 거리낌이 있느뇨"
+      ],
+      "raw_text_hashes": [
+        "1f6077507c2d14f8fc53fc115c8191cc25bbf7125d44ad529522fabd4ba51f41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:38",
+      "sequence": 27213,
+      "chapter_label": "ACT 8",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 38
+        }
+      ],
+      "en": "He commanded the chariot to stand still, and they both went down into the water, both Philip and the eunuch, and he baptized him.",
+      "ko": "이에 명하여 병거를 머물고 빌립과 내시가 둘 다 물에 내려가 빌립이 세례를 주고",
+      "source_text_hash": "8cd9f7ee71751d7c775506d35c0974fb8b90be7cb997b4da2e020b25913a0a62",
+      "translation_text_hash": "5e6642c77b1f34ff1a0f3b08c645e460bc16e3e08acca9670111bd5c8a8c0a57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 명하여 병거를 머물고 빌립과 내시가 둘 다 물에 내려가 빌립이 세례를 주고"
+      ],
+      "raw_text_hashes": [
+        "5e6642c77b1f34ff1a0f3b08c645e460bc16e3e08acca9670111bd5c8a8c0a57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:39",
+      "sequence": 27214,
+      "chapter_label": "ACT 8",
+      "verse_label": "39",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 39
+        }
+      ],
+      "en": "When they came up out of the water, the Spirit of the Lord caught Philip away, and the eunuch didn’t see him any more, for he went on his way rejoicing.",
+      "ko": "둘이 물에서 올라갈새 주의 영이 빌립을 이끌어 간지라 내시는 흔연히 길을 가므로 그를 다시 보지 못하니라",
+      "source_text_hash": "e86156403816e36ef2722848b3832646f93ec7597f4e645e9cea9fcea840259e",
+      "translation_text_hash": "d2bd6ae6302b08a0538a03f5a0a7597d4857a28eaeb0e01f4949e6788781752e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘이 물에서 올라갈새 주의 영이 빌립을 이끌어 간지라 내시는 흔연히 길을 가므로 그를 다시 보지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "d2bd6ae6302b08a0538a03f5a0a7597d4857a28eaeb0e01f4949e6788781752e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:8:40",
+      "sequence": 27215,
+      "chapter_label": "ACT 8",
+      "verse_label": "40",
+      "locator": {
+        "book": "ACT",
+        "chapter": 8,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 8,
+          "verse": 40
+        }
+      ],
+      "en": "But Philip was found at Azotus. Passing through, he preached the Good News to all the cities until he came to Caesarea.",
+      "ko": "빌립은 아소도에 나타나 여러 성을 지나 다니며 복음을 전하고 가이사랴에 이르니라",
+      "source_text_hash": "a6286d65490e1fd8ecc12c6312bb7feeca7cf8ff2d5a19203925406ea3265dfe",
+      "translation_text_hash": "9d76d18885fc1378f2d09576e55e026f183dafbdf40f6bfeaca2a74cfda01afe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립은 아소도에 나타나 여러 성을 지나 다니며 복음을 전하고 가이사랴에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "9d76d18885fc1378f2d09576e55e026f183dafbdf40f6bfeaca2a74cfda01afe"
+      ]
+    }
+  ]
+}

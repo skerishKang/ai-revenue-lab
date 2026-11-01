@@ -49,7 +49,7 @@
   var BODY_ID = "skillAutoBody";
   var FILE_INPUT_ID = "skauto-file";
 
-  var FILE_ACCEPT = ".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp";
+  var FILE_ACCEPT = ".pdf,.docx,.pptx,.xlsx,.hwp,.hwpx,.jpg,.jpeg,.png,.webp";
 
   var ANALYSIS_UNAVAILABLE =
     "지금은 파일 자동 분석을 사용할 수 없습니다. 회사 정보를 직접 확인해 입력한 뒤 승인 요청을 보낼 수 있습니다.";
@@ -61,7 +61,7 @@
     invalid_file_name: "파일 이름을 확인해 주세요.",
     invalid_file_size: "파일 크기를 확인하지 못했습니다.",
     empty_file: "빈 파일은 사용할 수 없습니다.",
-    legacy_hwp_unsupported: "기존 HWP 파일은 지원하지 않습니다. HWPX 또는 PDF로 저장해 주세요.",
+    legacy_hwp_unsupported: "구형 HWP(.hwp)는 편집·변환할 수 없습니다. 한글에서 '다른 이름으로 저장 → HWPX'로 바꾼 뒤 올려 주세요.",
     unsupported_file_type: "지원하지 않는 파일 형식입니다.",
     document_too_large: "문서는 2 MiB 이하만 선택할 수 있습니다.",
     image_too_large: "이미지는 4 MiB 이하만 선택할 수 있습니다.",

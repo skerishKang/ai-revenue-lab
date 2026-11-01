@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:002",
+  "unit_ordinal": 999,
+  "unit_label": "JHN 2",
+  "book_code": "JHN",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:2:1",
+      "sequence": 26096,
+      "chapter_label": "JHN 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "The third day, there was a wedding in Cana of Galilee. Jesus’ mother was there.",
+      "ko": "사흘 되던 날에 갈릴리 가나에 혼인이 있어 예수의 어머니도 거기 계시고",
+      "source_text_hash": "7911136150b8f957572a02f2035dba482f8dcef7c8698de6169b82c2e3024a08",
+      "translation_text_hash": "a79aa989a1aa9683fd4a629c8107cd1f8710f93b7e83f23d351462e07eee2f3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사흘 되던 날에 갈릴리 가나에 혼인이 있어 예수의 어머니도 거기 계시고"
+      ],
+      "raw_text_hashes": [
+        "a79aa989a1aa9683fd4a629c8107cd1f8710f93b7e83f23d351462e07eee2f3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:2",
+      "sequence": 26097,
+      "chapter_label": "JHN 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "Jesus also was invited, with his disciples, to the wedding.",
+      "ko": "예수와 그 제자들도 혼인에 청함을 받았더니",
+      "source_text_hash": "bddf876aac980a309d9522580ba7fb8f061e5a1a3395f5eb5aa1adbc9df6350c",
+      "translation_text_hash": "635ffdf5a0d32c626b8c2b6c94f34ef9f18a47927dc4ea7d3a4ccfbcda8e04e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수와 그 제자들도 혼인에 청함을 받았더니"
+      ],
+      "raw_text_hashes": [
+        "635ffdf5a0d32c626b8c2b6c94f34ef9f18a47927dc4ea7d3a4ccfbcda8e04e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:3",
+      "sequence": 26098,
+      "chapter_label": "JHN 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "When the wine ran out, Jesus’ mother said to him, “They have no wine.”",
+      "ko": "포도주가 모자란지라 예수의 어머니가 예수에게 이르되 저희에게 포도주가 없다 하니",
+      "source_text_hash": "d919734390cac6b4c82954fbc0b8e29611fc32666b1a740fe111886d09eb5c67",
+      "translation_text_hash": "79900d2fab2b03f6695df5ae211a5167289d74c3ccf28c768221c2d29d11b838",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도주가 모자란지라 예수의 어머니가 예수에게 이르되 저희에게 포도주가 없다 하니"
+      ],
+      "raw_text_hashes": [
+        "79900d2fab2b03f6695df5ae211a5167289d74c3ccf28c768221c2d29d11b838"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:4",
+      "sequence": 26099,
+      "chapter_label": "JHN 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Jesus said to her, “Woman, what does that have to do with you and me? My hour has not yet come.”",
+      "ko": "예수께서 가라사대 여자여 나와 무슨 상관이 있나이까 내 때가 아직 이르지 못하였나이다",
+      "source_text_hash": "26951b613448986256e888a232478b1d5e602e621a1498889ca44fe76d28c1ff",
+      "translation_text_hash": "9912d6d3058e99b099c6b04e3c508c9162982292b93dca3667af9041940f48b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 여자여 나와 무슨 상관이 있나이까 내 때가 아직 이르지 못하였나이다"
+      ],
+      "raw_text_hashes": [
+        "9912d6d3058e99b099c6b04e3c508c9162982292b93dca3667af9041940f48b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:5",
+      "sequence": 26100,
+      "chapter_label": "JHN 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "His mother said to the servants, “Whatever he says to you, do it.”",
+      "ko": "그 어머니가 하인들에게 이르되 너희에게 무슨 말씀을 하시든지 그대로 하라 하니라",
+      "source_text_hash": "9f95943e9fce13d2ee05e8e8a9e736a55c01c16c1947603d22acfc00b90c7352",
+      "translation_text_hash": "98cdef6132045cae338b5571e062279666a67d08ba4a1f1bc115c28d3cb0778c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 어머니가 하인들에게 이르되 너희에게 무슨 말씀을 하시든지 그대로 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "98cdef6132045cae338b5571e062279666a67d08ba4a1f1bc115c28d3cb0778c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:6",
+      "sequence": 26101,
+      "chapter_label": "JHN 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "Now there were six water pots of stone set there after the Jews’ way of purifying, containing two or three metretes apiece.",
+      "ko": "거기 유대인의 결례를 따라 두 세 통 드는 돌항아리 여섯이 놓였는지라",
+      "source_text_hash": "2a75f1d071412733eb15ae270d64d3fb21ef34144194a835e18cb03763d03d3d",
+      "translation_text_hash": "cdc3370d2ef1f1d67f17c87e3541a1af6b0e278f3eb489f68a69cff946864e28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 유대인의 결례를 따라 두 세 통 드는 돌항아리 여섯이 놓였는지라"
+      ],
+      "raw_text_hashes": [
+        "cdc3370d2ef1f1d67f17c87e3541a1af6b0e278f3eb489f68a69cff946864e28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:7",
+      "sequence": 26102,
+      "chapter_label": "JHN 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "Jesus said to them, “Fill the water pots with water.”So they filled them up to the brim.",
+      "ko": "예수께서 저희에게 이르시되 항아리에 물을 채우라 하신즉 아구까지 채우니",
+      "source_text_hash": "5f13be80793be8e66793dd65f4b3003074e8e36c7856a9c0304147756255fb5c",
+      "translation_text_hash": "b54470a8b177dfb27066e0384f20b5bc25c4311397bff16a5319bc3490962343",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 이르시되 항아리에 물을 채우라 하신즉 아구까지 채우니"
+      ],
+      "raw_text_hashes": [
+        "b54470a8b177dfb27066e0384f20b5bc25c4311397bff16a5319bc3490962343"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:8",
+      "sequence": 26103,
+      "chapter_label": "JHN 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "He said to them, “Now draw some out, and take it to the ruler of the feast.”So they took it.",
+      "ko": "이제는 떠서 연회장에게 갖다 주라 하시매 갖다 주었더니",
+      "source_text_hash": "2b7a7597c9aa67cf267d3afc66d099b364d9e88fe1ccd5ed0a2242a7778a6f3b",
+      "translation_text_hash": "2bb9c4f5795f892f0ef1b599f67728c83855b8e8ad2fc57c0c2a4bf7105db7bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 떠서 연회장에게 갖다 주라 하시매 갖다 주었더니"
+      ],
+      "raw_text_hashes": [
+        "2bb9c4f5795f892f0ef1b599f67728c83855b8e8ad2fc57c0c2a4bf7105db7bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:9",
+      "sequence": 26104,
+      "chapter_label": "JHN 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "When the ruler of the feast tasted the water now become wine, and didn’t know where it came from (but the servants who had drawn the water knew), the ruler of the feast called the bridegroom",
+      "ko": "연회장은 물로 된 포도주를 맛보고 어디서 났는지 알지 못하되 물 떠온 하인들은 알더라 연회장이 신랑을 불러",
+      "source_text_hash": "ab174734f50e5846bcb7709e9fc9d95d924e08df49c89a2524991e143993239d",
+      "translation_text_hash": "efcafe03365daead6ab7298bb522ff8691fc1698d478964da89527e1d6f809ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "연회장은 물로 된 포도주를 맛보고 어디서 났는지 알지 못하되 물 떠온 하인들은 알더라 연회장이 신랑을 불러"
+      ],
+      "raw_text_hashes": [
+        "efcafe03365daead6ab7298bb522ff8691fc1698d478964da89527e1d6f809ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:10",
+      "sequence": 26105,
+      "chapter_label": "JHN 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "and said to him, “Everyone serves the good wine first, and when the guests have drunk freely, then that which is worse. You have kept the good wine until now!”",
+      "ko": "말하되 사람마다 먼저 좋은 포도주를 내고 취한 후에 낮은 것을 내거늘 그대는 지금까지 좋은 포도주를 두었도다 하니라",
+      "source_text_hash": "15823f17db690b0ff50e70fbc608fea6bc50cce7b08a5c26950c3523859ce56d",
+      "translation_text_hash": "df9d966b93facb9d0a94c232513b6ace556908e2e6ee8ec9d8424fb4ed07f983",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하되 사람마다 먼저 좋은 포도주를 내고 취한 후에 낮은 것을 내거늘 그대는 지금까지 좋은 포도주를 두었도다 하니라"
+      ],
+      "raw_text_hashes": [
+        "df9d966b93facb9d0a94c232513b6ace556908e2e6ee8ec9d8424fb4ed07f983"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:11",
+      "sequence": 26106,
+      "chapter_label": "JHN 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "This beginning of his signs Jesus did in Cana of Galilee, and revealed his glory; and his disciples believed in him.",
+      "ko": "예수께서 이 처음 표적을 갈릴리 가나에서 행하여 그 영광을 나타내시매 제자들이 그를 믿으니라",
+      "source_text_hash": "1a1d73f4113837e9eb4dc1932e8e606937c2df3b89fce438e0258659f2480476",
+      "translation_text_hash": "c4dde9484bf8ab4a00c1273c7b176ae362087fee2ec1f58524acd93fa295de55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 처음 표적을 갈릴리 가나에서 행하여 그 영광을 나타내시매 제자들이 그를 믿으니라"
+      ],
+      "raw_text_hashes": [
+        "c4dde9484bf8ab4a00c1273c7b176ae362087fee2ec1f58524acd93fa295de55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:12",
+      "sequence": 26107,
+      "chapter_label": "JHN 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "After this, he went down to Capernaum, he, and his mother, his brothers, and his disciples; and they stayed there a few days.",
+      "ko": "그 후에 예수께서 그 어머니와 형제들과 제자들과 함께 가버나움으로 내려가 거기 여러 날 계시지 아니하시니라",
+      "source_text_hash": "bba988a6b1c8f90fef7ec9cacbb46a668fe1e6e0fdd4e4fd8e1e887416debb97",
+      "translation_text_hash": "490f9f852200d7fc38216445e1b0c013c399cb9593782a90bc9a14a373073895",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 예수께서 그 어머니와 형제들과 제자들과 함께 가버나움으로 내려가 거기 여러 날 계시지 아니하시니라"
+      ],
+      "raw_text_hashes": [
+        "490f9f852200d7fc38216445e1b0c013c399cb9593782a90bc9a14a373073895"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:13",
+      "sequence": 26108,
+      "chapter_label": "JHN 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "The Passover of the Jews was at hand, and Jesus went up to Jerusalem.",
+      "ko": "유대인의 유월절이 가까운지라 예수께서 예루살렘으로 올라가셨더니",
+      "source_text_hash": "153e68bea9a77049bfe045276e880da00f97ccacc4f84b1cc741f720631eea98",
+      "translation_text_hash": "bd2e37a70eee578b4732e01f64efccd3a2e80cda457f19aacd4ad8734442c021",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인의 유월절이 가까운지라 예수께서 예루살렘으로 올라가셨더니"
+      ],
+      "raw_text_hashes": [
+        "bd2e37a70eee578b4732e01f64efccd3a2e80cda457f19aacd4ad8734442c021"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:14",
+      "sequence": 26109,
+      "chapter_label": "JHN 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "He found in the temple those who sold oxen, sheep, and doves, and the changers of money sitting.",
+      "ko": "성전 안에서 소와 양과 비둘기 파는 사람들과 돈 바꾸는 사람들의 앉은 것을 보시고",
+      "source_text_hash": "48b4a80341093a65985f95b1d8ddce156c949267126dce8560ce70d4e4405635",
+      "translation_text_hash": "cf1653f8309a3472b13cf809aac90659ca8febb9a6b30ed47e18382d5ca8b0ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성전 안에서 소와 양과 비둘기 파는 사람들과 돈 바꾸는 사람들의 앉은 것을 보시고"
+      ],
+      "raw_text_hashes": [
+        "cf1653f8309a3472b13cf809aac90659ca8febb9a6b30ed47e18382d5ca8b0ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:15",
+      "sequence": 26110,
+      "chapter_label": "JHN 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "He made a whip of cords and drove all out of the temple, both the sheep and the oxen; and he poured out the changers’ money and overthrew their tables.",
+      "ko": "노끈으로 채찍을 만드사 양이나 소를 다 성전에서 내어 쫓으시고 돈 바꾸는 사람들의 돈을 쏟으시며 상을 엎으시고",
+      "source_text_hash": "4925a6301ec41d314d81f8e9a29289cdec535ef95ca87be1038e1a977c0db577",
+      "translation_text_hash": "3add2bc10e1e4d52037a6bcbde61341b99272be342cd153a1223ecd7e50b3549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노끈으로 채찍을 만드사 양이나 소를 다 성전에서 내어 쫓으시고 돈 바꾸는 사람들의 돈을 쏟으시며 상을 엎으시고"
+      ],
+      "raw_text_hashes": [
+        "3add2bc10e1e4d52037a6bcbde61341b99272be342cd153a1223ecd7e50b3549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:16",
+      "sequence": 26111,
+      "chapter_label": "JHN 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "To those who sold the doves, he said, “Take these things out of here! Don’t make my Father’s house a marketplace!”",
+      "ko": "비둘기 파는 사람들에게 이르시되 이것을 여기서 가져가라 내 아버지의 집으로 장사하는 집을 만들지 말라 하시니",
+      "source_text_hash": "0c1865cb495b55c6d572ba89c4929a782cc7d939c0cfc5eb23c0ae1cc9c464e6",
+      "translation_text_hash": "195339decf4c3158cb827af87a1a29f74223d702d2c96a2c2f8753c7732220cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비둘기 파는 사람들에게 이르시되 이것을 여기서 가져가라 내 아버지의 집으로 장사하는 집을 만들지 말라 하시니"
+      ],
+      "raw_text_hashes": [
+        "195339decf4c3158cb827af87a1a29f74223d702d2c96a2c2f8753c7732220cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:17",
+      "sequence": 26112,
+      "chapter_label": "JHN 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "His disciples remembered that it was written, “Zeal for your house will eat me up.”",
+      "ko": "제자들이 성경 말씀에 주의 전을 사모하는 열심이 나를 삼키리라 한 것을 기억하더라",
+      "source_text_hash": "542014a96f5a5ea4a52715f2c7ae5ee7ea5addd841a429228a4a7a5427b5beb5",
+      "translation_text_hash": "6a4f006bf906ae4fa13f253e5348f21b5bdc4d8c247443e83ae937c1f46288b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 성경 말씀에 주의 전을 사모하는 열심이 나를 삼키리라 한 것을 기억하더라"
+      ],
+      "raw_text_hashes": [
+        "6a4f006bf906ae4fa13f253e5348f21b5bdc4d8c247443e83ae937c1f46288b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:18",
+      "sequence": 26113,
+      "chapter_label": "JHN 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "The Jews therefore answered him, “What sign do you show us, seeing that you do these things?”",
+      "ko": "이에 유대인들이 대답하여 예수께 말하기를 네가 이런 일을 행하니 무슨 표적을 우리에게 보이겠느뇨",
+      "source_text_hash": "daefb74cd1be11a935fa6e2d20e2fdde9d03f7cd9b7675eb0024aed2233c3f8c",
+      "translation_text_hash": "00739e6784291cd3a5fa2807e32c2229a1d2c08c77be44353c77f3d06e49799e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 유대인들이 대답하여 예수께 말하기를 네가 이런 일을 행하니 무슨 표적을 우리에게 보이겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "00739e6784291cd3a5fa2807e32c2229a1d2c08c77be44353c77f3d06e49799e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:19",
+      "sequence": 26114,
+      "chapter_label": "JHN 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Jesus answered them, “Destroy this temple, and in three days I will raise it up.”",
+      "ko": "예수께서 대답하여 가라사대 너희가 이 성전을 헐라 내가 사흘 동안에 일으키리라",
+      "source_text_hash": "e623f9bd4be0048ff3c953b233c9d3cde7f8139cc51457be70da1fe502b2708b",
+      "translation_text_hash": "d28f741a00a6ee75a63f7511cd707e2e274bee52bec58d8a653619e9080260c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 너희가 이 성전을 헐라 내가 사흘 동안에 일으키리라"
+      ],
+      "raw_text_hashes": [
+        "d28f741a00a6ee75a63f7511cd707e2e274bee52bec58d8a653619e9080260c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:20",
+      "sequence": 26115,
+      "chapter_label": "JHN 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "The Jews therefore said, “It took forty-six years to build this temple! Will you raise it up in three days?”",
+      "ko": "유대인들이 가로되 이 성전은 사십 륙년 동안에 지었거늘 네가 삼 일 동안에 일으키겠느뇨 하더라",
+      "source_text_hash": "3eb0486345a7e4a4003c9ad8b5eb0dcf4b0935528a900c10086831abfaf8ab79",
+      "translation_text_hash": "d7019204ad2b984e14df0bf6d3d7f2e012da2688ac3bfab05c550b62829ec7b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 가로되 이 성전은 사십 륙년 동안에 지었거늘 네가 삼 일 동안에 일으키겠느뇨 하더라"
+      ],
+      "raw_text_hashes": [
+        "d7019204ad2b984e14df0bf6d3d7f2e012da2688ac3bfab05c550b62829ec7b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:21",
+      "sequence": 26116,
+      "chapter_label": "JHN 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "But he spoke of the temple of his body.",
+      "ko": "그러나 예수는 성전된 자기 육체를 가리켜 말씀하신 것이라",
+      "source_text_hash": "e61446f715ac9094ed4969a294f7e4f1c215af942ef897a46191160a21abe0e2",
+      "translation_text_hash": "841467e72058783b4f8e4d1a296296812d374a0a758ed95f9a84e63991465138",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 예수는 성전된 자기 육체를 가리켜 말씀하신 것이라"
+      ],
+      "raw_text_hashes": [
+        "841467e72058783b4f8e4d1a296296812d374a0a758ed95f9a84e63991465138"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:22",
+      "sequence": 26117,
+      "chapter_label": "JHN 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "When therefore he was raised from the dead, his disciples remembered that he said this, and they believed the Scripture and the word which Jesus had said.",
+      "ko": "죽은 자 가운데서 살아나신 후에야 제자들이 이 말씀하신 것을 기억하고 성경과 및 예수의 하신 말씀을 믿었더라",
+      "source_text_hash": "386c85b4b33d192671f300a6b567f50a6bfefed87ed3e3c3a2eb0772155d4323",
+      "translation_text_hash": "69661605d4e00e43e771d6303c6ef3193c171bdf04d3d71d2b7e248995775f42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자 가운데서 살아나신 후에야 제자들이 이 말씀하신 것을 기억하고 성경과 및 예수의 하신 말씀을 믿었더라"
+      ],
+      "raw_text_hashes": [
+        "69661605d4e00e43e771d6303c6ef3193c171bdf04d3d71d2b7e248995775f42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:23",
+      "sequence": 26118,
+      "chapter_label": "JHN 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "Now when he was in Jerusalem at the Passover, during the feast, many believed in his name, observing his signs which he did.",
+      "ko": "유월절에 예수께서 예루살렘에 계시니 많은 사람이 그 행하시는 표적을 보고 그 이름을 믿었으나",
+      "source_text_hash": "4ad4e5c807a150b253e215a75e385455832981df7279a24ae0ce97b036a7a503",
+      "translation_text_hash": "0042fb6297645aec1e7a5384c44b6b89f0ed94f26524853051c8ca6fc8d15eb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유월절에 예수께서 예루살렘에 계시니 많은 사람이 그 행하시는 표적을 보고 그 이름을 믿었으나"
+      ],
+      "raw_text_hashes": [
+        "0042fb6297645aec1e7a5384c44b6b89f0ed94f26524853051c8ca6fc8d15eb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:24",
+      "sequence": 26119,
+      "chapter_label": "JHN 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "But Jesus didn’t entrust himself to them, because he knew everyone,",
+      "ko": "예수는 그 몸을 저희에게 의탁지 아니하셨으니 이는 친히 모든 사람을 아심이요",
+      "source_text_hash": "68ca76c6ae5389429b44c27bc3908248a63a528e24c2d0f196f651e81cd875d7",
+      "translation_text_hash": "56d619ba4533998ec1fee606d1172ac8dde10bef6b5c437f09021eaffd0f0acc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수는 그 몸을 저희에게 의탁지 아니하셨으니 이는 친히 모든 사람을 아심이요"
+      ],
+      "raw_text_hashes": [
+        "56d619ba4533998ec1fee606d1172ac8dde10bef6b5c437f09021eaffd0f0acc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:2:25",
+      "sequence": 26120,
+      "chapter_label": "JHN 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "and because he didn’t need for anyone to testify concerning man; for he himself knew what was in man.",
+      "ko": "또 친히 사람의 속에 있는 것을 아시므로 사람에 대하여 아무의 증거도 받으실 필요가 없음이니라",
+      "source_text_hash": "624fa795c386278da5eed2ef5003dbfc385474c0486ff082a885b40be01e734d",
+      "translation_text_hash": "880e58a41fa7d1a1014692a4db9a45ad74b8651ad56dc668e3af0950e020e1b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 친히 사람의 속에 있는 것을 아시므로 사람에 대하여 아무의 증거도 받으실 필요가 없음이니라"
+      ],
+      "raw_text_hashes": [
+        "880e58a41fa7d1a1014692a4db9a45ad74b8651ad56dc668e3af0950e020e1b5"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1357 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:019",
+  "unit_ordinal": 1016,
+  "unit_label": "JHN 19",
+  "book_code": "JHN",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:19:1",
+      "sequence": 26826,
+      "chapter_label": "JHN 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "So Pilate then took Jesus and flogged him.",
+      "ko": "이에 빌라도가 예수를 데려다가 채찍질하더라",
+      "source_text_hash": "d8499d4e57351fffe455d6387fab217b2e510c2845df66f7b288f86254da964f",
+      "translation_text_hash": "00d2e88fc15faca376d45d9bd91f3a909854898340cc889a2843774bcb7f2ec6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 빌라도가 예수를 데려다가 채찍질하더라"
+      ],
+      "raw_text_hashes": [
+        "00d2e88fc15faca376d45d9bd91f3a909854898340cc889a2843774bcb7f2ec6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:2",
+      "sequence": 26827,
+      "chapter_label": "JHN 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "The soldiers twisted thorns into a crown and put it on his head, and dressed him in a purple garment.",
+      "ko": "군병들이 가시로 면류관을 엮어 그의 머리에 씌우고 자색 옷을 입히고",
+      "source_text_hash": "8ce857e027ba0370d51e830a9b0dcbccf6d12837d8628f23fa27040fe8aae86c",
+      "translation_text_hash": "13205a8bc0165825d4d1fe63a26f810abf5cae28d2ae3be05b5dab631ca1ac2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군병들이 가시로 면류관을 엮어 그의 머리에 씌우고 자색 옷을 입히고"
+      ],
+      "raw_text_hashes": [
+        "13205a8bc0165825d4d1fe63a26f810abf5cae28d2ae3be05b5dab631ca1ac2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:3",
+      "sequence": 26828,
+      "chapter_label": "JHN 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "They kept saying, “Hail, King of the Jews!” and they kept slapping him.",
+      "ko": "앞에 와서 가로되 유대인의 왕이여 평안할찌어다 하며 손바닥으로 때리더라",
+      "source_text_hash": "ac2b204b3315c72a3c14c6b1e38ed00867b1b1b259cd5c86435716a8260991cb",
+      "translation_text_hash": "cb0e6d97580378f73f89bcb5f8d870bce1d72006e20f8f7836f6357f901a6cfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앞에 와서 가로되 유대인의 왕이여 평안할찌어다 하며 손바닥으로 때리더라"
+      ],
+      "raw_text_hashes": [
+        "cb0e6d97580378f73f89bcb5f8d870bce1d72006e20f8f7836f6357f901a6cfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:4",
+      "sequence": 26829,
+      "chapter_label": "JHN 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "Then Pilate went out again, and said to them, “Behold, I bring him out to you, that you may know that I find no basis for a charge against him.”",
+      "ko": "빌라도가 다시 밖에 나가 말하되 보라 이 사람을 데리고 너희에게 나오나니 이는 내가 그에게서 아무 죄도 찾지 못한 것을 너희로 알게 하려 함이로라 하더라",
+      "source_text_hash": "6839285eeda3de9291bab623bd1b3819b00e32682013c55fa61986c29c2ddf60",
+      "translation_text_hash": "60bbb6c6d597fe33bac4eb819e82566069efd733e780c9b313e16d07039352a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 다시 밖에 나가 말하되 보라 이 사람을 데리고 너희에게 나오나니 이는 내가 그에게서 아무 죄도 찾지 못한 것을 너희로 알게 하려 함이로라 하더라"
+      ],
+      "raw_text_hashes": [
+        "60bbb6c6d597fe33bac4eb819e82566069efd733e780c9b313e16d07039352a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:5",
+      "sequence": 26830,
+      "chapter_label": "JHN 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "Jesus therefore came out, wearing the crown of thorns and the purple garment. Pilate said to them, “Behold, the man!”",
+      "ko": "이에 예수께서 가시 면류관을 쓰고 자색 옷을 입고 나오시니 빌라도가 저희에게 말하되 보라 이 사람이로다 하매",
+      "source_text_hash": "1aef7a569ef9e65cc8283630e6550d0eb722153571182b56360f62565a8b8cf9",
+      "translation_text_hash": "b6d1b4836c27438b1b7b0a8fb0fa303762e2b7919cc0fc689440b8212f5ed89f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 가시 면류관을 쓰고 자색 옷을 입고 나오시니 빌라도가 저희에게 말하되 보라 이 사람이로다 하매"
+      ],
+      "raw_text_hashes": [
+        "b6d1b4836c27438b1b7b0a8fb0fa303762e2b7919cc0fc689440b8212f5ed89f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:6",
+      "sequence": 26831,
+      "chapter_label": "JHN 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "When therefore the chief priests and the officers saw him, they shouted, saying, “Crucify! Crucify!” Pilate said to them, “Take him yourselves and crucify him, for I find no basis for a charge against him.”",
+      "ko": "대제사장들과 하속들이 예수를 보고 소리질러 가로되 십자가에 못 박게 하소서 십자가에 못 박게 하소서 하는지라 빌라도가 가로되 너희가 친히 데려다가 십자가에 못 박으라 나는 그에게서 죄를 찾지 못하노라",
+      "source_text_hash": "4af6c8e41fe5d1fb822e8683a24ecb8c2d86dcb61c19d792a1b2c6f164c4efea",
+      "translation_text_hash": "159389d924eb333df43ebaf2097a4bc40f929ea56790c8b5033fd4ae3ce8f4f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 하속들이 예수를 보고 소리질러 가로되 십자가에 못 박게 하소서 십자가에 못 박게 하소서 하는지라 빌라도가 가로되 너희가 친히 데려다가 십자가에 못 박으라 나는 그에게서 죄를 찾지 못하노라"
+      ],
+      "raw_text_hashes": [
+        "159389d924eb333df43ebaf2097a4bc40f929ea56790c8b5033fd4ae3ce8f4f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:7",
+      "sequence": 26832,
+      "chapter_label": "JHN 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "The Jews answered him, “We have a law, and by our law he ought to die, because he made himself the Son of God.”",
+      "ko": "유대인들이 대답하되 우리에게 법이 있으니 그 법대로 하면 저가 당연히 죽을 것은 저가 자기를 하나님 아들이라 함이니이다",
+      "source_text_hash": "575aa68c8680a7fb6c7a7e4174772a24d67186d762110f839a97a2490f8b4aac",
+      "translation_text_hash": "7db098359777bd85e3c4062285960ce4ef9b45852a284bd6c1e6d69a0b9d185c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 대답하되 우리에게 법이 있으니 그 법대로 하면 저가 당연히 죽을 것은 저가 자기를 하나님 아들이라 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "7db098359777bd85e3c4062285960ce4ef9b45852a284bd6c1e6d69a0b9d185c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:8",
+      "sequence": 26833,
+      "chapter_label": "JHN 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "When therefore Pilate heard this saying, he was more afraid.",
+      "ko": "빌라도가 이 말을 듣고 더욱 두려워하여",
+      "source_text_hash": "a20893066d4f603e63ddbce05a6305cee2445776ca816953fa87d0e9e7b8849f",
+      "translation_text_hash": "a5504036a5bbb32845bc094f7eda62dceda93f6f75c621addfb178fc98a407c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 이 말을 듣고 더욱 두려워하여"
+      ],
+      "raw_text_hashes": [
+        "a5504036a5bbb32845bc094f7eda62dceda93f6f75c621addfb178fc98a407c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:9",
+      "sequence": 26834,
+      "chapter_label": "JHN 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "He entered into the Praetorium again, and said to Jesus, “Where are you from?” But Jesus gave him no answer.",
+      "ko": "다시 관정에 들어가서 예수께 말하되 너는 어디로서냐 하되 예수께서 대답하여 주지 아니하시는지라",
+      "source_text_hash": "b776c6cdcfc39becccbe376b6d8d164280cd88dded728575b76b0f29fecd594b",
+      "translation_text_hash": "6f112602901eb738d69498293d0aff7c63d350543443356a219778ff3fc95924",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 관정에 들어가서 예수께 말하되 너는 어디로서냐 하되 예수께서 대답하여 주지 아니하시는지라"
+      ],
+      "raw_text_hashes": [
+        "6f112602901eb738d69498293d0aff7c63d350543443356a219778ff3fc95924"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:10",
+      "sequence": 26835,
+      "chapter_label": "JHN 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "Pilate therefore said to him, “Aren’t you speaking to me? Don’t you know that I have power to release you and have power to crucify you?”",
+      "ko": "빌라도가 가로되 내게 말하지 아니하느냐 내가 너를 놓을 권세도 있고 십자가에 못 박을 권세도 있는줄 알지 못하느냐",
+      "source_text_hash": "272a4d957eadac518a4822b69233059c57bfd57e6b3b17256fcda43578f37833",
+      "translation_text_hash": "66f9032d29261ded46f803151a91b48c6b9647bf1b438b171f2ae03de38539a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 가로되 내게 말하지 아니하느냐 내가 너를 놓을 권세도 있고 십자가에 못 박을 권세도 있는줄 알지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "66f9032d29261ded46f803151a91b48c6b9647bf1b438b171f2ae03de38539a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:11",
+      "sequence": 26836,
+      "chapter_label": "JHN 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "Jesus answered, “You would have no power at all against me, unless it were given to you from above. Therefore he who delivered me to you has greater sin.”",
+      "ko": "예수께서 대답하시되 위에서 주지 아니하셨더면 나를 해할 권세가 없었으리니 그러므로 나를 네게 넘겨 준 자의 죄는 더 크니라 하시니",
+      "source_text_hash": "fa1269cad9b018a35116949695190e5b23043efa89416fb9305e913afd385e08",
+      "translation_text_hash": "c8b1f92e7156d3d7f1c449013d9abf4a11f42a6fe400a24ed131c89d8bda070b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 위에서 주지 아니하셨더면 나를 해할 권세가 없었으리니 그러므로 나를 네게 넘겨 준 자의 죄는 더 크니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "c8b1f92e7156d3d7f1c449013d9abf4a11f42a6fe400a24ed131c89d8bda070b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:12",
+      "sequence": 26837,
+      "chapter_label": "JHN 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "At this, Pilate was seeking to release him, but the Jews cried out, saying, “If you release this man, you aren’t Caesar’s friend! Everyone who makes himself a king speaks against Caesar!”",
+      "ko": "이러하므로 빌라도가 예수를 놓으려고 힘썼으나 유대인들이 소리 질러 가로되 이 사람을 놓으면 가이사의 충신이 아니니이다 무릇 자기를 왕이라 하는 자는 가이사를 반역하는 것이니이다",
+      "source_text_hash": "94a649d10d3e75e6e0d77c14cfe14827afde8e1adb29b17c6a392e32dfb31824",
+      "translation_text_hash": "fafe8abe808b06b0071e35344c91c3ea3859a39df75dc8dfae75470335950d3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러하므로 빌라도가 예수를 놓으려고 힘썼으나 유대인들이 소리 질러 가로되 이 사람을 놓으면 가이사의 충신이 아니니이다 무릇 자기를 왕이라 하는 자는 가이사를 반역하는 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "fafe8abe808b06b0071e35344c91c3ea3859a39df75dc8dfae75470335950d3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:13",
+      "sequence": 26838,
+      "chapter_label": "JHN 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "When Pilate therefore heard these words, he brought Jesus out and sat down on the judgment seat at a place called “The Pavement”, but in Hebrew, “Gabbatha.”",
+      "ko": "빌라도가 이 말을 듣고 예수를 끌고 나와서 박석(히브리 말로 가바다)이란 곳에서 재판석에 앉았더라",
+      "source_text_hash": "a9de53e498f545195663f8f4138de0a611b4a9a386780d959ca1060e4c5544ad",
+      "translation_text_hash": "00c6838afe671232b242b00142817f79d946b4d4ba366d9e52dfc7836e255810",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 이 말을 듣고 예수를 끌고 나와서 박석(히브리 말로 가바다)이란 곳에서 재판석에 앉았더라"
+      ],
+      "raw_text_hashes": [
+        "00c6838afe671232b242b00142817f79d946b4d4ba366d9e52dfc7836e255810"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:14",
+      "sequence": 26839,
+      "chapter_label": "JHN 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "Now it was the Preparation Day of the Passover, at about the sixth hour. He said to the Jews, “Behold, your King!”",
+      "ko": "이 날은 유월절의 예비일이요 때는 제 육시라 빌라도가 유대인들에게 이르되 보라 너희 왕이로다",
+      "source_text_hash": "a10b1aa4af35175347263b912026eec1bf4e52acc4f0ee208defa01bb8cb3194",
+      "translation_text_hash": "bb9ef01de428d277eb6a1c6452b6891b22ed2678a3e3e310a5f543d222b3c15e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날은 유월절의 예비일이요 때는 제 육시라 빌라도가 유대인들에게 이르되 보라 너희 왕이로다"
+      ],
+      "raw_text_hashes": [
+        "bb9ef01de428d277eb6a1c6452b6891b22ed2678a3e3e310a5f543d222b3c15e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:15",
+      "sequence": 26840,
+      "chapter_label": "JHN 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "They cried out, “Away with him! Away with him! Crucify him!” Pilate said to them, “Shall I crucify your King?” The chief priests answered, “We have no king but Caesar!”",
+      "ko": "저희가 소리지르되 없이 하소서 없이 하소서 저를 십자가에 못 박게 하소서 빌라도가 가로되 내가 너희 왕을 십자가에 못 박으랴 대제사장들이 대답하되 가이사 외에는 우리에게 왕이 없나이다 하니",
+      "source_text_hash": "7d4a8bb7eaa5eedfcbd67465ab501078f76987bfce8d5d9e68f41f94d18a0e97",
+      "translation_text_hash": "ea4c367baa9fe2dfe7187437b975aab8ddbf71e4db50ed2b3556899f14f4a5ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 소리지르되 없이 하소서 없이 하소서 저를 십자가에 못 박게 하소서 빌라도가 가로되 내가 너희 왕을 십자가에 못 박으랴 대제사장들이 대답하되 가이사 외에는 우리에게 왕이 없나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "ea4c367baa9fe2dfe7187437b975aab8ddbf71e4db50ed2b3556899f14f4a5ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:16",
+      "sequence": 26841,
+      "chapter_label": "JHN 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "So then he delivered him to them to be crucified. So they took Jesus and led him away.",
+      "ko": "이에 예수를 십자가에 못 박히게 저희에게 넘겨주니라",
+      "source_text_hash": "d6d81a73711ba26f596e37eed2eade7e8a284757329c17ff2c1c498ab3c5e217",
+      "translation_text_hash": "ed6100384d6c2485938219e13af3e8f2a908c8abaae3d5111ea5bef9b9088a6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수를 십자가에 못 박히게 저희에게 넘겨주니라"
+      ],
+      "raw_text_hashes": [
+        "ed6100384d6c2485938219e13af3e8f2a908c8abaae3d5111ea5bef9b9088a6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:17",
+      "sequence": 26842,
+      "chapter_label": "JHN 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "He went out, bearing his cross, to the place called “The Place of a Skull”, which is called in Hebrew, “Golgotha”,",
+      "ko": "저희가 예수를 맡으매 예수께서 자기의 십자가를 지시고 해골(히브리 말로 골고다)이라 하는 곳에 나오시니",
+      "source_text_hash": "166303313f3338ec158eb0a2db8f828ea4ca41c94254b4e0eb7543c8c912e6dc",
+      "translation_text_hash": "c3b8d5ea652545f2cb9d0d37c49536f898424957415914d8a72a917e7f01a78e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수를 맡으매 예수께서 자기의 십자가를 지시고 해골(히브리 말로 골고다)이라 하는 곳에 나오시니"
+      ],
+      "raw_text_hashes": [
+        "c3b8d5ea652545f2cb9d0d37c49536f898424957415914d8a72a917e7f01a78e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:18",
+      "sequence": 26843,
+      "chapter_label": "JHN 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "where they crucified him, and with him two others, on either side one, and Jesus in the middle.",
+      "ko": "저희가 거기서 예수를 십자가에 못 박을쌔 다른 두 사람도 그와 함께 좌우편에 못 박으니 예수는 가운데 있더라",
+      "source_text_hash": "d92ab70eb04e57d803b7afa3343cb6b2acb151bb4e592a7e033108cc63ba94fc",
+      "translation_text_hash": "329ad924941308f3994a693e218159a7d0ccd52e6072ea29ed51f36081ca5681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 거기서 예수를 십자가에 못 박을쌔 다른 두 사람도 그와 함께 좌우편에 못 박으니 예수는 가운데 있더라"
+      ],
+      "raw_text_hashes": [
+        "329ad924941308f3994a693e218159a7d0ccd52e6072ea29ed51f36081ca5681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:19",
+      "sequence": 26844,
+      "chapter_label": "JHN 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "Pilate wrote a title also, and put it on the cross. There was written, “JESUS OF NAZARETH, THE KING OF THE JEWS.”",
+      "ko": "빌라도가 패를 써서 십자가 위에 붙이니 나사렛 예수 유대인의 왕이라 기록되었더라",
+      "source_text_hash": "b77f5ab7251c245de4b9876d1fa8966e3dab5af2157cce27e543ed6e4033e96b",
+      "translation_text_hash": "deafea18509b998eafb9beed62cb6529bc3a79d0f89bad7cfda76b49804d7a46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 패를 써서 십자가 위에 붙이니 나사렛 예수 유대인의 왕이라 기록되었더라"
+      ],
+      "raw_text_hashes": [
+        "deafea18509b998eafb9beed62cb6529bc3a79d0f89bad7cfda76b49804d7a46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:20",
+      "sequence": 26845,
+      "chapter_label": "JHN 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "Therefore many of the Jews read this title, for the place where Jesus was crucified was near the city; and it was written in Hebrew, in Latin, and in Greek.",
+      "ko": "예수의 못 박히신 곳이 성에서 가까운고로 많은 유대인이 이 패를 읽는데 히브리와 로마와 헬라 말로 기록되었더라",
+      "source_text_hash": "0ecf5244f9729e7a01f76b9817852af0fce889ff568bf3327a069c580478968c",
+      "translation_text_hash": "af9bd4a2f5f5fe8240e213827614c4a408e18adfbad3bcc2678f929ef3ffb51c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 못 박히신 곳이 성에서 가까운고로 많은 유대인이 이 패를 읽는데 히브리와 로마와 헬라 말로 기록되었더라"
+      ],
+      "raw_text_hashes": [
+        "af9bd4a2f5f5fe8240e213827614c4a408e18adfbad3bcc2678f929ef3ffb51c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:21",
+      "sequence": 26846,
+      "chapter_label": "JHN 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "The chief priests of the Jews therefore said to Pilate, “Don’t write, ‘The King of the Jews,’ but, ‘he said, “I am King of the Jews.”’”",
+      "ko": "유대인의 대제사장들이 빌라도에게 이르되 유대인의 왕이라 말고 자칭 유대인의 왕이라 쓰라 하니",
+      "source_text_hash": "b7d63a54a87e4d87cf446a1845661bfb0498d401a662582bdac1a8a095c57078",
+      "translation_text_hash": "4c08e2561c73ecdebf8237e79af0b92ed353f8b2c42433b7234687b19214da92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인의 대제사장들이 빌라도에게 이르되 유대인의 왕이라 말고 자칭 유대인의 왕이라 쓰라 하니"
+      ],
+      "raw_text_hashes": [
+        "4c08e2561c73ecdebf8237e79af0b92ed353f8b2c42433b7234687b19214da92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:22",
+      "sequence": 26847,
+      "chapter_label": "JHN 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "Pilate answered, “What I have written, I have written.”",
+      "ko": "빌라도가 대답하되 나의 쓸 것을 썼다 하니라",
+      "source_text_hash": "5c4651c7fa132185b1d0afab40b3a2374e2fe20bbf13c1289dc02d7804a4d631",
+      "translation_text_hash": "0b15bfe15f0414ddb9b17f2ca8786548de7fdd8a5a582f85dfd37f348c3b8dad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌라도가 대답하되 나의 쓸 것을 썼다 하니라"
+      ],
+      "raw_text_hashes": [
+        "0b15bfe15f0414ddb9b17f2ca8786548de7fdd8a5a582f85dfd37f348c3b8dad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:23",
+      "sequence": 26848,
+      "chapter_label": "JHN 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "Then the soldiers, when they had crucified Jesus, took his garments and made four parts, to every soldier a part; and also the tunic. Now the tunic was without seam, woven from the top throughout.",
+      "ko": "군병들이 예수를 십자가에 못 박고 그의 옷을 취하여 네 깃에 나눠 각각 한 깃씩 얻고 속옷도 취하니 이 속옷은 호지 아니하고 위에서부터 통으로 짠 것이라",
+      "source_text_hash": "d0afa824f389baca4eebe04bb17321366eb807c5a2165b5f59b67e0a5b492488",
+      "translation_text_hash": "af95d658aff8da64cfd69a10879f0a697bc707411caa225dea6f1247907a474e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군병들이 예수를 십자가에 못 박고 그의 옷을 취하여 네 깃에 나눠 각각 한 깃씩 얻고 속옷도 취하니 이 속옷은 호지 아니하고 위에서부터 통으로 짠 것이라"
+      ],
+      "raw_text_hashes": [
+        "af95d658aff8da64cfd69a10879f0a697bc707411caa225dea6f1247907a474e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:24",
+      "sequence": 26849,
+      "chapter_label": "JHN 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "Then they said to one another, “Let’s not tear it, but cast lots for it to decide whose it will be,” that the Scripture might be fulfilled, which says, “They parted my garments among them. They cast lots for my clothing.” Therefore the soldiers did these things.",
+      "ko": "군병들이 서로 말하되 이것을 찢지 말고 누가 얻나 제비 뽑자 하니 이는 성경에 저희가 내 옷을 나누고 내 옷을 제비 뽑나이다 한 것을 응하게 하려 함이러라 군병들은 이런 일을 하고",
+      "source_text_hash": "53eb0ed58fdfba2cb848063016fb7673faba11ba475d6f267dd852d592540fd5",
+      "translation_text_hash": "b486d909d9cd2aee849f37a7d5d5029b8b7746254233818c6909678ad9a6f84e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군병들이 서로 말하되 이것을 찢지 말고 누가 얻나 제비 뽑자 하니 이는 성경에 저희가 내 옷을 나누고 내 옷을 제비 뽑나이다 한 것을 응하게 하려 함이러라 군병들은 이런 일을 하고"
+      ],
+      "raw_text_hashes": [
+        "b486d909d9cd2aee849f37a7d5d5029b8b7746254233818c6909678ad9a6f84e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:25",
+      "sequence": 26850,
+      "chapter_label": "JHN 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "But standing by Jesus’ cross were his mother, his mother’s sister, Mary the wife of Clopas, and Mary Magdalene.",
+      "ko": "예수의 십자가 곁에는 그 모친과 이모와 글로바의 아내 마리아와 막달라 마리아가 섰는지라",
+      "source_text_hash": "6c535d6343b61b2d54f46aef5170b51398d3eca239935aadbf17492fd7428ebf",
+      "translation_text_hash": "31a0bca26c16bf5089892523ee529711b2cb9bd8e3bd20343ae1ed079f3194ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 십자가 곁에는 그 모친과 이모와 글로바의 아내 마리아와 막달라 마리아가 섰는지라"
+      ],
+      "raw_text_hashes": [
+        "31a0bca26c16bf5089892523ee529711b2cb9bd8e3bd20343ae1ed079f3194ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:26",
+      "sequence": 26851,
+      "chapter_label": "JHN 19",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 26
+        }
+      ],
+      "en": "Therefore when Jesus saw his mother, and the disciple whom he loved standing there, he said to his mother, “Woman, behold, your son!”",
+      "ko": "예수께서 그 모친과 사랑하시는 제자가 곁에 섰는 것을 보시고 그 모친께 말씀하시되 여자여 보소서 아들이니이다 하시고",
+      "source_text_hash": "a97acf69aefd7e42d37660aab1ca1c37de1e07f092b31374725d1548517c70ca",
+      "translation_text_hash": "b95306001a6444fd05247bcac72f3c063518c18e1bbec576a57d78da781b2541",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 모친과 사랑하시는 제자가 곁에 섰는 것을 보시고 그 모친께 말씀하시되 여자여 보소서 아들이니이다 하시고"
+      ],
+      "raw_text_hashes": [
+        "b95306001a6444fd05247bcac72f3c063518c18e1bbec576a57d78da781b2541"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:27",
+      "sequence": 26852,
+      "chapter_label": "JHN 19",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 27
+        }
+      ],
+      "en": "Then he said to the disciple, “Behold, your mother!”From that hour, the disciple took her to his own home.",
+      "ko": "또 그 제자에게 이르시되 보라 네 어머니라 하신대 그 때부터 그 제자가 자기 집에 모시니라",
+      "source_text_hash": "d6a7b43fe1858abd9ec3c45532695092fbf5b4081ea622637f0f4bf366e65b54",
+      "translation_text_hash": "51bfe79c836ca24ebae3576b4eca59a9f94236344852cf13e6a495ca87a857dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 제자에게 이르시되 보라 네 어머니라 하신대 그 때부터 그 제자가 자기 집에 모시니라"
+      ],
+      "raw_text_hashes": [
+        "51bfe79c836ca24ebae3576b4eca59a9f94236344852cf13e6a495ca87a857dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:28",
+      "sequence": 26853,
+      "chapter_label": "JHN 19",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 28
+        }
+      ],
+      "en": "After this, Jesus, seeing that all things were now finished, that the Scripture might be fulfilled, said, “I am thirsty!”",
+      "ko": "이 후에 예수께서 모든 일이 이미 이룬줄 아시고 성경으로 응하게 하려하사 가라사대 내가 목마르다 하시니",
+      "source_text_hash": "1d70adb24348bcb2e816664d5051d3c62e5ff7e662b9166ceb623f5fae680a7b",
+      "translation_text_hash": "0f11db119d1a00d1a4c934f06aa2868c7afe1ead5b3a00d2930c2398a662f7f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 예수께서 모든 일이 이미 이룬줄 아시고 성경으로 응하게 하려하사 가라사대 내가 목마르다 하시니"
+      ],
+      "raw_text_hashes": [
+        "0f11db119d1a00d1a4c934f06aa2868c7afe1ead5b3a00d2930c2398a662f7f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:29",
+      "sequence": 26854,
+      "chapter_label": "JHN 19",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 29
+        }
+      ],
+      "en": "Now a vessel full of vinegar was set there; so they put a sponge full of the vinegar on hyssop, and held it at his mouth.",
+      "ko": "거기 신 포도주가 가득히 담긴 그릇이 있는지라 사람들이 신 포도주를 머금은 해융을 우슬초에 매어 예수의 입에 대니",
+      "source_text_hash": "8c33fd6e9af45df2e106c56a5fedf7b5dc84a6e0dfaf2c739880eded5709b885",
+      "translation_text_hash": "5100f9eaaf78966bf9eb950b95d025d2e964feca975ef1062eb87d14fd9dd5b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 신 포도주가 가득히 담긴 그릇이 있는지라 사람들이 신 포도주를 머금은 해융을 우슬초에 매어 예수의 입에 대니"
+      ],
+      "raw_text_hashes": [
+        "5100f9eaaf78966bf9eb950b95d025d2e964feca975ef1062eb87d14fd9dd5b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:30",
+      "sequence": 26855,
+      "chapter_label": "JHN 19",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 30
+        }
+      ],
+      "en": "When Jesus therefore had received the vinegar, he said, “It is finished!”Then he bowed his head and gave up his spirit.",
+      "ko": "예수께서 신 포도주를 받으신 후 가라사대 다 이루었다 하시고 머리를 숙이시고 영혼이 돌아가시니라",
+      "source_text_hash": "0ad352fb673dd37d422fbf2eca26a74d253daf4bd0386d4cd2bfc1660d819af5",
+      "translation_text_hash": "9e307b7c258fe353609b2cdc78ff17403af7763561af7bbc00df3d3575aeb563",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 신 포도주를 받으신 후 가라사대 다 이루었다 하시고 머리를 숙이시고 영혼이 돌아가시니라"
+      ],
+      "raw_text_hashes": [
+        "9e307b7c258fe353609b2cdc78ff17403af7763561af7bbc00df3d3575aeb563"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:31",
+      "sequence": 26856,
+      "chapter_label": "JHN 19",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 31
+        }
+      ],
+      "en": "Therefore the Jews, because it was the Preparation Day, so that the bodies wouldn’t remain on the cross on the Sabbath (for that Sabbath was a special one), asked of Pilate that their legs might be broken and that they might be taken away.",
+      "ko": "이 날은 예비일이라 유대인들은 그 안식일이 큰 날이므로 그 안식일에 시체들을 십자가에 두지 아니하려 하여 빌라도에게 그들의 다리를 꺾어 시체를 치워 달라 하니",
+      "source_text_hash": "9c8995f62447b411a6754368292d48b262c50ec1b9930cb1f89601cc21ccca71",
+      "translation_text_hash": "783f9680d383f7627b16cff3c20f5fed39fea20c1dfee3122ff611580c17752e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날은 예비일이라 유대인들은 그 안식일이 큰 날이므로 그 안식일에 시체들을 십자가에 두지 아니하려 하여 빌라도에게 그들의 다리를 꺾어 시체를 치워 달라 하니"
+      ],
+      "raw_text_hashes": [
+        "783f9680d383f7627b16cff3c20f5fed39fea20c1dfee3122ff611580c17752e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:32",
+      "sequence": 26857,
+      "chapter_label": "JHN 19",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 32
+        }
+      ],
+      "en": "Therefore the soldiers came and broke the legs of the first and of the other who was crucified with him;",
+      "ko": "군병들이 가서 예수와 함께 못 박힌 첫째 사람과 또 그 다른 사람의 다리를 꺾고",
+      "source_text_hash": "8dd1c86f3bc128be0fb8eafb37e25e3bf76160915f5cde36e1e1734b3b93285c",
+      "translation_text_hash": "68cfce1f6f1f4d1005535da0ea22e8f6a63d1c7e13795f4c71495faf312cdb16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군병들이 가서 예수와 함께 못 박힌 첫째 사람과 또 그 다른 사람의 다리를 꺾고"
+      ],
+      "raw_text_hashes": [
+        "68cfce1f6f1f4d1005535da0ea22e8f6a63d1c7e13795f4c71495faf312cdb16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:33",
+      "sequence": 26858,
+      "chapter_label": "JHN 19",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 33
+        }
+      ],
+      "en": "but when they came to Jesus and saw that he was already dead, they didn’t break his legs.",
+      "ko": "예수께 이르러는 이미 죽은 것을 보고 다리를 꺾지 아니하고",
+      "source_text_hash": "51ac442b30a1860aae75c2d184ef8cfacf8ab084a5d8ebdcd0cfa68832c66219",
+      "translation_text_hash": "493ced0ade874d4779b8b00ccdf09533c76b9ecd560e5fcc4f2d1fae23fff14c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께 이르러는 이미 죽은 것을 보고 다리를 꺾지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "493ced0ade874d4779b8b00ccdf09533c76b9ecd560e5fcc4f2d1fae23fff14c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:34",
+      "sequence": 26859,
+      "chapter_label": "JHN 19",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 34
+        }
+      ],
+      "en": "However, one of the soldiers pierced his side with a spear, and immediately blood and water came out.",
+      "ko": "그 중 한 군병이 창으로 옆구리를 찌르니 곧 피와 물이 나오더라",
+      "source_text_hash": "cfa5b1dbd2cac42b250021281efe5df3cf0f3fb7d1672bb7a84e4c1856b6f72f",
+      "translation_text_hash": "615a7b8b79767c85859dbfdbb92105c8afdfebbb1a6acdea9ffeaaf4472d628d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중 한 군병이 창으로 옆구리를 찌르니 곧 피와 물이 나오더라"
+      ],
+      "raw_text_hashes": [
+        "615a7b8b79767c85859dbfdbb92105c8afdfebbb1a6acdea9ffeaaf4472d628d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:35",
+      "sequence": 26860,
+      "chapter_label": "JHN 19",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 35
+        }
+      ],
+      "en": "He who has seen has testified, and his testimony is true. He knows that he tells the truth, that you may believe.",
+      "ko": "이를 본 자가 증거하였으니 그 증거가 참이라 저가 자기의 말하는 것이 참인줄 알고 너희로 믿게 하려함이니라",
+      "source_text_hash": "6bab610cf07253c848312964e3325c07a239c22c9061c18a939be529e320bebe",
+      "translation_text_hash": "f9afa288c3b1679866dd05644dc1a548a48b3c4712c2addf8eeea27669e53148",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 본 자가 증거하였으니 그 증거가 참이라 저가 자기의 말하는 것이 참인줄 알고 너희로 믿게 하려함이니라"
+      ],
+      "raw_text_hashes": [
+        "f9afa288c3b1679866dd05644dc1a548a48b3c4712c2addf8eeea27669e53148"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:36",
+      "sequence": 26861,
+      "chapter_label": "JHN 19",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 36
+        }
+      ],
+      "en": "For these things happened that the Scripture might be fulfilled, “A bone of him will not be broken.”",
+      "ko": "이 일이 이룬 것은 그 뼈가 하나도 꺾이우지 아니하리라 한 성경을 응하게 하려함이라",
+      "source_text_hash": "8b8f27cd7c598b1aebe5a449aaac55bd6de7b7c4d50fa0e20ed65dbd79765b72",
+      "translation_text_hash": "f1d49d8716845e0c20374fc4f5dff2016e2925e2b89ca47efae11af03868a0f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 이룬 것은 그 뼈가 하나도 꺾이우지 아니하리라 한 성경을 응하게 하려함이라"
+      ],
+      "raw_text_hashes": [
+        "f1d49d8716845e0c20374fc4f5dff2016e2925e2b89ca47efae11af03868a0f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:37",
+      "sequence": 26862,
+      "chapter_label": "JHN 19",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 37
+        }
+      ],
+      "en": "Again another Scripture says, “They will look on him whom they pierced.”",
+      "ko": "또 다른 성경에 저희가 그 찌른 자를 보리라 하였느니라",
+      "source_text_hash": "88ad1ec5f14d0b915903aa6882437840c66026f73c45bc3e3a7851761e9265d1",
+      "translation_text_hash": "058549e47c64dadcddf2cc260cc9b56a6649cf4fc149427a1e042c187dee2b76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 성경에 저희가 그 찌른 자를 보리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "058549e47c64dadcddf2cc260cc9b56a6649cf4fc149427a1e042c187dee2b76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:38",
+      "sequence": 26863,
+      "chapter_label": "JHN 19",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 38
+        }
+      ],
+      "en": "After these things, Joseph of Arimathaea, being a disciple of Jesus, but secretly for fear of the Jews, asked of Pilate that he might take away Jesus’ body. Pilate gave him permission. He came therefore and took away his body.",
+      "ko": "아리마대 사람 요셉이 예수의 제자나 유대인을 두려워하여 은휘하더니 이 일 후에 빌라도더러 예수의 시체를 가져가기를 구하매 빌라도가 허락하는지라 이에 가서 예수의 시체를 가져가니라",
+      "source_text_hash": "00902a0166e7fc6da0363eb997ef760e7b33e829cb956f60a3e3f900fe22b391",
+      "translation_text_hash": "b87387c0258df0ca640d65fe5ba1471385dbd01457703a6989473d6bfe99f88b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아리마대 사람 요셉이 예수의 제자나 유대인을 두려워하여 은휘하더니 이 일 후에 빌라도더러 예수의 시체를 가져가기를 구하매 빌라도가 허락하는지라 이에 가서 예수의 시체를 가져가니라"
+      ],
+      "raw_text_hashes": [
+        "b87387c0258df0ca640d65fe5ba1471385dbd01457703a6989473d6bfe99f88b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:39",
+      "sequence": 26864,
+      "chapter_label": "JHN 19",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 39
+        }
+      ],
+      "en": "Nicodemus, who at first came to Jesus by night, also came bringing a mixture of myrrh and aloes, about a hundred Roman pounds.",
+      "ko": "일찍 예수께 밤에 나아왔던 니고데모도 몰약과 침향 섞은 것을 백 근쯤 가지고 온지라",
+      "source_text_hash": "d18c850f809cc141c1952b35c69527aaac05b2f3f8a27c9b20670bb062ed82ec",
+      "translation_text_hash": "d2714d894ead2030eab2416ea908a5cc97e4e3849f88523b87e683bd76ec5b02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일찍 예수께 밤에 나아왔던 니고데모도 몰약과 침향 섞은 것을 백 근쯤 가지고 온지라"
+      ],
+      "raw_text_hashes": [
+        "d2714d894ead2030eab2416ea908a5cc97e4e3849f88523b87e683bd76ec5b02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:40",
+      "sequence": 26865,
+      "chapter_label": "JHN 19",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 40
+        }
+      ],
+      "en": "So they took Jesus’ body, and bound it in linen cloths with the spices, as the custom of the Jews is to bury.",
+      "ko": "이에 예수의 시체를 가져다가 유대인의 장례 법대로 그 향품과 함께 세마포로 쌌더라",
+      "source_text_hash": "ade36ad866ce6f38fc027e767186fcfcbc2238e2a6c7c73eb8d467191619f89d",
+      "translation_text_hash": "78508a24488cc1b949a4947601dbefcd8721b027596d6a9ae09643994561ac7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수의 시체를 가져다가 유대인의 장례 법대로 그 향품과 함께 세마포로 쌌더라"
+      ],
+      "raw_text_hashes": [
+        "78508a24488cc1b949a4947601dbefcd8721b027596d6a9ae09643994561ac7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:41",
+      "sequence": 26866,
+      "chapter_label": "JHN 19",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 41
+        }
+      ],
+      "en": "Now in the place where he was crucified there was a garden. In the garden was a new tomb in which no man had ever yet been laid.",
+      "ko": "예수의 십자가에 못 박히신 곳에 동산이 있고 동산 안에 아직 사람을 장사한 일이 없는 새 무덤이 있는지라",
+      "source_text_hash": "3349fb7a5b873cc4c97fcf90445e92020089a2bffc8cc5eeded72f39dc6980f7",
+      "translation_text_hash": "279d942460410361494583f3287811b1d1df6fe8be3be22925aeecb88454ae44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 십자가에 못 박히신 곳에 동산이 있고 동산 안에 아직 사람을 장사한 일이 없는 새 무덤이 있는지라"
+      ],
+      "raw_text_hashes": [
+        "279d942460410361494583f3287811b1d1df6fe8be3be22925aeecb88454ae44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:19:42",
+      "sequence": 26867,
+      "chapter_label": "JHN 19",
+      "verse_label": "42",
+      "locator": {
+        "book": "JHN",
+        "chapter": 19,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 19,
+          "verse": 42
+        }
+      ],
+      "en": "Then, because of the Jews’ Preparation Day (for the tomb was near at hand), they laid Jesus there.",
+      "ko": "이 날은 유대인의 예비일이요 또 무덤이 가까운고로 예수를 거기 두니라",
+      "source_text_hash": "75c351fa13e78f18a1c9ff412ec367102dbf8821884ab526e2a1ad31cb93e892",
+      "translation_text_hash": "683cd6eabd60a1e2704038b479851dc65a6e98974f3b8eb7c053cbaa5760abb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날은 유대인의 예비일이요 또 무덤이 가까운고로 예수를 거기 두니라"
+      ],
+      "raw_text_hashes": [
+        "683cd6eabd60a1e2704038b479851dc65a6e98974f3b8eb7c053cbaa5760abb3"
+      ]
+    }
+  ]
+}

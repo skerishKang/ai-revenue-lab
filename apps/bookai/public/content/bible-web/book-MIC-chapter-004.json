@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MIC:chapter:004",
+  "unit_ordinal": 897,
+  "unit_label": "MIC 4",
+  "book_code": "MIC",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MIC:4:1",
+      "sequence": 22622,
+      "chapter_label": "MIC 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "But in the latter days, it will happen that the mountain of the LORD’s temple will be established on the top of the mountains, and it will be exalted above the hills; and peoples will stream to it.",
+      "ko": "말일에 이르러는 여호와의 전의 산이 산들의 꼭대기에 굳게 서며 작은 산들 위에 뛰어나고 민족들이 그리로 몰려갈 것이라",
+      "source_text_hash": "4776dd91ce9a2a3451e7816a9c86895623af2474af962ae890841920f9d041a0",
+      "translation_text_hash": "8a7b4a5f845c83efce1842e24e595b466c1715eafe69ff818082371f7b4441f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말일에 이르러는 여호와의 전의 산이 산들의 꼭대기에 굳게 서며 작은 산들 위에 뛰어나고 민족들이 그리로 몰려갈 것이라"
+      ],
+      "raw_text_hashes": [
+        "8a7b4a5f845c83efce1842e24e595b466c1715eafe69ff818082371f7b4441f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:2",
+      "sequence": 22623,
+      "chapter_label": "MIC 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Many nations will go and say, “Come! Let’s go up to the mountain of the LORD, and to the house of the God of Jacob; and he will teach us of his ways, and we will walk in his paths.” For the law will go out of Zion, and the LORD’s word from Jerusalem;",
+      "ko": "곧 많은 이방이 가며 이르기를 오라 우리가 여호와의 산에 올라가서 야곱의 하나님의 전에 이르자 그가 그 도로 우리에게 가르치실 것이라 우리가 그 길로 행하리라 하리니 이는 율법이 시온에서부터 나올 것이요 여호와의 말씀이 예루살렘에서부터 나올 것임이라",
+      "source_text_hash": "6c9684320bc4d09c32e2d4e4d38a08ef19118abde193a232f4429ed902a60b54",
+      "translation_text_hash": "476d1a15c18cbfccd5cb98b1b89a5423d1341aebd6ae9505e6df546169cc0594",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 많은 이방이 가며 이르기를 오라 우리가 여호와의 산에 올라가서 야곱의 하나님의 전에 이르자 그가 그 도로 우리에게 가르치실 것이라 우리가 그 길로 행하리라 하리니 이는 율법이 시온에서부터 나올 것이요 여호와의 말씀이 예루살렘에서부터 나올 것임이라"
+      ],
+      "raw_text_hashes": [
+        "476d1a15c18cbfccd5cb98b1b89a5423d1341aebd6ae9505e6df546169cc0594"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:3",
+      "sequence": 22624,
+      "chapter_label": "MIC 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "and he will judge between many peoples, and will decide concerning strong nations afar off. They will beat their swords into plowshares, and their spears into pruning hooks. Nation will not lift up sword against nation, neither will they learn war any more.",
+      "ko": "그가 많은 민족 중에 심판하시며 먼 곳 강한 이방을 판결하시리니 무리가 그 칼을 쳐서 보습을 만들고 창을 쳐서 낫을 만들 것이며 이 나라와 저 나라가 다시는 칼을 들고 서로 치지 아니하며 다시는 전쟁을 연습하지 아니하고",
+      "source_text_hash": "aa6afc195c735ba81064ecfbb21d6235e135e4413f5923c7782da49e918dd14c",
+      "translation_text_hash": "22072063fdce0087ed2dbe138e81e66e5996c014c087201c191ad8a5c869d77f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 많은 민족 중에 심판하시며 먼 곳 강한 이방을 판결하시리니 무리가 그 칼을 쳐서 보습을 만들고 창을 쳐서 낫을 만들 것이며 이 나라와 저 나라가 다시는 칼을 들고 서로 치지 아니하며 다시는 전쟁을 연습하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "22072063fdce0087ed2dbe138e81e66e5996c014c087201c191ad8a5c869d77f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:4",
+      "sequence": 22625,
+      "chapter_label": "MIC 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "But every man will sit under his vine and under his fig tree. No one will make them afraid, for the mouth of the LORD of Armies has spoken.",
+      "ko": "각 사람이 자기 포도나무 아래와 자기 무화과나무 아래 앉을 것이라 그들을 두렵게 할 자가 없으리니 이는 만군의 여호와의 입이 이같이 말씀하셨음이니라",
+      "source_text_hash": "68367d7bc5724fb75f875b84c902cd736747e33b5ec3b4f964ac3c3e9de4ce29",
+      "translation_text_hash": "cfd599706edb5c7261c894775ff09a107ff56c5b8b27becb18a770ee73f27275",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 사람이 자기 포도나무 아래와 자기 무화과나무 아래 앉을 것이라 그들을 두렵게 할 자가 없으리니 이는 만군의 여호와의 입이 이같이 말씀하셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "cfd599706edb5c7261c894775ff09a107ff56c5b8b27becb18a770ee73f27275"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:5",
+      "sequence": 22626,
+      "chapter_label": "MIC 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Indeed all the nations may walk in the name of their gods, but we will walk in the name of the LORD our God forever and ever.",
+      "ko": "만민이 각각 자기의 신의 이름을 빙자하여 행하되 오직 우리는 우리 하나님 여호와의 이름을 빙자하여 영원히 행하리로다",
+      "source_text_hash": "5aefe4f9db30285197a2690741c87d8c703f03a39fa325114c3c880faba1e847",
+      "translation_text_hash": "c7dee150d9f8de9569dadb0298ed4b64616a870dd4c600f74f78d508ec0e666a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만민이 각각 자기의 신의 이름을 빙자하여 행하되 오직 우리는 우리 하나님 여호와의 이름을 빙자하여 영원히 행하리로다"
+      ],
+      "raw_text_hashes": [
+        "c7dee150d9f8de9569dadb0298ed4b64616a870dd4c600f74f78d508ec0e666a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:6",
+      "sequence": 22627,
+      "chapter_label": "MIC 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "“In that day,” says the LORD, “I will assemble that which is lame, and I will gather that which is driven away, and that which I have afflicted;",
+      "ko": "여호와께서 말씀하시되 그 날에는 내가 저는 자를 모으며 쫓겨난 자와 내가 환난 받게한 자를 모아",
+      "source_text_hash": "84e4a880032d144a58c19547a945014af9cc4b9805edb765136c7651999ad774",
+      "translation_text_hash": "a887addeca546558439fb0539a1a10b3b420130d86b834c0f7b9dc12027f89a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 그 날에는 내가 저는 자를 모으며 쫓겨난 자와 내가 환난 받게한 자를 모아"
+      ],
+      "raw_text_hashes": [
+        "a887addeca546558439fb0539a1a10b3b420130d86b834c0f7b9dc12027f89a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:7",
+      "sequence": 22628,
+      "chapter_label": "MIC 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "and I will make that which was lame a remnant, and that which was cast far off a strong nation: and the LORD will reign over them on Mount Zion from then on, even forever.”",
+      "ko": "그 저는 자로 남은 백성이 되게 하며 멀리 쫓겨났던 자로 강한 나라가 되게 하고 나 여호와가 시온산에서 이제부터 영원까지 그들을 치리하리라 하셨나니",
+      "source_text_hash": "0feb908200916146bc38034db1a0d3f8a282434287e96a783eb17b6cbe623a9a",
+      "translation_text_hash": "19160715cbd4949bd68130e80b5af9c69966d424bdfff5b9db1ba355b5191e6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 저는 자로 남은 백성이 되게 하며 멀리 쫓겨났던 자로 강한 나라가 되게 하고 나 여호와가 시온산에서 이제부터 영원까지 그들을 치리하리라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "19160715cbd4949bd68130e80b5af9c69966d424bdfff5b9db1ba355b5191e6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:8",
+      "sequence": 22629,
+      "chapter_label": "MIC 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "You, tower of the flock, the hill of the daughter of Zion, to you it will come. Yes, the former dominion will come, the kingdom of the daughter of Jerusalem.",
+      "ko": "너 양떼의 망대요 딸 시온의 산이여 이전 권능 곧 딸 예루살렘의 나라가 네게로 돌아오리라",
+      "source_text_hash": "4b35f41f1a593063c41641b87ab5bf43db9f3b1dc68a7218b67eb9b3c336f91f",
+      "translation_text_hash": "bbf9e5210b0d6a7dd1a0d1adcbe24c7d8e8eb25bfc237bd7cf58615984263729",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 양떼의 망대요 딸 시온의 산이여 이전 권능 곧 딸 예루살렘의 나라가 네게로 돌아오리라"
+      ],
+      "raw_text_hashes": [
+        "bbf9e5210b0d6a7dd1a0d1adcbe24c7d8e8eb25bfc237bd7cf58615984263729"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:9",
+      "sequence": 22630,
+      "chapter_label": "MIC 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Now why do you cry out aloud? Is there no king in you? Has your counselor perished, that pains have taken hold of you as of a woman in travail?",
+      "ko": "이제 네가 어찌하여 부르짖느냐 너희 중에 왕이 없어졌고 네 모사가 죽었으므로 네가 해산하는 여인처럼 고통함이냐",
+      "source_text_hash": "068228bd792bb855dd019d5c64c33f17a685d8b49a2a2315397043137b2a1f0f",
+      "translation_text_hash": "a835a3b64ed8e829127ef158e65f5a82db251cf7de1c36e5df22428a338a7ab3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 네가 어찌하여 부르짖느냐 너희 중에 왕이 없어졌고 네 모사가 죽었으므로 네가 해산하는 여인처럼 고통함이냐"
+      ],
+      "raw_text_hashes": [
+        "a835a3b64ed8e829127ef158e65f5a82db251cf7de1c36e5df22428a338a7ab3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:10",
+      "sequence": 22631,
+      "chapter_label": "MIC 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Be in pain, and labor to give birth, daughter of Zion, like a woman in travail; for now you will go out of the city, and will dwell in the field, and will come even to Babylon. There you will be rescued. There the LORD will redeem you from the hand of your enemies.",
+      "ko": "딸 시온이여 해산하는 여인처럼 애써 구로하여 낳을찌어다 이제 네가 성읍에서 나가서 들에 거하며 또 바벨론까지 이르러 거기서 구원을 얻으리니 여호와께서 거기서 너를 너의 원수들의 손에서 속량하여 내시리라",
+      "source_text_hash": "90308b07d68c017b63427a27779e76ef879cdcb4e5383e5bcb04bed22867fce9",
+      "translation_text_hash": "a9e45dc3f148a4a1cb0ec3347c676e912b3843ddd4c0ea00e6c1d3ff93fba939",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸 시온이여 해산하는 여인처럼 애써 구로하여 낳을찌어다 이제 네가 성읍에서 나가서 들에 거하며 또 바벨론까지 이르러 거기서 구원을 얻으리니 여호와께서 거기서 너를 너의 원수들의 손에서 속량하여 내시리라"
+      ],
+      "raw_text_hashes": [
+        "a9e45dc3f148a4a1cb0ec3347c676e912b3843ddd4c0ea00e6c1d3ff93fba939"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:11",
+      "sequence": 22632,
+      "chapter_label": "MIC 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Now many nations have assembled against you, that say, “Let her be defiled, and let our eye gloat over Zion.”",
+      "ko": "이제 많은 이방이 모여서 너를 쳐 이르기를 시온이 더럽게 되며 그것을 우리 눈으로 바라보기를 원하노라 하거니와",
+      "source_text_hash": "71c8338ec36548a32448267ebe1c689f072053aa28a3722b67bb695d1ecbbf05",
+      "translation_text_hash": "dd957cc2a11ea08b6aa22aacd9bffedac78f5bf533bd0fc0a093eaf53e8f4ede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 많은 이방이 모여서 너를 쳐 이르기를 시온이 더럽게 되며 그것을 우리 눈으로 바라보기를 원하노라 하거니와"
+      ],
+      "raw_text_hashes": [
+        "dd957cc2a11ea08b6aa22aacd9bffedac78f5bf533bd0fc0a093eaf53e8f4ede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:12",
+      "sequence": 22633,
+      "chapter_label": "MIC 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "But they don’t know the thoughts of the LORD, neither do they understand his counsel; for he has gathered them like the sheaves to the threshing floor.",
+      "ko": "그들이 여호와의 뜻을 알지 못하며 그 모략을 깨닫지 못한 것이라 여호와께서 곡식 단을 타작마당에 모음 같이 그들을 모으셨나니",
+      "source_text_hash": "0f4f703e12bf48ad76674847d7fc0cdbb9f8f8b987d829226ae099a3e232d10e",
+      "translation_text_hash": "bfee422c77b6738456e14d67576f08c5431201b700a15101f21e99f3b7262ecc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호와의 뜻을 알지 못하며 그 모략을 깨닫지 못한 것이라 여호와께서 곡식 단을 타작마당에 모음 같이 그들을 모으셨나니"
+      ],
+      "raw_text_hashes": [
+        "bfee422c77b6738456e14d67576f08c5431201b700a15101f21e99f3b7262ecc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:4:13",
+      "sequence": 22634,
+      "chapter_label": "MIC 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "MIC",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Arise and thresh, daughter of Zion, for I will make your horn iron, and I will make your hoofs bronze. You will beat in pieces many peoples. I will devote their gain to the LORD, and their substance to the Lord of the whole earth.",
+      "ko": "딸 시온이여 일어나서 칠찌어다 내가 네 뿔을 철 같게 하며 네 굽을 놋 같게 하리니 네가 여러 백성을 쳐서 깨뜨릴 것이라 내가 그들의 탈취물을 구별하여 여호와께 드리며 그들의 재물을 온 땅의 대주재께 돌리리라",
+      "source_text_hash": "5e31a61cba1ed2689badee27857d6fbee2cb2476f1b3c0b8a486ab7be7350d8a",
+      "translation_text_hash": "5ac818f8297b3e94184571e52e78dc93f8410d63e4daa856cd22e85d368ce1a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸 시온이여 일어나서 칠찌어다 내가 네 뿔을 철 같게 하며 네 굽을 놋 같게 하리니 네가 여러 백성을 쳐서 깨뜨릴 것이라 내가 그들의 탈취물을 구별하여 여호와께 드리며 그들의 재물을 온 땅의 대주재께 돌리리라"
+      ],
+      "raw_text_hashes": [
+        "5ac818f8297b3e94184571e52e78dc93f8410d63e4daa856cd22e85d368ce1a2"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:029",
+  "unit_ordinal": 367,
+  "unit_label": "1CH 29",
+  "book_code": "1CH",
+  "chapter_number": 29,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:29:1",
+      "sequence": 11166,
+      "chapter_label": "1CH 29",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 1
+        }
+      ],
+      "en": "David the king said to all the assembly, “Solomon my son, whom alone God has chosen, is yet young and tender, and the work is great; for the palace is not for man, but for the LORD God.",
+      "ko": "다윗왕이 온 회중에게 이르되 내 아들 솔로몬이 홀로 하나님의 택하신바 되었으나 오히려 어리고 연약하고 이 역사는 크도다 이 전은 사람을 위한 것이 아니요 여호와 하나님을 위한 것이라",
+      "source_text_hash": "321e3271c54b83a9574b4b92e2a8833984e090e837d9f7f2f34a832c80b241ea",
+      "translation_text_hash": "30c590423f9f6e6a562fab1fe1ed1617366a4c3ba8d74ac59a6cb87772d54c38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗왕이 온 회중에게 이르되 내 아들 솔로몬이 홀로 하나님의 택하신바 되었으나 오히려 어리고 연약하고 이 역사는 크도다 이 전은 사람을 위한 것이 아니요 여호와 하나님을 위한 것이라"
+      ],
+      "raw_text_hashes": [
+        "30c590423f9f6e6a562fab1fe1ed1617366a4c3ba8d74ac59a6cb87772d54c38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:2",
+      "sequence": 11167,
+      "chapter_label": "1CH 29",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 2
+        }
+      ],
+      "en": "Now I have prepared with all my might for the house of my God the gold for the things of gold, the silver for the things of silver, the bronze for the things of bronze, iron for the things of iron, and wood for the things of wood, also onyx stones, stones to be set, stones for inlaid work of various colors, all kinds of precious stones, and marble stones in abundance.",
+      "ko": "내가 이미 내 하나님의 전을 위하여 힘을 다하여 예비하였나니 곧 기구를 만들 금과 은과 놋과 철과 나무며 또 마노와 박을 보석과 꾸밀 보석과 채석과 다른 보석들과 화반석이 매우 많으며",
+      "source_text_hash": "23f220bf566b0d542cfc12f4a63bbbef821ac6cdff00a060665ba5bb386b25d9",
+      "translation_text_hash": "3252c9435f087c43623a67fddb2dbb165fba78b9504b828560861e97063a2cd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이미 내 하나님의 전을 위하여 힘을 다하여 예비하였나니 곧 기구를 만들 금과 은과 놋과 철과 나무며 또 마노와 박을 보석과 꾸밀 보석과 채석과 다른 보석들과 화반석이 매우 많으며"
+      ],
+      "raw_text_hashes": [
+        "3252c9435f087c43623a67fddb2dbb165fba78b9504b828560861e97063a2cd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:3",
+      "sequence": 11168,
+      "chapter_label": "1CH 29",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 3
+        }
+      ],
+      "en": "In addition, because I have set my affection on the house of my God, since I have a treasure of my own of gold and silver, I give it to the house of my God, over and above all that I have prepared for the holy house:",
+      "ko": "성전을 위하여 예비한 이 모든 것 외에도 내 마음에 내 하나님의 전을 사모하므로 나의 사유의 금, 은으로 내 하나님의 전을 위하여 드렸노니",
+      "source_text_hash": "fb03e7bcdb473f779394be003064210996b59258d4e627bdd6f2f99633e0a2c3",
+      "translation_text_hash": "30b3f7858162de0af8cc1e904b9297b17e427ae2c8dd4bcbcf3431b3297df199",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성전을 위하여 예비한 이 모든 것 외에도 내 마음에 내 하나님의 전을 사모하므로 나의 사유의 금, 은으로 내 하나님의 전을 위하여 드렸노니"
+      ],
+      "raw_text_hashes": [
+        "30b3f7858162de0af8cc1e904b9297b17e427ae2c8dd4bcbcf3431b3297df199"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:4",
+      "sequence": 11169,
+      "chapter_label": "1CH 29",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 4
+        }
+      ],
+      "en": "even three thousand talents of gold, of the gold of Ophir, and seven thousand talents of refined silver, with which to overlay the walls of the houses;",
+      "ko": "곧 오빌의 금 삼천 달란트와 천은 칠천 달란트라 모든 전 벽에 입히며",
+      "source_text_hash": "8b19e2c42d88191fece5044a2ea4b8695f2c396a57f3e61998ebce7fe50fd020",
+      "translation_text_hash": "2c2e5819c45162be42ff2cc0a76d4c37215cf7fe95ab3182bd458888ef3b0977",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 오빌의 금 삼천 달란트와 천은 칠천 달란트라 모든 전 벽에 입히며"
+      ],
+      "raw_text_hashes": [
+        "2c2e5819c45162be42ff2cc0a76d4c37215cf7fe95ab3182bd458888ef3b0977"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:5",
+      "sequence": 11170,
+      "chapter_label": "1CH 29",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 5
+        }
+      ],
+      "en": "of gold for the things of gold, and of silver for the things of silver, and for all kinds of work to be made by the hands of artisans. Who then offers willingly to consecrate himself today to the LORD?”",
+      "ko": "금, 은 그릇을 만들며 공장의 손으로 하는 모든 일에 쓰게 하였노니 오늘날 누가 즐거이 손에 채워 여호와께 드리겠느냐",
+      "source_text_hash": "0b68e9c50f8d1dc8bf8079a81f37b2681427fb2bf9ef401ad7d3fba1f217a47d",
+      "translation_text_hash": "ecce713fbf5cdcebf635cc68657a49bacbbd09255178dd636744ce3a0d9e1afe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금, 은 그릇을 만들며 공장의 손으로 하는 모든 일에 쓰게 하였노니 오늘날 누가 즐거이 손에 채워 여호와께 드리겠느냐"
+      ],
+      "raw_text_hashes": [
+        "ecce713fbf5cdcebf635cc68657a49bacbbd09255178dd636744ce3a0d9e1afe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:6",
+      "sequence": 11171,
+      "chapter_label": "1CH 29",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 6
+        }
+      ],
+      "en": "Then the princes of the fathers’ households, and the princes of the tribes of Israel, and the captains of thousands and of hundreds, with the rulers over the king’s work, offered willingly;",
+      "ko": "이에 모든 족장과 이스라엘 모든 지파 어른과 천부장과 백부장과 왕의 사무감독이 다 즐거이 드리되",
+      "source_text_hash": "70e0fb3e08a06a0bcccb2e5917130250733f1460c8bff1126b8a6a794ae52720",
+      "translation_text_hash": "0fb70c6126eacd7d0f4f7cbe37181c6eb38339ea194121cdd3bcd300d31291f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모든 족장과 이스라엘 모든 지파 어른과 천부장과 백부장과 왕의 사무감독이 다 즐거이 드리되"
+      ],
+      "raw_text_hashes": [
+        "0fb70c6126eacd7d0f4f7cbe37181c6eb38339ea194121cdd3bcd300d31291f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:7",
+      "sequence": 11172,
+      "chapter_label": "1CH 29",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 7
+        }
+      ],
+      "en": "and they gave for the service of God’s house of gold five thousand talents and ten thousand darics, of silver ten thousand talents, of bronze eighteen thousand talents, and of iron one hundred thousand talents.",
+      "ko": "하나님의 전 역사를 위하여 금 오천 달란트와 금 다릭 일만과 은 일만 달란트와 놋 일만 팔천 달란트와 철 십만 달란트를 드리고",
+      "source_text_hash": "642dd365d4f07248dfbd3912e899f2ebf857f83e64c55f7fa1983fb7d5e76d46",
+      "translation_text_hash": "6867a963290bd4e170d284a8de8fbf72161cf7d75e2c94521985add932e47e70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 전 역사를 위하여 금 오천 달란트와 금 다릭 일만과 은 일만 달란트와 놋 일만 팔천 달란트와 철 십만 달란트를 드리고"
+      ],
+      "raw_text_hashes": [
+        "6867a963290bd4e170d284a8de8fbf72161cf7d75e2c94521985add932e47e70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:8",
+      "sequence": 11173,
+      "chapter_label": "1CH 29",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 8
+        }
+      ],
+      "en": "People with whom precious stones were found gave them to the treasure of the LORD’s house, under the hand of Jehiel the Gershonite.",
+      "ko": "무릇 보석이 있는 자는 게르손 사람 여히엘의 손에 부쳐 여호와의 전 곳간에 드렸더라",
+      "source_text_hash": "091f4caf1256c6a6a502203553e86701122ec04ae6408e13b428bc6523eca921",
+      "translation_text_hash": "5505ce1a95726881ab2c2b780d18d74c518d6de10fe4b579984d2d836183f18d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 보석이 있는 자는 게르손 사람 여히엘의 손에 부쳐 여호와의 전 곳간에 드렸더라"
+      ],
+      "raw_text_hashes": [
+        "5505ce1a95726881ab2c2b780d18d74c518d6de10fe4b579984d2d836183f18d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:9",
+      "sequence": 11174,
+      "chapter_label": "1CH 29",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 9
+        }
+      ],
+      "en": "Then the people rejoiced, because they offered willingly, because with a perfect heart they offered willingly to the LORD; and David the king also rejoiced with great joy.",
+      "ko": "백성이 자기의 즐거이 드림으로 기뻐하였으니 곧 저희가 성심으로 여호와께 즐거이 드림이며 다윗왕도 기쁨을 이기지 못하여 하니라",
+      "source_text_hash": "66d6eb38c59d60d0fdd2e77898344cd331e11787083c921374a0c57b1751a953",
+      "translation_text_hash": "a465aafb05e64f6c484256bbf619847c8ccdc703187b70d0bce6eb8b016f1d21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 자기의 즐거이 드림으로 기뻐하였으니 곧 저희가 성심으로 여호와께 즐거이 드림이며 다윗왕도 기쁨을 이기지 못하여 하니라"
+      ],
+      "raw_text_hashes": [
+        "a465aafb05e64f6c484256bbf619847c8ccdc703187b70d0bce6eb8b016f1d21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:10",
+      "sequence": 11175,
+      "chapter_label": "1CH 29",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore David blessed the LORD before all the assembly; and David said, “You are blessed, LORD, the God of Israel our father, forever and ever.",
+      "ko": "다윗이 온 회중 앞에서 여호와를 송축하여 가로되 우리 조상 이스라엘의 하나님 여호와여 주는 영원히 송축을 받으시옵소서",
+      "source_text_hash": "178fc3a543c4fea98fa2479ff24d35f949d166262f4e04648625603b89f09e8b",
+      "translation_text_hash": "6734cdfe2b209718c16fa6af52268b8fdeedcd6218b1b7516bea48786f6c6a47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 온 회중 앞에서 여호와를 송축하여 가로되 우리 조상 이스라엘의 하나님 여호와여 주는 영원히 송축을 받으시옵소서"
+      ],
+      "raw_text_hashes": [
+        "6734cdfe2b209718c16fa6af52268b8fdeedcd6218b1b7516bea48786f6c6a47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:11",
+      "sequence": 11176,
+      "chapter_label": "1CH 29",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 11
+        }
+      ],
+      "en": "Yours, LORD, is the greatness, the power, the glory, the victory, and the majesty! For all that is in the heavens and on the earth is yours. Yours is the kingdom, LORD, and you are exalted as head above all.",
+      "ko": "여호와여 광대하심과 권능과 영광과 이김과 위엄이 다 주께 속하였사오니 천지에 있는 것이 다 주의 것이로소이다 여호와여 주권도 주께 속하였사오니 주는 높으사 만유의 머리심이니이다",
+      "source_text_hash": "976668a70d3d8b3d7883c892633dfc4c9ca67bc26bc57a5b249ad1b6fc3f4057",
+      "translation_text_hash": "a00b094d09bfa745d22ee89bf9817046a03666d28ae2c47817a86856e91c86c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 광대하심과 권능과 영광과 이김과 위엄이 다 주께 속하였사오니 천지에 있는 것이 다 주의 것이로소이다 여호와여 주권도 주께 속하였사오니 주는 높으사 만유의 머리심이니이다"
+      ],
+      "raw_text_hashes": [
+        "a00b094d09bfa745d22ee89bf9817046a03666d28ae2c47817a86856e91c86c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:12",
+      "sequence": 11177,
+      "chapter_label": "1CH 29",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 12
+        }
+      ],
+      "en": "Both riches and honor come from you, and you rule over all! In your hand is power and might! It is in your hand to make great, and to give strength to all!",
+      "ko": "부와 귀가 주께로 말미암고 또 주는 만유의 주재가 되사 손에 권세와 능력이 있사오니 모든 자를 크게 하심과 강하게 하심이 주의 손에 있나이다",
+      "source_text_hash": "07ac0b86a27d7aa0c3ed4e4e57efea4019ec924f7d851307cf5667c4b9673165",
+      "translation_text_hash": "6be3b86ad46df03c0c3309ce41ceed2768d559e1e9569e7dba798aa007c75324",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부와 귀가 주께로 말미암고 또 주는 만유의 주재가 되사 손에 권세와 능력이 있사오니 모든 자를 크게 하심과 강하게 하심이 주의 손에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "6be3b86ad46df03c0c3309ce41ceed2768d559e1e9569e7dba798aa007c75324"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:13",
+      "sequence": 11178,
+      "chapter_label": "1CH 29",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 13
+        }
+      ],
+      "en": "Now therefore, our God, we thank you and praise your glorious name.",
+      "ko": "우리 하나님이여 이제 우리가 주께 감사하오며 주의 영화로운 이름을 찬양하나이다",
+      "source_text_hash": "7333f6e107b2cfeec1b8d4a6cc023d8e0d50c98ecd1451b7e9a552d5ef8f92cc",
+      "translation_text_hash": "b0475af3f537ec1a822b928f56f6e37a0046cb5576554896865df0582e7c0ec6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님이여 이제 우리가 주께 감사하오며 주의 영화로운 이름을 찬양하나이다"
+      ],
+      "raw_text_hashes": [
+        "b0475af3f537ec1a822b928f56f6e37a0046cb5576554896865df0582e7c0ec6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:14",
+      "sequence": 11179,
+      "chapter_label": "1CH 29",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 14
+        }
+      ],
+      "en": "But who am I, and what is my people, that we should be able to offer so willingly as this? For all things come from you, and we have given you of your own.",
+      "ko": "나와 나의 백성이 무엇이관대 이처럼 즐거운 마음으로 드릴 힘이 있었나이까 모든 것이 주께로 말미암았사오니 우리가 주의 손에서 받은 것으로 주께 드렸을 뿐이니이다",
+      "source_text_hash": "68157623b69dd91de7e7c4a7f804b72e69b60ef05406fad8f0a519eeca6e345c",
+      "translation_text_hash": "2227193cc93c9d8b8901be5a4f1195dcfdc7b998e80bf0b8a6eb05c102505091",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 나의 백성이 무엇이관대 이처럼 즐거운 마음으로 드릴 힘이 있었나이까 모든 것이 주께로 말미암았사오니 우리가 주의 손에서 받은 것으로 주께 드렸을 뿐이니이다"
+      ],
+      "raw_text_hashes": [
+        "2227193cc93c9d8b8901be5a4f1195dcfdc7b998e80bf0b8a6eb05c102505091"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:15",
+      "sequence": 11180,
+      "chapter_label": "1CH 29",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 15
+        }
+      ],
+      "en": "For we are strangers before you and foreigners, as all our fathers were. Our days on the earth are as a shadow, and there is no remaining.",
+      "ko": "주 앞에서는 우리가 우리 열조와 다름이 없이 나그네와 우거한 자라 세상에 있는 날이 그림자 같아서 머무름이 없나이다",
+      "source_text_hash": "a3571c1f31d840df9d6b8b9f8f251bcb9d7d65c1287a574350f3443fa2fa43fd",
+      "translation_text_hash": "19ca2efba83fc54477d166ee38bd53f76f92e32467d8d5dbc9c6b7f9bc22d76f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 앞에서는 우리가 우리 열조와 다름이 없이 나그네와 우거한 자라 세상에 있는 날이 그림자 같아서 머무름이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "19ca2efba83fc54477d166ee38bd53f76f92e32467d8d5dbc9c6b7f9bc22d76f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:16",
+      "sequence": 11181,
+      "chapter_label": "1CH 29",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 16
+        }
+      ],
+      "en": "LORD our God, all this store that we have prepared to build you a house for your holy name comes from your hand, and is all your own.",
+      "ko": "우리 하나님 여호와여 우리가 주의 거룩한 이름을 위하여 전을 건축하려고 미리 저축한 이 모든 물건이 다 주의 손에서 왔사오니 다 주의 것이니이다",
+      "source_text_hash": "7ff5cee5f8c42d10c5757ddb03dc23562732fd57ee184fff396dc8e6dbfc0310",
+      "translation_text_hash": "e603cd41356557f533b95ad942ae1d4b6bbe6e697526e022a21db4b3d9492275",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와여 우리가 주의 거룩한 이름을 위하여 전을 건축하려고 미리 저축한 이 모든 물건이 다 주의 손에서 왔사오니 다 주의 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "e603cd41356557f533b95ad942ae1d4b6bbe6e697526e022a21db4b3d9492275"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:17",
+      "sequence": 11182,
+      "chapter_label": "1CH 29",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 17
+        }
+      ],
+      "en": "I know also, my God, that you try the heart and have pleasure in uprightness. As for me, in the uprightness of my heart I have willingly offered all these things. Now I have seen with joy your people, who are present here, offer willingly to you.",
+      "ko": "나의 하나님이여 주께서 마음을 감찰하시고 정직을 기뻐하시는줄 내가 아나이다 내가 정직한 마음으로 이 모든 것을 즐거이 드렸사오며 이제 내가 또 여기 있는 주의 백성이 주께 즐거이 드리는 것을 보오니 심히 기쁘도소이다",
+      "source_text_hash": "74196404819476ac59371cb3837f4daa493e3de13159a5c7d492cdb5183b75f7",
+      "translation_text_hash": "494d090b1d9e92ade5d2fd90c7555777bbec9caef2b9e8fbcb9a82af2d71e67d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이여 주께서 마음을 감찰하시고 정직을 기뻐하시는줄 내가 아나이다 내가 정직한 마음으로 이 모든 것을 즐거이 드렸사오며 이제 내가 또 여기 있는 주의 백성이 주께 즐거이 드리는 것을 보오니 심히 기쁘도소이다"
+      ],
+      "raw_text_hashes": [
+        "494d090b1d9e92ade5d2fd90c7555777bbec9caef2b9e8fbcb9a82af2d71e67d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:18",
+      "sequence": 11183,
+      "chapter_label": "1CH 29",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 18
+        }
+      ],
+      "en": "LORD, the God of Abraham, of Isaac, and of Israel, our fathers, keep this desire forever in the thoughts of the heart of your people, and prepare their heart for you;",
+      "ko": "우리 열조 아브라함과 이삭과 이스라엘의 하나님 여호와여 주께서 이것을 주의 백성의 심중에 영원히 두어 생각하게 하시고 그 마음을 예비하여 주께로 돌아오게 하옵시며",
+      "source_text_hash": "c04c506a367ddca75a5f3ec693bd39e35a198537a96dd416da7bfef4eb746c27",
+      "translation_text_hash": "fc4ac4851b23c7a72b690e92452bce04849e4e6b572ccd8e4b158acc95e310df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 열조 아브라함과 이삭과 이스라엘의 하나님 여호와여 주께서 이것을 주의 백성의 심중에 영원히 두어 생각하게 하시고 그 마음을 예비하여 주께로 돌아오게 하옵시며"
+      ],
+      "raw_text_hashes": [
+        "fc4ac4851b23c7a72b690e92452bce04849e4e6b572ccd8e4b158acc95e310df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:19",
+      "sequence": 11184,
+      "chapter_label": "1CH 29",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 19
+        }
+      ],
+      "en": "and give to Solomon my son a perfect heart, to keep your commandments, your testimonies, and your statutes, and to do all these things, and to build the palace, for which I have made provision.”",
+      "ko": "또 내 아들 솔로몬에게 정성된 마음을 주사 주의 계명과 법도와 율례를 지켜 이 모든 일을 행하게 하시고 내가 위하여 예비한 것으로 전을 건축하게 하옵소서",
+      "source_text_hash": "ec66e99218104c69ea28f5136ac2415b00a4fec748509f0646aa50b45d43bf41",
+      "translation_text_hash": "07edc51b8990ea2189d9dfded699b8f215ebe70dfa67247b17af89dbaed0e71f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내 아들 솔로몬에게 정성된 마음을 주사 주의 계명과 법도와 율례를 지켜 이 모든 일을 행하게 하시고 내가 위하여 예비한 것으로 전을 건축하게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "07edc51b8990ea2189d9dfded699b8f215ebe70dfa67247b17af89dbaed0e71f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:20",
+      "sequence": 11185,
+      "chapter_label": "1CH 29",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 20
+        }
+      ],
+      "en": "Then David said to all the assembly, “Now bless the LORD your God!” All the assembly blessed the LORD, the God of their fathers, and bowed down their heads and prostrated themselves before the LORD and the king.",
+      "ko": "다윗이 온 회중에게 이르되 너희는 너희 하나님 여호와를 송축하라 하매 회중이 그 열조의 하나님 여호와를 송축하고 머리를 숙여 여호와와 왕에게 절하고",
+      "source_text_hash": "8ea11816826608533c9132c82130e03c330ee359162759bec9e84644c0cad5ff",
+      "translation_text_hash": "dd7415182732e655c1cf6998d17f28fcca1a032d8c14140db070e25fdad64745",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 온 회중에게 이르되 너희는 너희 하나님 여호와를 송축하라 하매 회중이 그 열조의 하나님 여호와를 송축하고 머리를 숙여 여호와와 왕에게 절하고"
+      ],
+      "raw_text_hashes": [
+        "dd7415182732e655c1cf6998d17f28fcca1a032d8c14140db070e25fdad64745"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:21",
+      "sequence": 11186,
+      "chapter_label": "1CH 29",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 21
+        }
+      ],
+      "en": "They sacrificed sacrifices to the LORD and offered burnt offerings to the LORD on the next day after that day, even one thousand bulls, one thousand rams, and one thousand lambs, with their drink offerings and sacrifices in abundance for all Israel,",
+      "ko": "이튿날 여호와께 제사를 드리고 또 번제를 드리니 수송아지가 일천이요 수양이 일천이요 어린 양이 일천이요 또 그 전제라 온 이스라엘을 위하여 풍성한 제물을 드리고",
+      "source_text_hash": "122d1a94228cbb1c99a94d1214196ed3f05b2c16ee74775763514cf59d833519",
+      "translation_text_hash": "300279a7e3d695abf215fb8951aff1c21906f999fa2e18ef3f67c69dd818514f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 여호와께 제사를 드리고 또 번제를 드리니 수송아지가 일천이요 수양이 일천이요 어린 양이 일천이요 또 그 전제라 온 이스라엘을 위하여 풍성한 제물을 드리고"
+      ],
+      "raw_text_hashes": [
+        "300279a7e3d695abf215fb8951aff1c21906f999fa2e18ef3f67c69dd818514f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:22",
+      "sequence": 11187,
+      "chapter_label": "1CH 29",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 22
+        }
+      ],
+      "en": "and ate and drank before the LORD on that day with great gladness. They made Solomon the son of David king the second time, and anointed him before the LORD to be prince, and Zadok to be priest.",
+      "ko": "이 날에 무리가 크게 기뻐하여 여호와 앞에서 먹으며 마셨더라 무리가 다윗의 아들 솔로몬으로 다시 왕을 삼아 기름을 부어 여호와께 돌려 주권자가 되게 하고 사독에게도 기름을 부어 제사장이 되게 하니라",
+      "source_text_hash": "fc51cd53627ad4a978101fd8c1c7f8cc51616feb49f570fd2557fc7e22887dfd",
+      "translation_text_hash": "b4d1c90df37da6f6c2268b92f1979e1fa87ee4751f13e462fcf4c2095af5e457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 무리가 크게 기뻐하여 여호와 앞에서 먹으며 마셨더라 무리가 다윗의 아들 솔로몬으로 다시 왕을 삼아 기름을 부어 여호와께 돌려 주권자가 되게 하고 사독에게도 기름을 부어 제사장이 되게 하니라"
+      ],
+      "raw_text_hashes": [
+        "b4d1c90df37da6f6c2268b92f1979e1fa87ee4751f13e462fcf4c2095af5e457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:23",
+      "sequence": 11188,
+      "chapter_label": "1CH 29",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 23
+        }
+      ],
+      "en": "Then Solomon sat on the throne of the LORD as king instead of David his father, and prospered; and all Israel obeyed him.",
+      "ko": "솔로몬이 여호와께서 주신 위에 앉아 부친 다윗을 이어 왕이 되어 형통하니 온 이스라엘이 그 명령을 순종하며",
+      "source_text_hash": "12093c49cc40457104e5802c4fcfa3292793cfc1352bfc4abcee71d25ec8dfe8",
+      "translation_text_hash": "f0a7faa5cb1e221fa8684915d1ba11d7e5120a5a3e2acfa7317b60c2dc4acec0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 여호와께서 주신 위에 앉아 부친 다윗을 이어 왕이 되어 형통하니 온 이스라엘이 그 명령을 순종하며"
+      ],
+      "raw_text_hashes": [
+        "f0a7faa5cb1e221fa8684915d1ba11d7e5120a5a3e2acfa7317b60c2dc4acec0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:24",
+      "sequence": 11189,
+      "chapter_label": "1CH 29",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 24
+        }
+      ],
+      "en": "All the princes, the mighty men, and also all of the sons of King David submitted themselves to Solomon the king.",
+      "ko": "모든 방백과 용사와 다윗왕의 여러 아들이 솔로몬왕에게 복종하니",
+      "source_text_hash": "fd5a374397d516c3e8e0b9f705007294f66b74f6e319666ddbe91f5108298ad4",
+      "translation_text_hash": "cc0a038ea1410ca5e91c6b7e3aa7164a0e494ebd2ddf418294d13bcbbc052dfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 방백과 용사와 다윗왕의 여러 아들이 솔로몬왕에게 복종하니"
+      ],
+      "raw_text_hashes": [
+        "cc0a038ea1410ca5e91c6b7e3aa7164a0e494ebd2ddf418294d13bcbbc052dfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:25",
+      "sequence": 11190,
+      "chapter_label": "1CH 29",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD magnified Solomon exceedingly in the sight of all Israel, and gave to him such royal majesty as had not been on any king before him in Israel.",
+      "ko": "여호와께서 솔로몬으로 이스라엘 무리의 목전에 심히 존대케 하시고 또 왕의 위엄을 주사 그 전 이스라엘 모든 왕보다 뛰어나게 하셨더라",
+      "source_text_hash": "bd5d5264ab09cb8ba12ba8e3fbb77b45270c59daa7695019a5adaabfa4020673",
+      "translation_text_hash": "7e1bc78d9aef023842bde6944df1879e2267443ca3523eb3c99cd08561c11361",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 솔로몬으로 이스라엘 무리의 목전에 심히 존대케 하시고 또 왕의 위엄을 주사 그 전 이스라엘 모든 왕보다 뛰어나게 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "7e1bc78d9aef023842bde6944df1879e2267443ca3523eb3c99cd08561c11361"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:26",
+      "sequence": 11191,
+      "chapter_label": "1CH 29",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 26
+        }
+      ],
+      "en": "Now David the son of Jesse reigned over all Israel.",
+      "ko": "이새의 아들 다윗이 온 이스라엘의 왕이 되어",
+      "source_text_hash": "7c8e688d385cb4f99c6f32b48a97a0e81ce9d94df98b438a3292253a2eba8131",
+      "translation_text_hash": "c528a59b190733e18838a103470d56ba6f0b8511765ea26b3683fa4d68554195",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이새의 아들 다윗이 온 이스라엘의 왕이 되어"
+      ],
+      "raw_text_hashes": [
+        "c528a59b190733e18838a103470d56ba6f0b8511765ea26b3683fa4d68554195"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:27",
+      "sequence": 11192,
+      "chapter_label": "1CH 29",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 27
+        }
+      ],
+      "en": "The time that he reigned over Israel was forty years; he reigned seven years in Hebron, and he reigned thirty-three years in Jerusalem.",
+      "ko": "이스라엘을 치리한 날짜는 사십년이라 헤브론에서 칠년을 치리하였고 예루살렘에서 삼십 삼년을 치리하였더라",
+      "source_text_hash": "6f8baeb88229392bbeeca957e6bee1701ab585bd6d7377b26d318dd1ae044e2a",
+      "translation_text_hash": "2880baa02ed1350edd871865c48d97e976cbec6033f98f02a7ec34429ef9d926",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘을 치리한 날짜는 사십년이라 헤브론에서 칠년을 치리하였고 예루살렘에서 삼십 삼년을 치리하였더라"
+      ],
+      "raw_text_hashes": [
+        "2880baa02ed1350edd871865c48d97e976cbec6033f98f02a7ec34429ef9d926"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:28",
+      "sequence": 11193,
+      "chapter_label": "1CH 29",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 28
+        }
+      ],
+      "en": "He died at a good old age, full of days, riches, and honor; and Solomon his son reigned in his place.",
+      "ko": "저가 나이 많아 늙도록 부하고 존귀하다가 죽으매 그 아들 솔로몬이 대신하여 왕이 되니라",
+      "source_text_hash": "1be0db56addf25a37f2b918fcb3af843e5af32731d87597091721bb044e18e79",
+      "translation_text_hash": "9c9392f0619918689da2c6c3c1c0a4ac5936e7fc75ced7fce6ec041a3d900f2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 나이 많아 늙도록 부하고 존귀하다가 죽으매 그 아들 솔로몬이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "9c9392f0619918689da2c6c3c1c0a4ac5936e7fc75ced7fce6ec041a3d900f2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:29",
+      "sequence": 11194,
+      "chapter_label": "1CH 29",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 29
+        }
+      ],
+      "en": "Now the acts of David the king, first and last, behold, they are written in the history of Samuel the seer, and in the history of Nathan the prophet, and in the history of Gad the seer,",
+      "ko": "다윗왕의 시종 행적이 선견자 사무엘의 글과 선지자 나단의 글과 선견자 갓의 글에 다 기록되고",
+      "source_text_hash": "360a9df41fd1110f131372c293d06eb9fcdd7fdaac7a8b2c95e31be4f3f75b41",
+      "translation_text_hash": "2ffdd665cbc2045ef3c80269720105b2c5092b9b1460417d5f8cc1c2ee7fd068",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗왕의 시종 행적이 선견자 사무엘의 글과 선지자 나단의 글과 선견자 갓의 글에 다 기록되고"
+      ],
+      "raw_text_hashes": [
+        "2ffdd665cbc2045ef3c80269720105b2c5092b9b1460417d5f8cc1c2ee7fd068"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:29:30",
+      "sequence": 11195,
+      "chapter_label": "1CH 29",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 29,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 29,
+          "verse": 30
+        }
+      ],
+      "en": "with all his reign and his might, and the events that involved him, Israel, and all the kingdoms of the lands.",
+      "ko": "또 저의 왕 된 일과 그 권세와 저와 이스라엘과 온 세상 열국의 지난 시사가 다 기록되니라",
+      "source_text_hash": "e5e97b398e0b6e314962fbee5a61719039694fa632e449082d74dd9b7f639775",
+      "translation_text_hash": "6a327c4b5ecafa94857fcdc047d837e7fb0e4d3b5fe2a9d567a6505926377cb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저의 왕 된 일과 그 권세와 저와 이스라엘과 온 세상 열국의 지난 시사가 다 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "6a327c4b5ecafa94857fcdc047d837e7fb0e4d3b5fe2a9d567a6505926377cb5"
+      ]
+    }
+  ]
+}

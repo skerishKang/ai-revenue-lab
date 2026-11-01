@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:002",
+  "unit_ordinal": 1169,
+  "unit_label": "REV 2",
+  "book_code": "REV",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:2:1",
+      "sequence": 30715,
+      "chapter_label": "REV 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "“To the angel of the assembly in Ephesus write:“He who holds the seven stars in his right hand, he who walks among the seven golden lamp stands says these things:",
+      "ko": "에베소 교회의 사자에게 편지하기를 오른손에 일곱 별을 붙잡고 일곱 금 촛대 사이에 다니시는 이가 가라사대",
+      "source_text_hash": "20464b82ef913f6156ba721acd168f6fc4e4b5c9727f019a19908da6f614b233",
+      "translation_text_hash": "3ea2b38041c9763725d5c6d2730317bb29b4e8d1e8f46147649d18a9c6c97b3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에베소 교회의 사자에게 편지하기를 오른손에 일곱 별을 붙잡고 일곱 금 촛대 사이에 다니시는 이가 가라사대"
+      ],
+      "raw_text_hashes": [
+        "3ea2b38041c9763725d5c6d2730317bb29b4e8d1e8f46147649d18a9c6c97b3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:2",
+      "sequence": 30716,
+      "chapter_label": "REV 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "“I know your works, and your toil and perseverance, and that you can’t tolerate evil men, and have tested those who call themselves apostles, and they are not, and found them false.",
+      "ko": "내가 네 행위와 수고와 네 인내를 알고 또 악한 자들을 용납지 아니한 것과 자칭 사도라 하되 아닌 자들을 시험하여 그 거짓된 것을 네가 드러낸 것과",
+      "source_text_hash": "0e40db1ebf6b64f2c8e852f6a7f7c0885cd1ad46a732f1950e65882cb7b990bb",
+      "translation_text_hash": "d1abebf121f3f7ae40414933db7c0b807d7416fe09bf1d07f7f7a707f5261874",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 행위와 수고와 네 인내를 알고 또 악한 자들을 용납지 아니한 것과 자칭 사도라 하되 아닌 자들을 시험하여 그 거짓된 것을 네가 드러낸 것과"
+      ],
+      "raw_text_hashes": [
+        "d1abebf121f3f7ae40414933db7c0b807d7416fe09bf1d07f7f7a707f5261874"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:3",
+      "sequence": 30717,
+      "chapter_label": "REV 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "You have perseverance and have endured for my name’s sake, and have not grown weary.",
+      "ko": "또 네가 참고 내 이름을 위하여 견디고 게으르지 아니한 것을 아노라",
+      "source_text_hash": "3aefdf012849bb0dd944ad81844eed6acece60cb8b7946fe0754b5654d9d58ce",
+      "translation_text_hash": "59cd15dff420825c4a56c2a897ca21703b514f5ee105536443c94e6d61d776b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네가 참고 내 이름을 위하여 견디고 게으르지 아니한 것을 아노라"
+      ],
+      "raw_text_hashes": [
+        "59cd15dff420825c4a56c2a897ca21703b514f5ee105536443c94e6d61d776b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:4",
+      "sequence": 30718,
+      "chapter_label": "REV 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "But I have this against you, that you left your first love.",
+      "ko": "그러나 너를 책망할 것이 있나니 너의 처음 사랑을 버렸느니라",
+      "source_text_hash": "903379c269da209b0fee446a894842b8ccf3770e711513078d12689833f2e23d",
+      "translation_text_hash": "0f9f299bee61ed87e0dae7d78b43b41de332a555183564290a6241ef392c5f39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너를 책망할 것이 있나니 너의 처음 사랑을 버렸느니라"
+      ],
+      "raw_text_hashes": [
+        "0f9f299bee61ed87e0dae7d78b43b41de332a555183564290a6241ef392c5f39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:5",
+      "sequence": 30719,
+      "chapter_label": "REV 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Remember therefore from where you have fallen, and repent and do the first works; or else I am coming to you swiftly, and will move your lamp stand out of its place, unless you repent.",
+      "ko": "그러므로 어디서 떨어진 것을 생각하고 회개하여 처음 행위를 가지라 만일 그리하지 아니하고 회개치 아니하면 내가 네게 임하여 네 촛대를 그 자리에서 옮기리라",
+      "source_text_hash": "665e1be0355d9d4c24661ab622b3af832232506e25b01a3853671133312d9464",
+      "translation_text_hash": "f0076db659ca2930fc342c05126ff33ae098fa7aca6e4268492cd93c29b2f8d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 어디서 떨어진 것을 생각하고 회개하여 처음 행위를 가지라 만일 그리하지 아니하고 회개치 아니하면 내가 네게 임하여 네 촛대를 그 자리에서 옮기리라"
+      ],
+      "raw_text_hashes": [
+        "f0076db659ca2930fc342c05126ff33ae098fa7aca6e4268492cd93c29b2f8d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:6",
+      "sequence": 30720,
+      "chapter_label": "REV 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "But this you have, that you hate the works of the Nicolaitans, which I also hate.",
+      "ko": "오직 네게 이것이 있으니 네가 니골라당의 행위를 미워하는도다 나도 이것을 미워하노라",
+      "source_text_hash": "2b2c1f3c832e44138d1973f492aab6ffcdefd3f7aacc4be52cf2be769e86895a",
+      "translation_text_hash": "571b9e078b79a9d9c6509882f1ffe449d6db1c5d100259c0521faa578f6cd2f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 네게 이것이 있으니 네가 니골라당의 행위를 미워하는도다 나도 이것을 미워하노라"
+      ],
+      "raw_text_hashes": [
+        "571b9e078b79a9d9c6509882f1ffe449d6db1c5d100259c0521faa578f6cd2f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:7",
+      "sequence": 30721,
+      "chapter_label": "REV 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "He who has an ear, let him hear what the Spirit says to the assemblies. To him who overcomes I will give to eat from the tree of life, which is in the Paradise of my God.",
+      "ko": "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다 이기는 그에게는 내가 하나님의 낙원에 있는 생명나무의 과실을 주어 먹게 하리라",
+      "source_text_hash": "44bb5f00c36c0955b12103464016a4c9cf064c37f1637592be6bd5ba6668216a",
+      "translation_text_hash": "5ad31702816dacce44afdde435a7b7465bf558bd9d989bced50fa44d577bb316",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다 이기는 그에게는 내가 하나님의 낙원에 있는 생명나무의 과실을 주어 먹게 하리라"
+      ],
+      "raw_text_hashes": [
+        "5ad31702816dacce44afdde435a7b7465bf558bd9d989bced50fa44d577bb316"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:8",
+      "sequence": 30722,
+      "chapter_label": "REV 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "“To the angel of the assembly in Smyrna write:“The first and the last, who was dead, and has come to life says these things:",
+      "ko": "서머나 교회의 사자에게 편지하기를 처음이요 나중이요 죽었다가 살아나신 이가 가라사대",
+      "source_text_hash": "6dd25e932ff12793ee2b2917df32e5ff127e22a1c506d0a4f71084e2515379ac",
+      "translation_text_hash": "77560b024ca7771911690362f0cd56f8664afdce2af2767b131081551d275b57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서머나 교회의 사자에게 편지하기를 처음이요 나중이요 죽었다가 살아나신 이가 가라사대"
+      ],
+      "raw_text_hashes": [
+        "77560b024ca7771911690362f0cd56f8664afdce2af2767b131081551d275b57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:9",
+      "sequence": 30723,
+      "chapter_label": "REV 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "“I know your works, oppression, and your poverty (but you are rich), and the blasphemy of those who say they are Jews, and they are not, but are a synagogue of Satan.",
+      "ko": "내가 네 환난과 궁핍을 아노니 실상은 네가 부요한 자니라 자칭 유대인이라 하는 자들의 훼방도 아노니 실상은 유대인이 아니요 사단의 회라",
+      "source_text_hash": "841938150454f5cb2b726fbdd1ef9d51247b7b6acfc1480fcc38916c37d87450",
+      "translation_text_hash": "1f96eaab8819a502c315ecd7cffa589d6dcfcb0040cd27a4fdccd86184ca2668",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 환난과 궁핍을 아노니 실상은 네가 부요한 자니라 자칭 유대인이라 하는 자들의 훼방도 아노니 실상은 유대인이 아니요 사단의 회라"
+      ],
+      "raw_text_hashes": [
+        "1f96eaab8819a502c315ecd7cffa589d6dcfcb0040cd27a4fdccd86184ca2668"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:10",
+      "sequence": 30724,
+      "chapter_label": "REV 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Don’t be afraid of the things which you are about to suffer. Behold, the devil is about to throw some of you into prison, that you may be tested; and you will have oppression for ten days. Be faithful to death, and I will give you the crown of life.",
+      "ko": "네가 장차 받을 고난을 두려워 말라 볼찌어다 마귀가 장차 너희 가운데서 몇 사람을 옥에 던져 시험을 받게 하리니 너희가 십일 동안 환난을 받으리라 네가 죽도록 충성하라 그리하면 내가 생명의 면류관을 네게 주리라",
+      "source_text_hash": "63f8aaa7a1b20596f802879c3408502057f92ef75d26d96eac76e2334e47b08d",
+      "translation_text_hash": "41edf0a4cc1ba90bca95a08c832be403d70d08630a3cb883b48eb784063cfa00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 장차 받을 고난을 두려워 말라 볼찌어다 마귀가 장차 너희 가운데서 몇 사람을 옥에 던져 시험을 받게 하리니 너희가 십일 동안 환난을 받으리라 네가 죽도록 충성하라 그리하면 내가 생명의 면류관을 네게 주리라"
+      ],
+      "raw_text_hashes": [
+        "41edf0a4cc1ba90bca95a08c832be403d70d08630a3cb883b48eb784063cfa00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:11",
+      "sequence": 30725,
+      "chapter_label": "REV 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "He who has an ear, let him hear what the Spirit says to the assemblies. He who overcomes won’t be harmed by the second death.",
+      "ko": "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다 이기는 자는 둘째 사망의 해를 받지 아니하리라",
+      "source_text_hash": "6b0afc0e6d72ca0d942c2150588fd7bc052a572ab78469b43e486a5e8a14592e",
+      "translation_text_hash": "4c2510a9fcea3b8c8e7c4403b694c5cb5b09e30a2baa202dea4a4330bdbee69c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다 이기는 자는 둘째 사망의 해를 받지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "4c2510a9fcea3b8c8e7c4403b694c5cb5b09e30a2baa202dea4a4330bdbee69c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:12",
+      "sequence": 30726,
+      "chapter_label": "REV 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "“To the angel of the assembly in Pergamum write:“He who has the sharp two-edged sword says these things:",
+      "ko": "버가모 교회의 사자에게 편지하기를 좌우에 날선 검을 가진 이가 가라사대",
+      "source_text_hash": "77d07ce736615b41740f1ef2404ef7a406aa7488366b639fe2a9c63da3c08dc1",
+      "translation_text_hash": "56f1eae96f6799b0e0d90c1a5acc51c68afab11b2a789f7a9226bcdd8efdf840",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "버가모 교회의 사자에게 편지하기를 좌우에 날선 검을 가진 이가 가라사대"
+      ],
+      "raw_text_hashes": [
+        "56f1eae96f6799b0e0d90c1a5acc51c68afab11b2a789f7a9226bcdd8efdf840"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:13",
+      "sequence": 30727,
+      "chapter_label": "REV 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "“I know your works and where you dwell, where Satan’s throne is. You hold firmly to my name, and didn’t deny my faith in the days of Antipas my witness, my faithful one, who was killed among you, where Satan dwells.",
+      "ko": "네가 어디 사는 것을 내가 아노니 거기는 사단의 위가 있는 데라 네가 내 이름을 굳게 잡아서 내 충성된 증인 안디바가 너희 가운데 곧 사단의 거하는 곳에서 죽임을 당할 때에도 나를 믿는 믿음을 저버리지 아니하였도다",
+      "source_text_hash": "5b4b647852218e1bfd4dde364078ef9062870e7719a1abed46c8368f8e0576b6",
+      "translation_text_hash": "72f146efad37d82682c8f2f9a7e8410c2b6fa1b3f3bad5380f4d13c4d004c086",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어디 사는 것을 내가 아노니 거기는 사단의 위가 있는 데라 네가 내 이름을 굳게 잡아서 내 충성된 증인 안디바가 너희 가운데 곧 사단의 거하는 곳에서 죽임을 당할 때에도 나를 믿는 믿음을 저버리지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "72f146efad37d82682c8f2f9a7e8410c2b6fa1b3f3bad5380f4d13c4d004c086"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:14",
+      "sequence": 30728,
+      "chapter_label": "REV 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "But I have a few things against you, because you have there some who hold the teaching of Balaam, who taught Balak to throw a stumbling block before the children of Israel, to eat things sacrificed to idols, and to commit sexual immorality.",
+      "ko": "그러나 네게 두어가지 책망할 것이 있나니 거기 네게 발람의 교훈을 지키는 자들이 있도다 발람이 발락을 가르쳐 이스라엘 앞에 올무를 놓아 우상의 제물을 먹게 하였고 또 행음하게 하였느니라",
+      "source_text_hash": "9190cfa2ad682a82edcfacee31e54390531baa489d18731880b08d3086b9fa65",
+      "translation_text_hash": "a1a16bc697ba8cd9b71b2b4a7b13944e5bb91a40296d2fee3ec1fe38f4b044ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네게 두어가지 책망할 것이 있나니 거기 네게 발람의 교훈을 지키는 자들이 있도다 발람이 발락을 가르쳐 이스라엘 앞에 올무를 놓아 우상의 제물을 먹게 하였고 또 행음하게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "a1a16bc697ba8cd9b71b2b4a7b13944e5bb91a40296d2fee3ec1fe38f4b044ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:15",
+      "sequence": 30729,
+      "chapter_label": "REV 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "So also you likewise have some who hold to the teaching of the Nicolaitans.",
+      "ko": "이와 같이 네게도 니골라당의 교훈을 지키는 자들이 있도다",
+      "source_text_hash": "e932b30f2aa633ee527527d21218cc0f369a86bb194d277b8fc51bd4f0a74ae5",
+      "translation_text_hash": "6747bf5a0c66686d5295873584fb94e7008460f0a1a2d07650f4cd580b7b0c85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 네게도 니골라당의 교훈을 지키는 자들이 있도다"
+      ],
+      "raw_text_hashes": [
+        "6747bf5a0c66686d5295873584fb94e7008460f0a1a2d07650f4cd580b7b0c85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:16",
+      "sequence": 30730,
+      "chapter_label": "REV 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "Repent therefore, or else I am coming to you quickly and I will make war against them with the sword of my mouth.",
+      "ko": "그러므로 회개하라 그리하지 아니하면 내가 네게 속히 임하여 내 입의 검으로 그들과 싸우리라",
+      "source_text_hash": "baec51c63518e7a0e2309d66e9f982cafb80a8bb29d1c99738999780912e1d1d",
+      "translation_text_hash": "d29779f100aeba63b1c12b38085494ac8014355cca7c4c448245b58d421c8242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 회개하라 그리하지 아니하면 내가 네게 속히 임하여 내 입의 검으로 그들과 싸우리라"
+      ],
+      "raw_text_hashes": [
+        "d29779f100aeba63b1c12b38085494ac8014355cca7c4c448245b58d421c8242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:17",
+      "sequence": 30731,
+      "chapter_label": "REV 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "He who has an ear, let him hear what the Spirit says to the assemblies. To him who overcomes, to him I will give of the hidden manna, and I will give him a white stone, and on the stone a new name written which no one knows but he who receives it.",
+      "ko": "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다 이기는 그에게는 내가 감추었던 만나를 주고 또 흰 돌을 줄터인데 그 돌 위에 새 이름을 기록한 것이 있나니 받는 자 밖에는 그 이름을 알 사람이 없느니라",
+      "source_text_hash": "a2df2c3246e1046a1341f9e629392e234a84bf71d85a7bd56c1c729a51c1b48a",
+      "translation_text_hash": "b9ed0937960a8cf8f1107966fc93b16fe29cd63c208027d94347d598f9f870e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다 이기는 그에게는 내가 감추었던 만나를 주고 또 흰 돌을 줄터인데 그 돌 위에 새 이름을 기록한 것이 있나니 받는 자 밖에는 그 이름을 알 사람이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "b9ed0937960a8cf8f1107966fc93b16fe29cd63c208027d94347d598f9f870e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:18",
+      "sequence": 30732,
+      "chapter_label": "REV 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "“To the angel of the assembly in Thyatira write:“The Son of God, who has his eyes like a flame of fire, and his feet are like burnished brass, says these things:",
+      "ko": "두아디라 교회의 사자에게 편지하기를 그 눈이 불꽃 같고 그 발이 빛난 주석과 같은 하나님의 아들이 가라사대",
+      "source_text_hash": "f3f9fabeb212f6685b6f88c03cf20db3964e2cbffb712849bb924088d33ec2b8",
+      "translation_text_hash": "11cd7f6e0e1f315cb045d569f34932fa0eb252745db6e8e2fbfd2505ca65b9c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두아디라 교회의 사자에게 편지하기를 그 눈이 불꽃 같고 그 발이 빛난 주석과 같은 하나님의 아들이 가라사대"
+      ],
+      "raw_text_hashes": [
+        "11cd7f6e0e1f315cb045d569f34932fa0eb252745db6e8e2fbfd2505ca65b9c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:19",
+      "sequence": 30733,
+      "chapter_label": "REV 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "“I know your works, your love, faith, service, patient endurance, and that your last works are more than the first.",
+      "ko": "내가 네 사업과 사랑과 믿음과 섬김과 인내를 아노니 네 나중 행위가 처음것보다 많도다",
+      "source_text_hash": "c32a38e3208e1adb7126bbac21b9391ec0e153352f41723c2b5a7656bf9e95de",
+      "translation_text_hash": "7deda893763be1921625b51f00a3be5e05968303d52ca1d3c781280fccc69d07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 사업과 사랑과 믿음과 섬김과 인내를 아노니 네 나중 행위가 처음것보다 많도다"
+      ],
+      "raw_text_hashes": [
+        "7deda893763be1921625b51f00a3be5e05968303d52ca1d3c781280fccc69d07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:20",
+      "sequence": 30734,
+      "chapter_label": "REV 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "But I have this against you, that you tolerate yourwoman Jezebel, who calls herself a prophetess. She teaches and seduces my servants to commit sexual immorality and to eat things sacrificed to idols.",
+      "ko": "그러나 네게 책망할 일이 있노라 자칭 선지자라 하는 여자 이세벨을 네가 용납함이니 그가 내 종들을 가르쳐 꾀어 행음하게 하고 우상의 제물을 먹게 하는도다",
+      "source_text_hash": "c4718b512951a8e2abd47cd67d944dabf0873bbe8a1972731e837b75e68ec5ea",
+      "translation_text_hash": "1db0ee3ec2baa7084bcf6bd151367db5876d83ef7910db72fff1da13b769ae79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네게 책망할 일이 있노라 자칭 선지자라 하는 여자 이세벨을 네가 용납함이니 그가 내 종들을 가르쳐 꾀어 행음하게 하고 우상의 제물을 먹게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "1db0ee3ec2baa7084bcf6bd151367db5876d83ef7910db72fff1da13b769ae79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:21",
+      "sequence": 30735,
+      "chapter_label": "REV 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "I gave her time to repent, but she refuses to repent of her sexual immorality.",
+      "ko": "또 내가 그에게 회개할 기회를 주었으되 그 음행을 회개하고자 아니하는도다",
+      "source_text_hash": "4f05895142a879fc98bea3d0a77b09998a7d8ff62dd10cd80942701b4175c5cb",
+      "translation_text_hash": "ba7aa504176cc246dc3af1749465035d730714013428c0dd63f9cd957172b07e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 그에게 회개할 기회를 주었으되 그 음행을 회개하고자 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "ba7aa504176cc246dc3af1749465035d730714013428c0dd63f9cd957172b07e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:22",
+      "sequence": 30736,
+      "chapter_label": "REV 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "Behold, I will throw her and those who commit adultery with her into a bed of great oppression, unless they repent of her works.",
+      "ko": "볼찌어다 내가 그를 침상에 던질터이요 또 그로 더불어 간음하는 자들도 만일 그의 행위를 회개치 아니하면 큰 환난 가운데 던지고",
+      "source_text_hash": "a531bf4c9191a494872275dc4216f83a94e1e84a6ac97732ce83ade03f1436b0",
+      "translation_text_hash": "dc01f974386400fe00765c10b00ddd7f86860ea890e06a05c5fff34f7e922a69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "볼찌어다 내가 그를 침상에 던질터이요 또 그로 더불어 간음하는 자들도 만일 그의 행위를 회개치 아니하면 큰 환난 가운데 던지고"
+      ],
+      "raw_text_hashes": [
+        "dc01f974386400fe00765c10b00ddd7f86860ea890e06a05c5fff34f7e922a69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:23",
+      "sequence": 30737,
+      "chapter_label": "REV 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "I will kill her children with Death, and all the assemblies will know that I am he who searches the minds and hearts. I will give to each one of you according to your deeds.",
+      "ko": "또 내가 사망으로 그의 자녀를 죽이리니 모든 교회가 나는 사람의 뜻과 마음을 살피는 자인줄 알찌라 내가 너희 각 사람의 행위대로 갚아 주리라",
+      "source_text_hash": "0ebba85ce09f3415974a2dd127cf12344f9e90401bcd288281604a93df5920f7",
+      "translation_text_hash": "97ffad77254e2575b8303fd5f9a3d63c99a864712a2903175a1999a5ca821c12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 사망으로 그의 자녀를 죽이리니 모든 교회가 나는 사람의 뜻과 마음을 살피는 자인줄 알찌라 내가 너희 각 사람의 행위대로 갚아 주리라"
+      ],
+      "raw_text_hashes": [
+        "97ffad77254e2575b8303fd5f9a3d63c99a864712a2903175a1999a5ca821c12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:24",
+      "sequence": 30738,
+      "chapter_label": "REV 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "But to you I say, to the rest who are in Thyatira—as many as don’t have this teaching, who don’t know what some call ‘the deep things of Satan’—to you I say, I am not putting any other burden on you.",
+      "ko": "두아디라에 남아 있어 이 교훈을 받지 아니하고 소위 사단의 깊은 것을 알지 못하는 너희에게 말하노니 다른 짐으로 너희에게 지울 것이 없노라",
+      "source_text_hash": "0a074463731ca932dca2347d32fc1e90edfb973929c30bf1cf45e1e7629a60f6",
+      "translation_text_hash": "dca05d376e0be2e07c7061f95c2291ccf5249f52c4073805a53fe4769de134c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두아디라에 남아 있어 이 교훈을 받지 아니하고 소위 사단의 깊은 것을 알지 못하는 너희에게 말하노니 다른 짐으로 너희에게 지울 것이 없노라"
+      ],
+      "raw_text_hashes": [
+        "dca05d376e0be2e07c7061f95c2291ccf5249f52c4073805a53fe4769de134c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:25",
+      "sequence": 30739,
+      "chapter_label": "REV 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "Nevertheless, hold that which you have firmly until I come.",
+      "ko": "다만 너희에게 있는 것을 내가 올 때까지 굳게 잡으라",
+      "source_text_hash": "4d9f5c37aef8f0a9d395834492bfcc178c3b4a72cd0087f032018bc97509fda0",
+      "translation_text_hash": "bbb3b62967f3326ec85de76d1974b5119f1b395967c4f2db0a286bc2fd259466",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 너희에게 있는 것을 내가 올 때까지 굳게 잡으라"
+      ],
+      "raw_text_hashes": [
+        "bbb3b62967f3326ec85de76d1974b5119f1b395967c4f2db0a286bc2fd259466"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:26",
+      "sequence": 30740,
+      "chapter_label": "REV 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "He who overcomes, and he who keeps my works to the end, to him I will give authority over the nations.",
+      "ko": "이기는 자와 끝까지 내 일을 지키는 그에게 만국을 다스리는 권세를 주리니",
+      "source_text_hash": "3c7055bc733f57e423be9f5a4114069fa9f4febe003b10e8913f0cb17d8699cc",
+      "translation_text_hash": "3276583a69b3c329337b458ad00f982e585354016d4b4fedca600c22edfe15e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이기는 자와 끝까지 내 일을 지키는 그에게 만국을 다스리는 권세를 주리니"
+      ],
+      "raw_text_hashes": [
+        "3276583a69b3c329337b458ad00f982e585354016d4b4fedca600c22edfe15e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:27",
+      "sequence": 30741,
+      "chapter_label": "REV 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "He will rule them with a rod of iron, shattering them like clay pots,as I also have received of my Father;",
+      "ko": "그가 철장을 가지고 저희를 다스려 질그릇 깨뜨리는 것과 같이 하리라 나도 내 아버지께 받은 것이 그러하니라",
+      "source_text_hash": "c3a31891c32c530213d566097e6d9e110311ea40a5650d2ee623ee76cf589a02",
+      "translation_text_hash": "0539fa3c21ecbef6869d761fb8fd92008d150a18f2e74e7c87b8093424a7406f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 철장을 가지고 저희를 다스려 질그릇 깨뜨리는 것과 같이 하리라 나도 내 아버지께 받은 것이 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "0539fa3c21ecbef6869d761fb8fd92008d150a18f2e74e7c87b8093424a7406f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:28",
+      "sequence": 30742,
+      "chapter_label": "REV 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "and I will give him the morning star.",
+      "ko": "내가 또 그에게 새벽 별을 주리라",
+      "source_text_hash": "d18e551271c384ec8d125a2a825b696dbb87edd587f7d6d9322d52410eb97cc2",
+      "translation_text_hash": "9c421f9dbfbb6b3aad36b9615afe3d7f56a6cccd852b53ce59e1f39358ae9dfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 그에게 새벽 별을 주리라"
+      ],
+      "raw_text_hashes": [
+        "9c421f9dbfbb6b3aad36b9615afe3d7f56a6cccd852b53ce59e1f39358ae9dfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:2:29",
+      "sequence": 30743,
+      "chapter_label": "REV 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "REV",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "He who has an ear, let him hear what the Spirit says to the assemblies.",
+      "ko": "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다",
+      "source_text_hash": "41efec26bd2928dedbfc339464fd23c8bf79b9600f81c52a8d9ece8417f24924",
+      "translation_text_hash": "5fe2cef06aab47bca7ac7e99cf1ac8d0af5607c0b869a621793ef8936ea855b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀 있는 자는 성령이 교회들에게 하시는 말씀을 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "5fe2cef06aab47bca7ac7e99cf1ac8d0af5607c0b869a621793ef8936ea855b2"
+      ]
+    }
+  ]
+}

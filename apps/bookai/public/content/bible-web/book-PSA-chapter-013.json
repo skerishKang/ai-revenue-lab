@@ -1,0 +1,205 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:013",
+  "unit_ordinal": 491,
+  "unit_label": "PSA 13",
+  "book_code": "PSA",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:13:1",
+      "sequence": 14076,
+      "chapter_label": "PSA 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "How long, LORD? Will you forget me forever? How long will you hide your face from me?",
+      "ko": "여호와여 어느 때까지니이까 나를 영영히 잊으시나이까 주의 얼굴을 나에게서 언제까지 숨기시겠나이까",
+      "source_text_hash": "d687498d68ce6215af0c4dec075e54a2670b3c8324394f96eac548a1faefc390",
+      "translation_text_hash": "cd886a6585c57003db231191e288f4506f8217c4c5ea2cb0cbdc2fe70297d633",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 어느 때까지니이까 나를 영영히 잊으시나이까 주의 얼굴을 나에게서 언제까지 숨기시겠나이까"
+      ],
+      "raw_text_hashes": [
+        "cd886a6585c57003db231191e288f4506f8217c4c5ea2cb0cbdc2fe70297d633"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:13:2",
+      "sequence": 14077,
+      "chapter_label": "PSA 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "How long shall I take counsel in my soul, having sorrow in my heart every day? How long shall my enemy triumph over me?",
+      "ko": "내가 나의 영혼에 경영하고 종일토록 마음에 근심하기를 어느 때까지 하오며 내 원수가 나를 쳐서 자긍하기를 어느 때까지 하리이까",
+      "source_text_hash": "63327c39d2763001ba9dc03de33c10e36f3e854cd5cbce9c5c6f8bea242b752c",
+      "translation_text_hash": "492a35b82a1803ccde9119efbc63f6da7f4be0ffbef16a777cba000807bc882e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 영혼에 경영하고 종일토록 마음에 근심하기를 어느 때까지 하오며 내 원수가 나를 쳐서 자긍하기를 어느 때까지 하리이까"
+      ],
+      "raw_text_hashes": [
+        "492a35b82a1803ccde9119efbc63f6da7f4be0ffbef16a777cba000807bc882e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:13:3",
+      "sequence": 14078,
+      "chapter_label": "PSA 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "Behold, and answer me, LORD, my God. Give light to my eyes, lest I sleep in death;",
+      "ko": "여호와 내 하나님이여 나를 생각하사 응답하시고 나의 눈을 밝히소서 두렵건대 내가 사망의 잠을 잘까 하오며",
+      "source_text_hash": "04817a4f01ae9506b20305484b43807c9313a017e9da6397c19e6c44b7fca52a",
+      "translation_text_hash": "eec70bbe414e72248423567b82764d684365bb8f797bf8f832d9e52556a3bf6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 내 하나님이여 나를 생각하사 응답하시고 나의 눈을 밝히소서 두렵건대 내가 사망의 잠을 잘까 하오며"
+      ],
+      "raw_text_hashes": [
+        "eec70bbe414e72248423567b82764d684365bb8f797bf8f832d9e52556a3bf6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:13:4",
+      "sequence": 14079,
+      "chapter_label": "PSA 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "lest my enemy say, “I have prevailed against him;” lest my adversaries rejoice when I fall.",
+      "ko": "두렵건대 나의 원수가 이르기를 내가 저를 이기었다 할까 하오며 내가 요동될 때에 나의 대적들이 기뻐할까 하나이다",
+      "source_text_hash": "7aa439b223e2a0a482a209bb387d9948cd4154bbb8986a15bed9c658a7c62470",
+      "translation_text_hash": "4b42c791362d8d66d1ca3549bf219a4f66c8c7eef76556168f7140424b9e3873",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두렵건대 나의 원수가 이르기를 내가 저를 이기었다 할까 하오며 내가 요동될 때에 나의 대적들이 기뻐할까 하나이다"
+      ],
+      "raw_text_hashes": [
+        "4b42c791362d8d66d1ca3549bf219a4f66c8c7eef76556168f7140424b9e3873"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:13:5",
+      "sequence": 14080,
+      "chapter_label": "PSA 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "But I trust in your loving kindness. My heart rejoices in your salvation.",
+      "ko": "나는 오직 주의 인자하심을 의뢰하였사오니 내 마음은 주의 구원을 기뻐하리이다",
+      "source_text_hash": "1ee0448e85ed746eded98dafc17274e6f1d076bb35a9e535609f3e5d18af751a",
+      "translation_text_hash": "ea506dd893195cd4ce8a71c8ca1e345c32f2cbb9fa2288e0530d961db47040ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 오직 주의 인자하심을 의뢰하였사오니 내 마음은 주의 구원을 기뻐하리이다"
+      ],
+      "raw_text_hashes": [
+        "ea506dd893195cd4ce8a71c8ca1e345c32f2cbb9fa2288e0530d961db47040ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:13:6",
+      "sequence": 14081,
+      "chapter_label": "PSA 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "I will sing to the LORD, because he has been good to me.",
+      "ko": "내가 여호와를 찬송하리니 이는 나를 후대하심이로다",
+      "source_text_hash": "e57fe8cc7635833f1b6a4db351f0f367206fce9c870b3007d95d598486f66345",
+      "translation_text_hash": "8e29c7824845f03e48c7c03157a232d017a1939c8407f1b4bd83d9b8840380a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와를 찬송하리니 이는 나를 후대하심이로다"
+      ],
+      "raw_text_hashes": [
+        "8e29c7824845f03e48c7c03157a232d017a1939c8407f1b4bd83d9b8840380a7"
+      ]
+    }
+  ]
+}

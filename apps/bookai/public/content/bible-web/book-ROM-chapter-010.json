@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:010",
+  "unit_ordinal": 1056,
+  "unit_label": "ROM 10",
+  "book_code": "ROM",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:10:1",
+      "sequence": 28186,
+      "chapter_label": "ROM 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Brothers, my heart’s desire and my prayer to God is for Israel, that they may be saved.",
+      "ko": "형제들아 내 마음에 원하는 바와 하나님께 구하는 바는 이스라엘을 위함이니 곧 저희로 구원을 얻게 함이라",
+      "source_text_hash": "666cad6f0312b9120be0cc67c077b7300c93f6cb8fc6de7f559bd27711aac08c",
+      "translation_text_hash": "b8f7d6d1f4c7b037bdcbd1c9ec2f06d429ddc73c0fe7d4f1088e204385d18df9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내 마음에 원하는 바와 하나님께 구하는 바는 이스라엘을 위함이니 곧 저희로 구원을 얻게 함이라"
+      ],
+      "raw_text_hashes": [
+        "b8f7d6d1f4c7b037bdcbd1c9ec2f06d429ddc73c0fe7d4f1088e204385d18df9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:2",
+      "sequence": 28187,
+      "chapter_label": "ROM 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "For I testify about them that they have a zeal for God, but not according to knowledge.",
+      "ko": "내가 증거하노니 저희가 하나님께 열심이 있으나 지식을 좇은 것이 아니라",
+      "source_text_hash": "fb5e2a46d5a3f3af685bf58647f8d19c3195e66822f22b311df3a7199b7756df",
+      "translation_text_hash": "d97145b962d9a7f827fa327edfd59990ee8446c042127c433767b340feb2b9f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 증거하노니 저희가 하나님께 열심이 있으나 지식을 좇은 것이 아니라"
+      ],
+      "raw_text_hashes": [
+        "d97145b962d9a7f827fa327edfd59990ee8446c042127c433767b340feb2b9f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:3",
+      "sequence": 28188,
+      "chapter_label": "ROM 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "For being ignorant of God’s righteousness, and seeking to establish their own righteousness, they didn’t subject themselves to the righteousness of God.",
+      "ko": "하나님의 의를 모르고 자기 의를 세우려고 힘써 하나님의 의를 복종치 아니하였느니라",
+      "source_text_hash": "230d7d1d6a92b3c173220096426f7ac9109ced3443f9df8d29fbcf41940963ee",
+      "translation_text_hash": "ecebd664122258abfc68f4b6dff632bd89ff7f438babc7dd714d94372acd02d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 의를 모르고 자기 의를 세우려고 힘써 하나님의 의를 복종치 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ecebd664122258abfc68f4b6dff632bd89ff7f438babc7dd714d94372acd02d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:4",
+      "sequence": 28189,
+      "chapter_label": "ROM 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "For Christ is the fulfillment of the law for righteousness to everyone who believes.",
+      "ko": "그리스도는 모든 믿는 자에게 의를 이루기 위하여 율법의 마침이 되시니라",
+      "source_text_hash": "28cdf4bae60b66f38448df90314468237b9126a5943b59c6789608489e8b46cd",
+      "translation_text_hash": "04520dbdb4278a7697017ca048946983e1cb00c17b372a09355ab47c301529e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도는 모든 믿는 자에게 의를 이루기 위하여 율법의 마침이 되시니라"
+      ],
+      "raw_text_hashes": [
+        "04520dbdb4278a7697017ca048946983e1cb00c17b372a09355ab47c301529e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:5",
+      "sequence": 28190,
+      "chapter_label": "ROM 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "For Moses writes about the righteousness of the law, “The one who does them will live by them.”",
+      "ko": "모세가 기록하되 율법으로 말미암는 의를 행하는 사람은 그 의로 살리라 하였거니와",
+      "source_text_hash": "deaa54b72897d5e1c9a33d398c39f4064152eb6c68f24b1546efb8f8a51caad8",
+      "translation_text_hash": "b3178be69d51c17f4703ea7735da966a4e483c359b168ca5f977077b7fbf17ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 기록하되 율법으로 말미암는 의를 행하는 사람은 그 의로 살리라 하였거니와"
+      ],
+      "raw_text_hashes": [
+        "b3178be69d51c17f4703ea7735da966a4e483c359b168ca5f977077b7fbf17ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:6",
+      "sequence": 28191,
+      "chapter_label": "ROM 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "But the righteousness which is of faith says this, “Don’t say in your heart, ‘Who will ascend into heaven?’ (that is, to bring Christ down);",
+      "ko": "믿음으로 말미암는 의는 이같이 말하되 네 마음에 누가 하늘에 올라가겠느냐 하지 말라 하니 올라가겠느냐 함은 그리스도를 모셔 내리려는 것이요",
+      "source_text_hash": "121700fdffc1bcb32ad0bf2b731750116fb2fdfee06184c2c23016d6730cc30b",
+      "translation_text_hash": "07a952309e5e7246bdf2e62ce000efd893d52cc155c8321a08c2c8cdbba0ad90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 말미암는 의는 이같이 말하되 네 마음에 누가 하늘에 올라가겠느냐 하지 말라 하니 올라가겠느냐 함은 그리스도를 모셔 내리려는 것이요"
+      ],
+      "raw_text_hashes": [
+        "07a952309e5e7246bdf2e62ce000efd893d52cc155c8321a08c2c8cdbba0ad90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:7",
+      "sequence": 28192,
+      "chapter_label": "ROM 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "or, ‘Who will descend into the abyss?’ (that is, to bring Christ up from the dead.)”",
+      "ko": "혹 누가 음부에 내려가겠느냐 하지 말라 하니 내려가겠느냐 함은 그리스도를 죽은 자 가운데서 모셔 올리려는 것이라",
+      "source_text_hash": "79bb75c75f6ac895b025434c388d7a8d2f40e793a792b9f15c0e65e40379eaae",
+      "translation_text_hash": "cd9ae862fa3b1fa62cf5c7697ad1e55d14a2381f071192405d61942cd2b968fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 누가 음부에 내려가겠느냐 하지 말라 하니 내려가겠느냐 함은 그리스도를 죽은 자 가운데서 모셔 올리려는 것이라"
+      ],
+      "raw_text_hashes": [
+        "cd9ae862fa3b1fa62cf5c7697ad1e55d14a2381f071192405d61942cd2b968fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:8",
+      "sequence": 28193,
+      "chapter_label": "ROM 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "But what does it say? “The word is near you, in your mouth and in your heart;” that is, the word of faith which we preach:",
+      "ko": "그러면 무엇을 말하느뇨 말씀이 네게 가까와 네 입에 있으며 네 마음에 있다 하였으니 곧 우리가 전파하는 믿음의 말씀이라",
+      "source_text_hash": "d5f79a8c6e4cfd451d704b55a2a590cdd952b37f28756670dc482f97769dfc55",
+      "translation_text_hash": "8c21d5891eb0da11ce5793f241ed34483b011f6d0435dd7ea6ec89fbfa47eb71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 무엇을 말하느뇨 말씀이 네게 가까와 네 입에 있으며 네 마음에 있다 하였으니 곧 우리가 전파하는 믿음의 말씀이라"
+      ],
+      "raw_text_hashes": [
+        "8c21d5891eb0da11ce5793f241ed34483b011f6d0435dd7ea6ec89fbfa47eb71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:9",
+      "sequence": 28194,
+      "chapter_label": "ROM 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "that if you will confess with your mouth that Jesus is Lord and believe in your heart that God raised him from the dead, you will be saved.",
+      "ko": "네가 만일 네 입으로 예수를 주로 시인하며 또 하나님께서 그를 죽은 자 가운데서 살리신 것을 네 마음에 믿으면 구원을 얻으리니",
+      "source_text_hash": "099d2df46cee1dc8dad84f8f7e6e3888f6deb52418cc32f39038b6197e5483d0",
+      "translation_text_hash": "76894aa1c79eb95a61189492603af1a9d3d652cae1f5d3bc61a766b8a126fc3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 네 입으로 예수를 주로 시인하며 또 하나님께서 그를 죽은 자 가운데서 살리신 것을 네 마음에 믿으면 구원을 얻으리니"
+      ],
+      "raw_text_hashes": [
+        "76894aa1c79eb95a61189492603af1a9d3d652cae1f5d3bc61a766b8a126fc3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:10",
+      "sequence": 28195,
+      "chapter_label": "ROM 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "For with the heart one believes resulting in righteousness; and with the mouth confession is made resulting in salvation.",
+      "ko": "사람이 마음으로 믿어 의에 이르고 입으로 시인하여 구원에 이르느니라",
+      "source_text_hash": "a6e0816fc2e267679f988a6c64f756ea959ab50dd06c19e93343e8e80b2f35f1",
+      "translation_text_hash": "55cc118795015d69a8c56ca6be6e835a9318afbfef02895b4403a131ad82a203",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 마음으로 믿어 의에 이르고 입으로 시인하여 구원에 이르느니라"
+      ],
+      "raw_text_hashes": [
+        "55cc118795015d69a8c56ca6be6e835a9318afbfef02895b4403a131ad82a203"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:11",
+      "sequence": 28196,
+      "chapter_label": "ROM 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "For the Scripture says, “Whoever believes in him will not be disappointed.”",
+      "ko": "성경에 이르되 누구든지 저를 믿는 자는 부끄러움을 당하지 아니하리라 하니",
+      "source_text_hash": "d101a1ff99b8aa0a94d1af8bc01c96a22480f068e3b142eabff2aff18ee45bde",
+      "translation_text_hash": "d25f2b924af8dc5300afea443c3503b7511edd63f1fe6fc954fcfc2b2e205308",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성경에 이르되 누구든지 저를 믿는 자는 부끄러움을 당하지 아니하리라 하니"
+      ],
+      "raw_text_hashes": [
+        "d25f2b924af8dc5300afea443c3503b7511edd63f1fe6fc954fcfc2b2e205308"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:12",
+      "sequence": 28197,
+      "chapter_label": "ROM 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "For there is no distinction between Jew and Greek; for the same Lord is Lord of all, and is rich to all who call on him.",
+      "ko": "유대인이나 헬라인이나 차별이 없음이라 한 주께서 모든 사람의 주가 되사 저를 부르는 모든 사람에게 부요하시도다",
+      "source_text_hash": "9298338e70e3aa85a362582bbd05ffe3a1ec4fb16cf515cadb055b28834d121b",
+      "translation_text_hash": "287a5b138dbad58a13f9758ca2fa1cd1e4759160d4645127ee7be4a19dd93ddb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인이나 헬라인이나 차별이 없음이라 한 주께서 모든 사람의 주가 되사 저를 부르는 모든 사람에게 부요하시도다"
+      ],
+      "raw_text_hashes": [
+        "287a5b138dbad58a13f9758ca2fa1cd1e4759160d4645127ee7be4a19dd93ddb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:13",
+      "sequence": 28198,
+      "chapter_label": "ROM 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "For, “Whoever will call on the name of the Lord will be saved.”",
+      "ko": "누구든지 주의 이름을 부르는 자는 구원을 얻으리라",
+      "source_text_hash": "9090db7cf9baccee4247957c1538ab6f20a5967a59f8b9bb537554702fc5e93f",
+      "translation_text_hash": "fe2b05347c2b4b0c7ae6f643c9ff6f5f18f8a2689a30c93ef9cdd3c404f9bf87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 주의 이름을 부르는 자는 구원을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "fe2b05347c2b4b0c7ae6f643c9ff6f5f18f8a2689a30c93ef9cdd3c404f9bf87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:14",
+      "sequence": 28199,
+      "chapter_label": "ROM 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "How then will they call on him in whom they have not believed? How will they believe in him whom they have not heard? How will they hear without a preacher?",
+      "ko": "그런즉 저희가 믿지 아니하는 이를 어찌 부르리요 듣지도 못한 이를 어찌 믿으리요 전파하는 자가 없이 어찌 들으리요",
+      "source_text_hash": "2b28fe31abf3d738b3e067d21a14da192b91c86455973635dfadd326133515ce",
+      "translation_text_hash": "43f3a1d0d8b58238d46b71acc83bf5dad1407338a3efc2946eec1b3ec36ef80d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 저희가 믿지 아니하는 이를 어찌 부르리요 듣지도 못한 이를 어찌 믿으리요 전파하는 자가 없이 어찌 들으리요"
+      ],
+      "raw_text_hashes": [
+        "43f3a1d0d8b58238d46b71acc83bf5dad1407338a3efc2946eec1b3ec36ef80d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:15",
+      "sequence": 28200,
+      "chapter_label": "ROM 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "And how will they preach unless they are sent? As it is written: “How beautiful are the feet of those who preach the Good News of peace, who bring glad tidings of good things!”",
+      "ko": "보내심을 받지 아니하였으면 어찌 전파하리요 기록된바 아름답도다 좋은 소식을 전하는 자들의 발이여 함과 같으니라",
+      "source_text_hash": "6812dc5be3284588c849e7e7e80a85fb309809d64f09d493bfda2eb51462e509",
+      "translation_text_hash": "4f78d47614d05154a4d24b386510502dad2c2efa2f036436b17ea563b4d2151a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보내심을 받지 아니하였으면 어찌 전파하리요 기록된바 아름답도다 좋은 소식을 전하는 자들의 발이여 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "4f78d47614d05154a4d24b386510502dad2c2efa2f036436b17ea563b4d2151a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:16",
+      "sequence": 28201,
+      "chapter_label": "ROM 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "But they didn’t all listen to the glad news. For Isaiah says, “Lord, who has believed our report?”",
+      "ko": "그러나 저희가 다 복음을 순종치 아니하였도다 이사야가 가로되 주여 우리의 전하는 바를 누가 믿었나이까 하였으니",
+      "source_text_hash": "a25fddcbdef192b449b36dbc5e0f87694b3e36ef09e916c1ff6a1a048e553df4",
+      "translation_text_hash": "0a72cf1cd9bfbc579eb80e9579bad6c8610e8d4a45154a25753812492903227c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 저희가 다 복음을 순종치 아니하였도다 이사야가 가로되 주여 우리의 전하는 바를 누가 믿었나이까 하였으니"
+      ],
+      "raw_text_hashes": [
+        "0a72cf1cd9bfbc579eb80e9579bad6c8610e8d4a45154a25753812492903227c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:17",
+      "sequence": 28202,
+      "chapter_label": "ROM 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "So faith comes by hearing, and hearing by the word of God.",
+      "ko": "그러므로 믿음은 들음에서 나며 들음은 그리스도의 말씀으로 말미암았느니라",
+      "source_text_hash": "0cc7232bd1a4fa0265f77b34a9e940d9c2d6a9d03b55d3619aa6107327633054",
+      "translation_text_hash": "6e6c878a973393d14579056e01a29faa33f08877c741a1c9b553f324c4090114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 믿음은 들음에서 나며 들음은 그리스도의 말씀으로 말미암았느니라"
+      ],
+      "raw_text_hashes": [
+        "6e6c878a973393d14579056e01a29faa33f08877c741a1c9b553f324c4090114"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:18",
+      "sequence": 28203,
+      "chapter_label": "ROM 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "But I say, didn’t they hear? Yes, most certainly, “Their sound went out into all the earth, their words to the ends of the world.”",
+      "ko": "그러나 내가 말하노니 저희가 듣지 아니하였느뇨 그렇지 아니하다 그 소리가 온 땅에 퍼졌고 그 말씀이 땅끝까지 이르렀도다 하였느니라",
+      "source_text_hash": "cfd0f64ae348b9269f0ae771c8b207d946f0299e98911c0ce5f8941831f2f680",
+      "translation_text_hash": "a303f2f36b84effc1dfbba757515d9af3b32fc5671ff06af0345b4aaebe497fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 말하노니 저희가 듣지 아니하였느뇨 그렇지 아니하다 그 소리가 온 땅에 퍼졌고 그 말씀이 땅끝까지 이르렀도다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "a303f2f36b84effc1dfbba757515d9af3b32fc5671ff06af0345b4aaebe497fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:19",
+      "sequence": 28204,
+      "chapter_label": "ROM 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "But I ask, didn’t Israel know? First Moses says, “I will provoke you to jealousy with that which is no nation. I will make you angry with a nation void of understanding.”",
+      "ko": "그러나 내가 말하노니 이스라엘이 알지 못하였느뇨 먼저 모세가 이르되 내가 백성 아닌 자로써 너희를 시기나게 하며 미련한 백성으로써 너희를 노엽게 하리라 하였고",
+      "source_text_hash": "996c6d43daf44bdc3a02710042b69d492fad500a38cdfbc39e97ff28e49aa08d",
+      "translation_text_hash": "8d237fe2c2c615fe85fbe8c61f4e2a01e70a9d853abf104e5bc0dd76d67901f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 말하노니 이스라엘이 알지 못하였느뇨 먼저 모세가 이르되 내가 백성 아닌 자로써 너희를 시기나게 하며 미련한 백성으로써 너희를 노엽게 하리라 하였고"
+      ],
+      "raw_text_hashes": [
+        "8d237fe2c2c615fe85fbe8c61f4e2a01e70a9d853abf104e5bc0dd76d67901f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:20",
+      "sequence": 28205,
+      "chapter_label": "ROM 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "Isaiah is very bold and says, “I was found by those who didn’t seek me. I was revealed to those who didn’t ask for me.”",
+      "ko": "또한 이사야가 매우 담대하여 이르되 내가 구하지 아니하는 자들에게 찾은바 되고 내게 문의하지 아니하는 자들에게 나타났노라 하였고",
+      "source_text_hash": "97496c760bfd7cbecdf96ab5c38ee6f282f63065b965e03a40c5b1738543f407",
+      "translation_text_hash": "7cb1b347b5e11bb4dae7b4b23ced8b89a390c66457eb68321f099e40499d18be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 이사야가 매우 담대하여 이르되 내가 구하지 아니하는 자들에게 찾은바 되고 내게 문의하지 아니하는 자들에게 나타났노라 하였고"
+      ],
+      "raw_text_hashes": [
+        "7cb1b347b5e11bb4dae7b4b23ced8b89a390c66457eb68321f099e40499d18be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:10:21",
+      "sequence": 28206,
+      "chapter_label": "ROM 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "But about Israel he says, “All day long I stretched out my hands to a disobedient and contrary people.”",
+      "ko": "이스라엘을 대하여 가라사대 순종치 아니하고 거스려 말하는 백성에게 내가 종일 내 손을 벌렸노라 하셨느니라",
+      "source_text_hash": "fa4c86f6f4eae4ddc03aee452145e94f9bdefdea765bd9e2a17c8feb78229553",
+      "translation_text_hash": "27450198e580deb2c68444900d4a13ed15eeddbf937da31d7754c5cb0ac670de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘을 대하여 가라사대 순종치 아니하고 거스려 말하는 백성에게 내가 종일 내 손을 벌렸노라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "27450198e580deb2c68444900d4a13ed15eeddbf937da31d7754c5cb0ac670de"
+      ]
+    }
+  ]
+}

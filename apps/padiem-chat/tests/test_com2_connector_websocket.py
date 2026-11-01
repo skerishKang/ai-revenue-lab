@@ -146,27 +146,27 @@ async def test_loopback_identity_rpc_is_scoped_and_signed():
         LoopbackRpcBinding(port=443, secret=SECRET, methods=_IDENTITY_METHODS)
 
 
-async def test_the_broker_loopback_keeps_v1_until_its_ingress_has_a_replay_guard():
+async def test_the_broker_loopback_signs_the_same_v2_id_the_identity_lane_does():
     import httpx
     from app.com2_connector_websocket import LoopbackRpcBinding, _BROKER_METHODS
 
     def handler(request):
-        # The broker ingress has no replay memory, so a v2 request would be a
-        # 503 rpc_replay_guard_unavailable instead of a served call.
-        assert "x-padiem-service-id" not in request.headers
+        # The broker ingress consumes the signed id (#6424), so this lane signs
+        # one exactly like the identity lane; the round trip is proven against
+        # the real broker app in test_broker_loopback_v2_roundtrip_261031.py.
         signed = b"\n".join((
-            b"v1", b"POST", request.url.path.encode("utf-8"),
+            b"v2", b"POST", request.url.path.encode("utf-8"),
             request.headers["x-padiem-service-at"].encode("ascii"),
+            request.headers["x-padiem-service-id"].encode("utf-8"),
             request.content,
         ))
-        expected = "v1=" + hmac.new(SECRET.encode(), signed, hashlib.sha256).hexdigest()
+        expected = "v2=" + hmac.new(SECRET.encode(), signed, hashlib.sha256).hexdigest()
         assert request.headers["x-padiem-service-proof"] == expected
         return httpx.Response(200, json={"ok": True})
 
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
         binding = LoopbackRpcBinding(
             port=8799, secret=SECRET, methods=_BROKER_METHODS, client=client,
-            sign_request_id=False,
         )
         assert await binding.get_enrollment_binding({"challenge_id": CHALLENGE}) == {"ok": True}
 

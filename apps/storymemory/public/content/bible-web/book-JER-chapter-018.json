@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:018",
+  "unit_ordinal": 763,
+  "unit_label": "JER 18",
+  "book_code": "JER",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:18:1",
+      "sequence": 19386,
+      "chapter_label": "JER 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "The word which came to Jeremiah from the LORD, saying,",
+      "ko": "여호와께로부터 예레미야에게 임한 말씀에 가라사대",
+      "source_text_hash": "cd07308ac8a710018154d9464f24c2cd2f0a375e892e396b2ce052f516417389",
+      "translation_text_hash": "68898f513b07c5eef187372ea8e0b38a147c5d0628614172799255eea53a73ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께로부터 예레미야에게 임한 말씀에 가라사대"
+      ],
+      "raw_text_hashes": [
+        "68898f513b07c5eef187372ea8e0b38a147c5d0628614172799255eea53a73ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:2",
+      "sequence": 19387,
+      "chapter_label": "JER 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "“Arise, and go down to the potter’s house, and there I will cause you to hear my words.”",
+      "ko": "너는 일어나 토기장이의 집으로 내려가라 내가 거기서 내 말을 네게 들리리라 하시기로",
+      "source_text_hash": "5eba0c6a4838c51eab1821d16376ae2fc3cb1f9e27c7e3e9581b975a0f65a403",
+      "translation_text_hash": "4ab822d2be85ba158513278f6a915b6be5d6b88d6efb415c1a70e40034e0374f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 일어나 토기장이의 집으로 내려가라 내가 거기서 내 말을 네게 들리리라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "4ab822d2be85ba158513278f6a915b6be5d6b88d6efb415c1a70e40034e0374f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:3",
+      "sequence": 19388,
+      "chapter_label": "JER 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "Then I went down to the potter’s house, and behold, he was making something on the wheels.",
+      "ko": "내가 토기장이의 집으로 내려가서 본즉 그가 녹로로 일을 하는데",
+      "source_text_hash": "8063e3e75032ce02f31f7150429c485982e8e073809923e6277251d98102e241",
+      "translation_text_hash": "a23543ba1ecfb5c012df6eb0ef491489af9331639e46c6b09eed01f8e6c86414",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 토기장이의 집으로 내려가서 본즉 그가 녹로로 일을 하는데"
+      ],
+      "raw_text_hashes": [
+        "a23543ba1ecfb5c012df6eb0ef491489af9331639e46c6b09eed01f8e6c86414"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:4",
+      "sequence": 19389,
+      "chapter_label": "JER 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "When the vessel that he made of the clay was marred in the hand of the potter, he made it again another vessel, as seemed good to the potter to make it.",
+      "ko": "진흙으로 만든 그릇이 토기장이의 손에서 파상하매 그가 그것으로 자기 의견에 선한대로 다른 그릇을 만들더라",
+      "source_text_hash": "a1956624862671c0a9e4e1e91bc86eeb947f26c7dd86b6b78505e45d77cc84d1",
+      "translation_text_hash": "89ce084ecdaf45948c1ca996fab202174645bef321a6c23748ee09a5a4ccbff0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진흙으로 만든 그릇이 토기장이의 손에서 파상하매 그가 그것으로 자기 의견에 선한대로 다른 그릇을 만들더라"
+      ],
+      "raw_text_hashes": [
+        "89ce084ecdaf45948c1ca996fab202174645bef321a6c23748ee09a5a4ccbff0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:5",
+      "sequence": 19390,
+      "chapter_label": "JER 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "Then the LORD’s word came to me, saying,",
+      "ko": "때에 여호와의 말씀이 내게 임하니라 가라사대",
+      "source_text_hash": "f6d95515d1ca6f58e19208de17095f2350084db431e1d848311001bc3487a207",
+      "translation_text_hash": "7b03d21cdf58856551943468f9d1cae82265a923e993a88123c88edef2c27e03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호와의 말씀이 내게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "7b03d21cdf58856551943468f9d1cae82265a923e993a88123c88edef2c27e03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:6",
+      "sequence": 19391,
+      "chapter_label": "JER 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "“House of Israel, can’t I do with you as this potter?” says the LORD. “Behold, as the clay in the potter’s hand, so are you in my hand, house of Israel.",
+      "ko": "나 여호와가 이르노라 이스라엘 족속아 이 토기장이의 하는것 같이 내가 능히 너희에게 행하지 못하겠느냐 이스라엘 족속아 진흙이 토기장이의 손에 있음 같이 너희가 내 손에 있느니라",
+      "source_text_hash": "0766c84a5380fd21290e4ccb66172faebe75dff636a39021c67e0923e4bb979e",
+      "translation_text_hash": "e97aeb9af01c4522074b621f3a9717f9dfc1446a4d5ab5f1357cf74924cc41f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이르노라 이스라엘 족속아 이 토기장이의 하는것 같이 내가 능히 너희에게 행하지 못하겠느냐 이스라엘 족속아 진흙이 토기장이의 손에 있음 같이 너희가 내 손에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "e97aeb9af01c4522074b621f3a9717f9dfc1446a4d5ab5f1357cf74924cc41f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:7",
+      "sequence": 19392,
+      "chapter_label": "JER 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "At the instant I speak concerning a nation, and concerning a kingdom, to pluck up and to break down and to destroy it,",
+      "ko": "내가 언제든지 어느 민족이나 국가를 뽑거나 파하거나 멸하리라 한다고 하자",
+      "source_text_hash": "fc2b57cf6aa44e694c3b582c9afb2f1c11183efcdd596a6da82d4be5331d03f4",
+      "translation_text_hash": "3df08f630e580b9567ff5f9a5b0d44c4d5b0f39a682229f40404deb771ccc224",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 언제든지 어느 민족이나 국가를 뽑거나 파하거나 멸하리라 한다고 하자"
+      ],
+      "raw_text_hashes": [
+        "3df08f630e580b9567ff5f9a5b0d44c4d5b0f39a682229f40404deb771ccc224"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:8",
+      "sequence": 19393,
+      "chapter_label": "JER 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "if that nation, concerning which I have spoken, turns from their evil, I will repent of the evil that I thought to do to them.",
+      "ko": "만일 나의 말한 그 민족이 그 악에서 돌이키면 내가 그에게 내리기로 생각하였던 재앙에 대하여 뜻을 돌이키겠고",
+      "source_text_hash": "c195c19bc496776442c80d9dfc8e9baa94be1b0a82d26efd88beac65f45580ae",
+      "translation_text_hash": "b5322ef6e716076e3c7f95cc90b41875833ebfb5090d5273861e30094492daa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 나의 말한 그 민족이 그 악에서 돌이키면 내가 그에게 내리기로 생각하였던 재앙에 대하여 뜻을 돌이키겠고"
+      ],
+      "raw_text_hashes": [
+        "b5322ef6e716076e3c7f95cc90b41875833ebfb5090d5273861e30094492daa0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:9",
+      "sequence": 19394,
+      "chapter_label": "JER 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "At the instant I speak concerning a nation, and concerning a kingdom, to build and to plant it,",
+      "ko": "내가 언제든지 어느 민족이나 국가를 건설하거나 심으리라 한다고 하자",
+      "source_text_hash": "3bde3964437468930580c496783c489025fbc4b74361ab61dc457a273a168c77",
+      "translation_text_hash": "b4847b316b618f588ad3d5c1f933ae07fbe2b02d045e82f34dcd81cdd86637cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 언제든지 어느 민족이나 국가를 건설하거나 심으리라 한다고 하자"
+      ],
+      "raw_text_hashes": [
+        "b4847b316b618f588ad3d5c1f933ae07fbe2b02d045e82f34dcd81cdd86637cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:10",
+      "sequence": 19395,
+      "chapter_label": "JER 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "if they do that which is evil in my sight, that they don’t obey my voice, then I will repent of the good with which I said I would benefit them.",
+      "ko": "만일 그들이 나 보기에 악한 것을 행하여 내 목소리를 청종치 아니하면 내가 그에게 유익케 하리라 한 선에 대하여 뜻을 돌이키리라",
+      "source_text_hash": "d3e29ca065d0dd696b32539ded1ef7e2bf22bd9ee5d5fad2cda429238d69121b",
+      "translation_text_hash": "5ad7b5b5bcc432b1e8bca4bab708768808a9ab9265b9d8e5d74244d823bc58af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그들이 나 보기에 악한 것을 행하여 내 목소리를 청종치 아니하면 내가 그에게 유익케 하리라 한 선에 대하여 뜻을 돌이키리라"
+      ],
+      "raw_text_hashes": [
+        "5ad7b5b5bcc432b1e8bca4bab708768808a9ab9265b9d8e5d74244d823bc58af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:11",
+      "sequence": 19396,
+      "chapter_label": "JER 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "“Now therefore, speak to the men of Judah, and to the inhabitants of Jerusalem, saying, ‘The LORD says: “Behold, I frame evil against you, and devise a plan against you. Everyone return from his evil way now, and amend your ways and your doings.”’",
+      "ko": "그러므로 이제 너는 유다 사람들과 예루살렘 거민들에게 말하여 이르기를 여호와의 말씀에 보라 내가 너희에게 재앙을 내리며 계책을 베풀어 너희를 치려하노니 너희는 각기 악한 길에서 돌이키며 너희 길과 행위를 선하게 하라 하셨다 하라",
+      "source_text_hash": "6edf8d0faf422e82d33b770d100526637bfbea2073fc03402863fa9b2da6cc03",
+      "translation_text_hash": "ae487ffa5ae98bde7a7c8f8bb7a70422bab4f6ac235250f3092598c533f49301",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이제 너는 유다 사람들과 예루살렘 거민들에게 말하여 이르기를 여호와의 말씀에 보라 내가 너희에게 재앙을 내리며 계책을 베풀어 너희를 치려하노니 너희는 각기 악한 길에서 돌이키며 너희 길과 행위를 선하게 하라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "ae487ffa5ae98bde7a7c8f8bb7a70422bab4f6ac235250f3092598c533f49301"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:12",
+      "sequence": 19397,
+      "chapter_label": "JER 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "But they say, ‘It is in vain; for we will walk after our own plans, and we will each follow the stubbornness of his evil heart.’”",
+      "ko": "그러나 그들이 말하기를 이는 헛된 말이라 우리는 우리의 도모대로 행하며 우리는 각기 악한 마음의 강퍅한대로 행하리라 하느니라",
+      "source_text_hash": "e48a0fd822838ab81393c0f7d8be5c6c0d0b481416d0459b7ff9425f8218a7cf",
+      "translation_text_hash": "7913f7b725069d1fb5da7ebfc5ce66adf25c812f7f2d63529442b232051b0a20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그들이 말하기를 이는 헛된 말이라 우리는 우리의 도모대로 행하며 우리는 각기 악한 마음의 강퍅한대로 행하리라 하느니라"
+      ],
+      "raw_text_hashes": [
+        "7913f7b725069d1fb5da7ebfc5ce66adf25c812f7f2d63529442b232051b0a20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:13",
+      "sequence": 19398,
+      "chapter_label": "JER 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore the LORD says: “Ask now among the nations, ‘Who has heard such things?’ The virgin of Israel has done a very horrible thing.",
+      "ko": "그러므로 나 여호와가 이같이 말하노라 너희는 누가 이러한 일을 들었는가 열방 중에 물어보라 처녀 이스라엘이 심히 가증한 일을 행하였도다",
+      "source_text_hash": "a30785dcfbaaf5d4e1335c34d25f5af8f0cc1ed8f56b590963143d9d26cbd65b",
+      "translation_text_hash": "194288636102e43b455c0b2e2bc1481284af06ddde0f03ff7ff94b1a85272346",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 여호와가 이같이 말하노라 너희는 누가 이러한 일을 들었는가 열방 중에 물어보라 처녀 이스라엘이 심히 가증한 일을 행하였도다"
+      ],
+      "raw_text_hashes": [
+        "194288636102e43b455c0b2e2bc1481284af06ddde0f03ff7ff94b1a85272346"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:14",
+      "sequence": 19399,
+      "chapter_label": "JER 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "Will the snow of Lebanon fail from the rock of the field? Will the cold waters that flow down from afar be dried up?",
+      "ko": "레바논의 눈이 어찌 들의 반석을 떠나겠으며 원방에서 흘러내리는 찬물이 어찌 마르겠느냐",
+      "source_text_hash": "87d078aa78032b0469f0c49959a8207d2a9457c997be9364e3b8155a21e21c66",
+      "translation_text_hash": "93c7bbe64b30902b91d49137eafc8d26c4a1d2a9087e3640343dfeb3d18ef950",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레바논의 눈이 어찌 들의 반석을 떠나겠으며 원방에서 흘러내리는 찬물이 어찌 마르겠느냐"
+      ],
+      "raw_text_hashes": [
+        "93c7bbe64b30902b91d49137eafc8d26c4a1d2a9087e3640343dfeb3d18ef950"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:15",
+      "sequence": 19400,
+      "chapter_label": "JER 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "For my people have forgotten me. They have burned incense to false gods. They have been made to stumble in their ways in the ancient paths, to walk in byways, in a way not built up,",
+      "ko": "대저 내 백성은 나를 잊고 허무한 것에게 분향하거니와 이러한 것들은 그들로 그 길 곧 그 옛길에서 넘어지게 하며 곁길 곧 닦지 아니한 길로 행케 하여",
+      "source_text_hash": "bdc2e44ace8c2ea8ec822ee63cf95a180f36dc90e7acc27f7c75b874c44957ec",
+      "translation_text_hash": "581aaa848f8df0bb1a9f45049c7fbfc8c8a84dc3366c034fc234bdce0be79ff7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 내 백성은 나를 잊고 허무한 것에게 분향하거니와 이러한 것들은 그들로 그 길 곧 그 옛길에서 넘어지게 하며 곁길 곧 닦지 아니한 길로 행케 하여"
+      ],
+      "raw_text_hashes": [
+        "581aaa848f8df0bb1a9f45049c7fbfc8c8a84dc3366c034fc234bdce0be79ff7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:16",
+      "sequence": 19401,
+      "chapter_label": "JER 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "to make their land an astonishment, and a perpetual hissing. Everyone who passes by it will be astonished, and shake his head.",
+      "ko": "그들의 땅으로 놀랍고 영영한 치소가 되게 하리니 그리로 지나는 자마다 놀라서 그 머리를 흔들리라",
+      "source_text_hash": "cc3331ee058c680013b2ba59c9f0118dce909d4c9114eaa0015c5c4fcf6cc9c4",
+      "translation_text_hash": "ca410060913be5518316fd5aec5d78ef503dfa5ffe50152f81e4279ac4db6016",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 땅으로 놀랍고 영영한 치소가 되게 하리니 그리로 지나는 자마다 놀라서 그 머리를 흔들리라"
+      ],
+      "raw_text_hashes": [
+        "ca410060913be5518316fd5aec5d78ef503dfa5ffe50152f81e4279ac4db6016"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:17",
+      "sequence": 19402,
+      "chapter_label": "JER 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "I will scatter them as with an east wind before the enemy. I will show them the back, and not the face, in the day of their calamity.",
+      "ko": "내가 그들을 그 원수 앞에서 흩기를 동풍으로 함 같이 할 것이며 그들의 재난의 날에는 내가 그들에게 등을 보이고 얼굴을 보이지 아니하리라",
+      "source_text_hash": "ed2e2b76b91bdf37fbb04a58167f46fef0897e27e160bd6bad0e5dce9b6eff7a",
+      "translation_text_hash": "4b03672252050a2023b9418ad7d763e51df206931a78ed38b54529e08a14ecb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 그 원수 앞에서 흩기를 동풍으로 함 같이 할 것이며 그들의 재난의 날에는 내가 그들에게 등을 보이고 얼굴을 보이지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "4b03672252050a2023b9418ad7d763e51df206931a78ed38b54529e08a14ecb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:18",
+      "sequence": 19403,
+      "chapter_label": "JER 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "Then they said, “Come! Let’s devise plans against Jeremiah; for the law won’t perish from the priest, nor counsel from the wise, nor the word from the prophet. Come, and let’s strike him with the tongue, and let’s not give heed to any of his words.”",
+      "ko": "그들이 말하기를 오라 우리가 꾀를 내어 예레미야를 치자 제사장에게서 율법이, 지혜로운 자에게서 모략이, 선지자에게서 말씀이 끊어지지 아니할 것이니 오라 우리가 혀로 그를 치고 그의 아무 말에도 주의치 말자 하나이다",
+      "source_text_hash": "7f310431352cc5fdc5e76e9360235c08f6f69eb47346974ef7272a003a5e3d64",
+      "translation_text_hash": "598839bfb2d7d6bc1440338758f6792220cfdd05c3f2400af607311428d0122d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 말하기를 오라 우리가 꾀를 내어 예레미야를 치자 제사장에게서 율법이, 지혜로운 자에게서 모략이, 선지자에게서 말씀이 끊어지지 아니할 것이니 오라 우리가 혀로 그를 치고 그의 아무 말에도 주의치 말자 하나이다"
+      ],
+      "raw_text_hashes": [
+        "598839bfb2d7d6bc1440338758f6792220cfdd05c3f2400af607311428d0122d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:19",
+      "sequence": 19404,
+      "chapter_label": "JER 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "Give heed to me, LORD, and listen to the voice of those who contend with me.",
+      "ko": "여호와여 나를 돌아 보사 나로 더불어 다투는 그들의 목소리를 들어보옵소서",
+      "source_text_hash": "e9ae64bde0acbf8253c0dfd1201900666e86f26771c539eac4a5eeff4c782c6f",
+      "translation_text_hash": "f6e127bfc92f4d3d63710f68555c89bc4ae714f45d61d175523c0946f9f1aaca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나를 돌아 보사 나로 더불어 다투는 그들의 목소리를 들어보옵소서"
+      ],
+      "raw_text_hashes": [
+        "f6e127bfc92f4d3d63710f68555c89bc4ae714f45d61d175523c0946f9f1aaca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:20",
+      "sequence": 19405,
+      "chapter_label": "JER 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "Should evil be recompensed for good? For they have dug a pit for my soul. Remember how I stood before you to speak good for them, to turn away your wrath from them.",
+      "ko": "어찌 악으로 선을 갚으리이까마는 그들이 나의 생명을 해하려고 구덩이를 팠나이다 내가 주의 분노를 그들에게서 돌이키려 하고 주의 앞에 서서 그들을 위하여 선한 말씀한 것을 기억하옵소서",
+      "source_text_hash": "6c64187feea0b2c9a0720b43183033d94693d75341b7261f291e71b4416736a3",
+      "translation_text_hash": "f7fcf1eaba641b32a2775e4e1c8cb66a391c5d3c140e365c11f52c4ff18b2fb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌 악으로 선을 갚으리이까마는 그들이 나의 생명을 해하려고 구덩이를 팠나이다 내가 주의 분노를 그들에게서 돌이키려 하고 주의 앞에 서서 그들을 위하여 선한 말씀한 것을 기억하옵소서"
+      ],
+      "raw_text_hashes": [
+        "f7fcf1eaba641b32a2775e4e1c8cb66a391c5d3c140e365c11f52c4ff18b2fb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:21",
+      "sequence": 19406,
+      "chapter_label": "JER 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "Therefore deliver up their children to the famine, and give them over to the power of the sword. Let their wives become childless and widows. Let their men be killed and their young men struck by the sword in battle.",
+      "ko": "그러하온즉 그들의 자녀를 기근에 내어주시며 그들을 칼의 세력에 붙이시며 그들의 아내들은 자녀를 잃고 과부가 되며 그 장정은 사망을 당하며 그 청년은 전장에서 칼을 맞게 하시며",
+      "source_text_hash": "d08c0fd0e8bbc082797a8355a1cb3f6ee7e732f717b5fbb80f1f39138b62204e",
+      "translation_text_hash": "85a29026753b26175e697de40799a939c565eee705d26100c842b2dfdc252a5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하온즉 그들의 자녀를 기근에 내어주시며 그들을 칼의 세력에 붙이시며 그들의 아내들은 자녀를 잃고 과부가 되며 그 장정은 사망을 당하며 그 청년은 전장에서 칼을 맞게 하시며"
+      ],
+      "raw_text_hashes": [
+        "85a29026753b26175e697de40799a939c565eee705d26100c842b2dfdc252a5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:22",
+      "sequence": 19407,
+      "chapter_label": "JER 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "Let a cry be heard from their houses when you bring a troop suddenly on them; for they have dug a pit to take me and hidden snares for my feet.",
+      "ko": "주께서 군대로 졸지에 그들에게 임하게 하사 그들의 집에서 부르짖음이 들리게 하옵소서 이는 그들이 나를 취하려고 구덩이를 팠고 내 발을 빠치려고 올무를 베풀었음이니이다",
+      "source_text_hash": "e988f52d526fbede2dfd66c5e9fa728a76373659d705faec9f63a0eded48de5c",
+      "translation_text_hash": "dcf2120b5eef29526d5dcffd257f18e01e677d7aba7a0dafc266cd503c24e56e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 군대로 졸지에 그들에게 임하게 하사 그들의 집에서 부르짖음이 들리게 하옵소서 이는 그들이 나를 취하려고 구덩이를 팠고 내 발을 빠치려고 올무를 베풀었음이니이다"
+      ],
+      "raw_text_hashes": [
+        "dcf2120b5eef29526d5dcffd257f18e01e677d7aba7a0dafc266cd503c24e56e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:18:23",
+      "sequence": 19408,
+      "chapter_label": "JER 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "Yet, LORD, you know all their counsel against me to kill me. Don’t forgive their iniquity. Don’t blot out their sin from your sight, Let them be overthrown before you. Deal with them in the time of your anger.",
+      "ko": "여호와여 그들이 나를 죽이려 하는 계략을 주께서 다 아시오니 그 악을 사하지 마시며 그 죄를 주의 목전에서 도말치 마시고 그들로 주의 앞에 넘어지게 하시되 주의 노하시는 때에 이같이 그들에게 행하옵소서",
+      "source_text_hash": "3aa91971652648a4cfb0a258569345ac5fa149b24be6b0aa9d2e7165f9ad6ee4",
+      "translation_text_hash": "b26b41f6bcc0a58d0ec8a0bd5d9a906548b98211857ce1e4611d83dc135a9e37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 그들이 나를 죽이려 하는 계략을 주께서 다 아시오니 그 악을 사하지 마시며 그 죄를 주의 목전에서 도말치 마시고 그들로 주의 앞에 넘어지게 하시되 주의 노하시는 때에 이같이 그들에게 행하옵소서"
+      ],
+      "raw_text_hashes": [
+        "b26b41f6bcc0a58d0ec8a0bd5d9a906548b98211857ce1e4611d83dc135a9e37"
+      ]
+    }
+  ]
+}

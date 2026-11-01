@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LAM:chapter:005",
+  "unit_ordinal": 802,
+  "unit_label": "LAM 5",
+  "book_code": "LAM",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LAM:5:1",
+      "sequence": 20444,
+      "chapter_label": "LAM 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Remember, LORD, what has come on us. Look, and see our reproach.",
+      "ko": "여호와여 우리의 당한 것을 기억하시고 우리의 수욕을 감찰하옵소서",
+      "source_text_hash": "0f7e87c5ce3392a859cf2ca036260bd891a1542fe027ff2a2b5d08271ce7dafd",
+      "translation_text_hash": "36e89c17377c9317c69bc37fc58c34b4f6b154c0b4a8aefe9bb5b2fbb64ce3dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 우리의 당한 것을 기억하시고 우리의 수욕을 감찰하옵소서"
+      ],
+      "raw_text_hashes": [
+        "36e89c17377c9317c69bc37fc58c34b4f6b154c0b4a8aefe9bb5b2fbb64ce3dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:2",
+      "sequence": 20445,
+      "chapter_label": "LAM 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "Our inheritance has been turned over to strangers, our houses to aliens.",
+      "ko": "우리 기업이 외인에게, 우리 집들도 외인에게 돌아갔나이다",
+      "source_text_hash": "34f6eab6a34b2097fb42e7195c91da70242021e89a38f17c1ead819174d91a20",
+      "translation_text_hash": "1139e300cdff6ca1b7642b4297ad7c804a0d56d7cbd7a9a2f1cae71faf24a8f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 기업이 외인에게, 우리 집들도 외인에게 돌아갔나이다"
+      ],
+      "raw_text_hashes": [
+        "1139e300cdff6ca1b7642b4297ad7c804a0d56d7cbd7a9a2f1cae71faf24a8f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:3",
+      "sequence": 20446,
+      "chapter_label": "LAM 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "We are orphans and fatherless. Our mothers are as widows.",
+      "ko": "우리는 아비 없는 외로운 자식이오며 우리 어미는 과부 같으니",
+      "source_text_hash": "90060249dac875dd5940ed5a9b960d59a8574024cd45836c053ddd4b53ac1a36",
+      "translation_text_hash": "f40d9f8a0b97ba2fba18b794345099c404857c5fc66d484d9428eb633c4e8457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 아비 없는 외로운 자식이오며 우리 어미는 과부 같으니"
+      ],
+      "raw_text_hashes": [
+        "f40d9f8a0b97ba2fba18b794345099c404857c5fc66d484d9428eb633c4e8457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:4",
+      "sequence": 20447,
+      "chapter_label": "LAM 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "We must pay for water to drink. Our wood is sold to us.",
+      "ko": "우리가 은을 주고 물을 마시며 값을 주고 섶을 얻으오며",
+      "source_text_hash": "a09841050de098e69b9bfc073b4d95362157b0b203e1f122bb9663f44e0a4c63",
+      "translation_text_hash": "d6c2752edc7ee435615790f79e6d900928e18ed4e1c6174e4e9db4eeacb3edeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 은을 주고 물을 마시며 값을 주고 섶을 얻으오며"
+      ],
+      "raw_text_hashes": [
+        "d6c2752edc7ee435615790f79e6d900928e18ed4e1c6174e4e9db4eeacb3edeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:5",
+      "sequence": 20448,
+      "chapter_label": "LAM 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Our pursuers are on our necks. We are weary, and have no rest.",
+      "ko": "우리를 쫓는 자는 우리 목을 눌렀사오니 우리가 곤비하여 쉴수 없나이다",
+      "source_text_hash": "fbb881388e09e19266ff003abb48a03382385e8857d5146054be9bdeac7e4262",
+      "translation_text_hash": "9ed9ed20a3015a7c79bc788cb77bfc0aaa39a2deb10db3c750816cb631d364b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 쫓는 자는 우리 목을 눌렀사오니 우리가 곤비하여 쉴수 없나이다"
+      ],
+      "raw_text_hashes": [
+        "9ed9ed20a3015a7c79bc788cb77bfc0aaa39a2deb10db3c750816cb631d364b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:6",
+      "sequence": 20449,
+      "chapter_label": "LAM 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "We have given our hands to the Egyptians, and to the Assyrians, to be satisfied with bread.",
+      "ko": "우리가 애굽 사람과 앗수르 사람과 악수하고 양식을 얻어 배불리고자 하였나이다",
+      "source_text_hash": "a58312a35fff81a85edaf3670dd34d2ee1e5d79a265c9043e7beb1c2b2b185b4",
+      "translation_text_hash": "5c493b3557466d570ea9d0d898ae74fe0eb68c5675f0232c95f0141833ddf32c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 애굽 사람과 앗수르 사람과 악수하고 양식을 얻어 배불리고자 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "5c493b3557466d570ea9d0d898ae74fe0eb68c5675f0232c95f0141833ddf32c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:7",
+      "sequence": 20450,
+      "chapter_label": "LAM 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Our fathers sinned, and are no more. We have borne their iniquities.",
+      "ko": "우리 열조는 범죄하고 없어졌고 우리는 그 죄악을 담당하였나이다",
+      "source_text_hash": "682d7a8812df5ea3ef5fb4cf3782dd0b5bf8a4974583193f7146290290d34305",
+      "translation_text_hash": "9f6730353afcc35074c04eca94cca2bed691fc155bd2fd0e99a7087cfab36064",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 열조는 범죄하고 없어졌고 우리는 그 죄악을 담당하였나이다"
+      ],
+      "raw_text_hashes": [
+        "9f6730353afcc35074c04eca94cca2bed691fc155bd2fd0e99a7087cfab36064"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:8",
+      "sequence": 20451,
+      "chapter_label": "LAM 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "Servants rule over us. There is no one to deliver us out of their hand.",
+      "ko": "종들이 우리를 관할함이여 그 손에서 건져낼 자가 없나이다",
+      "source_text_hash": "a0cceeebe6809722d2f540517d9d2dbbe0136a3ebf2b954f344e32a71bb641ee",
+      "translation_text_hash": "6acf9b1a755507964279476486336ced40f8d2207203cd875235d70437af433e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종들이 우리를 관할함이여 그 손에서 건져낼 자가 없나이다"
+      ],
+      "raw_text_hashes": [
+        "6acf9b1a755507964279476486336ced40f8d2207203cd875235d70437af433e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:9",
+      "sequence": 20452,
+      "chapter_label": "LAM 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "We get our bread at the peril of our lives, because of the sword in the wilderness.",
+      "ko": "광야에는 칼이 있으므로 죽기를 무릅써야 양식을 얻사오니",
+      "source_text_hash": "53a6e43da317a65b7c86af872501727eadca61775c2ddf3619baf4389fd5da5d",
+      "translation_text_hash": "e4ff7b019bf127db1a92349ff76d476d5488c7a519a5ffa97adea10339864f27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야에는 칼이 있으므로 죽기를 무릅써야 양식을 얻사오니"
+      ],
+      "raw_text_hashes": [
+        "e4ff7b019bf127db1a92349ff76d476d5488c7a519a5ffa97adea10339864f27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:10",
+      "sequence": 20453,
+      "chapter_label": "LAM 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "Our skin is black like an oven, because of the burning heat of famine.",
+      "ko": "주림의 열기로 인하여 우리의 피부가 아궁이처럼 검으니이다",
+      "source_text_hash": "746e0f8c0a9c6b554ef8e884de20f53db3ded96fb231c8e59f4cca8bdfc1927b",
+      "translation_text_hash": "dcee7770026830b03144f6c7d164585fa72d8c71fcbf7979a8e6eb1b32ebfef4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주림의 열기로 인하여 우리의 피부가 아궁이처럼 검으니이다"
+      ],
+      "raw_text_hashes": [
+        "dcee7770026830b03144f6c7d164585fa72d8c71fcbf7979a8e6eb1b32ebfef4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:11",
+      "sequence": 20454,
+      "chapter_label": "LAM 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "They ravished the women in Zion, the virgins in the cities of Judah.",
+      "ko": "대적이 시온에서 부녀들을, 유다 각 성에서 처녀들을 욕보였나이다",
+      "source_text_hash": "a42100015f95746cfc6898cbd9457e3b4b17a354b18d54d1b1a00c28b3c3c278",
+      "translation_text_hash": "19618106ad3acf7cf0ce08fd873e4a44acf6342243abbfc12c8425eced5dabae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대적이 시온에서 부녀들을, 유다 각 성에서 처녀들을 욕보였나이다"
+      ],
+      "raw_text_hashes": [
+        "19618106ad3acf7cf0ce08fd873e4a44acf6342243abbfc12c8425eced5dabae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:12",
+      "sequence": 20455,
+      "chapter_label": "LAM 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "Princes were hanged up by their hands. The faces of elders were not honored.",
+      "ko": "방백들의 손이 매어달리며 장로들의 얼굴이 존경을 받지 못하나이다",
+      "source_text_hash": "1d06fcc85759a101137805e1c1c2f37ad5b0e15da6ad1917fb70b86b52f2c0a5",
+      "translation_text_hash": "748d2cd8c16d9d5bc90bdaf13f4bd01af00bcd5facc43f2ef376601e9a9fd9a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들의 손이 매어달리며 장로들의 얼굴이 존경을 받지 못하나이다"
+      ],
+      "raw_text_hashes": [
+        "748d2cd8c16d9d5bc90bdaf13f4bd01af00bcd5facc43f2ef376601e9a9fd9a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:13",
+      "sequence": 20456,
+      "chapter_label": "LAM 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "The young men carry millstones. The children stumbled under loads of wood.",
+      "ko": "소년들이 맷돌을 지오며 아이들이 섶을 지다가 엎드러지오며",
+      "source_text_hash": "edcf1261c8890be79f4a40037bc9d41abe7e11bf5a63518bf9fdfe4691a44b27",
+      "translation_text_hash": "7f427f8f69f74c45f42240b5d8944684876f3e8a02ab2ec0dcd58dde2134c6f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소년들이 맷돌을 지오며 아이들이 섶을 지다가 엎드러지오며"
+      ],
+      "raw_text_hashes": [
+        "7f427f8f69f74c45f42240b5d8944684876f3e8a02ab2ec0dcd58dde2134c6f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:14",
+      "sequence": 20457,
+      "chapter_label": "LAM 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "The elders have ceased from the gate, and the young men from their music.",
+      "ko": "노인은 다시 성문에 앉지 못하며 소년은 다시 노래하지 못하나이다",
+      "source_text_hash": "e63abc830c5927b2823a011c2fd52c77b73c6609daf6fdd12b7975406a2aef4a",
+      "translation_text_hash": "c9dfc63583d2f0908473a1e60509b19e1e0377ecafee0f3b18fdb47dfd6ccd64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노인은 다시 성문에 앉지 못하며 소년은 다시 노래하지 못하나이다"
+      ],
+      "raw_text_hashes": [
+        "c9dfc63583d2f0908473a1e60509b19e1e0377ecafee0f3b18fdb47dfd6ccd64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:15",
+      "sequence": 20458,
+      "chapter_label": "LAM 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "The joy of our heart has ceased. Our dance is turned into mourning.",
+      "ko": "우리 마음에 희락이 그쳤고 우리의 무도가 변하여 애통이 되었사오며",
+      "source_text_hash": "728bc0e9a222337b33b06924da9778e91737f4c4034255e05e8f01c85bb5b44d",
+      "translation_text_hash": "76382b5737f81ccc9d7d18c4d924147d9e08526f01af2adebc8be2b7de5abf25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 마음에 희락이 그쳤고 우리의 무도가 변하여 애통이 되었사오며"
+      ],
+      "raw_text_hashes": [
+        "76382b5737f81ccc9d7d18c4d924147d9e08526f01af2adebc8be2b7de5abf25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:16",
+      "sequence": 20459,
+      "chapter_label": "LAM 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "The crown has fallen from our head. Woe to us, for we have sinned!",
+      "ko": "우리 머리에서 면류관이 떨어졌사오니 오호라 우리의 범죄함을 인함이니이다",
+      "source_text_hash": "efa19d4bc895b4e762d083d7ac9123c7721be530c1937a24ce5da4d8ab7d23bf",
+      "translation_text_hash": "d853db329d20325bd17f475cb3d12691b922680b1db09b6277b710e6f87cbedf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 머리에서 면류관이 떨어졌사오니 오호라 우리의 범죄함을 인함이니이다"
+      ],
+      "raw_text_hashes": [
+        "d853db329d20325bd17f475cb3d12691b922680b1db09b6277b710e6f87cbedf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:17",
+      "sequence": 20460,
+      "chapter_label": "LAM 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "For this our heart is faint. For these things our eyes are dim:",
+      "ko": "이러므로 우리 마음이 피곤하고 이러므로 우리 눈이 어두우며",
+      "source_text_hash": "8e99d88d461324528505dbaba2354f649a25eea9601507208955d8207bed8c6d",
+      "translation_text_hash": "46bbf9a8deeda060ce779216936ba6fe0d58ab8e6b5c181d70188d53e78ceaa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리 마음이 피곤하고 이러므로 우리 눈이 어두우며"
+      ],
+      "raw_text_hashes": [
+        "46bbf9a8deeda060ce779216936ba6fe0d58ab8e6b5c181d70188d53e78ceaa0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:18",
+      "sequence": 20461,
+      "chapter_label": "LAM 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "for the mountain of Zion, which is desolate. The foxes walk on it.",
+      "ko": "시온산이 황무하여 여우가 거기서 노나이다",
+      "source_text_hash": "848f5dc71ef404ef9706bc7c222289a263fba3a37ae735100925bdebac8e3735",
+      "translation_text_hash": "f09fb7e0eb6a8e8b19a98c31c7057cd6bc801773fdf3d5b8cda94c0eae939c1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온산이 황무하여 여우가 거기서 노나이다"
+      ],
+      "raw_text_hashes": [
+        "f09fb7e0eb6a8e8b19a98c31c7057cd6bc801773fdf3d5b8cda94c0eae939c1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:19",
+      "sequence": 20462,
+      "chapter_label": "LAM 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "You, LORD, remain forever. Your throne is from generation to generation.",
+      "ko": "여호와여 주는 영원히 계시오며 주의 보좌는 세세에 미치나이다",
+      "source_text_hash": "9905ac3efd895c43a4ea84938e8283d68d97f606595883f5af06f7f4546f984c",
+      "translation_text_hash": "43ec3af2373f1ca029f3ecca5809d68f01873a8eed2b01e30f02344c154f675d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주는 영원히 계시오며 주의 보좌는 세세에 미치나이다"
+      ],
+      "raw_text_hashes": [
+        "43ec3af2373f1ca029f3ecca5809d68f01873a8eed2b01e30f02344c154f675d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:20",
+      "sequence": 20463,
+      "chapter_label": "LAM 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "Why do you forget us forever, and forsake us for so long a time?",
+      "ko": "주께서 어찌하여 우리를 영원히 잊으시오며 우리를 이같이 오래 버리시나이까",
+      "source_text_hash": "6fb22436d6cd997beb2c44ab440fea3523e7661a3e9885a363dca2b11d00ff00",
+      "translation_text_hash": "051f658363dc26c4a236aeff3109fab0beb2e74117867962aa3a7fab816d89f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 어찌하여 우리를 영원히 잊으시오며 우리를 이같이 오래 버리시나이까"
+      ],
+      "raw_text_hashes": [
+        "051f658363dc26c4a236aeff3109fab0beb2e74117867962aa3a7fab816d89f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:21",
+      "sequence": 20464,
+      "chapter_label": "LAM 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "Turn us to yourself, LORD, and we will be turned. Renew our days as of old.",
+      "ko": "여호와여 우리를 주께로 돌이키소서 그리하시면 우리가 주께로 돌아 가겠사오니 우리의 날을 다시 새롭게 하사 옛적 같게 하옵소서",
+      "source_text_hash": "63803adc0d8d95d6851062874b1f1cca4de6bf70f48368ff38eb2accf778ef47",
+      "translation_text_hash": "17b58f010830dc9af9bf8d3e9885d4530a5cb649df290f3654658a747b26475f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 우리를 주께로 돌이키소서 그리하시면 우리가 주께로 돌아 가겠사오니 우리의 날을 다시 새롭게 하사 옛적 같게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "17b58f010830dc9af9bf8d3e9885d4530a5cb649df290f3654658a747b26475f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:5:22",
+      "sequence": 20465,
+      "chapter_label": "LAM 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "LAM",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "But you have utterly rejected us. You are very angry against us.",
+      "ko": "주께서 우리를 아주 버리셨사오며 우리에게 진노하심이 특심하시니이다",
+      "source_text_hash": "f2c08283ad22fec0ae7096fda3e278f31640dd5a295ea3d9e0e970018f53ce46",
+      "translation_text_hash": "fc453be38a9e15aac435d1a8c481ba76403a73494c486b347ca1a14f5ccff007",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 우리를 아주 버리셨사오며 우리에게 진노하심이 특심하시니이다"
+      ],
+      "raw_text_hashes": [
+        "fc453be38a9e15aac435d1a8c481ba76403a73494c486b347ca1a14f5ccff007"
+      ]
+    }
+  ]
+}

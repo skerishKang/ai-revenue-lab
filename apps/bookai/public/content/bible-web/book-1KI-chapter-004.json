@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:004",
+  "unit_ordinal": 295,
+  "unit_label": "1KI 4",
+  "book_code": "1KI",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:4:1",
+      "sequence": 8846,
+      "chapter_label": "1KI 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "King Solomon was king over all Israel.",
+      "ko": "솔로몬왕이 온 이스라엘의 왕이 되었고",
+      "source_text_hash": "7cbfad7ca91d1bd4888ea0ddf62d5a9fbbf9e7e5fa84b144adcc386556ba12a8",
+      "translation_text_hash": "3a544f843940be78a10c766c831315e635501717a42665b1bc99bae506500c55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕이 온 이스라엘의 왕이 되었고"
+      ],
+      "raw_text_hashes": [
+        "3a544f843940be78a10c766c831315e635501717a42665b1bc99bae506500c55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:2",
+      "sequence": 8847,
+      "chapter_label": "1KI 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "These were the princes whom he had: Azariah the son of Zadok, the priest;",
+      "ko": "그의 신하들은 이러하니라 사독의 아들 아사리아는 제사장이요",
+      "source_text_hash": "76725a45b96c2c750081f38add93c9f4000b9c5cc7466c88c77847eae3f503c2",
+      "translation_text_hash": "31ed6ef918db369221805bf42bab10766fb336c87f1005b0928653656fcaeb31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 신하들은 이러하니라 사독의 아들 아사리아는 제사장이요"
+      ],
+      "raw_text_hashes": [
+        "31ed6ef918db369221805bf42bab10766fb336c87f1005b0928653656fcaeb31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:3",
+      "sequence": 8848,
+      "chapter_label": "1KI 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Elihoreph and Ahijah, the sons of Shisha, scribes; Jehoshaphat the son of Ahilud, the recorder;",
+      "ko": "시사의 아들 엘리호렙과 아히야는 서기관이요 아힐룻의 아들 여호사밧은 사관이요",
+      "source_text_hash": "cbaf052897c1e0eb34146cf5e77c25acaa56b4bfd32b2c23b8bfdff21bc9b947",
+      "translation_text_hash": "a43670039e99460edfaa4438b41e8b23a2bafb910af76669b9c14db9f0af6db3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시사의 아들 엘리호렙과 아히야는 서기관이요 아힐룻의 아들 여호사밧은 사관이요"
+      ],
+      "raw_text_hashes": [
+        "a43670039e99460edfaa4438b41e8b23a2bafb910af76669b9c14db9f0af6db3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:4",
+      "sequence": 8849,
+      "chapter_label": "1KI 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Benaiah the son of Jehoiada was over the army; Zadok and Abiathar were priests;",
+      "ko": "여호야다의 아들 브나야는 군대장관이요 사독과 아비아달은 제사장이요",
+      "source_text_hash": "cf51d4c14af44224cfc8e7c136f2cd720039b3a95cbb594e0eeceee7fca68fc3",
+      "translation_text_hash": "88698d357091b7ea8a6a77ac913d8f1843dde97338c2fbc1bbb88c3f8cedc34b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다의 아들 브나야는 군대장관이요 사독과 아비아달은 제사장이요"
+      ],
+      "raw_text_hashes": [
+        "88698d357091b7ea8a6a77ac913d8f1843dde97338c2fbc1bbb88c3f8cedc34b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:5",
+      "sequence": 8850,
+      "chapter_label": "1KI 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Azariah the son of Nathan was over the officers; Zabud the son of Nathan was chief minister, the king’s friend;",
+      "ko": "나단의 아들 아사리아는 관리장이요 나단의 아들 사붓은 대신이니 왕의 벗이요",
+      "source_text_hash": "775ee54dbeb8a82cda8214deb2143de1d48b1ec4796257cbfd1e3b87e71b5592",
+      "translation_text_hash": "ff1861375d6f243065ad701337d6faa5acba7397b9d90ddc283748a7fbee7cdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나단의 아들 아사리아는 관리장이요 나단의 아들 사붓은 대신이니 왕의 벗이요"
+      ],
+      "raw_text_hashes": [
+        "ff1861375d6f243065ad701337d6faa5acba7397b9d90ddc283748a7fbee7cdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:6",
+      "sequence": 8851,
+      "chapter_label": "1KI 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Ahishar was over the household; and Adoniram the son of Abda was over the men subject to forced labor.",
+      "ko": "아히살은 궁내대신이요 압다의 아들 아도니람은 감역관이더라",
+      "source_text_hash": "768958de24256f402e6b423a7f07b7322e0818157daceaad0b128ec448eb25ab",
+      "translation_text_hash": "c88c9d04b7238d6d71958968c9327699a035445aeec2e117e9f35c94748458e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히살은 궁내대신이요 압다의 아들 아도니람은 감역관이더라"
+      ],
+      "raw_text_hashes": [
+        "c88c9d04b7238d6d71958968c9327699a035445aeec2e117e9f35c94748458e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:7",
+      "sequence": 8852,
+      "chapter_label": "1KI 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Solomon had twelve officers over all Israel, who provided food for the king and his household. Each man had to make provision for a month in the year.",
+      "ko": "솔로몬이 또 온 이스라엘 위에 열 두 관장을 두매 그 사람들이 왕과 왕실을 위하여 식물을 예비하되 각기 일년에 한달씩 식물을 예비하였으니",
+      "source_text_hash": "9972440e0323a23281546fa7009c90ec43d93523da661ee6318cea8787eb8d87",
+      "translation_text_hash": "36c01b52c4476ef90ef94fac544ac0b556597776eac9bac038392e6438caa6fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 또 온 이스라엘 위에 열 두 관장을 두매 그 사람들이 왕과 왕실을 위하여 식물을 예비하되 각기 일년에 한달씩 식물을 예비하였으니"
+      ],
+      "raw_text_hashes": [
+        "36c01b52c4476ef90ef94fac544ac0b556597776eac9bac038392e6438caa6fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:8",
+      "sequence": 8853,
+      "chapter_label": "1KI 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "These are their names: Ben Hur, in the hill country of Ephraim;",
+      "ko": "그 이름은 이러하니라 에브라임 산지에는 벤훌이요",
+      "source_text_hash": "53fef7370e3bfc3b8d014c593fb7bdbb93643542e07fb87c67975ada2a9c1a2a",
+      "translation_text_hash": "4b92870052ff718ff616b9429bdcde1a5707d5d7ca3356fd8aadbe407ac40101",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이름은 이러하니라 에브라임 산지에는 벤훌이요"
+      ],
+      "raw_text_hashes": [
+        "4b92870052ff718ff616b9429bdcde1a5707d5d7ca3356fd8aadbe407ac40101"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:9",
+      "sequence": 8854,
+      "chapter_label": "1KI 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Ben Deker, in Makaz, in Shaalbim, Beth Shemesh, and Elon Beth Hanan;",
+      "ko": "마가스와 사알빔과 벧세메스와 엘론벧하난에는 벤데겔이요",
+      "source_text_hash": "39993e4ba3942fa4a11c5e17bc0e1bb324744940f2a49958f07642ee5d06a20b",
+      "translation_text_hash": "d5f6442dd0987a98bfbafe03b61ebe1ec53ead81d3f5c170314067e897d3c703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마가스와 사알빔과 벧세메스와 엘론벧하난에는 벤데겔이요"
+      ],
+      "raw_text_hashes": [
+        "d5f6442dd0987a98bfbafe03b61ebe1ec53ead81d3f5c170314067e897d3c703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:10",
+      "sequence": 8855,
+      "chapter_label": "1KI 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Ben Hesed, in Arubboth (Socoh and all the land of Hepher belonged to him);",
+      "ko": "아룹봇에는 벤헤셋이니 소고와 헤벨 온 땅을 저가 주관하였으며",
+      "source_text_hash": "2ba8015dc95b3f2c3ef97ae507e59f42edd396bf941850e3629008672337525b",
+      "translation_text_hash": "012e1719490af87dab14754c8cab5670a2ce0adb991cddaade3d666372db777f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아룹봇에는 벤헤셋이니 소고와 헤벨 온 땅을 저가 주관하였으며"
+      ],
+      "raw_text_hashes": [
+        "012e1719490af87dab14754c8cab5670a2ce0adb991cddaade3d666372db777f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:11",
+      "sequence": 8856,
+      "chapter_label": "1KI 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Ben Abinadab, in all the height of Dor (he had Taphath, Solomon’s daughter, as wife);",
+      "ko": "돌 높은 땅 온 지방에는 벤아비나답이니 저는 솔로몬의 딸 다밧으로 아내를 삼았으며",
+      "source_text_hash": "1529bde54c68bbc384362ebb5afb0a89fedf1e2078b47b905d0712288ab69133",
+      "translation_text_hash": "9d7d12537859af91bf58833d68100a6f4aa01cf85fca71c50e28e2c988a2fed3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌 높은 땅 온 지방에는 벤아비나답이니 저는 솔로몬의 딸 다밧으로 아내를 삼았으며"
+      ],
+      "raw_text_hashes": [
+        "9d7d12537859af91bf58833d68100a6f4aa01cf85fca71c50e28e2c988a2fed3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:12",
+      "sequence": 8857,
+      "chapter_label": "1KI 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Baana the son of Ahilud, in Taanach and Megiddo, and all Beth Shean which is beside Zarethan, beneath Jezreel, from Beth Shean to Abel Meholah, as far as beyond Jokmeam;",
+      "ko": "다아낙과 므깃도와 이스르엘 아래 사르단 가에 있는 벧스안 온 땅은 아힐룻의 아들 바아나가 맡았으니 벧스안에서부터 아벨므홀라에 이르고 욕느암 바깥까지 미쳤으며",
+      "source_text_hash": "98da1fc37773579314c48938c6eb05de4d0aacfbfd0b0ad5a7ea1764fa7a7f08",
+      "translation_text_hash": "07496fbcfafdd372fba5c53131dfd1b2ce528f8452f885ea6a7c71ee0671eef5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다아낙과 므깃도와 이스르엘 아래 사르단 가에 있는 벧스안 온 땅은 아힐룻의 아들 바아나가 맡았으니 벧스안에서부터 아벨므홀라에 이르고 욕느암 바깥까지 미쳤으며"
+      ],
+      "raw_text_hashes": [
+        "07496fbcfafdd372fba5c53131dfd1b2ce528f8452f885ea6a7c71ee0671eef5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:13",
+      "sequence": 8858,
+      "chapter_label": "1KI 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Ben Geber, in Ramoth Gilead (the towns of Jair the son of Manasseh, which are in Gilead, belonged to him; and the region of Argob, which is in Bashan, sixty great cities with walls and bronze bars, belonged to him);",
+      "ko": "길르앗 라못에는 벤게벨이니 저는 길르앗에 있는 므낫세의 아들 야일의 모든 촌을 주관하였고 또 바산 아르곱 땅의 성벽과 놋빗장 있는 큰 성읍 육십을 주관하였으며",
+      "source_text_hash": "dbe4dca809e47876f2c2ba3763348eadf75d4ec84e1895a6e39e3f35f00a4bf9",
+      "translation_text_hash": "88ebc0c75e04f07e1b40062209e371cc39de015d223fbd5ef992b3a2b4ec6135",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗 라못에는 벤게벨이니 저는 길르앗에 있는 므낫세의 아들 야일의 모든 촌을 주관하였고 또 바산 아르곱 땅의 성벽과 놋빗장 있는 큰 성읍 육십을 주관하였으며"
+      ],
+      "raw_text_hashes": [
+        "88ebc0c75e04f07e1b40062209e371cc39de015d223fbd5ef992b3a2b4ec6135"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:14",
+      "sequence": 8859,
+      "chapter_label": "1KI 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Ahinadab the son of Iddo, in Mahanaim;",
+      "ko": "마하나임에는 잇도의 아들 아히나답이요",
+      "source_text_hash": "936c0d763d0a606dfcdfaf5162dd67e15d063a829bb09f5a1bbfa810c1bf57bf",
+      "translation_text_hash": "f9c9f40e0b70408919b30a17407187a4330818dbfb121df8d797c6d141ea4ad4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마하나임에는 잇도의 아들 아히나답이요"
+      ],
+      "raw_text_hashes": [
+        "f9c9f40e0b70408919b30a17407187a4330818dbfb121df8d797c6d141ea4ad4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:15",
+      "sequence": 8860,
+      "chapter_label": "1KI 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Ahimaaz, in Naphtali (he also took Basemath the daughter of Solomon as wife);",
+      "ko": "납달리에는 아히마아스니 저는 솔로몬의 딸 바스맛으로 아내를 삼았으며",
+      "source_text_hash": "d642845b7fba6a3233548b48de7110b6bb6d9bbe3bb3df16bfd263849cb83123",
+      "translation_text_hash": "f940d8101ecc8fbce4bb570bdd3585f93d5d02c8e7687da32a86f12f75de1c93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리에는 아히마아스니 저는 솔로몬의 딸 바스맛으로 아내를 삼았으며"
+      ],
+      "raw_text_hashes": [
+        "f940d8101ecc8fbce4bb570bdd3585f93d5d02c8e7687da32a86f12f75de1c93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:16",
+      "sequence": 8861,
+      "chapter_label": "1KI 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "Baana the son of Hushai, in Asher and Bealoth;",
+      "ko": "아셀과 아롯에는 후새의 아들 바아나요",
+      "source_text_hash": "ac4763952dfa68a5ed10f4848460eecdab995f6b76f6e309331155b49f612b38",
+      "translation_text_hash": "dd647904ec303bef3850c9743db7d197d7f2ae6a8abed2c3e10e53909825837a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀과 아롯에는 후새의 아들 바아나요"
+      ],
+      "raw_text_hashes": [
+        "dd647904ec303bef3850c9743db7d197d7f2ae6a8abed2c3e10e53909825837a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:17",
+      "sequence": 8862,
+      "chapter_label": "1KI 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "Jehoshaphat the son of Paruah, in Issachar;",
+      "ko": "잇사갈에는 바루아의 아들 여호사밧이요",
+      "source_text_hash": "85c4b98dcb6587aa6cb472a582a782f6a68b0ce45611f5590ecbfc90eaed1e98",
+      "translation_text_hash": "0b1465fc56ed2c3c260544368a3d6334f078f5c00c31059a81a1d2ca631cafad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈에는 바루아의 아들 여호사밧이요"
+      ],
+      "raw_text_hashes": [
+        "0b1465fc56ed2c3c260544368a3d6334f078f5c00c31059a81a1d2ca631cafad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:18",
+      "sequence": 8863,
+      "chapter_label": "1KI 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Shimei the son of Ela, in Benjamin;",
+      "ko": "베냐민에는 엘라의 아들 시므이요",
+      "source_text_hash": "dc52d8c3b3947020f58c4381231fa5fd95bf2c9d3aad07d8b864f857bb3c1b79",
+      "translation_text_hash": "b2de7ee7fbafc5a7e70caead5c7635295773ffd2ebfb2a76a52ad0ae0d699beb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민에는 엘라의 아들 시므이요"
+      ],
+      "raw_text_hashes": [
+        "b2de7ee7fbafc5a7e70caead5c7635295773ffd2ebfb2a76a52ad0ae0d699beb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:19",
+      "sequence": 8864,
+      "chapter_label": "1KI 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "Geber the son of Uri, in the land of Gilead, the country of Sihon king of the Amorites and of Og king of Bashan; and he was the only officer who was in the land.",
+      "ko": "아모리 사람의 왕 시혼과 바산 왕 옥의 나라 길르앗 땅에는 우리의 아들 게벨이니 그 땅에서는 저 한 사람만 관장이 되었더라",
+      "source_text_hash": "37db62c9ed650055afcf9112560518880a93ae530804d8edcc7280e93eb71924",
+      "translation_text_hash": "e0e50c1b20880a162fa062bdbf962d69791ceda5694d61a1914aece67c549f0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아모리 사람의 왕 시혼과 바산 왕 옥의 나라 길르앗 땅에는 우리의 아들 게벨이니 그 땅에서는 저 한 사람만 관장이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "e0e50c1b20880a162fa062bdbf962d69791ceda5694d61a1914aece67c549f0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:20",
+      "sequence": 8865,
+      "chapter_label": "1KI 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Judah and Israel were numerous as the sand which is by the sea in multitude, eating and drinking and making merry.",
+      "ko": "유다와 이스라엘의 인구가 바닷가의 모래 같이 많게 되매 먹고 마시며 즐거워하였으며",
+      "source_text_hash": "815ed37b3f72f7d8abf42c58e8021c57e1fe9f821ad3c1639a6809bc5666a8ef",
+      "translation_text_hash": "154ee02c35b813a1142b39ad2fd638af88f4706c97543681329fc99162fc9cf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다와 이스라엘의 인구가 바닷가의 모래 같이 많게 되매 먹고 마시며 즐거워하였으며"
+      ],
+      "raw_text_hashes": [
+        "154ee02c35b813a1142b39ad2fd638af88f4706c97543681329fc99162fc9cf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:21",
+      "sequence": 8866,
+      "chapter_label": "1KI 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Solomon ruled over all the kingdoms from the River to the land of the Philistines, and to the border of Egypt. They brought tribute and served Solomon all the days of his life.",
+      "ko": "솔로몬이 하수에서부터 블레셋 사람의 땅에 이르기까지와 애굽 지경에 미치기까지의 모든 나라를 다스리므로 그 나라들이 공을 바쳐 솔로몬의 사는 동안에 섬겼더라",
+      "source_text_hash": "d7914d034af4457672ec88e6b5f7c07e14e9dd302da7e8472f951f996839c0b6",
+      "translation_text_hash": "833ff5c612366356281cb7509607951d989135f5ab4cd2690768e77c23a18ad7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 하수에서부터 블레셋 사람의 땅에 이르기까지와 애굽 지경에 미치기까지의 모든 나라를 다스리므로 그 나라들이 공을 바쳐 솔로몬의 사는 동안에 섬겼더라"
+      ],
+      "raw_text_hashes": [
+        "833ff5c612366356281cb7509607951d989135f5ab4cd2690768e77c23a18ad7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:22",
+      "sequence": 8867,
+      "chapter_label": "1KI 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "Solomon’s provision for one day was thirty cors of fine flour, sixty measures of meal,",
+      "ko": "솔로몬의 일일분 식물은 가는 밀가루가 삼십석이요 굵은 밀가루가 육십석이요",
+      "source_text_hash": "0907eba0214e31a845e65e61ce70a9a9fa58902132d89682b92be55ba3a0b607",
+      "translation_text_hash": "a78cd4ecd7296f679136e20227e28964dd791173aa9fa7ca0ef9c486a8280adf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 일일분 식물은 가는 밀가루가 삼십석이요 굵은 밀가루가 육십석이요"
+      ],
+      "raw_text_hashes": [
+        "a78cd4ecd7296f679136e20227e28964dd791173aa9fa7ca0ef9c486a8280adf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:23",
+      "sequence": 8868,
+      "chapter_label": "1KI 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "ten head of fat cattle, twenty head of cattle out of the pastures, and one hundred sheep, in addition to deer, gazelles, roebucks, and fattened fowl.",
+      "ko": "살찐 소가 열이요 초장의 소가 스물이요 양이 일백이며 그 외에 수사슴과 노루와 암사슴과 살찐 새들이었더라",
+      "source_text_hash": "8833eb17f1232ba7d78c4df409dd4d67033835f998efafc08975ebaba13558d8",
+      "translation_text_hash": "35fb516a4c90d999ee124e0c3d515574078eba66cd6afaf241f93f8ac950a9cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살찐 소가 열이요 초장의 소가 스물이요 양이 일백이며 그 외에 수사슴과 노루와 암사슴과 살찐 새들이었더라"
+      ],
+      "raw_text_hashes": [
+        "35fb516a4c90d999ee124e0c3d515574078eba66cd6afaf241f93f8ac950a9cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:24",
+      "sequence": 8869,
+      "chapter_label": "1KI 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "For he had dominion over all on this side of the River, from Tiphsah even to Gaza, over all the kings on this side of the River; and he had peace on all sides around him.",
+      "ko": "솔로몬이 하수 이편을 딥사에서부터 가사까지 모두 다스리므로 하수 이편의 모든 왕이 다 관할한바 되매 저가 사방에 둘린 민족과 평화가 있었으니",
+      "source_text_hash": "0fd1399923d8dee15fbcb4fa0599985ae851552b2ecc3f729c4c89b22ad60d32",
+      "translation_text_hash": "ea7b8793b88e3e7d32fe55d0753b082f453f95868d33a2c02e291a0c6be22d92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 하수 이편을 딥사에서부터 가사까지 모두 다스리므로 하수 이편의 모든 왕이 다 관할한바 되매 저가 사방에 둘린 민족과 평화가 있었으니"
+      ],
+      "raw_text_hashes": [
+        "ea7b8793b88e3e7d32fe55d0753b082f453f95868d33a2c02e291a0c6be22d92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:25",
+      "sequence": 8870,
+      "chapter_label": "1KI 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "Judah and Israel lived safely, every man under his vine and under his fig tree, from Dan even to Beersheba, all the days of Solomon.",
+      "ko": "솔로몬의 사는 동안에 유다와 이스라엘이 단에서부터 브엘세바에 이르기까지 각기 포도나무 아래와 무화과나무 아래서 안연히 살았더라",
+      "source_text_hash": "d83f1c958308c37a0e81f052a7536427dbb4e2fcf1cd963ba5cb5573734d7cdb",
+      "translation_text_hash": "8a1d0a7ae0e84d21b5b8fe414d8ce64e4459a500461240e30cc51d5abc7ee9c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 사는 동안에 유다와 이스라엘이 단에서부터 브엘세바에 이르기까지 각기 포도나무 아래와 무화과나무 아래서 안연히 살았더라"
+      ],
+      "raw_text_hashes": [
+        "8a1d0a7ae0e84d21b5b8fe414d8ce64e4459a500461240e30cc51d5abc7ee9c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:26",
+      "sequence": 8871,
+      "chapter_label": "1KI 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "Solomon had forty thousand stalls of horses for his chariots, and twelve thousand horsemen.",
+      "ko": "솔로몬의 병거의 말의 외양간이 사만이요 마병이 일만 이천이며",
+      "source_text_hash": "c9ed101b1b9729956de94549de470632d4cdc3b5d431cb246c6cc75b9f21b55a",
+      "translation_text_hash": "454f2ddced02d89b24235562894f4ea22ffea5668ff657a79d11776edbada10b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 병거의 말의 외양간이 사만이요 마병이 일만 이천이며"
+      ],
+      "raw_text_hashes": [
+        "454f2ddced02d89b24235562894f4ea22ffea5668ff657a79d11776edbada10b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:27",
+      "sequence": 8872,
+      "chapter_label": "1KI 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "Those officers provided food for King Solomon, and for all who came to King Solomon’s table, every man in his month. They let nothing be lacking.",
+      "ko": "그 관장들은 각각 자기 달에 솔로몬왕과 왕의 상에 참예하는 모든 자를 위하여 먹을 것을 예비하여 부족함이 없게 하였으며",
+      "source_text_hash": "53b8bcfe14aa8714c3ffc22e04a4d0be2364c330b20d39b39d4be98c3bd8a46c",
+      "translation_text_hash": "a3390fbf4a906b5458bf065af804ed9c914d368e9d2f66dd1a7108073813aede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 관장들은 각각 자기 달에 솔로몬왕과 왕의 상에 참예하는 모든 자를 위하여 먹을 것을 예비하여 부족함이 없게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "a3390fbf4a906b5458bf065af804ed9c914d368e9d2f66dd1a7108073813aede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:28",
+      "sequence": 8873,
+      "chapter_label": "1KI 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "They also brought barley and straw for the horses and swift steeds to the place where the officers were, each man according to his duty.",
+      "ko": "또 저희가 각기 직무를 따라 말과 준마에게 먹일 보리와 꼴을 그 말의 있는 곳으로 가져왔더라",
+      "source_text_hash": "bb3b4e4cf3f883e20a10217ab6a16b16b42337abbb74747a202728eb8312a229",
+      "translation_text_hash": "3fc846e2d361297371541565e87a2f3f07a3af49850e2b4eb650bfe5bba13546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희가 각기 직무를 따라 말과 준마에게 먹일 보리와 꼴을 그 말의 있는 곳으로 가져왔더라"
+      ],
+      "raw_text_hashes": [
+        "3fc846e2d361297371541565e87a2f3f07a3af49850e2b4eb650bfe5bba13546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:29",
+      "sequence": 8874,
+      "chapter_label": "1KI 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "God gave Solomon abundant wisdom, understanding, and breadth of mind like the sand that is on the seashore.",
+      "ko": "하나님이 솔로몬에게 지혜와 총명을 심히 많이 주시고 또 넓은 마음을 주시되 바닷가의 모래 같이 하시니",
+      "source_text_hash": "b8cd175ef8f8d75812690ef4b69ed37870aa799aff7d465246413ef0e4e72fcb",
+      "translation_text_hash": "45f80ce6c25cf15a14f7969cfafcf731fc65e6eee0535019eb1b5185df161078",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 솔로몬에게 지혜와 총명을 심히 많이 주시고 또 넓은 마음을 주시되 바닷가의 모래 같이 하시니"
+      ],
+      "raw_text_hashes": [
+        "45f80ce6c25cf15a14f7969cfafcf731fc65e6eee0535019eb1b5185df161078"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:30",
+      "sequence": 8875,
+      "chapter_label": "1KI 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "Solomon’s wisdom excelled the wisdom of all the children of the east and all the wisdom of Egypt.",
+      "ko": "솔로몬의 지혜가 동양 모든 사람의 지혜와 애굽의 모든 지혜보다 뛰어난지라",
+      "source_text_hash": "d6268b6192f7098980833ad4c0f3da67ac6ea279da7cfacf7f6710ed07ca33f2",
+      "translation_text_hash": "ee6a841f02d36e15fb752e8861bca91c5abda221580c48ce1aee574c252d0500",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 지혜가 동양 모든 사람의 지혜와 애굽의 모든 지혜보다 뛰어난지라"
+      ],
+      "raw_text_hashes": [
+        "ee6a841f02d36e15fb752e8861bca91c5abda221580c48ce1aee574c252d0500"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:31",
+      "sequence": 8876,
+      "chapter_label": "1KI 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "For he was wiser than all men—wiser than Ethan the Ezrahite, Heman, Calcol, and Darda, the sons of Mahol; and his fame was in all the nations all around.",
+      "ko": "저는 모든 사람보다 지혜로와서 예스라 사람 에단과 마홀의 아들 헤만과 갈골과 다르다보다 나으므로 그 이름이 사방 모든 나라에 들렸더라",
+      "source_text_hash": "b706bfafc3aa44b4b207f4cff5c7b9b00ff2a6dc2d59b348f09ea0a8b41b6252",
+      "translation_text_hash": "0088abf78f7bdc3e03a139b74d6c279e823bb71ee925d3c21225b94f6ced16e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 모든 사람보다 지혜로와서 예스라 사람 에단과 마홀의 아들 헤만과 갈골과 다르다보다 나으므로 그 이름이 사방 모든 나라에 들렸더라"
+      ],
+      "raw_text_hashes": [
+        "0088abf78f7bdc3e03a139b74d6c279e823bb71ee925d3c21225b94f6ced16e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:32",
+      "sequence": 8877,
+      "chapter_label": "1KI 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "He spoke three thousand proverbs, and his songs numbered one thousand five.",
+      "ko": "저가 잠언 삼천을 말하였고 그 노래는 일천 다섯이며",
+      "source_text_hash": "7ddb110cbe53582dbdb147c51e51927bcddf9455b9b31d6c1c0a5d873db86805",
+      "translation_text_hash": "cbd0827a8bfd57afd9ef42e801c1229a1ad70b37e24504ba68eabbb389d9eff1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 잠언 삼천을 말하였고 그 노래는 일천 다섯이며"
+      ],
+      "raw_text_hashes": [
+        "cbd0827a8bfd57afd9ef42e801c1229a1ad70b37e24504ba68eabbb389d9eff1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:33",
+      "sequence": 8878,
+      "chapter_label": "1KI 4",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 33
+        }
+      ],
+      "en": "He spoke of trees, from the cedar that is in Lebanon even to the hyssop that grows out of the wall; he also spoke of animals, of birds, of creeping things, and of fish.",
+      "ko": "저가 또 초목을 논하되 레바논 백향목으로부터 담에 나는 우슬초까지 하고 저가 또 짐승과 새와 기어 다니는 것과 물고기를 논한지라",
+      "source_text_hash": "a64d72632df7e6ffb425d7c14b2e0168cdfd9a7fb3aeb36d4e310819e30748cb",
+      "translation_text_hash": "126d845aeb1e4fe321d4384301719dd9c7d79f834d3f8e1f9536c40377bf467a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 초목을 논하되 레바논 백향목으로부터 담에 나는 우슬초까지 하고 저가 또 짐승과 새와 기어 다니는 것과 물고기를 논한지라"
+      ],
+      "raw_text_hashes": [
+        "126d845aeb1e4fe321d4384301719dd9c7d79f834d3f8e1f9536c40377bf467a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:4:34",
+      "sequence": 8879,
+      "chapter_label": "1KI 4",
+      "verse_label": "34",
+      "locator": {
+        "book": "1KI",
+        "chapter": 4,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 4,
+          "verse": 34
+        }
+      ],
+      "en": "People of all nations came to hear the wisdom of Solomon, sent by all kings of the earth who had heard of his wisdom.",
+      "ko": "모든 민족 중에서 솔로몬의 지혜의 소문을 들은 천하 모든 왕 중에서 그 지혜를 들으러 왔더라",
+      "source_text_hash": "0dbfeada824af60f82019f39d0d91a7457ff182e2656624ba0ddfab489923bdf",
+      "translation_text_hash": "d9206fa05746e64f61ee40b9b216f2e2f47218cc8a6bc4baa7be572299fe4376",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 민족 중에서 솔로몬의 지혜의 소문을 들은 천하 모든 왕 중에서 그 지혜를 들으러 왔더라"
+      ],
+      "raw_text_hashes": [
+        "d9206fa05746e64f61ee40b9b216f2e2f47218cc8a6bc4baa7be572299fe4376"
+      ]
+    }
+  ]
+}

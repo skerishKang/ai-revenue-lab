@@ -1,0 +1,1261 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:049",
+  "unit_ordinal": 794,
+  "unit_label": "JER 49",
+  "book_code": "JER",
+  "chapter_number": 49,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:49:1",
+      "sequence": 20129,
+      "chapter_label": "JER 49",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 1
+        }
+      ],
+      "en": "Of the children of Ammon. The LORD says: “Has Israel no sons? Has he no heir? Why then does Malcam possess Gad, and his people dwell in its cities?",
+      "ko": "암몬 자손에 대한 말씀이라 여호와께서 이같이 말씀하시되 이스라엘이 무자하냐 상속자가 없느냐 말감이 갓을 점령하며 그 백성이 그 성읍들에 거함은 어찜이뇨",
+      "source_text_hash": "be837fe1c279345c2a6865e986d3dc9b9cab6eccb0a3219be2c14dbe866d0cca",
+      "translation_text_hash": "b9a7defc5f654d702a8cb2612797b6f74e2384258315453d5e192e230ef475ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암몬 자손에 대한 말씀이라 여호와께서 이같이 말씀하시되 이스라엘이 무자하냐 상속자가 없느냐 말감이 갓을 점령하며 그 백성이 그 성읍들에 거함은 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "b9a7defc5f654d702a8cb2612797b6f74e2384258315453d5e192e230ef475ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:2",
+      "sequence": 20130,
+      "chapter_label": "JER 49",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 2
+        }
+      ],
+      "en": "Therefore behold, the days come,” says the LORD, “that I will cause an alarm of war to be heard against Rabbah of the children of Ammon, and it will become a desolate heap, and her daughters will be burned with fire; then Israel will possess those who possessed him,” says the LORD.",
+      "ko": "그러므로 나 여호와가 말하노라 보라 날이 이르리니 내가 전쟁 소리로 암몬 자손의 랍바에 들리게 할 것이라 랍바는 거친 무더기가 되겠고 그 촌락들은 불에 탈 것이며 그 때에 이스라엘은 자기를 점령하였던 자를 점령하리라 여호와의 말이니라",
+      "source_text_hash": "edae9685dd789ae53164885cade0e3691e0497a49caac9ef67c264de6bcee712",
+      "translation_text_hash": "d14e90fb9c8039249d1e688b0eab9ed737b8809eb07f71aa56a9bc98f7d326cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 여호와가 말하노라 보라 날이 이르리니 내가 전쟁 소리로 암몬 자손의 랍바에 들리게 할 것이라 랍바는 거친 무더기가 되겠고 그 촌락들은 불에 탈 것이며 그 때에 이스라엘은 자기를 점령하였던 자를 점령하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "d14e90fb9c8039249d1e688b0eab9ed737b8809eb07f71aa56a9bc98f7d326cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:3",
+      "sequence": 20131,
+      "chapter_label": "JER 49",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 3
+        }
+      ],
+      "en": "“Wail, Heshbon, for Ai is laid waste! Cry, you daughters of Rabbah! Clothe yourself in sackcloth. Lament, and run back and forth among the fences; for Malcam will go into captivity, his priests and his princes together.",
+      "ko": "헤스본아 애곡할지어다 아이가 황폐하였도다 너희 랍바의 딸들아 부르짖을지어다 굵은 베를 감고 애통하며 울타리 가운데서 앞 뒤로 달릴지어다 말감과 그 제사장들과 그 방백들이 다 사로잡혀 가리로다",
+      "source_text_hash": "541e0611a883c660ce320afd0ca3cd5bb656e2b62170971f5a2dde653c0c8838",
+      "translation_text_hash": "76523dce7c367b6531d7f4c02d6648b6ab2ac34330eec464de7c7dfdad43beeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본아 애곡할지어다 아이가 황폐하였도다 너희 랍바의 딸들아 부르짖을지어다 굵은 베를 감고 애통하며 울타리 가운데서 앞 뒤로 달릴지어다 말감과 그 제사장들과 그 방백들이 다 사로잡혀 가리로다"
+      ],
+      "raw_text_hashes": [
+        "76523dce7c367b6531d7f4c02d6648b6ab2ac34330eec464de7c7dfdad43beeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:4",
+      "sequence": 20132,
+      "chapter_label": "JER 49",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 4
+        }
+      ],
+      "en": "Why do you boast in the valleys, your flowing valley, backsliding daughter? You trusted in her treasures, saying, ‘Who will come to me?’",
+      "ko": "타락한 딸아 어찌하여 골짜기 곧 네 흐르는 골짜기로 자랑하느냐 네가 어찌하여 재물을 의뢰하여 말하기를 누가 내게 오리요 하느냐",
+      "source_text_hash": "46d31e81a5ac745ce3307b5e7241553fc2fc7577a941e05bf7537e6d6e86e320",
+      "translation_text_hash": "15ac0cfeb12db1f413e6554a7f72d01825765d8eef4f467120d2001f53e1b111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "타락한 딸아 어찌하여 골짜기 곧 네 흐르는 골짜기로 자랑하느냐 네가 어찌하여 재물을 의뢰하여 말하기를 누가 내게 오리요 하느냐"
+      ],
+      "raw_text_hashes": [
+        "15ac0cfeb12db1f413e6554a7f72d01825765d8eef4f467120d2001f53e1b111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:5",
+      "sequence": 20133,
+      "chapter_label": "JER 49",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 5
+        }
+      ],
+      "en": "Behold, I will bring a terror on you,” says the Lord, GOD of Armies, “from all who are around you. All of you will be driven completely out, and there will be no one to gather together the fugitives.",
+      "ko": "주 만군의 여호와가 말하노라 보라 내가 두려움을 네 사방에서 네게 오게 하리니 너희 각 사람이 쫓겨서 바로 나갈 것이요 도망하는 자들을 모을 자가 없으리라",
+      "source_text_hash": "85e8a5ee7d84bba0c62fe4f611c00b9f7ffc0d256da8af6e118bc0565d9adeb8",
+      "translation_text_hash": "3b162d0ba43e143ee770be1bbaa9d16fde9494ff4f3c88e43a6d4481e9ca6769",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 만군의 여호와가 말하노라 보라 내가 두려움을 네 사방에서 네게 오게 하리니 너희 각 사람이 쫓겨서 바로 나갈 것이요 도망하는 자들을 모을 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "3b162d0ba43e143ee770be1bbaa9d16fde9494ff4f3c88e43a6d4481e9ca6769"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:6",
+      "sequence": 20134,
+      "chapter_label": "JER 49",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 6
+        }
+      ],
+      "en": "“But afterward I will reverse the captivity of the children of Ammon,” says the LORD.",
+      "ko": "그러나 그 후에 내가 암몬 자손의 포로로 돌아 오게 하리라 여호와의 말이니라 하시니라",
+      "source_text_hash": "627a947f96a1900f2c681d6f836c7e7b07821ab812ba492ebbc4c8d8da9299ca",
+      "translation_text_hash": "d9eb24aa1e44f418904267a5ed78173bf1574bd457152614faf5079f9642dd91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 후에 내가 암몬 자손의 포로로 돌아 오게 하리라 여호와의 말이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d9eb24aa1e44f418904267a5ed78173bf1574bd457152614faf5079f9642dd91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:7",
+      "sequence": 20135,
+      "chapter_label": "JER 49",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 7
+        }
+      ],
+      "en": "Of Edom, the LORD of Armies says: “Is wisdom no more in Teman? Has counsel perished from the prudent? Has their wisdom vanished?",
+      "ko": "에돔에 대한 말씀이라 만군의 여호와께서 이같이 말씀하시되 데만에 다시는 지혜가 없게 되었느냐 명철한 자에게 모략이 끊어졌느냐 그들의 지혜가 없어졌느냐",
+      "source_text_hash": "610e77660cb3915de90fcd1b81ff0c5375806509576ecf857a19fa80268fb899",
+      "translation_text_hash": "092e5392455f6b8324251cfbf3660c761e8e2a8946719ed2fd743cb3c04f7690",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에돔에 대한 말씀이라 만군의 여호와께서 이같이 말씀하시되 데만에 다시는 지혜가 없게 되었느냐 명철한 자에게 모략이 끊어졌느냐 그들의 지혜가 없어졌느냐"
+      ],
+      "raw_text_hashes": [
+        "092e5392455f6b8324251cfbf3660c761e8e2a8946719ed2fd743cb3c04f7690"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:8",
+      "sequence": 20136,
+      "chapter_label": "JER 49",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 8
+        }
+      ],
+      "en": "Flee! Turn back! Dwell in the depths, inhabitants of Dedan; for I will bring the calamity of Esau on him when I visit him.",
+      "ko": "드단 거민아 돌이켜 도망할지어다 깊은데 숨을지어다 내가 에서의 재난을 그에게 임하게 하여 그를 벌할 때가 이르게 하리로다",
+      "source_text_hash": "6cdf51c4b738aed875805a7ef0cb65469046c2d350c3ec4b093826c65672af39",
+      "translation_text_hash": "8b89db323daa9951588ca47e6ab490cd80527313e63186c0c8fbc4141406e193",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드단 거민아 돌이켜 도망할지어다 깊은데 숨을지어다 내가 에서의 재난을 그에게 임하게 하여 그를 벌할 때가 이르게 하리로다"
+      ],
+      "raw_text_hashes": [
+        "8b89db323daa9951588ca47e6ab490cd80527313e63186c0c8fbc4141406e193"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:9",
+      "sequence": 20137,
+      "chapter_label": "JER 49",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 9
+        }
+      ],
+      "en": "If grape gatherers came to you, would they not leave some gleaning grapes? If thieves came by night, wouldn’t they steal until they had enough?",
+      "ko": "포도를 거두는 자들이 네게 이르면 약간의 열매도 남기지 아니하겠고 밤에 도적이 오면 그 욕심이 차기까지 멸하느니라",
+      "source_text_hash": "8bcf22ee9565dc50907b14061c19436f0fb422ede4b5e86c773540fe72a2f9d9",
+      "translation_text_hash": "9d50fb68fc58b0a20d3d288eafe2c90afe377ac7a4d7fe52ca84282521590d75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도를 거두는 자들이 네게 이르면 약간의 열매도 남기지 아니하겠고 밤에 도적이 오면 그 욕심이 차기까지 멸하느니라"
+      ],
+      "raw_text_hashes": [
+        "9d50fb68fc58b0a20d3d288eafe2c90afe377ac7a4d7fe52ca84282521590d75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:10",
+      "sequence": 20138,
+      "chapter_label": "JER 49",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 10
+        }
+      ],
+      "en": "But I have made Esau bare, I have uncovered his secret places, and he will not be able to hide himself. His offspring is destroyed, with his brothers and his neighbors; and he is no more.",
+      "ko": "대저 내가 에서로 적신이 되게 하여 그 비밀한 곳들이 드러나게 하였나니 그가 그 몸을 숨길 수 없을 것이라 그 자손과 형제와 이웃이 멸망하였은즉 그가 없어졌느니라",
+      "source_text_hash": "765576591f2ff646f95e7757f1b71f6fb9b31cb578fdd8362a6e06cee312c123",
+      "translation_text_hash": "80a13aaf193fb484110a8b6fe1303416da5e0be44e27afd5e19c68a99abdc22e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 내가 에서로 적신이 되게 하여 그 비밀한 곳들이 드러나게 하였나니 그가 그 몸을 숨길 수 없을 것이라 그 자손과 형제와 이웃이 멸망하였은즉 그가 없어졌느니라"
+      ],
+      "raw_text_hashes": [
+        "80a13aaf193fb484110a8b6fe1303416da5e0be44e27afd5e19c68a99abdc22e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:11",
+      "sequence": 20139,
+      "chapter_label": "JER 49",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 11
+        }
+      ],
+      "en": "Leave your fatherless children. I will preserve them alive. Let your widows trust in me.”",
+      "ko": "네 고아들을 남겨 두라 내가 그들을 살려 두리라 네 과부들은 나를 의지할 것이니라",
+      "source_text_hash": "0592afc5b6acf0b15f0caacf1994267d91f45a0769cc265685f5828ead233ecd",
+      "translation_text_hash": "c982d7a0644edc802cacb7182a7c1780760f260978aac2cfb7bb26aeef8a451d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 고아들을 남겨 두라 내가 그들을 살려 두리라 네 과부들은 나를 의지할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "c982d7a0644edc802cacb7182a7c1780760f260978aac2cfb7bb26aeef8a451d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:12",
+      "sequence": 20140,
+      "chapter_label": "JER 49",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 12
+        }
+      ],
+      "en": "For the LORD says: “Behold, they to whom it didn’t pertain to drink of the cup will certainly drink; and are you he who will altogether go unpunished? You won’t go unpunished, but you will surely drink.",
+      "ko": "나 여호와가 이같이 말하노라 보라 이 잔을 마시지 않을 자도 마시지 않지 못하겠거늘 네가 형벌을 온전히 면하겠느냐 면하지 못하고 반드시 마시리라",
+      "source_text_hash": "8f50e295ef9cc4676b0d5e49f30c1d415fc6995128792e22e4f8cca4fc873367",
+      "translation_text_hash": "9042183972be69858267da3beac2d0256f36db547c5ae9bd6dcd2518c5103de7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 보라 이 잔을 마시지 않을 자도 마시지 않지 못하겠거늘 네가 형벌을 온전히 면하겠느냐 면하지 못하고 반드시 마시리라"
+      ],
+      "raw_text_hashes": [
+        "9042183972be69858267da3beac2d0256f36db547c5ae9bd6dcd2518c5103de7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:13",
+      "sequence": 20141,
+      "chapter_label": "JER 49",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 13
+        }
+      ],
+      "en": "For I have sworn by myself,” says the LORD, “that Bozrah will become an astonishment, a reproach, a waste, and a curse. All its cities will be perpetual wastes.”",
+      "ko": "나 여호와가 말하노라 내가 나로 맹세하노니 보스라가 놀램과 수욕거리와 황폐함과 저줏거리가 될 것이요 그 모든 성읍이 영영히 황폐하리라",
+      "source_text_hash": "6367aefb77f572bd76623eb52d229d685946c2c23170feb43922eb1ba5e0f440",
+      "translation_text_hash": "5b4e2967de676b3f7e18a444b89ad9fc67c199f6ffc2a7d64bc8b15223d32b47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내가 나로 맹세하노니 보스라가 놀램과 수욕거리와 황폐함과 저줏거리가 될 것이요 그 모든 성읍이 영영히 황폐하리라"
+      ],
+      "raw_text_hashes": [
+        "5b4e2967de676b3f7e18a444b89ad9fc67c199f6ffc2a7d64bc8b15223d32b47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:14",
+      "sequence": 20142,
+      "chapter_label": "JER 49",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 14
+        }
+      ],
+      "en": "I have heard news from the LORD, and an ambassador is sent among the nations, saying, “Gather yourselves together! Come against her! Rise up to the battle!”",
+      "ko": "내가 여호와에게서부터 오는 소식을 들었노라 사자를 열방 중에 보내어 이르시되 너희는 모여와서 그를 치며 일어나서 싸우라 하시도다",
+      "source_text_hash": "86634b311b42f3c44fca89996d35431828e1d07029f67cebeb65c5a8b3d71ea0",
+      "translation_text_hash": "848446cc301920585b237847b53619180c67b1a5c294185e7ce840c46f67a651",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와에게서부터 오는 소식을 들었노라 사자를 열방 중에 보내어 이르시되 너희는 모여와서 그를 치며 일어나서 싸우라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "848446cc301920585b237847b53619180c67b1a5c294185e7ce840c46f67a651"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:15",
+      "sequence": 20143,
+      "chapter_label": "JER 49",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 15
+        }
+      ],
+      "en": "“For, behold, I have made you small among the nations, and despised among men.",
+      "ko": "여호와께서 가라사대 내가 너를 열방 중에 작게 하였고 사람들중에 멸시를 받게 하였느니라",
+      "source_text_hash": "67fe633c7774c28a3bdc069a0c1e5b238552972381ed579a599ea329adcdda6c",
+      "translation_text_hash": "6a7bcb33cf33795212d9e648699175d66acabe8fa84a16192e684da6ca7f0e75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 너를 열방 중에 작게 하였고 사람들중에 멸시를 받게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "6a7bcb33cf33795212d9e648699175d66acabe8fa84a16192e684da6ca7f0e75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:16",
+      "sequence": 20144,
+      "chapter_label": "JER 49",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 16
+        }
+      ],
+      "en": "As for your terror, the pride of your heart has deceived you, O you who dwell in the clefts of the rock, who hold the height of the hill, though you should make your nest as high as the eagle, I will bring you down from there,” says the LORD.",
+      "ko": "바위 틈에 거하며 산꼭대기를 점령한 자여 스스로 두려운 자인줄로 여김과 네 마음의 교만이 너를 속였도다 네가 독수리 같이 보금자리를 높이 지었을찌라도 내가 거기서 너를 끌어내리리라 여호와의 말이니라",
+      "source_text_hash": "eb2c851749333909c285baf23ef78bf4cbfc2f53991d509c0c1196985d515994",
+      "translation_text_hash": "38d1770bc450e9434656303a2af5a88a7ea1b899e2abe043369aef7304489f0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바위 틈에 거하며 산꼭대기를 점령한 자여 스스로 두려운 자인줄로 여김과 네 마음의 교만이 너를 속였도다 네가 독수리 같이 보금자리를 높이 지었을찌라도 내가 거기서 너를 끌어내리리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "38d1770bc450e9434656303a2af5a88a7ea1b899e2abe043369aef7304489f0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:17",
+      "sequence": 20145,
+      "chapter_label": "JER 49",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 17
+        }
+      ],
+      "en": "“Edom will become an astonishment. Everyone who passes by it will be astonished, and will hiss at all its plagues.",
+      "ko": "에돔이 놀라운 것이 되리니 그리로 지나는 자마다 놀라며 그 모든 재앙을 인하여 비웃으리로다",
+      "source_text_hash": "958a28ee2196d35739603b1e8ec17c1c847a1e964243087ab4af406f39b198b8",
+      "translation_text_hash": "4cc3215abb318f9c4d821ad5485abc34094594bffe0b919eac2e6f574bd33dbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에돔이 놀라운 것이 되리니 그리로 지나는 자마다 놀라며 그 모든 재앙을 인하여 비웃으리로다"
+      ],
+      "raw_text_hashes": [
+        "4cc3215abb318f9c4d821ad5485abc34094594bffe0b919eac2e6f574bd33dbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:18",
+      "sequence": 20146,
+      "chapter_label": "JER 49",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 18
+        }
+      ],
+      "en": "As in the overthrow of Sodom and Gomorrah and its neighbor cities,” says the LORD, “no man will dwell there, neither will any son of man live therein.",
+      "ko": "나 여호와가 말하노라 소돔과 고모라와 그 이웃 성읍들의 멸망된 것 같이 거기 거하는 사람이 없으며 그 중에 우거할 아무 인자가 없으리라",
+      "source_text_hash": "7afeb1471011e15c87398b993c5f9501bdca0a094380610040803028e74eb61c",
+      "translation_text_hash": "e53e8e9dc41e6244a71ffb216c266743b6b2f69bbe4ec607e57dd386f48b0d4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 소돔과 고모라와 그 이웃 성읍들의 멸망된 것 같이 거기 거하는 사람이 없으며 그 중에 우거할 아무 인자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "e53e8e9dc41e6244a71ffb216c266743b6b2f69bbe4ec607e57dd386f48b0d4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:19",
+      "sequence": 20147,
+      "chapter_label": "JER 49",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 19
+        }
+      ],
+      "en": "“Behold, he will come up like a lion from the pride of the Jordan against the strong habitation; for I will suddenly make them run away from it, and whoever is chosen, I will appoint him over it. For who is like me? Who will appoint me a time? Who is the shepherd who will stand before me?”",
+      "ko": "보라 사자가 요단의 수풀에서 올라 오는것 같이 그가 와서 견고한 처소를 칠 것이라 내가 즉시 그들을 거기서 쫓아내고 택한 자를 내가 그 위에 세우리니 나와 같은 자 누구며 나로 더불어 다툴 자 누구며 내 앞에 설 목자가 누구뇨",
+      "source_text_hash": "31cea046070232d8b861450a79a3a547b9ab93d75fa564b64f1c429b87722053",
+      "translation_text_hash": "3fdf876b32474962ec50231cbd369a34b0d1925fa8d034991a813dce0e8f50fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 사자가 요단의 수풀에서 올라 오는것 같이 그가 와서 견고한 처소를 칠 것이라 내가 즉시 그들을 거기서 쫓아내고 택한 자를 내가 그 위에 세우리니 나와 같은 자 누구며 나로 더불어 다툴 자 누구며 내 앞에 설 목자가 누구뇨"
+      ],
+      "raw_text_hashes": [
+        "3fdf876b32474962ec50231cbd369a34b0d1925fa8d034991a813dce0e8f50fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:20",
+      "sequence": 20148,
+      "chapter_label": "JER 49",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 20
+        }
+      ],
+      "en": "Therefore hear the counsel of the LORD, that he has taken against Edom, and his purposes that he has purposed against the inhabitants of Teman: Surely they will drag them away, the little ones of the flock. Surely he will make their habitation desolate over them.",
+      "ko": "그런즉 에돔에 대한 나 여호와의 도모와 데만 거민에 대하여 경영한 나 여호와의 뜻을 들으라 양떼의 어린 것들을 그들이 반드시 끌어가고 그 처소로 황무케 하리니",
+      "source_text_hash": "650ded9d1e93acc2bc7a456f0676fab0eb2a0d6e2b08b121789f9b4286d9b3ff",
+      "translation_text_hash": "ef6a4f96e23195242777bab1604c25b5fa3ec75ef4e696347cb7f953b88af661",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 에돔에 대한 나 여호와의 도모와 데만 거민에 대하여 경영한 나 여호와의 뜻을 들으라 양떼의 어린 것들을 그들이 반드시 끌어가고 그 처소로 황무케 하리니"
+      ],
+      "raw_text_hashes": [
+        "ef6a4f96e23195242777bab1604c25b5fa3ec75ef4e696347cb7f953b88af661"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:21",
+      "sequence": 20149,
+      "chapter_label": "JER 49",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 21
+        }
+      ],
+      "en": "The earth trembles at the noise of their fall; there is a cry, the noise which is heard in the Red Sea.",
+      "ko": "그 넘어지는 소리에 땅이 진동하며 그 부르짖는 소리는 홍해에 들리리라",
+      "source_text_hash": "7613f95ae35773aa2868c72c7350b38cee279d0df93012e175309c10ef7f2181",
+      "translation_text_hash": "5e7b9d14396f4b4ccacb2c0f1ad85e9426938238faf751b3bbb7eb8624cbdf3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 넘어지는 소리에 땅이 진동하며 그 부르짖는 소리는 홍해에 들리리라"
+      ],
+      "raw_text_hashes": [
+        "5e7b9d14396f4b4ccacb2c0f1ad85e9426938238faf751b3bbb7eb8624cbdf3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:22",
+      "sequence": 20150,
+      "chapter_label": "JER 49",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 22
+        }
+      ],
+      "en": "Behold, he will come up and fly as the eagle, and spread out his wings against Bozrah. The heart of the mighty men of Edom at that day will be as the heart of a woman in her pangs.",
+      "ko": "보라 원수가 독수리 같이 날아와서 그 날개를 보스라 위에 펴는 그 날에 에돔 용사의 마음이 구로하는 여인 같으리라",
+      "source_text_hash": "10c30885ae9fbc981df6f0bff788ff7ceaa4969f1fd1388a776861fbfaefff9d",
+      "translation_text_hash": "753c18393759905f5cbe0ffdd0adda588458b432144297f74b8bcbbcd0f3e9f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 원수가 독수리 같이 날아와서 그 날개를 보스라 위에 펴는 그 날에 에돔 용사의 마음이 구로하는 여인 같으리라"
+      ],
+      "raw_text_hashes": [
+        "753c18393759905f5cbe0ffdd0adda588458b432144297f74b8bcbbcd0f3e9f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:23",
+      "sequence": 20151,
+      "chapter_label": "JER 49",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 23
+        }
+      ],
+      "en": "Of Damascus: “Hamath and Arpad are confounded, for they have heard evil news. They have melted away. There is sorrow on the sea. It can’t be quiet.",
+      "ko": "다메섹에 대한 말씀이라 하맛과 아르밧이 수치를 당하리니 이는 흉한 소문을 듣고 낙담함이라 바닷가에 슬픔이 있고 평안이 없도다",
+      "source_text_hash": "361565e66490ee36921a1cc2391661279bfdc33a5e10b8f65ba775e69c11960d",
+      "translation_text_hash": "cda718021b729507f6a579606d5a8e2c77d117f52c29be72f62357dfed5fd562",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다메섹에 대한 말씀이라 하맛과 아르밧이 수치를 당하리니 이는 흉한 소문을 듣고 낙담함이라 바닷가에 슬픔이 있고 평안이 없도다"
+      ],
+      "raw_text_hashes": [
+        "cda718021b729507f6a579606d5a8e2c77d117f52c29be72f62357dfed5fd562"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:24",
+      "sequence": 20152,
+      "chapter_label": "JER 49",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 24
+        }
+      ],
+      "en": "Damascus has grown feeble, she turns herself to flee, and trembling has seized her. Anguish and sorrows have taken hold of her, as of a woman in travail.",
+      "ko": "다메섹이 피곤하여 몸을 돌이켜 달아나려 하니 떨림이 그를 움켰고 해산하는 여인 같이 고통과 슬픔이 그를 잡았도다",
+      "source_text_hash": "1830fa8180aa95d257a2576917401d1fec147b712c975e56223bfccbadee7a22",
+      "translation_text_hash": "98bde2c5f4ef421f7922abb456376c96e0b86bf5908b00f4e71ce73cbcb0f2a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다메섹이 피곤하여 몸을 돌이켜 달아나려 하니 떨림이 그를 움켰고 해산하는 여인 같이 고통과 슬픔이 그를 잡았도다"
+      ],
+      "raw_text_hashes": [
+        "98bde2c5f4ef421f7922abb456376c96e0b86bf5908b00f4e71ce73cbcb0f2a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:25",
+      "sequence": 20153,
+      "chapter_label": "JER 49",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 25
+        }
+      ],
+      "en": "How is the city of praise not forsaken, the city of my joy?",
+      "ko": "찬송의 성읍, 나의 즐거운 성읍이 어찌 버린 것이 되지 않겠느냐",
+      "source_text_hash": "6df5cb20ddcb1116bd24593ff837dccd23cd9fae845e4f50a3144c2b326d2313",
+      "translation_text_hash": "d2f954b02722589d793680273e01515040241e50f2018cddf6f67357eab5e67c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "찬송의 성읍, 나의 즐거운 성읍이 어찌 버린 것이 되지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "d2f954b02722589d793680273e01515040241e50f2018cddf6f67357eab5e67c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:26",
+      "sequence": 20154,
+      "chapter_label": "JER 49",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 26
+        }
+      ],
+      "en": "Therefore her young men will fall in her streets, and all the men of war will be brought to silence in that day,” says the LORD of Armies.",
+      "ko": "나 만군의 여호와가 말하노라 그런즉 그 날에 그의 청년들은 그 거리에 엎드러지겠고 모든 군사는 멸절될 것이며",
+      "source_text_hash": "8fdd23a3a82c818d3af80a53ebfeb4c0ce68f9c74d55a1e5f3c06e9c90c7136e",
+      "translation_text_hash": "4ac193137bf22ba154145c502301ea7af46fa7481b026ceef466662ab4332058",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와가 말하노라 그런즉 그 날에 그의 청년들은 그 거리에 엎드러지겠고 모든 군사는 멸절될 것이며"
+      ],
+      "raw_text_hashes": [
+        "4ac193137bf22ba154145c502301ea7af46fa7481b026ceef466662ab4332058"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:27",
+      "sequence": 20155,
+      "chapter_label": "JER 49",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 27
+        }
+      ],
+      "en": "“I will kindle a fire in the wall of Damascus, and it will devour the palaces of Ben Hadad.”",
+      "ko": "내가 다메섹의 성벽에 불을 놓으리니 벤하닷의 궁전이 살라지리라",
+      "source_text_hash": "d8b25c65d20ae0727d34d1e81e2a4af99c9ee6485121b84c3e058e06af4948ee",
+      "translation_text_hash": "f965b49b24309667b6176c57a17f68a1126a522ef04a69ea378d2b07f1938783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 다메섹의 성벽에 불을 놓으리니 벤하닷의 궁전이 살라지리라"
+      ],
+      "raw_text_hashes": [
+        "f965b49b24309667b6176c57a17f68a1126a522ef04a69ea378d2b07f1938783"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:28",
+      "sequence": 20156,
+      "chapter_label": "JER 49",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 28
+        }
+      ],
+      "en": "Of Kedar, and of the kingdoms of Hazor, which Nebuchadnezzar king of Babylon struck, The LORD says: “Arise, go up to Kedar, and destroy the children of the east.",
+      "ko": "바벨론 왕 느부갓네살에게 공격된바 게달과 하솔 나라들에 대한 말씀이라 여호와께서 이같이 말씀하시되 너희는 일어나 게달로 올라가서 동방 자손들을 멸하라",
+      "source_text_hash": "dd7e58111c444c3ecbafb104fc65886215dedbe20bb808bbeba6324da1b36987",
+      "translation_text_hash": "6ac40e52ad427b08b9972a8542eb2b63e33d65e06496091e012e6fe93a10449b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕 느부갓네살에게 공격된바 게달과 하솔 나라들에 대한 말씀이라 여호와께서 이같이 말씀하시되 너희는 일어나 게달로 올라가서 동방 자손들을 멸하라"
+      ],
+      "raw_text_hashes": [
+        "6ac40e52ad427b08b9972a8542eb2b63e33d65e06496091e012e6fe93a10449b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:29",
+      "sequence": 20157,
+      "chapter_label": "JER 49",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 29
+        }
+      ],
+      "en": "They will take their tents and their flocks. they will carry away for themselves their curtains, all their vessels, and their camels; and they will cry to them, ‘Terror on every side!’",
+      "ko": "너희는 그 장막과 양떼를 취하며 휘장과 모든 기구와 약대를 빼앗아다가 소유를 삼고 그들을 향하여 외치기를 두려움이 사방에 있다 할찌니라",
+      "source_text_hash": "a8633b4e6cb8000ca8c6d53687bffd81a6173a7e389770e3338c357e99c2e27c",
+      "translation_text_hash": "3f5dae7bf172c3df32f17935b2cbf4c19e2c65e048fb73d1273cd6771a681ac8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그 장막과 양떼를 취하며 휘장과 모든 기구와 약대를 빼앗아다가 소유를 삼고 그들을 향하여 외치기를 두려움이 사방에 있다 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "3f5dae7bf172c3df32f17935b2cbf4c19e2c65e048fb73d1273cd6771a681ac8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:30",
+      "sequence": 20158,
+      "chapter_label": "JER 49",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 30
+        }
+      ],
+      "en": "Flee! Wander far off! Dwell in the depths, you inhabitants of Hazor,” says the LORD; “for Nebuchadnezzar king of Babylon has taken counsel against you, and has conceived a purpose against you.",
+      "ko": "나 여호와가 말하노라 하솔 거민아 도망하라 멀리 가서 깊은데 거하라 이는 바벨론 왕 느부갓네살이 너를 칠 모략과 너를 칠 계책을 정하였음이니라",
+      "source_text_hash": "fbccc7a7327ef443aa999132f2632d07f58aec56fb0e558b433080ee9eb38f91",
+      "translation_text_hash": "3e184d4f6c1c07da21a93a1d07287968473be0a638062c7bac09350310b6cb21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 하솔 거민아 도망하라 멀리 가서 깊은데 거하라 이는 바벨론 왕 느부갓네살이 너를 칠 모략과 너를 칠 계책을 정하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "3e184d4f6c1c07da21a93a1d07287968473be0a638062c7bac09350310b6cb21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:31",
+      "sequence": 20159,
+      "chapter_label": "JER 49",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 31
+        }
+      ],
+      "en": "Arise! Go up to a nation that is at ease, that dwells without care,” says the LORD; “that has neither gates nor bars, that dwells alone.",
+      "ko": "나 여호와가 말하노라 너는 일어나 저 평안하고 염려 없이 거하는 백성 곧 성문이나 문빗장이 없이 홀로 거하는 국민을 치라",
+      "source_text_hash": "1e79d900b0b070580b7b815162c6be4ff90664990584d967e59706cc440df5a7",
+      "translation_text_hash": "2259e4ff2d24cff8d2c07b9cb1bf5273e9fa04c6218dc6e65f11986ba7cd8bf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 너는 일어나 저 평안하고 염려 없이 거하는 백성 곧 성문이나 문빗장이 없이 홀로 거하는 국민을 치라"
+      ],
+      "raw_text_hashes": [
+        "2259e4ff2d24cff8d2c07b9cb1bf5273e9fa04c6218dc6e65f11986ba7cd8bf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:32",
+      "sequence": 20160,
+      "chapter_label": "JER 49",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 32
+        }
+      ],
+      "en": "Their camels will be a booty, and the multitude of their livestock a plunder. I will scatter to all winds those who have the corners of their beards cut off; and I will bring their calamity from every side of them,” says the LORD.",
+      "ko": "그들의 약대들은 노략되겠고 그 많은 가축은 탈취를 당할 것이라 내가 그 머리털을 모지게 깎는 자들을 사면에 흩고 그 재난을 각방에서 오게 하리라 여호와의 말이니라",
+      "source_text_hash": "daf7e9e0254c5044417cd196fae386f9bb91bc76c75ed2833e121f13b026d3da",
+      "translation_text_hash": "926a4fad4e34fae5cf4761a765efadc0c8b8c49da995e73a62945a59b5fa928a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 약대들은 노략되겠고 그 많은 가축은 탈취를 당할 것이라 내가 그 머리털을 모지게 깎는 자들을 사면에 흩고 그 재난을 각방에서 오게 하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "926a4fad4e34fae5cf4761a765efadc0c8b8c49da995e73a62945a59b5fa928a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:33",
+      "sequence": 20161,
+      "chapter_label": "JER 49",
+      "verse_label": "33",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 33
+        }
+      ],
+      "en": "Hazor will be a dwelling place of jackals, a desolation forever. No man will dwell there, neither will any son of man live therein.”",
+      "ko": "하솔은 시랑의 거처가 되어 영원히 황무하리니 거기 거하는 사람이나 그 중에 우거하는 아무 인자가 없게 되리라",
+      "source_text_hash": "a0e416c2f3f2b002dceabc804bf82e96f0153cabc2f9e3819db3b8f947b94eb1",
+      "translation_text_hash": "8545534e1b29b7d21a3e5e1f77feb8b7b1d0588afed38123d2593a8f81c74211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하솔은 시랑의 거처가 되어 영원히 황무하리니 거기 거하는 사람이나 그 중에 우거하는 아무 인자가 없게 되리라"
+      ],
+      "raw_text_hashes": [
+        "8545534e1b29b7d21a3e5e1f77feb8b7b1d0588afed38123d2593a8f81c74211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:34",
+      "sequence": 20162,
+      "chapter_label": "JER 49",
+      "verse_label": "34",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 34
+        }
+      ],
+      "en": "The LORD’s word that came to Jeremiah the prophet concerning Elam, in the beginning of the reign of Zedekiah king of Judah, saying,",
+      "ko": "유다 왕 시드기야의 즉위한지 오래지 아니하여서 엘람에 대한 여호와의 말씀이 선지자 예레미야에게 임하니라 가라사대",
+      "source_text_hash": "a2eb55bc967ec51a0d00b1c0602cb48b714848816da18ff25636fb868cd83112",
+      "translation_text_hash": "931e30e55962ef1db3dfab5f1876af3b27553c4561af4a154a57e26af1d067b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 시드기야의 즉위한지 오래지 아니하여서 엘람에 대한 여호와의 말씀이 선지자 예레미야에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "931e30e55962ef1db3dfab5f1876af3b27553c4561af4a154a57e26af1d067b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:35",
+      "sequence": 20163,
+      "chapter_label": "JER 49",
+      "verse_label": "35",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 35
+        }
+      ],
+      "en": "“The LORD of Armies says: ‘Behold, I will break the bow of Elam, the chief of their might.",
+      "ko": "나 만군의 여호와가 이같이 말하노라 보라 내가 엘람의 힘의 으뜸되는 활을 꺾을 것이요",
+      "source_text_hash": "35606476d891929e4c958f0c7e6e8be98f6a3e1b6ac04f0f9261d2c42d1fd772",
+      "translation_text_hash": "c2488e42cd544e693942a735934b563072cdb224e14da42754035aa939088138",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 만군의 여호와가 이같이 말하노라 보라 내가 엘람의 힘의 으뜸되는 활을 꺾을 것이요"
+      ],
+      "raw_text_hashes": [
+        "c2488e42cd544e693942a735934b563072cdb224e14da42754035aa939088138"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:36",
+      "sequence": 20164,
+      "chapter_label": "JER 49",
+      "verse_label": "36",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 36
+        }
+      ],
+      "en": "I will bring on Elam the four winds from the four quarters of the sky, and will scatter them toward all those winds. There will be no nation where the outcasts of Elam will not come.",
+      "ko": "하늘의 사방에서부터 사방 바람을 엘람에 이르게 하여 그들을 사방으로 흩으리니 엘람에서 쫓겨난 자의 이르지 아니하는 나라가 없으리라",
+      "source_text_hash": "7c47f81e3dbaac2f034cba69dd6a265048e5f558d1ae81974d0ba364cd8d67f4",
+      "translation_text_hash": "063624d64f55d2aa31ad68b24c8e951ce4bd1fb4263bab489a1140c8fb7c83a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘의 사방에서부터 사방 바람을 엘람에 이르게 하여 그들을 사방으로 흩으리니 엘람에서 쫓겨난 자의 이르지 아니하는 나라가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "063624d64f55d2aa31ad68b24c8e951ce4bd1fb4263bab489a1140c8fb7c83a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:37",
+      "sequence": 20165,
+      "chapter_label": "JER 49",
+      "verse_label": "37",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 37
+        }
+      ],
+      "en": "I will cause Elam to be dismayed before their enemies, and before those who seek their life. I will bring evil on them, even my fierce anger,’ says the LORD; ‘and I will send the sword after them, until I have consumed them.",
+      "ko": "나 여호와가 말하노라 내가 엘람으로 그 원수의 앞, 그 생명을 찾는 자의 앞에서 놀라게 할 것이며 내가 재앙 곧 나의 진노를 그 위에 내릴 것이며 내가 또 그 뒤로 칼을 보내어 그를 진멸하기까지 할것이라",
+      "source_text_hash": "11cbb912a4fb18e3d87b6e7e0be79d0748c5e10dd096b866d20af852688e2220",
+      "translation_text_hash": "29e65cce10f342ecdf18db257ea5b318d701797865ce5d30a73e437ed71819bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 내가 엘람으로 그 원수의 앞, 그 생명을 찾는 자의 앞에서 놀라게 할 것이며 내가 재앙 곧 나의 진노를 그 위에 내릴 것이며 내가 또 그 뒤로 칼을 보내어 그를 진멸하기까지 할것이라"
+      ],
+      "raw_text_hashes": [
+        "29e65cce10f342ecdf18db257ea5b318d701797865ce5d30a73e437ed71819bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:38",
+      "sequence": 20166,
+      "chapter_label": "JER 49",
+      "verse_label": "38",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 38
+        }
+      ],
+      "en": "I will set my throne in Elam, and will destroy from there king and princes,’ says the LORD.",
+      "ko": "내가 나의 위를 엘람에 베풀고 왕과 족장들을 그곳에서 멸하리라 여호와의 말이니라",
+      "source_text_hash": "526a94264c4e779196ef931207a8ec52e7c60b492efac359722e96a5ff7ddb8d",
+      "translation_text_hash": "73dc1cf179b18ae3178dc42705dd5fd9fdb02ab0fe9533da7ca4a32f8cf853ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 위를 엘람에 베풀고 왕과 족장들을 그곳에서 멸하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "73dc1cf179b18ae3178dc42705dd5fd9fdb02ab0fe9533da7ca4a32f8cf853ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:49:39",
+      "sequence": 20167,
+      "chapter_label": "JER 49",
+      "verse_label": "39",
+      "locator": {
+        "book": "JER",
+        "chapter": 49,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 49,
+          "verse": 39
+        }
+      ],
+      "en": "‘But it will happen in the latter days that I will reverse the captivity of Elam,’ says the LORD.”",
+      "ko": "그러나 끝날에 이르러는 내가 엘람의 포로를 돌아오게 하리라 여호와의 말이니라",
+      "source_text_hash": "7e0d9b0c47f24c09cfa16813d059d84831ac18e644e9745887bc90afd34c3819",
+      "translation_text_hash": "55eed6458f785dee0304b84436bf1e1bbfbcbd9a9e17e90fad70d3b73276e174",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 끝날에 이르러는 내가 엘람의 포로를 돌아오게 하리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "55eed6458f785dee0304b84436bf1e1bbfbcbd9a9e17e90fad70d3b73276e174"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:007",
+  "unit_ordinal": 485,
+  "unit_label": "PSA 7",
+  "book_code": "PSA",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:7:1",
+      "sequence": 13997,
+      "chapter_label": "PSA 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "LORD, my God, I take refuge in you. Save me from all those who pursue me, and deliver me,",
+      "ko": "여호와 내 하나님이여 주께 피하오니 나를 쫓는 모든 자에게서 나를 구하여 건지소서",
+      "source_text_hash": "3737cc3baa4da69585a7e9eb6081257a15d28e9f6eb902489d4a75aa0c964d43",
+      "translation_text_hash": "7f6a44c892236e292783a884d7951157cd6f389718aad4a6412d21fd8bea4054",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 내 하나님이여 주께 피하오니 나를 쫓는 모든 자에게서 나를 구하여 건지소서"
+      ],
+      "raw_text_hashes": [
+        "7f6a44c892236e292783a884d7951157cd6f389718aad4a6412d21fd8bea4054"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:2",
+      "sequence": 13998,
+      "chapter_label": "PSA 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "lest they tear apart my soul like a lion, ripping it in pieces, while there is no one to deliver.",
+      "ko": "건져낼 자 없으면 저희가 사자 같이 나를 찢고 뜯을까 하나이다",
+      "source_text_hash": "800ee210c2f599f8b97e00874ba8e5c0b79dc83b1fe2ddef46fb9081f4654fc7",
+      "translation_text_hash": "d6c27b43ed6e781c4ae2e03e3cdc1c53cfae9787a9258c98194232b4294b3ee4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "건져낼 자 없으면 저희가 사자 같이 나를 찢고 뜯을까 하나이다"
+      ],
+      "raw_text_hashes": [
+        "d6c27b43ed6e781c4ae2e03e3cdc1c53cfae9787a9258c98194232b4294b3ee4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:3",
+      "sequence": 13999,
+      "chapter_label": "PSA 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "LORD, my God, if I have done this, if there is iniquity in my hands,",
+      "ko": "여호와 내 하나님이여 내가 이것을 행하였거나 내 손에 죄악이 있거나",
+      "source_text_hash": "7fb358200c4c7cf840adf28cfe6cbc5126bb4fe5712213f2d3407455e2db6c9d",
+      "translation_text_hash": "a46955e90e0f63fad641f0bb102fa40c0e49240b570c7aaa8e7ccb4ba01f6d4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 내 하나님이여 내가 이것을 행하였거나 내 손에 죄악이 있거나"
+      ],
+      "raw_text_hashes": [
+        "a46955e90e0f63fad641f0bb102fa40c0e49240b570c7aaa8e7ccb4ba01f6d4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:4",
+      "sequence": 14000,
+      "chapter_label": "PSA 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "if I have rewarded evil to him who was at peace with me (yes, I have plundered him who without cause was my adversary),",
+      "ko": "화친한 자를 악으로 갚았거나 내 대적에게 무고히 빼앗았거든",
+      "source_text_hash": "33bcd549978eeb238ec686655fa608c4ed28a78776147e18e73daf03529aad61",
+      "translation_text_hash": "c3906ae013e2db814801c0aa4bad42f7549ed316cbc1555978425e80353056bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화친한 자를 악으로 갚았거나 내 대적에게 무고히 빼앗았거든"
+      ],
+      "raw_text_hashes": [
+        "c3906ae013e2db814801c0aa4bad42f7549ed316cbc1555978425e80353056bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:5",
+      "sequence": 14001,
+      "chapter_label": "PSA 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "let the enemy pursue my soul, and overtake it; yes, let him tread my life down to the earth, and lay my glory in the dust. Selah.",
+      "ko": "원수로 나의 영혼을 쫓아 잡아 내 생명을 땅에 짓밟고 내 영광을 진토에 떨어뜨리게 하소서(셀라)",
+      "source_text_hash": "5afecbd199967bb17b00281946a04348d6c9a5fc4fe039a0962c179353feaf27",
+      "translation_text_hash": "ca80b8d5927fc2fe06903e7099faf178bae0590456e760d7dd307c7a24f417b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원수로 나의 영혼을 쫓아 잡아 내 생명을 땅에 짓밟고 내 영광을 진토에 떨어뜨리게 하소서(셀라)"
+      ],
+      "raw_text_hashes": [
+        "ca80b8d5927fc2fe06903e7099faf178bae0590456e760d7dd307c7a24f417b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:6",
+      "sequence": 14002,
+      "chapter_label": "PSA 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "Arise, LORD, in your anger. Lift up yourself against the rage of my adversaries. Awake for me. You have commanded judgment.",
+      "ko": "여호와여 진노로 일어나사 내 대적들의 노를 막으시며 나를 위하여 깨소서 주께서 심판을 명하셨나이다",
+      "source_text_hash": "eebd941158b3101bd77b601fd70931f2bdee1e2d600ef19c543f6f1cbc2d2919",
+      "translation_text_hash": "462590f58fcd57b30616e58baa60c7f09b50dcead2bebe741e58d99e8c6605d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 진노로 일어나사 내 대적들의 노를 막으시며 나를 위하여 깨소서 주께서 심판을 명하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "462590f58fcd57b30616e58baa60c7f09b50dcead2bebe741e58d99e8c6605d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:7",
+      "sequence": 14003,
+      "chapter_label": "PSA 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Let the congregation of the peoples surround you. Rule over them on high.",
+      "ko": "민족들의 집회로 주를 두르게 하시고 그 위 높은 자리에 돌아오소서",
+      "source_text_hash": "7e4ab4c220420e7c665b9e480c3854123f0ca0a363db170351adad248ea96c08",
+      "translation_text_hash": "699e1ba9dcd8f383362a710a754dff59d2a49629650b78e2cbb5b0c1ef2651dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "민족들의 집회로 주를 두르게 하시고 그 위 높은 자리에 돌아오소서"
+      ],
+      "raw_text_hashes": [
+        "699e1ba9dcd8f383362a710a754dff59d2a49629650b78e2cbb5b0c1ef2651dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:8",
+      "sequence": 14004,
+      "chapter_label": "PSA 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD administers judgment to the peoples. Judge me, LORD, according to my righteousness, and to my integrity that is in me.",
+      "ko": "여호와께서 만민에게 심판을 행하시오니 여호와여 나의 의와 내게 있는 성실함을 따라 나를 판단하소서",
+      "source_text_hash": "f2ed60498a803c6a31198555771c81d4c3d18e9343d70be056df84c2d0ccbf5b",
+      "translation_text_hash": "6dae5220472f748a1e48d07a41b9c0daca7125070c39f9a50d8edc30ab540926",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 만민에게 심판을 행하시오니 여호와여 나의 의와 내게 있는 성실함을 따라 나를 판단하소서"
+      ],
+      "raw_text_hashes": [
+        "6dae5220472f748a1e48d07a41b9c0daca7125070c39f9a50d8edc30ab540926"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:9",
+      "sequence": 14005,
+      "chapter_label": "PSA 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Oh let the wickedness of the wicked come to an end, but establish the righteous; their minds and hearts are searched by the righteous God.",
+      "ko": "악인의 악을 끊고 의인을 세우소서 의로우신 하나님이 사람의 심장을 감찰하시나이다",
+      "source_text_hash": "a84c5d9207be43ee30eda9c3b602a9263acc177d77d1ce78e94eb36c876dc96a",
+      "translation_text_hash": "a2ea001454e28d83922c1a92b56ec4c475c7af99e1adce1edca453e326fc2acc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인의 악을 끊고 의인을 세우소서 의로우신 하나님이 사람의 심장을 감찰하시나이다"
+      ],
+      "raw_text_hashes": [
+        "a2ea001454e28d83922c1a92b56ec4c475c7af99e1adce1edca453e326fc2acc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:10",
+      "sequence": 14006,
+      "chapter_label": "PSA 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "My shield is with God, who saves the upright in heart.",
+      "ko": "나의 방패는 마음이 정직한 자를 구원하시는 하나님께 있도다",
+      "source_text_hash": "1d98034cf343a6d0c751bf08d3c972d5c609af3bfdaa11f9133bdf78f28e2227",
+      "translation_text_hash": "b70ba5c014be68e1cb48e87ac215bb8aea9451047c90182f1f5d2b5bba0b7b1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 방패는 마음이 정직한 자를 구원하시는 하나님께 있도다"
+      ],
+      "raw_text_hashes": [
+        "b70ba5c014be68e1cb48e87ac215bb8aea9451047c90182f1f5d2b5bba0b7b1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:11",
+      "sequence": 14007,
+      "chapter_label": "PSA 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "God is a righteous judge, yes, a God who has indignation every day.",
+      "ko": "하나님은 의로우신 재판장이심이여 매일 분노하시는 하나님이시로다",
+      "source_text_hash": "a67172a3b409ceaa63e5029036d0aa9e1672d465ad0f1eaa54b14d1857bc8eed",
+      "translation_text_hash": "8a5d106e7af2af534738931832cb740c03ac4684730cab7d01a9511b8271f263",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 의로우신 재판장이심이여 매일 분노하시는 하나님이시로다"
+      ],
+      "raw_text_hashes": [
+        "8a5d106e7af2af534738931832cb740c03ac4684730cab7d01a9511b8271f263"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:12",
+      "sequence": 14008,
+      "chapter_label": "PSA 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "If a man doesn’t repent, he will sharpen his sword; he has bent and strung his bow.",
+      "ko": "사람이 회개치 아니하면 저가 그 칼을 갈으심이여 그 활을 이미 당기어 예비하셨도다",
+      "source_text_hash": "b62d4c54d9f46e36cb673abcbdc72029f20a535417ac3a071a6e38cf39068fc4",
+      "translation_text_hash": "6712ee7538f596abf57996946ba809ac9a8fd10895a33cc667465931546370ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 회개치 아니하면 저가 그 칼을 갈으심이여 그 활을 이미 당기어 예비하셨도다"
+      ],
+      "raw_text_hashes": [
+        "6712ee7538f596abf57996946ba809ac9a8fd10895a33cc667465931546370ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:13",
+      "sequence": 14009,
+      "chapter_label": "PSA 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "He has also prepared for himself the instruments of death. He makes ready his flaming arrows.",
+      "ko": "죽일 기계를 또한 예비하심이여 그 만든 살은 화전이로다",
+      "source_text_hash": "840c4c7daee23009e3a049bb98697c65267cbfc3d21ef6da1232a28e81d5e6af",
+      "translation_text_hash": "03b5fc36aaa2e533dc1825e3d3d85ada1903bd835f91047250635899f8253de7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽일 기계를 또한 예비하심이여 그 만든 살은 화전이로다"
+      ],
+      "raw_text_hashes": [
+        "03b5fc36aaa2e533dc1825e3d3d85ada1903bd835f91047250635899f8253de7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:14",
+      "sequence": 14010,
+      "chapter_label": "PSA 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "Behold, he travails with iniquity. Yes, he has conceived mischief, and brought out falsehood.",
+      "ko": "악인이 죄악을 해산함이여 잔해를 잉태하여 궤휼을 낳았도다",
+      "source_text_hash": "2f5e7b65d8d3f02a91eed620992c6da090f9c774ba2b6d5c8014c98ce4d963ab",
+      "translation_text_hash": "e2eba0b34ef6e89cad153c703b5844d9a968cd07cad91baa6fb75d39349a12e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인이 죄악을 해산함이여 잔해를 잉태하여 궤휼을 낳았도다"
+      ],
+      "raw_text_hashes": [
+        "e2eba0b34ef6e89cad153c703b5844d9a968cd07cad91baa6fb75d39349a12e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:15",
+      "sequence": 14011,
+      "chapter_label": "PSA 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "He has dug a hole, and has fallen into the pit which he made.",
+      "ko": "저가 웅덩이를 파 만듦이여 제가 만든 함정에 빠졌도다",
+      "source_text_hash": "b9a221e6044bd4d986cdd5a972b6413a3065f417384a2f6dda72bbcc83b3b815",
+      "translation_text_hash": "e7eb9a59cee01a3ec769e2c07f40ac8a68abcbdb8cc69a10f58974c7e9e40d00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 웅덩이를 파 만듦이여 제가 만든 함정에 빠졌도다"
+      ],
+      "raw_text_hashes": [
+        "e7eb9a59cee01a3ec769e2c07f40ac8a68abcbdb8cc69a10f58974c7e9e40d00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:16",
+      "sequence": 14012,
+      "chapter_label": "PSA 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "The trouble he causes shall return to his own head. His violence shall come down on the crown of his own head.",
+      "ko": "그 잔해는 자기 머리로 돌아오고 그 포학은 자기 정수리에 내리리로다",
+      "source_text_hash": "241a19a95558fc9143adf73a9b1da928a15ce9aa43ca8073bb10cb59dac1ec2e",
+      "translation_text_hash": "508380c72b6cf4e85941df3935215a6a32d95ea5e8b09b73fa6189fbf837dbb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 잔해는 자기 머리로 돌아오고 그 포학은 자기 정수리에 내리리로다"
+      ],
+      "raw_text_hashes": [
+        "508380c72b6cf4e85941df3935215a6a32d95ea5e8b09b73fa6189fbf837dbb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:7:17",
+      "sequence": 14013,
+      "chapter_label": "PSA 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "I will give thanks to the LORD according to his righteousness, and will sing praise to the name of the LORD Most High.",
+      "ko": "내가 여호와의 의를 따라 감사함이여 지극히 높으신 여호와의 이름을 찬양하리로다",
+      "source_text_hash": "c992e9d4e24cdb5bb96325ccc4050039f5c4e686ebc14bb5787aa830e32b26e5",
+      "translation_text_hash": "8d1a2dba7089ca16045a96653ec687691e17ac49b1f70bdaed95c1ef27c3d114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와의 의를 따라 감사함이여 지극히 높으신 여호와의 이름을 찬양하리로다"
+      ],
+      "raw_text_hashes": [
+        "8d1a2dba7089ca16045a96653ec687691e17ac49b1f70bdaed95c1ef27c3d114"
+      ]
+    }
+  ]
+}

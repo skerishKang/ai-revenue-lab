@@ -1,0 +1,1741 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:004",
+  "unit_ordinal": 1001,
+  "unit_label": "JHN 4",
+  "book_code": "JHN",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:4:1",
+      "sequence": 26157,
+      "chapter_label": "JHN 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Therefore when the Lord knew that the Pharisees had heard that Jesus was making and baptizing more disciples than John",
+      "ko": "예수의 제자를 삼고 세례를 주는 것이 요한보다 많다 하는 말을 바리새인들이 들은 줄을 주께서 아신지라",
+      "source_text_hash": "d6d90576365a25c857d3ffd5c78beffbef90d3ecf1477f1ae95f1ef5d6af0371",
+      "translation_text_hash": "e65b8efed7e914aab54b6ecb7e235e0d9469179858c11117dc3ce2574229cb73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 제자를 삼고 세례를 주는 것이 요한보다 많다 하는 말을 바리새인들이 들은 줄을 주께서 아신지라"
+      ],
+      "raw_text_hashes": [
+        "e65b8efed7e914aab54b6ecb7e235e0d9469179858c11117dc3ce2574229cb73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:2",
+      "sequence": 26158,
+      "chapter_label": "JHN 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "(although Jesus himself didn’t baptize, but his disciples),",
+      "ko": "(예수께서 친히 세례를 주신 것이 아니요 제자들이 준 것이라)",
+      "source_text_hash": "1f70d46c5f5fe2dc959faf56650f96eae12b7e57c931f4f46b27eeaca967b7ef",
+      "translation_text_hash": "e8f38dbc18ba839e4d01e23cc3431ffd86edb953f3e4d38821657a5720a3688b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(예수께서 친히 세례를 주신 것이 아니요 제자들이 준 것이라)"
+      ],
+      "raw_text_hashes": [
+        "e8f38dbc18ba839e4d01e23cc3431ffd86edb953f3e4d38821657a5720a3688b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:3",
+      "sequence": 26159,
+      "chapter_label": "JHN 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "he left Judea and departed into Galilee.",
+      "ko": "유대를 떠나사 다시 갈릴리로 가실쌔",
+      "source_text_hash": "5f46547714a8fe67c6e89c060cbb5a9036a92132abb6c115c40ed741c6102ad0",
+      "translation_text_hash": "c963ef475e20a6e7dbd90891482ed89db0d3eb270063e3ae96a2ca9e39cadc0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대를 떠나사 다시 갈릴리로 가실쌔"
+      ],
+      "raw_text_hashes": [
+        "c963ef475e20a6e7dbd90891482ed89db0d3eb270063e3ae96a2ca9e39cadc0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:4",
+      "sequence": 26160,
+      "chapter_label": "JHN 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "He needed to pass through Samaria.",
+      "ko": "사마리아로 통행하여야 하겠는지라",
+      "source_text_hash": "6d00a68ce4171427793543c69f6124596579f7c04ec9f199ed044481e8271d80",
+      "translation_text_hash": "321863adc1aa7385e8d4f031449e5d750e40115c2ca37aea0e09c0aa97a02152",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아로 통행하여야 하겠는지라"
+      ],
+      "raw_text_hashes": [
+        "321863adc1aa7385e8d4f031449e5d750e40115c2ca37aea0e09c0aa97a02152"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:5",
+      "sequence": 26161,
+      "chapter_label": "JHN 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "So he came to a city of Samaria called Sychar, near the parcel of ground that Jacob gave to his son Joseph.",
+      "ko": "사마리아에 있는 수가라 하는 동네에 이르시니 야곱이 그 아들 요셉에게 준 땅이 가깝고",
+      "source_text_hash": "2d43848f97709679a6f0b600436d887dccb7f96978212022290cc95186423650",
+      "translation_text_hash": "00f5512f2c40bfa8019df014f7aefd3f0d896844cb25a175fa5031273536760b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아에 있는 수가라 하는 동네에 이르시니 야곱이 그 아들 요셉에게 준 땅이 가깝고"
+      ],
+      "raw_text_hashes": [
+        "00f5512f2c40bfa8019df014f7aefd3f0d896844cb25a175fa5031273536760b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:6",
+      "sequence": 26162,
+      "chapter_label": "JHN 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Jacob’s well was there. Jesus therefore, being tired from his journey, sat down by the well. It was about the sixth hour.",
+      "ko": "거기 또 야곱의 우물이 있더라 예수께서 행로에 곤하여 우물 곁에 그대로 앉으시니 때가 제 육시쯤 되었더라",
+      "source_text_hash": "9709a4d0497fb5a88fd7fdc3d0984084de839d5de2b3f24371e46a6b638f1799",
+      "translation_text_hash": "383088b7ed78a0dfa93ff7732c09d2f0579b77bef2b3632e450c84a38553dea5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 또 야곱의 우물이 있더라 예수께서 행로에 곤하여 우물 곁에 그대로 앉으시니 때가 제 육시쯤 되었더라"
+      ],
+      "raw_text_hashes": [
+        "383088b7ed78a0dfa93ff7732c09d2f0579b77bef2b3632e450c84a38553dea5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:7",
+      "sequence": 26163,
+      "chapter_label": "JHN 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "A woman of Samaria came to draw water. Jesus said to her, “Give me a drink.”",
+      "ko": "사마리아 여자 하나가 물을 길러 왔으매 예수께서 물을 좀 달라 하시니",
+      "source_text_hash": "631c3f35fbcaf2bdad843c593853d857f5bfcd15507d92f251552a131a84638d",
+      "translation_text_hash": "d2c2d8f4fcd5843f89c16e02059b5990b312e7403604e3fa5108ef19a661d6d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아 여자 하나가 물을 길러 왔으매 예수께서 물을 좀 달라 하시니"
+      ],
+      "raw_text_hashes": [
+        "d2c2d8f4fcd5843f89c16e02059b5990b312e7403604e3fa5108ef19a661d6d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:8",
+      "sequence": 26164,
+      "chapter_label": "JHN 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "For his disciples had gone away into the city to buy food.",
+      "ko": "이는 제자들이 먹을것을 사러 동네에 들어갔음이러라",
+      "source_text_hash": "07d8eed84cf9912b053fc27284594bc1470bf07b3787492e19dede570a782b73",
+      "translation_text_hash": "46bba1b9ec4be841d9451cc989ce0e61dee1f57eb2879be003b9ea23c08041d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 제자들이 먹을것을 사러 동네에 들어갔음이러라"
+      ],
+      "raw_text_hashes": [
+        "46bba1b9ec4be841d9451cc989ce0e61dee1f57eb2879be003b9ea23c08041d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:9",
+      "sequence": 26165,
+      "chapter_label": "JHN 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "The Samaritan woman therefore said to him, “How is it that you, being a Jew, ask for a drink from me, a Samaritan woman?” (For Jews have no dealings with Samaritans.)",
+      "ko": "사마리아 여자가 가로되 당신은 유대인으로서 어찌하여 사마리아 여자 나에게 물을 달라 하나이까 하니 이는 유대인이 사마리아인과 상종치 아니함이러라",
+      "source_text_hash": "481c274ea00f72e9a173f9c8ecb47a404f923c27fc2b3ab1fcde63084ca1ba07",
+      "translation_text_hash": "d0a9cd7e7af65f951bac712c0976e767061d0551105b3f90bf9f9f2dee9686e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아 여자가 가로되 당신은 유대인으로서 어찌하여 사마리아 여자 나에게 물을 달라 하나이까 하니 이는 유대인이 사마리아인과 상종치 아니함이러라"
+      ],
+      "raw_text_hashes": [
+        "d0a9cd7e7af65f951bac712c0976e767061d0551105b3f90bf9f9f2dee9686e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:10",
+      "sequence": 26166,
+      "chapter_label": "JHN 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Jesus answered her, “If you knew the gift of God, and who it is who says to you, ‘Give me a drink,’ you would have asked him, and he would have given you living water.”",
+      "ko": "예수께서 대답하여 가라사대 네가 만일 하나님의 선물과 또 네게 물좀 달라 하는 이가 누구인줄 알았더면 네가 그에게 구하였을 것이요 그가 생수를 네게 주었으리라",
+      "source_text_hash": "5431bf6471c8f2cabe40eacc70cfadc5846eda83fbffff918f6de4fa00c23f21",
+      "translation_text_hash": "1d4e7aa4cd46fe576dca1c6d93f6b5fd42e3fce2683e6708fe3e3d2dda6ba718",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 네가 만일 하나님의 선물과 또 네게 물좀 달라 하는 이가 누구인줄 알았더면 네가 그에게 구하였을 것이요 그가 생수를 네게 주었으리라"
+      ],
+      "raw_text_hashes": [
+        "1d4e7aa4cd46fe576dca1c6d93f6b5fd42e3fce2683e6708fe3e3d2dda6ba718"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:11",
+      "sequence": 26167,
+      "chapter_label": "JHN 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "The woman said to him, “Sir, you have nothing to draw with, and the well is deep. So where do you get that living water?",
+      "ko": "여자가 가로되 주여 물 길을 그릇도 없고 이 우물은 깊은데 어디서 이 생수를 얻겠삽나이까",
+      "source_text_hash": "616797ad2f05e345c16498d80b2b16a0837ddba6c9fe05890cce5129b0e50950",
+      "translation_text_hash": "ae5c53994f848edc3a9a77d1d873c46867022fa54532f8f6537703075d6d0fac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 가로되 주여 물 길을 그릇도 없고 이 우물은 깊은데 어디서 이 생수를 얻겠삽나이까"
+      ],
+      "raw_text_hashes": [
+        "ae5c53994f848edc3a9a77d1d873c46867022fa54532f8f6537703075d6d0fac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:12",
+      "sequence": 26168,
+      "chapter_label": "JHN 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Are you greater than our father Jacob, who gave us the well and drank from it himself, as did his children and his livestock?”",
+      "ko": "우리 조상 야곱이 이 우물을 우리에게 주었고 또 여기서 자기와 자기 아들들과 짐승이 다 먹었으니 당신이 야곱보다 더 크니이까",
+      "source_text_hash": "76c61cb98992dec9630f985dc19f947a134294a15030a3cc265e6f5d4f189fc5",
+      "translation_text_hash": "41be6d261a30032ce2a6a2044e4e1f0fd45c2459d8fa9e544855b360e3f67718",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 조상 야곱이 이 우물을 우리에게 주었고 또 여기서 자기와 자기 아들들과 짐승이 다 먹었으니 당신이 야곱보다 더 크니이까"
+      ],
+      "raw_text_hashes": [
+        "41be6d261a30032ce2a6a2044e4e1f0fd45c2459d8fa9e544855b360e3f67718"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:13",
+      "sequence": 26169,
+      "chapter_label": "JHN 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Jesus answered her, “Everyone who drinks of this water will thirst again,",
+      "ko": "예수께서 대답하여 가라사대 이 물을 먹는 자마다 다시 목마르려니와",
+      "source_text_hash": "d86dd0bf4985686b84dfa1a4006d4a919f9b315ff632953aa7c77ffd64f9bc93",
+      "translation_text_hash": "497e18213304d516e6e35d5e09f9c6e04125b6d7f4893d89dea66124c89f7cdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 이 물을 먹는 자마다 다시 목마르려니와"
+      ],
+      "raw_text_hashes": [
+        "497e18213304d516e6e35d5e09f9c6e04125b6d7f4893d89dea66124c89f7cdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:14",
+      "sequence": 26170,
+      "chapter_label": "JHN 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "but whoever drinks of the water that I will give him will never thirst again; but the water that I will give him will become in him a well of water springing up to eternal life.”",
+      "ko": "내가 주는 물을 먹는 자는 영원히 목마르지 아니하리니 나의 주는 물은 그 속에서 영생하도록 솟아나는 샘물이 되리라",
+      "source_text_hash": "4376c5e0e80a3513984f725de891e0f022fce2e59d5e78454117f1f964d189bf",
+      "translation_text_hash": "e1107b113da3e301c5ad7231719c1afb2c261e4496f26279e988ceb333d9ac29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주는 물을 먹는 자는 영원히 목마르지 아니하리니 나의 주는 물은 그 속에서 영생하도록 솟아나는 샘물이 되리라"
+      ],
+      "raw_text_hashes": [
+        "e1107b113da3e301c5ad7231719c1afb2c261e4496f26279e988ceb333d9ac29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:15",
+      "sequence": 26171,
+      "chapter_label": "JHN 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "The woman said to him, “Sir, give me this water, so that I don’t get thirsty, neither come all the way here to draw.”",
+      "ko": "여자가 가로되 주여 이런 물을 내게 주사 목마르지도 않고 또 여기 물 길러 오지도 않게 하옵소서",
+      "source_text_hash": "547e852b2e64aa802a2c72808337504a383fc5a6ca5eac961c1c9ff99436a510",
+      "translation_text_hash": "ff7c0ec49b4c34da6887c37c714ab68892d35e74902691f71103281189090ce4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 가로되 주여 이런 물을 내게 주사 목마르지도 않고 또 여기 물 길러 오지도 않게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "ff7c0ec49b4c34da6887c37c714ab68892d35e74902691f71103281189090ce4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:16",
+      "sequence": 26172,
+      "chapter_label": "JHN 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "Jesus said to her, “Go, call your husband, and come here.”",
+      "ko": "가라사대 가서 네 남편을 불러 오라",
+      "source_text_hash": "ece48c44626cd5b81935dbca70e7fec03af60e7c340b3c828c3d243fccea3c6b",
+      "translation_text_hash": "855e1d8b7a75e9b6039d24fe13952ae5819799fea8fef9c5bf2ef582310b90f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 가서 네 남편을 불러 오라"
+      ],
+      "raw_text_hashes": [
+        "855e1d8b7a75e9b6039d24fe13952ae5819799fea8fef9c5bf2ef582310b90f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:17",
+      "sequence": 26173,
+      "chapter_label": "JHN 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "The woman answered, “I have no husband.” Jesus said to her, “You said well, ‘I have no husband,’",
+      "ko": "여자가 대답하여 가로되 나는 남편이 없나이다 예수께서 가라사대 네가 남편이 없다 하는 말이 옳도다",
+      "source_text_hash": "06811a17df1ed7b5c339438396915a0d5ad8d0b640f1bcd12a1f76cba13b1376",
+      "translation_text_hash": "df5276bba30b2025d3f27baa1fdfb5a00d283782a42648c616996d4fbad80312",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 대답하여 가로되 나는 남편이 없나이다 예수께서 가라사대 네가 남편이 없다 하는 말이 옳도다"
+      ],
+      "raw_text_hashes": [
+        "df5276bba30b2025d3f27baa1fdfb5a00d283782a42648c616996d4fbad80312"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:18",
+      "sequence": 26174,
+      "chapter_label": "JHN 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "for you have had five husbands; and he whom you now have is not your husband. This you have said truly.”",
+      "ko": "네가 남편 다섯이 있었으나 지금 있는 자는 네 남편이 아니니 네 말이 참되도다",
+      "source_text_hash": "15b371636d3455996bb4a2b84261b22c7e7b3f91094d4874a13ff02197d27ff9",
+      "translation_text_hash": "f3d932a86527616bb238b6453aca07e95a4a16171873ab05225c2d496fc74bc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 남편 다섯이 있었으나 지금 있는 자는 네 남편이 아니니 네 말이 참되도다"
+      ],
+      "raw_text_hashes": [
+        "f3d932a86527616bb238b6453aca07e95a4a16171873ab05225c2d496fc74bc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:19",
+      "sequence": 26175,
+      "chapter_label": "JHN 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "The woman said to him, “Sir, I perceive that you are a prophet.",
+      "ko": "여자가 가로되 주여 내가 보니 선지자로소이다",
+      "source_text_hash": "70ee9d395ed578cf0a1e8d122a5fd81f44d4f9472ac5d51e96b86ebc762aba07",
+      "translation_text_hash": "8535dba03711bf4ee575132c369445dde779e381a5dd4560bc7f802944b828a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 가로되 주여 내가 보니 선지자로소이다"
+      ],
+      "raw_text_hashes": [
+        "8535dba03711bf4ee575132c369445dde779e381a5dd4560bc7f802944b828a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:20",
+      "sequence": 26176,
+      "chapter_label": "JHN 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Our fathers worshiped in this mountain, and you Jews say that in Jerusalem is the place where people ought to worship.”",
+      "ko": "우리 조상들은 이 산에서 예배하였는데 당신들의 말은 예배할 곳이 예루살렘에 있다 하더이다",
+      "source_text_hash": "ad3f29e4fda4e917c7425661e17d9f1ce13b23bdf509cf1ca19110aea0134d79",
+      "translation_text_hash": "4b7dc916e227bd1f463a1bac19ce96c3f5e1b3479d59628b75be84383b62ae51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 조상들은 이 산에서 예배하였는데 당신들의 말은 예배할 곳이 예루살렘에 있다 하더이다"
+      ],
+      "raw_text_hashes": [
+        "4b7dc916e227bd1f463a1bac19ce96c3f5e1b3479d59628b75be84383b62ae51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:21",
+      "sequence": 26177,
+      "chapter_label": "JHN 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Jesus said to her, “Woman, believe me, the hour is coming when neither in this mountain nor in Jerusalem will you worship the Father.",
+      "ko": "예수께서 가라사대 여자여 내 말을 믿으라 이 산에서도 말고 예루살렘에서도 말고 너희가 아버지께 예배할 때가 이르리라",
+      "source_text_hash": "7568589da6d62ee0ffd24cefbdda1a53b39af0b39e1acf01696bf49c6b57c0ad",
+      "translation_text_hash": "7ebcdd675b5a40f9c8723b6a443c2a89a86b2e2de729464df61b8fef53c9f0e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 여자여 내 말을 믿으라 이 산에서도 말고 예루살렘에서도 말고 너희가 아버지께 예배할 때가 이르리라"
+      ],
+      "raw_text_hashes": [
+        "7ebcdd675b5a40f9c8723b6a443c2a89a86b2e2de729464df61b8fef53c9f0e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:22",
+      "sequence": 26178,
+      "chapter_label": "JHN 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "You worship that which you don’t know. We worship that which we know; for salvation is from the Jews.",
+      "ko": "너희는 알지 못하는 것을 예배하고 우리는 아는 것을 예배하노니 이는 구원이 유대인에게서 남이니라",
+      "source_text_hash": "4e76705957f3e3e859b73f723d118535d919c836fb2016ffdbb82cc2d2feb33d",
+      "translation_text_hash": "11c685d598f5606e8c388a0eff23a60d1464e9462e515b12588919c4e8db4a44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 알지 못하는 것을 예배하고 우리는 아는 것을 예배하노니 이는 구원이 유대인에게서 남이니라"
+      ],
+      "raw_text_hashes": [
+        "11c685d598f5606e8c388a0eff23a60d1464e9462e515b12588919c4e8db4a44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:23",
+      "sequence": 26179,
+      "chapter_label": "JHN 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "But the hour comes, and now is, when the true worshipers will worship the Father in spirit and truth, for the Father seeks such to be his worshipers.",
+      "ko": "아버지께 참으로 예배하는 자들은 신령과 진정으로 예배할 때가 오나니 곧 이때라 아버지께서는 이렇게 자기에게 예배하는 자들을 찾으시느니라",
+      "source_text_hash": "e5c8cf0e1e4118eb641514bfd956191b977adecf8b73a56c9319031bee10925b",
+      "translation_text_hash": "4d55a9fd6d2dc2973b7b654e0ad76a052d90a967494d9c1715043eec23d412e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께 참으로 예배하는 자들은 신령과 진정으로 예배할 때가 오나니 곧 이때라 아버지께서는 이렇게 자기에게 예배하는 자들을 찾으시느니라"
+      ],
+      "raw_text_hashes": [
+        "4d55a9fd6d2dc2973b7b654e0ad76a052d90a967494d9c1715043eec23d412e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:24",
+      "sequence": 26180,
+      "chapter_label": "JHN 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "God is spirit, and those who worship him must worship in spirit and truth.”",
+      "ko": "하나님은 영이시니 예배하는 자가 신령과 진정으로 예배할찌니라",
+      "source_text_hash": "ebcd6344d52970ef42227b2bdb6c1e3deafce528dcbca237e5b4df8a1b40093b",
+      "translation_text_hash": "dd4cf8b98a4d11f78e3b192abbb4badba5c9ae322613f8b435542f4c017fa908",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 영이시니 예배하는 자가 신령과 진정으로 예배할찌니라"
+      ],
+      "raw_text_hashes": [
+        "dd4cf8b98a4d11f78e3b192abbb4badba5c9ae322613f8b435542f4c017fa908"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:25",
+      "sequence": 26181,
+      "chapter_label": "JHN 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "The woman said to him, “I know that Messiah is coming, he who is called Christ. When he has come, he will declare to us all things.”",
+      "ko": "여자가 가로되 메시야 곧 그리스도라 하는 이가 오실 줄을 내가 아노니 그가 오시면 모든 것을 우리에게 고하시리이다",
+      "source_text_hash": "967e89ea03cc2a5b5b757feb4aeafff9b734136fd60b29e01b9ddf1d320429cb",
+      "translation_text_hash": "fda0fc9be72d18ec0d593672db9b6db2b3c86d674d2e18a3ec610ec9af2dfcd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 가로되 메시야 곧 그리스도라 하는 이가 오실 줄을 내가 아노니 그가 오시면 모든 것을 우리에게 고하시리이다"
+      ],
+      "raw_text_hashes": [
+        "fda0fc9be72d18ec0d593672db9b6db2b3c86d674d2e18a3ec610ec9af2dfcd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:26",
+      "sequence": 26182,
+      "chapter_label": "JHN 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "Jesus said to her, “I am he, the one who speaks to you.”",
+      "ko": "예수께서 이르시되 네게 말하는 내가 그로라 하시니라",
+      "source_text_hash": "04066cdbc8576547afade4fb368b25b4906f3aa5dc72e9e4253ef6d5a0e0a90a",
+      "translation_text_hash": "24507cf386baabb6a94d42481d650728ce7efeedde39b52f290a216b0d752c88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 네게 말하는 내가 그로라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "24507cf386baabb6a94d42481d650728ce7efeedde39b52f290a216b0d752c88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:27",
+      "sequence": 26183,
+      "chapter_label": "JHN 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "Just then, his disciples came. They marveled that he was speaking with a woman; yet no one said, “What are you looking for?” or, “Why do you speak with her?”",
+      "ko": "이 때에 제자들이 돌아와서 예수께서 여자와 말씀하시는 것을 이상히 여겼으나 무엇을 구하시나이까 어찌하여 저와 말씀하시나이까 묻는 이가 없더라",
+      "source_text_hash": "2f69bd8ef67fb112b7c1db7c96cf07d240be67771e443b5a350c873e9b3883ac",
+      "translation_text_hash": "35d461c46a2485c411109bcba3c826ff9469c4a16f412692fc2e90f9b9ff98f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 제자들이 돌아와서 예수께서 여자와 말씀하시는 것을 이상히 여겼으나 무엇을 구하시나이까 어찌하여 저와 말씀하시나이까 묻는 이가 없더라"
+      ],
+      "raw_text_hashes": [
+        "35d461c46a2485c411109bcba3c826ff9469c4a16f412692fc2e90f9b9ff98f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:28",
+      "sequence": 26184,
+      "chapter_label": "JHN 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "So the woman left her water pot, went away into the city, and said to the people,",
+      "ko": "여자가 물동이를 버려두고 동네에 들어가서 사람들에게 이르되",
+      "source_text_hash": "0aaf6bc3ee36cd769d6bfc1c947de8fafe5771c4c187c7e8fbbe7c99eed24a13",
+      "translation_text_hash": "135851269a14c0b48e30bd9655c058adf0bb07ed6f4756e0d251113480de2e2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 물동이를 버려두고 동네에 들어가서 사람들에게 이르되"
+      ],
+      "raw_text_hashes": [
+        "135851269a14c0b48e30bd9655c058adf0bb07ed6f4756e0d251113480de2e2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:29",
+      "sequence": 26185,
+      "chapter_label": "JHN 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "“Come, see a man who told me everything that I have done. Can this be the Christ?”",
+      "ko": "나의 행한 모든 일을 내게 말한 사람을 와 보라 이는 그리스도가 아니냐 하니",
+      "source_text_hash": "521b9ecbe04876acc4d48c451d56668cef920c5123e6669cdb370550cf087ea4",
+      "translation_text_hash": "070bca134a38cf35a302513836fcc2ff0fcbc51290657d908a5e27064ffea44b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 행한 모든 일을 내게 말한 사람을 와 보라 이는 그리스도가 아니냐 하니"
+      ],
+      "raw_text_hashes": [
+        "070bca134a38cf35a302513836fcc2ff0fcbc51290657d908a5e27064ffea44b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:30",
+      "sequence": 26186,
+      "chapter_label": "JHN 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "They went out of the city, and were coming to him.",
+      "ko": "저희가 동네에서 나와 예수께로 오더라",
+      "source_text_hash": "8bc47684451aa6d332a44ff1780c1b067748a784cd36a9cf75ce4a6074df819b",
+      "translation_text_hash": "71085a49f2ea418543b7515e51656be3d8ec5b198a14d8a3bf40c13307682a98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 동네에서 나와 예수께로 오더라"
+      ],
+      "raw_text_hashes": [
+        "71085a49f2ea418543b7515e51656be3d8ec5b198a14d8a3bf40c13307682a98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:31",
+      "sequence": 26187,
+      "chapter_label": "JHN 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "In the meanwhile, the disciples urged him, saying, “Rabbi, eat.”",
+      "ko": "그 사이에 제자들이 청하여 가로되 랍비여 잡수소서",
+      "source_text_hash": "00ce2f688ed86bf679e9eea4df5788ffc24a46f8b3b0a3331e0fc7a2d917988a",
+      "translation_text_hash": "34268bd0147000ff77d33f04cc24d881dfda730686ac3495e05d68f466ce176f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사이에 제자들이 청하여 가로되 랍비여 잡수소서"
+      ],
+      "raw_text_hashes": [
+        "34268bd0147000ff77d33f04cc24d881dfda730686ac3495e05d68f466ce176f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:32",
+      "sequence": 26188,
+      "chapter_label": "JHN 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "But he said to them, “I have food to eat that you don’t know about.”",
+      "ko": "가라사대 내게는 너희가 알지 못하는 먹을 양식이 있느니라",
+      "source_text_hash": "2e3bdac0dee02bb76a66e8a871852f5fdc392df8e73ce0f675417ce7f150cbcf",
+      "translation_text_hash": "925e6ea1688e3a7f0c3185f3cc0aa79299365fec16897e854c809c5acd94de91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 내게는 너희가 알지 못하는 먹을 양식이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "925e6ea1688e3a7f0c3185f3cc0aa79299365fec16897e854c809c5acd94de91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:33",
+      "sequence": 26189,
+      "chapter_label": "JHN 4",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 33
+        }
+      ],
+      "en": "The disciples therefore said to one another, “Has anyone brought him something to eat?”",
+      "ko": "제자들이 서로 말하되 누가 잡수실 것을 갖다 드렸는가 한대",
+      "source_text_hash": "137a4e6285dd14f02a97e4b483fd95a462cab937796402b42ce712cde9ff0c50",
+      "translation_text_hash": "79e17afaa6d375bb792134e209a3fb3f7a7f42db77df8ae627e0c3cae60338a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 서로 말하되 누가 잡수실 것을 갖다 드렸는가 한대"
+      ],
+      "raw_text_hashes": [
+        "79e17afaa6d375bb792134e209a3fb3f7a7f42db77df8ae627e0c3cae60338a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:34",
+      "sequence": 26190,
+      "chapter_label": "JHN 4",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus said to them, “My food is to do the will of him who sent me and to accomplish his work.",
+      "ko": "예수께서 이르시되 나의 양식은 나를 보내신 이의 뜻을 행하며 그의 일을 온전히 이루는 이것이니라",
+      "source_text_hash": "e978484c70b51ecdde52bc2ec8c5cdcf64d84c11d6381c1a541ea24f8a975ad0",
+      "translation_text_hash": "406db832366b5a620645f2d43d59b6122d6ef3d8fea394b63a5b438df94b7eee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 나의 양식은 나를 보내신 이의 뜻을 행하며 그의 일을 온전히 이루는 이것이니라"
+      ],
+      "raw_text_hashes": [
+        "406db832366b5a620645f2d43d59b6122d6ef3d8fea394b63a5b438df94b7eee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:35",
+      "sequence": 26191,
+      "chapter_label": "JHN 4",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 35
+        }
+      ],
+      "en": "Don’t you say, ‘There are yet four months until the harvest’? Behold, I tell you, lift up your eyes and look at the fields, that they are white for harvest already.",
+      "ko": "너희가 넉 달이 지나야 추수할 때가 이르겠다 하지 아니하느냐 내가 너희에게 이르노니 눈을 들어 밭을 보라 희어져 추수하게 되었도다",
+      "source_text_hash": "6c546f621fc5584abb8099a6561a6181d4f6b939f4712f45d12b64602a3241d5",
+      "translation_text_hash": "d37451309f051ffbb99b1a668ad605fae59e11fa9551d812a96e1db555576840",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 넉 달이 지나야 추수할 때가 이르겠다 하지 아니하느냐 내가 너희에게 이르노니 눈을 들어 밭을 보라 희어져 추수하게 되었도다"
+      ],
+      "raw_text_hashes": [
+        "d37451309f051ffbb99b1a668ad605fae59e11fa9551d812a96e1db555576840"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:36",
+      "sequence": 26192,
+      "chapter_label": "JHN 4",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 36
+        }
+      ],
+      "en": "He who reaps receives wages and gathers fruit to eternal life, that both he who sows and he who reaps may rejoice together.",
+      "ko": "거두는 자가 이미 삯도 받고 영생에 이르는 열매를 모으나니 이는 뿌리는 자와 거두는 자가 함께 즐거워하게 하려 함이니라",
+      "source_text_hash": "65f869c218da1c31411f182d06141488358bce8acaffaabf09c21f3049dfccb2",
+      "translation_text_hash": "61360d1e15ddc47669613cd3cc553fe9406b18db6b0dc81bd8732aa02aa35af7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거두는 자가 이미 삯도 받고 영생에 이르는 열매를 모으나니 이는 뿌리는 자와 거두는 자가 함께 즐거워하게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "61360d1e15ddc47669613cd3cc553fe9406b18db6b0dc81bd8732aa02aa35af7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:37",
+      "sequence": 26193,
+      "chapter_label": "JHN 4",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 37
+        }
+      ],
+      "en": "For in this the saying is true, ‘One sows, and another reaps.’",
+      "ko": "그런즉 한 사람이 심고 다른 사람이 거둔다 하는 말이 옳도다",
+      "source_text_hash": "0aa77a876a1bc45598b99e191cc086e43878be098d22b420685041e393682697",
+      "translation_text_hash": "2b23ad69c0e8aca57098a8b810e6610c2a4752bc0f431bd9a3843d9ffd40d9ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 한 사람이 심고 다른 사람이 거둔다 하는 말이 옳도다"
+      ],
+      "raw_text_hashes": [
+        "2b23ad69c0e8aca57098a8b810e6610c2a4752bc0f431bd9a3843d9ffd40d9ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:38",
+      "sequence": 26194,
+      "chapter_label": "JHN 4",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 38
+        }
+      ],
+      "en": "I sent you to reap that for which you haven’t labored. Others have labored, and you have entered into their labor.”",
+      "ko": "내가 너희로 노력지 아니한 것을 거두러 보내었노니 다른 사람들은 노력하였고 너희는 그들의 노력한 것에 참예하였느니라",
+      "source_text_hash": "616170f97030bcd43c95aaa7e91d99f700aaf4600a04220f5b333948f1858a4e",
+      "translation_text_hash": "b7560747d94d10e6ff5f77cea7420759f7b546fd2c8fd2a0422310943f2c4285",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희로 노력지 아니한 것을 거두러 보내었노니 다른 사람들은 노력하였고 너희는 그들의 노력한 것에 참예하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b7560747d94d10e6ff5f77cea7420759f7b546fd2c8fd2a0422310943f2c4285"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:39",
+      "sequence": 26195,
+      "chapter_label": "JHN 4",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 39
+        }
+      ],
+      "en": "From that city many of the Samaritans believed in him because of the word of the woman, who testified, “He told me everything that I have done.”",
+      "ko": "여자의 말이 그가 나의 행한 모든 것을 내게 말하였다 증거하므로 그 동네 중에 많은 사마리아인이 예수를 믿는지라",
+      "source_text_hash": "3deb1dd87e44807dc9fa468abc699abcff0b98eb0a29e5cfce557e15bad212e0",
+      "translation_text_hash": "c969bc67b2bf3e7ca41ffd67643f44833097d2b3443bbb2dbea640cad879adb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자의 말이 그가 나의 행한 모든 것을 내게 말하였다 증거하므로 그 동네 중에 많은 사마리아인이 예수를 믿는지라"
+      ],
+      "raw_text_hashes": [
+        "c969bc67b2bf3e7ca41ffd67643f44833097d2b3443bbb2dbea640cad879adb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:40",
+      "sequence": 26196,
+      "chapter_label": "JHN 4",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 40
+        }
+      ],
+      "en": "So when the Samaritans came to him, they begged him to stay with them. He stayed there two days.",
+      "ko": "사마리아인들이 예수께 와서 자기들과 함께 유하기를 청하니 거기서 이틀을 유하시매",
+      "source_text_hash": "eb1b1ab55b899ed74d746dc89454d5b29bdae8d6e0080f7d80b75c0b002c7ee3",
+      "translation_text_hash": "eecb839b14a2682c5997040384d3c67d9a7302068b1e43d860438786b128145e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아인들이 예수께 와서 자기들과 함께 유하기를 청하니 거기서 이틀을 유하시매"
+      ],
+      "raw_text_hashes": [
+        "eecb839b14a2682c5997040384d3c67d9a7302068b1e43d860438786b128145e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:41",
+      "sequence": 26197,
+      "chapter_label": "JHN 4",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 41
+        }
+      ],
+      "en": "Many more believed because of his word.",
+      "ko": "예수의 말씀을 인하여 믿는 자가 더욱 많아",
+      "source_text_hash": "7964e32085a22e0343eb5498ed90d6617462de6abf8044d16d38f720b66b5ac7",
+      "translation_text_hash": "94e6e9fe21eed9e1735b8fe6e5e3f826b95479bcf0df455ff021dfab56e19597",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 말씀을 인하여 믿는 자가 더욱 많아"
+      ],
+      "raw_text_hashes": [
+        "94e6e9fe21eed9e1735b8fe6e5e3f826b95479bcf0df455ff021dfab56e19597"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:42",
+      "sequence": 26198,
+      "chapter_label": "JHN 4",
+      "verse_label": "42",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 42
+        }
+      ],
+      "en": "They said to the woman, “Now we believe, not because of your speaking; for we have heard for ourselves, and know that this is indeed the Christ, the Savior of the world.”",
+      "ko": "그 여자에게 말하되 이제 우리가 믿는 것은 네 말을 인함이 아니니 이는 우리가 친히 듣고 그가 참으로 세상의 구주신줄 앎이니라 하였더라",
+      "source_text_hash": "33405021b0df696d14d21f53ff151d325a121a66c17510962c087e6fd742892b",
+      "translation_text_hash": "deb77564a1b8e566ece96f1e03e9193188365bb28df8374b8cf2179601569920",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자에게 말하되 이제 우리가 믿는 것은 네 말을 인함이 아니니 이는 우리가 친히 듣고 그가 참으로 세상의 구주신줄 앎이니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "deb77564a1b8e566ece96f1e03e9193188365bb28df8374b8cf2179601569920"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:43",
+      "sequence": 26199,
+      "chapter_label": "JHN 4",
+      "verse_label": "43",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 43
+        }
+      ],
+      "en": "After the two days he went out from there and went into Galilee.",
+      "ko": "이틀이 지나매 예수께서 거기를 떠나 갈릴리로 가시며",
+      "source_text_hash": "e566a17e0d216d4043fa6b3dac38cb18e771df8aec23a1c19cd22c4825b98b78",
+      "translation_text_hash": "4d6721c82345624a47b582b59b5831f22fefc8419884f7cb96a5bf5a00196a5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이틀이 지나매 예수께서 거기를 떠나 갈릴리로 가시며"
+      ],
+      "raw_text_hashes": [
+        "4d6721c82345624a47b582b59b5831f22fefc8419884f7cb96a5bf5a00196a5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:44",
+      "sequence": 26200,
+      "chapter_label": "JHN 4",
+      "verse_label": "44",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 44
+        }
+      ],
+      "en": "For Jesus himself testified that a prophet has no honor in his own country.",
+      "ko": "친히 증거하시기를 선지자가 고향에서는 높임을 받지 못한다 하시고",
+      "source_text_hash": "2d6df99a6f5041f9ecc9570c063be7a6df3d8b3e93b3f82bf9ab65ce8e8bdc6e",
+      "translation_text_hash": "d1e3093a682f99db39cd5b4dab87755b6d9a99d88a63a936f0ea9cbeab5af658",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "친히 증거하시기를 선지자가 고향에서는 높임을 받지 못한다 하시고"
+      ],
+      "raw_text_hashes": [
+        "d1e3093a682f99db39cd5b4dab87755b6d9a99d88a63a936f0ea9cbeab5af658"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:45",
+      "sequence": 26201,
+      "chapter_label": "JHN 4",
+      "verse_label": "45",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 45
+        }
+      ],
+      "en": "So when he came into Galilee, the Galileans received him, having seen all the things that he did in Jerusalem at the feast, for they also went to the feast.",
+      "ko": "갈릴리에 이르시매 갈릴리인들이 그를 영접하니 이는 자기들도 명절에 갔다가 예수께서 명절 중 예루살렘에서 하신 모든 일을 보았음이더라",
+      "source_text_hash": "2630e1af19e8fa644646ed237ecbe466e4ed6b9bb87c8b2d9fc4916663d69aec",
+      "translation_text_hash": "853d173f128d9c80aca4b9df84e3e467611a7b87e1d2e9d1c5c04a6885df4b77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리에 이르시매 갈릴리인들이 그를 영접하니 이는 자기들도 명절에 갔다가 예수께서 명절 중 예루살렘에서 하신 모든 일을 보았음이더라"
+      ],
+      "raw_text_hashes": [
+        "853d173f128d9c80aca4b9df84e3e467611a7b87e1d2e9d1c5c04a6885df4b77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:46",
+      "sequence": 26202,
+      "chapter_label": "JHN 4",
+      "verse_label": "46",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 46
+        }
+      ],
+      "en": "Jesus came therefore again to Cana of Galilee, where he made the water into wine. There was a certain nobleman whose son was sick at Capernaum.",
+      "ko": "예수께서 다시 갈릴리 가나에 이르시니 전에 물로 포도주를 만드신 곳이라 왕의 신하가 있어 그 아들이 가버나움에서 병들었더니",
+      "source_text_hash": "a25014941c19ff04386f3ae3f74885b6bce3c5eddba5738c24449c980827835c",
+      "translation_text_hash": "8bb6a470db5741501c5aecfabf9e91c4fad039bd2a03f19872659ed795085525",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 다시 갈릴리 가나에 이르시니 전에 물로 포도주를 만드신 곳이라 왕의 신하가 있어 그 아들이 가버나움에서 병들었더니"
+      ],
+      "raw_text_hashes": [
+        "8bb6a470db5741501c5aecfabf9e91c4fad039bd2a03f19872659ed795085525"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:47",
+      "sequence": 26203,
+      "chapter_label": "JHN 4",
+      "verse_label": "47",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 47
+        }
+      ],
+      "en": "When he heard that Jesus had come out of Judea into Galilee, he went to him and begged him that he would come down and heal his son, for he was at the point of death.",
+      "ko": "그가 예수께서 유대로부터 갈릴리에 오심을 듣고 가서 청하되 내려오셔서 내 아들의 병을 고쳐주소서 하니 저가 거의 죽게 되었음이라",
+      "source_text_hash": "92766fcfb27b26a13ddf76e7cc9e38cd223ccfeadd047234c4dc9d7cc28d6083",
+      "translation_text_hash": "3f9a85358bbde420a02726b19cbbc4f1118f8bb2660a7b8ed977fc5bac8ac8e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 예수께서 유대로부터 갈릴리에 오심을 듣고 가서 청하되 내려오셔서 내 아들의 병을 고쳐주소서 하니 저가 거의 죽게 되었음이라"
+      ],
+      "raw_text_hashes": [
+        "3f9a85358bbde420a02726b19cbbc4f1118f8bb2660a7b8ed977fc5bac8ac8e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:48",
+      "sequence": 26204,
+      "chapter_label": "JHN 4",
+      "verse_label": "48",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 48
+        }
+      ],
+      "en": "Jesus therefore said to him, “Unless you people see signs and wonders, you will in no way believe.”",
+      "ko": "예수께서 가라사대 너희는 표적과 기사를 보지 못하면 도무지 믿지 아니하리라",
+      "source_text_hash": "e7516b70dc0859f02b8faaa09c38b40ac406ab1ccd68c94182afeb09a13bfb9c",
+      "translation_text_hash": "963f146d9cbb4e3a80784bbdfa4b87674a7bbe349f058d318783799f8037a09a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너희는 표적과 기사를 보지 못하면 도무지 믿지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "963f146d9cbb4e3a80784bbdfa4b87674a7bbe349f058d318783799f8037a09a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:49",
+      "sequence": 26205,
+      "chapter_label": "JHN 4",
+      "verse_label": "49",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 49
+        }
+      ],
+      "en": "The nobleman said to him, “Sir, come down before my child dies.”",
+      "ko": "신하가 가로되 주여 내 아이가 죽기 전에 내려오소서",
+      "source_text_hash": "057fb5091d22cd48a8d5ec7784fbc6a685a33085c69bb487c0dc6d9f0f61da05",
+      "translation_text_hash": "b1179602fa775c5d9bdc547ce25ddce4b09d2205062bbff1a6348a3dd392b55e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신하가 가로되 주여 내 아이가 죽기 전에 내려오소서"
+      ],
+      "raw_text_hashes": [
+        "b1179602fa775c5d9bdc547ce25ddce4b09d2205062bbff1a6348a3dd392b55e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:50",
+      "sequence": 26206,
+      "chapter_label": "JHN 4",
+      "verse_label": "50",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 50
+        }
+      ],
+      "en": "Jesus said to him, “Go your way. Your son lives.”The man believed the word that Jesus spoke to him, and he went his way.",
+      "ko": "예수께서 가라사대 가라 네 아들이 살았다 하신대 그 사람이 예수의 하신 말씀을 믿고 가더니",
+      "source_text_hash": "0ca683fe004874bc2af300a9bded37d88b4550da7832cc0a7f5836217dbb0104",
+      "translation_text_hash": "6d2531770e89f4c1b4de8a08fb3a5fa72f26758248081d4160d329d1360ccdc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 가라 네 아들이 살았다 하신대 그 사람이 예수의 하신 말씀을 믿고 가더니"
+      ],
+      "raw_text_hashes": [
+        "6d2531770e89f4c1b4de8a08fb3a5fa72f26758248081d4160d329d1360ccdc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:51",
+      "sequence": 26207,
+      "chapter_label": "JHN 4",
+      "verse_label": "51",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 51
+        }
+      ],
+      "en": "As he was going down, his servants met him and reported, saying “Your child lives!”",
+      "ko": "내려가는 길에서 그 종들이 오다가 만나서 아이가 살았다 하거늘",
+      "source_text_hash": "9c50263aa459d748c184d78294548abfc7f5dc494f92c93ddb870d5c3124f79d",
+      "translation_text_hash": "90714f793577463303d125aefce9c1cb1e3d03d869b753faae8166f81e03eda0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내려가는 길에서 그 종들이 오다가 만나서 아이가 살았다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "90714f793577463303d125aefce9c1cb1e3d03d869b753faae8166f81e03eda0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:52",
+      "sequence": 26208,
+      "chapter_label": "JHN 4",
+      "verse_label": "52",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 52
+        }
+      ],
+      "en": "So he inquired of them the hour when he began to get better. They said therefore to him, “Yesterday at the seventh hour, the fever left him.”",
+      "ko": "그 낫기 시작한 때를 물은즉 어제 제 칠시에 열기가 떨어졌나이다 하는지라",
+      "source_text_hash": "7168ba8cbad08aa172e30712b47a85a997b03f7d122fe636ab921bfcfaef78ba",
+      "translation_text_hash": "dcd7db1e6f71381fb63dee2de3e14502d0723af32921e50b539350b3517daff4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 낫기 시작한 때를 물은즉 어제 제 칠시에 열기가 떨어졌나이다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "dcd7db1e6f71381fb63dee2de3e14502d0723af32921e50b539350b3517daff4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:53",
+      "sequence": 26209,
+      "chapter_label": "JHN 4",
+      "verse_label": "53",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 53
+        }
+      ],
+      "en": "So the father knew that it was at that hour in which Jesus said to him, “Your son lives.”He believed, as did his whole house.",
+      "ko": "아비가 예수께서 네 아들이 살았다 말씀하신 그 때인줄 알고 자기와 그 온 집이 다 믿으니라",
+      "source_text_hash": "28ed25df42262777c2d641cd35db1dc8a6305e7676757ea9dc352c1d98f49490",
+      "translation_text_hash": "45ec4024f40e78159baae3385348dd2551fa2ac483f20b6b973c8467613b2762",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비가 예수께서 네 아들이 살았다 말씀하신 그 때인줄 알고 자기와 그 온 집이 다 믿으니라"
+      ],
+      "raw_text_hashes": [
+        "45ec4024f40e78159baae3385348dd2551fa2ac483f20b6b973c8467613b2762"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:4:54",
+      "sequence": 26210,
+      "chapter_label": "JHN 4",
+      "verse_label": "54",
+      "locator": {
+        "book": "JHN",
+        "chapter": 4,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 4,
+          "verse": 54
+        }
+      ],
+      "en": "This is again the second sign that Jesus did, having come out of Judea into Galilee.",
+      "ko": "이것은 예수께서 유대에서 갈릴리로 오신 후 행하신 두 번째 표적이니라",
+      "source_text_hash": "86be9f5f3e95c1587c857d6e1afb43061d13001779adb6e030f2c9e91b97930d",
+      "translation_text_hash": "3f7d8cdb0ab677ee4d00aac56c7c6dc99cddada35dd0bd6fd01ab95e0793992e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 예수께서 유대에서 갈릴리로 오신 후 행하신 두 번째 표적이니라"
+      ],
+      "raw_text_hashes": [
+        "3f7d8cdb0ab677ee4d00aac56c7c6dc99cddada35dd0bd6fd01ab95e0793992e"
+      ]
+    }
+  ]
+}

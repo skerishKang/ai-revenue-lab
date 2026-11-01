@@ -1,0 +1,237 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:142",
+  "unit_ordinal": 620,
+  "unit_label": "PSA 142",
+  "book_code": "PSA",
+  "chapter_number": 142,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:142:1",
+      "sequence": 16288,
+      "chapter_label": "PSA 142",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 142,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 142,
+          "verse": 1
+        }
+      ],
+      "en": "I cry with my voice to the LORD. With my voice, I ask the LORD for mercy.",
+      "ko": "내가 소리 내어 여호와께 부르짖으며 소리 내어 여호와께 간구하는도다",
+      "source_text_hash": "78772e972b066ad1fe7fb778860523d6b89c09edbdb3cfc74fdf00551dd4022b",
+      "translation_text_hash": "9b16de239af75f90b91c0ebf252389890b434c594c81043f2723bb236556409b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 소리 내어 여호와께 부르짖으며 소리 내어 여호와께 간구하는도다"
+      ],
+      "raw_text_hashes": [
+        "9b16de239af75f90b91c0ebf252389890b434c594c81043f2723bb236556409b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:142:2",
+      "sequence": 16289,
+      "chapter_label": "PSA 142",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 142,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 142,
+          "verse": 2
+        }
+      ],
+      "en": "I pour out my complaint before him. I tell him my troubles.",
+      "ko": "내가 내 원통함을 그 앞에 토하며 내 우환을 그 앞에 진술하는도다",
+      "source_text_hash": "5782c492a58693bbdf082ecb0cef13ab2509140d483131aca937be5307c62056",
+      "translation_text_hash": "b18c7edc9ecd2429ad51dff7110f664d34770e56bec6bae96dcfd6feb4656f9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 원통함을 그 앞에 토하며 내 우환을 그 앞에 진술하는도다"
+      ],
+      "raw_text_hashes": [
+        "b18c7edc9ecd2429ad51dff7110f664d34770e56bec6bae96dcfd6feb4656f9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:142:3",
+      "sequence": 16290,
+      "chapter_label": "PSA 142",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 142,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 142,
+          "verse": 3
+        }
+      ],
+      "en": "When my spirit was overwhelmed within me, you knew my route. On the path in which I walk, they have hidden a snare for me.",
+      "ko": "내 심령이 속에서 상할 때에도 주께서 내 길을 아셨나이다 나의 행하는 길에 저희가 나를 잡으려고 올무를 숨겼나이다",
+      "source_text_hash": "6032ace180962e08af369fe327be4dfe0dce15ab956e75af031912ae9e69a9ee",
+      "translation_text_hash": "ad2111846538ad32b72a525a6e739a63289ff93365ea1ed73f36afd68dd6a5b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 심령이 속에서 상할 때에도 주께서 내 길을 아셨나이다 나의 행하는 길에 저희가 나를 잡으려고 올무를 숨겼나이다"
+      ],
+      "raw_text_hashes": [
+        "ad2111846538ad32b72a525a6e739a63289ff93365ea1ed73f36afd68dd6a5b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:142:4",
+      "sequence": 16291,
+      "chapter_label": "PSA 142",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 142,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 142,
+          "verse": 4
+        }
+      ],
+      "en": "Look on my right, and see; for there is no one who is concerned for me. Refuge has fled from me. No one cares for my soul.",
+      "ko": "내 우편을 살펴 보소서 나를 아는 자도 없고 피난처도 없고 내 영혼을 돌아보는 자도 없나이다",
+      "source_text_hash": "45ec6e426cdc7c8402337055d90c2ec40e286cc6088f35b370df864878430e2a",
+      "translation_text_hash": "f7d97fd9b83915e5b51a3a090ed0b873d56ff7365ff26eb122b128c749e967ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 우편을 살펴 보소서 나를 아는 자도 없고 피난처도 없고 내 영혼을 돌아보는 자도 없나이다"
+      ],
+      "raw_text_hashes": [
+        "f7d97fd9b83915e5b51a3a090ed0b873d56ff7365ff26eb122b128c749e967ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:142:5",
+      "sequence": 16292,
+      "chapter_label": "PSA 142",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 142,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 142,
+          "verse": 5
+        }
+      ],
+      "en": "I cried to you, LORD. I said, “You are my refuge, my portion in the land of the living.”",
+      "ko": "여호와여 내가 주께 부르짖어 말하기를 주는 나의 피난처시요 생존 세계에서 나의 분깃이시라 하였나이다",
+      "source_text_hash": "470917a015ac8042ff654cdad492c820f3f856a19c239ee0e3857c4aa3a49bb6",
+      "translation_text_hash": "ef28e3cf34c9cb17dc9be1d8ba282ae6cc89ac319811573fc0e0a41c524dfd91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주께 부르짖어 말하기를 주는 나의 피난처시요 생존 세계에서 나의 분깃이시라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "ef28e3cf34c9cb17dc9be1d8ba282ae6cc89ac319811573fc0e0a41c524dfd91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:142:6",
+      "sequence": 16293,
+      "chapter_label": "PSA 142",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 142,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 142,
+          "verse": 6
+        }
+      ],
+      "en": "Listen to my cry, for I am in desperate need. Deliver me from my persecutors, for they are too strong for me.",
+      "ko": "나의 부르짖음을 들으소서 나는 심히 비천하니이다 나를 핍박하는 자에게서 건지소서 저희는 나보다 강하니이다",
+      "source_text_hash": "ef3db4cb1988e57b867d7b557b139e40e0549d7aa24221878cfbb877c18d3162",
+      "translation_text_hash": "6cee94c16fe240cb69c62da4894ddf4779f91f9324f28a27c74a79a4e7baaca8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 부르짖음을 들으소서 나는 심히 비천하니이다 나를 핍박하는 자에게서 건지소서 저희는 나보다 강하니이다"
+      ],
+      "raw_text_hashes": [
+        "6cee94c16fe240cb69c62da4894ddf4779f91f9324f28a27c74a79a4e7baaca8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:142:7",
+      "sequence": 16294,
+      "chapter_label": "PSA 142",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 142,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 142,
+          "verse": 7
+        }
+      ],
+      "en": "Bring my soul out of prison, that I may give thanks to your name. The righteous will surround me, for you will be good to me.",
+      "ko": "내 영혼을 옥에서 이끌어 내사 주의 이름을 감사케 하소서 주께서 나를 후대하시리니 의인이 나를 두르리이다",
+      "source_text_hash": "c497e15780ca37db8e2ac199e2bbb95ffd8eb85e96d99a5db1057af6c8d88d9d",
+      "translation_text_hash": "4f32c7ac6b746ce9f551285c59b169572ca85cc5abef0dff17cf0d0d9849d9fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼을 옥에서 이끌어 내사 주의 이름을 감사케 하소서 주께서 나를 후대하시리니 의인이 나를 두르리이다"
+      ],
+      "raw_text_hashes": [
+        "4f32c7ac6b746ce9f551285c59b169572ca85cc5abef0dff17cf0d0d9849d9fb"
+      ]
+    }
+  ]
+}

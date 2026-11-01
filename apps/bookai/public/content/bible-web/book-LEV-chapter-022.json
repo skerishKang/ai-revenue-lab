@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:022",
+  "unit_ordinal": 112,
+  "unit_label": "LEV 22",
+  "book_code": "LEV",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:22:1",
+      "sequence": 3371,
+      "chapter_label": "LEV 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:2",
+      "sequence": 3372,
+      "chapter_label": "LEV 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "“Tell Aaron and his sons to separate themselves from the holy things of the children of Israel, which they make holy to me, and that they not profane my holy name. I am the LORD.",
+      "ko": "아론과 그 아들들에게 고하여 그들로 이스라엘 자손이 내게 드리는 성물에 대하여 스스로 구별하여 내 성호를 욕되게 함이 없게 하라 나는 여호와니라",
+      "source_text_hash": "71f32fac8325ab539b7965515818f41cf483a32a67f1ffdcc2bd62d47585b560",
+      "translation_text_hash": "653a90d5fdc709c975dd92fc75cdd86feb33563ad61634d7ae678b7cc688eb1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들에게 고하여 그들로 이스라엘 자손이 내게 드리는 성물에 대하여 스스로 구별하여 내 성호를 욕되게 함이 없게 하라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "653a90d5fdc709c975dd92fc75cdd86feb33563ad61634d7ae678b7cc688eb1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:3",
+      "sequence": 3373,
+      "chapter_label": "LEV 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "“Tell them, ‘If anyone of all your offspring throughout your generations approaches the holy things which the children of Israel make holy to the LORD, having his uncleanness on him, that soul shall be cut off from before me. I am the LORD.",
+      "ko": "그들에게 이르라 무릇 너의 대대 자손 중에 그 몸이 부정하고도 이스라엘 자손이 구별하여 여호와께 드리는 성물에 가까이하는 자는 내 앞에서 끊어지리라 나는 여호와니라",
+      "source_text_hash": "d1e2b95dd5cacb3e963ae00f4176ea69cbd5dfdbfa6db5cba7664af2f76b5638",
+      "translation_text_hash": "13ebc293009850c231a05af1a92c49c68c993dd9007357c9efa96cbb6445faa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르라 무릇 너의 대대 자손 중에 그 몸이 부정하고도 이스라엘 자손이 구별하여 여호와께 드리는 성물에 가까이하는 자는 내 앞에서 끊어지리라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "13ebc293009850c231a05af1a92c49c68c993dd9007357c9efa96cbb6445faa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:4",
+      "sequence": 3374,
+      "chapter_label": "LEV 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "“‘Whoever of the offspring of Aaron is a leper or has a discharge shall not eat of the holy things until he is clean. Whoever touches anything that is unclean by the dead, or a man who has a seminal emission,",
+      "ko": "아론의 자손 중 문둥 환자나 유출병이 있는 자는 정하기 전에는 성물을 먹지 말 것이요 시체로 부정하게 된 자나 설정한 자나",
+      "source_text_hash": "f70ceb1465a333051730b5680ce53ce9fc41565276e21f27ac250814f1ebbd5f",
+      "translation_text_hash": "897bb1968bb4150a1a946fafbf188412a47ceb33e55e457836a07208632eb0c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 자손 중 문둥 환자나 유출병이 있는 자는 정하기 전에는 성물을 먹지 말 것이요 시체로 부정하게 된 자나 설정한 자나"
+      ],
+      "raw_text_hashes": [
+        "897bb1968bb4150a1a946fafbf188412a47ceb33e55e457836a07208632eb0c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:5",
+      "sequence": 3375,
+      "chapter_label": "LEV 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "or whoever touches any creeping thing by which he may be made unclean, or a man from whom he may become unclean, whatever uncleanness he has—",
+      "ko": "무릇 사람을 부정하게 하는 벌레에 접촉된 자나 무슨 부정이든지 사람을 더럽힐만한 자에게 접촉된 자",
+      "source_text_hash": "198b37aa4856140631a9b87e16b95766ce3c2a0702f6474a27d8b598bb1f138f",
+      "translation_text_hash": "9137af0e8b751485be28ac49823b879e702c03d76e7434be993f8733b674bb12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 사람을 부정하게 하는 벌레에 접촉된 자나 무슨 부정이든지 사람을 더럽힐만한 자에게 접촉된 자"
+      ],
+      "raw_text_hashes": [
+        "9137af0e8b751485be28ac49823b879e702c03d76e7434be993f8733b674bb12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:6",
+      "sequence": 3376,
+      "chapter_label": "LEV 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "the person that touches any such shall be unclean until the evening, and shall not eat of the holy things unless he bathes his body in water.",
+      "ko": "곧 이런 것에 접촉된 자는 저녁까지 부정하니 몸을 물로 씻지 아니하면 성물을 먹지 못할찌며",
+      "source_text_hash": "a7e75b0e4cfcea6a8648c775770605fbce146636731554c03e03f84a6e485307",
+      "translation_text_hash": "43440cd4b232f05b531af74a184edd91707d76ccaa657c9391ecd66dfd6f0580",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 이런 것에 접촉된 자는 저녁까지 부정하니 몸을 물로 씻지 아니하면 성물을 먹지 못할찌며"
+      ],
+      "raw_text_hashes": [
+        "43440cd4b232f05b531af74a184edd91707d76ccaa657c9391ecd66dfd6f0580"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:7",
+      "sequence": 3377,
+      "chapter_label": "LEV 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "When the sun is down, he shall be clean; and afterward he shall eat of the holy things, because it is his bread.",
+      "ko": "해 질 때에야 정하리니 그 후에 성물을 먹을 것이라 이는 자기의 응식이 됨이니라",
+      "source_text_hash": "60dafcc36e6228c79b0be06ee0652520277f0f236b08ee66f6dca4d179cc6249",
+      "translation_text_hash": "ba9574624e69a7da4fbdca8b57dba79aa6075a9a2e4c8601eebb5b0da4a66144",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해 질 때에야 정하리니 그 후에 성물을 먹을 것이라 이는 자기의 응식이 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "ba9574624e69a7da4fbdca8b57dba79aa6075a9a2e4c8601eebb5b0da4a66144"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:8",
+      "sequence": 3378,
+      "chapter_label": "LEV 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "He shall not eat that which dies of itself or is torn by animals, defiling himself by it. I am the LORD.",
+      "ko": "절로 죽은 것이나 들짐승에게 찢긴 것을 먹음으로 자기를 더럽히지 말라 나는 여호와니라",
+      "source_text_hash": "2f883c0d022bd4f71b1f0c0bb4a91df9a27b2d5940727369b82c96b0cb379997",
+      "translation_text_hash": "660e32417d70284992166bee865749228b105e29e6c803c8428455e1bf72fb82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "절로 죽은 것이나 들짐승에게 찢긴 것을 먹음으로 자기를 더럽히지 말라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "660e32417d70284992166bee865749228b105e29e6c803c8428455e1bf72fb82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:9",
+      "sequence": 3379,
+      "chapter_label": "LEV 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "“‘They shall therefore follow my commandment, lest they bear sin for it and die in it, if they profane it. I am the LORD who sanctifies them.",
+      "ko": "그들은 나의 명을 지킬 것이라 그것을 욕되게 하면 그로 인하여 죄를 짓고 그 가운데서 죽을까 하노라 나는 그들을 거룩하게 하는 여호와니라",
+      "source_text_hash": "f6fff488fb3d319f362a0d9803e655a79b04d2b2c9b3c45a241cc0ffab348c70",
+      "translation_text_hash": "5eef02ac3a97fa30dc69d4f95c3402a39ebee7fb4a0a61e4769ab1c0b10aaaaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 나의 명을 지킬 것이라 그것을 욕되게 하면 그로 인하여 죄를 짓고 그 가운데서 죽을까 하노라 나는 그들을 거룩하게 하는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "5eef02ac3a97fa30dc69d4f95c3402a39ebee7fb4a0a61e4769ab1c0b10aaaaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:10",
+      "sequence": 3380,
+      "chapter_label": "LEV 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "“‘No stranger shall eat of the holy thing: a foreigner living with the priests, or a hired servant, shall not eat of the holy thing.",
+      "ko": "외국인은 성물을 먹지 못할 것이며 제사장의 객이나 품군은 다 성물을 먹지 못할 것이니라",
+      "source_text_hash": "b04a2f12c23a06f9881793ae668baedc2a21a40a6b29d6c3da21a7b3ff9c61d3",
+      "translation_text_hash": "d70bf79510993334c2b54b2e444c517b04a9bd4aea2acd6f7bb92d7a61f88aec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외국인은 성물을 먹지 못할 것이며 제사장의 객이나 품군은 다 성물을 먹지 못할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "d70bf79510993334c2b54b2e444c517b04a9bd4aea2acd6f7bb92d7a61f88aec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:11",
+      "sequence": 3381,
+      "chapter_label": "LEV 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "But if a priest buys a slave, purchased by his money, he shall eat of it; and those who are born in his house shall eat of his bread.",
+      "ko": "그러나 제사장이 돈으로 사람을 샀으면 그 자는 그것을 먹을 것이고 그 집에서 출생한 자도 그러하여 그들이 제사장의 식물을 먹을 것이며",
+      "source_text_hash": "8206536f2936c5640933c491d1955ff47c11cae3a51380cc5936bcfa69b563aa",
+      "translation_text_hash": "fb7814ddcd2d64600afc60a6f7234bc36d2f4850ae1b23d33129fda5e9a0f033",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 제사장이 돈으로 사람을 샀으면 그 자는 그것을 먹을 것이고 그 집에서 출생한 자도 그러하여 그들이 제사장의 식물을 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "fb7814ddcd2d64600afc60a6f7234bc36d2f4850ae1b23d33129fda5e9a0f033"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:12",
+      "sequence": 3382,
+      "chapter_label": "LEV 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "If a priest’s daughter is married to an outsider, she shall not eat of the heave offering of the holy things.",
+      "ko": "제사장의 딸은 외국인에게 출가하였으면 거제의 성물을 먹지 못하되",
+      "source_text_hash": "a60c92fd12e0291cd1b8e1499cadc622b06bbc6ce2dddaacb06d2876862be890",
+      "translation_text_hash": "e617b7b421eb8f091abd68c14733329909800f3d1dff3fd76fa3aab8e02a7e5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장의 딸은 외국인에게 출가하였으면 거제의 성물을 먹지 못하되"
+      ],
+      "raw_text_hashes": [
+        "e617b7b421eb8f091abd68c14733329909800f3d1dff3fd76fa3aab8e02a7e5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:13",
+      "sequence": 3383,
+      "chapter_label": "LEV 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "But if a priest’s daughter is a widow, or divorced, and has no child, and has returned to her father’s house as in her youth, she may eat of her father’s bread; but no stranger shall eat any of it.",
+      "ko": "그가 과부가 되든지 이혼을 당하든지 자식이 없이 친정에 돌아와서 어릴 때와 같으면 그는 그 아비의 응식을 먹을 것이나 외국인은 먹지 못할 것이니라",
+      "source_text_hash": "0987c0c3aed14379d26a590037cf6f230edc0f81ef21205851ca1cafe9bd4e60",
+      "translation_text_hash": "7dbb45a623133f40457c6223b82f718bd59c0df58c94afbe6bad5d0553ef0fe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 과부가 되든지 이혼을 당하든지 자식이 없이 친정에 돌아와서 어릴 때와 같으면 그는 그 아비의 응식을 먹을 것이나 외국인은 먹지 못할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "7dbb45a623133f40457c6223b82f718bd59c0df58c94afbe6bad5d0553ef0fe5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:14",
+      "sequence": 3384,
+      "chapter_label": "LEV 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "“‘If a man eats something holy unwittingly, then he shall add the fifth part of its value to it, and shall give the holy thing to the priest.",
+      "ko": "사람이 부지중 성물을 먹으면 그 성물에 그 오분 일을 더하여 제사장에게 줄찌니라",
+      "source_text_hash": "0e0fc6763fb59b69504e4debb1d416700f1e215793d9f6c82dd74b9a54a71076",
+      "translation_text_hash": "f34b7cbf2612dce51d944718a188c89207d619f3aa783f6ec92695a788a74e4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 부지중 성물을 먹으면 그 성물에 그 오분 일을 더하여 제사장에게 줄찌니라"
+      ],
+      "raw_text_hashes": [
+        "f34b7cbf2612dce51d944718a188c89207d619f3aa783f6ec92695a788a74e4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:15",
+      "sequence": 3385,
+      "chapter_label": "LEV 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "The priests shall not profane the holy things of the children of Israel, which they offer to the LORD,",
+      "ko": "이스라엘 자손이 여호와께 드리는 성물을 그들은 더럽히지 말찌니",
+      "source_text_hash": "1e2407da1da3162140ae027456cdc3370998c5044978875cd336d8ec2e95aa72",
+      "translation_text_hash": "a2e913f6d27a9e63af21a4851aafd252775c8a3cbd07c45b87b3a4704053b0ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와께 드리는 성물을 그들은 더럽히지 말찌니"
+      ],
+      "raw_text_hashes": [
+        "a2e913f6d27a9e63af21a4851aafd252775c8a3cbd07c45b87b3a4704053b0ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:16",
+      "sequence": 3386,
+      "chapter_label": "LEV 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "and so cause them to bear the iniquity that brings guilt when they eat their holy things; for I am the LORD who sanctifies them.’”",
+      "ko": "그들이 성물을 먹으면 그 죄로 인하여 형벌을 받게 할 것이니라 나는 그들을 거룩하게 하는 여호와니라",
+      "source_text_hash": "b9ae7ceb48772ba66dc44c879aaca0e1203d339f519ce125d2458706587cc67b",
+      "translation_text_hash": "d03af012a28f7b979551ddd66aa9c1d072b1c4e5df04c57c673ce866ffe84800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 성물을 먹으면 그 죄로 인하여 형벌을 받게 할 것이니라 나는 그들을 거룩하게 하는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "d03af012a28f7b979551ddd66aa9c1d072b1c4e5df04c57c673ce866ffe84800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:17",
+      "sequence": 3387,
+      "chapter_label": "LEV 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:18",
+      "sequence": 3388,
+      "chapter_label": "LEV 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "“Speak to Aaron, and to his sons, and to all the children of Israel, and say to them, ‘Whoever is of the house of Israel, or of the foreigners in Israel, who offers his offering, whether it is any of their vows or any of their free will offerings, which they offer to the LORD for a burnt offering:",
+      "ko": "아론과 그 아들들과 이스라엘 온 족속에게 고하여 이르라 이스라엘 자손이나 그 중에 우거하는 자가 서원제나 낙헌제로 번제를 여호와께 예물로 드리려거든",
+      "source_text_hash": "2166e85e80222d63155a324d86d8cfb2bcecd533105e0f2e1ddba0593ba57ae1",
+      "translation_text_hash": "6eeb25f431de118dc8d4a01e507c1b1dcfd265aeb12c6ece767008d61445946b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들과 이스라엘 온 족속에게 고하여 이르라 이스라엘 자손이나 그 중에 우거하는 자가 서원제나 낙헌제로 번제를 여호와께 예물로 드리려거든"
+      ],
+      "raw_text_hashes": [
+        "6eeb25f431de118dc8d4a01e507c1b1dcfd265aeb12c6ece767008d61445946b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:19",
+      "sequence": 3389,
+      "chapter_label": "LEV 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "that you may be accepted, you shall offer a male without defect, of the bulls, of the sheep, or of the goats.",
+      "ko": "열납되도록 소나 양이나 염소의 흠 없는 수컷으로 드릴찌니",
+      "source_text_hash": "ad52144c5713277eedf9bfe2010da87b7a11bd28786085388bab41421628b7b5",
+      "translation_text_hash": "e8ae5582a85806416a3dd6e5f409682ddeb0c4c9a13cb7c5820e2b5b775e30c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열납되도록 소나 양이나 염소의 흠 없는 수컷으로 드릴찌니"
+      ],
+      "raw_text_hashes": [
+        "e8ae5582a85806416a3dd6e5f409682ddeb0c4c9a13cb7c5820e2b5b775e30c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:20",
+      "sequence": 3390,
+      "chapter_label": "LEV 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "But you shall not offer whatever has a defect, for it shall not be acceptable for you.",
+      "ko": "무릇 흠 있는 것을 너희는 드리지 말것은 그것이 열납되지 못할 것임이니라",
+      "source_text_hash": "0535a3f277739dfcc827cb4dce9fbac34df431b3cfc7d26a8e0084676cca8f27",
+      "translation_text_hash": "c63398bcf057f5e334430befcc3dc8638f3c5485671703c0506478dc94597b71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 흠 있는 것을 너희는 드리지 말것은 그것이 열납되지 못할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "c63398bcf057f5e334430befcc3dc8638f3c5485671703c0506478dc94597b71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:21",
+      "sequence": 3391,
+      "chapter_label": "LEV 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "Whoever offers a sacrifice of peace offerings to the LORD to accomplish a vow, or for a free will offering of the herd or of the flock, it shall be perfect to be accepted. It shall have no defect.",
+      "ko": "무릇 서원한 것을 갚으려든지 자의로 예물을 드리려든지 하여 소나 양으로 화목제 희생을 여호와께 드리는 자는 열납되도록 아무 흠이 없는 온전한 것으로 할찌니",
+      "source_text_hash": "54ae9887bede67990b6da5d2542d68043b051d6eb672d548c4455ba156fc647f",
+      "translation_text_hash": "71239eb6341779d405427520428957ac6b87a5275c5aa71016cc6362505e338a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 서원한 것을 갚으려든지 자의로 예물을 드리려든지 하여 소나 양으로 화목제 희생을 여호와께 드리는 자는 열납되도록 아무 흠이 없는 온전한 것으로 할찌니"
+      ],
+      "raw_text_hashes": [
+        "71239eb6341779d405427520428957ac6b87a5275c5aa71016cc6362505e338a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:22",
+      "sequence": 3392,
+      "chapter_label": "LEV 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "You shall not offer what is blind, is injured, is maimed, has a wart, is festering, or has a running sore to the LORD, nor make an offering by fire of them on the altar to the LORD.",
+      "ko": "눈먼 것이나 상한 것이나 지체에 베임을 당한 것이나 종기 있는 것이나 괴혈병 있는 것이나 비루먹은 것을 너희는 여호와께 드리지 말며 단 위에 화제로 여호와께 드리지 말라",
+      "source_text_hash": "6fdabe6e6d459b8a6a112c08c25bff717d748db2ed3e182998f623b619c48f16",
+      "translation_text_hash": "5aef025ded59939d7355a66b898c2461d1dba87f8aa8e7b334d9f5aea3668371",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈먼 것이나 상한 것이나 지체에 베임을 당한 것이나 종기 있는 것이나 괴혈병 있는 것이나 비루먹은 것을 너희는 여호와께 드리지 말며 단 위에 화제로 여호와께 드리지 말라"
+      ],
+      "raw_text_hashes": [
+        "5aef025ded59939d7355a66b898c2461d1dba87f8aa8e7b334d9f5aea3668371"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:23",
+      "sequence": 3393,
+      "chapter_label": "LEV 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "Either a bull or a lamb that has any deformity or lacking in his parts, that you may offer for a free will offering; but for a vow it shall not be accepted.",
+      "ko": "우양의 지체가 더하거나 덜하거나 한 것은 너희가 낙헌 예물로는 쓰려니와 서원한 것을 갚음으로 드리면 열납되지 못하리라",
+      "source_text_hash": "444f7a9d167b3c0fe990488d717c99c0c1ab674c8aa069794166b5b90058803e",
+      "translation_text_hash": "7e7399c4bec96fef22b06e4e373872ab6ae118496312654839c6d5d3e7ef4643",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우양의 지체가 더하거나 덜하거나 한 것은 너희가 낙헌 예물로는 쓰려니와 서원한 것을 갚음으로 드리면 열납되지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "7e7399c4bec96fef22b06e4e373872ab6ae118496312654839c6d5d3e7ef4643"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:24",
+      "sequence": 3394,
+      "chapter_label": "LEV 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "You must not offer to the LORD that which has its testicles bruised, crushed, broken, or cut. You must not do this in your land.",
+      "ko": "너희는 불알이 상하였거나 치었거나 터졌거나 베임을 당한 것은 여호와께 드리지 말며 너희 땅에서는 이런 일을 행치도 말찌며",
+      "source_text_hash": "f11b70e5b37b1aed771d9b766882f9cbc968f4410d0a7da66b8dbf74847615a5",
+      "translation_text_hash": "516d552fc239b9dd15de1edf7a7b908d260f7a04ef7eb4515c02e48b968873ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 불알이 상하였거나 치었거나 터졌거나 베임을 당한 것은 여호와께 드리지 말며 너희 땅에서는 이런 일을 행치도 말찌며"
+      ],
+      "raw_text_hashes": [
+        "516d552fc239b9dd15de1edf7a7b908d260f7a04ef7eb4515c02e48b968873ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:25",
+      "sequence": 3395,
+      "chapter_label": "LEV 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "You must not offer any of these as the bread of your God from the hand of a foreigner, because their corruption is in them. There is a defect in them. They shall not be accepted for you.’”",
+      "ko": "너희는 외방인에게서도 이런 것을 받아 너희의 하나님의 식물로 드리지 말라 이는 결점이 있고 흠이 있는 것인즉 너희를 위하여 열납되지 못할 것임이니라",
+      "source_text_hash": "61fc3fbcea579bb83dc7b753510b342b505b2b563ba7b6f06cc81b218fcbd337",
+      "translation_text_hash": "1802af5b8ef2abe7f6e964ed313752076f2aaf1c745b055df34f6ec6385e2ce7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 외방인에게서도 이런 것을 받아 너희의 하나님의 식물로 드리지 말라 이는 결점이 있고 흠이 있는 것인즉 너희를 위하여 열납되지 못할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "1802af5b8ef2abe7f6e964ed313752076f2aaf1c745b055df34f6ec6385e2ce7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:26",
+      "sequence": 3396,
+      "chapter_label": "LEV 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:27",
+      "sequence": 3397,
+      "chapter_label": "LEV 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "“When a bull, a sheep, or a goat is born, it shall remain seven days with its mother. From the eighth day on it shall be accepted for the offering of an offering made by fire to the LORD.",
+      "ko": "수소나 양이나 염소가 나거든 칠일 동안 그 어미와 같이 있게 하라 제 팔일 이후로는 여호와께 화제로 예물을 드리면 열납되리라",
+      "source_text_hash": "921e01bd3f27ce19a72eede03634ac5057d244b42ffebaafb3d0ff138fd7781d",
+      "translation_text_hash": "48146a36960eb264364fb26082a66067bd7b28756c2d15fd15beba5e92f9e2b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수소나 양이나 염소가 나거든 칠일 동안 그 어미와 같이 있게 하라 제 팔일 이후로는 여호와께 화제로 예물을 드리면 열납되리라"
+      ],
+      "raw_text_hashes": [
+        "48146a36960eb264364fb26082a66067bd7b28756c2d15fd15beba5e92f9e2b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:28",
+      "sequence": 3398,
+      "chapter_label": "LEV 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "Whether it is a cow or ewe, you shall not kill it and its young both in one day.",
+      "ko": "암소나 암양을 무론하고 어미와 새끼를 동일에 잡지 말찌니라",
+      "source_text_hash": "cc6d2f6ebe211048ac236076ec2e577fc8e56bfbd75bb35347aaf51d6ba144cd",
+      "translation_text_hash": "7914f27434381344c38f541cfa566d8f81f65920ed27223af8a6baae2dff81b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암소나 암양을 무론하고 어미와 새끼를 동일에 잡지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "7914f27434381344c38f541cfa566d8f81f65920ed27223af8a6baae2dff81b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:29",
+      "sequence": 3399,
+      "chapter_label": "LEV 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "“When you sacrifice a sacrifice of thanksgiving to the LORD, you shall sacrifice it so that you may be accepted.",
+      "ko": "너희가 여호와께 감사 희생을 드리거든 너희가 열납되도록 드릴찌며",
+      "source_text_hash": "5c605e20cdfee728aa6b49d988cdd991629f8ce8bf2d6512194f3dda5aab067c",
+      "translation_text_hash": "bb074e2e33bc12702d9a8246a7f49d676ceb3f90efae6d2693056491a6406281",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 여호와께 감사 희생을 드리거든 너희가 열납되도록 드릴찌며"
+      ],
+      "raw_text_hashes": [
+        "bb074e2e33bc12702d9a8246a7f49d676ceb3f90efae6d2693056491a6406281"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:30",
+      "sequence": 3400,
+      "chapter_label": "LEV 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "It shall be eaten on the same day; you shall leave none of it until the morning. I am the LORD.",
+      "ko": "그 제물은 당일에 먹고 이튿날까지 두지 말라 나는 여호와니라",
+      "source_text_hash": "772931aab54825f874d6472c5bc1edbe3df87d50659a5a7f5496d156632b99fb",
+      "translation_text_hash": "f249f80aa1ae90978e2389c7453456e715e48256010dd5a0691c1768f47ff11a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 제물은 당일에 먹고 이튿날까지 두지 말라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "f249f80aa1ae90978e2389c7453456e715e48256010dd5a0691c1768f47ff11a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:31",
+      "sequence": 3401,
+      "chapter_label": "LEV 22",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 31
+        }
+      ],
+      "en": "“Therefore you shall keep my commandments, and do them. I am the LORD.",
+      "ko": "너희는 나의 계명을 지키며 행하라 나는 여호와니라",
+      "source_text_hash": "871ca9fcb6437ed05c0cf2d90e29875bea597869c461872f1a7b11a3e002d125",
+      "translation_text_hash": "e0a9705cb3bbd386189b5280e883180a51fffff3d0e8959ab018a0582da7042b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나의 계명을 지키며 행하라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "e0a9705cb3bbd386189b5280e883180a51fffff3d0e8959ab018a0582da7042b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:32",
+      "sequence": 3402,
+      "chapter_label": "LEV 22",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 32
+        }
+      ],
+      "en": "You shall not profane my holy name, but I will be made holy among the children of Israel. I am the LORD who makes you holy,",
+      "ko": "너희는 나의 성호를 욕되게 말라 나는 이스라엘 자손 중에서 거룩하게 함을 받을 것이니라 나는 너희를 거룩하게 하는 여호와요",
+      "source_text_hash": "5a1a195cf9a65aebbee13a0d76968cd73f8bfa7782d7f4495cb9bd3ba1909014",
+      "translation_text_hash": "331c4b4ca81cd16f2de833bcdbfb3932134110f71bd36319eab57f0640379b1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나의 성호를 욕되게 말라 나는 이스라엘 자손 중에서 거룩하게 함을 받을 것이니라 나는 너희를 거룩하게 하는 여호와요"
+      ],
+      "raw_text_hashes": [
+        "331c4b4ca81cd16f2de833bcdbfb3932134110f71bd36319eab57f0640379b1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:22:33",
+      "sequence": 3403,
+      "chapter_label": "LEV 22",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 22,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 22,
+          "verse": 33
+        }
+      ],
+      "en": "who brought you out of the land of Egypt, to be your God. I am the LORD.”",
+      "ko": "너희 하나님이 되려고 너희를 애굽 땅에서 인도하여 낸 자니 나는 여호와니라",
+      "source_text_hash": "ef6ce8f9a2af7e82b9d58310b518196e328a934120f34cce3df485e6444ea8bf",
+      "translation_text_hash": "2750d29a4ad3fb7b37d0d690e6d2de13f65dd7cb6efc4ec8bf5003877005884b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님이 되려고 너희를 애굽 땅에서 인도하여 낸 자니 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "2750d29a4ad3fb7b37d0d690e6d2de13f65dd7cb6efc4ec8bf5003877005884b"
+      ]
+    }
+  ]
+}

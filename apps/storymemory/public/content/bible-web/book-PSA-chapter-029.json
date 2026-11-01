@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:029",
+  "unit_ordinal": 507,
+  "unit_label": "PSA 29",
+  "book_code": "PSA",
+  "chapter_number": 29,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:29:1",
+      "sequence": 14310,
+      "chapter_label": "PSA 29",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 1
+        }
+      ],
+      "en": "Ascribe to the LORD, you sons of the mighty, ascribe to the LORD glory and strength.",
+      "ko": "너희 권능 있는 자들아 영광과 능력을 여호와께 돌리고 돌릴찌어다",
+      "source_text_hash": "381a8b7f24eff3e86a3a167c7918ad445e99a9e51b3f655a9a1c6ba35bebe50d",
+      "translation_text_hash": "f0305cf7dbefb7b1b9afd470cd25b1ee66cbd5c962622d1de70ad69c203eeb66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 권능 있는 자들아 영광과 능력을 여호와께 돌리고 돌릴찌어다"
+      ],
+      "raw_text_hashes": [
+        "f0305cf7dbefb7b1b9afd470cd25b1ee66cbd5c962622d1de70ad69c203eeb66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:29:2",
+      "sequence": 14311,
+      "chapter_label": "PSA 29",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 2
+        }
+      ],
+      "en": "Ascribe to the LORD the glory due to his name. Worship the LORD in holy array.",
+      "ko": "여호와의 이름에 합당한 영광을 돌리며 거룩한 옷을 입고 여호와께 경배할찌어다",
+      "source_text_hash": "1df6f7b3b1c8c7ca8166c0641b76214451c380a025ced9b0cff9025b36f86c1b",
+      "translation_text_hash": "6ff43de7424c69a51923822ddeb94966695a70f2bb4e65ebea97120578c985c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 이름에 합당한 영광을 돌리며 거룩한 옷을 입고 여호와께 경배할찌어다"
+      ],
+      "raw_text_hashes": [
+        "6ff43de7424c69a51923822ddeb94966695a70f2bb4e65ebea97120578c985c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:29:3",
+      "sequence": 14312,
+      "chapter_label": "PSA 29",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD’s voice is on the waters. The God of glory thunders, even the LORD on many waters.",
+      "ko": "여호와의 소리가 물 위에 있도다 영광의 하나님이 뇌성을 발하시니 여호와는 많은 물 위에 계시도다",
+      "source_text_hash": "780829597da368fbcddd410ce61e4236680daefd89463dedc6cf3612169c36c8",
+      "translation_text_hash": "02e09683fca36fd2e53f1934694fe1f88114577d11bd7159c3545ddb1bb95016",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 소리가 물 위에 있도다 영광의 하나님이 뇌성을 발하시니 여호와는 많은 물 위에 계시도다"
+      ],
+      "raw_text_hashes": [
+        "02e09683fca36fd2e53f1934694fe1f88114577d11bd7159c3545ddb1bb95016"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:29:4",
+      "sequence": 14313,
+      "chapter_label": "PSA 29",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD’s voice is powerful. The LORD’s voice is full of majesty.",
+      "ko": "여호와의 소리가 힘 있음이여 여호와의 소리가 위엄차도다",
+      "source_text_hash": "f7e0a5df8f9f5a8c6909c9c229c8def10ffe1c3dbcb3dc2e709371a5a85c052b",
+      "translation_text_hash": "02d9b3147dc62206bb84dc5c556fe211aed2a3ec56b61d0c7b1f235f82b36791",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 소리가 힘 있음이여 여호와의 소리가 위엄차도다"
+      ],
+      "raw_text_hashes": [
+        "02d9b3147dc62206bb84dc5c556fe211aed2a3ec56b61d0c7b1f235f82b36791"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:29:5",
+      "sequence": 14314,
+      "chapter_label": "PSA 29",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD’s voice breaks the cedars. Yes, the LORD breaks in pieces the cedars of Lebanon.",
+      "ko": "여호와의 소리가 백향목을 꺾으심이여 여호와께서 레바논 백향목을 꺾어 부수시도다",
+      "source_text_hash": "0cab2b9941ba5d27d5608004d6ba88491124019585ae2fd61f94e276700bfac0",
+      "translation_text_hash": "6c7ea25cba4730723c36e80ddea4ddc904443df10976065f81e1636c6915e875",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 소리가 백향목을 꺾으심이여 여호와께서 레바논 백향목을 꺾어 부수시도다"
+      ],
+      "raw_text_hashes": [
+        "6c7ea25cba4730723c36e80ddea4ddc904443df10976065f81e1636c6915e875"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:29:6",
+      "sequence": 14315,
+      "chapter_label": "PSA 29",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 6
+        }
+      ],
+      "en": "He makes them also to skip like a calf; Lebanon and Sirion like a young, wild ox.",
+      "ko": "그 나무를 송아지 같이 뛰게 하심이여 레바논과 시룐으로 들송아지 같이 뛰게 하시도다",
+      "source_text_hash": "354406e7c249a1961e8ce96aca7625303dcce9f486187c59d5d04f88447c694e",
+      "translation_text_hash": "7cf380b8b4302b52ef4ed1b21488ee6295aa5efdad280eb626298c9e468f2cf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나무를 송아지 같이 뛰게 하심이여 레바논과 시룐으로 들송아지 같이 뛰게 하시도다"
+      ],
+      "raw_text_hashes": [
+        "7cf380b8b4302b52ef4ed1b21488ee6295aa5efdad280eb626298c9e468f2cf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:29:7",
+      "sequence": 14316,
+      "chapter_label": "PSA 29",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD’s voice strikes with flashes of lightning.",
+      "ko": "여호와의 소리가 화염을 가르시도다",
+      "source_text_hash": "558494249348c4f577daebb5982e82e886eb91e3b2f665e2b4ad2a5a4949d9cd",
+      "translation_text_hash": "c1cb43d018ccb840d43f5dcdde001ee3208d61a6d5ec7b0ceeba46b526b41a10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 소리가 화염을 가르시도다"
+      ],
+      "raw_text_hashes": [
+        "c1cb43d018ccb840d43f5dcdde001ee3208d61a6d5ec7b0ceeba46b526b41a10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:29:8",
+      "sequence": 14317,
+      "chapter_label": "PSA 29",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD’s voice shakes the wilderness. The LORD shakes the wilderness of Kadesh.",
+      "ko": "여호와의 소리가 광야를 진동하심이여 여호와께서 가데스 광야를 진동하시도다",
+      "source_text_hash": "b5ce9ae4064a8a760ff8955e1f374375087d62b6f10febdef37602af112450bb",
+      "translation_text_hash": "aed8480f36503657e19418d0305ea6b04c3bce7db4901b9ebc4b7fdd87b02756",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 소리가 광야를 진동하심이여 여호와께서 가데스 광야를 진동하시도다"
+      ],
+      "raw_text_hashes": [
+        "aed8480f36503657e19418d0305ea6b04c3bce7db4901b9ebc4b7fdd87b02756"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:29:9",
+      "sequence": 14318,
+      "chapter_label": "PSA 29",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD’s voice makes the deer calve, and strips the forests bare. In his temple everything says, “Glory!”",
+      "ko": "여호와의 소리가 암사슴으로 낙태케 하시고 삼림을 말갛게 벗기시니 그 전에서 모든 것이 말하기를 영광이라 하도다",
+      "source_text_hash": "c3dc522ef104ad4ea3ae16fe2614b99671b77eb6503dffb3f5f2a77b631de02c",
+      "translation_text_hash": "382e47ed8c3f3fdb8df323615ba6a1a59ef27cbece365617234af2765b5f3628",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 소리가 암사슴으로 낙태케 하시고 삼림을 말갛게 벗기시니 그 전에서 모든 것이 말하기를 영광이라 하도다"
+      ],
+      "raw_text_hashes": [
+        "382e47ed8c3f3fdb8df323615ba6a1a59ef27cbece365617234af2765b5f3628"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:29:10",
+      "sequence": 14319,
+      "chapter_label": "PSA 29",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD sat enthroned at the Flood. Yes, the LORD sits as King forever.",
+      "ko": "여호와께서 홍수 때에 좌정하셨음이여 여호와께서 영영토록 왕으로 좌정하시도다",
+      "source_text_hash": "473b4d787909af9a0c58f322e2bb4211722c6c1ddf45f2a98fab4d17074a2f64",
+      "translation_text_hash": "55f8e9565052c743752023f0e0e3a0721a882b96bb0bac8072d738eea7c554be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 홍수 때에 좌정하셨음이여 여호와께서 영영토록 왕으로 좌정하시도다"
+      ],
+      "raw_text_hashes": [
+        "55f8e9565052c743752023f0e0e3a0721a882b96bb0bac8072d738eea7c554be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:29:11",
+      "sequence": 14320,
+      "chapter_label": "PSA 29",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 29,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 29,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD will give strength to his people. The LORD will bless his people with peace.",
+      "ko": "여호와께서 자기 백성에게 힘을 주심이여 여호와께서 자기 백성에게 평강의 복을 주시리로다",
+      "source_text_hash": "b7380bb2da5a5924b848e66d40f2af8baa9bfe5699f6aa3606263ad41bc5fd19",
+      "translation_text_hash": "7b3db4376a6d1d724e14bdb84342fa12d68e4892e9a9fa172bfd9a9b650fd540",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기 백성에게 힘을 주심이여 여호와께서 자기 백성에게 평강의 복을 주시리로다"
+      ],
+      "raw_text_hashes": [
+        "7b3db4376a6d1d724e14bdb84342fa12d68e4892e9a9fa172bfd9a9b650fd540"
+      ]
+    }
+  ]
+}

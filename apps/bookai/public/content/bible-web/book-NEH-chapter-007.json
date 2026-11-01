@@ -1,0 +1,2349 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NEH:chapter:007",
+  "unit_ordinal": 420,
+  "unit_label": "NEH 7",
+  "book_code": "NEH",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NEH:7:1",
+      "sequence": 12422,
+      "chapter_label": "NEH 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Now when the wall was built and I had set up the doors, and the gatekeepers and the singers and the Levites were appointed,",
+      "ko": "성이 건축되매 문짝을 달고 문지기와 노래하는 자들과 레위 사람들을 세운 후에",
+      "source_text_hash": "fc38309ebbac8a04d676a50f354422901e2a92fd594a3b06f724c9c7ebf8c0d6",
+      "translation_text_hash": "cebdee5f072935a257e846f63c4c53d0c1e1a42aa17ebc3b2cc8b5eca6454858",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성이 건축되매 문짝을 달고 문지기와 노래하는 자들과 레위 사람들을 세운 후에"
+      ],
+      "raw_text_hashes": [
+        "cebdee5f072935a257e846f63c4c53d0c1e1a42aa17ebc3b2cc8b5eca6454858"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:2",
+      "sequence": 12423,
+      "chapter_label": "NEH 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "I put my brother Hanani, and Hananiah the governor of the fortress, in charge of Jerusalem; for he was a faithful man and feared God above many.",
+      "ko": "내 아우 하나니와 영문의 관원 하나냐로 함께 예루살렘을 다스리게 하였는데 하나냐는 위인이 충성되어 하나님을 경외함이 무리에서 뛰어난 자라",
+      "source_text_hash": "903edc0aac839b73a1f0ed1e373fe4364cb0ddf199318b5a1da9a563ded2a0a8",
+      "translation_text_hash": "3d6dfb3a0b06ce615d191dc53b254bd1019c37025313ebd31512ae167802b01e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아우 하나니와 영문의 관원 하나냐로 함께 예루살렘을 다스리게 하였는데 하나냐는 위인이 충성되어 하나님을 경외함이 무리에서 뛰어난 자라"
+      ],
+      "raw_text_hashes": [
+        "3d6dfb3a0b06ce615d191dc53b254bd1019c37025313ebd31512ae167802b01e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:3",
+      "sequence": 12424,
+      "chapter_label": "NEH 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "I said to them, “Don’t let the gates of Jerusalem be opened until the sun is hot; and while they stand guard, let them shut the doors, and you bar them; and appoint watches of the inhabitants of Jerusalem, everyone in his watch, with everyone near his house.”",
+      "ko": "내가 저희에게 이르기를 해가 높이 뜨기 전에는 예루살렘 성문을 열지 말고 아직 파수할 때에 곧 문을 닫고 빗장을 지르며 또 예루살렘 거민으로 각각 반차를 따라 파수하되 자기 집 맞은편을 지키게 하라 하였노니",
+      "source_text_hash": "b11d7e7239049da3808c7812425bc4b3e786ae9329334bf377ff1eeee256aa2f",
+      "translation_text_hash": "d866c3047d5cbf47f33a61c7b85b160755fca027e6b6157cea1dd4513ed7809d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희에게 이르기를 해가 높이 뜨기 전에는 예루살렘 성문을 열지 말고 아직 파수할 때에 곧 문을 닫고 빗장을 지르며 또 예루살렘 거민으로 각각 반차를 따라 파수하되 자기 집 맞은편을 지키게 하라 하였노니"
+      ],
+      "raw_text_hashes": [
+        "d866c3047d5cbf47f33a61c7b85b160755fca027e6b6157cea1dd4513ed7809d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:4",
+      "sequence": 12425,
+      "chapter_label": "NEH 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Now the city was wide and large; but the people were few therein, and the houses were not built.",
+      "ko": "그 성은 광대하고 거민은 희소하여 가옥을 오히려 건축하지 못하였음이니라",
+      "source_text_hash": "45ad6838f51b5d2cce54af8ff3da46353a47265ed20cf65526cd6a3281b897af",
+      "translation_text_hash": "3c9f08f15a33de953e5ddd89084b0060ea22bdac4a5fd2678930c2b910baf937",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성은 광대하고 거민은 희소하여 가옥을 오히려 건축하지 못하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "3c9f08f15a33de953e5ddd89084b0060ea22bdac4a5fd2678930c2b910baf937"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:5",
+      "sequence": 12426,
+      "chapter_label": "NEH 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "My God put into my heart to gather together the nobles, and the rulers, and the people, that they might be listed by genealogy. I found the book of the genealogy of those who came up at the first, and I found this written in it:",
+      "ko": "내 하나님이 내 마음을 감동하사 귀인들과 민장과 백성을 모아 그 보계대로 계수하게 하신고로 내가 처음으로 돌아온 자의 보계를 얻었는데 거기 기록한 것을 보면",
+      "source_text_hash": "4c960b15275f342b17efd139b34d2a55a52a8e90be7721db7cf8d25968a2f346",
+      "translation_text_hash": "660e4b2e7a60e18fc9b319890b090e8cfc74b33cb0fb5f5d2d7de7fa0e738b81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 하나님이 내 마음을 감동하사 귀인들과 민장과 백성을 모아 그 보계대로 계수하게 하신고로 내가 처음으로 돌아온 자의 보계를 얻었는데 거기 기록한 것을 보면"
+      ],
+      "raw_text_hashes": [
+        "660e4b2e7a60e18fc9b319890b090e8cfc74b33cb0fb5f5d2d7de7fa0e738b81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:6",
+      "sequence": 12427,
+      "chapter_label": "NEH 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "These are the children of the province who went up out of the captivity of those who had been carried away, whom Nebuchadnezzar the king of Babylon had carried away, and who returned to Jerusalem and to Judah, everyone to his city,",
+      "ko": "옛적에 바벨론왕 느부갓네살에게 사로잡혀 갔던 자 중에서 놓임을 받고 예루살렘과 유다로 돌아와 각기 본성에 이른 자 곧",
+      "source_text_hash": "60f168e51fcf7197d03f11007ff07f944c63dad4fe31e8758912f1ff0d5a7241",
+      "translation_text_hash": "1e192bbbc3f7bac55c396e5e1010ea88296aab3cdde2162c4108639a0ebbfca6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적에 바벨론왕 느부갓네살에게 사로잡혀 갔던 자 중에서 놓임을 받고 예루살렘과 유다로 돌아와 각기 본성에 이른 자 곧"
+      ],
+      "raw_text_hashes": [
+        "1e192bbbc3f7bac55c396e5e1010ea88296aab3cdde2162c4108639a0ebbfca6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:7",
+      "sequence": 12428,
+      "chapter_label": "NEH 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "who came with Zerubbabel, Jeshua, Nehemiah, Azariah, Raamiah, Nahamani, Mordecai, Bilshan, Mispereth, Bigvai, Nehum, and Baanah. The number of the men of the people of Israel:",
+      "ko": "스룹바벨과 예수아와 느헤미야와 아사랴와 라아먀와 나하마니와 모르드개와 빌산과 미스베렛과 비그왜와 느훔과 바아나등과 함께 나온 이스라엘 백성의 명수가 이러하니라",
+      "source_text_hash": "c39a78c2f33991b3ccced4a2855db63c4b6132d1eaf6b8893c559ec504d6b515",
+      "translation_text_hash": "768f7c246f9fbd9c3bb994ef685cccfa1802894e5eabb51c19b6147b9de7ca9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스룹바벨과 예수아와 느헤미야와 아사랴와 라아먀와 나하마니와 모르드개와 빌산과 미스베렛과 비그왜와 느훔과 바아나등과 함께 나온 이스라엘 백성의 명수가 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "768f7c246f9fbd9c3bb994ef685cccfa1802894e5eabb51c19b6147b9de7ca9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:8",
+      "sequence": 12429,
+      "chapter_label": "NEH 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "The children of Parosh: two thousand one hundred seventy-two.",
+      "ko": "바로스 자손이 이천 일백 칠십 이명이요",
+      "source_text_hash": "ab0ab371e95e3dd6d0bd830585e75c79e1b7f084314043ae58b4865bef14117b",
+      "translation_text_hash": "6f3bee682a1716a0b58e4ea52909f71bdc76a542663e1a5ff17afca0c076818f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로스 자손이 이천 일백 칠십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "6f3bee682a1716a0b58e4ea52909f71bdc76a542663e1a5ff17afca0c076818f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:9",
+      "sequence": 12430,
+      "chapter_label": "NEH 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "The children of Shephatiah: three hundred seventy-two.",
+      "ko": "스바댜 자손이 삼백 칠십 이명이요",
+      "source_text_hash": "c5b76086d293d948ff3c59bdd62546b78126012f0cbf3ab755cdb2e00d6cfd8a",
+      "translation_text_hash": "7d5e63796b0548baeeddcc863ea5e490e6ae46be4e6ac19dc45e961f7d7e7be5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바댜 자손이 삼백 칠십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "7d5e63796b0548baeeddcc863ea5e490e6ae46be4e6ac19dc45e961f7d7e7be5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:10",
+      "sequence": 12431,
+      "chapter_label": "NEH 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "The children of Arah: six hundred fifty-two.",
+      "ko": "아라 자손이 육백 오십 이명이요",
+      "source_text_hash": "9e180c4e61fa687ae7bf0a08ae6c86904b739930e0ce5ec5b3186c8e415db30d",
+      "translation_text_hash": "df720b149981a9829eeaec6a1d94753d52602ba75d51923621be0474f2a50142",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아라 자손이 육백 오십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "df720b149981a9829eeaec6a1d94753d52602ba75d51923621be0474f2a50142"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:11",
+      "sequence": 12432,
+      "chapter_label": "NEH 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "The children of Pahathmoab, of the children of Jeshua and Joab: two thousand eight hundred eighteen.",
+      "ko": "바핫모압 자손 곧 예수아와 요압 자손이 이천 팔백 십 팔명이요",
+      "source_text_hash": "2ca1e6ee9a14825f8fd5e9c2627406e86880b2a7b233e2fc4e73f6fdac84df67",
+      "translation_text_hash": "16b83202d28d426451bb4ef3c0332a26e674be23d9567cf53657923369fb0d38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바핫모압 자손 곧 예수아와 요압 자손이 이천 팔백 십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "16b83202d28d426451bb4ef3c0332a26e674be23d9567cf53657923369fb0d38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:12",
+      "sequence": 12433,
+      "chapter_label": "NEH 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "The children of Elam: one thousand two hundred fifty-four.",
+      "ko": "엘람 자손이 일천 이백 오십 사명이요",
+      "source_text_hash": "eeed8e6c4a72d5c7b67b2326348d8613efb487a706077b95edc3b0fa38d75542",
+      "translation_text_hash": "df6449c999303adf501c24b2b7c2ee689d154e8b0139d53193c0f7e6930f4d27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘람 자손이 일천 이백 오십 사명이요"
+      ],
+      "raw_text_hashes": [
+        "df6449c999303adf501c24b2b7c2ee689d154e8b0139d53193c0f7e6930f4d27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:13",
+      "sequence": 12434,
+      "chapter_label": "NEH 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "The children of Zattu: eight hundred forty-five.",
+      "ko": "삿두 자손이 팔백 사십 오명이요",
+      "source_text_hash": "25029be6ad983cbd5ce170dd74238c3bbea652f62884df4ca042955c4830b71f",
+      "translation_text_hash": "618f2cd4429427c03bfafb2298dd5d5836a2447d9edc1149b7de9bc0d2b12d7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삿두 자손이 팔백 사십 오명이요"
+      ],
+      "raw_text_hashes": [
+        "618f2cd4429427c03bfafb2298dd5d5836a2447d9edc1149b7de9bc0d2b12d7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:14",
+      "sequence": 12435,
+      "chapter_label": "NEH 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "The children of Zaccai: seven hundred sixty.",
+      "ko": "삭개 자손이 칠백 육십명이요",
+      "source_text_hash": "098652842a2f6531745be792ce782c58b909145483a6881c67fba0fca64af543",
+      "translation_text_hash": "05fd38821471586d64714932b12ef77afa6612a115c7a51b0c1fc74955c4b69a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삭개 자손이 칠백 육십명이요"
+      ],
+      "raw_text_hashes": [
+        "05fd38821471586d64714932b12ef77afa6612a115c7a51b0c1fc74955c4b69a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:15",
+      "sequence": 12436,
+      "chapter_label": "NEH 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "The children of Binnui: six hundred forty-eight.",
+      "ko": "빈누이 자손이 육백 사십 팔명이요",
+      "source_text_hash": "738680b7bb8fe94de9cad143c913fc9b5150536f9b99d143bdb7379d11a9658d",
+      "translation_text_hash": "aaec304da47b5965c05103d1faf83ac4f512a3f676b514b0e75384655481bdda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빈누이 자손이 육백 사십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "aaec304da47b5965c05103d1faf83ac4f512a3f676b514b0e75384655481bdda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:16",
+      "sequence": 12437,
+      "chapter_label": "NEH 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "The children of Bebai: six hundred twenty-eight.",
+      "ko": "브배 자손이 육백 이십 팔명이요",
+      "source_text_hash": "b8c8029f40223c0be50b7c1f1b06a664a907cee79b102d177540bf864c845f4d",
+      "translation_text_hash": "486620e07afe859f880b70d069757e7a3283a07d961d3099584c1b432bf9182d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브배 자손이 육백 이십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "486620e07afe859f880b70d069757e7a3283a07d961d3099584c1b432bf9182d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:17",
+      "sequence": 12438,
+      "chapter_label": "NEH 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "The children of Azgad: two thousand three hundred twenty-two.",
+      "ko": "아스갓 자손이 이천 삼백 이십 이명이요",
+      "source_text_hash": "80361b41b910b0b9d288d222ac0f3f66f31f4d1315c7da0b6d0c49928a9a20ca",
+      "translation_text_hash": "b537251de8166dbf9ec576715e3c8a37eaacb41070439d8151dd585eb9adbaef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아스갓 자손이 이천 삼백 이십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "b537251de8166dbf9ec576715e3c8a37eaacb41070439d8151dd585eb9adbaef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:18",
+      "sequence": 12439,
+      "chapter_label": "NEH 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "The children of Adonikam: six hundred sixty-seven.",
+      "ko": "아도니감 자손이 육백 륙십 칠명이요",
+      "source_text_hash": "46727ec50ccc02e5d1a8db8672b325daae10b7d7eb246b51d1c66bc203b6c9ae",
+      "translation_text_hash": "089bc8b6ade3118b9d43cfe2363ef08eb68acf369e175ab82f8233d961dee8af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아도니감 자손이 육백 륙십 칠명이요"
+      ],
+      "raw_text_hashes": [
+        "089bc8b6ade3118b9d43cfe2363ef08eb68acf369e175ab82f8233d961dee8af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:19",
+      "sequence": 12440,
+      "chapter_label": "NEH 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "The children of Bigvai: two thousand sixty-seven.",
+      "ko": "비그왜 자손이 이천 육십 칠명이요",
+      "source_text_hash": "7fb01a0f844248e0ad763913789ec789809972c971da6dd8cfb1c79bd82aa2e5",
+      "translation_text_hash": "5066b7e45dc319f1b511069018202727a09f8c99db0a18ebbe9975aa4393211e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비그왜 자손이 이천 육십 칠명이요"
+      ],
+      "raw_text_hashes": [
+        "5066b7e45dc319f1b511069018202727a09f8c99db0a18ebbe9975aa4393211e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:20",
+      "sequence": 12441,
+      "chapter_label": "NEH 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "The children of Adin: six hundred fifty-five.",
+      "ko": "아딘 자손이 육백 오십 오명이요",
+      "source_text_hash": "ba6c15794b985a3ff8846a05c7adf18a5055e4c2b9720212dc97b3e6825cec17",
+      "translation_text_hash": "04e9502f5fcfc052bf5be538e9456c87b0de1d0298bb1fff3efff28d5ceeaf4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아딘 자손이 육백 오십 오명이요"
+      ],
+      "raw_text_hashes": [
+        "04e9502f5fcfc052bf5be538e9456c87b0de1d0298bb1fff3efff28d5ceeaf4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:21",
+      "sequence": 12442,
+      "chapter_label": "NEH 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "The children of Ater: of Hezekiah, ninety-eight.",
+      "ko": "아델 자손 곧 히스기야 자손이 구십 팔명이요",
+      "source_text_hash": "aa4e3c099be79927ae8dd61ebe34cb4f5f7463b51c17869772f285a31be3a363",
+      "translation_text_hash": "b344807fab31438acabc8fc707df42c77182d6b7076bd1abc1317007481f47a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아델 자손 곧 히스기야 자손이 구십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "b344807fab31438acabc8fc707df42c77182d6b7076bd1abc1317007481f47a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:22",
+      "sequence": 12443,
+      "chapter_label": "NEH 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "The children of Hashum: three hundred twenty-eight.",
+      "ko": "하숨 자손이 삼백 이십 팔명이요",
+      "source_text_hash": "27424a3e9345edf5c19fdb65c6169a437963b3c59a2324bff9d8e3d9700a9900",
+      "translation_text_hash": "ea446ec72615642201b592dc12731cd5be393dc921c68f5c4e8f44d321295a3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하숨 자손이 삼백 이십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "ea446ec72615642201b592dc12731cd5be393dc921c68f5c4e8f44d321295a3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:23",
+      "sequence": 12444,
+      "chapter_label": "NEH 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "The children of Bezai: three hundred twenty-four.",
+      "ko": "베새 자손이 삼백 이십 사명이요",
+      "source_text_hash": "62d3c5ea87186afc08f945633d2850a9d45896dccc77e348e64e1ac8bd4a0f17",
+      "translation_text_hash": "da138f42220b00e568d3a2751cca1778ac25565725bfd58b8b69f421d5c95004",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베새 자손이 삼백 이십 사명이요"
+      ],
+      "raw_text_hashes": [
+        "da138f42220b00e568d3a2751cca1778ac25565725bfd58b8b69f421d5c95004"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:24",
+      "sequence": 12445,
+      "chapter_label": "NEH 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "The children of Hariph: one hundred twelve.",
+      "ko": "하립 자손이 일백 십 이명이요",
+      "source_text_hash": "caceb0bbee43fa785eb95751e774cbd6ae7666c609278decf4f196af17777719",
+      "translation_text_hash": "9e55001f36954a8b2bf8be6042fa32df0c6fe171eb6ac92059aa114ae04bd872",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하립 자손이 일백 십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "9e55001f36954a8b2bf8be6042fa32df0c6fe171eb6ac92059aa114ae04bd872"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:25",
+      "sequence": 12446,
+      "chapter_label": "NEH 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "The children of Gibeon: ninety-five.",
+      "ko": "기브온 사람이 구십 오명이요",
+      "source_text_hash": "85ac41db86e918cd9b1d2770bb9a5b63887dc2fc3a0f98cbb4050a72559e7765",
+      "translation_text_hash": "8ed0ad198154cf69929a2fff77d718eb58444b79f8eabbb99de43d3cf223d527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브온 사람이 구십 오명이요"
+      ],
+      "raw_text_hashes": [
+        "8ed0ad198154cf69929a2fff77d718eb58444b79f8eabbb99de43d3cf223d527"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:26",
+      "sequence": 12447,
+      "chapter_label": "NEH 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "The men of Bethlehem and Netophah: one hundred eighty-eight.",
+      "ko": "베들레헴과 느도바 사람이 일백 팔십 팔명이요",
+      "source_text_hash": "c2237242c05cdc5f0f5bbe27daab02206c06b47dca233ba0797a84fce18e3af2",
+      "translation_text_hash": "7d3b8f4d5982bc7f6c6907dd3198742b53c0033d26c6e3853a5e84fbb0d108e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베들레헴과 느도바 사람이 일백 팔십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "7d3b8f4d5982bc7f6c6907dd3198742b53c0033d26c6e3853a5e84fbb0d108e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:27",
+      "sequence": 12448,
+      "chapter_label": "NEH 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "The men of Anathoth: one hundred twenty-eight.",
+      "ko": "아나돗 사람이 일백 이십 팔명이요",
+      "source_text_hash": "f48440a9d2b9cdd0ec7ade3471ed3c700eb92460c675e29deeb2f4eb35da8b32",
+      "translation_text_hash": "bdd32c423fdb3454cf950a59ac76ef310b1bf227d28e90d80f4cd82893d2679d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아나돗 사람이 일백 이십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "bdd32c423fdb3454cf950a59ac76ef310b1bf227d28e90d80f4cd82893d2679d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:28",
+      "sequence": 12449,
+      "chapter_label": "NEH 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "The men of Beth Azmaveth: forty-two.",
+      "ko": "벧아스마웻 사람이 사십 이명이요",
+      "source_text_hash": "4a1ad387ab6d97b8f12fa8dd205cb184b75d1b62f2a0902954b0dcc37285172c",
+      "translation_text_hash": "61c6a0ac982ed387bfc045cc89452946d6d5a2c8458a7b606ca255401bbc4175",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧아스마웻 사람이 사십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "61c6a0ac982ed387bfc045cc89452946d6d5a2c8458a7b606ca255401bbc4175"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:29",
+      "sequence": 12450,
+      "chapter_label": "NEH 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "The men of Kiriath Jearim, Chephirah, and Beeroth: seven hundred forty-three.",
+      "ko": "기럇여아림과 그비라와 브에롯 사람이 칠백 사십 삼명이요",
+      "source_text_hash": "c3a4438ae73f10aad3227709bbdc3c946c1ea61d9ba7b7da905c069c294b77d4",
+      "translation_text_hash": "4a50bea881b9588e3c9a9eea1115de75ca1780067694e2fdb8af106e08da0154",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기럇여아림과 그비라와 브에롯 사람이 칠백 사십 삼명이요"
+      ],
+      "raw_text_hashes": [
+        "4a50bea881b9588e3c9a9eea1115de75ca1780067694e2fdb8af106e08da0154"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:30",
+      "sequence": 12451,
+      "chapter_label": "NEH 7",
+      "verse_label": "30",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 30
+        }
+      ],
+      "en": "The men of Ramah and Geba: six hundred twenty-one.",
+      "ko": "라마와 게바 사람이 육백 이십 일명이요",
+      "source_text_hash": "79969ec6d3a63b6c58b55a0776f4cee2264f37c4d9d2ff5d473fdc10234e232f",
+      "translation_text_hash": "668bd01f753a60aca5884cc9e3609bcbaa03a434d1f66d73affabcc758168c19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라마와 게바 사람이 육백 이십 일명이요"
+      ],
+      "raw_text_hashes": [
+        "668bd01f753a60aca5884cc9e3609bcbaa03a434d1f66d73affabcc758168c19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:31",
+      "sequence": 12452,
+      "chapter_label": "NEH 7",
+      "verse_label": "31",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 31
+        }
+      ],
+      "en": "The men of Michmas: one hundred twenty-two.",
+      "ko": "믹마스 사람이 일백 이십 이명이요",
+      "source_text_hash": "367368522a1d915a3593785d1a9e176b1284ce7f35df411a45a58ca5d15c51ec",
+      "translation_text_hash": "3e26c868301a7b107de72c0634c4c296b6a12c45c131a2457e698dbfcdb70a33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믹마스 사람이 일백 이십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "3e26c868301a7b107de72c0634c4c296b6a12c45c131a2457e698dbfcdb70a33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:32",
+      "sequence": 12453,
+      "chapter_label": "NEH 7",
+      "verse_label": "32",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 32
+        }
+      ],
+      "en": "The men of Bethel and Ai: one hundred twenty-three.",
+      "ko": "벧엘과 아이 사람이 일백 이십 삼명이요",
+      "source_text_hash": "fa32aad98ef2f08f8f59bd7064615aae15d1fb6a85d21187483641999bc23b7e",
+      "translation_text_hash": "0a810122f3f25963e286513dac22803b4fde302e6275b15fb1613b51e83e4b90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧엘과 아이 사람이 일백 이십 삼명이요"
+      ],
+      "raw_text_hashes": [
+        "0a810122f3f25963e286513dac22803b4fde302e6275b15fb1613b51e83e4b90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:33",
+      "sequence": 12454,
+      "chapter_label": "NEH 7",
+      "verse_label": "33",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 33
+        }
+      ],
+      "en": "The men of the other Nebo: fifty-two.",
+      "ko": "기타 느보 사람이 오십 이명이요",
+      "source_text_hash": "f6138a19f53acdf997d50ac3694d83ee336086a7356875da3bb7a38099dc0812",
+      "translation_text_hash": "b8020e6ad4d9f8dc994233b2ce2546f2510b793d5907a3ddddc022daec81b6d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기타 느보 사람이 오십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "b8020e6ad4d9f8dc994233b2ce2546f2510b793d5907a3ddddc022daec81b6d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:34",
+      "sequence": 12455,
+      "chapter_label": "NEH 7",
+      "verse_label": "34",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 34
+        }
+      ],
+      "en": "The children of the other Elam: one thousand two hundred fifty-four.",
+      "ko": "기타 엘람 자손이 일천 이백 오십 사명이요",
+      "source_text_hash": "b475c7118e3251c57632d592005ada26fb616cd2204ffd1a455436cc4c021e95",
+      "translation_text_hash": "f9a6a06b65f3b6348408e2c19894bab6157e11a8bdc94efbf5c8cec9c52b225c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기타 엘람 자손이 일천 이백 오십 사명이요"
+      ],
+      "raw_text_hashes": [
+        "f9a6a06b65f3b6348408e2c19894bab6157e11a8bdc94efbf5c8cec9c52b225c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:35",
+      "sequence": 12456,
+      "chapter_label": "NEH 7",
+      "verse_label": "35",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 35
+        }
+      ],
+      "en": "The children of Harim: three hundred twenty.",
+      "ko": "하림 자손이 삼백 이십명이요",
+      "source_text_hash": "33d3920e3591fb3498ce0b53a9bd07f0e2795c76f0f004a249a4539f2dd376bb",
+      "translation_text_hash": "be410144ed71a4a1010f829a2a348a873f877c95836a41fd5e9de1f9e5dd8459",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하림 자손이 삼백 이십명이요"
+      ],
+      "raw_text_hashes": [
+        "be410144ed71a4a1010f829a2a348a873f877c95836a41fd5e9de1f9e5dd8459"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:36",
+      "sequence": 12457,
+      "chapter_label": "NEH 7",
+      "verse_label": "36",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 36
+        }
+      ],
+      "en": "The children of Jericho: three hundred forty-five.",
+      "ko": "여리고 자손이 삼백 사십 오명이요",
+      "source_text_hash": "4d090eb79fd390b08aea22cad9d1c3a963ebd4f1b2eccc38123d74cc30130778",
+      "translation_text_hash": "3b914ad97adb650003e5ced22ed1ec620ddb5628a79bd34c6091c889eaa1b9e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여리고 자손이 삼백 사십 오명이요"
+      ],
+      "raw_text_hashes": [
+        "3b914ad97adb650003e5ced22ed1ec620ddb5628a79bd34c6091c889eaa1b9e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:37",
+      "sequence": 12458,
+      "chapter_label": "NEH 7",
+      "verse_label": "37",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 37
+        }
+      ],
+      "en": "The children of Lod, Hadid, and Ono: seven hundred twenty-one.",
+      "ko": "로드와 하딧과 오노 자손이 칠백 이십 일명이요",
+      "source_text_hash": "b2a30dba314a36766da1ac96be73f9375a7c2f9ffb5cb21469d878eae825110c",
+      "translation_text_hash": "b7c1fe2fbe2b93d8dae8075b424b9a30e9739473af85012acf14bceb7a6097ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "로드와 하딧과 오노 자손이 칠백 이십 일명이요"
+      ],
+      "raw_text_hashes": [
+        "b7c1fe2fbe2b93d8dae8075b424b9a30e9739473af85012acf14bceb7a6097ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:38",
+      "sequence": 12459,
+      "chapter_label": "NEH 7",
+      "verse_label": "38",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 38
+        }
+      ],
+      "en": "The children of Senaah: three thousand nine hundred thirty.",
+      "ko": "스나아 자손이 삼천 구백 삼십명이었느니라",
+      "source_text_hash": "3da3ed7dfea2b83cb7982d45f05c2919f73e0c94e309d55b10b77e461046ebfb",
+      "translation_text_hash": "750b269453d5bc72a56582f7cdb20bdfd8d44ee262bc1f40710a0416a2a787ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스나아 자손이 삼천 구백 삼십명이었느니라"
+      ],
+      "raw_text_hashes": [
+        "750b269453d5bc72a56582f7cdb20bdfd8d44ee262bc1f40710a0416a2a787ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:39",
+      "sequence": 12460,
+      "chapter_label": "NEH 7",
+      "verse_label": "39",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 39
+        }
+      ],
+      "en": "The priests: The children of Jedaiah, of the house of Jeshua: nine hundred seventy-three.",
+      "ko": "제사장들은 예수아의 집 여다야 자손이 구백 칠십 삼명이요",
+      "source_text_hash": "9dc23082f52e11b3b41205adf83c99da20aa382fa47add1718f61e017e7541d8",
+      "translation_text_hash": "42bef380ec2f9f5a8216e095f31fbdcbc06fce6918967cf64c93815a17aaebe6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들은 예수아의 집 여다야 자손이 구백 칠십 삼명이요"
+      ],
+      "raw_text_hashes": [
+        "42bef380ec2f9f5a8216e095f31fbdcbc06fce6918967cf64c93815a17aaebe6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:40",
+      "sequence": 12461,
+      "chapter_label": "NEH 7",
+      "verse_label": "40",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 40
+        }
+      ],
+      "en": "The children of Immer: one thousand fifty-two.",
+      "ko": "임멜 자손이 일천 오십 이명이요",
+      "source_text_hash": "cc7ad517421f02131111a80423df04b5e43e0f5e1ce571c053a63ab2798d16a4",
+      "translation_text_hash": "2a9a7519bafa64bee7fcdcf871f320a89ff54113718da86e4f315b486af7a621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "임멜 자손이 일천 오십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "2a9a7519bafa64bee7fcdcf871f320a89ff54113718da86e4f315b486af7a621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:41",
+      "sequence": 12462,
+      "chapter_label": "NEH 7",
+      "verse_label": "41",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 41
+        }
+      ],
+      "en": "The children of Pashhur: one thousand two hundred forty-seven.",
+      "ko": "바스훌 자손이 일천 이백 사십 칠명이요",
+      "source_text_hash": "dee097a81ed6ec20fd7099eb9b4988bb0d4255c7d9a0cd87240154817952b155",
+      "translation_text_hash": "d733e8d0194c3b2900f6558f23b19e2f1eec4daea44e275029e4ca019a187245",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바스훌 자손이 일천 이백 사십 칠명이요"
+      ],
+      "raw_text_hashes": [
+        "d733e8d0194c3b2900f6558f23b19e2f1eec4daea44e275029e4ca019a187245"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:42",
+      "sequence": 12463,
+      "chapter_label": "NEH 7",
+      "verse_label": "42",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 42
+        }
+      ],
+      "en": "The children of Harim: one thousand seventeen.",
+      "ko": "하림 자손이 일천 십 칠명이었느니라",
+      "source_text_hash": "4665c2d9d9781b16bef460bb4652c0ff2fcd946dfc45945588de701ad8bdfbb5",
+      "translation_text_hash": "418a9890924975bc2763e87fe49bd0319b78fdc493a9ce0d08ba2a87f5013535",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하림 자손이 일천 십 칠명이었느니라"
+      ],
+      "raw_text_hashes": [
+        "418a9890924975bc2763e87fe49bd0319b78fdc493a9ce0d08ba2a87f5013535"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:43",
+      "sequence": 12464,
+      "chapter_label": "NEH 7",
+      "verse_label": "43",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 43
+        }
+      ],
+      "en": "The Levites: the children of Jeshua, of Kadmiel, of the children of Hodevah: seventy-four.",
+      "ko": "레위 사람들은 호드야 자손 곧 예수아와 갓미엘 자손이 칠십 사명이요",
+      "source_text_hash": "177be3690f12be6779d2326d2e6980f6747c95ba0c54c0d3e820da64cc4c0331",
+      "translation_text_hash": "68f94a4e6c1c7010d82e479d94e80240a9fc6d22c59ff7c1b8b6b332b400939b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람들은 호드야 자손 곧 예수아와 갓미엘 자손이 칠십 사명이요"
+      ],
+      "raw_text_hashes": [
+        "68f94a4e6c1c7010d82e479d94e80240a9fc6d22c59ff7c1b8b6b332b400939b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:44",
+      "sequence": 12465,
+      "chapter_label": "NEH 7",
+      "verse_label": "44",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 44
+        }
+      ],
+      "en": "The singers: the children of Asaph: one hundred forty-eight.",
+      "ko": "노래하는 자들은 아삽 자손이 일백 사십 팔명이요",
+      "source_text_hash": "c450791ae0ee18c08062d06bc019a40c33439b2290873d47ff20c9d807098f3c",
+      "translation_text_hash": "f282dc4377bd5d460cb1dc73b213cfdc6fd63aa004c008b2740b1a2b298536f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노래하는 자들은 아삽 자손이 일백 사십 팔명이요"
+      ],
+      "raw_text_hashes": [
+        "f282dc4377bd5d460cb1dc73b213cfdc6fd63aa004c008b2740b1a2b298536f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:45",
+      "sequence": 12466,
+      "chapter_label": "NEH 7",
+      "verse_label": "45",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 45
+        }
+      ],
+      "en": "The gatekeepers: the children of Shallum, the children of Ater, the children of Talmon, the children of Akkub, the children of Hatita, the children of Shobai: one hundred thirty-eight.",
+      "ko": "문지기들은 살룸 자손과 아델 자손과 달문 자손과 악굽 자손과 하디다 자손과 소배 자손이 모두 일백 삼십 팔명이었느니라",
+      "source_text_hash": "b4b2db6441dd3d184ae1e77af4de674dc62f4abbdabcd704e2e07e8963ad3ad7",
+      "translation_text_hash": "a592e2f41dd8e7c34f554cbcc9d1c3949042eaa2c28f4997bac6ad9ff0befb02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문지기들은 살룸 자손과 아델 자손과 달문 자손과 악굽 자손과 하디다 자손과 소배 자손이 모두 일백 삼십 팔명이었느니라"
+      ],
+      "raw_text_hashes": [
+        "a592e2f41dd8e7c34f554cbcc9d1c3949042eaa2c28f4997bac6ad9ff0befb02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:46",
+      "sequence": 12467,
+      "chapter_label": "NEH 7",
+      "verse_label": "46",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 46
+        }
+      ],
+      "en": "The temple servants: the children of Ziha, the children of Hasupha, the children of Tabbaoth,",
+      "ko": "느디님 사람들은 시하 자손과 하수바 자손과 답바옷 자손과",
+      "source_text_hash": "e64791af3a20f38a2404ed248310ae26cb4ca2690d965f59eb837d5789d2b339",
+      "translation_text_hash": "70b17e2fa104f1e493c5b7ee4b4f74b005f1787b1de18450835ca61a1ab7f990",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느디님 사람들은 시하 자손과 하수바 자손과 답바옷 자손과"
+      ],
+      "raw_text_hashes": [
+        "70b17e2fa104f1e493c5b7ee4b4f74b005f1787b1de18450835ca61a1ab7f990"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:47",
+      "sequence": 12468,
+      "chapter_label": "NEH 7",
+      "verse_label": "47",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 47
+        }
+      ],
+      "en": "the children of Keros, the children of Sia, the children of Padon,",
+      "ko": "게로스 자손과 시아 자손과 바돈 자손과 르바나 자손과",
+      "source_text_hash": "f601d1052106021503a3892eb8fc56860e9c1e74db4ce8ac66b9539134a414ee",
+      "translation_text_hash": "765ea3c68e9f8491d511158b94dfee81389f48cb055a43a2f85a4ec8cd86280f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게로스 자손과 시아 자손과 바돈 자손과 르바나 자손과"
+      ],
+      "raw_text_hashes": [
+        "765ea3c68e9f8491d511158b94dfee81389f48cb055a43a2f85a4ec8cd86280f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:48",
+      "sequence": 12469,
+      "chapter_label": "NEH 7",
+      "verse_label": "48",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 48
+        }
+      ],
+      "en": "the children of Lebana, the children of Hagaba, the children of Salmai,",
+      "ko": "하가바 자손과 살매 자손과",
+      "source_text_hash": "e17761766a1da34d9cfaf9e98e12f2e027d9e656c549cda2c409c8b64163c7d7",
+      "translation_text_hash": "b26d62deb958f581c6ff3ad1b1568ac2b0ad05687f850ef491d023627556ef56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하가바 자손과 살매 자손과"
+      ],
+      "raw_text_hashes": [
+        "b26d62deb958f581c6ff3ad1b1568ac2b0ad05687f850ef491d023627556ef56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:49",
+      "sequence": 12470,
+      "chapter_label": "NEH 7",
+      "verse_label": "49",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 49
+        }
+      ],
+      "en": "the children of Hanan, the children of Giddel, the children of Gahar,",
+      "ko": "하난 자손과 깃델 자손과 가할 자손과",
+      "source_text_hash": "663aa4238e1210c88588a609d93e506512d9cd83a31c2e0ea51aebdeaa3cd839",
+      "translation_text_hash": "bf785509559965bb9073e79c42ed9d710f6d5f16f8a8a89d496d27dad006c3c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하난 자손과 깃델 자손과 가할 자손과"
+      ],
+      "raw_text_hashes": [
+        "bf785509559965bb9073e79c42ed9d710f6d5f16f8a8a89d496d27dad006c3c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:50",
+      "sequence": 12471,
+      "chapter_label": "NEH 7",
+      "verse_label": "50",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 50
+        }
+      ],
+      "en": "the children of Reaiah, the children of Rezin, the children of Nekoda,",
+      "ko": "르아야 자손과 르신 자손과 느고다 자손과",
+      "source_text_hash": "367946e60ef27e5b18425dab97340ca6a311d9c18b1b5d1155e206bc52184d57",
+      "translation_text_hash": "329e2cce63648192a151edf6f67936d232749314ba023c05b77cc2ad9de26988",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르아야 자손과 르신 자손과 느고다 자손과"
+      ],
+      "raw_text_hashes": [
+        "329e2cce63648192a151edf6f67936d232749314ba023c05b77cc2ad9de26988"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:51",
+      "sequence": 12472,
+      "chapter_label": "NEH 7",
+      "verse_label": "51",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 51
+        }
+      ],
+      "en": "the children of Gazzam, the children of Uzza, the children of Paseah,",
+      "ko": "갓삼 자손과 웃사 자손과 바세아 자손과",
+      "source_text_hash": "b5504543dbf3fcdcff13e15056545a141889ab284ca59f1b70662565936ac767",
+      "translation_text_hash": "f7910dd61d33e4e5db38d15a366f662923e5dbfcf10164ac2988bcb72eed0f9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓삼 자손과 웃사 자손과 바세아 자손과"
+      ],
+      "raw_text_hashes": [
+        "f7910dd61d33e4e5db38d15a366f662923e5dbfcf10164ac2988bcb72eed0f9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:52",
+      "sequence": 12473,
+      "chapter_label": "NEH 7",
+      "verse_label": "52",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 52
+        }
+      ],
+      "en": "the children of Besai, the children of Meunim, the children of Nephushesim,",
+      "ko": "베새 자손과 므우님 자손과 느비스심 자손과",
+      "source_text_hash": "883926d0a8a8c3ff8cc98aa8853be6aaf6d97570fd4091c492b811e82d908ce1",
+      "translation_text_hash": "d1731af7f610a7ed8bacdca355303d98813f37d647d4342eec408404b9e13752",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베새 자손과 므우님 자손과 느비스심 자손과"
+      ],
+      "raw_text_hashes": [
+        "d1731af7f610a7ed8bacdca355303d98813f37d647d4342eec408404b9e13752"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:53",
+      "sequence": 12474,
+      "chapter_label": "NEH 7",
+      "verse_label": "53",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 53
+        }
+      ],
+      "en": "the children of Bakbuk, the children of Hakupha, the children of Harhur,",
+      "ko": "박북 자손과 하그바 자손과 할훌 자손과",
+      "source_text_hash": "b1252394dbb51686847e448bad4537d92d5dd5768e759a6f0a96cd27d61617b6",
+      "translation_text_hash": "f57b7280e61e89ba940e29d104cacbe764c5113788cf2e84d6ebc696ff1e7f53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "박북 자손과 하그바 자손과 할훌 자손과"
+      ],
+      "raw_text_hashes": [
+        "f57b7280e61e89ba940e29d104cacbe764c5113788cf2e84d6ebc696ff1e7f53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:54",
+      "sequence": 12475,
+      "chapter_label": "NEH 7",
+      "verse_label": "54",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 54
+        }
+      ],
+      "en": "the children of Bazlith, the children of Mehida, the children of Harsha,",
+      "ko": "바슬릿 자손과 므히다 자손과 하르사 자손과",
+      "source_text_hash": "b97ea5eeab939b1f3dc52b235efb10394a405d740e7790c427971985547682bd",
+      "translation_text_hash": "e0af2b070f995299ae8444cb3d0b530614b14b19812ebfb90903380b2bbea606",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바슬릿 자손과 므히다 자손과 하르사 자손과"
+      ],
+      "raw_text_hashes": [
+        "e0af2b070f995299ae8444cb3d0b530614b14b19812ebfb90903380b2bbea606"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:55",
+      "sequence": 12476,
+      "chapter_label": "NEH 7",
+      "verse_label": "55",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 55
+        }
+      ],
+      "en": "the children of Barkos, the children of Sisera, the children of Temah,",
+      "ko": "바르고스 자손과 시스라 자손과 데마 자손과",
+      "source_text_hash": "97225ea85351eda01ab679903e3aa46e8fae6ee247d3342d794ca375a112856c",
+      "translation_text_hash": "938854ed5389db9f89491ad2b019b0edcdbf11b1d1e2f7e1b4173449b53e6589",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바르고스 자손과 시스라 자손과 데마 자손과"
+      ],
+      "raw_text_hashes": [
+        "938854ed5389db9f89491ad2b019b0edcdbf11b1d1e2f7e1b4173449b53e6589"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:56",
+      "sequence": 12477,
+      "chapter_label": "NEH 7",
+      "verse_label": "56",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 56
+        }
+      ],
+      "en": "the children of Neziah, and the children of Hatipha.",
+      "ko": "느시야 자손과 하디바 자손이었느니라",
+      "source_text_hash": "292eadabf6926d7a4d2996e614a7869954082fa6749724d0ccdda0db72544480",
+      "translation_text_hash": "d708252583d9a2b6f665dfe8af1d243dccf5c130c3fe5a3a7a5621d016bf6db9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느시야 자손과 하디바 자손이었느니라"
+      ],
+      "raw_text_hashes": [
+        "d708252583d9a2b6f665dfe8af1d243dccf5c130c3fe5a3a7a5621d016bf6db9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:57",
+      "sequence": 12478,
+      "chapter_label": "NEH 7",
+      "verse_label": "57",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 57
+        }
+      ],
+      "en": "The children of Solomon’s servants: the children of Sotai, the children of Sophereth, the children of Perida,",
+      "ko": "솔로몬의 신복의 자손은 소대 자손과 소베렛 자손과 브리다 자손과",
+      "source_text_hash": "a53dab54e4c55656d9c27c63bee907088d7a0a0f5c3c685086dfff64b6a5b75e",
+      "translation_text_hash": "6bd582e0fb9055944968e8fa82041050304a7ec7093af600dcecfac85462be7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 신복의 자손은 소대 자손과 소베렛 자손과 브리다 자손과"
+      ],
+      "raw_text_hashes": [
+        "6bd582e0fb9055944968e8fa82041050304a7ec7093af600dcecfac85462be7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:58",
+      "sequence": 12479,
+      "chapter_label": "NEH 7",
+      "verse_label": "58",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 58
+        }
+      ],
+      "en": "the children of Jaala, the children of Darkon, the children of Giddel,",
+      "ko": "야알라 자손과 다르곤 자손과 깃델 자손과",
+      "source_text_hash": "4fbecaa16d17a2c918235e41d043845c5ce76bd0481765faf66f405da77712a0",
+      "translation_text_hash": "eb346026f866375845321e3289953d14f021e5e4741fb8daade342586fcb2dd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야알라 자손과 다르곤 자손과 깃델 자손과"
+      ],
+      "raw_text_hashes": [
+        "eb346026f866375845321e3289953d14f021e5e4741fb8daade342586fcb2dd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:59",
+      "sequence": 12480,
+      "chapter_label": "NEH 7",
+      "verse_label": "59",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 59
+        }
+      ],
+      "en": "the children of Shephatiah, the children of Hattil, the children of Pochereth Hazzebaim, and the children of Amon.",
+      "ko": "스바댜 자손과 핫딜 자손과 보게렛하스바임 자손과 아몬 자손이니",
+      "source_text_hash": "dd136f2da425c69c99ebdb4131aeed8eefd2ddbb9de56e41f56d0d9b7c3c6501",
+      "translation_text_hash": "5d968288638a1d5f7f78b91bd598030865e151c964f56f425e8324140aabbc6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바댜 자손과 핫딜 자손과 보게렛하스바임 자손과 아몬 자손이니"
+      ],
+      "raw_text_hashes": [
+        "5d968288638a1d5f7f78b91bd598030865e151c964f56f425e8324140aabbc6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:60",
+      "sequence": 12481,
+      "chapter_label": "NEH 7",
+      "verse_label": "60",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 60
+        }
+      ],
+      "en": "All the temple servants and the children of Solomon’s servants were three hundred ninety-two.",
+      "ko": "모든 느디님 사람과 솔로몬의 신복의 자손이 삼백 구십 이명이었느니라",
+      "source_text_hash": "177c737ba5667bba6e4d13f140c7bc5b5102ed08859711be77c3eb8da8d80ebd",
+      "translation_text_hash": "c353f25733d4bd9d5e1640a7b3f433627a52823481e77177cd7021f6b7b89346",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 느디님 사람과 솔로몬의 신복의 자손이 삼백 구십 이명이었느니라"
+      ],
+      "raw_text_hashes": [
+        "c353f25733d4bd9d5e1640a7b3f433627a52823481e77177cd7021f6b7b89346"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:61",
+      "sequence": 12482,
+      "chapter_label": "NEH 7",
+      "verse_label": "61",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 61
+        }
+      ],
+      "en": "These were those who went up from Tel Melah, Tel Harsha, Cherub, Addon, and Immer; but they could not show their fathers’ houses, nor their offspring, whether they were of Israel:",
+      "ko": "델멜라와 델하르사와 그룹과 앗돈과 임멜로부터 올라온 자가 있으나 그 종족과 보계가 이스라엘에 속하였는지는 증거할 수 없으니",
+      "source_text_hash": "0ea522327927af21dd371b083c6fd56a8c2444d20260ca5fe6be64a476f86ac5",
+      "translation_text_hash": "9e679ecd6f8fefcf7587b46f6d08fea738a232808d337000bcd0e8c5127a4af2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "델멜라와 델하르사와 그룹과 앗돈과 임멜로부터 올라온 자가 있으나 그 종족과 보계가 이스라엘에 속하였는지는 증거할 수 없으니"
+      ],
+      "raw_text_hashes": [
+        "9e679ecd6f8fefcf7587b46f6d08fea738a232808d337000bcd0e8c5127a4af2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:62",
+      "sequence": 12483,
+      "chapter_label": "NEH 7",
+      "verse_label": "62",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 62
+        }
+      ],
+      "en": "The children of Delaiah, the children of Tobiah, the children of Nekoda: six hundred forty-two.",
+      "ko": "저희는 들라야 자손과 도비야 자손과 느고다 자손이라 도합이 육백 사십 이명이요",
+      "source_text_hash": "34cea25c0b6682e33bef9d17c59e1a2918f660776a202944432114bf925ba477",
+      "translation_text_hash": "0976dfc1b49c241d1a7a975154835ede74cee7154369d8f4fc03ad471d3d4db1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 들라야 자손과 도비야 자손과 느고다 자손이라 도합이 육백 사십 이명이요"
+      ],
+      "raw_text_hashes": [
+        "0976dfc1b49c241d1a7a975154835ede74cee7154369d8f4fc03ad471d3d4db1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:63",
+      "sequence": 12484,
+      "chapter_label": "NEH 7",
+      "verse_label": "63",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 63
+        }
+      ],
+      "en": "Of the priests: the children of Hobaiah, the children of Hakkoz, the children of Barzillai, who took a wife of the daughters of Barzillai the Gileadite, and was called after their name.",
+      "ko": "제사장 중에는 호바야 자손과 학고스 자손과 바르실래 자손이니 바르실래는 길르앗 사람 바르실래의 딸 중에 하나로 아내를 삼고 바르실래의 이름으로 이름한 자라",
+      "source_text_hash": "e52337316174abea4eac396dcfb3025f167d6f01fb2fb501ae555adfddb6059f",
+      "translation_text_hash": "3bd6a4b363a08873203870d6b35f6baf0b77ec03dbd356c6ad9fa7a1ae2679fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 중에는 호바야 자손과 학고스 자손과 바르실래 자손이니 바르실래는 길르앗 사람 바르실래의 딸 중에 하나로 아내를 삼고 바르실래의 이름으로 이름한 자라"
+      ],
+      "raw_text_hashes": [
+        "3bd6a4b363a08873203870d6b35f6baf0b77ec03dbd356c6ad9fa7a1ae2679fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:64",
+      "sequence": 12485,
+      "chapter_label": "NEH 7",
+      "verse_label": "64",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 64
+        }
+      ],
+      "en": "These searched for their genealogical records, but couldn’t find them. Therefore they were deemed disqualified and removed from the priesthood.",
+      "ko": "이 사람들이 보계 중에서 자기 이름을 찾아도 얻지 못한고로 저희를 부정하게 여겨 제사장의 직분을 행치 못하게 하고",
+      "source_text_hash": "6e5af2ef744c5a5955ce9c46143fa34a7acca8d38408d41534f16cd323b10624",
+      "translation_text_hash": "0c97187609ddb1ba773fde0a82bced520527cffead1052faeae6a40ab61ed7e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들이 보계 중에서 자기 이름을 찾아도 얻지 못한고로 저희를 부정하게 여겨 제사장의 직분을 행치 못하게 하고"
+      ],
+      "raw_text_hashes": [
+        "0c97187609ddb1ba773fde0a82bced520527cffead1052faeae6a40ab61ed7e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:65",
+      "sequence": 12486,
+      "chapter_label": "NEH 7",
+      "verse_label": "65",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 65
+        }
+      ],
+      "en": "The governor told them not to eat of the most holy things until a priest stood up to minister with Urim and Thummim.",
+      "ko": "방백이 저희에게 명하여 우림과 둠밈을 가진 제사장이 일어나기 전에는 지성물을 먹지 말라 하였느니라",
+      "source_text_hash": "ecb827ac756cd396d19e175828b198fb27eea694f061962154bc16337c536938",
+      "translation_text_hash": "e431f64458962a1d2f9048402c3b0fed0dadb9ed91eecfe17887619a09f39b48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백이 저희에게 명하여 우림과 둠밈을 가진 제사장이 일어나기 전에는 지성물을 먹지 말라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e431f64458962a1d2f9048402c3b0fed0dadb9ed91eecfe17887619a09f39b48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:66",
+      "sequence": 12487,
+      "chapter_label": "NEH 7",
+      "verse_label": "66",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 66
+        }
+      ],
+      "en": "The whole assembly together was forty-two thousand three hundred sixty,",
+      "ko": "온 회중의 합계가 사만 이천 삼백 육십명이요",
+      "source_text_hash": "ca078831d3e27cec0429847bf3dd1b8092c1c99cb00f92b1faab838a4080e4b3",
+      "translation_text_hash": "ccb35f438b994fc22deaa00eb5188f00d2e87fb40dd1092f2f3cf4ca983bd0c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 회중의 합계가 사만 이천 삼백 육십명이요"
+      ],
+      "raw_text_hashes": [
+        "ccb35f438b994fc22deaa00eb5188f00d2e87fb40dd1092f2f3cf4ca983bd0c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:67",
+      "sequence": 12488,
+      "chapter_label": "NEH 7",
+      "verse_label": "67",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 67
+        }
+      ],
+      "en": "in addition to their male servants and their female servants, of whom there were seven thousand three hundred thirty-seven. They had two hundred forty-five singing men and singing women.",
+      "ko": "그 외에 노비가 칠천 삼백 삼십 칠명이요 노래하는 남녀가 이백 사십 오명이요",
+      "source_text_hash": "a2dafdf01f0e0ab3474048f48ed91fd2372fde005d97ff94affa640b18ec11d1",
+      "translation_text_hash": "2816b94a9cbb12b74e763cbfd055fe07764cbf57dfbd22a2a9a20430f4470e0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 외에 노비가 칠천 삼백 삼십 칠명이요 노래하는 남녀가 이백 사십 오명이요"
+      ],
+      "raw_text_hashes": [
+        "2816b94a9cbb12b74e763cbfd055fe07764cbf57dfbd22a2a9a20430f4470e0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:68",
+      "sequence": 12489,
+      "chapter_label": "NEH 7",
+      "verse_label": "68",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 68
+        }
+      ],
+      "en": "Their horses were seven hundred thirty-six; their mules, two hundred forty-five;",
+      "ko": "말이 칠백 삼십 륙이요 노새가 이백 사십 오요",
+      "source_text_hash": "f86bd89f60f84f28e51a54380364c50bc9452e28e97fc25b74888680de8cd4e2",
+      "translation_text_hash": "a2868670ca7412b07172dc33f570f553a81fa979e7a69a3e7f22d71791bf5929",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말이 칠백 삼십 륙이요 노새가 이백 사십 오요"
+      ],
+      "raw_text_hashes": [
+        "a2868670ca7412b07172dc33f570f553a81fa979e7a69a3e7f22d71791bf5929"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:69",
+      "sequence": 12490,
+      "chapter_label": "NEH 7",
+      "verse_label": "69",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 69
+        }
+      ],
+      "en": "their camels, four hundred thirty-five; their donkeys, six thousand seven hundred twenty.",
+      "ko": "약대가 사백 삼십 오요 나귀가 육천 칠백 이십이었느니라",
+      "source_text_hash": "a0aaecf1bcb8dead9d3f2026ffdec43e250f30e10d355854e743ea0a64672280",
+      "translation_text_hash": "3e56acccafe5d7f57c86891c5bd9689ada07c54a37e93b3eb8e1e52908cd7334",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "약대가 사백 삼십 오요 나귀가 육천 칠백 이십이었느니라"
+      ],
+      "raw_text_hashes": [
+        "3e56acccafe5d7f57c86891c5bd9689ada07c54a37e93b3eb8e1e52908cd7334"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:70",
+      "sequence": 12491,
+      "chapter_label": "NEH 7",
+      "verse_label": "70",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 70
+        }
+      ],
+      "en": "Some from among the heads of fathers’ households gave to the work. The governor gave to the treasury one thousand darics of gold, fifty basins, and five hundred thirty priests’ garments.",
+      "ko": "어떤 족장들은 역사를 위하여 보조하였고 방백은 금 일천 다릭과 대접 오십과 제사장의 의복 오백 삼십 벌을 보물 곳간에 드렸고",
+      "source_text_hash": "c1b3af9815c60e6fbd5c90b21b735536e7e18c3c2dcc0e7db73ffbf448262c2b",
+      "translation_text_hash": "b42e286378567c52e775de755481ebac99a0c77bb5cdb04e04fa37eb55b13b3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 족장들은 역사를 위하여 보조하였고 방백은 금 일천 다릭과 대접 오십과 제사장의 의복 오백 삼십 벌을 보물 곳간에 드렸고"
+      ],
+      "raw_text_hashes": [
+        "b42e286378567c52e775de755481ebac99a0c77bb5cdb04e04fa37eb55b13b3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:71",
+      "sequence": 12492,
+      "chapter_label": "NEH 7",
+      "verse_label": "71",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 71
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 71
+        }
+      ],
+      "en": "Some of the heads of fathers’ households gave into the treasury of the work twenty thousand darics of gold, and two thousand two hundred minas of silver.",
+      "ko": "또 어떤 족장들은 금 이만 다릭과 은 이천 이백 마네를 역사 곳간에 드렸고",
+      "source_text_hash": "2212633bf44193985957e167b314a4ede0e2be63412c4faf7d6f648634aa1e87",
+      "translation_text_hash": "c589ad1bb2988a56ca23966bd5bf31ef8c7226499411bfa006c5c611421d552b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어떤 족장들은 금 이만 다릭과 은 이천 이백 마네를 역사 곳간에 드렸고"
+      ],
+      "raw_text_hashes": [
+        "c589ad1bb2988a56ca23966bd5bf31ef8c7226499411bfa006c5c611421d552b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:72",
+      "sequence": 12493,
+      "chapter_label": "NEH 7",
+      "verse_label": "72",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 72
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 72
+        }
+      ],
+      "en": "That which the rest of the people gave was twenty thousand darics of gold, plus two thousand minas of silver, and sixty-seven priests’ garments.",
+      "ko": "그 나머지 백성은 금 이만 다릭과 은 이천 마네와 제사장의 의복 육십 칠 벌을 드렸느니라",
+      "source_text_hash": "4a008b6f458dcd9a939c0aedb1b206617ade413d506543eccbe3a6a1c009fb42",
+      "translation_text_hash": "69ebe9fce2f041b983b117ef5c88ce5372699da962a09cb582907fca47f3b806",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나머지 백성은 금 이만 다릭과 은 이천 마네와 제사장의 의복 육십 칠 벌을 드렸느니라"
+      ],
+      "raw_text_hashes": [
+        "69ebe9fce2f041b983b117ef5c88ce5372699da962a09cb582907fca47f3b806"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:7:73",
+      "sequence": 12494,
+      "chapter_label": "NEH 7",
+      "verse_label": "73",
+      "locator": {
+        "book": "NEH",
+        "chapter": 7,
+        "verse": 73
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 7,
+          "verse": 73
+        }
+      ],
+      "en": "So the priests, the Levites, the gatekeepers, the singers, some of the people, the temple servants, and all Israel lived in their cities. When the seventh month had come, the children of Israel were in their cities.",
+      "ko": "이와 같이 제사장들과 레위 사람들과 문지기들과 노래하는 자들과 백성 몇명과 느디님 사람들과 온 이스라엘이 다 그 본성에 거하였느니라",
+      "source_text_hash": "55668443db80020ca5616d98be70f7d0df856af086d6648d0901244a2e2f5cef",
+      "translation_text_hash": "298447d7b752a1c1e1cc0768815c0c32536e730918ad0a9752a87352a645779a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 제사장들과 레위 사람들과 문지기들과 노래하는 자들과 백성 몇명과 느디님 사람들과 온 이스라엘이 다 그 본성에 거하였느니라"
+      ],
+      "raw_text_hashes": [
+        "298447d7b752a1c1e1cc0768815c0c32536e730918ad0a9752a87352a645779a"
+      ]
+    }
+  ]
+}

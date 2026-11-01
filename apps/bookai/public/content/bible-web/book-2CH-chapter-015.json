@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:015",
+  "unit_ordinal": 382,
+  "unit_label": "2CH 15",
+  "book_code": "2CH",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:15:1",
+      "sequence": 11492,
+      "chapter_label": "2CH 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "The Spirit of God came on Azariah the son of Oded.",
+      "ko": "하나님의 신이 오뎃의 아들 아사랴에게 임하시매",
+      "source_text_hash": "9f269f1b3c77f560a7b44c78be50c05800db6cfce23588720325d5b99a678353",
+      "translation_text_hash": "43c88ad6ee125774871d52278edf3035269db2b2fae85cf82be72f2a0dc8a83f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 신이 오뎃의 아들 아사랴에게 임하시매"
+      ],
+      "raw_text_hashes": [
+        "43c88ad6ee125774871d52278edf3035269db2b2fae85cf82be72f2a0dc8a83f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:2",
+      "sequence": 11493,
+      "chapter_label": "2CH 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "He went out to meet Asa, and said to him, “Hear me, Asa, and all Judah and Benjamin! The LORD is with you while you are with him; and if you seek him, he will be found by you; but if you forsake him, he will forsake you.",
+      "ko": "저가 나가서 아사를 맞아 이르되 아사와 및 유다와 베냐민의 무리들아 내 말을 들으라 너희가 여호와와 함께하면 여호와께서 너희와 함께하실찌라 너희가 만일 저를 찾으면 저가 너희의 만난바 되시려니와 너희가 만일 저를 버리면 저도 너희를 버리시리라",
+      "source_text_hash": "a91be89b623851f789fac4bcb37dbc02d822ede2dbb2463240c0fa29494911af",
+      "translation_text_hash": "583f0a96df2d2f6bf4fed0f5c7e352bdcdc279c90c7214a7469b429b2dc2eb72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 나가서 아사를 맞아 이르되 아사와 및 유다와 베냐민의 무리들아 내 말을 들으라 너희가 여호와와 함께하면 여호와께서 너희와 함께하실찌라 너희가 만일 저를 찾으면 저가 너희의 만난바 되시려니와 너희가 만일 저를 버리면 저도 너희를 버리시리라"
+      ],
+      "raw_text_hashes": [
+        "583f0a96df2d2f6bf4fed0f5c7e352bdcdc279c90c7214a7469b429b2dc2eb72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:3",
+      "sequence": 11494,
+      "chapter_label": "2CH 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "Now for a long time Israel was without the true God, without a teaching priest, and without law.",
+      "ko": "이스라엘에는 참 신이 없고 가르치는 제사장도 없고 율법도 없은지가 이제 오래였으나",
+      "source_text_hash": "8b0ff2e96e398a87cfbdf833438f1670f61e6b212680331c9324826d2116470f",
+      "translation_text_hash": "825d14e5f73ad30acb06215646d7bfb5b40531bd186f82a6f69e731b2873954c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘에는 참 신이 없고 가르치는 제사장도 없고 율법도 없은지가 이제 오래였으나"
+      ],
+      "raw_text_hashes": [
+        "825d14e5f73ad30acb06215646d7bfb5b40531bd186f82a6f69e731b2873954c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:4",
+      "sequence": 11495,
+      "chapter_label": "2CH 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "But when in their distress they turned to the LORD, the God of Israel, and sought him, he was found by them.",
+      "ko": "그 환난 때에 이스라엘 하나님 여호와께 돌아가서 찾으매 저가 그들의 만난바가 되셨나니",
+      "source_text_hash": "7201cc971e68c38b8254ed5d93a83d7cd9148c6c73351afa9f49e1dd30cab7d6",
+      "translation_text_hash": "3cd3413bfa27f3f4c4c149876c58e7649e284fb15a95aeb65c2fc2c7a73853b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 환난 때에 이스라엘 하나님 여호와께 돌아가서 찾으매 저가 그들의 만난바가 되셨나니"
+      ],
+      "raw_text_hashes": [
+        "3cd3413bfa27f3f4c4c149876c58e7649e284fb15a95aeb65c2fc2c7a73853b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:5",
+      "sequence": 11496,
+      "chapter_label": "2CH 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "In those times there was no peace to him who went out, nor to him who came in; but great troubles were on all the inhabitants of the lands.",
+      "ko": "그 때에 열국에 거한 모든 백성이 크게 요란하여 사람의 출입이 평안치 못하며",
+      "source_text_hash": "4a81cde64332852121b565ba16ce2dc4187e9bd85a7f525b65e75a2bb9a6cb7b",
+      "translation_text_hash": "621cb742de4e63bf50c13e92fe137ea1ca7f60731adbd70b4bb2177d19f3f338",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 열국에 거한 모든 백성이 크게 요란하여 사람의 출입이 평안치 못하며"
+      ],
+      "raw_text_hashes": [
+        "621cb742de4e63bf50c13e92fe137ea1ca7f60731adbd70b4bb2177d19f3f338"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:6",
+      "sequence": 11497,
+      "chapter_label": "2CH 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "They were broken in pieces, nation against nation, and city against city; for God troubled them with all adversity.",
+      "ko": "이 나라가 저 나라와 서로 치고 이 성읍이 저 성읍과 또한 그러하여 피차 상한바 되었나니 이는 하나님이 모든 고난으로 요란케 하셨음이니라",
+      "source_text_hash": "e4ddeae0e23a1ec9b1c92c4c48038f5ca08615abd5758dc02492f2b3b2aab78b",
+      "translation_text_hash": "3531df42721d8aa5f298492f48f972dfb1e76ed9cbadcec54944d286f55a5d61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 나라가 저 나라와 서로 치고 이 성읍이 저 성읍과 또한 그러하여 피차 상한바 되었나니 이는 하나님이 모든 고난으로 요란케 하셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "3531df42721d8aa5f298492f48f972dfb1e76ed9cbadcec54944d286f55a5d61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:7",
+      "sequence": 11498,
+      "chapter_label": "2CH 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "But you be strong! Don’t let your hands be slack, for your work will be rewarded.”",
+      "ko": "그런즉 너희는 강하게 하라 손이 약하지 않게 하라 너희 행위에는 상급이 있음이니라",
+      "source_text_hash": "d1b9f0fa61761b5cb6e85af6df4ad359eca2256f8c7ba6e4e754c3ddcded7612",
+      "translation_text_hash": "316b4b07db5c22fc960f70d7b9a513d8a7dc3b57ad99230ec67839ae5d8679ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 강하게 하라 손이 약하지 않게 하라 너희 행위에는 상급이 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "316b4b07db5c22fc960f70d7b9a513d8a7dc3b57ad99230ec67839ae5d8679ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:8",
+      "sequence": 11499,
+      "chapter_label": "2CH 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "When Asa heard these words and the prophecy of Oded the prophet, he took courage, and put away the abominations out of all the land of Judah and Benjamin, and out of the cities which he had taken from the hill country of Ephraim; and he renewed the LORD’s altar that was before the LORD’s porch.",
+      "ko": "아사가 이 말 곧 선지자 오뎃의 예언을 듣고 마음을 강하게 하여 가증한 물건을 유다와 베냐민 온 땅에서 제하고 또 에브라임 산지에서 빼앗은 성읍들에서 제하고 또 여호와의 낭실 앞 여호와의 단을 중수하고",
+      "source_text_hash": "1410d0a19a441871c4e2f370d4dcf487e4a3d3b3fd87f87df4d057c7e571f000",
+      "translation_text_hash": "b69be43c01d93f050a839f4d4bed51f7ac2634a7777d2d536eb1c262f2bbdbf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사가 이 말 곧 선지자 오뎃의 예언을 듣고 마음을 강하게 하여 가증한 물건을 유다와 베냐민 온 땅에서 제하고 또 에브라임 산지에서 빼앗은 성읍들에서 제하고 또 여호와의 낭실 앞 여호와의 단을 중수하고"
+      ],
+      "raw_text_hashes": [
+        "b69be43c01d93f050a839f4d4bed51f7ac2634a7777d2d536eb1c262f2bbdbf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:9",
+      "sequence": 11500,
+      "chapter_label": "2CH 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "He gathered all Judah and Benjamin, and those who lived with them out of Ephraim, Manasseh, and Simeon; for they came to him out of Israel in abundance when they saw that the LORD his God was with him.",
+      "ko": "또 유다와 베냐민의 무리를 모으고 에브라임과 므낫세와 시므온 가운데서 나와서 저희 중에 우거하는 자를 모았으니 이는 이스라엘 사람들이 아사의 하나님 여호와께서 그와 함께하심을 보고 아사에게로 돌아오는 자가 많았음이더라",
+      "source_text_hash": "9bf35230ddeef9b7c9150a0111c0f3445dac68c68b603bd870e6ba9d711f8089",
+      "translation_text_hash": "a6f1c5cf41666799a4e90d772a7cdaf22ee3ca65d7f9cf4b0fb4432852115850",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 유다와 베냐민의 무리를 모으고 에브라임과 므낫세와 시므온 가운데서 나와서 저희 중에 우거하는 자를 모았으니 이는 이스라엘 사람들이 아사의 하나님 여호와께서 그와 함께하심을 보고 아사에게로 돌아오는 자가 많았음이더라"
+      ],
+      "raw_text_hashes": [
+        "a6f1c5cf41666799a4e90d772a7cdaf22ee3ca65d7f9cf4b0fb4432852115850"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:10",
+      "sequence": 11501,
+      "chapter_label": "2CH 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "So they gathered themselves together at Jerusalem in the third month, in the fifteenth year of Asa’s reign.",
+      "ko": "아사왕 십 오년 삼월에 저희가 예루살렘에 모이고",
+      "source_text_hash": "bc3653f19ab1ef29ea40b95a3bed60e67670d693c374a00104f339063fff2fb4",
+      "translation_text_hash": "5e314a993b4aae7a0421a8fdb5830581e38bf677810d83e4e3ba57b65a90ee1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사왕 십 오년 삼월에 저희가 예루살렘에 모이고"
+      ],
+      "raw_text_hashes": [
+        "5e314a993b4aae7a0421a8fdb5830581e38bf677810d83e4e3ba57b65a90ee1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:11",
+      "sequence": 11502,
+      "chapter_label": "2CH 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "They sacrificed to the LORD in that day, from the plunder which they had brought, seven hundred head of cattle and seven thousand sheep.",
+      "ko": "그 날에 노략하여 온 물건 중에서 소 칠백과 양 칠천으로 여호와께 제사를 드리고",
+      "source_text_hash": "3a71a82ce80755bc21d5ca594dc2f287dd089c46d2da74b3e6af82bf939cae1b",
+      "translation_text_hash": "39c505589947d344607052cdc29ff4f29b94c4f343cd63b00ab98d5c36498536",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 노략하여 온 물건 중에서 소 칠백과 양 칠천으로 여호와께 제사를 드리고"
+      ],
+      "raw_text_hashes": [
+        "39c505589947d344607052cdc29ff4f29b94c4f343cd63b00ab98d5c36498536"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:12",
+      "sequence": 11503,
+      "chapter_label": "2CH 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "They entered into the covenant to seek the LORD, the God of their fathers, with all their heart and with all their soul;",
+      "ko": "또 마음을 다하고 성품을 다하여 열조의 하나님 여호와를 찾기로 언약하고",
+      "source_text_hash": "8040ceaeb38fbb33cf591c6162418ba788c8834b9b8459d34f7f3d46d62096cc",
+      "translation_text_hash": "7813d9a9763088a20ca9ba616318d9f951da28939f8a327c2392469bcd2fc5b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 마음을 다하고 성품을 다하여 열조의 하나님 여호와를 찾기로 언약하고"
+      ],
+      "raw_text_hashes": [
+        "7813d9a9763088a20ca9ba616318d9f951da28939f8a327c2392469bcd2fc5b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:13",
+      "sequence": 11504,
+      "chapter_label": "2CH 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "and that whoever would not seek the LORD, the God of Israel, should be put to death, whether small or great, whether man or woman.",
+      "ko": "무릇 이스라엘 하나님 여호와를 찾지 아니하는 자는 대소 남녀를 무론하고 죽이는 것이 마땅하다 하고",
+      "source_text_hash": "837040ec570c8e3073963a4ece7311666da63e10f273f1e46758f44dd653b3b5",
+      "translation_text_hash": "ee0aaa0589a2bfe884a24f77139cd60030b5e3bc60e9d3f62944bdd09b6cd012",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이스라엘 하나님 여호와를 찾지 아니하는 자는 대소 남녀를 무론하고 죽이는 것이 마땅하다 하고"
+      ],
+      "raw_text_hashes": [
+        "ee0aaa0589a2bfe884a24f77139cd60030b5e3bc60e9d3f62944bdd09b6cd012"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:14",
+      "sequence": 11505,
+      "chapter_label": "2CH 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "They swore to the LORD with a loud voice, with shouting, with trumpets, and with cornets.",
+      "ko": "무리가 큰 소리로 부르며 피리와 나팔을 불어 여호와께 맹세하매",
+      "source_text_hash": "d913d731d51afe9d2243ec2cc3074a74d39c1720e177375e956b8de9280c0925",
+      "translation_text_hash": "e24fd5cbb965856a4434ac8ee74c514e7782eaca3511d68c2732593ed0378e28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 큰 소리로 부르며 피리와 나팔을 불어 여호와께 맹세하매"
+      ],
+      "raw_text_hashes": [
+        "e24fd5cbb965856a4434ac8ee74c514e7782eaca3511d68c2732593ed0378e28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:15",
+      "sequence": 11506,
+      "chapter_label": "2CH 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "All Judah rejoiced at the oath, for they had sworn with all their heart and sought him with their whole desire; and he was found by them. Then the LORD gave them rest all around.",
+      "ko": "온 유다가 이 맹세를 기뻐한지라 무리가 마음을 다하여 맹세하고 뜻을 다하여 여호와를 찾았으므로 여호와께서도 저희의 만난바가 되시고 그 사방에 평안을 주셨더라",
+      "source_text_hash": "d80afc017724c66ffba0cdaeb704e1709eeab2a715eccf06c0e91af1d28e0153",
+      "translation_text_hash": "05676152c99d22e03e87b02c30f1b228b8e641ec6980d5bf28d6d7d4f7d6e95c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 유다가 이 맹세를 기뻐한지라 무리가 마음을 다하여 맹세하고 뜻을 다하여 여호와를 찾았으므로 여호와께서도 저희의 만난바가 되시고 그 사방에 평안을 주셨더라"
+      ],
+      "raw_text_hashes": [
+        "05676152c99d22e03e87b02c30f1b228b8e641ec6980d5bf28d6d7d4f7d6e95c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:16",
+      "sequence": 11507,
+      "chapter_label": "2CH 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "Also Maacah, the mother of Asa the king, he removed from being queen mother, because she had made an abominable image for an Asherah; so Asa cut down her image, ground it into dust, and burned it at the brook Kidron.",
+      "ko": "아사왕의 모친 마아가가 아세라의 가증한 목상을 만들었으므로 아사가 그 태후의 위를 폐하고 그 우상을 찍고 빻아 기드론 시냇가에서 불살랐으니",
+      "source_text_hash": "5e4311125c4069c24d55f8ee7e52a27d43a068b72f3f92fd87040721ab555d86",
+      "translation_text_hash": "5b4b231b15f951b84bd2acdd01347c3b2b8116cebbe6cae4ba8ff79ca280427b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사왕의 모친 마아가가 아세라의 가증한 목상을 만들었으므로 아사가 그 태후의 위를 폐하고 그 우상을 찍고 빻아 기드론 시냇가에서 불살랐으니"
+      ],
+      "raw_text_hashes": [
+        "5b4b231b15f951b84bd2acdd01347c3b2b8116cebbe6cae4ba8ff79ca280427b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:17",
+      "sequence": 11508,
+      "chapter_label": "2CH 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "But the high places were not taken away out of Israel; nevertheless the heart of Asa was perfect all his days.",
+      "ko": "산당은 이스라엘 중에서 제하지 아니하였으나 아사의 마음이 일평생 온전하였더라",
+      "source_text_hash": "385664ac3e2d7652a5c2e70f02272f4eb77a6c7ee6661cc421bdb77d31237dc0",
+      "translation_text_hash": "ff32421d0f9f4e87a64351809a62650aaa48e8f0f8789ed917b189aac62444ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산당은 이스라엘 중에서 제하지 아니하였으나 아사의 마음이 일평생 온전하였더라"
+      ],
+      "raw_text_hashes": [
+        "ff32421d0f9f4e87a64351809a62650aaa48e8f0f8789ed917b189aac62444ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:18",
+      "sequence": 11509,
+      "chapter_label": "2CH 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "He brought the things that his father had dedicated and that he himself had dedicated, silver, gold, and vessels into God’s house.",
+      "ko": "저가 또 그 부친의 구별한 물건과 자기의 구별한 물건 곧 은과 금과 기명들을 하나님의 전에 드렸더니",
+      "source_text_hash": "de4c75f8f6889087c7ad4f4ca7a674504ca9b6ba5da37ed1dd8e6a450d349664",
+      "translation_text_hash": "b3609b6898ab10c40d04c9293a8afa5c45b662800bc702ad8c794c3c1959c359",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 그 부친의 구별한 물건과 자기의 구별한 물건 곧 은과 금과 기명들을 하나님의 전에 드렸더니"
+      ],
+      "raw_text_hashes": [
+        "b3609b6898ab10c40d04c9293a8afa5c45b662800bc702ad8c794c3c1959c359"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:15:19",
+      "sequence": 11510,
+      "chapter_label": "2CH 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "There was no more war to the thirty-fifth year of Asa’s reign.",
+      "ko": "이 때부터 아사왕 삼십 오년까지 다시는 전쟁이 없으니라",
+      "source_text_hash": "e378ec107ae987083cf2780cae8160db30e4da864e36956c59c8af4ac138e4f0",
+      "translation_text_hash": "df63030cd85a7f1ceffaa22798a8dbbb8da486fa7d6c765253803554d54fa3fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때부터 아사왕 삼십 오년까지 다시는 전쟁이 없으니라"
+      ],
+      "raw_text_hashes": [
+        "df63030cd85a7f1ceffaa22798a8dbbb8da486fa7d6c765253803554d54fa3fe"
+      ]
+    }
+  ]
+}

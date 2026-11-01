@@ -539,6 +539,7 @@ def create_app(
     account_model_selection_store=None,
     shared_auth_comparison_flow=None,
     shared_login_flow=None,
+    custom_credential_cipher=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -1093,6 +1094,7 @@ def create_app(
             resolved_custom_store = D1CustomProviderCredentialStore(
                 d1_binding,
                 key_secret=resolved.custom_key_secret,
+                cipher=custom_credential_cipher,
                 session_secret=resolved.session_secret,
                 previous_key_secrets=resolved.custom_key_previous_secrets,
                 legacy_session_secrets=resolved.custom_key_legacy_session_secrets,

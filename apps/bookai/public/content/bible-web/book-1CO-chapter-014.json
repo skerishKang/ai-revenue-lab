@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:014",
+  "unit_ordinal": 1076,
+  "unit_label": "1CO 14",
+  "book_code": "1CO",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:14:1",
+      "sequence": 28676,
+      "chapter_label": "1CO 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "Follow after love and earnestly desire spiritual gifts, but especially that you may prophesy.",
+      "ko": "사랑을 따라 구하라 신령한 것을 사모하되 특별히 예언을 하려고 하라",
+      "source_text_hash": "24cb74514f35aafc1998588050f72c424eb2e3ae14aeda7fcd8ebe261732df94",
+      "translation_text_hash": "6eee208f9dd8afb959fa0119191578ecb2aedb8cb7cd18032d5622278aac08e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑을 따라 구하라 신령한 것을 사모하되 특별히 예언을 하려고 하라"
+      ],
+      "raw_text_hashes": [
+        "6eee208f9dd8afb959fa0119191578ecb2aedb8cb7cd18032d5622278aac08e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:2",
+      "sequence": 28677,
+      "chapter_label": "1CO 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "For he who speaks in another language speaks not to men, but to God, for no one understands, but in the Spirit he speaks mysteries.",
+      "ko": "방언을 말하는 자는 사람에게 하지 아니하고 하나님께 하나니 이는 알아 듣는 자가 없고 그 영으로 비밀을 말함이니라",
+      "source_text_hash": "7d7c7427819f8bbb1c14b283dc8a5ad81516034dbc3e63ef675fb9f38102ec4c",
+      "translation_text_hash": "6866e3ebd8b6675e5bdb672fb9ce1d11003508d8274c18d35dc8431e74b5c04f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방언을 말하는 자는 사람에게 하지 아니하고 하나님께 하나니 이는 알아 듣는 자가 없고 그 영으로 비밀을 말함이니라"
+      ],
+      "raw_text_hashes": [
+        "6866e3ebd8b6675e5bdb672fb9ce1d11003508d8274c18d35dc8431e74b5c04f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:3",
+      "sequence": 28678,
+      "chapter_label": "1CO 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "But he who prophesies speaks to men for their edification, exhortation, and consolation.",
+      "ko": "그러나 예언하는 자는 사람에게 말하여 덕을 세우며 권면하며 안위하는 것이요",
+      "source_text_hash": "c11159592e49726176f37be1aa2787ff5cf7d5a4c7949209e116c2b83b3e1188",
+      "translation_text_hash": "dfc2fcd99460a7b924d02c6c2c26ab8008c488313ddfabaacbab7dcca1a9989a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 예언하는 자는 사람에게 말하여 덕을 세우며 권면하며 안위하는 것이요"
+      ],
+      "raw_text_hashes": [
+        "dfc2fcd99460a7b924d02c6c2c26ab8008c488313ddfabaacbab7dcca1a9989a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:4",
+      "sequence": 28679,
+      "chapter_label": "1CO 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "He who speaks in another language edifies himself, but he who prophesies edifies the assembly.",
+      "ko": "방언을 말하는 자는 자기의 덕을 세우고 예언하는 자는 교회의 덕을 세우나니",
+      "source_text_hash": "bdc32bc523209da45a94f8b7d5387e3beb8b8578d00d7d06df99e4763d75545e",
+      "translation_text_hash": "383a3451cb21d076708bcf6f91a0c658d2ab7b008eb4bc92bbe93b4793015114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방언을 말하는 자는 자기의 덕을 세우고 예언하는 자는 교회의 덕을 세우나니"
+      ],
+      "raw_text_hashes": [
+        "383a3451cb21d076708bcf6f91a0c658d2ab7b008eb4bc92bbe93b4793015114"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:5",
+      "sequence": 28680,
+      "chapter_label": "1CO 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "Now I desire to have you all speak with other languages, but even more that you would prophesy. For he is greater who prophesies than he who speaks with other languages, unless he interprets, that the assembly may be built up.",
+      "ko": "나는 너희가 다 방언 말하기를 원하나 특별히 예언하기를 원하노라 방언을 말하는 자가 만일 교회의 덕을 세우기 위하여 통역하지 아니하면 예언하는 자만 못하니라",
+      "source_text_hash": "9176aa6977a42265a14e88c8e0c2984c4a3ebf64206c11dbdf56f24adefd2a0f",
+      "translation_text_hash": "6905302d28b46d403d4040c67a7b3f9edc90b981e037dbfc9ebaaeef581fe2d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희가 다 방언 말하기를 원하나 특별히 예언하기를 원하노라 방언을 말하는 자가 만일 교회의 덕을 세우기 위하여 통역하지 아니하면 예언하는 자만 못하니라"
+      ],
+      "raw_text_hashes": [
+        "6905302d28b46d403d4040c67a7b3f9edc90b981e037dbfc9ebaaeef581fe2d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:6",
+      "sequence": 28681,
+      "chapter_label": "1CO 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "But now, brothers, if I come to you speaking with other languages, what would I profit you unless I speak to you either by way of revelation, or of knowledge, or of prophesying, or of teaching?",
+      "ko": "그런즉 형제들아 내가 너희에게 나아가서 방언을 말하고 계시나 지식이나 예언이나 가르치는 것이나 말하지 아니하면 너희에게 무엇이 유익하리요",
+      "source_text_hash": "bc154dc9b41382a648d82983fd39f414bbd04e8fdde3977c712bc058384c84dc",
+      "translation_text_hash": "f26d8400c5603603a9ce33e2fc4384ca2e9f0b8f4cc1dbbbcac3d05a727a79f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 형제들아 내가 너희에게 나아가서 방언을 말하고 계시나 지식이나 예언이나 가르치는 것이나 말하지 아니하면 너희에게 무엇이 유익하리요"
+      ],
+      "raw_text_hashes": [
+        "f26d8400c5603603a9ce33e2fc4384ca2e9f0b8f4cc1dbbbcac3d05a727a79f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:7",
+      "sequence": 28682,
+      "chapter_label": "1CO 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "Even lifeless things that make a sound, whether pipe or harp, if they didn’t give a distinction in the sounds, how would it be known what is piped or harped?",
+      "ko": "혹 저나 거문고와 같이 생명 없는 것이 소리를 낼 때에 그 음의 분별을 내지 아니하면 저 부는 것인지 거문고 타는 것인지 어찌 알게 되리요",
+      "source_text_hash": "6b9d014fec4f2b217dc08f9fc823897a384e7af9b2c7dfabcede0aad85f67282",
+      "translation_text_hash": "aa3912cd48fb530ee087645f452d2de7aa7eab8defcb1c5dc9008bfd437a0137",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 저나 거문고와 같이 생명 없는 것이 소리를 낼 때에 그 음의 분별을 내지 아니하면 저 부는 것인지 거문고 타는 것인지 어찌 알게 되리요"
+      ],
+      "raw_text_hashes": [
+        "aa3912cd48fb530ee087645f452d2de7aa7eab8defcb1c5dc9008bfd437a0137"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:8",
+      "sequence": 28683,
+      "chapter_label": "1CO 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "For if the trumpet gave an uncertain sound, who would prepare himself for war?",
+      "ko": "만일 나팔이 분명치 못한 소리를 내면 누가 전쟁을 예비하리요",
+      "source_text_hash": "86f9ce4b35cde414f34a9366570ac76c0d95f09f6f989cd11adc7f64048ee408",
+      "translation_text_hash": "fbce7666eb366824e5613909336d37eff6a7abd48f4eab82e96a5329db5cbed0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 나팔이 분명치 못한 소리를 내면 누가 전쟁을 예비하리요"
+      ],
+      "raw_text_hashes": [
+        "fbce7666eb366824e5613909336d37eff6a7abd48f4eab82e96a5329db5cbed0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:9",
+      "sequence": 28684,
+      "chapter_label": "1CO 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "So also you, unless you uttered by the tongue words easy to understand, how would it be known what is spoken? For you would be speaking into the air.",
+      "ko": "이와 같이 너희도 혀로서 알아 듣기 쉬운 말을 하지 아니하면 그 말하는 것을 어찌 알리요 이는 허공에다 말하는 것이라",
+      "source_text_hash": "8b094415223d1758f6ddbb43b682a5655de4621aa98fb0054854cc171e6fca75",
+      "translation_text_hash": "32185e52ecac89a77730d1cca1645f1d66e14e935dedc077155718c198850187",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 너희도 혀로서 알아 듣기 쉬운 말을 하지 아니하면 그 말하는 것을 어찌 알리요 이는 허공에다 말하는 것이라"
+      ],
+      "raw_text_hashes": [
+        "32185e52ecac89a77730d1cca1645f1d66e14e935dedc077155718c198850187"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:10",
+      "sequence": 28685,
+      "chapter_label": "1CO 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "There are, it may be, so many kinds of languages in the world, and none of them is without meaning.",
+      "ko": "세상에 소리의 종류가 이같이 많되 뜻 없는 소리는 없나니",
+      "source_text_hash": "a515673fda707fed4466fb4d9b15dbfbb84a07e8caa607abfe61864b652f82e9",
+      "translation_text_hash": "5a08a2f660b92010dc8cf7be138f89cfbb657162fcf047d1f2ed6f6dfca41b1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상에 소리의 종류가 이같이 많되 뜻 없는 소리는 없나니"
+      ],
+      "raw_text_hashes": [
+        "5a08a2f660b92010dc8cf7be138f89cfbb657162fcf047d1f2ed6f6dfca41b1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:11",
+      "sequence": 28686,
+      "chapter_label": "1CO 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "If then I don’t know the meaning of the language, I would be to him who speaks a foreigner, and he who speaks would be a foreigner to me.",
+      "ko": "그러므로 내가 그 소리의 뜻을 알지 못하면 내가 말하는 자에게 야만이 되고 말하는 자도 내게 야만이 되리니",
+      "source_text_hash": "4736ca17d9733fdf3ad5566b0bbf88012ae5e1341bc7dd097d2f6ced5d23a9da",
+      "translation_text_hash": "0b7e531d256defbd1f7507e1b5120d8e8bac20f1e7725e388a3a7e11d9a61524",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 그 소리의 뜻을 알지 못하면 내가 말하는 자에게 야만이 되고 말하는 자도 내게 야만이 되리니"
+      ],
+      "raw_text_hashes": [
+        "0b7e531d256defbd1f7507e1b5120d8e8bac20f1e7725e388a3a7e11d9a61524"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:12",
+      "sequence": 28687,
+      "chapter_label": "1CO 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "So also you, since you are zealous for spiritual gifts, seek that you may abound to the building up of the assembly.",
+      "ko": "그러면 너희도 신령한 것을 사모하는 자인즉 교회의 덕 세우기를 위하여 풍성하기를 구하라",
+      "source_text_hash": "a17a6c24c9425e69251ae8ef3ac5f6155257697719ca09fae9bab8161f5c99bb",
+      "translation_text_hash": "1fe476d857106bee770a7f329089b41c460826bfa1ed95b625be84b2e4bc66e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 너희도 신령한 것을 사모하는 자인즉 교회의 덕 세우기를 위하여 풍성하기를 구하라"
+      ],
+      "raw_text_hashes": [
+        "1fe476d857106bee770a7f329089b41c460826bfa1ed95b625be84b2e4bc66e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:13",
+      "sequence": 28688,
+      "chapter_label": "1CO 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore let him who speaks in another language pray that he may interpret.",
+      "ko": "그러므로 방언을 말하는 자는 통역하기를 기도할찌니",
+      "source_text_hash": "72dd85b5265e37070275d7e04bf43037d81ed95f6e2ee4d4fbc9f1b10bada3b3",
+      "translation_text_hash": "833e7af0dc1f710772ae36f412790c71e2823ab75bd4a14ac4d7f9c57dba079b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 방언을 말하는 자는 통역하기를 기도할찌니"
+      ],
+      "raw_text_hashes": [
+        "833e7af0dc1f710772ae36f412790c71e2823ab75bd4a14ac4d7f9c57dba079b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:14",
+      "sequence": 28689,
+      "chapter_label": "1CO 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "For if I pray in another language, my spirit prays, but my understanding is unfruitful.",
+      "ko": "내가 만일 방언으로 기도하면 나의 영이 기도하거니와 나의 마음은 열매를 맺히지 못하리라",
+      "source_text_hash": "33ee285e4eeaf182224a44cf345f5feadb8f01e69e91caf79edce1b6beccdf42",
+      "translation_text_hash": "54fa79ec5a4119b4815f583a8a7303aeccfa0740cee265c5bf9afd416523d291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 만일 방언으로 기도하면 나의 영이 기도하거니와 나의 마음은 열매를 맺히지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "54fa79ec5a4119b4815f583a8a7303aeccfa0740cee265c5bf9afd416523d291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:15",
+      "sequence": 28690,
+      "chapter_label": "1CO 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "What should I do? I will pray with the spirit, and I will pray with the understanding also. I will sing with the spirit, and I will sing with the understanding also.",
+      "ko": "그러면 어떻게 할꼬 내가 영으로 기도하고 또 마음으로 기도하며 내가 영으로 찬미하고 또 마음으로 찬미하리라",
+      "source_text_hash": "5fc58775dd03fc9d2bdf7f7cb6e1aac469507cbf0685bb44dd8973b4e8ac9cd0",
+      "translation_text_hash": "b4971ed22d1461e43f7723dd1f7aeac0d1f0ac7e3985aa1363afe4e0de4e5c45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 어떻게 할꼬 내가 영으로 기도하고 또 마음으로 기도하며 내가 영으로 찬미하고 또 마음으로 찬미하리라"
+      ],
+      "raw_text_hashes": [
+        "b4971ed22d1461e43f7723dd1f7aeac0d1f0ac7e3985aa1363afe4e0de4e5c45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:16",
+      "sequence": 28691,
+      "chapter_label": "1CO 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "Otherwise, if you bless with the spirit, how will he who fills the place of the unlearned say the “Amen” at your giving of thanks, seeing he doesn’t know what you say?",
+      "ko": "그렇지 아니하면 네가 영으로 축복할 때에 무식한 처지에 있는 자가 네가 무슨 말을 하는지 알지 못하고 네 감사에 어찌 아멘 하리요",
+      "source_text_hash": "b088df2c635bb2f2c42d632746a65187eb9042fc7b4282f2e907284ab5c37476",
+      "translation_text_hash": "a26d555bab9a80fca8391dce8df1cd53e5d7e6642d03c43efd8d029f65f24947",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그렇지 아니하면 네가 영으로 축복할 때에 무식한 처지에 있는 자가 네가 무슨 말을 하는지 알지 못하고 네 감사에 어찌 아멘 하리요"
+      ],
+      "raw_text_hashes": [
+        "a26d555bab9a80fca8391dce8df1cd53e5d7e6642d03c43efd8d029f65f24947"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:17",
+      "sequence": 28692,
+      "chapter_label": "1CO 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "For you most certainly give thanks well, but the other person is not built up.",
+      "ko": "너는 감사를 잘하였으나 그러나 다른 사람은 덕 세움을 받지 못하리라",
+      "source_text_hash": "c779258e57c2fb39692a594777b25b7e9435609e1bcfac6a003812d58ff29960",
+      "translation_text_hash": "0c546f3a0d63dd292f9500e7a4fb5177bee98e6867a871e46ff7ff8356c9edbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 감사를 잘하였으나 그러나 다른 사람은 덕 세움을 받지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "0c546f3a0d63dd292f9500e7a4fb5177bee98e6867a871e46ff7ff8356c9edbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:18",
+      "sequence": 28693,
+      "chapter_label": "1CO 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "I thank my God, I speak with other languages more than you all.",
+      "ko": "내가 너희 모든 사람보다 방언을 더 말하므로 하나님께 감사하노라",
+      "source_text_hash": "3ee8ede13de189e579717fb8806e333ac10ec2ace7196f24036e8888ea11aa87",
+      "translation_text_hash": "9b59e4465bdbd28fb069fa340e28dfb0021d33ce20e27275fde97689274de108",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 모든 사람보다 방언을 더 말하므로 하나님께 감사하노라"
+      ],
+      "raw_text_hashes": [
+        "9b59e4465bdbd28fb069fa340e28dfb0021d33ce20e27275fde97689274de108"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:19",
+      "sequence": 28694,
+      "chapter_label": "1CO 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "However, in the assembly I would rather speak five words with my understanding, that I might instruct others also, than ten thousand words in another language.",
+      "ko": "그러나 교회에서 네가 남을 가르치기 위하여 깨달은 마음으로 다섯 마디 말을 하는 것이 일만 마디 방언으로 말하는 것보다 나으니라",
+      "source_text_hash": "57f9e418b89fb081e6d54a14b11d1a3a9bccda1b0823f0cd3e52b2a03a465981",
+      "translation_text_hash": "f681652abf43cf1d5fe1d0fcd7426a5d5a233205d20aa4ce6f6b91f7819d0bbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 교회에서 네가 남을 가르치기 위하여 깨달은 마음으로 다섯 마디 말을 하는 것이 일만 마디 방언으로 말하는 것보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "f681652abf43cf1d5fe1d0fcd7426a5d5a233205d20aa4ce6f6b91f7819d0bbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:20",
+      "sequence": 28695,
+      "chapter_label": "1CO 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "Brothers, don’t be children in thoughts, yet in malice be babies, but in thoughts be mature.",
+      "ko": "형제들아 지혜에는 아이가 되지 말고 악에는 어린 아이가 되라 지혜에 장성한 사람이 되라",
+      "source_text_hash": "fb1067f3fc37f128e61da44e8aef5f40f687704165302840b31a27b160058719",
+      "translation_text_hash": "fe6be5b621e8c04838da6c3b0d514d6e0c60717cb0806652b4347aac79768cde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 지혜에는 아이가 되지 말고 악에는 어린 아이가 되라 지혜에 장성한 사람이 되라"
+      ],
+      "raw_text_hashes": [
+        "fe6be5b621e8c04838da6c3b0d514d6e0c60717cb0806652b4347aac79768cde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:21",
+      "sequence": 28696,
+      "chapter_label": "1CO 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "In the law it is written, “By men of strange languages and by the lips of strangers I will speak to this people. They won’t even listen to me that way, says the Lord.”",
+      "ko": "율법에 기록된바 주께서 가라사대 내가 다른 방언하는 자와 다른 입술로 이 백성에게 말할찌라도 저희가 오히려 듣지 아니하리라 하였으니",
+      "source_text_hash": "58bc0d128ea2851148a34314dd1818a58ec2aecbd6433ab61f59899261d1d973",
+      "translation_text_hash": "08a3bdda0966580bb897c4f7722fc78ab5ed61e462b184e1f1442089bfcaab69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법에 기록된바 주께서 가라사대 내가 다른 방언하는 자와 다른 입술로 이 백성에게 말할찌라도 저희가 오히려 듣지 아니하리라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "08a3bdda0966580bb897c4f7722fc78ab5ed61e462b184e1f1442089bfcaab69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:22",
+      "sequence": 28697,
+      "chapter_label": "1CO 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "Therefore other languages are for a sign, not to those who believe, but to the unbelieving; but prophesying is for a sign, not to the unbelieving, but to those who believe.",
+      "ko": "그러므로 방언은 믿는 자들을 위하지 않고 믿지 아니하는 자들을 위하는 표적이나 예언은 믿지 아니하는 자들을 위하지 않고 믿는 자들을 위함이니",
+      "source_text_hash": "741ad85a1e1625024c8e943efac8c35fcc3f5dbe4c670b9aefbd9e56cef0a778",
+      "translation_text_hash": "c34c32addc21f1eca835e58dc1ac86958053aeb4beed6674311e78b101aee992",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 방언은 믿는 자들을 위하지 않고 믿지 아니하는 자들을 위하는 표적이나 예언은 믿지 아니하는 자들을 위하지 않고 믿는 자들을 위함이니"
+      ],
+      "raw_text_hashes": [
+        "c34c32addc21f1eca835e58dc1ac86958053aeb4beed6674311e78b101aee992"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:23",
+      "sequence": 28698,
+      "chapter_label": "1CO 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "If therefore the whole assembly is assembled together and all speak with other languages, and unlearned or unbelieving people come in, won’t they say that you are crazy?",
+      "ko": "그러므로 온 교회가 함께 모여 다 방언으로 말하면 무식한 자들이나 믿지 아니하는 자들이 들어와서 너희를 미쳤다 하지 아니하겠느냐",
+      "source_text_hash": "9320fea4fcd3738083f9adba089e9e8604f74d1604b3be512937f2edfe326e23",
+      "translation_text_hash": "4b33e516d1cf21e0013dc9cd14dde7e1df48dc19810a4b11fa1594409c89ca7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 온 교회가 함께 모여 다 방언으로 말하면 무식한 자들이나 믿지 아니하는 자들이 들어와서 너희를 미쳤다 하지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "4b33e516d1cf21e0013dc9cd14dde7e1df48dc19810a4b11fa1594409c89ca7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:24",
+      "sequence": 28699,
+      "chapter_label": "1CO 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "But if all prophesy, and someone unbelieving or unlearned comes in, he is reproved by all, and he is judged by all.",
+      "ko": "그러나 다 예언을 하면 믿지 아니하는 자들이나 무식한 자들이 들어와서 모든 사람에게 책망을 들으며 모든 사람에게 판단을 받고",
+      "source_text_hash": "6e2017f91c58f82b98f5a329e5ed70ef92d69510229602906af1bf5cfa5b6a21",
+      "translation_text_hash": "30772fcb95c5df9a4714ff3e68e9229848300cfbf82b057f85a4388311cee91b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 다 예언을 하면 믿지 아니하는 자들이나 무식한 자들이 들어와서 모든 사람에게 책망을 들으며 모든 사람에게 판단을 받고"
+      ],
+      "raw_text_hashes": [
+        "30772fcb95c5df9a4714ff3e68e9229848300cfbf82b057f85a4388311cee91b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:25",
+      "sequence": 28700,
+      "chapter_label": "1CO 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "And thus the secrets of his heart are revealed. So he will fall down on his face and worship God, declaring that God is among you indeed.",
+      "ko": "그 마음의 숨은 일이 드러나게 되므로 엎드리어 하나님께 경배하며 하나님이 참으로 너희 가운데 계시다 전파하리라",
+      "source_text_hash": "64860202fcfd435a771942f0fd246e86f95f477f8a09d213dd71c4c5d3ae6a0b",
+      "translation_text_hash": "d8b5ff4c37759ed140d6c5469c9f54b75b29852c5c913481a9950bc331262f6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음의 숨은 일이 드러나게 되므로 엎드리어 하나님께 경배하며 하나님이 참으로 너희 가운데 계시다 전파하리라"
+      ],
+      "raw_text_hashes": [
+        "d8b5ff4c37759ed140d6c5469c9f54b75b29852c5c913481a9950bc331262f6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:26",
+      "sequence": 28701,
+      "chapter_label": "1CO 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "What is it then, brothers? When you come together, each one of you has a psalm, has a teaching, has a revelation, has another language, or has an interpretation. Let all things be done to build each other up.",
+      "ko": "그런즉 형제들아 어찌할꼬 너희가 모일 때에 각각 찬송시도 있으며 가르치는 말씀도 있으며 계시도 있으며 방언도 있으며 통역함도 있나니 모든 것을 덕을 세우기 위하여 하라",
+      "source_text_hash": "985e19b6e4c8b6e18cc0007d280a7a90a70f05093d8e2fcb2a794aa990b28227",
+      "translation_text_hash": "7de19def5f8f3608b25fff267460a5b526bff5ef3abf77ac3580f630f8006ebf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 형제들아 어찌할꼬 너희가 모일 때에 각각 찬송시도 있으며 가르치는 말씀도 있으며 계시도 있으며 방언도 있으며 통역함도 있나니 모든 것을 덕을 세우기 위하여 하라"
+      ],
+      "raw_text_hashes": [
+        "7de19def5f8f3608b25fff267460a5b526bff5ef3abf77ac3580f630f8006ebf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:27",
+      "sequence": 28702,
+      "chapter_label": "1CO 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "If any man speaks in another language, let there be two, or at the most three, and in turn; and let one interpret.",
+      "ko": "만일 누가 방언으로 말하거든 두 사람이나 다불과 세 사람이 차서를 따라 하고 한 사람이 통역할 것이요",
+      "source_text_hash": "9cdbdff7ee9b6e19e1b856bfc3cdf81d244de9ed9e8e6dae195d8f94c402c136",
+      "translation_text_hash": "88f690f0b23b9e30ba7b93f8ed952b853fd86619107f49ac9e2f8167c70ec3d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누가 방언으로 말하거든 두 사람이나 다불과 세 사람이 차서를 따라 하고 한 사람이 통역할 것이요"
+      ],
+      "raw_text_hashes": [
+        "88f690f0b23b9e30ba7b93f8ed952b853fd86619107f49ac9e2f8167c70ec3d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:28",
+      "sequence": 28703,
+      "chapter_label": "1CO 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "But if there is no interpreter, let him keep silent in the assembly, and let him speak to himself and to God.",
+      "ko": "만일 통역하는 자가 없거든 교회에서는 잠잠하고 자기와 및 하나님께 말할 것이요",
+      "source_text_hash": "3bad5fc0e8c12f377c30202c4745b8f1a3ddebc1af20cd5289208c4b0760f623",
+      "translation_text_hash": "eff4dc49c8922e83bf8a85c67d3502169309372eb826b058138199f2908db965",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 통역하는 자가 없거든 교회에서는 잠잠하고 자기와 및 하나님께 말할 것이요"
+      ],
+      "raw_text_hashes": [
+        "eff4dc49c8922e83bf8a85c67d3502169309372eb826b058138199f2908db965"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:29",
+      "sequence": 28704,
+      "chapter_label": "1CO 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "Let two or three of the prophets speak, and let the others discern.",
+      "ko": "예언하는 자는 둘이나 셋이나 말하고 다른이들은 분변할 것이요",
+      "source_text_hash": "5592f6e3b0af27801f8e84ad286734ad8a1f88e092864ac7eb24f12d613b9d1a",
+      "translation_text_hash": "e97e43851c6dc7b2f3ea64a56e059fa1c979175abfc9178a4c53e1ce1393a094",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예언하는 자는 둘이나 셋이나 말하고 다른이들은 분변할 것이요"
+      ],
+      "raw_text_hashes": [
+        "e97e43851c6dc7b2f3ea64a56e059fa1c979175abfc9178a4c53e1ce1393a094"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:30",
+      "sequence": 28705,
+      "chapter_label": "1CO 14",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 30
+        }
+      ],
+      "en": "But if a revelation is made to another sitting by, let the first keep silent.",
+      "ko": "만일 곁에 앉은 다른이에게 계시가 있거든 먼저 하던 자는 잠잠할찌니라",
+      "source_text_hash": "bc243d46a887f4b854d487e278e54594094f8cfcf4758669fc3e877386ffd0e3",
+      "translation_text_hash": "45da2c46948de07b9bd460acc7cffe4c285a6cbf675dcf752c6aab173ff79460",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 곁에 앉은 다른이에게 계시가 있거든 먼저 하던 자는 잠잠할찌니라"
+      ],
+      "raw_text_hashes": [
+        "45da2c46948de07b9bd460acc7cffe4c285a6cbf675dcf752c6aab173ff79460"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:31",
+      "sequence": 28706,
+      "chapter_label": "1CO 14",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 31
+        }
+      ],
+      "en": "For you all can prophesy one by one, that all may learn and all may be exhorted.",
+      "ko": "너희는 다 모든 사람으로 배우게 하고 모든 사람으로 권면을 받게 하기 위하여 하나씩 하나씩 예언할 수 있느니라",
+      "source_text_hash": "247785c64fb12537338195330ddb7316a91d0905ad53e04e0b1b0cba7982df7a",
+      "translation_text_hash": "bb8c057243fb46e80c79bddee921eb28bab4e3535a955bdad9d4868d74254ff1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 다 모든 사람으로 배우게 하고 모든 사람으로 권면을 받게 하기 위하여 하나씩 하나씩 예언할 수 있느니라"
+      ],
+      "raw_text_hashes": [
+        "bb8c057243fb46e80c79bddee921eb28bab4e3535a955bdad9d4868d74254ff1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:32",
+      "sequence": 28707,
+      "chapter_label": "1CO 14",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 32
+        }
+      ],
+      "en": "The spirits of the prophets are subject to the prophets,",
+      "ko": "예언하는 자들의 영이 예언하는 자들에게 제재를 받나니",
+      "source_text_hash": "003e9a06327c1b628e8316157a243e2c3bf74a01951557817f96556dff16bfac",
+      "translation_text_hash": "3f4120ce71cf6af74eb9a30089850e93e6042a28da94728b4ea7714577775bc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예언하는 자들의 영이 예언하는 자들에게 제재를 받나니"
+      ],
+      "raw_text_hashes": [
+        "3f4120ce71cf6af74eb9a30089850e93e6042a28da94728b4ea7714577775bc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:33",
+      "sequence": 28708,
+      "chapter_label": "1CO 14",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 33
+        }
+      ],
+      "en": "for God is not a God of confusion but of peace, as in all the assemblies of the saints.",
+      "ko": "하나님은 어지러움의 하나님이 아니시요 오직 화평의 하나님이시니라",
+      "source_text_hash": "2aa76a514fba34e30112241756a218afa3ad338b41c73d063afb55e7066436ca",
+      "translation_text_hash": "fc97e5849578a026fef276f2e633581c8f4b7d5afe920ba996155f8fe76d7ece",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 어지러움의 하나님이 아니시요 오직 화평의 하나님이시니라"
+      ],
+      "raw_text_hashes": [
+        "fc97e5849578a026fef276f2e633581c8f4b7d5afe920ba996155f8fe76d7ece"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:34",
+      "sequence": 28709,
+      "chapter_label": "1CO 14",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 34
+        }
+      ],
+      "en": "Let the wives be quiet in the assemblies, for it has not been permitted for them to be talking except in submission, as the law also says,",
+      "ko": "모든 성도의 교회에서 함과 같이 여자는 교회에서 잠잠하라 저희의 말하는 것을 허락함이 없나니 율법에 이른것 같이 오직 복종할 것이요",
+      "source_text_hash": "f04a28975c2f97bf5db4c1ee6fb29f4a3e8124691602f6961f00cbcb924f5512",
+      "translation_text_hash": "dd90ed14b79f7007f6c5377f33cef00fb3c09f438d133111f324c68034cafcfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 성도의 교회에서 함과 같이 여자는 교회에서 잠잠하라 저희의 말하는 것을 허락함이 없나니 율법에 이른것 같이 오직 복종할 것이요"
+      ],
+      "raw_text_hashes": [
+        "dd90ed14b79f7007f6c5377f33cef00fb3c09f438d133111f324c68034cafcfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:35",
+      "sequence": 28710,
+      "chapter_label": "1CO 14",
+      "verse_label": "35",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 35
+        }
+      ],
+      "en": "if they desire to learn anything. “Let them ask their own husbands at home, for it is shameful for a wife to be talking in the assembly.”",
+      "ko": "만일 무엇을 배우려거든 집에서 자기 남편에게 물을찌니 여자가 교회에서 말하는 것은 부끄러운 것임이라",
+      "source_text_hash": "e73cd8f208b5294321d1eadb8a618d9e35334b9968dca268f35edf1fde909358",
+      "translation_text_hash": "862b76b31414ba7416c29694224b3124276a41b3f565f8c8548170846f576d15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 무엇을 배우려거든 집에서 자기 남편에게 물을찌니 여자가 교회에서 말하는 것은 부끄러운 것임이라"
+      ],
+      "raw_text_hashes": [
+        "862b76b31414ba7416c29694224b3124276a41b3f565f8c8548170846f576d15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:36",
+      "sequence": 28711,
+      "chapter_label": "1CO 14",
+      "verse_label": "36",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 36
+        }
+      ],
+      "en": "What!? Was it from you that the word of God went out? Or did it come to you alone?",
+      "ko": "하나님의 말씀이 너희에게로부터 난 것이냐 또는 너희에게만 임한 것이냐",
+      "source_text_hash": "b623db7f1bc7e098a5fd39dac7e946f6f294410dcd7f9b91ee45095d552d90d5",
+      "translation_text_hash": "c15b19ea0d0e3ea0f1959fd3ff9c9068b68f06616d1d826dec8c524d8760643b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 말씀이 너희에게로부터 난 것이냐 또는 너희에게만 임한 것이냐"
+      ],
+      "raw_text_hashes": [
+        "c15b19ea0d0e3ea0f1959fd3ff9c9068b68f06616d1d826dec8c524d8760643b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:37",
+      "sequence": 28712,
+      "chapter_label": "1CO 14",
+      "verse_label": "37",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 37
+        }
+      ],
+      "en": "If any man thinks himself to be a prophet or spiritual, let him recognize the things which I write to you, that they are the commandment of the Lord.",
+      "ko": "만일 누구든지 자기를 선지자나 혹 신령한 자로 생각하거든 내가 너희에게 편지한 것이 주의 명령인줄 알라",
+      "source_text_hash": "08311049fb368d59fb056d028b9b2397e4a2bd63fc818d11c1965c8607682562",
+      "translation_text_hash": "2d9b2cbdeff7bda0c5b4cba9cfeddb47b4ead69ae7d6a3070a406685b4c54112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 자기를 선지자나 혹 신령한 자로 생각하거든 내가 너희에게 편지한 것이 주의 명령인줄 알라"
+      ],
+      "raw_text_hashes": [
+        "2d9b2cbdeff7bda0c5b4cba9cfeddb47b4ead69ae7d6a3070a406685b4c54112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:38",
+      "sequence": 28713,
+      "chapter_label": "1CO 14",
+      "verse_label": "38",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 38
+        }
+      ],
+      "en": "But if anyone is ignorant, let him be ignorant.",
+      "ko": "만일 누구든지 알지 못하면 그는 알지 못한 자니라",
+      "source_text_hash": "a9c806e646ae8dc9898046550f319511b377203458f90fea431f63635ca21e37",
+      "translation_text_hash": "4b89a345b84893831b70e83ec20d30ed5325e23bba30c7598926560843430792",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 알지 못하면 그는 알지 못한 자니라"
+      ],
+      "raw_text_hashes": [
+        "4b89a345b84893831b70e83ec20d30ed5325e23bba30c7598926560843430792"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:39",
+      "sequence": 28714,
+      "chapter_label": "1CO 14",
+      "verse_label": "39",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 39
+        }
+      ],
+      "en": "Therefore, brothers, desire earnestly to prophesy, and don’t forbid speaking with other languages.",
+      "ko": "그런즉 내 형제들아 예언하기를 사모하며 방언 말하기를 금하지 말라",
+      "source_text_hash": "63fcf84ad2e199e43fa92adf52dd5438354c3168fdc8aa77930f668b741a563a",
+      "translation_text_hash": "0e69cea1d50883bde268fc91601f6be5cd3ac6926e9788b91eeb5ae1fcbd97bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내 형제들아 예언하기를 사모하며 방언 말하기를 금하지 말라"
+      ],
+      "raw_text_hashes": [
+        "0e69cea1d50883bde268fc91601f6be5cd3ac6926e9788b91eeb5ae1fcbd97bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:14:40",
+      "sequence": 28715,
+      "chapter_label": "1CO 14",
+      "verse_label": "40",
+      "locator": {
+        "book": "1CO",
+        "chapter": 14,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 14,
+          "verse": 40
+        }
+      ],
+      "en": "Let all things be done decently and in order.",
+      "ko": "모든 것을 적당하게 하고 질서대로 하라",
+      "source_text_hash": "317912fd93fc35c7173a25c9406bac0dc02f48fbfc51655425a1dbb3d3f7330b",
+      "translation_text_hash": "accb10e06c49c6e8c15d51f4c75a941056f94f78d65c3756d8f7196a5d9fd21e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 것을 적당하게 하고 질서대로 하라"
+      ],
+      "raw_text_hashes": [
+        "accb10e06c49c6e8c15d51f4c75a941056f94f78d65c3756d8f7196a5d9fd21e"
+      ]
+    }
+  ]
+}

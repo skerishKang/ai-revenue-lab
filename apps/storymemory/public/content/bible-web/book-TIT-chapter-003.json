@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:TIT:chapter:003",
+  "unit_ordinal": 1132,
+  "unit_label": "TIT 3",
+  "book_code": "TIT",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:TIT:3:1",
+      "sequence": 29921,
+      "chapter_label": "TIT 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Remind them to be in subjection to rulers and to authorities, to be obedient, to be ready for every good work,",
+      "ko": "너는 저희로 하여금 정사와 권세 잡은 자들에게 복종하며 순종하며 모든 선한 일 행하기를 예비하게 하며",
+      "source_text_hash": "fd27bce192942ff34ca2585e33fdd7a3cb6738325ec9d90b1a8220bf6db20a5b",
+      "translation_text_hash": "0cd970161448d8748c13d4924bd103e5ecee4800d173e9063f1abc9a1da1890c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 저희로 하여금 정사와 권세 잡은 자들에게 복종하며 순종하며 모든 선한 일 행하기를 예비하게 하며"
+      ],
+      "raw_text_hashes": [
+        "0cd970161448d8748c13d4924bd103e5ecee4800d173e9063f1abc9a1da1890c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:2",
+      "sequence": 29922,
+      "chapter_label": "TIT 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "to speak evil of no one, not to be contentious, to be gentle, showing all humility toward all men.",
+      "ko": "아무도 훼방하지 말며 다투지 말며 관용하며 범사에 온유함을 모든 사람에게 나타낼 것을 기억하게 하라",
+      "source_text_hash": "11cab247abaead1f060f30ce00087f21ea4b3176168318975a92527b3109ad5b",
+      "translation_text_hash": "5890c555e78006302a4588538b1e38c0da79654ced5327d9342f289ba6e7f428",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무도 훼방하지 말며 다투지 말며 관용하며 범사에 온유함을 모든 사람에게 나타낼 것을 기억하게 하라"
+      ],
+      "raw_text_hashes": [
+        "5890c555e78006302a4588538b1e38c0da79654ced5327d9342f289ba6e7f428"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:3",
+      "sequence": 29923,
+      "chapter_label": "TIT 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "For we were also once foolish, disobedient, deceived, serving various lusts and pleasures, living in malice and envy, hateful, and hating one another.",
+      "ko": "우리도 전에는 어리석은 자요 순종치 아니한 자요 속은 자요 각색 정욕과 행락에 종노릇한 자요 악독과 투기로 지낸 자요 가증스러운 자요 피차 미워한 자이었으나",
+      "source_text_hash": "501c8c78c533ede37feb04a5b427b434475d0f27f6fe6b6fbc48067886707fb2",
+      "translation_text_hash": "30de3c19cec68becfa95300c06b86680124ee40c0222f738edbf8850c999a9ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리도 전에는 어리석은 자요 순종치 아니한 자요 속은 자요 각색 정욕과 행락에 종노릇한 자요 악독과 투기로 지낸 자요 가증스러운 자요 피차 미워한 자이었으나"
+      ],
+      "raw_text_hashes": [
+        "30de3c19cec68becfa95300c06b86680124ee40c0222f738edbf8850c999a9ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:4",
+      "sequence": 29924,
+      "chapter_label": "TIT 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "But when the kindness of God our Savior and his love toward mankind appeared,",
+      "ko": "우리 구주 하나님의 자비와 사람 사랑하심을 나타내실 때에",
+      "source_text_hash": "8fde02f700a4bb7deb47dd13a3b7938580b616c7a5fcfe57bdf2a59ec669ad01",
+      "translation_text_hash": "19b1298a6b09d4bffd0bf05582da7e410ad15a144951f7dc219a3e39e5a25ca3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 구주 하나님의 자비와 사람 사랑하심을 나타내실 때에"
+      ],
+      "raw_text_hashes": [
+        "19b1298a6b09d4bffd0bf05582da7e410ad15a144951f7dc219a3e39e5a25ca3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:5",
+      "sequence": 29925,
+      "chapter_label": "TIT 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "not by works of righteousness which we did ourselves, but according to his mercy, he saved us through the washing of regeneration and renewing by the Holy Spirit,",
+      "ko": "우리를 구원하시되 우리의 행한바 의로운 행위로 말미암지 아니하고 오직 그의 긍휼하심을 좇아 중생의 씻음과 성령의 새롭게 하심으로 하셨나니",
+      "source_text_hash": "662344ff505594a2865ac456880bb5bb03f0c14b526cb94ea32c4cec2b3c3c89",
+      "translation_text_hash": "77ad2f3959dd9b7db13a04f6e323a430aabb78b7f3b68fe49584f5e1ea1381e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 구원하시되 우리의 행한바 의로운 행위로 말미암지 아니하고 오직 그의 긍휼하심을 좇아 중생의 씻음과 성령의 새롭게 하심으로 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "77ad2f3959dd9b7db13a04f6e323a430aabb78b7f3b68fe49584f5e1ea1381e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:6",
+      "sequence": 29926,
+      "chapter_label": "TIT 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "whom he poured out on us richly through Jesus Christ our Savior;",
+      "ko": "성령을 우리 구주 예수 그리스도로 말미암아 우리에게 풍성히 부어 주사",
+      "source_text_hash": "624e948491bb6e55193dafd8f83f760ebe5136ccb83c9b130130c7b4d4a5497a",
+      "translation_text_hash": "6c9cc4b13dd8e6176d83a3d42f93b6872db0815ea2b58923243fd1787026a393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령을 우리 구주 예수 그리스도로 말미암아 우리에게 풍성히 부어 주사"
+      ],
+      "raw_text_hashes": [
+        "6c9cc4b13dd8e6176d83a3d42f93b6872db0815ea2b58923243fd1787026a393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:7",
+      "sequence": 29927,
+      "chapter_label": "TIT 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "that being justified by his grace, we might be made heirs according to the hope of eternal life.",
+      "ko": "우리로 저의 은혜를 힘입어 의롭다 하심을 얻어 영생의 소망을 따라 후사가 되게 하려 하심이라",
+      "source_text_hash": "550f1a58be82c3d23411bb70c4e545a96f3be6821f3baa6296ffee4d20e644cf",
+      "translation_text_hash": "56e8b9962c8cb7d24ea52d1def630679db75073554bef44c173f9591e9403c75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리로 저의 은혜를 힘입어 의롭다 하심을 얻어 영생의 소망을 따라 후사가 되게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "56e8b9962c8cb7d24ea52d1def630679db75073554bef44c173f9591e9403c75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:8",
+      "sequence": 29928,
+      "chapter_label": "TIT 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "This saying is faithful, and concerning these things I desire that you insist confidently, so that those who have believed God may be careful to maintain good works. These things are good and profitable to men;",
+      "ko": "이 말이 미쁘도다 원컨대 네가 이 여러 것에 대하여 굳세게 말하라 이는 하나님을 믿는 자들로 하여금 조심하여 선한 일을 힘쓰게 하려 함이라 이것은 아름다우며 사람들에게 유익하니라",
+      "source_text_hash": "f55e38b76c29446417740e1baf1872366aad4090dd597b2e374c392d250f603e",
+      "translation_text_hash": "fe25dd7a03d5a83fb2ae83c5cf0c891c6d8e6418b08b89e4b9a8668388e4b078",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말이 미쁘도다 원컨대 네가 이 여러 것에 대하여 굳세게 말하라 이는 하나님을 믿는 자들로 하여금 조심하여 선한 일을 힘쓰게 하려 함이라 이것은 아름다우며 사람들에게 유익하니라"
+      ],
+      "raw_text_hashes": [
+        "fe25dd7a03d5a83fb2ae83c5cf0c891c6d8e6418b08b89e4b9a8668388e4b078"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:9",
+      "sequence": 29929,
+      "chapter_label": "TIT 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "but shun foolish questionings, genealogies, strife, and disputes about the law; for they are unprofitable and vain.",
+      "ko": "그러나 어리석은 변론과 족보 이야기와 분쟁과 율법에 대한 다툼을 피하라 이것은 무익한 것이요 헛된 것이니라",
+      "source_text_hash": "c29b8f502d6a19a949715987377ac0e0bcd36ffe637166ce42f680a1789054da",
+      "translation_text_hash": "f5aa77e10946cab56d97e86f67ce8f9d258961d02585ecda6f20d7672438b22a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 어리석은 변론과 족보 이야기와 분쟁과 율법에 대한 다툼을 피하라 이것은 무익한 것이요 헛된 것이니라"
+      ],
+      "raw_text_hashes": [
+        "f5aa77e10946cab56d97e86f67ce8f9d258961d02585ecda6f20d7672438b22a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:10",
+      "sequence": 29930,
+      "chapter_label": "TIT 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Avoid a factious man after a first and second warning,",
+      "ko": "이단에 속한 사람을 한두번 훈계한 후에 멀리 하라",
+      "source_text_hash": "43b1706020dc72be97e8d5fa8b0e7b9a333ccf669ae56f46d59a79a0bdc77aa7",
+      "translation_text_hash": "af1e417ce0fe765e095b6aa0ca8e899afe3024a5cd309138659bd7f0d21220df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이단에 속한 사람을 한두번 훈계한 후에 멀리 하라"
+      ],
+      "raw_text_hashes": [
+        "af1e417ce0fe765e095b6aa0ca8e899afe3024a5cd309138659bd7f0d21220df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:11",
+      "sequence": 29931,
+      "chapter_label": "TIT 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "knowing that such a one is perverted and sinful, being self-condemned.",
+      "ko": "이러한 사람은 네가 아는 바와 같이 부패하여서 스스로 정죄한 자로서 죄를 짓느니라",
+      "source_text_hash": "b787355cff13f1ac1e4c5bf996481a7fec924145ca9364ab62a0d04dec63c063",
+      "translation_text_hash": "a493d008dd5d1ce09a78257e19ed9edd1952d7d8f42518f0302b0eb075a02494",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러한 사람은 네가 아는 바와 같이 부패하여서 스스로 정죄한 자로서 죄를 짓느니라"
+      ],
+      "raw_text_hashes": [
+        "a493d008dd5d1ce09a78257e19ed9edd1952d7d8f42518f0302b0eb075a02494"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:12",
+      "sequence": 29932,
+      "chapter_label": "TIT 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "When I send Artemas to you, or Tychicus, be diligent to come to me to Nicopolis, for I have determined to winter there.",
+      "ko": "내가 아데마나 두기고를 네게 보내리니 그 때에 네가 급히 니고볼리로 내게 오라 내가 거기서 과동하기로 작정하였노라",
+      "source_text_hash": "11f2d324d3b27ed43a5385d010c158b47c1b35fd108204ac848946fc5599b839",
+      "translation_text_hash": "be898dd163b73483cd29b1905da4366162bd83aa1378355a67e1685d101c45e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아데마나 두기고를 네게 보내리니 그 때에 네가 급히 니고볼리로 내게 오라 내가 거기서 과동하기로 작정하였노라"
+      ],
+      "raw_text_hashes": [
+        "be898dd163b73483cd29b1905da4366162bd83aa1378355a67e1685d101c45e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:13",
+      "sequence": 29933,
+      "chapter_label": "TIT 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Send Zenas the lawyer and Apollos on their journey speedily, that nothing may be lacking for them.",
+      "ko": "교법사 세나와 및 아볼로를 급히 먼저 보내어 저희로 궁핍함이 없게 하고",
+      "source_text_hash": "9c3fdbfe1868fc5b5ee8ed3ad589591d5106dfeaea10d2fce85d692e4540e9b5",
+      "translation_text_hash": "5449d0be8d98869d8236a233f9d71d5fb13d1f0f3970ae371976b289019d072f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "교법사 세나와 및 아볼로를 급히 먼저 보내어 저희로 궁핍함이 없게 하고"
+      ],
+      "raw_text_hashes": [
+        "5449d0be8d98869d8236a233f9d71d5fb13d1f0f3970ae371976b289019d072f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:14",
+      "sequence": 29934,
+      "chapter_label": "TIT 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "Let our people also learn to maintain good works to meet necessary needs, that they may not be unfruitful.",
+      "ko": "또 우리 사람들도 열매 없는 자가 되지 않게 하기 위하여 필요한 것을 예비하는 좋은 일에 힘 쓰기를 배우게 하라",
+      "source_text_hash": "d9aa10ce7cbd5fb49e144a1e6b1a6849dff6fffc01eeab537145deeef0ed8c9d",
+      "translation_text_hash": "3e98c25d1e4d1a4dc855d8919a134978841aef057843c7f77df1f6e51a05931b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 우리 사람들도 열매 없는 자가 되지 않게 하기 위하여 필요한 것을 예비하는 좋은 일에 힘 쓰기를 배우게 하라"
+      ],
+      "raw_text_hashes": [
+        "3e98c25d1e4d1a4dc855d8919a134978841aef057843c7f77df1f6e51a05931b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:3:15",
+      "sequence": 29935,
+      "chapter_label": "TIT 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "TIT",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "All who are with me greet you. Greet those who love us in faith. Grace be with you all. Amen.",
+      "ko": "나와 함께 있는 자가 다 네게 문안하니 믿음 안에서 우리를 사랑하는 자들에게 너도 문안하라 은혜가 너희 무리에게 있을찌어다",
+      "source_text_hash": "fcec867c6166138c677b7e0944f8c6b01958614216a49633f92fcfd4c8c4766d",
+      "translation_text_hash": "80262f2ea4edce335457b608dd0b9c461dbb75b9a1c43c5f47a8e05dd6f422d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 함께 있는 자가 다 네게 문안하니 믿음 안에서 우리를 사랑하는 자들에게 너도 문안하라 은혜가 너희 무리에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "80262f2ea4edce335457b608dd0b9c461dbb75b9a1c43c5f47a8e05dd6f422d3"
+      ]
+    }
+  ]
+}

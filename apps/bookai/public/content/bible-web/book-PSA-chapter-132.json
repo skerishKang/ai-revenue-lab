@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:132",
+  "unit_ordinal": 610,
+  "unit_label": "PSA 132",
+  "book_code": "PSA",
+  "chapter_number": 132,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:132:1",
+      "sequence": 16153,
+      "chapter_label": "PSA 132",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 1
+        }
+      ],
+      "en": "LORD, remember David and all his affliction,",
+      "ko": "여호와여 다윗을 위하여 그의 모든 근심한 것을 기억하소서",
+      "source_text_hash": "bfab8837d556233914c63abfbf3dc157f71e197aead864a701ecfddbf5300d0c",
+      "translation_text_hash": "a5291ebf206fa61418fec0df6ba33353fd45b1dd033facbb4a6909912a1de13d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 다윗을 위하여 그의 모든 근심한 것을 기억하소서"
+      ],
+      "raw_text_hashes": [
+        "a5291ebf206fa61418fec0df6ba33353fd45b1dd033facbb4a6909912a1de13d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:2",
+      "sequence": 16154,
+      "chapter_label": "PSA 132",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 2
+        }
+      ],
+      "en": "how he swore to the LORD, and vowed to the Mighty One of Jacob:",
+      "ko": "저가 여호와께 맹세하며 야곱의 전능자에게 서원하기를",
+      "source_text_hash": "efbcafa3bb25a26ae5644cbc07a9967a191e87a460f195a5c6e777496ee62f9a",
+      "translation_text_hash": "5049be093c63cc3cb0d7d3e9a51c0e10d483989041656d1f808c1592fd06e21d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 여호와께 맹세하며 야곱의 전능자에게 서원하기를"
+      ],
+      "raw_text_hashes": [
+        "5049be093c63cc3cb0d7d3e9a51c0e10d483989041656d1f808c1592fd06e21d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:3",
+      "sequence": 16155,
+      "chapter_label": "PSA 132",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 3
+        }
+      ],
+      "en": "“Surely I will not come into the structure of my house, nor go up into my bed;",
+      "ko": "내가 실로 나의 거하는 장막에 들어가지 아니하며 내 침상에 오르지 아니하며",
+      "source_text_hash": "11f7bb5ec4b5dd8af75870d558ace00ec853b4cf39f17db9a60da693bfb38ac0",
+      "translation_text_hash": "c660dd11f760d548c3ba32b826b3b5ef6830ffd2ddad4600f13ca8d9bfcf17f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 실로 나의 거하는 장막에 들어가지 아니하며 내 침상에 오르지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "c660dd11f760d548c3ba32b826b3b5ef6830ffd2ddad4600f13ca8d9bfcf17f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:4",
+      "sequence": 16156,
+      "chapter_label": "PSA 132",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 4
+        }
+      ],
+      "en": "I will not give sleep to my eyes, or slumber to my eyelids,",
+      "ko": "내 눈으로 잠들게 아니하며 내 눈꺼풀로 졸게 아니하기를",
+      "source_text_hash": "d31e57ba8e25e5e634f38149a2426c714dafd607c730a0cc2f36f3a8999c3706",
+      "translation_text_hash": "46ba4f5c156b259c874a27d3be96d3647a109cc98da5bb015280d96d0a68c488",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 눈으로 잠들게 아니하며 내 눈꺼풀로 졸게 아니하기를"
+      ],
+      "raw_text_hashes": [
+        "46ba4f5c156b259c874a27d3be96d3647a109cc98da5bb015280d96d0a68c488"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:5",
+      "sequence": 16157,
+      "chapter_label": "PSA 132",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 5
+        }
+      ],
+      "en": "until I find out a place for the LORD, a dwelling for the Mighty One of Jacob.”",
+      "ko": "여호와의 처소 곧 야곱의 전능자의 성막을 발견하기까지 하리라 하였나이다",
+      "source_text_hash": "2f0ef604031b29700cfe1aa612ec08e1ca7a280625f2770d2467ed23cfe39820",
+      "translation_text_hash": "3cdcc06e0cdbb52b6ebc0e94991e9b74b5777c3ac641bf45575d1299355e3b23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 처소 곧 야곱의 전능자의 성막을 발견하기까지 하리라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "3cdcc06e0cdbb52b6ebc0e94991e9b74b5777c3ac641bf45575d1299355e3b23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:6",
+      "sequence": 16158,
+      "chapter_label": "PSA 132",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 6
+        }
+      ],
+      "en": "Behold, we heard of it in Ephrathah. We found it in the field of Jaar.",
+      "ko": "우리가 그것이 에브라다에 있다 함을 들었더니 나무 밭에서 찾았도다",
+      "source_text_hash": "7a2eb158a28d6d72a27331661a01da410cbf88cac6dc98862c440b1a1cf4d39e",
+      "translation_text_hash": "42ef8517d2e88b67c2c1a2bfe0ab607106607f2d72a4877368441d26680b1247",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그것이 에브라다에 있다 함을 들었더니 나무 밭에서 찾았도다"
+      ],
+      "raw_text_hashes": [
+        "42ef8517d2e88b67c2c1a2bfe0ab607106607f2d72a4877368441d26680b1247"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:7",
+      "sequence": 16159,
+      "chapter_label": "PSA 132",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 7
+        }
+      ],
+      "en": "“We will go into his dwelling place. We will worship at his footstool.”",
+      "ko": "우리가 그의 성막에 들어가서 그 발등상 앞에서 경배하리로다",
+      "source_text_hash": "ff6d12cdcde28495a4e1fc2ad774e66d5a1c3025077ec1fbf867e1941472cfe9",
+      "translation_text_hash": "9af65bb43cfabbc61520cbea6a7f43b8bb18dc2b6c4088a3bcbbbf9e7dd4248d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그의 성막에 들어가서 그 발등상 앞에서 경배하리로다"
+      ],
+      "raw_text_hashes": [
+        "9af65bb43cfabbc61520cbea6a7f43b8bb18dc2b6c4088a3bcbbbf9e7dd4248d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:8",
+      "sequence": 16160,
+      "chapter_label": "PSA 132",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 8
+        }
+      ],
+      "en": "Arise, LORD, into your resting place, you, and the ark of your strength.",
+      "ko": "여호와여 일어나사 주의 권능의 궤와 함께 평안한 곳으로 들어 가소서",
+      "source_text_hash": "82f08d7ed3d1142314c3a5dc9ed7151f5dd803967ccc9245f16830a7c4786997",
+      "translation_text_hash": "516c181d38ba94ef9eb8f9bc12ad631d009ebfbed49cc09ecbadebf2ec305153",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 일어나사 주의 권능의 궤와 함께 평안한 곳으로 들어 가소서"
+      ],
+      "raw_text_hashes": [
+        "516c181d38ba94ef9eb8f9bc12ad631d009ebfbed49cc09ecbadebf2ec305153"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:9",
+      "sequence": 16161,
+      "chapter_label": "PSA 132",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 9
+        }
+      ],
+      "en": "Let your priests be clothed with righteousness. Let your saints shout for joy!",
+      "ko": "주의 제사장들은 의를 입고 주의 성도들은 즐거이 외칠찌어다",
+      "source_text_hash": "cf5c1e94fb43d685f6f66a78c9ed96febb06fad92e30d7b76de79564fe667b65",
+      "translation_text_hash": "1166dc9aadefaa6e8b0fc8a379ff3f1b0b6959f3b2e0b0bb1be4cef5156dc93e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 제사장들은 의를 입고 주의 성도들은 즐거이 외칠찌어다"
+      ],
+      "raw_text_hashes": [
+        "1166dc9aadefaa6e8b0fc8a379ff3f1b0b6959f3b2e0b0bb1be4cef5156dc93e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:10",
+      "sequence": 16162,
+      "chapter_label": "PSA 132",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 10
+        }
+      ],
+      "en": "For your servant David’s sake, don’t turn away the face of your anointed one.",
+      "ko": "주의 종 다윗을 위하여 주의 기름 받은 자의 얼굴을 물리치지 마옵소서",
+      "source_text_hash": "2c87473b18a93fb2dfa5065137817974b18bd154ec642b5fb832c779931b8593",
+      "translation_text_hash": "2f94af33f2a292aa8b957e36f4977231b7a9cd793182f09216f627dfe3efeb01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종 다윗을 위하여 주의 기름 받은 자의 얼굴을 물리치지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "2f94af33f2a292aa8b957e36f4977231b7a9cd793182f09216f627dfe3efeb01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:11",
+      "sequence": 16163,
+      "chapter_label": "PSA 132",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD has sworn to David in truth. He will not turn from it: “I will set the fruit of your body on your throne.",
+      "ko": "여호와께서 다윗에게 성실히 맹세하셨으니 변치 아니하실찌라 이르시기를 네 몸의 소생을 네 위에 둘찌라",
+      "source_text_hash": "f5127d6ef1f67aaafad0f79a87295a38bf5ece3b376c1faed27c043a43cc00b3",
+      "translation_text_hash": "0c3253b4e1853f078c707e9f7acee3f3c2db1f8da11c916777d51a396a3cc78a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 다윗에게 성실히 맹세하셨으니 변치 아니하실찌라 이르시기를 네 몸의 소생을 네 위에 둘찌라"
+      ],
+      "raw_text_hashes": [
+        "0c3253b4e1853f078c707e9f7acee3f3c2db1f8da11c916777d51a396a3cc78a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:12",
+      "sequence": 16164,
+      "chapter_label": "PSA 132",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 12
+        }
+      ],
+      "en": "If your children will keep my covenant, my testimony that I will teach them, their children also will sit on your throne forever more.”",
+      "ko": "네 자손이 내 언약과 저희에게 교훈하는 내 증거를 지킬찐대 저희 후손도 영원히 네 위에 앉으리라 하셨도다",
+      "source_text_hash": "a7896bea6b594412b2a60f69f2336bca741cedd723d1e4acc969db20664e16fd",
+      "translation_text_hash": "eac01c88ca3e5810efd464cf5d53159e814debf461210a7bd9d0f855df3ac5b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자손이 내 언약과 저희에게 교훈하는 내 증거를 지킬찐대 저희 후손도 영원히 네 위에 앉으리라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "eac01c88ca3e5810efd464cf5d53159e814debf461210a7bd9d0f855df3ac5b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:13",
+      "sequence": 16165,
+      "chapter_label": "PSA 132",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 13
+        }
+      ],
+      "en": "For the LORD has chosen Zion. He has desired it for his habitation.",
+      "ko": "여호와께서 시온을 택하시고 자기 거처를 삼고자 하여 이르시기를",
+      "source_text_hash": "2fcf78ec52bd0d5a16c0b00982ef17f149e54877300e8b1a3220f376eeb9cd88",
+      "translation_text_hash": "4ade1783883461b215ddcd31ad0187673d3d6106a5b0ecc2c8cdf1ee3f4e2134",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 시온을 택하시고 자기 거처를 삼고자 하여 이르시기를"
+      ],
+      "raw_text_hashes": [
+        "4ade1783883461b215ddcd31ad0187673d3d6106a5b0ecc2c8cdf1ee3f4e2134"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:14",
+      "sequence": 16166,
+      "chapter_label": "PSA 132",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 14
+        }
+      ],
+      "en": "“This is my resting place forever. I will live here, for I have desired it.",
+      "ko": "이는 나의 영원히 쉴 곳이라 내가 여기 거할 것은 이를 원하였음이로다",
+      "source_text_hash": "0c91ce48ac4ffdf71f8db7266f73c3bf736b7dea1859f74115ae5266df5d844f",
+      "translation_text_hash": "0a144b18284457bcf82c99bc99485c1859652068f524930370eae735c16e12ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 나의 영원히 쉴 곳이라 내가 여기 거할 것은 이를 원하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "0a144b18284457bcf82c99bc99485c1859652068f524930370eae735c16e12ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:15",
+      "sequence": 16167,
+      "chapter_label": "PSA 132",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 15
+        }
+      ],
+      "en": "I will abundantly bless her provision. I will satisfy her poor with bread.",
+      "ko": "내가 이 성의 식료품에 풍족히 복을 주고 양식으로 그 빈민을 만족케 하리로다",
+      "source_text_hash": "dc0271e7d755b262aa231636824adcecfd9c4775f4df677cd612f5df763798a3",
+      "translation_text_hash": "1254e31e52765c73452cd8be6c62210116da70e557a932959ceeebfec593243b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 성의 식료품에 풍족히 복을 주고 양식으로 그 빈민을 만족케 하리로다"
+      ],
+      "raw_text_hashes": [
+        "1254e31e52765c73452cd8be6c62210116da70e557a932959ceeebfec593243b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:16",
+      "sequence": 16168,
+      "chapter_label": "PSA 132",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 16
+        }
+      ],
+      "en": "I will also clothe her priests with salvation. Her saints will shout aloud for joy.",
+      "ko": "내가 그 제사장들에게 구원으로 입히리니 그 성도들은 즐거움으로 외치리로다",
+      "source_text_hash": "69f69d7cf2e9ec7443a5f9d224c24253c72571f367b078073e6d9e35baf43924",
+      "translation_text_hash": "4df022ef1110ee320c1137d52a6cca8347a5a82adb288ddba0d8248f9a51102d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 제사장들에게 구원으로 입히리니 그 성도들은 즐거움으로 외치리로다"
+      ],
+      "raw_text_hashes": [
+        "4df022ef1110ee320c1137d52a6cca8347a5a82adb288ddba0d8248f9a51102d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:17",
+      "sequence": 16169,
+      "chapter_label": "PSA 132",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 17
+        }
+      ],
+      "en": "I will make the horn of David to bud there. I have ordained a lamp for my anointed.",
+      "ko": "내가 거기서 다윗에게 뿔이 나게 할 것이라 내가 내 기름 부은 자를 위하여 등을 예비하였도다",
+      "source_text_hash": "094fe529fc059068a262eeae78d1ea8a90be9e547d27fa0ca09fb25f6bec2aac",
+      "translation_text_hash": "038c666528b9194e42f075e2590aab2f4274ba91d0e6ba55a10ac5311ad41f96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 거기서 다윗에게 뿔이 나게 할 것이라 내가 내 기름 부은 자를 위하여 등을 예비하였도다"
+      ],
+      "raw_text_hashes": [
+        "038c666528b9194e42f075e2590aab2f4274ba91d0e6ba55a10ac5311ad41f96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:132:18",
+      "sequence": 16170,
+      "chapter_label": "PSA 132",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 132,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 132,
+          "verse": 18
+        }
+      ],
+      "en": "I will clothe his enemies with shame, but on himself, his crown will shine.”",
+      "ko": "내가 저의 원수에게는 수치로 입히고 저에게는 면류관이 빛나게 하리라 하셨도다",
+      "source_text_hash": "6adea052f84d0560febff10917a4be589b54311d9cfed91dfe6f84c7e5f87584",
+      "translation_text_hash": "c437ab8fd262201b082fa176de19b3bc1e8a1e7a57a474b36f36e95eb8471007",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저의 원수에게는 수치로 입히고 저에게는 면류관이 빛나게 하리라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "c437ab8fd262201b082fa176de19b3bc1e8a1e7a57a474b36f36e95eb8471007"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EPH:chapter:005",
+  "unit_ordinal": 1102,
+  "unit_label": "EPH 5",
+  "book_code": "EPH",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EPH:5:1",
+      "sequence": 29302,
+      "chapter_label": "EPH 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Be therefore imitators of God, as beloved children.",
+      "ko": "그러므로 사랑을 입은 자녀 같이 너희는 하나님을 본받는 자가 되고",
+      "source_text_hash": "909a362e95c6fd3686c59e2c73cf3c532a786daeab752daa808c703f5e8997b6",
+      "translation_text_hash": "c93ff2b64d356de513615be82cb314986a3f7af2f350fe2dd313273a25114284",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 사랑을 입은 자녀 같이 너희는 하나님을 본받는 자가 되고"
+      ],
+      "raw_text_hashes": [
+        "c93ff2b64d356de513615be82cb314986a3f7af2f350fe2dd313273a25114284"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:2",
+      "sequence": 29303,
+      "chapter_label": "EPH 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "Walk in love, even as Christ also loved us and gave himself up for us, an offering and a sacrifice to God for a sweet-smelling fragrance.",
+      "ko": "그리스도께서 너희를 사랑하신 것 같이 너희도 사랑 가운데서 행하라 그는 우리를 위하여 자신을 버리사 향기로운 제물과 생축으로 하나님께 드리셨느니라",
+      "source_text_hash": "d9318793767d336545c2baadb913e5ebe6a4ce7787510dc333a75acd1ed5311d",
+      "translation_text_hash": "8958f99a9bba3ca2b270ea96f51c616b3a198857fa6e771d7817fd3cbc90ae63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 너희를 사랑하신 것 같이 너희도 사랑 가운데서 행하라 그는 우리를 위하여 자신을 버리사 향기로운 제물과 생축으로 하나님께 드리셨느니라"
+      ],
+      "raw_text_hashes": [
+        "8958f99a9bba3ca2b270ea96f51c616b3a198857fa6e771d7817fd3cbc90ae63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:3",
+      "sequence": 29304,
+      "chapter_label": "EPH 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "But sexual immorality, and all uncleanness or covetousness, let it not even be mentioned among you, as becomes saints;",
+      "ko": "음행과 온갖 더러운 것과 탐욕은 너희 중에서 그 이름이라도 부르지 말라 이는 성도의 마땅한 바니라",
+      "source_text_hash": "309cb3b8003440743fcef3541900cc798a47b3f6f5431a622d0b7220f050da5d",
+      "translation_text_hash": "0a9a363555ba98be9d56ecdba0b4cab8b692ab5841a3a0edaf7e21255788d994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음행과 온갖 더러운 것과 탐욕은 너희 중에서 그 이름이라도 부르지 말라 이는 성도의 마땅한 바니라"
+      ],
+      "raw_text_hashes": [
+        "0a9a363555ba98be9d56ecdba0b4cab8b692ab5841a3a0edaf7e21255788d994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:4",
+      "sequence": 29305,
+      "chapter_label": "EPH 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "nor filthiness, nor foolish talking, nor jesting, which are not appropriate, but rather giving of thanks.",
+      "ko": "누추함과 어리석은 말이나 희롱의 말이 마땅치 아니하니 돌이켜 감사하는 말을 하라",
+      "source_text_hash": "7dfa1f88b5f5e578a01ca70e3369f93463749154effb11ce85cd8b14ba6d62c7",
+      "translation_text_hash": "9277191b74566594deda1fae9851984a0a431a80196c2f35ad6032250529498e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누추함과 어리석은 말이나 희롱의 말이 마땅치 아니하니 돌이켜 감사하는 말을 하라"
+      ],
+      "raw_text_hashes": [
+        "9277191b74566594deda1fae9851984a0a431a80196c2f35ad6032250529498e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:5",
+      "sequence": 29306,
+      "chapter_label": "EPH 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Know this for sure, that no sexually immoral person, nor unclean person, nor covetous man (who is an idolater), has any inheritance in the Kingdom of Christ and God.",
+      "ko": "너희도 이것을 정녕히 알거니와 음행하는 자나 더러운 자나 탐하는 자 곧 우상 숭배자는 다 그리스도와 하나님 나라에서 기업을 얻지 못하리니",
+      "source_text_hash": "d07a6ef88ea82243f2cda0a3e143b0f4554475d3627bbf203ae662abcb3afe64",
+      "translation_text_hash": "529099ceceae6b449dd738fade174d3ef094153e7e557e30229b59f91462846e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 이것을 정녕히 알거니와 음행하는 자나 더러운 자나 탐하는 자 곧 우상 숭배자는 다 그리스도와 하나님 나라에서 기업을 얻지 못하리니"
+      ],
+      "raw_text_hashes": [
+        "529099ceceae6b449dd738fade174d3ef094153e7e557e30229b59f91462846e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:6",
+      "sequence": 29307,
+      "chapter_label": "EPH 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "Let no one deceive you with empty words, for because of these things the wrath of God comes on the children of disobedience.",
+      "ko": "누구든지 헛된 말로 너희를 속이지 못하게 하라 이를 인하여 하나님의 진노가 불순종의 아들들에게 임하나니",
+      "source_text_hash": "a1566c9d983f9894759cb6f1b89b5e7e91a4d1c99b1c5a72a42891a2691c9e2c",
+      "translation_text_hash": "a613eb3c950fe501ac946ed8b66b06fdab61446e68faf80df47902586fe491bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 헛된 말로 너희를 속이지 못하게 하라 이를 인하여 하나님의 진노가 불순종의 아들들에게 임하나니"
+      ],
+      "raw_text_hashes": [
+        "a613eb3c950fe501ac946ed8b66b06fdab61446e68faf80df47902586fe491bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:7",
+      "sequence": 29308,
+      "chapter_label": "EPH 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore don’t be partakers with them.",
+      "ko": "그러므로 저희와 함께 참예하는 자 되지 말라",
+      "source_text_hash": "14bc7ce62f96773d65b2796a9849cb28a9667cfe768a4d1e035b23844dfec7a2",
+      "translation_text_hash": "bdaa7761b10f856b15aec867b9a4059310c2e3ef33f8ac3777a8795dfec83166",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 저희와 함께 참예하는 자 되지 말라"
+      ],
+      "raw_text_hashes": [
+        "bdaa7761b10f856b15aec867b9a4059310c2e3ef33f8ac3777a8795dfec83166"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:8",
+      "sequence": 29309,
+      "chapter_label": "EPH 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "For you were once darkness, but are now light in the Lord. Walk as children of light,",
+      "ko": "너희가 전에는 어두움이더니 이제는 주 안에서 빛이라 빛의 자녀들처럼 행하라",
+      "source_text_hash": "59ad7168170444fb6a63966525f4dcae5dfeeedcd5f2a48e46314d79a8d312df",
+      "translation_text_hash": "a00ce621bf926131389a22292e11a154f56673596c977afcfd8656dedf219fa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 전에는 어두움이더니 이제는 주 안에서 빛이라 빛의 자녀들처럼 행하라"
+      ],
+      "raw_text_hashes": [
+        "a00ce621bf926131389a22292e11a154f56673596c977afcfd8656dedf219fa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:9",
+      "sequence": 29310,
+      "chapter_label": "EPH 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "for the fruit of the Spirit is in all goodness and righteousness and truth,",
+      "ko": "빛의 열매는 모든 착함과 의로움과 진실함에 있느니라",
+      "source_text_hash": "6337290acf607604e312103f7458b7ba79f3a7dbd37966a4b4fc2207d81edfe5",
+      "translation_text_hash": "5e7526f0a13b2d4977b87204d9cef6a4f66f20219a27c255e7062b7823d39298",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빛의 열매는 모든 착함과 의로움과 진실함에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "5e7526f0a13b2d4977b87204d9cef6a4f66f20219a27c255e7062b7823d39298"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:10",
+      "sequence": 29311,
+      "chapter_label": "EPH 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "proving what is well pleasing to the Lord.",
+      "ko": "주께 기쁘시게 할 것이 무엇인가 시험하여 보라",
+      "source_text_hash": "3f475f60c287e6929195fc3ef22d671eef9e44140d14b209bf5782c6080e89fd",
+      "translation_text_hash": "418bef3b81f08af265fbe37757cc8ef8b4ed49588e2e37c9a11cfc466a64f1d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께 기쁘시게 할 것이 무엇인가 시험하여 보라"
+      ],
+      "raw_text_hashes": [
+        "418bef3b81f08af265fbe37757cc8ef8b4ed49588e2e37c9a11cfc466a64f1d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:11",
+      "sequence": 29312,
+      "chapter_label": "EPH 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Have no fellowship with the unfruitful deeds of darkness, but rather even reprove them.",
+      "ko": "너희는 열매 없는 어두움의 일에 참예하지 말고 도리어 책망하라",
+      "source_text_hash": "5fb1deea982027f82c008c7223de8ef9820a20057fac87d28ab01f292a402d25",
+      "translation_text_hash": "48c2120bbfa5f115d9706816aff155752244aa74da6ca82131a6fa5725fd2009",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 열매 없는 어두움의 일에 참예하지 말고 도리어 책망하라"
+      ],
+      "raw_text_hashes": [
+        "48c2120bbfa5f115d9706816aff155752244aa74da6ca82131a6fa5725fd2009"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:12",
+      "sequence": 29313,
+      "chapter_label": "EPH 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "For it is a shame even to speak of the things which are done by them in secret.",
+      "ko": "저희의 은밀히 행하는 것들은 말하기도 부끄러움이라",
+      "source_text_hash": "3a3915d783770044f530b774af7233298a48acc030f77438cecd6e34cffbd480",
+      "translation_text_hash": "156ce6512eadaae0d1dcbd7d95bc5ecb569b2db6262c78f92794b57be09190c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 은밀히 행하는 것들은 말하기도 부끄러움이라"
+      ],
+      "raw_text_hashes": [
+        "156ce6512eadaae0d1dcbd7d95bc5ecb569b2db6262c78f92794b57be09190c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:13",
+      "sequence": 29314,
+      "chapter_label": "EPH 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "But all things, when they are reproved, are revealed by the light, for everything that reveals is light.",
+      "ko": "그러나 책망을 받는 모든 것이 빛으로 나타나나니 나타나지는 것마다 빛이니라",
+      "source_text_hash": "51d12bbbd5e5f0f4253223ae0e6787274f6a096967f96671dea25ef3ed846a02",
+      "translation_text_hash": "1cbf9d0272cab094f2811e40672beceee9a010d81fd3b94186d46608ed209183",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 책망을 받는 모든 것이 빛으로 나타나나니 나타나지는 것마다 빛이니라"
+      ],
+      "raw_text_hashes": [
+        "1cbf9d0272cab094f2811e40672beceee9a010d81fd3b94186d46608ed209183"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:14",
+      "sequence": 29315,
+      "chapter_label": "EPH 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore he says, “Awake, you who sleep, and arise from the dead, and Christ will shine on you.”",
+      "ko": "그러므로 이르시기를 잠자는 자여 깨어서 죽은 자들 가운데서 일어나라 그리스도께서 네게 비취시리라 하셨느니라",
+      "source_text_hash": "60149fb3a247d726e0674659242b03e77afd99cbcc9b01f0e5284ba8c53d06e1",
+      "translation_text_hash": "c6dd70748f879a6209d636eb9bcaf01fb4c5e0c87b2456b14f71b50cce24d85e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이르시기를 잠자는 자여 깨어서 죽은 자들 가운데서 일어나라 그리스도께서 네게 비취시리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "c6dd70748f879a6209d636eb9bcaf01fb4c5e0c87b2456b14f71b50cce24d85e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:15",
+      "sequence": 29316,
+      "chapter_label": "EPH 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "Therefore watch carefully how you walk, not as unwise, but as wise,",
+      "ko": "그런즉 너희가 어떻게 행할 것을 자세히 주의하여 지혜 없는 자 같이 말고 오직 지혜 있는 자 같이 하여",
+      "source_text_hash": "58776ae4964e878d4a434c08cd532ecf4da0fcd04ea5538f7faf75f94a01175e",
+      "translation_text_hash": "f8e1d1e58752a0fc211098d120849f20aae1e2952c6b82bfe1fca24698692cc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희가 어떻게 행할 것을 자세히 주의하여 지혜 없는 자 같이 말고 오직 지혜 있는 자 같이 하여"
+      ],
+      "raw_text_hashes": [
+        "f8e1d1e58752a0fc211098d120849f20aae1e2952c6b82bfe1fca24698692cc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:16",
+      "sequence": 29317,
+      "chapter_label": "EPH 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "redeeming the time, because the days are evil.",
+      "ko": "세월을 아끼라 때가 악하니라",
+      "source_text_hash": "ca5ceceaff7445c5368eaa6c42b9a1590208ebba5cd97ca74eb52e026ccf40ea",
+      "translation_text_hash": "3da667a044f891aa994307628ec57403deabcbf3331ce452e4a8ddd90198062b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세월을 아끼라 때가 악하니라"
+      ],
+      "raw_text_hashes": [
+        "3da667a044f891aa994307628ec57403deabcbf3331ce452e4a8ddd90198062b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:17",
+      "sequence": 29318,
+      "chapter_label": "EPH 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Therefore, don’t be foolish, but understand what the will of the Lord is.",
+      "ko": "그러므로 어리석은 자가 되지 말고 오직 주의 뜻이 무엇인가 이해하라",
+      "source_text_hash": "46d0eff48cc16c141b5455bb760c4e36f79e8b8ddc006afa17ccc22189e97ad3",
+      "translation_text_hash": "e8b61951f0611635490f50b6b9c0e935a548f891ce274d9bc3070108c2ee8003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 어리석은 자가 되지 말고 오직 주의 뜻이 무엇인가 이해하라"
+      ],
+      "raw_text_hashes": [
+        "e8b61951f0611635490f50b6b9c0e935a548f891ce274d9bc3070108c2ee8003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:18",
+      "sequence": 29319,
+      "chapter_label": "EPH 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "Don’t be drunken with wine, in which is dissipation, but be filled with the Spirit,",
+      "ko": "술 취하지 말라 이는 방탕한 것이니 오직 성령의 충만을 받으라",
+      "source_text_hash": "8bb525a11c5174104501bd3b398053300c5da40ff0fd6c18ac2f4b02b76615c5",
+      "translation_text_hash": "cb6b9aa6ce7c57b5a18099cb4775a60930f7376149111dc5235885c4cca79bcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술 취하지 말라 이는 방탕한 것이니 오직 성령의 충만을 받으라"
+      ],
+      "raw_text_hashes": [
+        "cb6b9aa6ce7c57b5a18099cb4775a60930f7376149111dc5235885c4cca79bcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:19",
+      "sequence": 29320,
+      "chapter_label": "EPH 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "speaking to one another in psalms, hymns, and spiritual songs; singing and making melody in your heart to the Lord;",
+      "ko": "시와 찬미와 신령한 노래들로 서로 화답하며 너희의 마음으로 주께 노래하며 찬송하며",
+      "source_text_hash": "d7aadb09ebf03cda0bcf553d92511679ea3d96a66de6a8b7808bc1af685c1c6a",
+      "translation_text_hash": "ba09650a8a180eeb83d6de12cfa1be6af977fb6d892d8a988d58d5197b69133f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시와 찬미와 신령한 노래들로 서로 화답하며 너희의 마음으로 주께 노래하며 찬송하며"
+      ],
+      "raw_text_hashes": [
+        "ba09650a8a180eeb83d6de12cfa1be6af977fb6d892d8a988d58d5197b69133f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:20",
+      "sequence": 29321,
+      "chapter_label": "EPH 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "giving thanks always concerning all things in the name of our Lord Jesus Christ to God, even the Father;",
+      "ko": "범사에 우리 주 예수 그리스도의 이름으로 항상 아버지 하나님께 감사하며",
+      "source_text_hash": "c53728a9e3630a6076b5cf7b060f8862dec32848123b09375c244b935710fe35",
+      "translation_text_hash": "c79a921b137fd89da0583c3496734aea2413c82241a3077a167eec8bcec4eac4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범사에 우리 주 예수 그리스도의 이름으로 항상 아버지 하나님께 감사하며"
+      ],
+      "raw_text_hashes": [
+        "c79a921b137fd89da0583c3496734aea2413c82241a3077a167eec8bcec4eac4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:21",
+      "sequence": 29322,
+      "chapter_label": "EPH 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "subjecting yourselves to one another in the fear of Christ.",
+      "ko": "그리스도를 경외함으로 피차 복종하라",
+      "source_text_hash": "a1fc8e79798219934eb99d92c53d21a29fcf9829ec514247f0670a90d4275aec",
+      "translation_text_hash": "5f9063e6445af7c10ee456f8d8503166226d58fcc207b6f3449bdd24378b5ecd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도를 경외함으로 피차 복종하라"
+      ],
+      "raw_text_hashes": [
+        "5f9063e6445af7c10ee456f8d8503166226d58fcc207b6f3449bdd24378b5ecd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:22",
+      "sequence": 29323,
+      "chapter_label": "EPH 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "Wives, be subject to your own husbands, as to the Lord.",
+      "ko": "아내들이여 자기 남편에게 복종하기를 주께 하듯하라",
+      "source_text_hash": "89cc875530f40266bb74a04cca933f7d75580ded88b94150bbac3d4f03d02c50",
+      "translation_text_hash": "7cd7fd728634c93920b8aba5fe9bb82c3e20cd3087fcb8c7c7b2dd1b9b1ea023",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아내들이여 자기 남편에게 복종하기를 주께 하듯하라"
+      ],
+      "raw_text_hashes": [
+        "7cd7fd728634c93920b8aba5fe9bb82c3e20cd3087fcb8c7c7b2dd1b9b1ea023"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:23",
+      "sequence": 29324,
+      "chapter_label": "EPH 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "For the husband is the head of the wife, as Christ also is the head of the assembly, being himself the savior of the body.",
+      "ko": "이는 남편이 아내의 머리 됨이 그리스도께서 교회의 머리 됨과 같음이니 그가 친히 몸의 구주시니라",
+      "source_text_hash": "716f5bf053cddb302389da78ea803bbcfde1f0d303155697a6df307847edab88",
+      "translation_text_hash": "88aea16474b1da6cc6697ec7ece51a47c60a58a8d3b2f10b0c797bd16cfda760",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 남편이 아내의 머리 됨이 그리스도께서 교회의 머리 됨과 같음이니 그가 친히 몸의 구주시니라"
+      ],
+      "raw_text_hashes": [
+        "88aea16474b1da6cc6697ec7ece51a47c60a58a8d3b2f10b0c797bd16cfda760"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:24",
+      "sequence": 29325,
+      "chapter_label": "EPH 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "But as the assembly is subject to Christ, so let the wives also be to their own husbands in everything.",
+      "ko": "그러나 교회가 그리스도에게 하듯 아내들도 범사에 그 남편에게 복종할찌니라",
+      "source_text_hash": "5b7c17112be58c8e80a0d805eb22f253e05c82a0702230f728cdb29907721006",
+      "translation_text_hash": "145c0faef9524303bd78185e7258740f26e0f41ece6a85fcfd7848434c2800c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 교회가 그리스도에게 하듯 아내들도 범사에 그 남편에게 복종할찌니라"
+      ],
+      "raw_text_hashes": [
+        "145c0faef9524303bd78185e7258740f26e0f41ece6a85fcfd7848434c2800c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:25",
+      "sequence": 29326,
+      "chapter_label": "EPH 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "Husbands, love your wives, even as Christ also loved the assembly and gave himself up for her,",
+      "ko": "남편들아 아내 사랑하기를 그리스도께서 교회를 사랑하시고 위하여 자신을 주심 같이 하라",
+      "source_text_hash": "5e01dab3841c8e1a94e26486714dac6b468a91726942bfb6c2fc8521a00373eb",
+      "translation_text_hash": "2738fe4a88a569cc5c82a67edf584ce3ecb0ab06e7485e8c3f7bfc43444fb7e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남편들아 아내 사랑하기를 그리스도께서 교회를 사랑하시고 위하여 자신을 주심 같이 하라"
+      ],
+      "raw_text_hashes": [
+        "2738fe4a88a569cc5c82a67edf584ce3ecb0ab06e7485e8c3f7bfc43444fb7e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:26",
+      "sequence": 29327,
+      "chapter_label": "EPH 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "that he might sanctify her, having cleansed her by the washing of water with the word,",
+      "ko": "이는 곧 물로 씻어 말씀으로 깨끗하게 하사 거룩하게 하시고",
+      "source_text_hash": "d8a70705ac688c2c7748d67844cbfd8a903c423e12bac2f204aa7478d6ece76b",
+      "translation_text_hash": "0b00b93f78d7ff69709ec9145e3d9218b314943b8fae2e048f5db5fe77b39a4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 곧 물로 씻어 말씀으로 깨끗하게 하사 거룩하게 하시고"
+      ],
+      "raw_text_hashes": [
+        "0b00b93f78d7ff69709ec9145e3d9218b314943b8fae2e048f5db5fe77b39a4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:27",
+      "sequence": 29328,
+      "chapter_label": "EPH 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "that he might present the assembly to himself gloriously, not having spot or wrinkle or any such thing, but that she should be holy and without defect.",
+      "ko": "자기 앞에 영광스러운 교회로 세우사 티나 주름잡힌 것이나 이런 것들이 없이 거룩하고 흠이 없게 하려 하심이니라",
+      "source_text_hash": "2601ea2ef1c0641f74b7730de604c119ce033a8b25068a95a7f85653053b1b05",
+      "translation_text_hash": "0bf62cb1bbd99aa45ca80b44ee4613d34a2f8751c9b924b5eda87a9ce444c73d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 앞에 영광스러운 교회로 세우사 티나 주름잡힌 것이나 이런 것들이 없이 거룩하고 흠이 없게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "0bf62cb1bbd99aa45ca80b44ee4613d34a2f8751c9b924b5eda87a9ce444c73d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:28",
+      "sequence": 29329,
+      "chapter_label": "EPH 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "Even so husbands also ought to love their own wives as their own bodies. He who loves his own wife loves himself.",
+      "ko": "이와 같이 남편들도 자기 아내 사랑하기를 제몸 같이 할찌니 자기 아내를 사랑하는 자는 자기를 사랑하는 것이라",
+      "source_text_hash": "e4a96137c6a19d9944d9ec680e7b011d4b5d8993465ca87b2a1a157993036779",
+      "translation_text_hash": "a9f18108e5e0f89890160ca29e2e7aa5a23b902ecb1e0bb6d36a6524997a92a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 남편들도 자기 아내 사랑하기를 제몸 같이 할찌니 자기 아내를 사랑하는 자는 자기를 사랑하는 것이라"
+      ],
+      "raw_text_hashes": [
+        "a9f18108e5e0f89890160ca29e2e7aa5a23b902ecb1e0bb6d36a6524997a92a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:29",
+      "sequence": 29330,
+      "chapter_label": "EPH 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "For no man ever hated his own flesh, but nourishes and cherishes it, even as the Lord also does the assembly,",
+      "ko": "누구든지 언제든지 제 육체를 미워하지 않고 오직 양육하여 보호하기를 그리스도께서 교회를 보양함과 같이 하나니",
+      "source_text_hash": "52609f90fdd4de49daa9de92d55326c6367d9180c540e5022de6efd5ea0754f3",
+      "translation_text_hash": "9be757c67df072c8aa586febb5640160d279b76822b31b3a10c720e4251ca76c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 언제든지 제 육체를 미워하지 않고 오직 양육하여 보호하기를 그리스도께서 교회를 보양함과 같이 하나니"
+      ],
+      "raw_text_hashes": [
+        "9be757c67df072c8aa586febb5640160d279b76822b31b3a10c720e4251ca76c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:30",
+      "sequence": 29331,
+      "chapter_label": "EPH 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "because we are members of his body, of his flesh and bones.",
+      "ko": "우리는 그 몸의 지체임이니라",
+      "source_text_hash": "0e2f716abb70f5ca10f062716c3bb37d4bcdda5b7aab92ec275dfd4b01924f21",
+      "translation_text_hash": "c0dce018526d5ee31dfd19203a43e6dee546704437ebe488a17f592089fd9d55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 그 몸의 지체임이니라"
+      ],
+      "raw_text_hashes": [
+        "c0dce018526d5ee31dfd19203a43e6dee546704437ebe488a17f592089fd9d55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:31",
+      "sequence": 29332,
+      "chapter_label": "EPH 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "“For this cause a man will leave his father and mother and will be joined to his wife. Then the two will become one flesh.”",
+      "ko": "이러므로 사람이 부모를 떠나 그 아내와 합하여 그 둘이 한 육체가 될찌니",
+      "source_text_hash": "66def9cf93b26b0de7efc6b869c28a2cc1ed367f68720b85dc8a3d16f13366de",
+      "translation_text_hash": "c93edccd5e212c0ac868a01984ec38b7046a0d56bfd8cb1f0b6fce99527b5d5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 사람이 부모를 떠나 그 아내와 합하여 그 둘이 한 육체가 될찌니"
+      ],
+      "raw_text_hashes": [
+        "c93edccd5e212c0ac868a01984ec38b7046a0d56bfd8cb1f0b6fce99527b5d5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:32",
+      "sequence": 29333,
+      "chapter_label": "EPH 5",
+      "verse_label": "32",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 32
+        }
+      ],
+      "en": "This mystery is great, but I speak concerning Christ and the assembly.",
+      "ko": "이 비밀이 크도다 내가 그리스도와 교회에 대하여 말하노라",
+      "source_text_hash": "c2a9d1e650b87f9810537aa754a165787cdd3df28f6f916c6352bf1c2e551e29",
+      "translation_text_hash": "f62d9ab8fde86050cf33b94fd4dd239ecfbd815a895316a9a8a905e35b720c8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 비밀이 크도다 내가 그리스도와 교회에 대하여 말하노라"
+      ],
+      "raw_text_hashes": [
+        "f62d9ab8fde86050cf33b94fd4dd239ecfbd815a895316a9a8a905e35b720c8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:5:33",
+      "sequence": 29334,
+      "chapter_label": "EPH 5",
+      "verse_label": "33",
+      "locator": {
+        "book": "EPH",
+        "chapter": 5,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 5,
+          "verse": 33
+        }
+      ],
+      "en": "Nevertheless each of you must also love his own wife even as himself; and let the wife see that she respects her husband.",
+      "ko": "그러나 너희도 각각 자기의 아내 사랑하기를 자기 같이 하고 아내도 그 남편을 경외하라",
+      "source_text_hash": "76d347d44ddd63dbd99dbea8489a248851edc52ec28653ca0d6e8c7713d02344",
+      "translation_text_hash": "50973f3f2a20be4d6f3da1c6a084d8e2a3990ae526bf702b4df54539a3a02df1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희도 각각 자기의 아내 사랑하기를 자기 같이 하고 아내도 그 남편을 경외하라"
+      ],
+      "raw_text_hashes": [
+        "50973f3f2a20be4d6f3da1c6a084d8e2a3990ae526bf702b4df54539a3a02df1"
+      ]
+    }
+  ]
+}

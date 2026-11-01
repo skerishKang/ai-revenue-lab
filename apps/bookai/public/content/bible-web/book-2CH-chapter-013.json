@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:013",
+  "unit_ordinal": 380,
+  "unit_label": "2CH 13",
+  "book_code": "2CH",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:13:1",
+      "sequence": 11455,
+      "chapter_label": "2CH 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "In the eighteenth year of King Jeroboam, Abijah began to reign over Judah.",
+      "ko": "여로보암왕 제 십팔년에 아비야가 유다 왕이 되고",
+      "source_text_hash": "3442df8a2f92fb3ac336bcdb4ed8ff477058256bfd073edd4081117d6a4a70a7",
+      "translation_text_hash": "fa5538d187be9f5ff6060dbffa733b634ebef369fdaed8078ad3c2926adb376d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암왕 제 십팔년에 아비야가 유다 왕이 되고"
+      ],
+      "raw_text_hashes": [
+        "fa5538d187be9f5ff6060dbffa733b634ebef369fdaed8078ad3c2926adb376d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:2",
+      "sequence": 11456,
+      "chapter_label": "2CH 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "He reigned three years in Jerusalem. His mother’s name was Micaiah the daughter of Uriel of Gibeah. There was war between Abijah and Jeroboam.",
+      "ko": "예루살렘에서 삼년을 치리하니라 그 모친의 이름은 미가야라 기브아 사람 우리엘의 딸이더라 아비야가 여로보암으로 더불어 싸울쌔",
+      "source_text_hash": "c6e37e360f50a933af35a0cd1689a223dcd8f3b9956cbb25dad48fb396ef3d92",
+      "translation_text_hash": "d4303350d8c4eb05dcb15b52b397c60e79c95b228de2c409f817447b96421b54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에서 삼년을 치리하니라 그 모친의 이름은 미가야라 기브아 사람 우리엘의 딸이더라 아비야가 여로보암으로 더불어 싸울쌔"
+      ],
+      "raw_text_hashes": [
+        "d4303350d8c4eb05dcb15b52b397c60e79c95b228de2c409f817447b96421b54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:3",
+      "sequence": 11457,
+      "chapter_label": "2CH 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "Abijah joined battle with an army of valiant men of war, even four hundred thousand chosen men; and Jeroboam set the battle in array against him with eight hundred thousand chosen men, who were mighty men of valor.",
+      "ko": "아비야는 택한바 싸움에 용맹한 군사 사십만으로 싸움을 예비하였고 여로보암은 택한바 큰 용사 팔십만으로 대진한지라",
+      "source_text_hash": "f2b72121c115a11627844be23da7d0c3e64948d761b0d7e425fc7cc50e5412fa",
+      "translation_text_hash": "7d43d89eff00e64eb4fc5ea057b7c18d17e16244ce07665cf47097e37e4ba508",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비야는 택한바 싸움에 용맹한 군사 사십만으로 싸움을 예비하였고 여로보암은 택한바 큰 용사 팔십만으로 대진한지라"
+      ],
+      "raw_text_hashes": [
+        "7d43d89eff00e64eb4fc5ea057b7c18d17e16244ce07665cf47097e37e4ba508"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:4",
+      "sequence": 11458,
+      "chapter_label": "2CH 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "Abijah stood up on Mount Zemaraim, which is in the hill country of Ephraim, and said, “Hear me, Jeroboam and all Israel:",
+      "ko": "아비야가 에브라임산 중 스마라임산 위에 서서 가로되 여로보암과 이스라엘 무리들아 다 들으라",
+      "source_text_hash": "c3581cfbd78d535d8a0070e966a1ee2f96b31e760085c88065058525c0c4dbf8",
+      "translation_text_hash": "2372e462b2f357e5ea101d3511262431b76d0d9d7c706bdfdb472ae8eafb6b3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비야가 에브라임산 중 스마라임산 위에 서서 가로되 여로보암과 이스라엘 무리들아 다 들으라"
+      ],
+      "raw_text_hashes": [
+        "2372e462b2f357e5ea101d3511262431b76d0d9d7c706bdfdb472ae8eafb6b3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:5",
+      "sequence": 11459,
+      "chapter_label": "2CH 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "Ought you not to know that the LORD, the God of Israel, gave the kingdom over Israel to David forever, even to him and to his sons by a covenant of salt?",
+      "ko": "이스라엘 하나님 여호와께서 소금 언약으로 이스라엘 나라를 영원히 다윗과 그 자손에게 주신 것을 너희가 알것이 아니냐",
+      "source_text_hash": "af94cf9ff0bc1cd9e90ac29589c5a821b51ca9f7d64bb4e4ba4dff6ba04fbc66",
+      "translation_text_hash": "7de46d178c00746471d55c7b87ebfa2c5fb20bde82f0aaaad41d58d2795fafe3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 하나님 여호와께서 소금 언약으로 이스라엘 나라를 영원히 다윗과 그 자손에게 주신 것을 너희가 알것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "7de46d178c00746471d55c7b87ebfa2c5fb20bde82f0aaaad41d58d2795fafe3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:6",
+      "sequence": 11460,
+      "chapter_label": "2CH 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "Yet Jeroboam the son of Nebat, the servant of Solomon the son of David, rose up, and rebelled against his lord.",
+      "ko": "다윗의 아들 솔로몬의 신복 느밧의 아들 여로보암이 일어나 그 주를 배반하고",
+      "source_text_hash": "931d3760a03f63a609f74d3973b5a86f51b6c91ec8731ae35a1921087728d54b",
+      "translation_text_hash": "bd41af2ac2182fd69b4d8cd6a07c7170839f82d25841db0399e75fe3fd63024e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 아들 솔로몬의 신복 느밧의 아들 여로보암이 일어나 그 주를 배반하고"
+      ],
+      "raw_text_hashes": [
+        "bd41af2ac2182fd69b4d8cd6a07c7170839f82d25841db0399e75fe3fd63024e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:7",
+      "sequence": 11461,
+      "chapter_label": "2CH 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Worthless men were gathered to him, wicked fellows who strengthened themselves against Rehoboam the son of Solomon, when Rehoboam was young and tender hearted, and could not withstand them.",
+      "ko": "난봉과 비류가 모여 좇으므로 스스로 강하게 하여 솔로몬의 아들 르호보암을 대적하나 그 때에 르호보암이 어리고 마음이 연약하여 능히 막지 못하였었느니라",
+      "source_text_hash": "1b2b7188ab6b9b2879c35fe43d10edbb76756b48650ae63ec581d047fcc06810",
+      "translation_text_hash": "e5376f387b7d0aac9b6fba0c4388ff78be308b2061f7f7c993e30958cf9fe949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "난봉과 비류가 모여 좇으므로 스스로 강하게 하여 솔로몬의 아들 르호보암을 대적하나 그 때에 르호보암이 어리고 마음이 연약하여 능히 막지 못하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "e5376f387b7d0aac9b6fba0c4388ff78be308b2061f7f7c993e30958cf9fe949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:8",
+      "sequence": 11462,
+      "chapter_label": "2CH 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "“Now you intend to withstand the kingdom of the LORD in the hand of the sons of David. You are a great multitude, and the golden calves which Jeroboam made you for gods are with you.",
+      "ko": "이제 너희가 또 다윗 자손의 손으로 다스리는 여호와의 나라를 대적하려 하는도다 너희는 큰 무리요 또 여로보암이 너희를 위하여 신으로 만든 금송아지가 너희와 함께 있도다",
+      "source_text_hash": "2e984dfe8d2037f8fab361b07cefde296f085b5c0fbae9099cb296d0359f0cb5",
+      "translation_text_hash": "9400bd06eaded9e29aba52eedffb0c23f6253d56e77a40a80bcee9f147db514f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희가 또 다윗 자손의 손으로 다스리는 여호와의 나라를 대적하려 하는도다 너희는 큰 무리요 또 여로보암이 너희를 위하여 신으로 만든 금송아지가 너희와 함께 있도다"
+      ],
+      "raw_text_hashes": [
+        "9400bd06eaded9e29aba52eedffb0c23f6253d56e77a40a80bcee9f147db514f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:9",
+      "sequence": 11463,
+      "chapter_label": "2CH 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "Haven’t you driven out the priests of the LORD, the sons of Aaron, and the Levites, and made priests for yourselves according to the ways of the peoples of other lands? Whoever comes to consecrate himself with a young bull and seven rams may be a priest of those who are no gods.",
+      "ko": "너희가 아론 자손 된 여호와의 제사장과 레위 사람을 쫓아내고 이방 백성의 풍속을 좇아 제사장을 삼지 아니하였느냐 무론 누구든지 수송아지 하나와 수양 일곱을 끌고 와서 장립을 받고자하는 자마다 허무한 신의 제사장이 될 수 있도다",
+      "source_text_hash": "0a91a40e32f71d4e4c0fba210376d7c009a5e7cdf8afb8381f11fbf298e84f07",
+      "translation_text_hash": "a9474d15ef748d4d9aacc67c594ee744ea4b80d98860c0b87b3d0af573238f87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 아론 자손 된 여호와의 제사장과 레위 사람을 쫓아내고 이방 백성의 풍속을 좇아 제사장을 삼지 아니하였느냐 무론 누구든지 수송아지 하나와 수양 일곱을 끌고 와서 장립을 받고자하는 자마다 허무한 신의 제사장이 될 수 있도다"
+      ],
+      "raw_text_hashes": [
+        "a9474d15ef748d4d9aacc67c594ee744ea4b80d98860c0b87b3d0af573238f87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:10",
+      "sequence": 11464,
+      "chapter_label": "2CH 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "“But as for us, the LORD is our God, and we have not forsaken him. We have priests serving the LORD, the sons of Aaron, and the Levites in their work.",
+      "ko": "우리에게는 여호와께서 우리 하나님이 되시니 그를 우리가 배반치 아니하였고 여호와를 섬기는 제사장들이 있으니 아론의 자손이요 또 레위 사람이 수종을 들어",
+      "source_text_hash": "f2025942c20c15523e8051f75e32c73d2abf690dbee0779da60fbc3ac76b40f7",
+      "translation_text_hash": "3c2ec66845c94070fdbea33d6110d1934ef4fa5b8a9f6b93aac3afe58c89afc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게는 여호와께서 우리 하나님이 되시니 그를 우리가 배반치 아니하였고 여호와를 섬기는 제사장들이 있으니 아론의 자손이요 또 레위 사람이 수종을 들어"
+      ],
+      "raw_text_hashes": [
+        "3c2ec66845c94070fdbea33d6110d1934ef4fa5b8a9f6b93aac3afe58c89afc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:11",
+      "sequence": 11465,
+      "chapter_label": "2CH 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "They burn to the LORD every morning and every evening burnt offerings and sweet incense. They also set the show bread in order on the pure table, and care for the gold lamp stand with its lamps, to burn every evening; for we keep the instruction of the LORD our God, but you have forsaken him.",
+      "ko": "조석으로 여호와 앞에 번제를 드리며 분향하며 또 깨끗한 상에 진설병을 놓고 또 금 등대가 있어 그 등에 저녁마다 불을 켜나니 우리는 우리 하나님 여호와의 계명을 지키나 너희는 그를 배반하였느니라",
+      "source_text_hash": "1ee89c6227bb95e20a711e121040b55273fcb40d48858242607ddd25334d72b8",
+      "translation_text_hash": "45a29b7c48a7a09ca09aa6621a1612f9ab729aa86004b880de18aa5d7b9e5c64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조석으로 여호와 앞에 번제를 드리며 분향하며 또 깨끗한 상에 진설병을 놓고 또 금 등대가 있어 그 등에 저녁마다 불을 켜나니 우리는 우리 하나님 여호와의 계명을 지키나 너희는 그를 배반하였느니라"
+      ],
+      "raw_text_hashes": [
+        "45a29b7c48a7a09ca09aa6621a1612f9ab729aa86004b880de18aa5d7b9e5c64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:12",
+      "sequence": 11466,
+      "chapter_label": "2CH 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "Behold, God is with us at our head, and his priests with the trumpets of alarm to sound an alarm against you. Children of Israel, don’t fight against the LORD, the God of your fathers; for you will not prosper.”",
+      "ko": "하나님이 우리와 함께 하사 우리의 머리가 되시고 그 제사장들도 우리와 함께하여 경고의 나팔을 불어 너희를 공격하느니라 이스라엘 자손들아 너희 열조의 하나님 여호와와 싸우지 말라 너희가 형통치 못하리라",
+      "source_text_hash": "73b30383ea77f2c02de933a58f5ed98a87763e7dc3d93d87081d69593bdafe24",
+      "translation_text_hash": "4b48f50dfe746c984fa2c24bfc30b9f00ed7cf9b03bd5765b9fbd56fde08cad9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 우리와 함께 하사 우리의 머리가 되시고 그 제사장들도 우리와 함께하여 경고의 나팔을 불어 너희를 공격하느니라 이스라엘 자손들아 너희 열조의 하나님 여호와와 싸우지 말라 너희가 형통치 못하리라"
+      ],
+      "raw_text_hashes": [
+        "4b48f50dfe746c984fa2c24bfc30b9f00ed7cf9b03bd5765b9fbd56fde08cad9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:13",
+      "sequence": 11467,
+      "chapter_label": "2CH 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "But Jeroboam caused an ambush to come about behind them; so they were before Judah, and the ambush was behind them.",
+      "ko": "여로보암이 유다의 뒤를 둘러 복병하였으므로 그 앞에는 이스라엘 사람이 있고 그 뒤에는 복병이 있는지라",
+      "source_text_hash": "f66dea681e731d6335cc477138a6e250fd92f76287e29b1b3d7a0df34f8fb69b",
+      "translation_text_hash": "401b99f694abdacbbe732f3d8afc6d7a55f183b3af161cf1d4110a8c9696a8d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암이 유다의 뒤를 둘러 복병하였으므로 그 앞에는 이스라엘 사람이 있고 그 뒤에는 복병이 있는지라"
+      ],
+      "raw_text_hashes": [
+        "401b99f694abdacbbe732f3d8afc6d7a55f183b3af161cf1d4110a8c9696a8d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:14",
+      "sequence": 11468,
+      "chapter_label": "2CH 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "When Judah looked back, behold, the battle was before and behind them; and they cried to the LORD, and the priests sounded with the trumpets.",
+      "ko": "유다 사람이 돌이켜 보고 자기 앞 뒤의 적병을 인하여 여호와께 부르짖고 제사장은 나팔을 부니라",
+      "source_text_hash": "10f8f007bcc7b70b2d897d01067dd76970cd15d0df1126574213d8861b083ee2",
+      "translation_text_hash": "166984a8b6c6d77daf406d17b0e70ee7a21df2f1b6e57139455c0f57942e2676",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 사람이 돌이켜 보고 자기 앞 뒤의 적병을 인하여 여호와께 부르짖고 제사장은 나팔을 부니라"
+      ],
+      "raw_text_hashes": [
+        "166984a8b6c6d77daf406d17b0e70ee7a21df2f1b6e57139455c0f57942e2676"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:15",
+      "sequence": 11469,
+      "chapter_label": "2CH 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Then the men of Judah gave a shout. As the men of Judah shouted, God struck Jeroboam and all Israel before Abijah and Judah.",
+      "ko": "유다 사람이 소리 지르매 유다 사람의 소리 지를 때에 하나님이 여로보암과 온 이스라엘을 아비야와 유다 앞에서 쳐서 패하게 하시니",
+      "source_text_hash": "439f1a54f7280cc4f85561778efa04f53dca8d7e363f8933552f6619e64a81b7",
+      "translation_text_hash": "483b40b916ea3d71191d26dbc268ea475fca8d17362f42a921450f058d778ccf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 사람이 소리 지르매 유다 사람의 소리 지를 때에 하나님이 여로보암과 온 이스라엘을 아비야와 유다 앞에서 쳐서 패하게 하시니"
+      ],
+      "raw_text_hashes": [
+        "483b40b916ea3d71191d26dbc268ea475fca8d17362f42a921450f058d778ccf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:16",
+      "sequence": 11470,
+      "chapter_label": "2CH 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "The children of Israel fled before Judah, and God delivered them into their hand.",
+      "ko": "이스라엘 자손이 유다 앞에서 도망하는지라 하나님이 그 손에 붙이신고로",
+      "source_text_hash": "d6d6318603a28e33de80d38772b27396eba8afa373a0cc14e1ed38583036a3f9",
+      "translation_text_hash": "892261c99b3a555307b81e92c327fb1b41456bbef4717661b3e84c0f4cb14db9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 유다 앞에서 도망하는지라 하나님이 그 손에 붙이신고로"
+      ],
+      "raw_text_hashes": [
+        "892261c99b3a555307b81e92c327fb1b41456bbef4717661b3e84c0f4cb14db9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:17",
+      "sequence": 11471,
+      "chapter_label": "2CH 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Abijah and his people killed them with a great slaughter, so five hundred thousand chosen men of Israel fell down slain.",
+      "ko": "아비야와 그 백성이 크게 도륙하니 이스라엘의 택한 병정이 죽임을 입고 엎드러진 자가 오십만이었더라",
+      "source_text_hash": "7b60d16068051475e0f1b0446d01dcf24400f66282fbeaaa6d26820f8a14910f",
+      "translation_text_hash": "5664d825a2a323f93ac1e74ba4a171bfd0bcda6affc9307a6fc771e65a35dc66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비야와 그 백성이 크게 도륙하니 이스라엘의 택한 병정이 죽임을 입고 엎드러진 자가 오십만이었더라"
+      ],
+      "raw_text_hashes": [
+        "5664d825a2a323f93ac1e74ba4a171bfd0bcda6affc9307a6fc771e65a35dc66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:18",
+      "sequence": 11472,
+      "chapter_label": "2CH 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "Thus the children of Israel were brought under at that time, and the children of Judah prevailed, because they relied on the LORD, the God of their fathers.",
+      "ko": "그 때에 이스라엘 자손이 항복하고 유다 자손이 이기었으니 이는 저희가 그 열조의 하나님 여호와를 의지하였음이라",
+      "source_text_hash": "a4e85f80f169d5b475b3be298446ebe25e37cb4a107ea9ef9e194b7f05ab77e6",
+      "translation_text_hash": "b189ec8e169db97b5a33b05a69ad97bdba14b7fb92cfdab7951b310d784595c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 이스라엘 자손이 항복하고 유다 자손이 이기었으니 이는 저희가 그 열조의 하나님 여호와를 의지하였음이라"
+      ],
+      "raw_text_hashes": [
+        "b189ec8e169db97b5a33b05a69ad97bdba14b7fb92cfdab7951b310d784595c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:19",
+      "sequence": 11473,
+      "chapter_label": "2CH 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "Abijah pursued Jeroboam, and took cities from him: Bethel with its villages, Jeshanah with its villages, and Ephron with its villages.",
+      "ko": "아비야가 여로보암을 쫓아가서 그 성읍들을 빼앗았으니 곧 벧엘과 그 동네와 여사나와 그 동네와 에브론과 그 동네라",
+      "source_text_hash": "3f7ddc86db3627b96175bcbc3a5b6c3fc8d4bc976c06777fec5b99fd8f7476fa",
+      "translation_text_hash": "f39feaec414651ca56afc5ca4d1156ebbd3927720d56294d068776c31e58053f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비야가 여로보암을 쫓아가서 그 성읍들을 빼앗았으니 곧 벧엘과 그 동네와 여사나와 그 동네와 에브론과 그 동네라"
+      ],
+      "raw_text_hashes": [
+        "f39feaec414651ca56afc5ca4d1156ebbd3927720d56294d068776c31e58053f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:20",
+      "sequence": 11474,
+      "chapter_label": "2CH 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "Jeroboam didn’t recover strength again in the days of Abijah. The LORD struck him, and he died.",
+      "ko": "아비야 때에 여로보암이 다시 강성하지 못하고 여호와의 치심을 입어 죽었고",
+      "source_text_hash": "2e68b441ab401254b269b33f543179d570e8288428930d204ca92b8c8f5a36d4",
+      "translation_text_hash": "d017ab419b7a84d82109f981a965ab1a5080380be25c3d2cf80c747e224d9344",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비야 때에 여로보암이 다시 강성하지 못하고 여호와의 치심을 입어 죽었고"
+      ],
+      "raw_text_hashes": [
+        "d017ab419b7a84d82109f981a965ab1a5080380be25c3d2cf80c747e224d9344"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:21",
+      "sequence": 11475,
+      "chapter_label": "2CH 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "But Abijah grew mighty and took for himself fourteen wives, and became the father of twenty-two sons and sixteen daughters.",
+      "ko": "아비야는 점점 강성하며 아내 열 넷을 취하여 아들 스물 둘과 딸 열 여섯을 낳았더라",
+      "source_text_hash": "6227c05f6aac1655a6cf901526a6843f0b8ce7882d6b9d33e1ff480643fb59d7",
+      "translation_text_hash": "998192328670e962bd1ba4eeae96685e8c399a34e54c7f55f374ae93fa0e4a4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비야는 점점 강성하며 아내 열 넷을 취하여 아들 스물 둘과 딸 열 여섯을 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "998192328670e962bd1ba4eeae96685e8c399a34e54c7f55f374ae93fa0e4a4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:13:22",
+      "sequence": 11476,
+      "chapter_label": "2CH 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "The rest of the acts of Abijah, his ways, and his sayings are written in the commentary of the prophet Iddo.",
+      "ko": "아비야의 남은 사적과 그 행위와 그 말은 선지자 잇도의 주석 책에 기록되니라",
+      "source_text_hash": "872975416e593e3dd01277ab9b2c2e70115efa7de635e27e25323303f1a58e53",
+      "translation_text_hash": "a6b0a82501a77009387ef9ef69be58fcbd21e9331dcaad86808a582c493fc07d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비야의 남은 사적과 그 행위와 그 말은 선지자 잇도의 주석 책에 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "a6b0a82501a77009387ef9ef69be58fcbd21e9331dcaad86808a582c493fc07d"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:034",
+  "unit_ordinal": 512,
+  "unit_label": "PSA 34",
+  "book_code": "PSA",
+  "chapter_number": 34,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:34:1",
+      "sequence": 14390,
+      "chapter_label": "PSA 34",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 1
+        }
+      ],
+      "en": "I will bless the LORD at all times. His praise will always be in my mouth.",
+      "ko": "내가 여호와를 항상 송축함이여 그를 송축함이 내 입에 계속하리로다",
+      "source_text_hash": "3a761cf03347eec78caf8d59b6279feed118c7665777e26d1d38b41d31a21605",
+      "translation_text_hash": "50141e81f499afdd24ae4f3de1b2f17ea4696f350d818cdb0b095f713e6967a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와를 항상 송축함이여 그를 송축함이 내 입에 계속하리로다"
+      ],
+      "raw_text_hashes": [
+        "50141e81f499afdd24ae4f3de1b2f17ea4696f350d818cdb0b095f713e6967a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:2",
+      "sequence": 14391,
+      "chapter_label": "PSA 34",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 2
+        }
+      ],
+      "en": "My soul shall boast in the LORD. The humble shall hear of it and be glad.",
+      "ko": "내 영혼이 여호와로 자랑하리니 곤고한 자가 이를 듣고 기뻐하리로다",
+      "source_text_hash": "ea8b22d8aa5042077f731346e66af6874037c390f1c634bf91ee621ddf563dc8",
+      "translation_text_hash": "e97a2658d0190338c3a1c29fed3e1a7c16487d6e0a0329800292b96bb5512ea0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼이 여호와로 자랑하리니 곤고한 자가 이를 듣고 기뻐하리로다"
+      ],
+      "raw_text_hashes": [
+        "e97a2658d0190338c3a1c29fed3e1a7c16487d6e0a0329800292b96bb5512ea0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:3",
+      "sequence": 14392,
+      "chapter_label": "PSA 34",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 3
+        }
+      ],
+      "en": "Oh magnify the LORD with me. Let’s exalt his name together.",
+      "ko": "나와 함께 여호와를 광대하시다 하며 함께 그 이름을 높이세",
+      "source_text_hash": "fd84fbbc75fbb4407105e6ae8f4bdc48a8a71339b9c530aeace83a04c31ccfbd",
+      "translation_text_hash": "9a1b62d8de031f0674df5d7311c26b8472f7b96567a996f671b213d19f2ff0af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 함께 여호와를 광대하시다 하며 함께 그 이름을 높이세"
+      ],
+      "raw_text_hashes": [
+        "9a1b62d8de031f0674df5d7311c26b8472f7b96567a996f671b213d19f2ff0af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:4",
+      "sequence": 14393,
+      "chapter_label": "PSA 34",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 4
+        }
+      ],
+      "en": "I sought the LORD, and he answered me, and delivered me from all my fears.",
+      "ko": "내가 여호와께 구하매 내게 응답하시고 내 모든 두려움에서 나를 건지셨도다",
+      "source_text_hash": "06c8ef754f54cf0af3d4f33dcd4a0401d7a164b974cd3f130373ae4db49c9f72",
+      "translation_text_hash": "6581a6138d44f034af6c8e7d3570462a9407c5527a1ea4cccd40b91ef5e0d149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여호와께 구하매 내게 응답하시고 내 모든 두려움에서 나를 건지셨도다"
+      ],
+      "raw_text_hashes": [
+        "6581a6138d44f034af6c8e7d3570462a9407c5527a1ea4cccd40b91ef5e0d149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:5",
+      "sequence": 14394,
+      "chapter_label": "PSA 34",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 5
+        }
+      ],
+      "en": "They looked to him, and were radiant. Their faces shall never be covered with shame.",
+      "ko": "저희가 주를 앙망하고 광채를 입었으니 그 얼굴이 영영히 부끄럽지 아니하리로다",
+      "source_text_hash": "5864efd7d519b39cf93f12d22189b25fa419999ce18807626300deca0f99336e",
+      "translation_text_hash": "71526c455dcf8c83bf50957ccfc0161462f270db8e796b8c4a7e06862ed4ec75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주를 앙망하고 광채를 입었으니 그 얼굴이 영영히 부끄럽지 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "71526c455dcf8c83bf50957ccfc0161462f270db8e796b8c4a7e06862ed4ec75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:6",
+      "sequence": 14395,
+      "chapter_label": "PSA 34",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 6
+        }
+      ],
+      "en": "This poor man cried, and the LORD heard him, and saved him out of all his troubles.",
+      "ko": "이 곤고한 자가 부르짖으매 여호와께서 들으시고 그 모든 환난에서 구원하셨도다",
+      "source_text_hash": "12abec61e2a4418ac632245c77b6390e0318497600f14605fc3c3217cefc7721",
+      "translation_text_hash": "41ca8e96559f68cbecb644770d3e1d19d239a5856024b7c8c4c428e8769b12f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 곤고한 자가 부르짖으매 여호와께서 들으시고 그 모든 환난에서 구원하셨도다"
+      ],
+      "raw_text_hashes": [
+        "41ca8e96559f68cbecb644770d3e1d19d239a5856024b7c8c4c428e8769b12f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:7",
+      "sequence": 14396,
+      "chapter_label": "PSA 34",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD’s angel encamps around those who fear him, and delivers them.",
+      "ko": "여호와의 사자가 주를 경외하는 자를 둘러 진 치고 저희를 건지시는도다",
+      "source_text_hash": "27db080bdec9cda902aab9be17e0951426d4030bec1fc5370a8c7842274f08f8",
+      "translation_text_hash": "c10427ce8d995b51632790d04da68ab90e11521c610b460906830f1bd4245a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 주를 경외하는 자를 둘러 진 치고 저희를 건지시는도다"
+      ],
+      "raw_text_hashes": [
+        "c10427ce8d995b51632790d04da68ab90e11521c610b460906830f1bd4245a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:8",
+      "sequence": 14397,
+      "chapter_label": "PSA 34",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 8
+        }
+      ],
+      "en": "Oh taste and see that the LORD is good. Blessed is the man who takes refuge in him.",
+      "ko": "너희는 여호와의 선하심을 맛보아 알찌어다 그에게 피하는 자는 복이 있도다",
+      "source_text_hash": "31fc53f0a43c08843c520351d7a7c7d1631a52e24013c66d9c2726c55497875d",
+      "translation_text_hash": "c6f5467f820f7e3e7d3d0086441987ac346c9fe149a360d1833bd34dfb76c271",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 여호와의 선하심을 맛보아 알찌어다 그에게 피하는 자는 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "c6f5467f820f7e3e7d3d0086441987ac346c9fe149a360d1833bd34dfb76c271"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:9",
+      "sequence": 14398,
+      "chapter_label": "PSA 34",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 9
+        }
+      ],
+      "en": "Oh fear the LORD, you his saints, for there is no lack with those who fear him.",
+      "ko": "너희 성도들아 여호와를 경외하라 저를 경외하는 자에게는 부족함이 없도다",
+      "source_text_hash": "655ef1741897c72b37cb495598033fb530756721c99784cd6b89a876a262b004",
+      "translation_text_hash": "d428adae7227391b8ba48dd3e2407714372fcb9a2d693318319e66b783378196",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 성도들아 여호와를 경외하라 저를 경외하는 자에게는 부족함이 없도다"
+      ],
+      "raw_text_hashes": [
+        "d428adae7227391b8ba48dd3e2407714372fcb9a2d693318319e66b783378196"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:10",
+      "sequence": 14399,
+      "chapter_label": "PSA 34",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 10
+        }
+      ],
+      "en": "The young lions do lack, and suffer hunger, but those who seek the LORD shall not lack any good thing.",
+      "ko": "젊은 사자는 궁핍하여 주릴찌라도 여호와를 찾는 자는 모든 좋은 것에 부족함이 없으리로다",
+      "source_text_hash": "4c579bc82849bc7c3775bb0173487939aa940d2d85a29855ee1ee82174facf0d",
+      "translation_text_hash": "423bc446ea4e03daa1e9dc37ce86104f17a3d4e6ef74e35e9032a04f227247f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젊은 사자는 궁핍하여 주릴찌라도 여호와를 찾는 자는 모든 좋은 것에 부족함이 없으리로다"
+      ],
+      "raw_text_hashes": [
+        "423bc446ea4e03daa1e9dc37ce86104f17a3d4e6ef74e35e9032a04f227247f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:11",
+      "sequence": 14400,
+      "chapter_label": "PSA 34",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 11
+        }
+      ],
+      "en": "Come, you children, listen to me. I will teach you the fear of the LORD.",
+      "ko": "너희 소자들아 와서 내게 들으라 내가 여호와를 경외함을 너희에게 가르치리로다",
+      "source_text_hash": "d2e6e53227a8409705798b4f959e863e987c3eb905b77065df1f30be27bdcb52",
+      "translation_text_hash": "4505329215c59abd0da56c8844cdabfded0884a80c801943f9ad2019d453c2a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 소자들아 와서 내게 들으라 내가 여호와를 경외함을 너희에게 가르치리로다"
+      ],
+      "raw_text_hashes": [
+        "4505329215c59abd0da56c8844cdabfded0884a80c801943f9ad2019d453c2a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:12",
+      "sequence": 14401,
+      "chapter_label": "PSA 34",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 12
+        }
+      ],
+      "en": "Who is someone who desires life, and loves many days, that he may see good?",
+      "ko": "생명을 사모하고 장수하여 복 받기를 원하는 사람이 누구뇨",
+      "source_text_hash": "fe0542c920c9053d9c081371778bd4c9be6fb638f89f20a3886476cd9bd65e38",
+      "translation_text_hash": "6c0a2bcf12f9d0308231bb3f803f19d2562f5549059cf8372f05cbaa83ca4719",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생명을 사모하고 장수하여 복 받기를 원하는 사람이 누구뇨"
+      ],
+      "raw_text_hashes": [
+        "6c0a2bcf12f9d0308231bb3f803f19d2562f5549059cf8372f05cbaa83ca4719"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:13",
+      "sequence": 14402,
+      "chapter_label": "PSA 34",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 13
+        }
+      ],
+      "en": "Keep your tongue from evil, and your lips from speaking lies.",
+      "ko": "네 혀를 악에서 금하며 네 입술을 궤사한 말에서 금할찌어다",
+      "source_text_hash": "7f37d8bd32009db8dcc7a8c0be7f8ef7b25578fbff103976102a32b64ce3c04c",
+      "translation_text_hash": "3be06c22a808906300bdc742f3806a7e1d0b28d3ecf5aee4a090d404e9fc9315",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 혀를 악에서 금하며 네 입술을 궤사한 말에서 금할찌어다"
+      ],
+      "raw_text_hashes": [
+        "3be06c22a808906300bdc742f3806a7e1d0b28d3ecf5aee4a090d404e9fc9315"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:14",
+      "sequence": 14403,
+      "chapter_label": "PSA 34",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 14
+        }
+      ],
+      "en": "Depart from evil, and do good. Seek peace, and pursue it.",
+      "ko": "악을 버리고 선을 행하며 화평을 찾아 따를찌어다",
+      "source_text_hash": "a305af09b1b5ffe2223b224f9bb566d52e29996843667f478a3a550e2f7096ef",
+      "translation_text_hash": "eaed5f8eddf80f0db29351b53cab87cd77f26d0f3b663e9516457437f8b318b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악을 버리고 선을 행하며 화평을 찾아 따를찌어다"
+      ],
+      "raw_text_hashes": [
+        "eaed5f8eddf80f0db29351b53cab87cd77f26d0f3b663e9516457437f8b318b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:15",
+      "sequence": 14404,
+      "chapter_label": "PSA 34",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD’s eyes are toward the righteous. His ears listen to their cry.",
+      "ko": "여호와의 눈은 의인을 향하시고 그 귀는 저희 부르짖음에 기울이시는도다",
+      "source_text_hash": "dc74ef565c2ad1b091da0726282b5945160f3213b5410d7a5858baeba2bed68b",
+      "translation_text_hash": "4bb905c94efc8489857fb7eb11843dd91e36f93a7145f2c75c1c39ea96828a42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 눈은 의인을 향하시고 그 귀는 저희 부르짖음에 기울이시는도다"
+      ],
+      "raw_text_hashes": [
+        "4bb905c94efc8489857fb7eb11843dd91e36f93a7145f2c75c1c39ea96828a42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:16",
+      "sequence": 14405,
+      "chapter_label": "PSA 34",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD’s face is against those who do evil, to cut off their memory from the earth.",
+      "ko": "여호와의 얼굴은 행악하는 자를 대하사 저희의 자취를 땅에서 끊으려 하시는도다",
+      "source_text_hash": "c1cc9cedd805c3a140904ec2f5a0d40cc04c4ed409dbb1b0c0f7c39f8a64eb47",
+      "translation_text_hash": "74de5aa3bd27f96e93f5a90677a1402022126e8754672741997d386b76d4a0d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 얼굴은 행악하는 자를 대하사 저희의 자취를 땅에서 끊으려 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "74de5aa3bd27f96e93f5a90677a1402022126e8754672741997d386b76d4a0d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:17",
+      "sequence": 14406,
+      "chapter_label": "PSA 34",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 17
+        }
+      ],
+      "en": "The righteous cry, and the LORD hears, and delivers them out of all their troubles.",
+      "ko": "의인이 외치매 여호와께서 들으시고 저희의 모든 환난에서 건지셨도다",
+      "source_text_hash": "3a0b7c71e993ed33cbb53530aa05b4d671f3eb8f518fc46c5821e5081d46cc03",
+      "translation_text_hash": "9208bbb45866c927c2cdea48ec040f93b7ff5091c113fa050ac98d074d5c9eba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인이 외치매 여호와께서 들으시고 저희의 모든 환난에서 건지셨도다"
+      ],
+      "raw_text_hashes": [
+        "9208bbb45866c927c2cdea48ec040f93b7ff5091c113fa050ac98d074d5c9eba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:18",
+      "sequence": 14407,
+      "chapter_label": "PSA 34",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD is near to those who have a broken heart, and saves those who have a crushed spirit.",
+      "ko": "여호와는 마음이 상한 자에게 가까이 하시고 중심에 통회하는 자를 구원하시는도다",
+      "source_text_hash": "456a6d43e625cbad25e6c6a4bfba037e4e22a79480b68dff6388117029028cb7",
+      "translation_text_hash": "39369f0ba135e12cda40d2d2378b62069f5af593d96dd3e96d00a196cb741db5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 마음이 상한 자에게 가까이 하시고 중심에 통회하는 자를 구원하시는도다"
+      ],
+      "raw_text_hashes": [
+        "39369f0ba135e12cda40d2d2378b62069f5af593d96dd3e96d00a196cb741db5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:19",
+      "sequence": 14408,
+      "chapter_label": "PSA 34",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 19
+        }
+      ],
+      "en": "Many are the afflictions of the righteous, but the LORD delivers him out of them all.",
+      "ko": "의인은 고난이 많으나 여호와께서 그 모든 고난에서 건지시는도다",
+      "source_text_hash": "bb1808147a183bca927be7c1994bc4272fb1a1f41352d576d80e372a84a50460",
+      "translation_text_hash": "d848b847fad6946c9b29b55f13974da9cc0a63da6c3ff80e170834c31b99a63a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인은 고난이 많으나 여호와께서 그 모든 고난에서 건지시는도다"
+      ],
+      "raw_text_hashes": [
+        "d848b847fad6946c9b29b55f13974da9cc0a63da6c3ff80e170834c31b99a63a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:20",
+      "sequence": 14409,
+      "chapter_label": "PSA 34",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 20
+        }
+      ],
+      "en": "He protects all of his bones. Not one of them is broken.",
+      "ko": "그 모든 뼈를 보호하심이여 그 중에 하나도 꺾이지 아니하도다",
+      "source_text_hash": "7d810678e7966562058a96dde50344b5edcbd84530c1986c44bb4d247c589405",
+      "translation_text_hash": "fb0eb4d254035452791549ef81b58511b605177a1b64673aeabde3de86ebad11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 뼈를 보호하심이여 그 중에 하나도 꺾이지 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "fb0eb4d254035452791549ef81b58511b605177a1b64673aeabde3de86ebad11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:21",
+      "sequence": 14410,
+      "chapter_label": "PSA 34",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 21
+        }
+      ],
+      "en": "Evil shall kill the wicked. Those who hate the righteous shall be condemned.",
+      "ko": "악이 악인을 죽일 것이라 의인을 미워하는 자는 죄를 받으리로다",
+      "source_text_hash": "b96473e50bac296d24cd088ac0cd748fd23c491f6ffd6ebe40df08a46d76b1fa",
+      "translation_text_hash": "a15a568a065928568627dd1f687914a1eca4c0ab310686a7be95e67b864ef9f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악이 악인을 죽일 것이라 의인을 미워하는 자는 죄를 받으리로다"
+      ],
+      "raw_text_hashes": [
+        "a15a568a065928568627dd1f687914a1eca4c0ab310686a7be95e67b864ef9f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:34:22",
+      "sequence": 14411,
+      "chapter_label": "PSA 34",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 34,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 34,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD redeems the soul of his servants. None of those who take refuge in him shall be condemned.",
+      "ko": "여호와께서 그 종들의 영혼을 구속하시나니 저에게 피하는 자는 다 죄를 받지 아니하리로다",
+      "source_text_hash": "4fc6d59cfa9bf5d415cecc1ce6fdeb1911852fac16aba262577636cc65f4bcd6",
+      "translation_text_hash": "09fea9c8a10fe9ea797b73634a76e743444c887bc06937a13a2374eaaee94a37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 종들의 영혼을 구속하시나니 저에게 피하는 자는 다 죄를 받지 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "09fea9c8a10fe9ea797b73634a76e743444c887bc06937a13a2374eaaee94a37"
+      ]
+    }
+  ]
+}

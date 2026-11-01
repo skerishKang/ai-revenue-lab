@@ -1,0 +1,1837 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:014",
+  "unit_ordinal": 104,
+  "unit_label": "LEV 14",
+  "book_code": "LEV",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:14:1",
+      "sequence": 3113,
+      "chapter_label": "LEV 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:2",
+      "sequence": 3114,
+      "chapter_label": "LEV 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "“This shall be the law of the leper in the day of his cleansing: He shall be brought to the priest,",
+      "ko": "문둥 환자의 정결케 되는 날의 규례는 이러하니 곧 그 사람을 제사장에게로 데려갈 것이요",
+      "source_text_hash": "694ea4052bcc705a28f211705215c0837ff4095db4dca52e4d5b2ab4aaa171c1",
+      "translation_text_hash": "f57706e572859353d16a382ed4cb40b2096ad3850c3719901dbdd75f926b3463",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문둥 환자의 정결케 되는 날의 규례는 이러하니 곧 그 사람을 제사장에게로 데려갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "f57706e572859353d16a382ed4cb40b2096ad3850c3719901dbdd75f926b3463"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:3",
+      "sequence": 3115,
+      "chapter_label": "LEV 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "and the priest shall go out of the camp. The priest shall examine him. Behold, if the plague of leprosy is healed in the leper,",
+      "ko": "제사장은 진에서 나가서 진찰할찌니 그 환자에게 있던 문둥병 환처가 나았으면",
+      "source_text_hash": "c4abfde568bbc0c012f47114979d361c306d450d094f369e7f4ef6875a738fcc",
+      "translation_text_hash": "5c3679f4ff196519b7196a623903d2c73d81c849605a533bafc33c14cb76ee73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 진에서 나가서 진찰할찌니 그 환자에게 있던 문둥병 환처가 나았으면"
+      ],
+      "raw_text_hashes": [
+        "5c3679f4ff196519b7196a623903d2c73d81c849605a533bafc33c14cb76ee73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:4",
+      "sequence": 3116,
+      "chapter_label": "LEV 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "then the priest shall command them to take for him who is to be cleansed two living clean birds, cedar wood, scarlet, and hyssop.",
+      "ko": "제사장은 그를 위하여 명하여 정한 산 새 두마리와 백향목과 홍색실과 우슬초를 가져오게 하고",
+      "source_text_hash": "b29f25d352b6aa8f7afc435880f1c7ed211f12de22ee9910144c61d1ad1c2dbd",
+      "translation_text_hash": "06f7c47c3f413b8c718ad887150dc5d761bd5f3fcd41084f1e9041ae23adad02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그를 위하여 명하여 정한 산 새 두마리와 백향목과 홍색실과 우슬초를 가져오게 하고"
+      ],
+      "raw_text_hashes": [
+        "06f7c47c3f413b8c718ad887150dc5d761bd5f3fcd41084f1e9041ae23adad02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:5",
+      "sequence": 3117,
+      "chapter_label": "LEV 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "The priest shall command them to kill one of the birds in an earthen vessel over running water.",
+      "ko": "제사장은 또 명하여 그 새 하나는 흐르는 물 위 질그릇 안에서 잡게 하고",
+      "source_text_hash": "6f5239739dd31e7199a5aa275ec8f695a54cb92b4d05442e13c6af3cfc641479",
+      "translation_text_hash": "01ab777ec5c06fa5f3164ca1e36a30abfb83e0e8cd265b4837f422c9d7a9d592",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 또 명하여 그 새 하나는 흐르는 물 위 질그릇 안에서 잡게 하고"
+      ],
+      "raw_text_hashes": [
+        "01ab777ec5c06fa5f3164ca1e36a30abfb83e0e8cd265b4837f422c9d7a9d592"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:6",
+      "sequence": 3118,
+      "chapter_label": "LEV 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "As for the living bird, he shall take it, the cedar wood, the scarlet, and the hyssop, and shall dip them and the living bird in the blood of the bird that was killed over the running water.",
+      "ko": "다른 새는 산대로 취하여 백향목과 홍색실과 우슬초와 함께 가져다가 흐르는 물 위에서 잡은 새 피를 찍어",
+      "source_text_hash": "773406f710f1d07440f77c95de482e59cc235b4292b4b363ac68cb7369b86009",
+      "translation_text_hash": "d4a37c06f7358913a1e7eaa95d9377cf7352b5a4e52ee0bb24d2f974f5666213",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다른 새는 산대로 취하여 백향목과 홍색실과 우슬초와 함께 가져다가 흐르는 물 위에서 잡은 새 피를 찍어"
+      ],
+      "raw_text_hashes": [
+        "d4a37c06f7358913a1e7eaa95d9377cf7352b5a4e52ee0bb24d2f974f5666213"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:7",
+      "sequence": 3119,
+      "chapter_label": "LEV 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "He shall sprinkle on him who is to be cleansed from the leprosy seven times, and shall pronounce him clean, and shall let the living bird go into the open field.",
+      "ko": "문둥병에서 정결함을 받을 자에게 일곱번 뿌려 정하다 하고 그 산 새는 들에 놓을찌며",
+      "source_text_hash": "38ca1bfd912f902ac19f999602a6bdcd69c046afcece060cea568af92843c4c8",
+      "translation_text_hash": "9faab9160ffee3f5717b945f31a2a349dd570c14de779d54f8da060f1a5cca68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문둥병에서 정결함을 받을 자에게 일곱번 뿌려 정하다 하고 그 산 새는 들에 놓을찌며"
+      ],
+      "raw_text_hashes": [
+        "9faab9160ffee3f5717b945f31a2a349dd570c14de779d54f8da060f1a5cca68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:8",
+      "sequence": 3120,
+      "chapter_label": "LEV 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "“He who is to be cleansed shall wash his clothes, and shave off all his hair, and bathe himself in water; and he shall be clean. After that he shall come into the camp, but shall dwell outside his tent seven days.",
+      "ko": "정결함을 받는 자는 그 옷을 빨고 모든 털을 밀고 물로 몸을 씻을 것이라 그리하면 정하리니 그 후에 진에 들어 올 것이나 자기 장막 밖에 칠일을 거할 것이요",
+      "source_text_hash": "3c77d38ecbfe8f2542d25fa1ae1d3bc82276cd763b8cdeb1fb413f8817b4fa56",
+      "translation_text_hash": "5d26a534e6cd1d8e5b52028a5dcd8614fd097a087c0faae0ae0e6d335dd46287",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정결함을 받는 자는 그 옷을 빨고 모든 털을 밀고 물로 몸을 씻을 것이라 그리하면 정하리니 그 후에 진에 들어 올 것이나 자기 장막 밖에 칠일을 거할 것이요"
+      ],
+      "raw_text_hashes": [
+        "5d26a534e6cd1d8e5b52028a5dcd8614fd097a087c0faae0ae0e6d335dd46287"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:9",
+      "sequence": 3121,
+      "chapter_label": "LEV 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "It shall be on the seventh day, that he shall shave all his hair off his head and his beard and his eyebrows. He shall shave off all his hair. He shall wash his clothes, and he shall bathe his body in water. Then he shall be clean.",
+      "ko": "칠일만에 그 모든 털을 밀되 머리털과 수염과 눈썹을 다 밀고 그 옷을 빨고 몸을 물에 씻을 것이라 그리하면 정하리라",
+      "source_text_hash": "7cbefc5074bc14474bc2570e1530d3c42ae27ef2c00b69d9dfa5d903c66958fa",
+      "translation_text_hash": "5dca7b80108261d15e43f29fb4051518a3f37bb038537363f30744097dfe4c0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일만에 그 모든 털을 밀되 머리털과 수염과 눈썹을 다 밀고 그 옷을 빨고 몸을 물에 씻을 것이라 그리하면 정하리라"
+      ],
+      "raw_text_hashes": [
+        "5dca7b80108261d15e43f29fb4051518a3f37bb038537363f30744097dfe4c0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:10",
+      "sequence": 3122,
+      "chapter_label": "LEV 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "“On the eighth day he shall take two male lambs without defect, one ewe lamb a year old without defect, three tenths of an ephah of fine flour for a meal offering, mixed with oil, and one log of oil.",
+      "ko": "제 팔일에 그는 흠 없는 어린 수양 둘과 일년 된 흠 없는 어린 암양 하나와 또 고운 가루 에바 십분 삼에 기름 섞은 소제물과 기름 한 록을 취할 것이요",
+      "source_text_hash": "f8a99ff02ba1fddbed3bc9aeee75de11a221a393a36a719d21291c154b70b862",
+      "translation_text_hash": "3852af9145fb27fb5b6daa4bba0afca02c114255102753f171618e91cfeb3f8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 팔일에 그는 흠 없는 어린 수양 둘과 일년 된 흠 없는 어린 암양 하나와 또 고운 가루 에바 십분 삼에 기름 섞은 소제물과 기름 한 록을 취할 것이요"
+      ],
+      "raw_text_hashes": [
+        "3852af9145fb27fb5b6daa4bba0afca02c114255102753f171618e91cfeb3f8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:11",
+      "sequence": 3123,
+      "chapter_label": "LEV 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "The priest who cleanses him shall set the man who is to be cleansed, and those things, before the LORD, at the door of the Tent of Meeting.",
+      "ko": "정결케 하는 제사장은 정결함을 받을 자와 그 물건들을 회막문 여호와 앞에 두고",
+      "source_text_hash": "dfaaef1eb732090dc33ad0bc0f8793a45d5f1db0b1334445405790b1126c19a9",
+      "translation_text_hash": "4db2f900da9096c7085f293dbed9607a3fc06776ed4cc8ca11cce1e5fb7c6973",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정결케 하는 제사장은 정결함을 받을 자와 그 물건들을 회막문 여호와 앞에 두고"
+      ],
+      "raw_text_hashes": [
+        "4db2f900da9096c7085f293dbed9607a3fc06776ed4cc8ca11cce1e5fb7c6973"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:12",
+      "sequence": 3124,
+      "chapter_label": "LEV 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "“The priest shall take one of the male lambs, and offer him for a trespass offering, with the log of oil, and wave them for a wave offering before the LORD.",
+      "ko": "어린 수양 하나를 취하여 기름 한 록과 아울러 속건제로 드리되 여호와 앞에 흔들어 요제를 삼고",
+      "source_text_hash": "e689629adb17296423dbf7e6303c6e0f82a9b327c9b7f1ff2ae02f60459d51e7",
+      "translation_text_hash": "cae45ecc21cfc6df1ee29bc67ff7e9e78d9bd93ca0cf205a68337424a4581d82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어린 수양 하나를 취하여 기름 한 록과 아울러 속건제로 드리되 여호와 앞에 흔들어 요제를 삼고"
+      ],
+      "raw_text_hashes": [
+        "cae45ecc21cfc6df1ee29bc67ff7e9e78d9bd93ca0cf205a68337424a4581d82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:13",
+      "sequence": 3125,
+      "chapter_label": "LEV 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "He shall kill the male lamb in the place where they kill the sin offering and the burnt offering, in the place of the sanctuary; for as the sin offering is the priest’s, so is the trespass offering. It is most holy.",
+      "ko": "그 어린 수양은 거룩한 장소 곧 속죄제와 번제 희생 잡는 곳에서 잡을 것이며 속건 제물은 속죄 제물과 일례로 제사장에게 돌릴찌니 이는 지극히 거룩한 것이니라",
+      "source_text_hash": "9ca30198a96ec3d3389080d35674092e5555fb08f79927e7652d33abe1b569f0",
+      "translation_text_hash": "e75fbbcce439471e43f9577cc712c15c81a5ed27b6946df8b57257b44d24ef23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 어린 수양은 거룩한 장소 곧 속죄제와 번제 희생 잡는 곳에서 잡을 것이며 속건 제물은 속죄 제물과 일례로 제사장에게 돌릴찌니 이는 지극히 거룩한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e75fbbcce439471e43f9577cc712c15c81a5ed27b6946df8b57257b44d24ef23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:14",
+      "sequence": 3126,
+      "chapter_label": "LEV 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "The priest shall take some of the blood of the trespass offering, and the priest shall put it on the tip of the right ear of him who is to be cleansed, and on the thumb of his right hand, and on the big toe of his right foot.",
+      "ko": "제사장은 그 속건제 희생의 피를 취하여 정결함을 받을 자의 우편 귓부리와 우편 손 엄지가락과 우편 발 엄지가락에 바를 것이요",
+      "source_text_hash": "806f68ea8007f9da7ad5c98fea9de30678795c67e84d15cb3af9b52aabeda7a5",
+      "translation_text_hash": "fd37f079ddf18ce179a1727a059696bc6cb9e705cff4406e977199e421042334",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 속건제 희생의 피를 취하여 정결함을 받을 자의 우편 귓부리와 우편 손 엄지가락과 우편 발 엄지가락에 바를 것이요"
+      ],
+      "raw_text_hashes": [
+        "fd37f079ddf18ce179a1727a059696bc6cb9e705cff4406e977199e421042334"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:15",
+      "sequence": 3127,
+      "chapter_label": "LEV 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "The priest shall take some of the log of oil, and pour it into the palm of his own left hand.",
+      "ko": "제사장은 또 그 한 록의 기름을 취하여 자기 좌편 손바닥에 따르고",
+      "source_text_hash": "fc66c17965032611b01f3a62f5e60eba643e90e29f25497c0c11fb4f607a278b",
+      "translation_text_hash": "88183dbc4223b8a40aeb3fd9aa18938dd0a3106cfac1ef451f0c1fe222af430f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 또 그 한 록의 기름을 취하여 자기 좌편 손바닥에 따르고"
+      ],
+      "raw_text_hashes": [
+        "88183dbc4223b8a40aeb3fd9aa18938dd0a3106cfac1ef451f0c1fe222af430f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:16",
+      "sequence": 3128,
+      "chapter_label": "LEV 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "The priest shall dip his right finger in the oil that is in his left hand, and shall sprinkle some of the oil with his finger seven times before the LORD.",
+      "ko": "우편 손가락으로 좌편 손의 기름을 찍어 그 손가락으로 그것을 여호와 앞에 일곱번 뿌릴 것이요",
+      "source_text_hash": "969e90c571c5a3329528bcdca702a1b5547fb2f1109173506ad68ddb7f902875",
+      "translation_text_hash": "1476357bf76f7be9a5c6faa94b33cb65d1792a0a64fddad8473207aa17e48a91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우편 손가락으로 좌편 손의 기름을 찍어 그 손가락으로 그것을 여호와 앞에 일곱번 뿌릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "1476357bf76f7be9a5c6faa94b33cb65d1792a0a64fddad8473207aa17e48a91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:17",
+      "sequence": 3129,
+      "chapter_label": "LEV 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "The priest shall put some of the rest of the oil that is in his hand on the tip of the right ear of him who is to be cleansed, and on the thumb of his right hand, and on the big toe of his right foot, upon the blood of the trespass offering.",
+      "ko": "손에 남은 기름은 제사장이 정결함을 받는 자의 우편 귓부리와 우편 손 엄지가락과 우편 발 엄지가락 곧 속건제 희생의 피 위에 바를 것이며",
+      "source_text_hash": "a21647ad6666a6cf8d6ec9a3bf310beebf3c726089d817186e768d5fc011dc8c",
+      "translation_text_hash": "c1f5a19d08547164fe94488ae282f9d870f8891caa799a3feabe1efc57eaf84a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손에 남은 기름은 제사장이 정결함을 받는 자의 우편 귓부리와 우편 손 엄지가락과 우편 발 엄지가락 곧 속건제 희생의 피 위에 바를 것이며"
+      ],
+      "raw_text_hashes": [
+        "c1f5a19d08547164fe94488ae282f9d870f8891caa799a3feabe1efc57eaf84a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:18",
+      "sequence": 3130,
+      "chapter_label": "LEV 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "The rest of the oil that is in the priest’s hand he shall put on the head of him who is to be cleansed, and the priest shall make atonement for him before the LORD.",
+      "ko": "오히려 그 손에 남은 기름은 제사장이 그 정결함을 받는 자의 머리에 바르고 여호와 앞에서 제사장은 그를 위하여 속죄하고",
+      "source_text_hash": "aa007d5c27d34bb26c553b2f0d448af70e2633e000d73925208516653df6dc2e",
+      "translation_text_hash": "7957d3f65c5d3761f829ffacb61f1bb71612b14c52828f98f37b65b706637e1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오히려 그 손에 남은 기름은 제사장이 그 정결함을 받는 자의 머리에 바르고 여호와 앞에서 제사장은 그를 위하여 속죄하고"
+      ],
+      "raw_text_hashes": [
+        "7957d3f65c5d3761f829ffacb61f1bb71612b14c52828f98f37b65b706637e1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:19",
+      "sequence": 3131,
+      "chapter_label": "LEV 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "“The priest shall offer the sin offering, and make atonement for him who is to be cleansed because of his uncleanness. Afterward he shall kill the burnt offering;",
+      "ko": "또 제사장은 속죄제를 드려 그 부정함을 인하여 정결함을 받으려는 자를 위하여 속죄하고 그 후에 번제 희생을 잡을 것이요",
+      "source_text_hash": "a9f9f94620fba7265f90f3da37105d4db06f8de036b0efc0585bcacd1657d1ec",
+      "translation_text_hash": "e77f4c1df4d9e6a31905d290f9323d6563b5f98741a06fe7fd260cf50e0773da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 제사장은 속죄제를 드려 그 부정함을 인하여 정결함을 받으려는 자를 위하여 속죄하고 그 후에 번제 희생을 잡을 것이요"
+      ],
+      "raw_text_hashes": [
+        "e77f4c1df4d9e6a31905d290f9323d6563b5f98741a06fe7fd260cf50e0773da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:20",
+      "sequence": 3132,
+      "chapter_label": "LEV 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "then the priest shall offer the burnt offering and the meal offering on the altar. The priest shall make atonement for him, and he shall be clean.",
+      "ko": "제사장은 그 번제와 소제를 단에 드려 그를 위하여 속죄할 것이라 그리하면 그가 정결하리라",
+      "source_text_hash": "17e933ca50b5a267d0014b300dd92b443dc2d528c02455fdd9bb9a0c55edf62c",
+      "translation_text_hash": "64ead5f3771527412cf9ddaf9df224d909fa6bf99b3a090cb1d4e1368cc51c57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 번제와 소제를 단에 드려 그를 위하여 속죄할 것이라 그리하면 그가 정결하리라"
+      ],
+      "raw_text_hashes": [
+        "64ead5f3771527412cf9ddaf9df224d909fa6bf99b3a090cb1d4e1368cc51c57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:21",
+      "sequence": 3133,
+      "chapter_label": "LEV 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "“If he is poor, and can’t afford so much, then he shall take one male lamb for a trespass offering to be waved, to make atonement for him, and one tenth of an ephah of fine flour mixed with oil for a meal offering, and a log of oil;",
+      "ko": "그가 가난하여 이에 힘이 미치지 못하면 그는 흔들어 자기를 속할 속건제를 위하여 어린 수양 하나와 소제를 위하여 고운 가루 에바 십분 일에 기름 섞은 것과 기름 한 록을 취하고",
+      "source_text_hash": "dc188db2fd3d8f16ae4d308080d600361a2ef93c7fddd7c59727805e35e12916",
+      "translation_text_hash": "26e7cf38b9a4a67bcd296ea2ecc8a6945d1980b23b25d0e1dd51cc95add8386b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가난하여 이에 힘이 미치지 못하면 그는 흔들어 자기를 속할 속건제를 위하여 어린 수양 하나와 소제를 위하여 고운 가루 에바 십분 일에 기름 섞은 것과 기름 한 록을 취하고"
+      ],
+      "raw_text_hashes": [
+        "26e7cf38b9a4a67bcd296ea2ecc8a6945d1980b23b25d0e1dd51cc95add8386b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:22",
+      "sequence": 3134,
+      "chapter_label": "LEV 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "and two turtledoves, or two young pigeons, such as he is able to afford; and the one shall be a sin offering, and the other a burnt offering.",
+      "ko": "그 힘이 미치는대로 산비둘기 둘이나 집비둘기 새끼 둘을 취하되 하나는 속죄 제물로, 하나는 번제물로 삼아",
+      "source_text_hash": "bcb3bf403dbeb22bff3f840587c691dc928eba0752ea026000c1789a8c203b31",
+      "translation_text_hash": "fe7b98cdd5b718ddd1af8c47f7e247e9880b4d60f9141fd1d1ac6fe2c0c68374",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 힘이 미치는대로 산비둘기 둘이나 집비둘기 새끼 둘을 취하되 하나는 속죄 제물로, 하나는 번제물로 삼아"
+      ],
+      "raw_text_hashes": [
+        "fe7b98cdd5b718ddd1af8c47f7e247e9880b4d60f9141fd1d1ac6fe2c0c68374"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:23",
+      "sequence": 3135,
+      "chapter_label": "LEV 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "“On the eighth day he shall bring them for his cleansing to the priest, to the door of the Tent of Meeting, before the LORD.",
+      "ko": "제 팔일에 그 결례를 위하여 그것들을 회막문 여호와 앞 제사장에게로 가져갈 것이요",
+      "source_text_hash": "f3d077a2dab0261f97904755bcd53a8e05127b98b6a7f72f0adb791901fd1cef",
+      "translation_text_hash": "476f9cca5f1af034f348fe8dc5315c3db68ffc98e3a7075ee53e16338573e76f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 팔일에 그 결례를 위하여 그것들을 회막문 여호와 앞 제사장에게로 가져갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "476f9cca5f1af034f348fe8dc5315c3db68ffc98e3a7075ee53e16338573e76f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:24",
+      "sequence": 3136,
+      "chapter_label": "LEV 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "The priest shall take the lamb of the trespass offering, and the log of oil, and the priest shall wave them for a wave offering before the LORD.",
+      "ko": "제사장은 속건제 어린 양과 기름 한 록을 취하여 여호와 앞에 흔들어 요제를 삼고",
+      "source_text_hash": "354d7929550f387aa0c18ee1aab24b992239610356046dce1ed7931d51eb12ee",
+      "translation_text_hash": "98b9f51f180c4d6d3196bc53bbdd45a0e3fa96e03aaf45e4fc129d52636fac11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 속건제 어린 양과 기름 한 록을 취하여 여호와 앞에 흔들어 요제를 삼고"
+      ],
+      "raw_text_hashes": [
+        "98b9f51f180c4d6d3196bc53bbdd45a0e3fa96e03aaf45e4fc129d52636fac11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:25",
+      "sequence": 3137,
+      "chapter_label": "LEV 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "He shall kill the lamb of the trespass offering. The priest shall take some of the blood of the trespass offering and put it on the tip of the right ear of him who is to be cleansed, and on the thumb of his right hand, and on the big toe of his right foot.",
+      "ko": "속건제의 어린 양을 잡아서 제사장은 그 속건제 희생의 피를 취하여 정결함을 받을 자의 우편 귓부리와 우편 손 엄지가락과 우편 발 엄지가락에 바를 것이요",
+      "source_text_hash": "0e73a8c1e72e294ea22c6085e478e3a6b577daaf9be43449b30265d32707a9f2",
+      "translation_text_hash": "efa6404fa5a33febbed84558d6efc8c32beefb4833bfb9037875eca8c71938b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속건제의 어린 양을 잡아서 제사장은 그 속건제 희생의 피를 취하여 정결함을 받을 자의 우편 귓부리와 우편 손 엄지가락과 우편 발 엄지가락에 바를 것이요"
+      ],
+      "raw_text_hashes": [
+        "efa6404fa5a33febbed84558d6efc8c32beefb4833bfb9037875eca8c71938b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:26",
+      "sequence": 3138,
+      "chapter_label": "LEV 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "The priest shall pour some of the oil into the palm of his own left hand;",
+      "ko": "제사장은 그 기름을 자기 좌편 손바닥에 따르고",
+      "source_text_hash": "e6a17169af103db4be8359c94ff5cc566040a16f8b0e75d6a4c8253ec6d94feb",
+      "translation_text_hash": "7a78523d0c8740b8dcb6163a7931693d213d53a457ac2b926baeab8449ae91de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 기름을 자기 좌편 손바닥에 따르고"
+      ],
+      "raw_text_hashes": [
+        "7a78523d0c8740b8dcb6163a7931693d213d53a457ac2b926baeab8449ae91de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:27",
+      "sequence": 3139,
+      "chapter_label": "LEV 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "and the priest shall sprinkle with his right finger some of the oil that is in his left hand seven times before the LORD.",
+      "ko": "우편 손가락으로 좌편 손의 기름을 조금 찍어 여호와 앞에 일곱번 뿌릴 것이요",
+      "source_text_hash": "a899bb6e539e6bd3a2ea1f284175cf5884cf63dae127cdc5963aca25c70c261d",
+      "translation_text_hash": "446e4892fa49ad6860a3c9385bb23f7cd7dac2a543ed035e436acafafa8be05a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우편 손가락으로 좌편 손의 기름을 조금 찍어 여호와 앞에 일곱번 뿌릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "446e4892fa49ad6860a3c9385bb23f7cd7dac2a543ed035e436acafafa8be05a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:28",
+      "sequence": 3140,
+      "chapter_label": "LEV 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "Then the priest shall put some of the oil that is in his hand on the tip of the right ear of him who is to be cleansed, and on the thumb of his right hand, and on the big toe of his right foot, on the place of the blood of the trespass offering.",
+      "ko": "그 손의 기름은 제사장이 정결함을 받을 자의 우편 귓부리와 우편 손 엄지가락과 우편 발 엄지가락 곧 속건제 희생의 피를 바른 곳에 바를 것이며",
+      "source_text_hash": "d2d5f6a025ed0e4aedf6cd92361c3a0f3913d9627d41e42c7d86c77d1b2a5bd4",
+      "translation_text_hash": "8bcc578c5ca75f120e529db29001a86d32fa6f2a0372f3acd203c0bfe475ccd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 손의 기름은 제사장이 정결함을 받을 자의 우편 귓부리와 우편 손 엄지가락과 우편 발 엄지가락 곧 속건제 희생의 피를 바른 곳에 바를 것이며"
+      ],
+      "raw_text_hashes": [
+        "8bcc578c5ca75f120e529db29001a86d32fa6f2a0372f3acd203c0bfe475ccd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:29",
+      "sequence": 3141,
+      "chapter_label": "LEV 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "The rest of the oil that is in the priest’s hand he shall put on the head of him who is to be cleansed, to make atonement for him before the LORD.",
+      "ko": "또 그 손에 남은 기름은 제사장이 그 정결함을 받는 자의 머리에 발라 여호와 앞에서 그를 위하여 속죄할 것이며",
+      "source_text_hash": "c9d32c38d5c2a21c9229047d5c1aaa6e78d1f7299acae004d1272fd6a848cc47",
+      "translation_text_hash": "0d293d59e1201e737b8fef80901bb1d1bc1c9463fe91259d137dcbc2eb05d7fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 손에 남은 기름은 제사장이 그 정결함을 받는 자의 머리에 발라 여호와 앞에서 그를 위하여 속죄할 것이며"
+      ],
+      "raw_text_hashes": [
+        "0d293d59e1201e737b8fef80901bb1d1bc1c9463fe91259d137dcbc2eb05d7fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:30",
+      "sequence": 3142,
+      "chapter_label": "LEV 14",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 30
+        }
+      ],
+      "en": "He shall offer one of the turtledoves, or of the young pigeons, which ever he is able to afford,",
+      "ko": "그는 힘이 미치는대로 산비둘기 하나나 집비둘기 새끼 하나를 드리되",
+      "source_text_hash": "8206a412f995db01a0dd065aa6ae3651e86adde94eb308a5a9625bcc8de1de6a",
+      "translation_text_hash": "68cd885e696c5fca8c4fef6ee7c0475ca7dca1e8fae2c862de6c27721f422831",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 힘이 미치는대로 산비둘기 하나나 집비둘기 새끼 하나를 드리되"
+      ],
+      "raw_text_hashes": [
+        "68cd885e696c5fca8c4fef6ee7c0475ca7dca1e8fae2c862de6c27721f422831"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:31",
+      "sequence": 3143,
+      "chapter_label": "LEV 14",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 31
+        }
+      ],
+      "en": "of the kind he is able to afford, the one for a sin offering, and the other for a burnt offering, with the meal offering. The priest shall make atonement for him who is to be cleansed before the LORD.”",
+      "ko": "곧 그 힘이 미치는 것의 하나는 속죄제로, 하나는 소제와 함께 번제로 드릴 것이요 제사장은 정결함을 받을 자를 위하여 여호와 앞에 속죄할찌니",
+      "source_text_hash": "26295c430bcd26af6fe467794080fae1d2d54d766ad48ee5838b7a511e10a3ff",
+      "translation_text_hash": "7e85d01fab2b5d987990bdfd2513389ac22409bf02300c604580d555fa9f291d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 힘이 미치는 것의 하나는 속죄제로, 하나는 소제와 함께 번제로 드릴 것이요 제사장은 정결함을 받을 자를 위하여 여호와 앞에 속죄할찌니"
+      ],
+      "raw_text_hashes": [
+        "7e85d01fab2b5d987990bdfd2513389ac22409bf02300c604580d555fa9f291d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:32",
+      "sequence": 3144,
+      "chapter_label": "LEV 14",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 32
+        }
+      ],
+      "en": "This is the law for him in whom is the plague of leprosy, who is not able to afford the sacrifice for his cleansing.",
+      "ko": "문둥병 환자로서 그 결례에 힘이 부족한 자의 규례가 이러하니라",
+      "source_text_hash": "2799fd8610b234123bdc2222b47438beb4e505b3f8722d2e57651a789abbd849",
+      "translation_text_hash": "ff0d9bb000d25ad9ed572b242f5e931d93baa588fc9bcc04a9aa83d00e1f0989",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문둥병 환자로서 그 결례에 힘이 부족한 자의 규례가 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "ff0d9bb000d25ad9ed572b242f5e931d93baa588fc9bcc04a9aa83d00e1f0989"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:33",
+      "sequence": 3145,
+      "chapter_label": "LEV 14",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 33
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying,",
+      "ko": "여호와께서 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "e6c7cd4c60d1b58d8caa7e02e4352f1d925cf188a6f005f934b711230470272a",
+      "translation_text_hash": "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:34",
+      "sequence": 3146,
+      "chapter_label": "LEV 14",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 34
+        }
+      ],
+      "en": "“When you have come into the land of Canaan, which I give to you for a possession, and I put a spreading mildew in a house in the land of your possession,",
+      "ko": "내가 네게 기업으로 주는 가나안 땅에 너희가 이른 때에 내가 너희 기업의 땅에서 어느 집에 문둥병 색점을 발하게 하거든",
+      "source_text_hash": "0cec2226b7a95e81a5cfaa0c9e14c650bd42511232aded095a1c615183dd64f3",
+      "translation_text_hash": "4201b96a729693f139254f2251eaeeaf55f6637a200134a0618983969b5497f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 기업으로 주는 가나안 땅에 너희가 이른 때에 내가 너희 기업의 땅에서 어느 집에 문둥병 색점을 발하게 하거든"
+      ],
+      "raw_text_hashes": [
+        "4201b96a729693f139254f2251eaeeaf55f6637a200134a0618983969b5497f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:35",
+      "sequence": 3147,
+      "chapter_label": "LEV 14",
+      "verse_label": "35",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 35
+        }
+      ],
+      "en": "then he who owns the house shall come and tell the priest, saying, ‘There seems to me to be some sort of plague in the house.’",
+      "ko": "그 집 주인은 제사장에게 와서 고하기를 무슨 색점이 집에 생겼다 할 것이요",
+      "source_text_hash": "8e1d465b5fa4dfdd4ec233bb567927e565eabfd2ef2b4a79c1a7fe678ad5525e",
+      "translation_text_hash": "c80976337ecb6a450097d62e6653dbf9f760af5751b25eafae78f097c952aac7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집 주인은 제사장에게 와서 고하기를 무슨 색점이 집에 생겼다 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "c80976337ecb6a450097d62e6653dbf9f760af5751b25eafae78f097c952aac7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:36",
+      "sequence": 3148,
+      "chapter_label": "LEV 14",
+      "verse_label": "36",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 36
+        }
+      ],
+      "en": "The priest shall command that they empty the house, before the priest goes in to examine the plague, that all that is in the house not be made unclean. Afterward the priest shall go in to inspect the house.",
+      "ko": "제사장은 그 색점을 보러 가기 전에 그 가장집물에 부정을 면케 하기 위하여 명하여 그 집을 비게 한 후에 들어가서 그 집을 볼찌니",
+      "source_text_hash": "c22c002f901c2481e516b4db3ef4a590c39f6b63e1722c44203a9e88845df3f2",
+      "translation_text_hash": "aee75f91e2fda09b7c5d8d0fc12d546f97ee3883a5f4ace1bad43462671048ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 색점을 보러 가기 전에 그 가장집물에 부정을 면케 하기 위하여 명하여 그 집을 비게 한 후에 들어가서 그 집을 볼찌니"
+      ],
+      "raw_text_hashes": [
+        "aee75f91e2fda09b7c5d8d0fc12d546f97ee3883a5f4ace1bad43462671048ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:37",
+      "sequence": 3149,
+      "chapter_label": "LEV 14",
+      "verse_label": "37",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 37
+        }
+      ],
+      "en": "He shall examine the plague; and behold, if the plague is in the walls of the house with hollow streaks, greenish or reddish, and it appears to be deeper than the wall,",
+      "ko": "그 색점을 볼 때에 그 집 벽에 푸르거나 붉은 무늬의 색점이 있어 벽보다 우묵하면",
+      "source_text_hash": "7ea125bbd95c3e7335faa0660dda4d88d0506379c1974d51211eee3437cd467a",
+      "translation_text_hash": "69eaa896c0930db9db9682066d87e14ea21e53104519917634faacaf442b7175",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 색점을 볼 때에 그 집 벽에 푸르거나 붉은 무늬의 색점이 있어 벽보다 우묵하면"
+      ],
+      "raw_text_hashes": [
+        "69eaa896c0930db9db9682066d87e14ea21e53104519917634faacaf442b7175"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:38",
+      "sequence": 3150,
+      "chapter_label": "LEV 14",
+      "verse_label": "38",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 38
+        }
+      ],
+      "en": "then the priest shall go out of the house to the door of the house, and shut up the house seven days.",
+      "ko": "제사장은 그 집 문으로 나와 그 집을 칠일 동안 폐쇄하였다가",
+      "source_text_hash": "253e02e2eb4f3c125950328a749b26f34061b8f29b909fa38e2f16b94e89d10b",
+      "translation_text_hash": "1b7b9f3d9e7821fc58999632c9564f24806727d9e9949822dcf6004e8e22d267",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 집 문으로 나와 그 집을 칠일 동안 폐쇄하였다가"
+      ],
+      "raw_text_hashes": [
+        "1b7b9f3d9e7821fc58999632c9564f24806727d9e9949822dcf6004e8e22d267"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:39",
+      "sequence": 3151,
+      "chapter_label": "LEV 14",
+      "verse_label": "39",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 39
+        }
+      ],
+      "en": "The priest shall come again on the seventh day, and look. If the plague has spread in the walls of the house,",
+      "ko": "칠일만에 또 와서 살펴 볼 것이요 그 색점이 벽에 퍼졌으면",
+      "source_text_hash": "e8cea796277bdc568c6243152225c17a2e15ec2e8200a2e2e3a73be9704f0afd",
+      "translation_text_hash": "6ec68f463cfea01ad52f1cc9b3e4ce62ee2ec9b2945eeb29ea356e4bcae46f39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일만에 또 와서 살펴 볼 것이요 그 색점이 벽에 퍼졌으면"
+      ],
+      "raw_text_hashes": [
+        "6ec68f463cfea01ad52f1cc9b3e4ce62ee2ec9b2945eeb29ea356e4bcae46f39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:40",
+      "sequence": 3152,
+      "chapter_label": "LEV 14",
+      "verse_label": "40",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 40
+        }
+      ],
+      "en": "then the priest shall command that they take out the stones in which is the plague, and cast them into an unclean place outside of the city.",
+      "ko": "그는 명하여 색점 있는 돌을 빼어 성밖 부정한 곳에 버리게 하고",
+      "source_text_hash": "119e25ef5e7459fb94cd682aab919927d60bbe6327d0da137d48e7ee940b4ea3",
+      "translation_text_hash": "b80a9b37c4d7ae28732140fc09710d5755bdcf290b471fae17501996dc022720",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 명하여 색점 있는 돌을 빼어 성밖 부정한 곳에 버리게 하고"
+      ],
+      "raw_text_hashes": [
+        "b80a9b37c4d7ae28732140fc09710d5755bdcf290b471fae17501996dc022720"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:41",
+      "sequence": 3153,
+      "chapter_label": "LEV 14",
+      "verse_label": "41",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 41
+        }
+      ],
+      "en": "He shall cause the inside of the house to be scraped all over. They shall pour out the mortar that they scraped off outside of the city into an unclean place.",
+      "ko": "또 집안 사면을 긁게 하고 그 긁은 흙을 성밖 부정한 곳에 쏟아 버리게 할 것이요",
+      "source_text_hash": "c8eefbf1119c79de53171cb4ddab7d9ed3284432123123bd1a179529e1ab6694",
+      "translation_text_hash": "251b428c4359cb30cfe8d56c3ab577ef8b38378a095a288fb96a1a3bb91b367a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 집안 사면을 긁게 하고 그 긁은 흙을 성밖 부정한 곳에 쏟아 버리게 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "251b428c4359cb30cfe8d56c3ab577ef8b38378a095a288fb96a1a3bb91b367a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:42",
+      "sequence": 3154,
+      "chapter_label": "LEV 14",
+      "verse_label": "42",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 42
+        }
+      ],
+      "en": "They shall take other stones, and put them in the place of those stones; and he shall take other mortar, and shall plaster the house.",
+      "ko": "그들은 다른 돌로 그 돌을 대신하며 다른 흙으로 집에 바를찌니라",
+      "source_text_hash": "b6cc1f8202b03f66159435cc942aa2f0cd04dea1b637ca93dc35cb95372f3d24",
+      "translation_text_hash": "68508511627555969992c255269bd83bcc2b7b1e0538538743f2455a4bd01bd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 다른 돌로 그 돌을 대신하며 다른 흙으로 집에 바를찌니라"
+      ],
+      "raw_text_hashes": [
+        "68508511627555969992c255269bd83bcc2b7b1e0538538743f2455a4bd01bd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:43",
+      "sequence": 3155,
+      "chapter_label": "LEV 14",
+      "verse_label": "43",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 43
+        }
+      ],
+      "en": "“If the plague comes again, and breaks out in the house after he has taken out the stones, and after he has scraped the house, and after it was plastered,",
+      "ko": "돌을 빼며 집을 긁고 고쳐 바른 후에 색점이 집에 복발하거든",
+      "source_text_hash": "d596df1b2791e474191a2074a8c1eedb7b8d139bdfd20d97a20c065c2430d5a5",
+      "translation_text_hash": "2b0e190df1ea29d92ea5de53d24d6c69a8842fc3eb3dabc636043a90dc6580fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌을 빼며 집을 긁고 고쳐 바른 후에 색점이 집에 복발하거든"
+      ],
+      "raw_text_hashes": [
+        "2b0e190df1ea29d92ea5de53d24d6c69a8842fc3eb3dabc636043a90dc6580fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:44",
+      "sequence": 3156,
+      "chapter_label": "LEV 14",
+      "verse_label": "44",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 44
+        }
+      ],
+      "en": "then the priest shall come in and look; and behold, if the plague has spread in the house, it is a destructive mildew in the house. It is unclean.",
+      "ko": "제사장은 또 와서 살펴 볼 것이요 그 색점이 만일 집에 퍼졌으면 악성 문둥병인즉 이는 부정하니",
+      "source_text_hash": "7b1da5deadfc038e9c098e376cffd551195a5e86f02e151ece7045ceefefd33c",
+      "translation_text_hash": "a8604b608dd7cbb1d3d7b9f7e39570a6e5d45341261ccedfc8c7f9da28b53861",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 또 와서 살펴 볼 것이요 그 색점이 만일 집에 퍼졌으면 악성 문둥병인즉 이는 부정하니"
+      ],
+      "raw_text_hashes": [
+        "a8604b608dd7cbb1d3d7b9f7e39570a6e5d45341261ccedfc8c7f9da28b53861"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:45",
+      "sequence": 3157,
+      "chapter_label": "LEV 14",
+      "verse_label": "45",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 45
+        }
+      ],
+      "en": "He shall break down the house, its stones, and its timber, and all the house’s mortar. He shall carry them out of the city into an unclean place.",
+      "ko": "그는 그 집을 헐고 돌과 그 재목과 그 집의 모든 흙을 성밖 부정한 곳으로 내어갈 것이며",
+      "source_text_hash": "b8b1798825c1187a89c2764652fefe9181abccf9492979233be3c847a3cf2e88",
+      "translation_text_hash": "51b4e52656c31408d645b4afa57c0ca574b5ac471fc66b76bb0749075eb6fecf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 그 집을 헐고 돌과 그 재목과 그 집의 모든 흙을 성밖 부정한 곳으로 내어갈 것이며"
+      ],
+      "raw_text_hashes": [
+        "51b4e52656c31408d645b4afa57c0ca574b5ac471fc66b76bb0749075eb6fecf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:46",
+      "sequence": 3158,
+      "chapter_label": "LEV 14",
+      "verse_label": "46",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 46
+        }
+      ],
+      "en": "“Moreover he who goes into the house while it is shut up shall be unclean until the evening.",
+      "ko": "그 집을 폐쇄한 날 동안에 들어가는 자는 저녁까지 부정할 것이요",
+      "source_text_hash": "92e7bf9bdd3321a1a7ba8738250572d2aead6ee9b724f36c9aa5d2ea9f37a01f",
+      "translation_text_hash": "67f8d8ac840380d1c6dfb4cde72fff942f53f07779210de567ddbf90a97966b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집을 폐쇄한 날 동안에 들어가는 자는 저녁까지 부정할 것이요"
+      ],
+      "raw_text_hashes": [
+        "67f8d8ac840380d1c6dfb4cde72fff942f53f07779210de567ddbf90a97966b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:47",
+      "sequence": 3159,
+      "chapter_label": "LEV 14",
+      "verse_label": "47",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 47
+        }
+      ],
+      "en": "He who lies down in the house shall wash his clothes; and he who eats in the house shall wash his clothes.",
+      "ko": "그 집에서 자는 자는 그 옷을 빨 것이요 그 집에서 먹는 자도 그 옷을 빨 것이니라",
+      "source_text_hash": "cd8be8eb9de2f1d2ffac8eed7050265306be22f9bad245395ea5487fae83ab6a",
+      "translation_text_hash": "909f886aa8c7c81354b275bfd37d3e710e497c960b80596c68642279ded2d1f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집에서 자는 자는 그 옷을 빨 것이요 그 집에서 먹는 자도 그 옷을 빨 것이니라"
+      ],
+      "raw_text_hashes": [
+        "909f886aa8c7c81354b275bfd37d3e710e497c960b80596c68642279ded2d1f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:48",
+      "sequence": 3160,
+      "chapter_label": "LEV 14",
+      "verse_label": "48",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 48
+        }
+      ],
+      "en": "“If the priest shall come in, and examine it, and behold, the plague hasn’t spread in the house, after the house was plastered, then the priest shall pronounce the house clean, because the plague is healed.",
+      "ko": "그 집을 고쳐 바른 후에 제사장이 들어가 살펴 보아서 색점이 집에 퍼지지 아니하였으면 이는 색점이 나은 것이니 제사장은 그 집을 정하다 하고",
+      "source_text_hash": "d04445b0364ba8ec7e4fc07845df653ec24ed15aa4eea99014468beef5c7359c",
+      "translation_text_hash": "4ef333e9fa1aad9d4d4f3ae9aefd7328c4b4f699ad90f1633293bc46dbcde7ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집을 고쳐 바른 후에 제사장이 들어가 살펴 보아서 색점이 집에 퍼지지 아니하였으면 이는 색점이 나은 것이니 제사장은 그 집을 정하다 하고"
+      ],
+      "raw_text_hashes": [
+        "4ef333e9fa1aad9d4d4f3ae9aefd7328c4b4f699ad90f1633293bc46dbcde7ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:49",
+      "sequence": 3161,
+      "chapter_label": "LEV 14",
+      "verse_label": "49",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 49
+        }
+      ],
+      "en": "To cleanse the house he shall take two birds, cedar wood, scarlet, and hyssop.",
+      "ko": "그는 그 집을 정결케 하기 위하여 새 두마리와 백향목과 홍색실과 우슬초를 취하고",
+      "source_text_hash": "c701d5bff1fb34d989f8e64684bf240f4fd8fb5e0a59e109cf755537f776a685",
+      "translation_text_hash": "e24d4dc2a997e8081bbf494485d0733b1407956ca5c0f9cf8f4bbf1ac25d6248",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 그 집을 정결케 하기 위하여 새 두마리와 백향목과 홍색실과 우슬초를 취하고"
+      ],
+      "raw_text_hashes": [
+        "e24d4dc2a997e8081bbf494485d0733b1407956ca5c0f9cf8f4bbf1ac25d6248"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:50",
+      "sequence": 3162,
+      "chapter_label": "LEV 14",
+      "verse_label": "50",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 50
+        }
+      ],
+      "en": "He shall kill one of the birds in an earthen vessel over running water.",
+      "ko": "그 새 하나를 흐르는 물 위 질그릇 안에서 잡고",
+      "source_text_hash": "7adc9cd8abd9396db63be5df11d8c6d08f34ab3466f39b8f4f8f3537b3037db9",
+      "translation_text_hash": "bc4b79f5e305e4e61dd8fa048a481ad689c11d5481106e41043fc446c23519af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 새 하나를 흐르는 물 위 질그릇 안에서 잡고"
+      ],
+      "raw_text_hashes": [
+        "bc4b79f5e305e4e61dd8fa048a481ad689c11d5481106e41043fc446c23519af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:51",
+      "sequence": 3163,
+      "chapter_label": "LEV 14",
+      "verse_label": "51",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 51
+        }
+      ],
+      "en": "He shall take the cedar wood, the hyssop, the scarlet, and the living bird, and dip them in the blood of the slain bird, and in the running water, and sprinkle the house seven times.",
+      "ko": "백향목과 우슬초와 홍색실과 산 새를 가져다가 잡은 새의 피와 흐르는 물을 찍어 그 집에 일곱번 뿌릴 것이요",
+      "source_text_hash": "286148d00a7fa2bf198bb43ee12a6bfc39fa0d63261a7b9477662baf0dac97fc",
+      "translation_text_hash": "4e57abdecdd256f218301b9288f25c0c8d2d891db31832064a06dca366b7df74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백향목과 우슬초와 홍색실과 산 새를 가져다가 잡은 새의 피와 흐르는 물을 찍어 그 집에 일곱번 뿌릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "4e57abdecdd256f218301b9288f25c0c8d2d891db31832064a06dca366b7df74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:52",
+      "sequence": 3164,
+      "chapter_label": "LEV 14",
+      "verse_label": "52",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 52
+        }
+      ],
+      "en": "He shall cleanse the house with the blood of the bird, and with the running water, with the living bird, with the cedar wood, with the hyssop, and with the scarlet;",
+      "ko": "그는 새의 피와 흐르는 물과 산 새와 백향목과 우슬초와 홍색실로 집을 정결케 하고",
+      "source_text_hash": "902cd7309b6e3d30f60cf57962b016dfba1f910966dc96aa38961ed4aa54392f",
+      "translation_text_hash": "40df15fa205be32deb38217071762cf6c2a9948496cacf02a6da871e7da0ea10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 새의 피와 흐르는 물과 산 새와 백향목과 우슬초와 홍색실로 집을 정결케 하고"
+      ],
+      "raw_text_hashes": [
+        "40df15fa205be32deb38217071762cf6c2a9948496cacf02a6da871e7da0ea10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:53",
+      "sequence": 3165,
+      "chapter_label": "LEV 14",
+      "verse_label": "53",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 53
+        }
+      ],
+      "en": "but he shall let the living bird go out of the city into the open field. So shall he make atonement for the house; and it shall be clean.”",
+      "ko": "그 산 새는 성밖 들에 놓아 그 집을 위하여 속할 것이라 그리하면 정결하리라",
+      "source_text_hash": "44db24731f3122b620f7583b43dc7f80723e70f3d230c107b3fcb03c08133a54",
+      "translation_text_hash": "36217349d2011aaab77635eae521c7716b498148e9b239bca460bb4dfaf49065",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 산 새는 성밖 들에 놓아 그 집을 위하여 속할 것이라 그리하면 정결하리라"
+      ],
+      "raw_text_hashes": [
+        "36217349d2011aaab77635eae521c7716b498148e9b239bca460bb4dfaf49065"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:54",
+      "sequence": 3166,
+      "chapter_label": "LEV 14",
+      "verse_label": "54",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 54
+        }
+      ],
+      "en": "This is the law for any plague of leprosy, and for an itch,",
+      "ko": "이는 각종 문둥병 환처에 대한 규례니 곧 옴과",
+      "source_text_hash": "3973284927a9990109f132cff75233011fb73f87ddd214f245d808986487676b",
+      "translation_text_hash": "b48d051b83723897d4304d8a53f3f2d569e83a47d042f2a6f7fed2ba7740a5c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 각종 문둥병 환처에 대한 규례니 곧 옴과"
+      ],
+      "raw_text_hashes": [
+        "b48d051b83723897d4304d8a53f3f2d569e83a47d042f2a6f7fed2ba7740a5c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:55",
+      "sequence": 3167,
+      "chapter_label": "LEV 14",
+      "verse_label": "55",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 55
+        }
+      ],
+      "en": "and for the destructive mildew of a garment, and for a house,",
+      "ko": "의복과 가옥의 문둥병과",
+      "source_text_hash": "1f045831b2d6d29096665465e62e8c4dfa64c29df15d630c3e8934d14111a46d",
+      "translation_text_hash": "600264f04fb473a4043e761f41c80431afd58d0a2261d3be45706e6d5bf14fa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의복과 가옥의 문둥병과"
+      ],
+      "raw_text_hashes": [
+        "600264f04fb473a4043e761f41c80431afd58d0a2261d3be45706e6d5bf14fa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:56",
+      "sequence": 3168,
+      "chapter_label": "LEV 14",
+      "verse_label": "56",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 56
+        }
+      ],
+      "en": "and for a swelling, and for a scab, and for a bright spot;",
+      "ko": "붓는 것과 피부병과 색점의",
+      "source_text_hash": "ce8793a6c4d9362aa70134d26c12d9d0b7082385b94a99d60542a2b8fc8a1191",
+      "translation_text_hash": "17366d8855067259800f4c936788a8dc741c53ead52c420e8a4d3dd003670863",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "붓는 것과 피부병과 색점의"
+      ],
+      "raw_text_hashes": [
+        "17366d8855067259800f4c936788a8dc741c53ead52c420e8a4d3dd003670863"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:14:57",
+      "sequence": 3169,
+      "chapter_label": "LEV 14",
+      "verse_label": "57",
+      "locator": {
+        "book": "LEV",
+        "chapter": 14,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 14,
+          "verse": 57
+        }
+      ],
+      "en": "to teach when it is unclean, and when it is clean. This is the law of leprosy.",
+      "ko": "언제는 부정하고 언제는 정함을 가르치는 것이니 문둥병의 규례가 이러하니라",
+      "source_text_hash": "7d1f1b0db0fef38892294dc91cc0dfee69bc5fbc4bb64a4a98e55fe45bd777a1",
+      "translation_text_hash": "fd71a1131e661cf047018df8a4451cc9d39b31d46771e620c97acce5af124e95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "언제는 부정하고 언제는 정함을 가르치는 것이니 문둥병의 규례가 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "fd71a1131e661cf047018df8a4451cc9d39b31d46771e620c97acce5af124e95"
+      ]
+    }
+  ]
+}

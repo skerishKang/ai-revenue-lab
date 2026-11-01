@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:017",
+  "unit_ordinal": 384,
+  "unit_label": "2CH 17",
+  "book_code": "2CH",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:17:1",
+      "sequence": 11525,
+      "chapter_label": "2CH 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "Jehoshaphat his son reigned in his place, and strengthened himself against Israel.",
+      "ko": "아사의 아들 여호사밧이 대신하여 왕이 되어 스스로 강하게 하여 이스라엘을 방비하되",
+      "source_text_hash": "e291c7e332fe026421eebdb958cebe68b7075868813401f8ea6712470a7f0d0d",
+      "translation_text_hash": "3c776f14cf3934d072711c895cb7ac77eafbd7c34f2178ac306ab704a2821e54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사의 아들 여호사밧이 대신하여 왕이 되어 스스로 강하게 하여 이스라엘을 방비하되"
+      ],
+      "raw_text_hashes": [
+        "3c776f14cf3934d072711c895cb7ac77eafbd7c34f2178ac306ab704a2821e54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:2",
+      "sequence": 11526,
+      "chapter_label": "2CH 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "He placed forces in all the fortified cities of Judah, and set garrisons in the land of Judah and in the cities of Ephraim, which Asa his father had taken.",
+      "ko": "유다 모든 견고한 성읍에 군대를 주둔하고 또 유다 땅과 그 아비 아사의 취한바 에브라임 성읍들에 영문을 두었더라",
+      "source_text_hash": "0e800d24171b61ae970ac49f0147e81bd7d21ceda014b9c68aa5f68d19a3d8ef",
+      "translation_text_hash": "7e238548c4750ce6db5ac392ab8935f8b2189ecd37d20c7cfae14a9adb8bec24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 모든 견고한 성읍에 군대를 주둔하고 또 유다 땅과 그 아비 아사의 취한바 에브라임 성읍들에 영문을 두었더라"
+      ],
+      "raw_text_hashes": [
+        "7e238548c4750ce6db5ac392ab8935f8b2189ecd37d20c7cfae14a9adb8bec24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:3",
+      "sequence": 11527,
+      "chapter_label": "2CH 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD was with Jehoshaphat, because he walked in the first ways of his father David, and didn’t seek the Baals,",
+      "ko": "여호와께서 여호사밧과 함께하셨으니 이는 저가 그 조상 다윗의 처음 길로 행하여 바알들에게 구하지 아니하고",
+      "source_text_hash": "7ddc8aba87a4561075547b125d4544b266a7d1987cc5519d5f655a5fa8221c59",
+      "translation_text_hash": "24753a188f39f291726030e8d150ca315e4ca5b325f1e77226f0ec8cc68539d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호사밧과 함께하셨으니 이는 저가 그 조상 다윗의 처음 길로 행하여 바알들에게 구하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "24753a188f39f291726030e8d150ca315e4ca5b325f1e77226f0ec8cc68539d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:4",
+      "sequence": 11528,
+      "chapter_label": "2CH 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "but sought the God of his father, and walked in his commandments, and not in the ways of Israel.",
+      "ko": "오직 그 부친의 하나님께 구하며 그 계명을 행하고 이스라엘의 행위를 좇지 아니하였음이라",
+      "source_text_hash": "1c2c6a00cbe9e017cf68d4c8cbbe3368a3db8578883876a58e7be794b6f4a720",
+      "translation_text_hash": "e9ac68315a983d6aa9b04419fa19707ede20d533b5c750bb92fa92dfd449c42f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 부친의 하나님께 구하며 그 계명을 행하고 이스라엘의 행위를 좇지 아니하였음이라"
+      ],
+      "raw_text_hashes": [
+        "e9ac68315a983d6aa9b04419fa19707ede20d533b5c750bb92fa92dfd449c42f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:5",
+      "sequence": 11529,
+      "chapter_label": "2CH 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore the LORD established the kingdom in his hand. All Judah brought tribute to Jehoshaphat, and he had riches and honor in abundance.",
+      "ko": "그러므로 여호와께서 나라를 그 손에서 견고하게 하시매 유다 무리가 여호사밧에게 예물을 드렸으므로 저가 부귀와 영광이 극하였더라",
+      "source_text_hash": "b1ea7f7b12d59104c241ab68f24e30fbc95919c085e60770be8577e3fcacb91a",
+      "translation_text_hash": "dbf09b13209a3d6218b6887e21a5b06a7fca7e17429376e9b4118913ca323e32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 나라를 그 손에서 견고하게 하시매 유다 무리가 여호사밧에게 예물을 드렸으므로 저가 부귀와 영광이 극하였더라"
+      ],
+      "raw_text_hashes": [
+        "dbf09b13209a3d6218b6887e21a5b06a7fca7e17429376e9b4118913ca323e32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:6",
+      "sequence": 11530,
+      "chapter_label": "2CH 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "His heart was lifted up in the ways of the LORD. Furthermore, he took away the high places and the Asherah poles out of Judah.",
+      "ko": "저가 전심으로 여호와의 도를 행하여 산당과 아세라 목상들도 유다에서 제하였더라",
+      "source_text_hash": "3bc174101e6475fd5f0683c66cbd3674984240ede6ef16c3d29686ec6ac239bf",
+      "translation_text_hash": "50abd39c692e5ffba2581bb6233b4d9f8a7f7f0bbfb57504931f0243ab5614c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 전심으로 여호와의 도를 행하여 산당과 아세라 목상들도 유다에서 제하였더라"
+      ],
+      "raw_text_hashes": [
+        "50abd39c692e5ffba2581bb6233b4d9f8a7f7f0bbfb57504931f0243ab5614c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:7",
+      "sequence": 11531,
+      "chapter_label": "2CH 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "Also in the third year of his reign he sent his princes, even Ben Hail, Obadiah, Zechariah, Nethanel, and Micaiah, to teach in the cities of Judah;",
+      "ko": "저가 위에 있은지 삼년에 그 방백 벤하일과 오바댜와 스가랴와 느다넬과 미가야를 보내어 유다 여러 성읍에 가서 가르치게 하고",
+      "source_text_hash": "6fedd58c5e404ed8b993d2e104c3864a583ee8c0cea0f89c8792871159c52f2a",
+      "translation_text_hash": "ffc4e63c2e15eb91d4b2b26821d6ce7676675f6184be86cc7106f6925c4c0fe3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 위에 있은지 삼년에 그 방백 벤하일과 오바댜와 스가랴와 느다넬과 미가야를 보내어 유다 여러 성읍에 가서 가르치게 하고"
+      ],
+      "raw_text_hashes": [
+        "ffc4e63c2e15eb91d4b2b26821d6ce7676675f6184be86cc7106f6925c4c0fe3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:8",
+      "sequence": 11532,
+      "chapter_label": "2CH 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "and with them Levites, even Shemaiah, Nethaniah, Zebadiah, Asahel, Shemiramoth, Jehonathan, Adonijah, Tobijah, and Tobadonijah, the Levites; and with them Elishama and Jehoram, the priests.",
+      "ko": "또 저희와 함께 레위 사람 스마야와 느다냐와 스바댜와 아사헬과 스미라못과 여호나단과 아도니야와 도비야와 도바도니야등 레위 사람을 보내고 또 저희와 함께 제사장 엘리사마와 여호람을 보내었더니",
+      "source_text_hash": "f22d36ffbd9801e1c8f3822ffc8888f9862010b9cb13d1bf233ab3247d4a4908",
+      "translation_text_hash": "e3cdd9e4fe88bba88eea48794539c50ee53e55e48a0e23292779489fddf01e57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희와 함께 레위 사람 스마야와 느다냐와 스바댜와 아사헬과 스미라못과 여호나단과 아도니야와 도비야와 도바도니야등 레위 사람을 보내고 또 저희와 함께 제사장 엘리사마와 여호람을 보내었더니"
+      ],
+      "raw_text_hashes": [
+        "e3cdd9e4fe88bba88eea48794539c50ee53e55e48a0e23292779489fddf01e57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:9",
+      "sequence": 11533,
+      "chapter_label": "2CH 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "They taught in Judah, having the book of the LORD’s law with them. They went about throughout all the cities of Judah and taught among the people.",
+      "ko": "저희가 여호와의 율법책을 가지고 유다에서 가르치되 그 모든 성읍으로 순행하며 인민을 가르쳤더라",
+      "source_text_hash": "02fc50d707bf2e215d7f6cc4f8dda780d9845ff577834c8c7d972d07d4190ff1",
+      "translation_text_hash": "29a86d43cbdca1f136a61810aae560cf93684a0b2e5afc85a78d487e5e8a2f4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 여호와의 율법책을 가지고 유다에서 가르치되 그 모든 성읍으로 순행하며 인민을 가르쳤더라"
+      ],
+      "raw_text_hashes": [
+        "29a86d43cbdca1f136a61810aae560cf93684a0b2e5afc85a78d487e5e8a2f4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:10",
+      "sequence": 11534,
+      "chapter_label": "2CH 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "The fear of the LORD fell on all the kingdoms of the lands that were around Judah, so that they made no war against Jehoshaphat.",
+      "ko": "여호와께서 유다 사면 열국에 두려움을 주사 여호사밧과 싸우지 못하게 하시매",
+      "source_text_hash": "09497635664004f192c7524c1dbc6fb6ed372fa8948de578a6717e863ad6bc4d",
+      "translation_text_hash": "cfafb85de2a47d519f1b92dd4bf9f2b01f613b7dee228707bbcb689aa62a22a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 유다 사면 열국에 두려움을 주사 여호사밧과 싸우지 못하게 하시매"
+      ],
+      "raw_text_hashes": [
+        "cfafb85de2a47d519f1b92dd4bf9f2b01f613b7dee228707bbcb689aa62a22a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:11",
+      "sequence": 11535,
+      "chapter_label": "2CH 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "Some of the Philistines brought Jehoshaphat presents and silver for tribute. The Arabians also brought him flocks: seven thousand seven hundred rams and seven thousand seven hundred male goats.",
+      "ko": "블레셋 중에서는 여호사밧에게 예물을 드리며 은으로 공을 바쳤고 아라비아 사람도 짐승떼 곧 수양 칠천 칠백과 수염소 칠천 칠백을 드렸더라",
+      "source_text_hash": "3014c8e214ee3e73a3691258a03014828a9b03d498216e11aff462e1f3a9ff69",
+      "translation_text_hash": "d5562f2780d4ee10ebcb16592571b742867a469e6f06b84e49e1333e0be7474e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 중에서는 여호사밧에게 예물을 드리며 은으로 공을 바쳤고 아라비아 사람도 짐승떼 곧 수양 칠천 칠백과 수염소 칠천 칠백을 드렸더라"
+      ],
+      "raw_text_hashes": [
+        "d5562f2780d4ee10ebcb16592571b742867a469e6f06b84e49e1333e0be7474e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:12",
+      "sequence": 11536,
+      "chapter_label": "2CH 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "Jehoshaphat grew great exceedingly; and he built fortresses and store cities in Judah.",
+      "ko": "여호사밧이 점점 강대하여 유다에 견고한 채와 국고성을 건축하고",
+      "source_text_hash": "b63a898e999cee587ba94056ae92ac57194be826325cdfa2f732de4273550317",
+      "translation_text_hash": "0cd4270a3e21ebeef150e35e5eba1ae0e37408aa7d0a1e632bb12fa38a68886b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 점점 강대하여 유다에 견고한 채와 국고성을 건축하고"
+      ],
+      "raw_text_hashes": [
+        "0cd4270a3e21ebeef150e35e5eba1ae0e37408aa7d0a1e632bb12fa38a68886b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:13",
+      "sequence": 11537,
+      "chapter_label": "2CH 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "He had many works in the cities of Judah; and men of war, mighty men of valor, in Jerusalem.",
+      "ko": "유다 각 성에 역사를 많이 하고 또 예루살렘에 크게 용맹한 군사를 두었으니",
+      "source_text_hash": "ecba74c143537f677bc0ad5c9d3d7a1cf96a2fb43549f3826fe479a74c9319b2",
+      "translation_text_hash": "5dd7e1531e7519af81fb5fdb4e4de47716b658dc5dbe4fd3e60eb6e3f014acbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 각 성에 역사를 많이 하고 또 예루살렘에 크게 용맹한 군사를 두었으니"
+      ],
+      "raw_text_hashes": [
+        "5dd7e1531e7519af81fb5fdb4e4de47716b658dc5dbe4fd3e60eb6e3f014acbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:14",
+      "sequence": 11538,
+      "chapter_label": "2CH 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "This was the numbering of them according to their fathers’ houses: From Judah, the captains of thousands: Adnah the captain, and with him three hundred thousand mighty men of valor;",
+      "ko": "군사의 수효가 그 족속대로 이러하니라 유다에 속한 천부장 중에는 아드나가 으뜸이 되어 큰 용사 삼십만을 거느렸고",
+      "source_text_hash": "533737660afdfeba258d7dbb0cbab33480a08d151246f262e4a2f1ff28f5cfc4",
+      "translation_text_hash": "8bb9f888b9f083685843913f36fa477ee04f78f60e86c21c264d16c8cd6de471",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "군사의 수효가 그 족속대로 이러하니라 유다에 속한 천부장 중에는 아드나가 으뜸이 되어 큰 용사 삼십만을 거느렸고"
+      ],
+      "raw_text_hashes": [
+        "8bb9f888b9f083685843913f36fa477ee04f78f60e86c21c264d16c8cd6de471"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:15",
+      "sequence": 11539,
+      "chapter_label": "2CH 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "and next to him Jehohanan the captain, and with him two hundred eighty thousand;",
+      "ko": "그 다음은 장관 여호하난이니 이십 팔만을 거느렸고",
+      "source_text_hash": "f872a5a552e23dbbbf4824b8617cb1aeda3c9fce7413897ae08f66031f31faa7",
+      "translation_text_hash": "239bd036cc64466a1c9cf7b3dd85fd1c339c2e8f9439461b23620746becf2816",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음은 장관 여호하난이니 이십 팔만을 거느렸고"
+      ],
+      "raw_text_hashes": [
+        "239bd036cc64466a1c9cf7b3dd85fd1c339c2e8f9439461b23620746becf2816"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:16",
+      "sequence": 11540,
+      "chapter_label": "2CH 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "and next to him Amasiah the son of Zichri, who willingly offered himself to the LORD, and with him two hundred thousand mighty men of valor.",
+      "ko": "그 다음은 시그리의 아들 아마시야니 저는 자기를 여호와께 즐거이 드린 자라 큰 용사 이십만을 거느렸고",
+      "source_text_hash": "59a97f4d162ec0ed23b91ab546bd861b591f347d793be7417ab57c8b9bd3a696",
+      "translation_text_hash": "c3dac44affd39936f0749c09a33122d7d695f3b0efa6b0326b8e89da15ac4843",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음은 시그리의 아들 아마시야니 저는 자기를 여호와께 즐거이 드린 자라 큰 용사 이십만을 거느렸고"
+      ],
+      "raw_text_hashes": [
+        "c3dac44affd39936f0749c09a33122d7d695f3b0efa6b0326b8e89da15ac4843"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:17",
+      "sequence": 11541,
+      "chapter_label": "2CH 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "From Benjamin: Eliada, a mighty man of valor, and with him two hundred thousand armed with bow and shield;",
+      "ko": "베냐민에 속한 자 중에 큰 용사 엘리아다는 활과 방패를 잡은 자 이십만을 거느렸고",
+      "source_text_hash": "1a4274e72d6ec9aaab4141dbe4b63362eb256934fb277002a0af245a433bd8bf",
+      "translation_text_hash": "ec7ce2b2c766d6ddd75ea3222aef1cb35739e1471a44ede3485856512dc72b77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민에 속한 자 중에 큰 용사 엘리아다는 활과 방패를 잡은 자 이십만을 거느렸고"
+      ],
+      "raw_text_hashes": [
+        "ec7ce2b2c766d6ddd75ea3222aef1cb35739e1471a44ede3485856512dc72b77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:18",
+      "sequence": 11542,
+      "chapter_label": "2CH 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "and next to him Jehozabad, and with him one hundred eighty thousand ready and prepared for war.",
+      "ko": "그 다음은 여호사밧이라 싸움을 예비한 자 십 팔만을 거느렸으니",
+      "source_text_hash": "49fc7e1660a27a07b48d60d72a478ca398524ba2069b8ccfd826282a5d565d94",
+      "translation_text_hash": "f6bbfac0023cd35f8a01475039c45dcd1ec78a9bc630c7b794f91ae2cc51a42c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다음은 여호사밧이라 싸움을 예비한 자 십 팔만을 거느렸으니"
+      ],
+      "raw_text_hashes": [
+        "f6bbfac0023cd35f8a01475039c45dcd1ec78a9bc630c7b794f91ae2cc51a42c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:17:19",
+      "sequence": 11543,
+      "chapter_label": "2CH 17",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 17,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 17,
+          "verse": 19
+        }
+      ],
+      "en": "These were those who waited on the king, in addition to those whom the king put in the fortified cities throughout all Judah.",
+      "ko": "이는 다 왕을 섬기는 자요 이 외에 또 온 유다 견고한 성에 왕이 군사를 두었더라",
+      "source_text_hash": "2e56c836f8a54702df00e9835dc2d751251b8131be2f9cf0f95728d6d81443df",
+      "translation_text_hash": "83157a14be85af9599a3f39b79dc1e645b0351b7043b2dfe2d243d28a91db6d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다 왕을 섬기는 자요 이 외에 또 온 유다 견고한 성에 왕이 군사를 두었더라"
+      ],
+      "raw_text_hashes": [
+        "83157a14be85af9599a3f39b79dc1e645b0351b7043b2dfe2d243d28a91db6d2"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:004",
+  "unit_ordinal": 440,
+  "unit_label": "JOB 4",
+  "book_code": "JOB",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:4:1",
+      "sequence": 12932,
+      "chapter_label": "JOB 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Then Eliphaz the Temanite answered,",
+      "ko": "데만 사람 엘리바스가 대답하여 가로되",
+      "source_text_hash": "00de4de4d5f7110b3e83e92e3a646b6ab6435b72ee6d8112b1fb64593a4001ab",
+      "translation_text_hash": "0936ac882704505ef45645d7b01a0ec629afc94493dd17ce5e52fd22d3e6790f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데만 사람 엘리바스가 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "0936ac882704505ef45645d7b01a0ec629afc94493dd17ce5e52fd22d3e6790f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:2",
+      "sequence": 12933,
+      "chapter_label": "JOB 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "“If someone ventures to talk with you, will you be grieved? But who can withhold himself from speaking?",
+      "ko": "누가 네게 말하면 네가 염증이 나겠느냐 날찌라도 누가 참고 말하지 아니하겠느냐",
+      "source_text_hash": "c18546cb9b6a351d574ad467d93d896f201a75b1852a365341cecf87b21777d9",
+      "translation_text_hash": "90e18a95d8c4a6dc219ceffd1fac3bc29968181acc7b7d30860d7042daf4ab9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 네게 말하면 네가 염증이 나겠느냐 날찌라도 누가 참고 말하지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "90e18a95d8c4a6dc219ceffd1fac3bc29968181acc7b7d30860d7042daf4ab9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:3",
+      "sequence": 12934,
+      "chapter_label": "JOB 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Behold, you have instructed many, you have strengthened the weak hands.",
+      "ko": "전에 네가 여러 사람을 교훈하였고 손이 늘어진 자면 강하게 하였고",
+      "source_text_hash": "dbd9aec97a807709b0688ba4511cc3f2c016bbccaca5b575e7d14f77341c0423",
+      "translation_text_hash": "75857cadf6d25728cda1e50af76f2004258c52c2ae24566cab2bb07af2e1c3dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 네가 여러 사람을 교훈하였고 손이 늘어진 자면 강하게 하였고"
+      ],
+      "raw_text_hashes": [
+        "75857cadf6d25728cda1e50af76f2004258c52c2ae24566cab2bb07af2e1c3dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:4",
+      "sequence": 12935,
+      "chapter_label": "JOB 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Your words have supported him who was falling, you have made the feeble knees firm.",
+      "ko": "넘어져 가는 자를 말로 붙들어 주었고 무릎이 약한 자를 강하게 하였거늘",
+      "source_text_hash": "9a14f6c586777ee704dc24ee84af411ca486cbfb1ff09d76cb0c571826766c44",
+      "translation_text_hash": "ef04af60ef8bb78f13067eefcf336a465e381120fd9ed02661b23028dd3fd672",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "넘어져 가는 자를 말로 붙들어 주었고 무릎이 약한 자를 강하게 하였거늘"
+      ],
+      "raw_text_hashes": [
+        "ef04af60ef8bb78f13067eefcf336a465e381120fd9ed02661b23028dd3fd672"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:5",
+      "sequence": 12936,
+      "chapter_label": "JOB 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "But now it has come to you, and you faint. It touches you, and you are troubled.",
+      "ko": "이제 이 일이 네게 임하매 네가 답답하여 하고 이 일이 네게 당하매 네가 놀라는구나",
+      "source_text_hash": "7f489f3d1a2fe1b3efb3c540851391ab80f2a2701327476077754f889ae59463",
+      "translation_text_hash": "a663cbac9de537b6a08a99955b1ff08ffaa246494d06d110610f71e13d378961",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 이 일이 네게 임하매 네가 답답하여 하고 이 일이 네게 당하매 네가 놀라는구나"
+      ],
+      "raw_text_hashes": [
+        "a663cbac9de537b6a08a99955b1ff08ffaa246494d06d110610f71e13d378961"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:6",
+      "sequence": 12937,
+      "chapter_label": "JOB 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Isn’t your piety your confidence? Isn’t the integrity of your ways your hope?",
+      "ko": "네 의뢰가 경외함에 있지 아니하냐 네 소망이 네 행위를 완전히 함에 있지 아니하냐",
+      "source_text_hash": "87a3b39c36ee3132cb9fcf618bd68993b6f195cf397b0d54189deadf27956d2a",
+      "translation_text_hash": "f7505fdea1e4dcc71969108bb3245871c88c3a928b0e483ebde9ae9aee21ea7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 의뢰가 경외함에 있지 아니하냐 네 소망이 네 행위를 완전히 함에 있지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "f7505fdea1e4dcc71969108bb3245871c88c3a928b0e483ebde9ae9aee21ea7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:7",
+      "sequence": 12938,
+      "chapter_label": "JOB 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "“Remember, now, who ever perished, being innocent? Or where were the upright cut off?",
+      "ko": "생각하여 보라 죄 없이 망한 자가 누구인가 정직한 자의 끊어짐이 어디 있는가",
+      "source_text_hash": "f788836b343043e0ba1c1aeff09f281294276f55d3c14206923ae4c59412fef3",
+      "translation_text_hash": "f6c9b4f1920f8ad0d0ec0df58374bd1682216bec81e292e64063a6020664ea2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생각하여 보라 죄 없이 망한 자가 누구인가 정직한 자의 끊어짐이 어디 있는가"
+      ],
+      "raw_text_hashes": [
+        "f6c9b4f1920f8ad0d0ec0df58374bd1682216bec81e292e64063a6020664ea2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:8",
+      "sequence": 12939,
+      "chapter_label": "JOB 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "According to what I have seen, those who plow iniquity and sow trouble, reap the same.",
+      "ko": "내가 보건대 악을 밭갈고 독을 뿌리는 자는 그대로 거두나니",
+      "source_text_hash": "39c8ab33a85f67b41972ab3a800087fcf4246b0d9e51f201f2bf87c11b68cbaa",
+      "translation_text_hash": "2409bb1951b858ec21e5efc55803acf0670e7aa9e39555d2d532767dc269556e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보건대 악을 밭갈고 독을 뿌리는 자는 그대로 거두나니"
+      ],
+      "raw_text_hashes": [
+        "2409bb1951b858ec21e5efc55803acf0670e7aa9e39555d2d532767dc269556e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:9",
+      "sequence": 12940,
+      "chapter_label": "JOB 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "By the breath of God they perish. By the blast of his anger are they consumed.",
+      "ko": "다 하나님의 입기운에 멸망하고 그 콧김에 사라지느니라",
+      "source_text_hash": "f5d9a66267212a6953d0327a343b8d69aa20db33bd9fe59be48acb7e0679d1bf",
+      "translation_text_hash": "db26b3190ba6910c6f3837da492e00eca0506030624a28954d8aba32c2e03c5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 하나님의 입기운에 멸망하고 그 콧김에 사라지느니라"
+      ],
+      "raw_text_hashes": [
+        "db26b3190ba6910c6f3837da492e00eca0506030624a28954d8aba32c2e03c5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:10",
+      "sequence": 12941,
+      "chapter_label": "JOB 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "The roaring of the lion, and the voice of the fierce lion, the teeth of the young lions, are broken.",
+      "ko": "사자의 우는 소리와 사나운 사자의 목소리가 그치고 젊은 사자의 이가 부러지며",
+      "source_text_hash": "55298902642b7ea7c871ca0f3ac50e0ca7673771d9d7788ba2162f5368029c4b",
+      "translation_text_hash": "6803f4f8e7948c9af162826ef582e5a73696e8458b19b19b47264316851118dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자의 우는 소리와 사나운 사자의 목소리가 그치고 젊은 사자의 이가 부러지며"
+      ],
+      "raw_text_hashes": [
+        "6803f4f8e7948c9af162826ef582e5a73696e8458b19b19b47264316851118dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:11",
+      "sequence": 12942,
+      "chapter_label": "JOB 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "The old lion perishes for lack of prey. The cubs of the lioness are scattered abroad.",
+      "ko": "늙은 사자는 움킨 것이 없어 죽고 암사자의 새끼는 흩어지느니라",
+      "source_text_hash": "937dcdf16366da0febc007570edb51fd007cc668c8d3087c4fb5e77c96b86eb8",
+      "translation_text_hash": "5c1bca88e0b109144dc3debb4983854a8a8b66aa543c77a71a1386f5430d6b0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늙은 사자는 움킨 것이 없어 죽고 암사자의 새끼는 흩어지느니라"
+      ],
+      "raw_text_hashes": [
+        "5c1bca88e0b109144dc3debb4983854a8a8b66aa543c77a71a1386f5430d6b0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:12",
+      "sequence": 12943,
+      "chapter_label": "JOB 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "“Now a thing was secretly brought to me. My ear received a whisper of it.",
+      "ko": "무슨 말씀이 내게 가만히 임하고 그 가는 소리가 내 귀에 들렸었나니",
+      "source_text_hash": "395d0d57a2e54326a0e64b06df68a1370fc564f97ffee91403d30e121735b57e",
+      "translation_text_hash": "d6edf7b8577f98c5c9f9e039c5690f15c41d81863e40f6cc2c9ee3384d6836ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무슨 말씀이 내게 가만히 임하고 그 가는 소리가 내 귀에 들렸었나니"
+      ],
+      "raw_text_hashes": [
+        "d6edf7b8577f98c5c9f9e039c5690f15c41d81863e40f6cc2c9ee3384d6836ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:13",
+      "sequence": 12944,
+      "chapter_label": "JOB 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "In thoughts from the visions of the night, when deep sleep falls on men,",
+      "ko": "곧 사람이 깊이 잠들 때쯤하여서니라 내가 그 밤의 이상으로 하여 생각이 번거로울 때에",
+      "source_text_hash": "047136b3d8fbdce49b8dd36aa65b7cb1dbe1ac4df5621a7364b34aebbe447a3c",
+      "translation_text_hash": "7fcd04c8a9947c9ebc8d8b985fc4074bb9067808a848954d09aef2ceed83183b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 사람이 깊이 잠들 때쯤하여서니라 내가 그 밤의 이상으로 하여 생각이 번거로울 때에"
+      ],
+      "raw_text_hashes": [
+        "7fcd04c8a9947c9ebc8d8b985fc4074bb9067808a848954d09aef2ceed83183b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:14",
+      "sequence": 12945,
+      "chapter_label": "JOB 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "fear came on me, and trembling, which made all my bones shake.",
+      "ko": "두려움과 떨림이 내게 이르러서 모든 골절이 흔들렸었느니라",
+      "source_text_hash": "adf7f48475c751b6e0d121a2ca130ddd4e9963530209cf89dc68eff1b7f9e360",
+      "translation_text_hash": "2a2bc45232770cb83e88bae459f2b27e83ad01ca55d2c8fedc8416373e37b5a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려움과 떨림이 내게 이르러서 모든 골절이 흔들렸었느니라"
+      ],
+      "raw_text_hashes": [
+        "2a2bc45232770cb83e88bae459f2b27e83ad01ca55d2c8fedc8416373e37b5a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:15",
+      "sequence": 12946,
+      "chapter_label": "JOB 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Then a spirit passed before my face. The hair of my flesh stood up.",
+      "ko": "그 때에 영이 내 앞으로 지나매 내 몸에 털이 주뼛하였었느니라",
+      "source_text_hash": "d2a3fa588c5aeb997cb25f5957fc18438cc87abacb2bf64bf5a2f87bcf074c77",
+      "translation_text_hash": "b7761b58a60278aacb76ccbedcd936f4fd2da482c2fad740250dcee2a1d598c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 영이 내 앞으로 지나매 내 몸에 털이 주뼛하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "b7761b58a60278aacb76ccbedcd936f4fd2da482c2fad740250dcee2a1d598c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:16",
+      "sequence": 12947,
+      "chapter_label": "JOB 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "It stood still, but I couldn’t discern its appearance. A form was before my eyes. Silence, then I heard a voice, saying,",
+      "ko": "그 영이 서는데 그 형상을 분변치는 못하여도 오직 한 형상이 내 눈앞에 있었느니라 그 때 내가 종용한 중에 목소리를 들으니 이르기를",
+      "source_text_hash": "b51b557db792aa089ce259e919414fdf2ea05fc6e01c2f41251922747e6eec49",
+      "translation_text_hash": "665c1016744a2eb90410f052ea7ca9d688517afb6dc9a5f85e40e2f3c670fc92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 영이 서는데 그 형상을 분변치는 못하여도 오직 한 형상이 내 눈앞에 있었느니라 그 때 내가 종용한 중에 목소리를 들으니 이르기를"
+      ],
+      "raw_text_hashes": [
+        "665c1016744a2eb90410f052ea7ca9d688517afb6dc9a5f85e40e2f3c670fc92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:17",
+      "sequence": 12948,
+      "chapter_label": "JOB 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "‘Shall mortal man be more just than God? Shall a man be more pure than his Maker?",
+      "ko": "인생이 어찌 하나님보다 의롭겠느냐 사람이 어찌 그 창조하신이보다 성결하겠느냐",
+      "source_text_hash": "2e0606e99e7b90a209acd1ab5cc5e4ef47a67c906aad98f580c162d52a2d5b5f",
+      "translation_text_hash": "ea95071029179a45b58c99fbf6f79873568867d0a22259911261b230118f74f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인생이 어찌 하나님보다 의롭겠느냐 사람이 어찌 그 창조하신이보다 성결하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "ea95071029179a45b58c99fbf6f79873568867d0a22259911261b230118f74f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:18",
+      "sequence": 12949,
+      "chapter_label": "JOB 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Behold, he puts no trust in his servants. He charges his angels with error.",
+      "ko": "하나님은 그 종이라도 오히려 믿지 아니하시며 그 사자라도 미련하다 하시나니",
+      "source_text_hash": "8c34d55ce989f1ab0dc46cc795c9b2b3a90eb3e645edf32025d927e7864e33ab",
+      "translation_text_hash": "6b15f6ac9a36724c5d00253303ffd37d29502d62dcb95d6e923dc7f4dd8f8f3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 그 종이라도 오히려 믿지 아니하시며 그 사자라도 미련하다 하시나니"
+      ],
+      "raw_text_hashes": [
+        "6b15f6ac9a36724c5d00253303ffd37d29502d62dcb95d6e923dc7f4dd8f8f3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:19",
+      "sequence": 12950,
+      "chapter_label": "JOB 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "How much more those who dwell in houses of clay, whose foundation is in the dust, who are crushed before the moth!",
+      "ko": "하물며 흙 집에 살며 티끌로 터를 삼고 하루살이에게라도 눌려 죽을 자이겠느냐",
+      "source_text_hash": "c980e10b17f547dd3ee8f91b0a32c9099568257620152efd131baad15e13c2e4",
+      "translation_text_hash": "9749e2892fe637df0d47c62c8a13b847524d0f096855fe669a7a27b1b04cf246",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하물며 흙 집에 살며 티끌로 터를 삼고 하루살이에게라도 눌려 죽을 자이겠느냐"
+      ],
+      "raw_text_hashes": [
+        "9749e2892fe637df0d47c62c8a13b847524d0f096855fe669a7a27b1b04cf246"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:20",
+      "sequence": 12951,
+      "chapter_label": "JOB 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Between morning and evening they are destroyed. They perish forever without any regarding it.",
+      "ko": "조석 사이에 멸한바 되며 영원히 망하되 생각하는 자가 없으리라",
+      "source_text_hash": "5b205b66ab6c2275297db586d4d3cce4a5f563711fda4bf5c0f67e406e18bc2d",
+      "translation_text_hash": "f8bea55e79406f41b75ccf2a4586c469ac6223a987f677e62ec9cdfdaa3d21a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조석 사이에 멸한바 되며 영원히 망하되 생각하는 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "f8bea55e79406f41b75ccf2a4586c469ac6223a987f677e62ec9cdfdaa3d21a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:4:21",
+      "sequence": 12952,
+      "chapter_label": "JOB 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Isn’t their tent cord plucked up within them? They die, and that without wisdom.’",
+      "ko": "장막 줄을 그들에게서 뽑지 아니하겠느냐 그들이 죽나니 지혜가 없느니라",
+      "source_text_hash": "f5186d7c4c11f15217105ba572dd40857bdd2fa143d6cc470d9051205e2fc277",
+      "translation_text_hash": "cdd770e412545de748ab2bacf294aadf495bbf1aab048e71d3e0a973dbdb6a31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장막 줄을 그들에게서 뽑지 아니하겠느냐 그들이 죽나니 지혜가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "cdd770e412545de748ab2bacf294aadf495bbf1aab048e71d3e0a973dbdb6a31"
+      ]
+    }
+  ]
+}

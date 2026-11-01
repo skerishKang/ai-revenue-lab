@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:003",
+  "unit_ordinal": 1021,
+  "unit_label": "ACT 3",
+  "book_code": "ACT",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:3:1",
+      "sequence": 26997,
+      "chapter_label": "ACT 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Peter and John were going up into the temple at the hour of prayer, the ninth hour.",
+      "ko": "제 구시 기도 시간에 베드로와 요한이 성전에 올라갈쌔",
+      "source_text_hash": "1fe66510e9779ad9fe0c250f1039d190acf80c5ab84a897ad63ed0afac457cb1",
+      "translation_text_hash": "f3c7f584afcdfb035a76c73f0559ab1ce74e738572218cdf64702743e0dca917",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 구시 기도 시간에 베드로와 요한이 성전에 올라갈쌔"
+      ],
+      "raw_text_hashes": [
+        "f3c7f584afcdfb035a76c73f0559ab1ce74e738572218cdf64702743e0dca917"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:2",
+      "sequence": 26998,
+      "chapter_label": "ACT 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "A certain man who was lame from his mother’s womb was being carried, whom they laid daily at the door of the temple which is called Beautiful, to ask gifts for the needy of those who entered into the temple.",
+      "ko": "나면서 앉은뱅이 된 자를 사람들이 메고 오니 이는 성전에 들어가는 사람들에게 구걸하기 위하여 날마다 미문이라는 성전 문에 두는 자라",
+      "source_text_hash": "1ca792f28493de942f914f006aeab034e6a067d6c585af5028a1fb37e7da2673",
+      "translation_text_hash": "3d34e163c5861f874e6221710baf4472c48a6b31c21ae06f48023e774f819d60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나면서 앉은뱅이 된 자를 사람들이 메고 오니 이는 성전에 들어가는 사람들에게 구걸하기 위하여 날마다 미문이라는 성전 문에 두는 자라"
+      ],
+      "raw_text_hashes": [
+        "3d34e163c5861f874e6221710baf4472c48a6b31c21ae06f48023e774f819d60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:3",
+      "sequence": 26999,
+      "chapter_label": "ACT 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Seeing Peter and John about to go into the temple, he asked to receive gifts for the needy.",
+      "ko": "그가 베드로와 요한이 성전에 들어 가려함을 보고 구걸하거늘",
+      "source_text_hash": "97341e8fcf7c1459c0070d39942a5b4c6017190e4df2ca53fbc39af31013ce0a",
+      "translation_text_hash": "59721bd77d59a308eaa4d40b17dc4005fc5522b2f5eb0b7e86ddd4641b071049",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 베드로와 요한이 성전에 들어 가려함을 보고 구걸하거늘"
+      ],
+      "raw_text_hashes": [
+        "59721bd77d59a308eaa4d40b17dc4005fc5522b2f5eb0b7e86ddd4641b071049"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:4",
+      "sequence": 27000,
+      "chapter_label": "ACT 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Peter, fastening his eyes on him, with John, said, “Look at us.”",
+      "ko": "베드로가 요한으로 더불어 주목하여 가로되 우리를 보라 하니",
+      "source_text_hash": "aaa1587d48bce5691953fa4432744d7d403b996de68f46764713274278fa43d2",
+      "translation_text_hash": "338d98945c20850d528dd23e566e54b3e9ffeb44beb673700d72ffb54ab5679b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 요한으로 더불어 주목하여 가로되 우리를 보라 하니"
+      ],
+      "raw_text_hashes": [
+        "338d98945c20850d528dd23e566e54b3e9ffeb44beb673700d72ffb54ab5679b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:5",
+      "sequence": 27001,
+      "chapter_label": "ACT 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "He listened to them, expecting to receive something from them.",
+      "ko": "그가 저희에게 무엇을 얻을까 하여 바라보거늘",
+      "source_text_hash": "02752fcc020c45ddf559cb2da7c7e4f97192aa7bc330dec33f4a8114c82cabde",
+      "translation_text_hash": "84c8c3c7b2287400a5cc72339932b6331f1d30ed0d709bf058b9fec7e4b94c4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 저희에게 무엇을 얻을까 하여 바라보거늘"
+      ],
+      "raw_text_hashes": [
+        "84c8c3c7b2287400a5cc72339932b6331f1d30ed0d709bf058b9fec7e4b94c4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:6",
+      "sequence": 27002,
+      "chapter_label": "ACT 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "But Peter said, “I have no silver or gold, but what I have, that I give you. In the name of Jesus Christ of Nazareth, get up and walk!”",
+      "ko": "베드로가 가로되 은과 금은 내게 없거니와 내게 있는 것으로 네게 주노니 곧 나사렛 예수 그리스도의 이름으로 걸으라 하고",
+      "source_text_hash": "a892782433a8901203e5e8d43325858b39046f9d2b0ac15d9c03cc3e57864775",
+      "translation_text_hash": "8000cd0027029283767439eb37e9773990f60cb84926cefbd42078460b7a7aa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 은과 금은 내게 없거니와 내게 있는 것으로 네게 주노니 곧 나사렛 예수 그리스도의 이름으로 걸으라 하고"
+      ],
+      "raw_text_hashes": [
+        "8000cd0027029283767439eb37e9773990f60cb84926cefbd42078460b7a7aa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:7",
+      "sequence": 27003,
+      "chapter_label": "ACT 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "He took him by the right hand and raised him up. Immediately his feet and his ankle bones received strength.",
+      "ko": "오른손을 잡아 일으키니 발과 발목이 곧 힘을 얻고",
+      "source_text_hash": "facf6e50938ef8173875786caceef1220b0efea93014d171b993a902e5fc5a73",
+      "translation_text_hash": "eebbacde94f78ba3841dd50012977d15df58e60531bca29e57943b51e8c36159",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오른손을 잡아 일으키니 발과 발목이 곧 힘을 얻고"
+      ],
+      "raw_text_hashes": [
+        "eebbacde94f78ba3841dd50012977d15df58e60531bca29e57943b51e8c36159"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:8",
+      "sequence": 27004,
+      "chapter_label": "ACT 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Leaping up, he stood and began to walk. He entered with them into the temple, walking, leaping, and praising God.",
+      "ko": "뛰어 서서 걸으며 그들과 함께 성전으로 들어 가면서 걷기도 하고 뛰기도 하며 하나님을 찬미하니",
+      "source_text_hash": "943bd3eea9289d318dc9cad3a4fa80feedfc8db5bda330eaa6aafe15da6c76f1",
+      "translation_text_hash": "a0156a9d825d52e46441deed29a2607408d499010159e69f63bf08586bbc82ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뛰어 서서 걸으며 그들과 함께 성전으로 들어 가면서 걷기도 하고 뛰기도 하며 하나님을 찬미하니"
+      ],
+      "raw_text_hashes": [
+        "a0156a9d825d52e46441deed29a2607408d499010159e69f63bf08586bbc82ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:9",
+      "sequence": 27005,
+      "chapter_label": "ACT 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "All the people saw him walking and praising God.",
+      "ko": "모든 백성이 그 걷는 것과 및 하나님을 찬미함을 보고",
+      "source_text_hash": "1f52341309b21342db83a1fd65c4cc37bf64496cfeb2b8a190104a78492867aa",
+      "translation_text_hash": "d1508f05b26debd7976db3b133912f82fe381dfaca7017d5011bb7a85fba3dcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 그 걷는 것과 및 하나님을 찬미함을 보고"
+      ],
+      "raw_text_hashes": [
+        "d1508f05b26debd7976db3b133912f82fe381dfaca7017d5011bb7a85fba3dcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:10",
+      "sequence": 27006,
+      "chapter_label": "ACT 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "They recognized him, that it was he who used to sit begging for gifts for the needy at the Beautiful Gate of the temple. They were filled with wonder and amazement at what had happened to him.",
+      "ko": "그 본래 성전 미문에 앉아 구걸하던 사람인줄 알고 그의 당한 일을 인하여 심히 기이히 여기며 놀라니라",
+      "source_text_hash": "4f069f46fcbc1f7759ad34684cafa8a4cda87a03bbd6c1613e23cf37b22654b6",
+      "translation_text_hash": "53dab3f4e895f0cebede8424e14816cb17a60de865e24bef030b2b6917f45fa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 본래 성전 미문에 앉아 구걸하던 사람인줄 알고 그의 당한 일을 인하여 심히 기이히 여기며 놀라니라"
+      ],
+      "raw_text_hashes": [
+        "53dab3f4e895f0cebede8424e14816cb17a60de865e24bef030b2b6917f45fa0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:11",
+      "sequence": 27007,
+      "chapter_label": "ACT 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "As the lame man who was healed held on to Peter and John, all the people ran together to them in the porch that is called Solomon’s, greatly wondering.",
+      "ko": "나은 사람이 베드로와 요한을 붙잡으니 모든 백성이 크게 놀라며 달려 나아가 솔로몬의 행각이라 칭하는 행각에 모이거늘",
+      "source_text_hash": "ecba5c5896c17f55b2e319708e51e2cbdd70a9b46aae56ba920292d7aabdd2d6",
+      "translation_text_hash": "2296e777a1b7aa858a57375739b6be30eae54bd1783c83c8fe13c123f5252b82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나은 사람이 베드로와 요한을 붙잡으니 모든 백성이 크게 놀라며 달려 나아가 솔로몬의 행각이라 칭하는 행각에 모이거늘"
+      ],
+      "raw_text_hashes": [
+        "2296e777a1b7aa858a57375739b6be30eae54bd1783c83c8fe13c123f5252b82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:12",
+      "sequence": 27008,
+      "chapter_label": "ACT 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "When Peter saw it, he responded to the people, “You men of Israel, why do you marvel at this man? Why do you fasten your eyes on us, as though by our own power or godliness we had made him walk?",
+      "ko": "베드로가 이것을 보고 백성에게 말하되 이스라엘 사람들아 이 일을 왜 기이히 여기느냐 우리 개인의 권능과 경건으로 이 사람을 걷게 한 것처럼 왜 우리를 주목하느냐",
+      "source_text_hash": "de6f2e74608f2a87e85feaa788fb3dd8f746301f45cb87104732c028bebb3246",
+      "translation_text_hash": "dbe2a0429a9a5c0d3115a9a21396f6bc992fae1288ddb57dbacbcfc4dd7f400c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 이것을 보고 백성에게 말하되 이스라엘 사람들아 이 일을 왜 기이히 여기느냐 우리 개인의 권능과 경건으로 이 사람을 걷게 한 것처럼 왜 우리를 주목하느냐"
+      ],
+      "raw_text_hashes": [
+        "dbe2a0429a9a5c0d3115a9a21396f6bc992fae1288ddb57dbacbcfc4dd7f400c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:13",
+      "sequence": 27009,
+      "chapter_label": "ACT 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "The God of Abraham, Isaac, and Jacob, the God of our fathers, has glorified his Servant Jesus, whom you delivered up and denied in the presence of Pilate, when he had determined to release him.",
+      "ko": "아브라함과 이삭과 야곱의 하나님 곧 우리 조상의 하나님이 그 종 예수를 영화롭게 하셨느니라 너희가 저를 넘겨주고 빌라도가 놓아 주기로 결안한 것을 너희가 그 앞에서 부인하였으니",
+      "source_text_hash": "01fd134eb21235d677933ace2a1eea3725ccbcc7086ec6e3767f3625228ba9ca",
+      "translation_text_hash": "8df3d4e8d556c8c788394dd70465c48f9a8f9c7c7909744d5e28ab8337129201",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함과 이삭과 야곱의 하나님 곧 우리 조상의 하나님이 그 종 예수를 영화롭게 하셨느니라 너희가 저를 넘겨주고 빌라도가 놓아 주기로 결안한 것을 너희가 그 앞에서 부인하였으니"
+      ],
+      "raw_text_hashes": [
+        "8df3d4e8d556c8c788394dd70465c48f9a8f9c7c7909744d5e28ab8337129201"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:14",
+      "sequence": 27010,
+      "chapter_label": "ACT 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "But you denied the Holy and Righteous One and asked for a murderer to be granted to you,",
+      "ko": "너희가 거룩하고 의로운 자를 부인하고 도리어 살인한 사람을 놓아 주기를 구하여",
+      "source_text_hash": "23a2eb69dcd39c3964f05a558c135b6117bf45b3d553d8bc707d42406cc442a8",
+      "translation_text_hash": "a7dd002606ac454177b80c452d2349b1d792d7b6d5e311f5f573127b276d5c5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 거룩하고 의로운 자를 부인하고 도리어 살인한 사람을 놓아 주기를 구하여"
+      ],
+      "raw_text_hashes": [
+        "a7dd002606ac454177b80c452d2349b1d792d7b6d5e311f5f573127b276d5c5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:15",
+      "sequence": 27011,
+      "chapter_label": "ACT 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "and killed the Prince of life, whom God raised from the dead, to which we are witnesses.",
+      "ko": "생명의 주를 죽였도다 그러나 하나님이 죽은자 가운데서 살리셨으니 우리가 이 일에 증인이로라",
+      "source_text_hash": "d497b05a315459a5f63b23782461a1cf7b3fd9457ec89ee6e49cab70d37f940f",
+      "translation_text_hash": "92d5f9d482d46ed7d7158f8f26f9cb65f03684830b11bea03a4adf4a221a086a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생명의 주를 죽였도다 그러나 하나님이 죽은자 가운데서 살리셨으니 우리가 이 일에 증인이로라"
+      ],
+      "raw_text_hashes": [
+        "92d5f9d482d46ed7d7158f8f26f9cb65f03684830b11bea03a4adf4a221a086a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:16",
+      "sequence": 27012,
+      "chapter_label": "ACT 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "By faith in his name, his name has made this man strong, whom you see and know. Yes, the faith which is through him has given him this perfect soundness in the presence of you all.",
+      "ko": "그 이름을 믿으므로 그 이름이 너희 보고 아는 이 사람을 성하게 하였나니 예수로 말미암아 난 믿음이 너희 모든 사람 앞에서 이같이 완전히 낫게 하였느니라",
+      "source_text_hash": "5ccc01bd61a2b7a59f6311ae29c32bc40922e811980a5b18ae0ed0c6433f002c",
+      "translation_text_hash": "adab8cc79da3e2bedc7a3efb8c77adf8e5cc7da7d0cab5b73f43bf3156fe2cb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이름을 믿으므로 그 이름이 너희 보고 아는 이 사람을 성하게 하였나니 예수로 말미암아 난 믿음이 너희 모든 사람 앞에서 이같이 완전히 낫게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "adab8cc79da3e2bedc7a3efb8c77adf8e5cc7da7d0cab5b73f43bf3156fe2cb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:17",
+      "sequence": 27013,
+      "chapter_label": "ACT 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "“Now, brothers, I know that you did this in ignorance, as did also your rulers.",
+      "ko": "형제들아 너희가 알지 못하여서 그리 하였으며 너희 관원들도 그리 한줄 아노라",
+      "source_text_hash": "18650eefc53d7cee576f1b68c62322c5005c8ffb8c34ec01b3a02be3b1e9face",
+      "translation_text_hash": "c7ed34160d8b8ef5d93985a868ce719e02188693e3e4a4b1a8851c9b027dca82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희가 알지 못하여서 그리 하였으며 너희 관원들도 그리 한줄 아노라"
+      ],
+      "raw_text_hashes": [
+        "c7ed34160d8b8ef5d93985a868ce719e02188693e3e4a4b1a8851c9b027dca82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:18",
+      "sequence": 27014,
+      "chapter_label": "ACT 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "But the things which God announced by the mouth of all his prophets, that Christ should suffer, he thus fulfilled.",
+      "ko": "그러나 하나님이 모든 선지자의 입을 의탁하사 자기의 그리스도의 해 받으실 일을 미리 알게 하신 것을 이와 같이 이루셨느니라",
+      "source_text_hash": "a0e4b330da28d20df7cdd61388602c68040413b4cd4c3a30caffeb5a53989d03",
+      "translation_text_hash": "3e7ccb661ac44c9938f4b4825828d08bb4055c2b72d3e2454ece8751d70e23cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 하나님이 모든 선지자의 입을 의탁하사 자기의 그리스도의 해 받으실 일을 미리 알게 하신 것을 이와 같이 이루셨느니라"
+      ],
+      "raw_text_hashes": [
+        "3e7ccb661ac44c9938f4b4825828d08bb4055c2b72d3e2454ece8751d70e23cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:19",
+      "sequence": 27015,
+      "chapter_label": "ACT 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "“Repent therefore, and turn again, that your sins may be blotted out, so that there may come times of refreshing from the presence of the Lord,",
+      "ko": "그러므로 너희가 회개하고 돌이켜 너희 죄 없이 함을 받으라 이같이 하면 유쾌하게 되는 날이 주 앞으로부터 이를 것이요",
+      "source_text_hash": "6441c2b634ca48a2687894dd22fa223a0f056a521a61db21a4af0b4921e2e444",
+      "translation_text_hash": "c061962c5b65da413fbd2514e4b11fd57f1d92f420b60d07e2f93a9b73c494bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 회개하고 돌이켜 너희 죄 없이 함을 받으라 이같이 하면 유쾌하게 되는 날이 주 앞으로부터 이를 것이요"
+      ],
+      "raw_text_hashes": [
+        "c061962c5b65da413fbd2514e4b11fd57f1d92f420b60d07e2f93a9b73c494bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:20",
+      "sequence": 27016,
+      "chapter_label": "ACT 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "and that he may send Christ Jesus, who was ordained for you before,",
+      "ko": "또 주께서 너희를 위하여 예정하신 그리스도 곧 예수를 보내시리니",
+      "source_text_hash": "2d3c4ac7d2f27bf1f836dea4d03e5b10aaa76b9f470d013016dcb693d7e637ca",
+      "translation_text_hash": "9e59572d5a24c5041536b315983c05954aa13519fb7558f3ec5a3b5c7cec7571",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주께서 너희를 위하여 예정하신 그리스도 곧 예수를 보내시리니"
+      ],
+      "raw_text_hashes": [
+        "9e59572d5a24c5041536b315983c05954aa13519fb7558f3ec5a3b5c7cec7571"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:21",
+      "sequence": 27017,
+      "chapter_label": "ACT 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "whom heaven must receive until the times of restoration of all things, which God spoke long ago by the mouth of his holy prophets.",
+      "ko": "하나님이 영원 전부터 거룩한 선지자의 입을 의탁하여 말씀하신바 만유를 회복하실 때까지는 하늘이 마땅히 그를 받아 두리라",
+      "source_text_hash": "1b2f75d0bc5e3b26a18a3570cf56142cc2dbd9f3e798774c70eed8bddb79e881",
+      "translation_text_hash": "5dadf63450bf5419e590bcba0e9a7370ef95f23baef8c01cd64e93b87c01d56a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 영원 전부터 거룩한 선지자의 입을 의탁하여 말씀하신바 만유를 회복하실 때까지는 하늘이 마땅히 그를 받아 두리라"
+      ],
+      "raw_text_hashes": [
+        "5dadf63450bf5419e590bcba0e9a7370ef95f23baef8c01cd64e93b87c01d56a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:22",
+      "sequence": 27018,
+      "chapter_label": "ACT 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "For Moses indeed said to the fathers, ‘The Lord God will raise up a prophet for you from among your brothers, like me. You shall listen to him in all things whatever he says to you.",
+      "ko": "모세가 말하되 주 하나님이 너희를 위하여 너희 형제 가운데서 나 같은 선지자 하나를 세울 것이니 너희가 무엇이든지 그 모든 말씀을 들을 것이라",
+      "source_text_hash": "1a059e9e998e0a927e5955d62210826978ce747deda1335c98fd176b5d4724de",
+      "translation_text_hash": "fb70f719cd3dba348bbb13442b474c364cb4cd6d2c4a8bd1e1955affc2b7727d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 말하되 주 하나님이 너희를 위하여 너희 형제 가운데서 나 같은 선지자 하나를 세울 것이니 너희가 무엇이든지 그 모든 말씀을 들을 것이라"
+      ],
+      "raw_text_hashes": [
+        "fb70f719cd3dba348bbb13442b474c364cb4cd6d2c4a8bd1e1955affc2b7727d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:23",
+      "sequence": 27019,
+      "chapter_label": "ACT 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "It will be that every soul that will not listen to that prophet will be utterly destroyed from among the people.’",
+      "ko": "누구든지 그 선지자의 말을 듣지 아니하는 자는 백성 중에서 멸망 받으리라 하였고",
+      "source_text_hash": "48267841fa46ea47401d236b56b69f668b5be3f986327788c159ee1ae731fec0",
+      "translation_text_hash": "8fcbfdac83b227264e228d9d5646062b2932d33771e9f19865aedf6173db3bcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 그 선지자의 말을 듣지 아니하는 자는 백성 중에서 멸망 받으리라 하였고"
+      ],
+      "raw_text_hashes": [
+        "8fcbfdac83b227264e228d9d5646062b2932d33771e9f19865aedf6173db3bcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:24",
+      "sequence": 27020,
+      "chapter_label": "ACT 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "Yes, and all the prophets from Samuel and those who followed after, as many as have spoken, also told of these days.",
+      "ko": "또한 사무엘 때부터 옴으로 말한 모든 선지자도 이 때를 가리켜 말하였느니라",
+      "source_text_hash": "df6490cf49d2b1063493a31e1bc4197f543767f9417c5c23317199afc1d3739f",
+      "translation_text_hash": "ba23fdbcbfdc88e3e7e22dcfea0cb374b5bc999a9d57ebbfc250db626bcf926d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 사무엘 때부터 옴으로 말한 모든 선지자도 이 때를 가리켜 말하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ba23fdbcbfdc88e3e7e22dcfea0cb374b5bc999a9d57ebbfc250db626bcf926d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:25",
+      "sequence": 27021,
+      "chapter_label": "ACT 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "You are the children of the prophets, and of the covenant which God made with our fathers, saying to Abraham, ‘All the families of the earth will be blessed through your offspring.’",
+      "ko": "너희는 선지자들의 자손이요 또 하나님이 너희 조상으로 더불어 세우신 언약의 자손이라 아브라함에게 이르시기를 땅 위의 모든 족속이 너의 씨를 인하여 복을 받으리라 하셨으니",
+      "source_text_hash": "4db3579f737db4aac87a7b5fa3f8265eb8b44ed1de4740f6906a74929dbcdd64",
+      "translation_text_hash": "146affcc2c620df6954dacd69369be16aed096d5bd617fa42dc25d3d5fff8c2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 선지자들의 자손이요 또 하나님이 너희 조상으로 더불어 세우신 언약의 자손이라 아브라함에게 이르시기를 땅 위의 모든 족속이 너의 씨를 인하여 복을 받으리라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "146affcc2c620df6954dacd69369be16aed096d5bd617fa42dc25d3d5fff8c2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:3:26",
+      "sequence": 27022,
+      "chapter_label": "ACT 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "God, having raised up his servant Jesus, sent him to you first to bless you, in turning away every one of you from your wickedness.”",
+      "ko": "하나님이 그 종을 세워 복 주시려고 너희에게 먼저 보내사 너희로 하여금 돌이켜 각각 그 악함을 버리게 하셨느니라",
+      "source_text_hash": "ea49b0ba26bbd3626b1f4c7c93835eae2ac7288ce9f8840ecc06a8fbd8493a6d",
+      "translation_text_hash": "d65e21713cce46c06793484ed64315562fc17d2fda3005f3155a57d7c5742896",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 종을 세워 복 주시려고 너희에게 먼저 보내사 너희로 하여금 돌이켜 각각 그 악함을 버리게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "d65e21713cce46c06793484ed64315562fc17d2fda3005f3155a57d7c5742896"
+      ]
+    }
+  ]
+}

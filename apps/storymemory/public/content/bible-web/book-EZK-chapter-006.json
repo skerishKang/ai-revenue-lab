@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:006",
+  "unit_ordinal": 808,
+  "unit_label": "EZK 6",
+  "book_code": "EZK",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:6:1",
+      "sequence": 20565,
+      "chapter_label": "EZK 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:2",
+      "sequence": 20566,
+      "chapter_label": "EZK 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, set your face toward the mountains of Israel, and prophesy to them,",
+      "ko": "인자야 너는 이스라엘 산을 향하여 그들에게 예언하여",
+      "source_text_hash": "082ff4d601cada56c88f92ee00f5392df2dab5bebd6e1971cbc4bc7dfc2e85c8",
+      "translation_text_hash": "f1fe177af6a4514c203ebdbc5319d3d568d31a32f72821d53ba7e1b90eef8777",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 이스라엘 산을 향하여 그들에게 예언하여"
+      ],
+      "raw_text_hashes": [
+        "f1fe177af6a4514c203ebdbc5319d3d568d31a32f72821d53ba7e1b90eef8777"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:3",
+      "sequence": 20567,
+      "chapter_label": "EZK 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "and say, ‘You mountains of Israel, hear the word of the Lord GOD! The Lord GOD says to the mountains and to the hills, to the watercourses and to the valleys: “Behold, I, even I, will bring a sword on you, and I will destroy your high places.",
+      "ko": "이르기를 이스라엘 산들아 주 여호와의 말씀을 들으라 주 여호와께서 산과 작은 산과 시내와 골짜기를 대하여 말씀하시기를 나 곧 내가 칼로 너희에게 임하게 하여 너희 산당을 멸하리니",
+      "source_text_hash": "86d0a05d03e02656e96869ed3194d9b421c2656df4a3186f640b962f6e493f7b",
+      "translation_text_hash": "8768b1024466e4f230b45a3bdecd8b69fee17234b4b06b35e3d2a2cb58120ebe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 이스라엘 산들아 주 여호와의 말씀을 들으라 주 여호와께서 산과 작은 산과 시내와 골짜기를 대하여 말씀하시기를 나 곧 내가 칼로 너희에게 임하게 하여 너희 산당을 멸하리니"
+      ],
+      "raw_text_hashes": [
+        "8768b1024466e4f230b45a3bdecd8b69fee17234b4b06b35e3d2a2cb58120ebe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:4",
+      "sequence": 20568,
+      "chapter_label": "EZK 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Your altars will become desolate, and your incense altars will be broken. I will cast down your slain men before your idols.",
+      "ko": "너희 제단이 황무하고 태양상이 훼파될 것이며 내가 또 너희 중에서 살륙을 당하여 너희 우상 앞에 엎드러지게 할 것이라",
+      "source_text_hash": "e1b670006263dc52a7e97c7b4ece9ab3230ecf881cb85593fab9aa5210e4e948",
+      "translation_text_hash": "accfab9be06a2c09f19782d144b016c4e33535c14faead1480af4cfd3ec27946",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 제단이 황무하고 태양상이 훼파될 것이며 내가 또 너희 중에서 살륙을 당하여 너희 우상 앞에 엎드러지게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "accfab9be06a2c09f19782d144b016c4e33535c14faead1480af4cfd3ec27946"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:5",
+      "sequence": 20569,
+      "chapter_label": "EZK 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "I will lay the dead bodies of the children of Israel before their idols. I will scatter your bones around your altars.",
+      "ko": "이스라엘 자손의 시체를 그 우상 앞에 두며 너희 해골을 너희 제단 사방에 흩으리라",
+      "source_text_hash": "cfc49c64dc23c764b51c2ec4424122f14d973a1c81038f47e72c8d110e76a826",
+      "translation_text_hash": "0021a939f7ecba94116ba374626b93fc1724f0b77b6cb36044f1b765d2e8de90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 시체를 그 우상 앞에 두며 너희 해골을 너희 제단 사방에 흩으리라"
+      ],
+      "raw_text_hashes": [
+        "0021a939f7ecba94116ba374626b93fc1724f0b77b6cb36044f1b765d2e8de90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:6",
+      "sequence": 20570,
+      "chapter_label": "EZK 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "In all your dwelling places, the cities will be laid waste and the high places will be desolate, so that your altars may be laid waste and made desolate, and your idols may be broken and cease, and your incense altars may be cut down, and your works may be abolished.",
+      "ko": "내가 너희 거하는 모든 성읍으로 사막이 되며 산당으로 황무하게 하리니 이는 너희 제단이 깨어지고 황폐하며 너희 우상들이 깨어져 없어지며 너희 태양상들이 찍히며 너희 만든 것이 다 폐하며",
+      "source_text_hash": "6ca759a3b52e73f8be9e3ae3a0bdf52672a6705ed68d93bd3a9efc591825d3f4",
+      "translation_text_hash": "e2e5223326d7b7f8f7980898433aa8f61ca7b30bdcd815f5f40283156ce66bc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 거하는 모든 성읍으로 사막이 되며 산당으로 황무하게 하리니 이는 너희 제단이 깨어지고 황폐하며 너희 우상들이 깨어져 없어지며 너희 태양상들이 찍히며 너희 만든 것이 다 폐하며"
+      ],
+      "raw_text_hashes": [
+        "e2e5223326d7b7f8f7980898433aa8f61ca7b30bdcd815f5f40283156ce66bc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:7",
+      "sequence": 20571,
+      "chapter_label": "EZK 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "The slain will fall among you, and you will know that I am the LORD.",
+      "ko": "또 너희 중에서 살륙을 당하여 엎드러지게 하여 너희로 나를 여호와인줄 알게 하려 함이니라",
+      "source_text_hash": "322df49a14c9aca8bce35425daff995e99d64e7deae107ac6c579fe213fb71eb",
+      "translation_text_hash": "174a947e70db0688a4809cad4cd49924fc306e6e4913a9fe232d318089ec1ff8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희 중에서 살륙을 당하여 엎드러지게 하여 너희로 나를 여호와인줄 알게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "174a947e70db0688a4809cad4cd49924fc306e6e4913a9fe232d318089ec1ff8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:8",
+      "sequence": 20572,
+      "chapter_label": "EZK 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "“‘“Yet I will leave a remnant, in that you will have some that escape the sword among the nations, when you are scattered through the countries.",
+      "ko": "그러나 너희가 열방에 흩어질 때에 내가 너희 중에서 칼을 피하여 이방 중에 남아 있는 자가 있게 할찌라",
+      "source_text_hash": "0501157a44f4be671bc14bb1b09b3d29ae0cebe3d3039b24b9f243dac7b9dc37",
+      "translation_text_hash": "b198602b4b8efed922e36ca99e256d9419dfdb228c903371b1ae5c020a1811d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희가 열방에 흩어질 때에 내가 너희 중에서 칼을 피하여 이방 중에 남아 있는 자가 있게 할찌라"
+      ],
+      "raw_text_hashes": [
+        "b198602b4b8efed922e36ca99e256d9419dfdb228c903371b1ae5c020a1811d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:9",
+      "sequence": 20573,
+      "chapter_label": "EZK 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Those of you that escape will remember me among the nations where they are carried captive, how I have been broken with their lewd heart, which has departed from me, and with their eyes, which play the prostitute after their idols. Then they will loathe themselves in their own sight for the evils which they have committed in all their abominations.",
+      "ko": "너희 중 피한 자가 사로잡혀 이방인 중에 있어서 나를 기억하되 그들이 음란한 마음으로 나를 떠나고 음란한 눈으로 우상을 섬겨 나로 근심케 한 것을 기억하고 스스로 한탄하리니 이는 그 모든 가증한 일로 악을 행하였음이라",
+      "source_text_hash": "ed3f8ab9bfaa054912792c059314822629d3d2c66ad53e8639d7eea1a4c902d5",
+      "translation_text_hash": "9a29aed39b79882d5f98e32210d8932463d369df6e0a6162a8de50fa1eef32e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중 피한 자가 사로잡혀 이방인 중에 있어서 나를 기억하되 그들이 음란한 마음으로 나를 떠나고 음란한 눈으로 우상을 섬겨 나로 근심케 한 것을 기억하고 스스로 한탄하리니 이는 그 모든 가증한 일로 악을 행하였음이라"
+      ],
+      "raw_text_hashes": [
+        "9a29aed39b79882d5f98e32210d8932463d369df6e0a6162a8de50fa1eef32e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:10",
+      "sequence": 20574,
+      "chapter_label": "EZK 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "They will know that I am the LORD. I have not said in vain that I would do this evil to them.”’",
+      "ko": "그 때에야 그들이 나를 여호와인줄 알리라 내가 이런 재앙을 그들에게 내리겠다 한 말이 헛되지 아니하니라",
+      "source_text_hash": "3576aa23a1e2c10e49aa6c8efba311d945744e60541486b8953b676778215ecf",
+      "translation_text_hash": "d796855a1954c32263f17688d182c913c3a0d7de9ecc037f221dfef0455e5964",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에야 그들이 나를 여호와인줄 알리라 내가 이런 재앙을 그들에게 내리겠다 한 말이 헛되지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "d796855a1954c32263f17688d182c913c3a0d7de9ecc037f221dfef0455e5964"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:11",
+      "sequence": 20575,
+      "chapter_label": "EZK 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "“The Lord GOD says: ‘Strike with your hand, and stamp with your foot, and say, “Alas!”, because of all the evil abominations of the house of Israel; for they will fall by the sword, by the famine, and by the pestilence.",
+      "ko": "주 여호와께서 가라사대 너는 손뼉을 치고 발을 구르며 말할찌어다 오호라 이스라엘 족속이 모든 가증한 악을 행하므로 필경 칼과 기근과 온역에 망하되",
+      "source_text_hash": "760377fb027d8b2b77b71eb1ba0f0d28329d3223e762368a573da8e2a460d0eb",
+      "translation_text_hash": "58f91d983f78ceb85fb2a099a0760504bd19bb71bd77758272356d9b6fee59cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 가라사대 너는 손뼉을 치고 발을 구르며 말할찌어다 오호라 이스라엘 족속이 모든 가증한 악을 행하므로 필경 칼과 기근과 온역에 망하되"
+      ],
+      "raw_text_hashes": [
+        "58f91d983f78ceb85fb2a099a0760504bd19bb71bd77758272356d9b6fee59cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:12",
+      "sequence": 20576,
+      "chapter_label": "EZK 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "He who is far off will die of the pestilence. He who is near will fall by the sword. He who remains and is besieged will die by the famine. Thus I will accomplish my wrath on them.",
+      "ko": "먼데 있는 자는 온역에 죽고 가까운데 있는 자는 칼에 엎드러지고 남아 있어 에워싸인 자는 기근에 죽으리라 이같이 내 진노를 그들에게 이룬즉",
+      "source_text_hash": "f60ca81a0ee661bd74f199dad64e0c947d1d6721348c3704f7370f1ab70f4d53",
+      "translation_text_hash": "a3255153141782f3c1fc360f880a9a6715440691a94b55c4f5b881e52f6f841b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼데 있는 자는 온역에 죽고 가까운데 있는 자는 칼에 엎드러지고 남아 있어 에워싸인 자는 기근에 죽으리라 이같이 내 진노를 그들에게 이룬즉"
+      ],
+      "raw_text_hashes": [
+        "a3255153141782f3c1fc360f880a9a6715440691a94b55c4f5b881e52f6f841b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:13",
+      "sequence": 20577,
+      "chapter_label": "EZK 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "You will know that I am the LORD when their slain men are among their idols around their altars, on every high hill, on all the tops of the mountains, under every green tree, and under every thick oak—the places where they offered pleasant aroma to all their idols.",
+      "ko": "그 살륙 당한 시체가 그 우상 사이에, 제단 사방에, 각 높은 고개에, 모든 산꼭대기에, 모든 푸른나무 아래에, 무성한 상수리나무 아래 곧 그 우상에게 분향하던 곳에 있으리니 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "cb93a5c51a784071fe29be944957c248727e0c8452572bc4fdd9c02bb5bf317c",
+      "translation_text_hash": "d7df0fcca28c7ab73a8e69e0549b9edad407ad99eb0ccacfc2f6ade073c6b44e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 살륙 당한 시체가 그 우상 사이에, 제단 사방에, 각 높은 고개에, 모든 산꼭대기에, 모든 푸른나무 아래에, 무성한 상수리나무 아래 곧 그 우상에게 분향하던 곳에 있으리니 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "d7df0fcca28c7ab73a8e69e0549b9edad407ad99eb0ccacfc2f6ade073c6b44e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:6:14",
+      "sequence": 20578,
+      "chapter_label": "EZK 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "I will stretch out my hand on them and make the land desolate and waste, from the wilderness toward Diblah, throughout all their habitations. Then they will know that I am the LORD.’”",
+      "ko": "내가 내 손을 그들의 위에 펴서 그 거하는 온 땅 곧 광야에서부터 디블라까지 처량하고 황무하게 하리니 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "373ee19e78a22895a3986b23c4ba91d6ec724256473721e10676cf292be73a26",
+      "translation_text_hash": "ff50e0609481cdbe76423b5eeda0f969d26ffcccec2aaf47a9555667181991d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 손을 그들의 위에 펴서 그 거하는 온 땅 곧 광야에서부터 디블라까지 처량하고 황무하게 하리니 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "ff50e0609481cdbe76423b5eeda0f969d26ffcccec2aaf47a9555667181991d6"
+      ]
+    }
+  ]
+}

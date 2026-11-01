@@ -1,0 +1,205 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:023",
+  "unit_ordinal": 501,
+  "unit_label": "PSA 23",
+  "book_code": "PSA",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:23:1",
+      "sequence": 14237,
+      "chapter_label": "PSA 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD is my shepherd; I shall lack nothing.",
+      "ko": "여호와는 나의 목자시니 내가 부족함이 없으리로다",
+      "source_text_hash": "df27ee7820cfc8eccf28737963416ed18a3bcfb806b8f8c3230b08ce5e6d412c",
+      "translation_text_hash": "79a88d6ab80b5c3575f3bd0f215f321ed634e77b99a31771dd5968eb7cafb422",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 나의 목자시니 내가 부족함이 없으리로다"
+      ],
+      "raw_text_hashes": [
+        "79a88d6ab80b5c3575f3bd0f215f321ed634e77b99a31771dd5968eb7cafb422"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:23:2",
+      "sequence": 14238,
+      "chapter_label": "PSA 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "He makes me lie down in green pastures. He leads me beside still waters.",
+      "ko": "그가 나를 푸른 초장에 누이시며 쉴만한 물 가으로 인도하시는도다",
+      "source_text_hash": "5fac52fade57bb8ba0bc0997f5ca0780ea41d18a05400dcef56c96ab1cc1b58a",
+      "translation_text_hash": "97d504d253841e11f28ee078797975b80acc0c16cd1c54ce3604b04f98dcbc7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나를 푸른 초장에 누이시며 쉴만한 물 가으로 인도하시는도다"
+      ],
+      "raw_text_hashes": [
+        "97d504d253841e11f28ee078797975b80acc0c16cd1c54ce3604b04f98dcbc7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:23:3",
+      "sequence": 14239,
+      "chapter_label": "PSA 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "He restores my soul. He guides me in the paths of righteousness for his name’s sake.",
+      "ko": "내 영혼을 소생시키시고 자기 이름을 위하여 의의 길로 인도하시는도다",
+      "source_text_hash": "224cf2714b360302613231658feb668a45d12088828822cc266af7e2112389e4",
+      "translation_text_hash": "c6e9f0ef324e79701bc26ffcacee369ae36fc7d698734b09b64d23c8a133ebd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼을 소생시키시고 자기 이름을 위하여 의의 길로 인도하시는도다"
+      ],
+      "raw_text_hashes": [
+        "c6e9f0ef324e79701bc26ffcacee369ae36fc7d698734b09b64d23c8a133ebd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:23:4",
+      "sequence": 14240,
+      "chapter_label": "PSA 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "Even though I walk through the valley of the shadow of death, I will fear no evil, for you are with me. Your rod and your staff, they comfort me.",
+      "ko": "내가 사망의 음침한 골짜기로 다닐찌라도 해를 두려워하지 않을 것은 주께서 나와 함께 하심이라 주의 지팡이와 막대기가 나를 안위하시나이다",
+      "source_text_hash": "9a816470c05dd33009101a71514e68079e208183d8e6f154b1a8190ed2417bd4",
+      "translation_text_hash": "9290e65724a63b946f5e47d2feb69111eda18f23748d19ed41755719c2186e51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사망의 음침한 골짜기로 다닐찌라도 해를 두려워하지 않을 것은 주께서 나와 함께 하심이라 주의 지팡이와 막대기가 나를 안위하시나이다"
+      ],
+      "raw_text_hashes": [
+        "9290e65724a63b946f5e47d2feb69111eda18f23748d19ed41755719c2186e51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:23:5",
+      "sequence": 14241,
+      "chapter_label": "PSA 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "You prepare a table before me in the presence of my enemies. You anoint my head with oil. My cup runs over.",
+      "ko": "주께서 내 원수의 목전에서 내게 상을 베푸시고 기름으로 내 머리에 바르셨으니 내 잔이 넘치나이다",
+      "source_text_hash": "4d8748cfbd2aba66bb5a204f2a64374b3afb09f334948214a07b9853c8a967b2",
+      "translation_text_hash": "49158ce1a4d8cda5cf713d7e0a0164ecb53e0cabad6b66182f648152f98de2b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 원수의 목전에서 내게 상을 베푸시고 기름으로 내 머리에 바르셨으니 내 잔이 넘치나이다"
+      ],
+      "raw_text_hashes": [
+        "49158ce1a4d8cda5cf713d7e0a0164ecb53e0cabad6b66182f648152f98de2b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:23:6",
+      "sequence": 14242,
+      "chapter_label": "PSA 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "Surely goodness and loving kindness shall follow me all the days of my life, and I will dwell in the LORD’s house forever.",
+      "ko": "나의 평생에 선하심과 인자하심이 정녕 나를 따르리니 내가 여호와의 집에 영원히 거하리로다",
+      "source_text_hash": "00865aa873f33443fd15a5831f78adb0c2e97c16207fd863ec2c27a9b766daab",
+      "translation_text_hash": "41b0a05dae7d5e7a8ba82677180c256f85628d10ba8dc8a721ff4fb784daed66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 평생에 선하심과 인자하심이 정녕 나를 따르리니 내가 여호와의 집에 영원히 거하리로다"
+      ],
+      "raw_text_hashes": [
+        "41b0a05dae7d5e7a8ba82677180c256f85628d10ba8dc8a721ff4fb784daed66"
+      ]
+    }
+  ]
+}

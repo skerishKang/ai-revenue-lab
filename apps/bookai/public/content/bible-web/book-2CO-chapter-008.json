@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:008",
+  "unit_ordinal": 1086,
+  "unit_label": "2CO 8",
+  "book_code": "2CO",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:8:1",
+      "sequence": 28930,
+      "chapter_label": "2CO 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Moreover, brothers, we make known to you the grace of God which has been given in the assemblies of Macedonia,",
+      "ko": "형제들아 하나님께서 마게도냐 교회들에게 주신 은혜를 우리가 너희에게 알게 하노니",
+      "source_text_hash": "e9b796d51781c8c2a8628f448d281776f665aa54d11337f14bce4bb674d6544d",
+      "translation_text_hash": "f35cbff4358ee3086e4eca360bbd2cbcb7deabe2e29d950aeb121ceeb60156e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 하나님께서 마게도냐 교회들에게 주신 은혜를 우리가 너희에게 알게 하노니"
+      ],
+      "raw_text_hashes": [
+        "f35cbff4358ee3086e4eca360bbd2cbcb7deabe2e29d950aeb121ceeb60156e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:2",
+      "sequence": 28931,
+      "chapter_label": "2CO 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "how in a severe ordeal of affliction, the abundance of their joy and their deep poverty abounded to the riches of their generosity.",
+      "ko": "환난의 많은 시련 가운데서 저희 넘치는 기쁨과 극한 가난이 저희로 풍성한 연보를 넘치도록 하게 하였느니라",
+      "source_text_hash": "9bbe15e29d728c91568cb1ba2fc19b33bfaa18145829138e7d88113dbbd5be91",
+      "translation_text_hash": "8921116e4704206e1fa45df90934194e125b953efddc2c3a0700f33fd303eac8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환난의 많은 시련 가운데서 저희 넘치는 기쁨과 극한 가난이 저희로 풍성한 연보를 넘치도록 하게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "8921116e4704206e1fa45df90934194e125b953efddc2c3a0700f33fd303eac8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:3",
+      "sequence": 28932,
+      "chapter_label": "2CO 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "For according to their power, I testify, yes and beyond their power, they gave of their own accord,",
+      "ko": "내가 증거하노니 저희가 힘대로 할 뿐아니라 힘에 지나도록 자원하여",
+      "source_text_hash": "56c39c076c2122886cd59ba281e944b9abfcd7a76c92da6fe84e1fb14c7d4922",
+      "translation_text_hash": "a679214fb774a8a1c7dd447342d944b40321244b3a2e03d5774020aa63fbd630",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 증거하노니 저희가 힘대로 할 뿐아니라 힘에 지나도록 자원하여"
+      ],
+      "raw_text_hashes": [
+        "a679214fb774a8a1c7dd447342d944b40321244b3a2e03d5774020aa63fbd630"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:4",
+      "sequence": 28933,
+      "chapter_label": "2CO 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "begging us with much entreaty to receive this grace and the fellowship in the service to the saints.",
+      "ko": "이 은혜와 성도 섬기는 일에 참여함에 대하여 우리에게 간절히 구하니",
+      "source_text_hash": "1994e35d37fd3328f177c6e6c9fb3a6510e88f2c8859ce7543392652c34154ca",
+      "translation_text_hash": "62eb4f81f66c85a7be5703682763d46d3cd216e77e9c2ff5950672cfae2bf718",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 은혜와 성도 섬기는 일에 참여함에 대하여 우리에게 간절히 구하니"
+      ],
+      "raw_text_hashes": [
+        "62eb4f81f66c85a7be5703682763d46d3cd216e77e9c2ff5950672cfae2bf718"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:5",
+      "sequence": 28934,
+      "chapter_label": "2CO 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "This was not as we had expected, but first they gave their own selves to the Lord, and to us through the will of God.",
+      "ko": "우리의 바라던 것뿐 아니라 저희가 먼저 자신을 주께 드리고 또 하나님 뜻을 좇아 우리에게 주었도다",
+      "source_text_hash": "2a1e6229b676626e91b50c9955a6dd7c4a32e8c42d9a5315a1cb6cfde93a8235",
+      "translation_text_hash": "94e339eb2f90a5a89440739a5802c6152f3ac503ca00d5b5648f64c7eacb1bb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 바라던 것뿐 아니라 저희가 먼저 자신을 주께 드리고 또 하나님 뜻을 좇아 우리에게 주었도다"
+      ],
+      "raw_text_hashes": [
+        "94e339eb2f90a5a89440739a5802c6152f3ac503ca00d5b5648f64c7eacb1bb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:6",
+      "sequence": 28935,
+      "chapter_label": "2CO 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "So we urged Titus, that as he had made a beginning before, so he would also complete in you this grace.",
+      "ko": "이러므로 우리가 디도를 권하여 너희 가운데서 시작하였은즉 이 은혜를 그대로 성취케 하라 하였노라",
+      "source_text_hash": "2bf33a112f5e1f7ff684e98b2b9f872c5c6a05680d3e61f8cef4e780992ea499",
+      "translation_text_hash": "a2dcfdcca41e5ff96d3fbc337456d5c8ec4c67c0e637cd550d197131894d83cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리가 디도를 권하여 너희 가운데서 시작하였은즉 이 은혜를 그대로 성취케 하라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "a2dcfdcca41e5ff96d3fbc337456d5c8ec4c67c0e637cd550d197131894d83cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:7",
+      "sequence": 28936,
+      "chapter_label": "2CO 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "But as you abound in everything—in faith, utterance, knowledge, all earnestness, and in your love to us—see that you also abound in this grace.",
+      "ko": "오직 너희는 믿음과 말과 지식과 모든 간절함과 우리를 사랑하는 이 모든 일에 풍성한것 같이 이 은혜에도 풍성하게 할찌니라",
+      "source_text_hash": "518f11e8c91225540f11c45b30f7f82ff6956c4ba31f2ee5add7d99b12acba31",
+      "translation_text_hash": "cae6345edd19cda2347ba7b156db8aad377677b85a0af91df86a3b2f9751417c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희는 믿음과 말과 지식과 모든 간절함과 우리를 사랑하는 이 모든 일에 풍성한것 같이 이 은혜에도 풍성하게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "cae6345edd19cda2347ba7b156db8aad377677b85a0af91df86a3b2f9751417c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:8",
+      "sequence": 28937,
+      "chapter_label": "2CO 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "I speak not by way of commandment, but as proving through the earnestness of others the sincerity also of your love.",
+      "ko": "내가 명령으로 하는 말이 아니요 오직 다른이들의 간절함을 가지고 너희의 사랑의 진실함을 증명코자 함이로라",
+      "source_text_hash": "f7cd8b73cdf223d484743e2df197735d0313077b0c8b504292443f19692ba6b6",
+      "translation_text_hash": "97498f1c7086704937d402cb40a4a072613ea6afb7c91f9ffb3b477b1e4bba93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 명령으로 하는 말이 아니요 오직 다른이들의 간절함을 가지고 너희의 사랑의 진실함을 증명코자 함이로라"
+      ],
+      "raw_text_hashes": [
+        "97498f1c7086704937d402cb40a4a072613ea6afb7c91f9ffb3b477b1e4bba93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:9",
+      "sequence": 28938,
+      "chapter_label": "2CO 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "For you know the grace of our Lord Jesus Christ, that though he was rich, yet for your sakes he became poor, that you through his poverty might become rich.",
+      "ko": "우리 주 예수 그리스도의 은혜를 너희가 알거니와 부요하신 자로서 너희를 위하여 가난하게 되심은 그의 가난함을 인하여 너희로 부요케 하려 하심이니라",
+      "source_text_hash": "d62bd6494ffe076322971ecc2d9ca72102782d354feeeb1916d11f327ad6d8d2",
+      "translation_text_hash": "ec97bb482d8fb3d3b63716955c3e03f20e9f4cbaa9f36b20b5c43d8a3989ee9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도의 은혜를 너희가 알거니와 부요하신 자로서 너희를 위하여 가난하게 되심은 그의 가난함을 인하여 너희로 부요케 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "ec97bb482d8fb3d3b63716955c3e03f20e9f4cbaa9f36b20b5c43d8a3989ee9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:10",
+      "sequence": 28939,
+      "chapter_label": "2CO 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "I give advice in this: it is expedient for you who were the first to start a year ago, not only to do, but also to be willing.",
+      "ko": "이 일에 내가 뜻만 보이노니 이것은 너희에게 유익함이라 너희가 일년 전에 행하기를 먼저 시작할뿐 아니라 원하기도 하였은즉",
+      "source_text_hash": "5cf787ed2b8fd0ae6da1daa22ce000190c2ff769890df754b1bfce96c5b54afc",
+      "translation_text_hash": "f96a533991101bd45e8f81d9d5d9498016693ae278cdbdd9acb9f37b4a98ca06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일에 내가 뜻만 보이노니 이것은 너희에게 유익함이라 너희가 일년 전에 행하기를 먼저 시작할뿐 아니라 원하기도 하였은즉"
+      ],
+      "raw_text_hashes": [
+        "f96a533991101bd45e8f81d9d5d9498016693ae278cdbdd9acb9f37b4a98ca06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:11",
+      "sequence": 28940,
+      "chapter_label": "2CO 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "But now complete the doing also, that as there was the readiness to be willing, so there may be the completion also out of your ability.",
+      "ko": "이제는 행하기를 성취할찌니 마음에 원하던 것과 같이 성취하되 있는 대로 하라",
+      "source_text_hash": "6e550cfe993340cffb2e913c34f9aac1f9411cbcd4ca115a63eb2f3a150cfca9",
+      "translation_text_hash": "11e459d34a07e1d878011395785435a072967b8c427bb93d2a1298f3c671cf0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 행하기를 성취할찌니 마음에 원하던 것과 같이 성취하되 있는 대로 하라"
+      ],
+      "raw_text_hashes": [
+        "11e459d34a07e1d878011395785435a072967b8c427bb93d2a1298f3c671cf0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:12",
+      "sequence": 28941,
+      "chapter_label": "2CO 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "For if the readiness is there, it is acceptable according to what you have, not according to what you don’t have.",
+      "ko": "할 마음만 있으면 있는 대로 받으실 터이요 없는 것을 받지 아니하시리라",
+      "source_text_hash": "90d100c943bb91474ff5ee9a70783c5d6f6931c2af44b3b5513c22887409b89a",
+      "translation_text_hash": "fc3e63e92f661de2c87be9b5c810454fdd9deda017dd820cd209cbbef334acd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할 마음만 있으면 있는 대로 받으실 터이요 없는 것을 받지 아니하시리라"
+      ],
+      "raw_text_hashes": [
+        "fc3e63e92f661de2c87be9b5c810454fdd9deda017dd820cd209cbbef334acd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:13",
+      "sequence": 28942,
+      "chapter_label": "2CO 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "For this is not that others may be eased and you distressed,",
+      "ko": "이는 다른 사람들은 평안하게 하고 너희는 곤고하게 하려는 것이 아니요 평균케 하려 함이니",
+      "source_text_hash": "29abfe1d9ffdb99849cb372b11969f745dffe1667936d76360ec74fc6fc92453",
+      "translation_text_hash": "7e3a0e0c67b1dbc5d26740a69fbfffcc6d74e08f7e38a213da155fe461c2afee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다른 사람들은 평안하게 하고 너희는 곤고하게 하려는 것이 아니요 평균케 하려 함이니"
+      ],
+      "raw_text_hashes": [
+        "7e3a0e0c67b1dbc5d26740a69fbfffcc6d74e08f7e38a213da155fe461c2afee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:14",
+      "sequence": 28943,
+      "chapter_label": "2CO 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "but for equality. Your abundance at this present time supplies their lack, that their abundance also may become a supply for your lack, that there may be equality.",
+      "ko": "이제 너희의 유여한 것으로 저희 부족한 것을 보충함은 후에 저희 유여한 것으로 너희 부족한 것을 보충하여 평균하게 하려 함이라",
+      "source_text_hash": "4f1106845a2f0f69a965cef08646f275b3fa5cdc7eef05c3cc902011ffb89590",
+      "translation_text_hash": "babe824595bc5fafdcbb87ba95bf1511893321ba468a98de8e5ed8878b682cf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희의 유여한 것으로 저희 부족한 것을 보충함은 후에 저희 유여한 것으로 너희 부족한 것을 보충하여 평균하게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "babe824595bc5fafdcbb87ba95bf1511893321ba468a98de8e5ed8878b682cf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:15",
+      "sequence": 28944,
+      "chapter_label": "2CO 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "As it is written, “He who gathered much had nothing left over, and he who gathered little had no lack.”",
+      "ko": "기록한것 같이 많이 거둔 자도 남지 아니하였고 적게 거둔 자도 모자라지 아니하였느니라",
+      "source_text_hash": "7f4a79764cfb48d2a44a15cf33e84bb5b4aaeb1b880fc6a03c976fd435fe03dc",
+      "translation_text_hash": "6fa97d7f6db99c1f5ebfddae3bf2b21924a631e63ab39d015f75f26e8f9d8255",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록한것 같이 많이 거둔 자도 남지 아니하였고 적게 거둔 자도 모자라지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "6fa97d7f6db99c1f5ebfddae3bf2b21924a631e63ab39d015f75f26e8f9d8255"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:16",
+      "sequence": 28945,
+      "chapter_label": "2CO 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "But thanks be to God, who puts the same earnest care for you into the heart of Titus.",
+      "ko": "너희를 위하여 같은 간절함을 디도의 마음에도 주시는 하나님께 감사하노니",
+      "source_text_hash": "9cf7b302527ee2156107b875b4863e3835ee83d19f2b01fb5ba937c4fcd540ad",
+      "translation_text_hash": "66791604737b28b51c99d5b80b0125a1c02b43dea2a008aec391c327a7bb962e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 위하여 같은 간절함을 디도의 마음에도 주시는 하나님께 감사하노니"
+      ],
+      "raw_text_hashes": [
+        "66791604737b28b51c99d5b80b0125a1c02b43dea2a008aec391c327a7bb962e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:17",
+      "sequence": 28946,
+      "chapter_label": "2CO 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "For he indeed accepted our exhortation, but being himself very earnest, he went out to you of his own accord.",
+      "ko": "저가 권함을 받고 더욱 간절함으로 자원하여 너희에게 나아갔고",
+      "source_text_hash": "bec854192bdc4d77eefbfdc2047857672b0ee6a5d00d41387d7e55901b9fbb6e",
+      "translation_text_hash": "9837c2f697add9c5814a2f8d7cd59157761f499f1c4b556c98d5c639a19fdb0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 권함을 받고 더욱 간절함으로 자원하여 너희에게 나아갔고"
+      ],
+      "raw_text_hashes": [
+        "9837c2f697add9c5814a2f8d7cd59157761f499f1c4b556c98d5c639a19fdb0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:18",
+      "sequence": 28947,
+      "chapter_label": "2CO 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "We have sent together with him the brother whose praise in the Good News is known throughout all the assemblies.",
+      "ko": "또 저와 함께 한 형제를 보내었으니 이 사람은 복음으로서 모든 교회에서 칭찬을 받는 자요",
+      "source_text_hash": "1e761b5e9b0dbb080407d691236bbb82bf781d464e2bc3190a929da459538ad2",
+      "translation_text_hash": "9dc5bea60ef972a9a418722972132429b47f336f9a8ddaaab889524897d09394",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저와 함께 한 형제를 보내었으니 이 사람은 복음으로서 모든 교회에서 칭찬을 받는 자요"
+      ],
+      "raw_text_hashes": [
+        "9dc5bea60ef972a9a418722972132429b47f336f9a8ddaaab889524897d09394"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:19",
+      "sequence": 28948,
+      "chapter_label": "2CO 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "Not only so, but he was also appointed by the assemblies to travel with us in this grace, which is served by us to the glory of the Lord himself, and to show our readiness.",
+      "ko": "이뿐 아니라 저는 동일한 주의 영광과 우리의 원을 나타내기 위하여 여러 교회의 택함을 입어 우리의 맡은 은혜의 일로 우리와 동행하는 자라",
+      "source_text_hash": "314701bc9bd176881f4df42b739d550e47c2fb6d9b00ba3126d1f80a866abccc",
+      "translation_text_hash": "266f48605cc01bc41ee850c0b6727ca6d0d8eea5d488e00bdc2462455b3adb5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이뿐 아니라 저는 동일한 주의 영광과 우리의 원을 나타내기 위하여 여러 교회의 택함을 입어 우리의 맡은 은혜의 일로 우리와 동행하는 자라"
+      ],
+      "raw_text_hashes": [
+        "266f48605cc01bc41ee850c0b6727ca6d0d8eea5d488e00bdc2462455b3adb5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:20",
+      "sequence": 28949,
+      "chapter_label": "2CO 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "We are avoiding this, that any man should blame us concerning this abundance which is administered by us.",
+      "ko": "이것을 조심함은 우리가 맡은 이 거액의 연보로 인하여 아무도 우리를 훼방하지 못하게 하려 함이니",
+      "source_text_hash": "00346b9e92719e2444c914054ff73138471f4d32fbecd0a70963db6dcab91686",
+      "translation_text_hash": "b1f6abde04d5a0366c1bf8620917f0a257cf871a81d7ff4d06a792066da0a4ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것을 조심함은 우리가 맡은 이 거액의 연보로 인하여 아무도 우리를 훼방하지 못하게 하려 함이니"
+      ],
+      "raw_text_hashes": [
+        "b1f6abde04d5a0366c1bf8620917f0a257cf871a81d7ff4d06a792066da0a4ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:21",
+      "sequence": 28950,
+      "chapter_label": "2CO 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "Having regard for honorable things, not only in the sight of the Lord, but also in the sight of men.",
+      "ko": "이는 우리가 주 앞에서만 아니라 사람 앞에서도 선한 일에 조심하려 함이라",
+      "source_text_hash": "e9e3ac5d6c6a91a01fc9d4c5cc507bb98cb9a7dd61631ae23a73dffb39ac5dd9",
+      "translation_text_hash": "ea530e3c7facf07177be056b355c66d41619a3da3e37676e51dde1d3c0038abb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리가 주 앞에서만 아니라 사람 앞에서도 선한 일에 조심하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "ea530e3c7facf07177be056b355c66d41619a3da3e37676e51dde1d3c0038abb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:22",
+      "sequence": 28951,
+      "chapter_label": "2CO 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "We have sent with them our brother whom we have many times proved earnest in many things, but now much more earnest, by reason of the great confidence which he has in you.",
+      "ko": "또 저희와 함께 우리의 한 형제를 보내었노니 우리가 여러 가지 일에 그 간절한 것을 여러번 시험하였거니와 이제 저가 너희를 크게 믿으므로 더욱 간절하니라",
+      "source_text_hash": "56440be55635cdae8d1a59bec80c4aa7b100aac27119b6836fe827b0345a07ae",
+      "translation_text_hash": "565a5a4d88119f5d33073e85ffe20538dd1a1791e310e8c5580a4d56e2de7769",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희와 함께 우리의 한 형제를 보내었노니 우리가 여러 가지 일에 그 간절한 것을 여러번 시험하였거니와 이제 저가 너희를 크게 믿으므로 더욱 간절하니라"
+      ],
+      "raw_text_hashes": [
+        "565a5a4d88119f5d33073e85ffe20538dd1a1791e310e8c5580a4d56e2de7769"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:23",
+      "sequence": 28952,
+      "chapter_label": "2CO 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "As for Titus, he is my partner and fellow worker for you. As for our brothers, they are the apostles of the assemblies, the glory of Christ.",
+      "ko": "디도로 말하면 나의 동무요 너희를 위한 나의 동역자요 우리 형제들로 말하면 여러 교회의 사자들이요 그리스도의 영광이니라",
+      "source_text_hash": "e55cefa7c3b22fda8088077434b252de70ad3627e2f175731ee6a9746b19d582",
+      "translation_text_hash": "6fac4f5677a1f6d2df54fcdbd354ceb089028d038104f1b253fba02667a2945c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디도로 말하면 나의 동무요 너희를 위한 나의 동역자요 우리 형제들로 말하면 여러 교회의 사자들이요 그리스도의 영광이니라"
+      ],
+      "raw_text_hashes": [
+        "6fac4f5677a1f6d2df54fcdbd354ceb089028d038104f1b253fba02667a2945c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:8:24",
+      "sequence": 28953,
+      "chapter_label": "2CO 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CO",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore show the proof of your love to them before the assemblies, and of our boasting on your behalf.",
+      "ko": "그러므로 너희는 여러 교회 앞에서 너희의 사랑과 너희를 대한 우리 자랑의 증거를 저희에게 보이라",
+      "source_text_hash": "25069d55ebccbca10f3ef78c32badfac44ebb01a69f18804a751d2a1b7383093",
+      "translation_text_hash": "a293591ca4962ddc6af758df2508bbf1b4699137eb2e921c55e89756cd49778e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 여러 교회 앞에서 너희의 사랑과 너희를 대한 우리 자랑의 증거를 저희에게 보이라"
+      ],
+      "raw_text_hashes": [
+        "a293591ca4962ddc6af758df2508bbf1b4699137eb2e921c55e89756cd49778e"
+      ]
+    }
+  ]
+}

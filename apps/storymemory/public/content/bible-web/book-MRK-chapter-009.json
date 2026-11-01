@@ -1,0 +1,1613 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:009",
+  "unit_ordinal": 966,
+  "unit_label": "MRK 9",
+  "book_code": "MRK",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:9:1",
+      "sequence": 24540,
+      "chapter_label": "MRK 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "He said to them, “Most certainly I tell you, there are some standing here who will in no way taste death until they see God’s Kingdom come with power.”",
+      "ko": "또 저희에게 이르시되 내가 진실로 너희에게 이르노니 여기 섰는 사람 중에 죽기 전에 하나님의 나라가 권능으로 임하는 것을 볼 자들도 있느니라 하시니라",
+      "source_text_hash": "7b8522c94269199ef026b5e0e0dee69ada1dd08f052345bbf5f5c60a1b2eabdb",
+      "translation_text_hash": "89a0dcaf795d63106f267d09ef87a0d7ae2ac93f440215ab8d5a15af04bf7042",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희에게 이르시되 내가 진실로 너희에게 이르노니 여기 섰는 사람 중에 죽기 전에 하나님의 나라가 권능으로 임하는 것을 볼 자들도 있느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "89a0dcaf795d63106f267d09ef87a0d7ae2ac93f440215ab8d5a15af04bf7042"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:2",
+      "sequence": 24541,
+      "chapter_label": "MRK 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "After six days Jesus took with him Peter, James, and John, and brought them up onto a high mountain privately by themselves, and he was changed into another form in front of them.",
+      "ko": "엿새 후에 예수께서 베드로와 야고보와 요한을 데리시고 따로 높은 산에 올라가셨더니 저희 앞에서 변형되사",
+      "source_text_hash": "e3bedc6e4412294ff6008e72170624c6067e8c98f54471e714020acfecf839c7",
+      "translation_text_hash": "5ce38ff442429a2b97cfb433d8420be6bdb3f9ba2c8e4325ee006b942441ea69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엿새 후에 예수께서 베드로와 야고보와 요한을 데리시고 따로 높은 산에 올라가셨더니 저희 앞에서 변형되사"
+      ],
+      "raw_text_hashes": [
+        "5ce38ff442429a2b97cfb433d8420be6bdb3f9ba2c8e4325ee006b942441ea69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:3",
+      "sequence": 24542,
+      "chapter_label": "MRK 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "His clothing became glistening, exceedingly white, like snow, such as no launderer on earth can whiten them.",
+      "ko": "그 옷이 광채가 나며 세상에서 빨래하는 자가 그렇게 희게 할 수 없을만큼 심히 희어졌더라",
+      "source_text_hash": "c92a20ddb59ee6438b76dc6ec5a07dd8f96b8d6e9b31f2d92d11fb7aa39e6067",
+      "translation_text_hash": "ccb1b1f29277d948cffd55564a05caf04681899d921c699cf592a594fabd8097",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 옷이 광채가 나며 세상에서 빨래하는 자가 그렇게 희게 할 수 없을만큼 심히 희어졌더라"
+      ],
+      "raw_text_hashes": [
+        "ccb1b1f29277d948cffd55564a05caf04681899d921c699cf592a594fabd8097"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:4",
+      "sequence": 24543,
+      "chapter_label": "MRK 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "Elijah and Moses appeared to them, and they were talking with Jesus.",
+      "ko": "이에 엘리야가 모세와 함께 저희에게 나타나 예수로 더불어 말씀하거늘",
+      "source_text_hash": "fe4af4bd50147ed3dd36ac66888e4c5ca7da4987f6062fef43976aeb665c5032",
+      "translation_text_hash": "9fae3b38bb8554ff2e054e1bd0c810d178efebade461d756637de16b3758a3eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 엘리야가 모세와 함께 저희에게 나타나 예수로 더불어 말씀하거늘"
+      ],
+      "raw_text_hashes": [
+        "9fae3b38bb8554ff2e054e1bd0c810d178efebade461d756637de16b3758a3eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:5",
+      "sequence": 24544,
+      "chapter_label": "MRK 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "Peter answered Jesus, “Rabbi, it is good for us to be here. Let’s make three tents: one for you, one for Moses, and one for Elijah.”",
+      "ko": "베드로가 예수께 고하되 랍비여 우리가 여기 있는 것이 좋사오니 우리가 초막 셋을 짓되 하나는 주를 위하여, 하나는 모세를 위하여, 하나는 엘리야를 위하여 하사이다 하니",
+      "source_text_hash": "89b7dc0d4ce2e2722fecbe4c43171a8461a89d680734ce1f6607a63243939e5b",
+      "translation_text_hash": "de3241593c199e1589a6c3de026c12f5bdceebb44d6d6a0de5aa016d2bbc6acb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 예수께 고하되 랍비여 우리가 여기 있는 것이 좋사오니 우리가 초막 셋을 짓되 하나는 주를 위하여, 하나는 모세를 위하여, 하나는 엘리야를 위하여 하사이다 하니"
+      ],
+      "raw_text_hashes": [
+        "de3241593c199e1589a6c3de026c12f5bdceebb44d6d6a0de5aa016d2bbc6acb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:6",
+      "sequence": 24545,
+      "chapter_label": "MRK 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "For he didn’t know what to say, for they were very afraid.",
+      "ko": "이는 저희가 심히 무서워하므로 저가 무슨 말을 할는지 알지 못함이더라",
+      "source_text_hash": "334a2b10ac52da89e8bd12673690342f4cef52a5c4fcfd2771394ad370283d55",
+      "translation_text_hash": "4a350c2124f5f81187637247147cef1bf3d58321dcfacb7a884d08ab0fd727bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희가 심히 무서워하므로 저가 무슨 말을 할는지 알지 못함이더라"
+      ],
+      "raw_text_hashes": [
+        "4a350c2124f5f81187637247147cef1bf3d58321dcfacb7a884d08ab0fd727bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:7",
+      "sequence": 24546,
+      "chapter_label": "MRK 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "A cloud came, overshadowing them, and a voice came out of the cloud, “This is my beloved Son. Listen to him.”",
+      "ko": "마침 구름이 와서 저희를 덮으며 구름 속에서 소리가 나되 이는 내 사랑하는 아들이니 너희는 저의 말을 들으라 하는지라",
+      "source_text_hash": "fe171f084810513dde9a243a43ee4cb7dcce7c13a2b77818b0dfa5a168cb221e",
+      "translation_text_hash": "757efdc1dcf9ad397c0a1c80e5139118edbd70d0dac720ada86a7890cd334ac8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 구름이 와서 저희를 덮으며 구름 속에서 소리가 나되 이는 내 사랑하는 아들이니 너희는 저의 말을 들으라 하는지라"
+      ],
+      "raw_text_hashes": [
+        "757efdc1dcf9ad397c0a1c80e5139118edbd70d0dac720ada86a7890cd334ac8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:8",
+      "sequence": 24547,
+      "chapter_label": "MRK 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Suddenly looking around, they saw no one with them any more, except Jesus only.",
+      "ko": "문득 둘러보니 아무도 보이지 아니하고 오직 예수와 자기들 뿐이었더라",
+      "source_text_hash": "8d62b3f4062f6809af4b539405e9fd9d0cac8e614face4254ea08f4bb074964a",
+      "translation_text_hash": "7037ba782bea80d7e7fa6ebf18938994bdbb813068069e98ff25176fbb7fd603",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문득 둘러보니 아무도 보이지 아니하고 오직 예수와 자기들 뿐이었더라"
+      ],
+      "raw_text_hashes": [
+        "7037ba782bea80d7e7fa6ebf18938994bdbb813068069e98ff25176fbb7fd603"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:9",
+      "sequence": 24548,
+      "chapter_label": "MRK 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "As they were coming down from the mountain, he commanded them that they should tell no one what things they had seen, until after the Son of Man had risen from the dead.",
+      "ko": "저희가 산에서 내려 올 때에 예수께서 경계하시되 인자가 죽은 자 가운데서 살아날 때까지는 본 것을 아무에게도 이르지 말라 하시니",
+      "source_text_hash": "4ea5d18ee1f444371d4eb8d48a74520794fd5322852cd6d6641ad6cacb24a8e3",
+      "translation_text_hash": "b2b26e39ba720b6b59b2a2145900e74dd887c7b49c1e36eebaa064facfd71800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 산에서 내려 올 때에 예수께서 경계하시되 인자가 죽은 자 가운데서 살아날 때까지는 본 것을 아무에게도 이르지 말라 하시니"
+      ],
+      "raw_text_hashes": [
+        "b2b26e39ba720b6b59b2a2145900e74dd887c7b49c1e36eebaa064facfd71800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:10",
+      "sequence": 24549,
+      "chapter_label": "MRK 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "They kept this saying to themselves, questioning what the “rising from the dead” meant.",
+      "ko": "저희가 이 말씀을 마음에 두며 서로 문의하되 죽은 자 가운데서 살아나는 것이 무엇일까 하고",
+      "source_text_hash": "03d3936741d7f3c733d7b024cd9d303457fcb222c60d45da66870da5936de3fc",
+      "translation_text_hash": "c9b530796e6a8fa4811a89e71a930bf00273650cc37c51d3ef6ed460b733fe88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이 말씀을 마음에 두며 서로 문의하되 죽은 자 가운데서 살아나는 것이 무엇일까 하고"
+      ],
+      "raw_text_hashes": [
+        "c9b530796e6a8fa4811a89e71a930bf00273650cc37c51d3ef6ed460b733fe88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:11",
+      "sequence": 24550,
+      "chapter_label": "MRK 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "They asked him, saying, “Why do the scribes say that Elijah must come first?”",
+      "ko": "이에 예수께 묻자와 가로되 어찌하여 서기관들이 엘리야가 먼저 와야 하리라 하나이까",
+      "source_text_hash": "095349a6db75dd2c38c3a33a627c6c633388c76e403ae581e50e5a9108d1570a",
+      "translation_text_hash": "2937e5fdfe90f12a4ef1ba6a6434bcbca7858fae108ecff52079c369779e386b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께 묻자와 가로되 어찌하여 서기관들이 엘리야가 먼저 와야 하리라 하나이까"
+      ],
+      "raw_text_hashes": [
+        "2937e5fdfe90f12a4ef1ba6a6434bcbca7858fae108ecff52079c369779e386b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:12",
+      "sequence": 24551,
+      "chapter_label": "MRK 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "He said to them, “Elijah indeed comes first, and restores all things. How is it written about the Son of Man, that he should suffer many things and be despised?",
+      "ko": "가라사대 엘리야가 과연 먼저 와서 모든 것을 회복하거니와 어찌 인자에 대하여 기록하기를 많은 고난을 받고 멸시를 당하리라 하였느냐",
+      "source_text_hash": "59acc259e49561335737cf7abdc80d8e63dfcfc16aa6fb0731741f043f3a563f",
+      "translation_text_hash": "f4f57f426aea6c8eeebaef388ed5829472e19905cbd635a8b75929fded8c4970",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 엘리야가 과연 먼저 와서 모든 것을 회복하거니와 어찌 인자에 대하여 기록하기를 많은 고난을 받고 멸시를 당하리라 하였느냐"
+      ],
+      "raw_text_hashes": [
+        "f4f57f426aea6c8eeebaef388ed5829472e19905cbd635a8b75929fded8c4970"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:13",
+      "sequence": 24552,
+      "chapter_label": "MRK 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "But I tell you that Elijah has come, and they have also done to him whatever they wanted to, even as it is written about him.”",
+      "ko": "그러나 내가 너희에게 이르노니 엘리야가 왔으되 기록된 바와 같이 사람들이 임의로 대우하였느니라 하시니라",
+      "source_text_hash": "c88565dac60adfb989defe6b6256cef0024010754eafe7282b90c16b4d61044b",
+      "translation_text_hash": "321a0fb6a55bc5c0cb4f8f7fb1408cd55bd496a5bf30185ee3922a4d95206ea2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 너희에게 이르노니 엘리야가 왔으되 기록된 바와 같이 사람들이 임의로 대우하였느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "321a0fb6a55bc5c0cb4f8f7fb1408cd55bd496a5bf30185ee3922a4d95206ea2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:14",
+      "sequence": 24553,
+      "chapter_label": "MRK 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "Coming to the disciples, he saw a great multitude around them, and scribes questioning them.",
+      "ko": "저희가 이에 제자들에게 와서 보니 큰 무리가 둘렀고 서기관들이 더불어 변론하더니",
+      "source_text_hash": "919f24df1efec0672dfb1d1ebe2ad7f0e923ffc8959dc2d7174ae6c81229fc14",
+      "translation_text_hash": "e089d966cab6587741bc384ef02ffdeb6d1a5a1a15ed1a0240c3b9ed15f60add",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이에 제자들에게 와서 보니 큰 무리가 둘렀고 서기관들이 더불어 변론하더니"
+      ],
+      "raw_text_hashes": [
+        "e089d966cab6587741bc384ef02ffdeb6d1a5a1a15ed1a0240c3b9ed15f60add"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:15",
+      "sequence": 24554,
+      "chapter_label": "MRK 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "Immediately all the multitude, when they saw him, were greatly amazed, and running to him, greeted him.",
+      "ko": "온 무리가 곧 예수를 보고 심히 놀라며 달려와 문안하거늘",
+      "source_text_hash": "09fdcf463fbeacbcd9c5942c1bc2627e195c221aebf60da46eafef2fc794cf11",
+      "translation_text_hash": "4fb1149155ff41c74f8e6a13addaccf9dc3b13ac5c29e9169c965b6af772fd8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 무리가 곧 예수를 보고 심히 놀라며 달려와 문안하거늘"
+      ],
+      "raw_text_hashes": [
+        "4fb1149155ff41c74f8e6a13addaccf9dc3b13ac5c29e9169c965b6af772fd8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:16",
+      "sequence": 24555,
+      "chapter_label": "MRK 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "He asked the scribes, “What are you asking them?”",
+      "ko": "예수께서 물으시되 너희가 무엇을 저희와 변론하느냐",
+      "source_text_hash": "bd23239ff728bb6a90ff7712339a2baa2010ede3c83e315e8299336b4c50594e",
+      "translation_text_hash": "2747c7b9f56d464675e3b784205e0cacee306d162276e6a1a777aaf8b15547f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 물으시되 너희가 무엇을 저희와 변론하느냐"
+      ],
+      "raw_text_hashes": [
+        "2747c7b9f56d464675e3b784205e0cacee306d162276e6a1a777aaf8b15547f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:17",
+      "sequence": 24556,
+      "chapter_label": "MRK 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "One of the multitude answered, “Teacher, I brought to you my son, who has a mute spirit;",
+      "ko": "무리 중에 하나가 대답하되 선생님 벙어리 귀신 들린 내 아들을 선생님께 데려 왔나이다",
+      "source_text_hash": "b7aed29b57755d92a9ac4cdeb1dc57f5cf01f58e7e2596bc085fa38d611346b4",
+      "translation_text_hash": "981b1f59f8860d139fb704b5f4414f4a8b6ac7c9c307f9ce358c6d549b97fad7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리 중에 하나가 대답하되 선생님 벙어리 귀신 들린 내 아들을 선생님께 데려 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "981b1f59f8860d139fb704b5f4414f4a8b6ac7c9c307f9ce358c6d549b97fad7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:18",
+      "sequence": 24557,
+      "chapter_label": "MRK 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "and wherever it seizes him, it throws him down; and he foams at the mouth, grinds his teeth, and becomes rigid. I asked your disciples to cast it out, and they weren’t able.”",
+      "ko": "귀신이 어디서든지 저를 잡으면 거꾸러져 거품을 흘리며 이를 갈며 그리고 파리하여 가는지라 내가 선생의 제자들에게 내어쫓아 달라 하였으나 저희가 능히 하지 못하더이다",
+      "source_text_hash": "13790461d4e0e7ea68313d4337af219a74811e390dfd1aea337b898b5e123ab8",
+      "translation_text_hash": "5bb05d435b1d09227ce988da442b54fa7837687c2cd5eeba4f29a3f611a5e750",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀신이 어디서든지 저를 잡으면 거꾸러져 거품을 흘리며 이를 갈며 그리고 파리하여 가는지라 내가 선생의 제자들에게 내어쫓아 달라 하였으나 저희가 능히 하지 못하더이다"
+      ],
+      "raw_text_hashes": [
+        "5bb05d435b1d09227ce988da442b54fa7837687c2cd5eeba4f29a3f611a5e750"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:19",
+      "sequence": 24558,
+      "chapter_label": "MRK 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "He answered him, “Unbelieving generation, how long shall I be with you? How long shall I bear with you? Bring him to me.”",
+      "ko": "대답하여 가라사대 믿음이 없는 세대여 내가 얼마나 너희와 함께 있으며 얼마나 너희를 참으리요 그를 내게로 데려오라 하시매",
+      "source_text_hash": "29ac944ad1c5369cca804a3d25f61a8d39e1160bcda2c6876399650d34db4864",
+      "translation_text_hash": "56384c74a13c413d4df28bcc24e4b336307ca5d2dbb6ff5be9fbc34988d48750",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 믿음이 없는 세대여 내가 얼마나 너희와 함께 있으며 얼마나 너희를 참으리요 그를 내게로 데려오라 하시매"
+      ],
+      "raw_text_hashes": [
+        "56384c74a13c413d4df28bcc24e4b336307ca5d2dbb6ff5be9fbc34988d48750"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:20",
+      "sequence": 24559,
+      "chapter_label": "MRK 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "They brought him to him, and when he saw him, immediately the spirit convulsed him and he fell on the ground, wallowing and foaming at the mouth.",
+      "ko": "이에 데리고 오니 귀신이 예수를 보고 곧 그 아이로 심히 경련을 일으키게 하는지라 저가 땅에 엎드러져 굴며 거품을 흘리더라",
+      "source_text_hash": "4362ec869c0b20c86d0557e8c635f4db4ec0442b76b97151a8fec944819d8cd2",
+      "translation_text_hash": "25f17f269d5256023dda8e119d0b6f660888367ba45e6e9c1d1fb34ae445ec62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 데리고 오니 귀신이 예수를 보고 곧 그 아이로 심히 경련을 일으키게 하는지라 저가 땅에 엎드러져 굴며 거품을 흘리더라"
+      ],
+      "raw_text_hashes": [
+        "25f17f269d5256023dda8e119d0b6f660888367ba45e6e9c1d1fb34ae445ec62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:21",
+      "sequence": 24560,
+      "chapter_label": "MRK 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "He asked his father, “How long has it been since this has been happening to him?”He said, “From childhood.",
+      "ko": "예수께서 그 아비에게 물으시되 언제부터 이렇게 되었느냐 하시니 가로되 어릴 때부터니이다",
+      "source_text_hash": "ebbc253111e935b94bacaf5b1f5fc40c066d07f4b0d2a3c86d09537659785e3e",
+      "translation_text_hash": "065edc90df93954f59b7de90115e95776c5b6259655892fb793bdf9a0f18215f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 아비에게 물으시되 언제부터 이렇게 되었느냐 하시니 가로되 어릴 때부터니이다"
+      ],
+      "raw_text_hashes": [
+        "065edc90df93954f59b7de90115e95776c5b6259655892fb793bdf9a0f18215f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:22",
+      "sequence": 24561,
+      "chapter_label": "MRK 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "Often it has cast him both into the fire and into the water to destroy him. But if you can do anything, have compassion on us and help us.”",
+      "ko": "귀신이 저를 죽이려고 불과 물에 자주 던졌나이다 그러나 무엇을 하실 수 있거든 우리를 불쌍히 여기사 도와 주옵소서",
+      "source_text_hash": "d35afcedc2c5a2317e885f3e8c599491b81bc577f2feaadc57b475ef7fc61490",
+      "translation_text_hash": "960ff494a9be26ea31f9905f41809159a08fc63e49cd59eef139021175001ecd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀신이 저를 죽이려고 불과 물에 자주 던졌나이다 그러나 무엇을 하실 수 있거든 우리를 불쌍히 여기사 도와 주옵소서"
+      ],
+      "raw_text_hashes": [
+        "960ff494a9be26ea31f9905f41809159a08fc63e49cd59eef139021175001ecd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:23",
+      "sequence": 24562,
+      "chapter_label": "MRK 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "Jesus said to him, “If you can believe, all things are possible to him who believes.”",
+      "ko": "예수께서 이르시되 할 수 있거든이 무슨 말이냐 믿는 자에게는 능치 못할 일이 없느니라 하시니",
+      "source_text_hash": "d6c49cea3fcb5b65c19bc4bb53269bf1cc5201d02c6588ebf2b36577ba6119a8",
+      "translation_text_hash": "995ab43fadae097f6a73f9be2444bdcb91c67dff8b3e58101f115fecb0420ded",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 할 수 있거든이 무슨 말이냐 믿는 자에게는 능치 못할 일이 없느니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "995ab43fadae097f6a73f9be2444bdcb91c67dff8b3e58101f115fecb0420ded"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:24",
+      "sequence": 24563,
+      "chapter_label": "MRK 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "Immediately the father of the child cried out with tears, “I believe. Help my unbelief!”",
+      "ko": "곧 그 아이의 아비가 소리를 질러 가로되 내가 믿나이다 나의 믿음 없는 것을 도와 주소서 하더라",
+      "source_text_hash": "7c92551a51d86935a3eac0ed2824d3a5344c17180585db685c34d8d008fe41c3",
+      "translation_text_hash": "bac52a0c751805cc032019c77a656e69f6c13010729929867a7ea002915ffed5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 아이의 아비가 소리를 질러 가로되 내가 믿나이다 나의 믿음 없는 것을 도와 주소서 하더라"
+      ],
+      "raw_text_hashes": [
+        "bac52a0c751805cc032019c77a656e69f6c13010729929867a7ea002915ffed5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:25",
+      "sequence": 24564,
+      "chapter_label": "MRK 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "When Jesus saw that a multitude came running together, he rebuked the unclean spirit, saying to him, “You mute and deaf spirit, I command you, come out of him, and never enter him again!”",
+      "ko": "예수께서 무리의 달려 모이는 것을 보시고 그 더러운 귀신을 꾸짖어 가라사대 벙어리 되고 귀먹은 귀신아 내가 네게 명하노니 그 아이에게서 나오고 다시 들어가지 말라 하시매",
+      "source_text_hash": "b6a57a8b9145268b2bac2e976d8d232ded9835d2e5a2af9c5fe472a565bc6e0b",
+      "translation_text_hash": "2d2775b1fcd800a8faf1309b00d2f39162ae08e7ad285026f4176add040b0d46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 무리의 달려 모이는 것을 보시고 그 더러운 귀신을 꾸짖어 가라사대 벙어리 되고 귀먹은 귀신아 내가 네게 명하노니 그 아이에게서 나오고 다시 들어가지 말라 하시매"
+      ],
+      "raw_text_hashes": [
+        "2d2775b1fcd800a8faf1309b00d2f39162ae08e7ad285026f4176add040b0d46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:26",
+      "sequence": 24565,
+      "chapter_label": "MRK 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "After crying out and convulsing him greatly, it came out of him. The boy became like one dead, so much that most of them said, “He is dead.”",
+      "ko": "귀신이 소리지르며 아이로 심히 경련을 일으키게 하고 나가니 그 아이가 죽은것 같이 되어 많은 사람이 말하기를 죽었다 하나",
+      "source_text_hash": "f79bd0de549183b19f38bc4989808daec8581f2a5b35ed1faa55869649c70395",
+      "translation_text_hash": "c261d3b9258971ce262fa9a6de58c32082783a4955cc140a760424814aca8df4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀신이 소리지르며 아이로 심히 경련을 일으키게 하고 나가니 그 아이가 죽은것 같이 되어 많은 사람이 말하기를 죽었다 하나"
+      ],
+      "raw_text_hashes": [
+        "c261d3b9258971ce262fa9a6de58c32082783a4955cc140a760424814aca8df4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:27",
+      "sequence": 24566,
+      "chapter_label": "MRK 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "But Jesus took him by the hand and raised him up; and he arose.",
+      "ko": "예수께서 그 손을 잡아 일으키시니 이에 일어서니라",
+      "source_text_hash": "ec2ca45ed968afb9f40ed33294e3e0a887ca3690101bf0edfcc0b57e2806a490",
+      "translation_text_hash": "213b748cd551282b2552ba798c943c0d91dfd1401b56403ea9bfc4f8244bb92e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 손을 잡아 일으키시니 이에 일어서니라"
+      ],
+      "raw_text_hashes": [
+        "213b748cd551282b2552ba798c943c0d91dfd1401b56403ea9bfc4f8244bb92e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:28",
+      "sequence": 24567,
+      "chapter_label": "MRK 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "When he had come into the house, his disciples asked him privately, “Why couldn’t we cast it out?”",
+      "ko": "집에 들어가시매 제자들이 종용히 묻자오되 우리는 어찌하여 능히 그 귀신을 쫓아 내지 못하였나이까",
+      "source_text_hash": "b67cacde2c71f3682d12d718e5a3e3c90333ffe6f6b599b893b360c44a986600",
+      "translation_text_hash": "445698cf09444e5586cd040e1214480ee311a1435bf20d492d3baadb71292242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집에 들어가시매 제자들이 종용히 묻자오되 우리는 어찌하여 능히 그 귀신을 쫓아 내지 못하였나이까"
+      ],
+      "raw_text_hashes": [
+        "445698cf09444e5586cd040e1214480ee311a1435bf20d492d3baadb71292242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:29",
+      "sequence": 24568,
+      "chapter_label": "MRK 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "He said to them, “This kind can come out by nothing but by prayer and fasting.”",
+      "ko": "이르시되 기도 외에 다른 것으로는 이런 유가 나갈 수 없느니라 하시니라",
+      "source_text_hash": "61a4d5b2509a128b9cb42a8dcf3c6535d117e842610d2e111e2ddef63b8bb153",
+      "translation_text_hash": "1d80bb6fcfadbde0678f5ce31272383d23e0ab56fbd4146f2209584f12ecebfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 기도 외에 다른 것으로는 이런 유가 나갈 수 없느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "1d80bb6fcfadbde0678f5ce31272383d23e0ab56fbd4146f2209584f12ecebfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:30",
+      "sequence": 24569,
+      "chapter_label": "MRK 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "They went out from there and passed through Galilee. He didn’t want anyone to know it,",
+      "ko": "그곳을 떠나 갈릴리 가운데로 지날쌔 예수께서 아무에게도 알리고자 아니하시니",
+      "source_text_hash": "73a85fe3cc08d834742ad60581828d4a0103938267fe97e4b4d1f37eb3eff49e",
+      "translation_text_hash": "cac681202f99e027b753c36d10f151d57dea85ce218770e11c3a9c8a45c603e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그곳을 떠나 갈릴리 가운데로 지날쌔 예수께서 아무에게도 알리고자 아니하시니"
+      ],
+      "raw_text_hashes": [
+        "cac681202f99e027b753c36d10f151d57dea85ce218770e11c3a9c8a45c603e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:31",
+      "sequence": 24570,
+      "chapter_label": "MRK 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "for he was teaching his disciples, and said to them, “The Son of Man is being handed over to the hands of men, and they will kill him; and when he is killed, on the third day he will rise again.”",
+      "ko": "이는 제자들을 가르치시며 또 인자가 사람들의 손에 넘기워 죽임을 당하고 죽은지 삼 일만에 살아나리라는 것을 말씀하시는 연고더라",
+      "source_text_hash": "948b0f3dc9748bd72fa70ecca75735906df00ced27b0245d916f477d54e86103",
+      "translation_text_hash": "bf2ac7b0c5b3c87f4c630233100e0c8f494d4c64fc7a1d82a58008170e1f3e3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 제자들을 가르치시며 또 인자가 사람들의 손에 넘기워 죽임을 당하고 죽은지 삼 일만에 살아나리라는 것을 말씀하시는 연고더라"
+      ],
+      "raw_text_hashes": [
+        "bf2ac7b0c5b3c87f4c630233100e0c8f494d4c64fc7a1d82a58008170e1f3e3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:32",
+      "sequence": 24571,
+      "chapter_label": "MRK 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "But they didn’t understand the saying, and were afraid to ask him.",
+      "ko": "그러나 제자들은 이 말씀을 깨닫지 못하고 묻기도 무서워하더라",
+      "source_text_hash": "c1dfef692c2053d233f0a58e1210fdb00d90a48d443a2737a8df94ad13c62f88",
+      "translation_text_hash": "e03f76707005505e8605e9042855805bad573ad0ea6db70a5051a8bbb16d9460",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 제자들은 이 말씀을 깨닫지 못하고 묻기도 무서워하더라"
+      ],
+      "raw_text_hashes": [
+        "e03f76707005505e8605e9042855805bad573ad0ea6db70a5051a8bbb16d9460"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:33",
+      "sequence": 24572,
+      "chapter_label": "MRK 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "He came to Capernaum, and when he was in the house he asked them, “What were you arguing among yourselves on the way?”",
+      "ko": "가버나움에 이르러 집에 계실쌔 제자들에게 물으시되 너희가 노중에서 서로 토론한 것이 무엇이냐 하시되",
+      "source_text_hash": "3504ece5579599b8afdf7c0aef0a97f512d747519f5919c4558ab6c727258c87",
+      "translation_text_hash": "a1e90601dbd2515d1e5e6da3a2d9578e1119d09c3dfc8608aa0d1908b8f958cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가버나움에 이르러 집에 계실쌔 제자들에게 물으시되 너희가 노중에서 서로 토론한 것이 무엇이냐 하시되"
+      ],
+      "raw_text_hashes": [
+        "a1e90601dbd2515d1e5e6da3a2d9578e1119d09c3dfc8608aa0d1908b8f958cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:34",
+      "sequence": 24573,
+      "chapter_label": "MRK 9",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 34
+        }
+      ],
+      "en": "But they were silent, for they had disputed with one another on the way about who was the greatest.",
+      "ko": "저희가 잠잠하니 이는 노중에서 서로 누가 크냐 하고 쟁론하였음이라",
+      "source_text_hash": "cd4aab7f06c460a4f95e404aac93d2e3f9d9f9ad1b125569dcb181855d281627",
+      "translation_text_hash": "d4b158694b1195fd8bb15f721fef141e2cef17a9fc8781274a5a69fc1ded3b49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 잠잠하니 이는 노중에서 서로 누가 크냐 하고 쟁론하였음이라"
+      ],
+      "raw_text_hashes": [
+        "d4b158694b1195fd8bb15f721fef141e2cef17a9fc8781274a5a69fc1ded3b49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:35",
+      "sequence": 24574,
+      "chapter_label": "MRK 9",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 35
+        }
+      ],
+      "en": "He sat down and called the twelve; and he said to them, “If any man wants to be first, he shall be last of all, and servant of all.”",
+      "ko": "예수께서 앉으사 열 두 제자를 불러서 이르시되 아무든지 첫째가 되고자 하면 뭇사람의 끝이 되며 뭇사람을 섬기는 자가 되어야 하리라 하시고",
+      "source_text_hash": "da605a910e891b34c228c6abdd8db26ae4b73902365c2f428100a64d76792d79",
+      "translation_text_hash": "fcf6b887af6815f2df4e45f16755b91971c7ebcc0655685a518051788189e07a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 앉으사 열 두 제자를 불러서 이르시되 아무든지 첫째가 되고자 하면 뭇사람의 끝이 되며 뭇사람을 섬기는 자가 되어야 하리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "fcf6b887af6815f2df4e45f16755b91971c7ebcc0655685a518051788189e07a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:36",
+      "sequence": 24575,
+      "chapter_label": "MRK 9",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 36
+        }
+      ],
+      "en": "He took a little child and set him in the middle of them. Taking him in his arms, he said to them,",
+      "ko": "어린 아이 하나를 데려다가 그들 가운데 세우시고 안으시며 제자들에게 이르시되",
+      "source_text_hash": "7046731ad7c790c3167549ca3f5c56c4e90af4aa4ee9d85f363b80da05d0024b",
+      "translation_text_hash": "2502702dc129b2576577bdee53f8976435dfa059c88e42e60043aacebb2fd0bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어린 아이 하나를 데려다가 그들 가운데 세우시고 안으시며 제자들에게 이르시되"
+      ],
+      "raw_text_hashes": [
+        "2502702dc129b2576577bdee53f8976435dfa059c88e42e60043aacebb2fd0bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:37",
+      "sequence": 24576,
+      "chapter_label": "MRK 9",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 37
+        }
+      ],
+      "en": "“Whoever receives one such little child in my name receives me; and whoever receives me, doesn’t receive me, but him who sent me.”",
+      "ko": "누구든지 내 이름으로 이런 어린 아이 하나를 영접하면 곧 나를 영접함이요 누구든지 나를 영접하면 나를 영접함이 아니요 나를 보내신 이를 영접함이니라",
+      "source_text_hash": "b3493bafa721d6f1bccf141a8bcc26094e723121407cc7645f9e16687554cafa",
+      "translation_text_hash": "72d67ca85320ce6879bb6439be11998c5525b7099c4f7fa315a8c8c1c66efa0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 내 이름으로 이런 어린 아이 하나를 영접하면 곧 나를 영접함이요 누구든지 나를 영접하면 나를 영접함이 아니요 나를 보내신 이를 영접함이니라"
+      ],
+      "raw_text_hashes": [
+        "72d67ca85320ce6879bb6439be11998c5525b7099c4f7fa315a8c8c1c66efa0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:38",
+      "sequence": 24577,
+      "chapter_label": "MRK 9",
+      "verse_label": "38",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 38
+        }
+      ],
+      "en": "John said to him, “Teacher, we saw someone who doesn’t follow us casting out demons in your name; and we forbade him, because he doesn’t follow us.”",
+      "ko": "요한이 예수께 여짜오되 선생님 우리를 따르지 않는 어떤 자가 주의 이름으로 귀신을 내어쫓는 것을 우리가 보고 우리를 따르지 아니하므로 금하였나이다",
+      "source_text_hash": "a2bd192efdf2c8ae5c746caee2b99db7a9544e5c431b55516aee89d7096b2587",
+      "translation_text_hash": "8168eb1dc8904ae5c9b073b978ad0cded100f8b72ad2b263ab4c0bf8e100e82b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 예수께 여짜오되 선생님 우리를 따르지 않는 어떤 자가 주의 이름으로 귀신을 내어쫓는 것을 우리가 보고 우리를 따르지 아니하므로 금하였나이다"
+      ],
+      "raw_text_hashes": [
+        "8168eb1dc8904ae5c9b073b978ad0cded100f8b72ad2b263ab4c0bf8e100e82b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:39",
+      "sequence": 24578,
+      "chapter_label": "MRK 9",
+      "verse_label": "39",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 39
+        }
+      ],
+      "en": "But Jesus said, “Don’t forbid him, for there is no one who will do a mighty work in my name and be able quickly to speak evil of me.",
+      "ko": "예수께서 가라사대 금하지 말라 내 이름을 의탁하여 능한 일을 행하고 즉시로 나를 비방할 자가 없느니라",
+      "source_text_hash": "480af595519d45917a4b8e23f6151f08282158d39483c2588d01eab24768fee9",
+      "translation_text_hash": "36653027e40785ee693282cc53436c39509a2f4b9cf20ef15ad971e5e148e33c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 금하지 말라 내 이름을 의탁하여 능한 일을 행하고 즉시로 나를 비방할 자가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "36653027e40785ee693282cc53436c39509a2f4b9cf20ef15ad971e5e148e33c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:40",
+      "sequence": 24579,
+      "chapter_label": "MRK 9",
+      "verse_label": "40",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 40
+        }
+      ],
+      "en": "For whoever is not against us is on our side.",
+      "ko": "우리를 반대하지 않는 자는 우리를 위하는 자니라",
+      "source_text_hash": "d9b5220780e7c2c8d4dadb2e0d7b220d7fdd671c44f039ceae782ddc8cf671e6",
+      "translation_text_hash": "6cc5a8c404bc1f7abc9e9903568728ac8b4555654cde09d555e899bffdefe5b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 반대하지 않는 자는 우리를 위하는 자니라"
+      ],
+      "raw_text_hashes": [
+        "6cc5a8c404bc1f7abc9e9903568728ac8b4555654cde09d555e899bffdefe5b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:41",
+      "sequence": 24580,
+      "chapter_label": "MRK 9",
+      "verse_label": "41",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 41
+        }
+      ],
+      "en": "For whoever will give you a cup of water to drink in my name because you are Christ’s, most certainly I tell you, he will in no way lose his reward.",
+      "ko": "누구든지 너희를 그리스도에게 속한 자라 하여 물 한 그릇을 주면 내가 진실로 너희에게 이르노니 저가 결단코 상을 잃지 않으리라",
+      "source_text_hash": "f228fb423d06535ecb2805b2972e33df6696efed7546cf4cd99abff33be9f213",
+      "translation_text_hash": "9662605a5d99a130cdd9798381719eb49c7bc7e4da772010f7cea2e408dfe42f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 너희를 그리스도에게 속한 자라 하여 물 한 그릇을 주면 내가 진실로 너희에게 이르노니 저가 결단코 상을 잃지 않으리라"
+      ],
+      "raw_text_hashes": [
+        "9662605a5d99a130cdd9798381719eb49c7bc7e4da772010f7cea2e408dfe42f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:42",
+      "sequence": 24581,
+      "chapter_label": "MRK 9",
+      "verse_label": "42",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 42
+        }
+      ],
+      "en": "“Whoever will cause one of these little ones who believe in me to stumble, it would be better for him if he were thrown into the sea with a millstone hung around his neck.",
+      "ko": "또 누구든지 나를 믿는 이 소자 중 하나를 실족케 하면 차라리 연자 맷돌을 그 목에 달리우고 바다에 던지움이 나으리라",
+      "source_text_hash": "d0dab35ca366cff3136cd3ca54b8fbadfd94e9a562b1871fa5d2b4b09e35bbf2",
+      "translation_text_hash": "3c3e12185365b234a82552fc43746620747fb63dea11e8ecd7c1c31a57e20143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 누구든지 나를 믿는 이 소자 중 하나를 실족케 하면 차라리 연자 맷돌을 그 목에 달리우고 바다에 던지움이 나으리라"
+      ],
+      "raw_text_hashes": [
+        "3c3e12185365b234a82552fc43746620747fb63dea11e8ecd7c1c31a57e20143"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:43",
+      "sequence": 24582,
+      "chapter_label": "MRK 9",
+      "verse_label": "43",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 43
+        }
+      ],
+      "en": "If your hand causes you to stumble, cut it off. It is better for you to enter into life maimed, rather than having your two hands to go into Gehenna, into the unquenchable fire,",
+      "ko": "만일 네 손이 너를 범죄케 하거든 찍어버리라 불구자로 영생에 들어가는 것이 두 손을 가지고 지옥 꺼지지 않는 불에 들어가는 것보다 나으니라",
+      "source_text_hash": "3f3924fcea5132e2d23761eee59458a98100c8b3d88e82a0913a96c4c32016c8",
+      "translation_text_hash": "3f2af0247ebbd1e1cfe1dea940b0ab876023cf0091862c84648a64c7176c8ab2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 네 손이 너를 범죄케 하거든 찍어버리라 불구자로 영생에 들어가는 것이 두 손을 가지고 지옥 꺼지지 않는 불에 들어가는 것보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "3f2af0247ebbd1e1cfe1dea940b0ab876023cf0091862c84648a64c7176c8ab2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:44",
+      "sequence": 24583,
+      "chapter_label": "MRK 9",
+      "verse_label": "44",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 44
+        }
+      ],
+      "en": "‘where their worm doesn’t die, and the fire is not quenched.’",
+      "ko": "(없음)",
+      "source_text_hash": "05f55de63b6d86b9036da2c275a70eee02fafacdc97ddf95c182fe59e17dc57a",
+      "translation_text_hash": "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(없음)"
+      ],
+      "raw_text_hashes": [
+        "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:45",
+      "sequence": 24584,
+      "chapter_label": "MRK 9",
+      "verse_label": "45",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 45
+        }
+      ],
+      "en": "If your foot causes you to stumble, cut it off. It is better for you to enter into life lame, rather than having your two feet to be cast into Gehenna, into the fire that will never be quenched—",
+      "ko": "만일 네 발이 너를 범죄케 하거든 찍어 버리라 절뚝발이로 영생에 들어가는 것이 두 발을 가지고 지옥에 던지우는 것보다 나으니라",
+      "source_text_hash": "b6daab8b2dce51e08152446fb9ae6d7e2f52dae5f1932701ba1a509b09297c1a",
+      "translation_text_hash": "56507e901ca99e96af55568b1c63717e9dd47de6e040720a492bfdfa80b6194c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 네 발이 너를 범죄케 하거든 찍어 버리라 절뚝발이로 영생에 들어가는 것이 두 발을 가지고 지옥에 던지우는 것보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "56507e901ca99e96af55568b1c63717e9dd47de6e040720a492bfdfa80b6194c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:46",
+      "sequence": 24585,
+      "chapter_label": "MRK 9",
+      "verse_label": "46",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 46
+        }
+      ],
+      "en": "‘where their worm doesn’t die, and the fire is not quenched.’",
+      "ko": "(없음)",
+      "source_text_hash": "05f55de63b6d86b9036da2c275a70eee02fafacdc97ddf95c182fe59e17dc57a",
+      "translation_text_hash": "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(없음)"
+      ],
+      "raw_text_hashes": [
+        "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:47",
+      "sequence": 24586,
+      "chapter_label": "MRK 9",
+      "verse_label": "47",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 47
+        }
+      ],
+      "en": "If your eye causes you to stumble, throw it out. It is better for you to enter into God’s Kingdom with one eye, rather than having two eyes to be cast into the Gehennaof fire,",
+      "ko": "만일 네 눈이 너를 범죄케 하거든 빼어버리라 한 눈으로 하나님의 나라에 들어가는 것이 두 눈을 가지고 지옥에 던지우는 것보다 나으니라",
+      "source_text_hash": "0eac5a83e2cf65e1d70491da70f8e9a42f9fe314a50a46d2c2801735c6675438",
+      "translation_text_hash": "06fc947ab794c2643144710fd52a5f88bfb3fbda5b85ac74777626c283951d84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 네 눈이 너를 범죄케 하거든 빼어버리라 한 눈으로 하나님의 나라에 들어가는 것이 두 눈을 가지고 지옥에 던지우는 것보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "06fc947ab794c2643144710fd52a5f88bfb3fbda5b85ac74777626c283951d84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:48",
+      "sequence": 24587,
+      "chapter_label": "MRK 9",
+      "verse_label": "48",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 48
+        }
+      ],
+      "en": "‘where their worm doesn’t die, and the fire is not quenched.’",
+      "ko": "거기는 구더기도 죽지 않고 불도 꺼지지 아니하느니라",
+      "source_text_hash": "05f55de63b6d86b9036da2c275a70eee02fafacdc97ddf95c182fe59e17dc57a",
+      "translation_text_hash": "e2d133c19a090482c21ada1817f8175ffcf380d8d520d1fe0e1b62561f7b6d72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기는 구더기도 죽지 않고 불도 꺼지지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "e2d133c19a090482c21ada1817f8175ffcf380d8d520d1fe0e1b62561f7b6d72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:49",
+      "sequence": 24588,
+      "chapter_label": "MRK 9",
+      "verse_label": "49",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 49
+        }
+      ],
+      "en": "For everyone will be salted with fire, and every sacrifice will be seasoned with salt.",
+      "ko": "사람마다 불로서 소금 치듯함을 받으리라",
+      "source_text_hash": "7487055fbb296765f2445f24242c54f600139c69c3144ddf43e1ceebf7ea0ad2",
+      "translation_text_hash": "dd4e09818e53a26fd2133184bb1b2ee2017e61682ad16857dd9a4447024dd1bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람마다 불로서 소금 치듯함을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "dd4e09818e53a26fd2133184bb1b2ee2017e61682ad16857dd9a4447024dd1bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:9:50",
+      "sequence": 24589,
+      "chapter_label": "MRK 9",
+      "verse_label": "50",
+      "locator": {
+        "book": "MRK",
+        "chapter": 9,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 9,
+          "verse": 50
+        }
+      ],
+      "en": "Salt is good, but if the salt has lost its saltiness, with what will you season it? Have salt in yourselves, and be at peace with one another.”",
+      "ko": "소금은 좋은 것이로되 만일 소금이 그 맛을 잃으면 무엇으로 이를 짜게 하리요 너희 속에 소금을 두고 서로 화목하라 하시니라",
+      "source_text_hash": "23c748a03d35fe4e07863f7fa674609c42b81bcb5c64cf190f5cd9997393fb04",
+      "translation_text_hash": "6888a1c91b2362a460b0e7dfa6722ce57f4ef37a724228c8a8994c6ee2ab493b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소금은 좋은 것이로되 만일 소금이 그 맛을 잃으면 무엇으로 이를 짜게 하리요 너희 속에 소금을 두고 서로 화목하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "6888a1c91b2362a460b0e7dfa6722ce57f4ef37a724228c8a8994c6ee2ab493b"
+      ]
+    }
+  ]
+}

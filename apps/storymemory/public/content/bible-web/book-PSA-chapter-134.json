@@ -1,0 +1,109 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:134",
+  "unit_ordinal": 612,
+  "unit_label": "PSA 134",
+  "book_code": "PSA",
+  "chapter_number": 134,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:134:1",
+      "sequence": 16174,
+      "chapter_label": "PSA 134",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 134,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 134,
+          "verse": 1
+        }
+      ],
+      "en": "Look! Praise the LORD, all you servants of the LORD, who stand by night in the LORD’s house!",
+      "ko": "밤에 여호와의 집에 섰는 여호와의 모든 종들아 여호와를 송축하라",
+      "source_text_hash": "e9db99ee3f20fdbb41cbf4ec11b88d92a68b3a8e1b2b6316800b592cb015e44f",
+      "translation_text_hash": "81c9e1f5ca7d2955a92baba877c2e2532ad7e6ea8234ebe480905d6f78329623",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 여호와의 집에 섰는 여호와의 모든 종들아 여호와를 송축하라"
+      ],
+      "raw_text_hashes": [
+        "81c9e1f5ca7d2955a92baba877c2e2532ad7e6ea8234ebe480905d6f78329623"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:134:2",
+      "sequence": 16175,
+      "chapter_label": "PSA 134",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 134,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 134,
+          "verse": 2
+        }
+      ],
+      "en": "Lift up your hands in the sanctuary. Praise the LORD!",
+      "ko": "성소를 향하여 너희 손을 들고 여호와를 송축하라",
+      "source_text_hash": "a5c376e3ef6d84a1117b67caa47ba9f69fcbdcabb7204d427a551c7350647980",
+      "translation_text_hash": "f2cc69d8396714cfb915422806c92905fa7eb34ec12f20dd52808491db218f78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성소를 향하여 너희 손을 들고 여호와를 송축하라"
+      ],
+      "raw_text_hashes": [
+        "f2cc69d8396714cfb915422806c92905fa7eb34ec12f20dd52808491db218f78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:134:3",
+      "sequence": 16176,
+      "chapter_label": "PSA 134",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 134,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 134,
+          "verse": 3
+        }
+      ],
+      "en": "May the LORD bless you from Zion, even he who made heaven and earth.",
+      "ko": "천지를 지으신 여호와께서 시온에서 네게 복을 주실찌어다",
+      "source_text_hash": "4d8ccbe073f356a0ef53adc4ec499b541bc09df9b4dc840c266e5e805d753192",
+      "translation_text_hash": "7550bea125c62a0c4de615bbd13994fdcdb5c81a52743339f3ada65c12d23a31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천지를 지으신 여호와께서 시온에서 네게 복을 주실찌어다"
+      ],
+      "raw_text_hashes": [
+        "7550bea125c62a0c4de615bbd13994fdcdb5c81a52743339f3ada65c12d23a31"
+      ]
+    }
+  ]
+}

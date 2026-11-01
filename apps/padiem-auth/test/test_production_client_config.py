@@ -18,22 +18,41 @@ class AuthClientConfigTest(unittest.TestCase):
         self.assertTrue(all(key.get('kty') == 'EC' and key.get('crv') == 'P-256' and 'd' not in key for key in keys))
 
 
-    def test_chat_comparison_has_exact_callback_and_public_key(self):
-        config = tomllib.loads((pathlib.Path(__file__).parents[1] / 'wrangler.toml').read_text())
-        client = json.loads(config['vars']['PADIEM_AUTH_CLIENTS'])['b62']
-        self.assertEqual(client['id'], 'b62')
-        self.assertNotIn('profile_claims', client)
-        staging = json.loads(config['vars']['PADIEM_AUTH_CLIENTS'])['b62-staging']
-        self.assertEqual(staging['profile_claims'], ['email', 'email_verified', 'name', 'picture'])
-        self.assertEqual(client['redirect_uris'], [
-            'https://chat.padiem.net/_test/auth/account-comparison/callback',
-        ])
-        keys = client['jwks']['keys']
-        self.assertEqual(len(keys), 1)
-        self.assertEqual(keys[0]['kid'], 'b62-42c57a6725c907f7f3cf')
-        self.assertEqual(keys[0]['kty'], 'EC')
-        self.assertEqual(keys[0]['crv'], 'P-256')
-        self.assertNotIn('d', keys[0])
+    def test_b62_matches_public_production_snapshot_6bb56bcf(self):
+        config = tomllib.loads((pathlib.Path(__file__).parents[1] / 'wrangler.toml').read_text(encoding='utf-8'))
+        clients = json.loads(config['vars']['PADIEM_AUTH_CLIENTS'])
+        # Public b62 fields read from deployed plain_text version 6bb56bcf.
+        expected = {
+            'id': 'b62',
+            'redirect_uris': [
+                'https://chat.padiem.net/_test/auth/account-comparison/callback',
+                'https://chat.padiem.net/auth/shared/callback',
+            ],
+            'jwks': {'keys': [
+                {
+                    'kty': 'EC', 'crv': 'P-256',
+                    'x': 'Fxm4tj33RhnExqImO8jYVT-o4WL3GuhSQ2XE3M77Apg',
+                    'y': '0atl60nlUhdPeWcd0LGBICEFmXqeB7nAIQhZFaVT6Jg',
+                    'kid': 'b62-42c57a6725c907f7f3cf', 'alg': 'ES256', 'use': 'sig',
+                },
+                {
+                    'kty': 'EC', 'crv': 'P-256',
+                    'x': 'UArI-7kWK28QEWtpXb6sNzapK4H2faShz9ryQQuCpAs',
+                    'y': '43lklNmEhpaARWNss_HwCPNupm0lu3eSZncBp-4qZnA',
+                    'kid': 'b62-com2-2cc5a6a0b3f010ded2e9', 'alg': 'ES256', 'use': 'sig',
+                },
+            ]},
+        }
+        self.assertEqual(clients['b62'], expected)
+        self.assertEqual(len({key['kid'] for key in clients['b62']['jwks']['keys']}), 2)
+        for key in clients['b62']['jwks']['keys']:
+            self.assertEqual(set(key), {'kty', 'crv', 'x', 'y', 'kid', 'alg', 'use'})
+            self.assertNotIn('d', key)
+        self.assertEqual(
+            clients['b62-staging']['profile_claims'],
+            ['email', 'email_verified', 'name', 'picture'],
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

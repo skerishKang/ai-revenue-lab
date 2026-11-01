@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:086",
+  "unit_ordinal": 564,
+  "unit_label": "PSA 86",
+  "book_code": "PSA",
+  "chapter_number": 86,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:86:1",
+      "sequence": 15286,
+      "chapter_label": "PSA 86",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 1
+        }
+      ],
+      "en": "Hear, LORD, and answer me, for I am poor and needy.",
+      "ko": "여호와여 나는 곤고하고 궁핍하오니 귀를 기울여 내게 응답하소서",
+      "source_text_hash": "aca8cadfa01dc4c5bb8a152887f0c615050765abe02e9f9f2a8396763774a01e",
+      "translation_text_hash": "8bfedf9451b27a8d957a99eae54d043e36a1fda4fb79e01cfed10c4740cc6d5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나는 곤고하고 궁핍하오니 귀를 기울여 내게 응답하소서"
+      ],
+      "raw_text_hashes": [
+        "8bfedf9451b27a8d957a99eae54d043e36a1fda4fb79e01cfed10c4740cc6d5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:2",
+      "sequence": 15287,
+      "chapter_label": "PSA 86",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 2
+        }
+      ],
+      "en": "Preserve my soul, for I am godly. You, my God, save your servant who trusts in you.",
+      "ko": "나는 경건하오니 내 영혼을 보존하소서 내 주 하나님이여 주를 의지하는 종을 구원하소서",
+      "source_text_hash": "6f14b314f4fcab80e0dd9265cb190006c3189f42b2b6b2047920a1b7dc8c4cc7",
+      "translation_text_hash": "3b26dde409bf89111f701dab6d912bd2b95acc621e0281bc800168c24b7e9a00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 경건하오니 내 영혼을 보존하소서 내 주 하나님이여 주를 의지하는 종을 구원하소서"
+      ],
+      "raw_text_hashes": [
+        "3b26dde409bf89111f701dab6d912bd2b95acc621e0281bc800168c24b7e9a00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:3",
+      "sequence": 15288,
+      "chapter_label": "PSA 86",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 3
+        }
+      ],
+      "en": "Be merciful to me, Lord, for I call to you all day long.",
+      "ko": "주여 나를 긍휼히 여기소서 내가 종일 주께 부르짖나이다",
+      "source_text_hash": "536620fee18e6658437092a01b995f7f6df790354dd187ca9337355cdaf42b10",
+      "translation_text_hash": "ef190af635407f035f28a16235d504a45b11cdde78330e78629cd33c916e6752",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 나를 긍휼히 여기소서 내가 종일 주께 부르짖나이다"
+      ],
+      "raw_text_hashes": [
+        "ef190af635407f035f28a16235d504a45b11cdde78330e78629cd33c916e6752"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:4",
+      "sequence": 15289,
+      "chapter_label": "PSA 86",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 4
+        }
+      ],
+      "en": "Bring joy to the soul of your servant, for to you, Lord, do I lift up my soul.",
+      "ko": "주여 내 영혼이 주를 우러러 보오니 주여 내 영혼을 기쁘게 하소서",
+      "source_text_hash": "deb67aa525cb6f513a0d5d9f390ec23d945c3d899bc09548f1a4c98392e6ad61",
+      "translation_text_hash": "ca7d3f17d8e672d2b619e08d9765cb63e0b03a60077df8ffacd96747d3d4a1a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 내 영혼이 주를 우러러 보오니 주여 내 영혼을 기쁘게 하소서"
+      ],
+      "raw_text_hashes": [
+        "ca7d3f17d8e672d2b619e08d9765cb63e0b03a60077df8ffacd96747d3d4a1a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:5",
+      "sequence": 15290,
+      "chapter_label": "PSA 86",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 5
+        }
+      ],
+      "en": "For you, Lord, are good, and ready to forgive, abundant in loving kindness to all those who call on you.",
+      "ko": "주는 선하사 사유하기를 즐기시며 주께 부르짖는 자에게 인자함이 후하심이니이다",
+      "source_text_hash": "9124881881ac12a32570f47a3978c743202ea02b56089d21f37b32b6f3f071fa",
+      "translation_text_hash": "0c886936335ca5952a0c7e95cc53ea9d8d71920830df8bc2316e92fc7d6a3b94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 선하사 사유하기를 즐기시며 주께 부르짖는 자에게 인자함이 후하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "0c886936335ca5952a0c7e95cc53ea9d8d71920830df8bc2316e92fc7d6a3b94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:6",
+      "sequence": 15291,
+      "chapter_label": "PSA 86",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 6
+        }
+      ],
+      "en": "Hear, LORD, my prayer. Listen to the voice of my petitions.",
+      "ko": "여호와여 나의 기도에 귀를 기울이시고 나의 간구하는 소리를 들으소서",
+      "source_text_hash": "dca0fe5bba76968a543ecb8fff4892cc3f2fed68226841079f1d17708d6b0ba5",
+      "translation_text_hash": "8156efed5f1a53e289e3dd1652fdfa6bdf5dd663ed5871bff33f1755003023bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나의 기도에 귀를 기울이시고 나의 간구하는 소리를 들으소서"
+      ],
+      "raw_text_hashes": [
+        "8156efed5f1a53e289e3dd1652fdfa6bdf5dd663ed5871bff33f1755003023bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:7",
+      "sequence": 15292,
+      "chapter_label": "PSA 86",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 7
+        }
+      ],
+      "en": "In the day of my trouble I will call on you, for you will answer me.",
+      "ko": "나의 환난 날에 내가 주께 부르짖으리니 주께서 내게 응답하시리이다",
+      "source_text_hash": "5f35cae59f945bdb3120da7862c726fad91f169a3861b45d0425f3d458f36c41",
+      "translation_text_hash": "fc2f6db1998cb7377373cb3aa7cf67043f5aac4f2105b3aa93c4ae8e740bc180",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 환난 날에 내가 주께 부르짖으리니 주께서 내게 응답하시리이다"
+      ],
+      "raw_text_hashes": [
+        "fc2f6db1998cb7377373cb3aa7cf67043f5aac4f2105b3aa93c4ae8e740bc180"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:8",
+      "sequence": 15293,
+      "chapter_label": "PSA 86",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 8
+        }
+      ],
+      "en": "There is no one like you among the gods, Lord, nor any deeds like your deeds.",
+      "ko": "주여 신들 중에 주와 같은 자 없사오며 주의 행사와 같음도 없나이다",
+      "source_text_hash": "ff8f43ae41115a7a2d65b253d3e5381ed8a1b4ad9f29849825de1f15c5fdbce1",
+      "translation_text_hash": "5c5a97aacf050910e55c96d2e2e9fd6246f60a636b12d26fe611a4860bce5ec9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 신들 중에 주와 같은 자 없사오며 주의 행사와 같음도 없나이다"
+      ],
+      "raw_text_hashes": [
+        "5c5a97aacf050910e55c96d2e2e9fd6246f60a636b12d26fe611a4860bce5ec9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:9",
+      "sequence": 15294,
+      "chapter_label": "PSA 86",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 9
+        }
+      ],
+      "en": "All nations you have made will come and worship before you, Lord. They shall glorify your name.",
+      "ko": "주여 주의 지으신 모든 열방이 와서 주의 앞에 경배하며 주의 이름에 영화를 돌리리이다",
+      "source_text_hash": "5e728ee7205bce8552cb096e0ebd5b8425d043834e27b14545705a7d37c268eb",
+      "translation_text_hash": "e0031b8a568cb6a67819bf3f9c989a06e471d745f8c74ddac272f607929dfabb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 주의 지으신 모든 열방이 와서 주의 앞에 경배하며 주의 이름에 영화를 돌리리이다"
+      ],
+      "raw_text_hashes": [
+        "e0031b8a568cb6a67819bf3f9c989a06e471d745f8c74ddac272f607929dfabb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:10",
+      "sequence": 15295,
+      "chapter_label": "PSA 86",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 10
+        }
+      ],
+      "en": "For you are great, and do wondrous things. You are God alone.",
+      "ko": "대저 주는 광대하사 기사를 행하시오니 주만 하나님이시니이다",
+      "source_text_hash": "c39a5522db21fffe62ff9cfbfac6cdf96df6b87005ba57c3debcc9023fc411ce",
+      "translation_text_hash": "72ec6945d869055af95e8c380cae084707b4ae5857adda120b41b25f98aae5df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 주는 광대하사 기사를 행하시오니 주만 하나님이시니이다"
+      ],
+      "raw_text_hashes": [
+        "72ec6945d869055af95e8c380cae084707b4ae5857adda120b41b25f98aae5df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:11",
+      "sequence": 15296,
+      "chapter_label": "PSA 86",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 11
+        }
+      ],
+      "en": "Teach me your way, LORD. I will walk in your truth. Make my heart undivided to fear your name.",
+      "ko": "여호와여 주의 도로 내게 가르치소서 내가 주의 진리에 행하오리니 일심으로 주의 이름을 경외하게 하소서",
+      "source_text_hash": "32928bba70b9995dbac4ab383f640ae38dd2479c9bcc5d7ddeef913d047ffcc9",
+      "translation_text_hash": "afb7975f692beb333a61702d38fa5df1be5c9093e06ff30c66d03b19bebd748f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 도로 내게 가르치소서 내가 주의 진리에 행하오리니 일심으로 주의 이름을 경외하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "afb7975f692beb333a61702d38fa5df1be5c9093e06ff30c66d03b19bebd748f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:12",
+      "sequence": 15297,
+      "chapter_label": "PSA 86",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 12
+        }
+      ],
+      "en": "I will praise you, Lord my God, with my whole heart. I will glorify your name forever more.",
+      "ko": "주 나의 하나님이여 내가 전심으로 주를 찬송하고 영영토록 주의 이름에 영화를 돌리오리니",
+      "source_text_hash": "c7fb175ca5cbc122f23f4e3b5bb2f5536c9960893e744829284074a0cb175ddd",
+      "translation_text_hash": "c42fc7462280b27e8d24a04befb0c48563ff684bbbfc01378084760008d7b882",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 나의 하나님이여 내가 전심으로 주를 찬송하고 영영토록 주의 이름에 영화를 돌리오리니"
+      ],
+      "raw_text_hashes": [
+        "c42fc7462280b27e8d24a04befb0c48563ff684bbbfc01378084760008d7b882"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:13",
+      "sequence": 15298,
+      "chapter_label": "PSA 86",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 13
+        }
+      ],
+      "en": "For your loving kindness is great toward me. You have delivered my soul from the lowest Sheol.",
+      "ko": "이는 내게 향하신 주의 인자가 크사 내 영혼을 깊은 음부에서 건지셨음이니이다",
+      "source_text_hash": "ccade937e77e938776e427531a18dfb03cd7d4a500a2384703c188ff1bfd70a5",
+      "translation_text_hash": "efbd6b9cd088f5d201aea8621ae889ed0e03c4c67e415d40dca622506c11d3e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내게 향하신 주의 인자가 크사 내 영혼을 깊은 음부에서 건지셨음이니이다"
+      ],
+      "raw_text_hashes": [
+        "efbd6b9cd088f5d201aea8621ae889ed0e03c4c67e415d40dca622506c11d3e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:14",
+      "sequence": 15299,
+      "chapter_label": "PSA 86",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 14
+        }
+      ],
+      "en": "God, the proud have risen up against me. A company of violent men have sought after my soul, and they don’t hold regard for you before them.",
+      "ko": "하나님이여 교만한 자가 일어나 나를 치고 강포한 자의 무리가 내 혼을 찾았사오며 자기 앞에 주를 두지 아니하였나이다",
+      "source_text_hash": "5d75c1daac49141b5b5d927f8bc043f3bfe81dfe32331dbb2c3af2c0e39b6253",
+      "translation_text_hash": "512ad28ceff64fc4f2a9a34aa4ab110cdd2584d64a07b04c5277ef7483aa2ad8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 교만한 자가 일어나 나를 치고 강포한 자의 무리가 내 혼을 찾았사오며 자기 앞에 주를 두지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "512ad28ceff64fc4f2a9a34aa4ab110cdd2584d64a07b04c5277ef7483aa2ad8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:15",
+      "sequence": 15300,
+      "chapter_label": "PSA 86",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 15
+        }
+      ],
+      "en": "But you, Lord, are a merciful and gracious God, slow to anger, and abundant in loving kindness and truth.",
+      "ko": "그러나 주여 주는 긍휼히 여기시며 은혜를 베푸시며 노하기를 더디하시며 인자와 진실이 풍성하신 하나님이시오니",
+      "source_text_hash": "69ce21098e6da737f8a56309429ca9ce8309a672fe21995608e9a2c179703caf",
+      "translation_text_hash": "2739518e4f91c008a82db9340cda7c3b19dbe723e370ea0eb1c08dcc9114be7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 주여 주는 긍휼히 여기시며 은혜를 베푸시며 노하기를 더디하시며 인자와 진실이 풍성하신 하나님이시오니"
+      ],
+      "raw_text_hashes": [
+        "2739518e4f91c008a82db9340cda7c3b19dbe723e370ea0eb1c08dcc9114be7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:16",
+      "sequence": 15301,
+      "chapter_label": "PSA 86",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 16
+        }
+      ],
+      "en": "Turn to me, and have mercy on me! Give your strength to your servant. Save the son of your servant.",
+      "ko": "내게로 돌이키사 나를 긍휼히 여기소서 주의 종에게 힘을 주시고 주의 여종의 아들을 구원하소서",
+      "source_text_hash": "844074f74366656b4222626903f8c429c15238268db8252f44605e968db06b58",
+      "translation_text_hash": "6d54442847d63cceed6e84557890c9237f5c27574c2293ac46f7ee6b31636b13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게로 돌이키사 나를 긍휼히 여기소서 주의 종에게 힘을 주시고 주의 여종의 아들을 구원하소서"
+      ],
+      "raw_text_hashes": [
+        "6d54442847d63cceed6e84557890c9237f5c27574c2293ac46f7ee6b31636b13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:86:17",
+      "sequence": 15302,
+      "chapter_label": "PSA 86",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 86,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 86,
+          "verse": 17
+        }
+      ],
+      "en": "Show me a sign of your goodness, that those who hate me may see it, and be shamed, because you, LORD, have helped me, and comforted me.",
+      "ko": "은총의 표징을 내게 보이소서 그러면 나를 미워하는 저희가 보고 부끄러워하오리니 여호와여 주는 나를 돕고 위로하심이니이다",
+      "source_text_hash": "df9eabdaabf0da20ec17d5b9712183ac6b39f35ccad75aafc3871c278c3fa2f7",
+      "translation_text_hash": "89dbd1bbf2856b45ed6d0798eac43e2b7b2faddfc9c0dc1fdedffe0b996b84b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은총의 표징을 내게 보이소서 그러면 나를 미워하는 저희가 보고 부끄러워하오리니 여호와여 주는 나를 돕고 위로하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "89dbd1bbf2856b45ed6d0798eac43e2b7b2faddfc9c0dc1fdedffe0b996b84b4"
+      ]
+    }
+  ]
+}

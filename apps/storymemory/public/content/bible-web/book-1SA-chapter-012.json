@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:012",
+  "unit_ordinal": 248,
+  "unit_label": "1SA 12",
+  "book_code": "1SA",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:12:1",
+      "sequence": 7462,
+      "chapter_label": "1SA 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Samuel said to all Israel, “Behold, I have listened to your voice in all that you said to me, and have made a king over you.",
+      "ko": "사무엘이 온 이스라엘에게 이르되 보라 너희가 내게 한 말을 내가 다 듣고 너희 위에 왕을 세웠더니",
+      "source_text_hash": "99c4aa8a213200c927585d909fdc65134521067f96e3fc6ff6b0e0587f0bbad5",
+      "translation_text_hash": "10ed12a02a84f0aa653e932c64bc1a89323e30734f0c08bc7ecbf3e5c988932a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 온 이스라엘에게 이르되 보라 너희가 내게 한 말을 내가 다 듣고 너희 위에 왕을 세웠더니"
+      ],
+      "raw_text_hashes": [
+        "10ed12a02a84f0aa653e932c64bc1a89323e30734f0c08bc7ecbf3e5c988932a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:2",
+      "sequence": 7463,
+      "chapter_label": "1SA 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "Now, behold, the king walks before you. I am old and gray-headed. Behold, my sons are with you. I have walked before you from my youth to this day.",
+      "ko": "이제 왕이 너희 앞에 출입하느니라 보라 나는 늙어 머리가 희었고 내 아들들도 너희와 함께 있느니라 내가 어려서부터 오늘날까지 너희 앞에 출입하였거니와",
+      "source_text_hash": "6f1c50c0e4b988036a121be85f3161265f90bd9058468505ab0aaafbc4f7369d",
+      "translation_text_hash": "a7804b24bd2469ca69e53d4a603b8866f3f8cc64b36a6524bb571f4d826e93b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 왕이 너희 앞에 출입하느니라 보라 나는 늙어 머리가 희었고 내 아들들도 너희와 함께 있느니라 내가 어려서부터 오늘날까지 너희 앞에 출입하였거니와"
+      ],
+      "raw_text_hashes": [
+        "a7804b24bd2469ca69e53d4a603b8866f3f8cc64b36a6524bb571f4d826e93b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:3",
+      "sequence": 7464,
+      "chapter_label": "1SA 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "Here I am. Witness against me before the LORD and before his anointed. Whose ox have I taken? Whose donkey have I taken? Whom have I defrauded? Whom have I oppressed? Of whose hand have I taken a bribe to make me blind my eyes? I will restore it to you.”",
+      "ko": "내가 여기 있나니 여호와 앞과 그 기름 부음을 받은 자 앞에서 내게 대하여 증거하라 내가 뉘 소를 취하였느냐 뉘 나귀를 취하였느냐 누구를 속였느냐 누구를 압제하였느냐 내 눈을 흐리게 하는 뇌물을 뉘 손에서 취하였느냐 그리하였으면 내가 그것을 너희에게 갚으리라",
+      "source_text_hash": "7909df6835eafde97a3a165bb44766acd7957c8c3e84daab435ffb78e3a435d3",
+      "translation_text_hash": "f5527a45f649ebc07ace34f0bf35ddb789f0883cc184c62c4c589c27f7790b5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 여기 있나니 여호와 앞과 그 기름 부음을 받은 자 앞에서 내게 대하여 증거하라 내가 뉘 소를 취하였느냐 뉘 나귀를 취하였느냐 누구를 속였느냐 누구를 압제하였느냐 내 눈을 흐리게 하는 뇌물을 뉘 손에서 취하였느냐 그리하였으면 내가 그것을 너희에게 갚으리라"
+      ],
+      "raw_text_hashes": [
+        "f5527a45f649ebc07ace34f0bf35ddb789f0883cc184c62c4c589c27f7790b5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:4",
+      "sequence": 7465,
+      "chapter_label": "1SA 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "They said, “You have not defrauded us, nor oppressed us, neither have you taken anything from anyone’s hand.”",
+      "ko": "그들이 가로되 당신이 우리를 속이지 아니하였고 압제하지 아니하였고 뉘 손에서 아무 것도 취한 것이 없나이다",
+      "source_text_hash": "9b4712e32178f52bf4b4398138f357b6f1a63adf9318afa4fcd2ba37a8631a0c",
+      "translation_text_hash": "a49df07171c9f84aac0c2f30d0a83bf51375f4181357c44eebb9da44818f8977",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 당신이 우리를 속이지 아니하였고 압제하지 아니하였고 뉘 손에서 아무 것도 취한 것이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "a49df07171c9f84aac0c2f30d0a83bf51375f4181357c44eebb9da44818f8977"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:5",
+      "sequence": 7466,
+      "chapter_label": "1SA 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "He said to them, “The LORD is witness against you, and his anointed is witness today, that you have not found anything in my hand.” They said, “He is witness.”",
+      "ko": "사무엘이 백성에게 이르되 너희가 내 손에서 아무 것도 찾아낸 것이 없음을 여호와께서 너희에게 대하여 증거하시며 그 기름 부음을 받은 자도 오늘날 증거하느니라 그들이 가로되 그가 증거하시나이다",
+      "source_text_hash": "98313d069b4db7ae3503ed2d2a96e08b5c5c477c056ca521cc0c1eb9f48344c3",
+      "translation_text_hash": "87280ff4ce1fe0abf811dd206dde2af5c37d56268f744f7ab74b98662c8f1bd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 백성에게 이르되 너희가 내 손에서 아무 것도 찾아낸 것이 없음을 여호와께서 너희에게 대하여 증거하시며 그 기름 부음을 받은 자도 오늘날 증거하느니라 그들이 가로되 그가 증거하시나이다"
+      ],
+      "raw_text_hashes": [
+        "87280ff4ce1fe0abf811dd206dde2af5c37d56268f744f7ab74b98662c8f1bd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:6",
+      "sequence": 7467,
+      "chapter_label": "1SA 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "Samuel said to the people, “It is the LORD who appointed Moses and Aaron, and that brought your fathers up out of the land of Egypt.",
+      "ko": "사무엘이 백성에게 이르되 모세와 아론을 세우시며 너희 열조를 애굽 땅에서 인도하여 내신이는 여호와시니",
+      "source_text_hash": "9129e6d44719fa3dc65d768e34ce17e465f5b867a9b1c89f8ae671f7c09ba18c",
+      "translation_text_hash": "fe751a61224e86f589415b7e1d4dd4f6815d85f9440ee6724e6f0713e3403820",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 백성에게 이르되 모세와 아론을 세우시며 너희 열조를 애굽 땅에서 인도하여 내신이는 여호와시니"
+      ],
+      "raw_text_hashes": [
+        "fe751a61224e86f589415b7e1d4dd4f6815d85f9440ee6724e6f0713e3403820"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:7",
+      "sequence": 7468,
+      "chapter_label": "1SA 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "Now therefore stand still, that I may plead with you before the LORD concerning all the righteous acts of the LORD, which he did to you and to your fathers.",
+      "ko": "그런즉 가만히 섰으라 여호와께서 너희와 너희 열조에게 행하신 모든 의로운 일에 대하여 내가 여호와 앞에서 너희와 담론하리라",
+      "source_text_hash": "c7faf125c25fb78d2b8798d5389c5976e45b02dbf2e1265a40cdc6824e8e7c01",
+      "translation_text_hash": "6fb00bbcc9f2e61cf93f6b229d5c9ee5d9084ebb1503d2442905447ccf304b2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 가만히 섰으라 여호와께서 너희와 너희 열조에게 행하신 모든 의로운 일에 대하여 내가 여호와 앞에서 너희와 담론하리라"
+      ],
+      "raw_text_hashes": [
+        "6fb00bbcc9f2e61cf93f6b229d5c9ee5d9084ebb1503d2442905447ccf304b2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:8",
+      "sequence": 7469,
+      "chapter_label": "1SA 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "“When Jacob had come into Egypt, and your fathers cried to the LORD, then the LORD sent Moses and Aaron, who brought your fathers out of Egypt, and made them to dwell in this place.",
+      "ko": "야곱이 애굽에 들어간 후 너희 열조가 여호와께 부르짖으매 여호와께서 모세와 아론을 보내사 그 두 사람으로 너희 열조를 애굽에서 인도하여 내어 이곳에 거하게 하셨으나",
+      "source_text_hash": "056bf816ee8a66eac458f98d712a95589cc9eedb2eb1adb4fd62ae773fc8f9e7",
+      "translation_text_hash": "c1eec4263bfc8bcc26d50e76b6ec5d04a4045ad61db6a37231bb6a63766823ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 애굽에 들어간 후 너희 열조가 여호와께 부르짖으매 여호와께서 모세와 아론을 보내사 그 두 사람으로 너희 열조를 애굽에서 인도하여 내어 이곳에 거하게 하셨으나"
+      ],
+      "raw_text_hashes": [
+        "c1eec4263bfc8bcc26d50e76b6ec5d04a4045ad61db6a37231bb6a63766823ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:9",
+      "sequence": 7470,
+      "chapter_label": "1SA 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "But they forgot the LORD their God; and he sold them into the hand of Sisera, captain of the army of Hazor, and into the hand of the Philistines, and into the hand of the king of Moab; and they fought against them.",
+      "ko": "그들이 그 하나님 여호와를 잊은지라 여호와께서 그들을 하솔 군장 시스라의 손과 블레셋 사람의 손과 모압 왕의 손에 붙이셨더니 그들이 치매",
+      "source_text_hash": "c59a4f8d8105f913e2a3c41a562bc0c45f974c3dc9e7d6c1b2ed3b3bf8d85600",
+      "translation_text_hash": "b73dba506cf79da832e9e78836100770283114e4bfd7445d669e51b247eddf10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 하나님 여호와를 잊은지라 여호와께서 그들을 하솔 군장 시스라의 손과 블레셋 사람의 손과 모압 왕의 손에 붙이셨더니 그들이 치매"
+      ],
+      "raw_text_hashes": [
+        "b73dba506cf79da832e9e78836100770283114e4bfd7445d669e51b247eddf10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:10",
+      "sequence": 7471,
+      "chapter_label": "1SA 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "They cried to the LORD, and said, ‘We have sinned, because we have forsaken the LORD and have served the Baals and the Ashtaroth; but now deliver us out of the hand of our enemies, and we will serve you.’",
+      "ko": "백성이 여호와께 부르짖어 가로되 우리가 여호와를 버리고 바알들과 아스다롯을 섬기므로 범죄하였나이다 그러하오나 이제 우리를 원수들의 손에서 건져내소서 그리하시면 우리가 주를 섬기겠나이다 하매",
+      "source_text_hash": "1ea27215cb8091f35cce619f62c5ed24b9eda645eaf1e91b0d1446f3fe6aa9f0",
+      "translation_text_hash": "7bf4b946b8cf1899dae59533b5ef37c92514d40c31e8fd94ec0ac60be6ce20ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 여호와께 부르짖어 가로되 우리가 여호와를 버리고 바알들과 아스다롯을 섬기므로 범죄하였나이다 그러하오나 이제 우리를 원수들의 손에서 건져내소서 그리하시면 우리가 주를 섬기겠나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "7bf4b946b8cf1899dae59533b5ef37c92514d40c31e8fd94ec0ac60be6ce20ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:11",
+      "sequence": 7472,
+      "chapter_label": "1SA 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD sent Jerubbaal, Bedan, Jephthah, and Samuel, and delivered you out of the hand of your enemies on every side; and you lived in safety.",
+      "ko": "여호와께서 여룹바알과 베단과 입다와 나 사무엘을 보내사 너희를 너희 사방 원수의 손에서 건져내사 너희로 안전히 거하게 하셨거늘",
+      "source_text_hash": "11371b0731438301107f56ed584ecaeaa56a200e2263b5bef0ffbb0d6275ef51",
+      "translation_text_hash": "a7a529d459e2e7357d67eb42659846d3f6f7b3e57b9a78cf1d0368baebd89fa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여룹바알과 베단과 입다와 나 사무엘을 보내사 너희를 너희 사방 원수의 손에서 건져내사 너희로 안전히 거하게 하셨거늘"
+      ],
+      "raw_text_hashes": [
+        "a7a529d459e2e7357d67eb42659846d3f6f7b3e57b9a78cf1d0368baebd89fa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:12",
+      "sequence": 7473,
+      "chapter_label": "1SA 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "“When you saw that Nahash the king of the children of Ammon came against you, you said to me, ‘No, but a king shall reign over us,’ when the LORD your God was your king.",
+      "ko": "너희가 암몬 자손의 왕 나하스의 너희를 치러 옴을 보고 너희 하나님 여호와께서는 너희의 왕이 되실찌라도 너희가 내게 이르기를 아니라 우리를 다스릴 왕이 있어야 하겠다 하였도다",
+      "source_text_hash": "d26d05fe40e2bd683fadfa60c179ee87f333610db977f356afc3d95300eb297e",
+      "translation_text_hash": "b6efee7929a5d16538fb590815f3e5181a8054552a46470e1549d8dafe2f4323",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 암몬 자손의 왕 나하스의 너희를 치러 옴을 보고 너희 하나님 여호와께서는 너희의 왕이 되실찌라도 너희가 내게 이르기를 아니라 우리를 다스릴 왕이 있어야 하겠다 하였도다"
+      ],
+      "raw_text_hashes": [
+        "b6efee7929a5d16538fb590815f3e5181a8054552a46470e1549d8dafe2f4323"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:13",
+      "sequence": 7474,
+      "chapter_label": "1SA 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "Now therefore see the king whom you have chosen and whom you have asked for. Behold, the LORD has set a king over you.",
+      "ko": "이제 너희의 구한 왕, 너희의 택한 왕을 보라 여호와께서 너희 위에 왕을 세우셨느니라",
+      "source_text_hash": "1696d10eda0f6d9770262602604d4a777bb183e95dc571b3b7e9ad3dde3f5134",
+      "translation_text_hash": "0355316e3a6a118924aea93b9f1c00ad287af459ba98544c4ba97ec00ee43c9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희의 구한 왕, 너희의 택한 왕을 보라 여호와께서 너희 위에 왕을 세우셨느니라"
+      ],
+      "raw_text_hashes": [
+        "0355316e3a6a118924aea93b9f1c00ad287af459ba98544c4ba97ec00ee43c9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:14",
+      "sequence": 7475,
+      "chapter_label": "1SA 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "If you will fear the LORD, and serve him, and listen to his voice, and not rebel against the commandment of the LORD, then both you and also the king who reigns over you are followers of the LORD your God.",
+      "ko": "너희가 만일 여호와를 경외하여 그를 섬기며 그 목소리를 듣고 여호와의 명령을 거역하지 아니하며 또 너희와 너희를 다스리는 왕이 너희 하나님 여호와를 좇으면 좋으니라마는",
+      "source_text_hash": "28b40c7b25ec7d3ff2ed49c02e67e70e7431c97f66baa8587dfaab90c92fb5ac",
+      "translation_text_hash": "6b51a0cacdf696a2031970deaca501d8a48fbe1b01c308800c1ef04b8ce0cd2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 여호와를 경외하여 그를 섬기며 그 목소리를 듣고 여호와의 명령을 거역하지 아니하며 또 너희와 너희를 다스리는 왕이 너희 하나님 여호와를 좇으면 좋으니라마는"
+      ],
+      "raw_text_hashes": [
+        "6b51a0cacdf696a2031970deaca501d8a48fbe1b01c308800c1ef04b8ce0cd2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:15",
+      "sequence": 7476,
+      "chapter_label": "1SA 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "But if you will not listen to the LORD’s voice, but rebel against the commandment of the LORD, then the LORD’s hand will be against you, as it was against your fathers.",
+      "ko": "너희가 만일 여호와의 목소리를 듣지 아니하고 여호와의 명령을 거역하면 여호와의 손이 너희의 열조를 치신것 같이 너희를 치실 것이라",
+      "source_text_hash": "1fabf4208c4b88635faf6586a329c7197736fdd3ba3e8ed23a96ca829e242e6a",
+      "translation_text_hash": "68740086d8a64c2f1bd10e68ddf508a63e5e2a3aaa69d770f84c676dc69217a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 여호와의 목소리를 듣지 아니하고 여호와의 명령을 거역하면 여호와의 손이 너희의 열조를 치신것 같이 너희를 치실 것이라"
+      ],
+      "raw_text_hashes": [
+        "68740086d8a64c2f1bd10e68ddf508a63e5e2a3aaa69d770f84c676dc69217a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:16",
+      "sequence": 7477,
+      "chapter_label": "1SA 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "“Now therefore stand still and see this great thing, which the LORD will do before your eyes.",
+      "ko": "너희는 이제 가만히 서서 여호와께서 너희 목전에 행하시는 이 큰 일을 보라",
+      "source_text_hash": "65c4fe3d91af731bf9634428db51372d0acad31360e02ab317dfc27f2b33afa9",
+      "translation_text_hash": "baad8a17e1f3924386b5a5d3bb11da87d7ed6fc633d59a718dc0724e17c1dff8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이제 가만히 서서 여호와께서 너희 목전에 행하시는 이 큰 일을 보라"
+      ],
+      "raw_text_hashes": [
+        "baad8a17e1f3924386b5a5d3bb11da87d7ed6fc633d59a718dc0724e17c1dff8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:17",
+      "sequence": 7478,
+      "chapter_label": "1SA 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "Isn’t it wheat harvest today? I will call to the LORD, that he may send thunder and rain; and you will know and see that your wickedness is great, which you have done in the LORD’s sight, in asking for a king.”",
+      "ko": "오늘은 밀 베는 때가 아니냐 내가 여호와께 아뢰리니 여호와께서 우뢰와 비를 보내사 너희가 왕을 구한 일 곧 여호와의 목전에 범한 죄악이 큼을 너희로 밝히 알게 하시리라",
+      "source_text_hash": "5f5945b55eb8bda0be052264be1d7422a2eb9b99c0783385e2a4e4736e38b748",
+      "translation_text_hash": "c6cf15489f61d4a5d19459791c00a15f9385e46e84d723bd89438dfff32cf6a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘은 밀 베는 때가 아니냐 내가 여호와께 아뢰리니 여호와께서 우뢰와 비를 보내사 너희가 왕을 구한 일 곧 여호와의 목전에 범한 죄악이 큼을 너희로 밝히 알게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "c6cf15489f61d4a5d19459791c00a15f9385e46e84d723bd89438dfff32cf6a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:18",
+      "sequence": 7479,
+      "chapter_label": "1SA 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "So Samuel called to the LORD, and the LORD sent thunder and rain that day. Then all the people greatly feared the LORD and Samuel.",
+      "ko": "이에 사무엘이 여호와께 아뢰매 여호와께서 그 날에 우뢰와 비를 보내시니 모든 백성이 여호와와 사무엘을 크게 두려워하니라",
+      "source_text_hash": "78824f4e8a2e3e213f960730e98e2243cc71c24d795e86968a41053465ff571e",
+      "translation_text_hash": "4e8318f64cb8d77ef3d155949ab77d0f4b42c8c2fd2ee8a40ed460848707166e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 사무엘이 여호와께 아뢰매 여호와께서 그 날에 우뢰와 비를 보내시니 모든 백성이 여호와와 사무엘을 크게 두려워하니라"
+      ],
+      "raw_text_hashes": [
+        "4e8318f64cb8d77ef3d155949ab77d0f4b42c8c2fd2ee8a40ed460848707166e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:19",
+      "sequence": 7480,
+      "chapter_label": "1SA 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "All the people said to Samuel, “Pray for your servants to the LORD your God, that we not die; for we have added to all our sins this evil, to ask for a king.”",
+      "ko": "모든 백성이 사무엘에게 이르되 당신의 종들을 위하여 당신의 하나님 여호와께 기도하여 우리로 죽지 않게 하소서 우리가 우리의 모든 죄에 왕을 구하는 악을 더하였나이다",
+      "source_text_hash": "98173d02c66aeaee87cfaefd99a21b6d5b653040fa39cc39d0db23e3bc737135",
+      "translation_text_hash": "25094838120a705d9d8c1d2ce243a1519c4226b08c8fa64221e03beb9d3b41d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 사무엘에게 이르되 당신의 종들을 위하여 당신의 하나님 여호와께 기도하여 우리로 죽지 않게 하소서 우리가 우리의 모든 죄에 왕을 구하는 악을 더하였나이다"
+      ],
+      "raw_text_hashes": [
+        "25094838120a705d9d8c1d2ce243a1519c4226b08c8fa64221e03beb9d3b41d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:20",
+      "sequence": 7481,
+      "chapter_label": "1SA 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "Samuel said to the people, “Don’t be afraid. You have indeed done all this evil; yet don’t turn away from following the LORD, but serve the LORD with all your heart.",
+      "ko": "사무엘이 백성에게 이르되 두려워 말라 너희가 과연 이 모든 악을 행하였으나 여호와를 좇는데서 돌이키지 말고 오직 너희 마음을 다하여 여호와를 섬기라",
+      "source_text_hash": "debc287fbec05d213cfdd311a47d00b117969ab685749ec3ceedbb1e26dba056",
+      "translation_text_hash": "9449bb1bcc6f9ba2c843c190892da0f8738651e2a8e9637a098f5b4b9188294e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 백성에게 이르되 두려워 말라 너희가 과연 이 모든 악을 행하였으나 여호와를 좇는데서 돌이키지 말고 오직 너희 마음을 다하여 여호와를 섬기라"
+      ],
+      "raw_text_hashes": [
+        "9449bb1bcc6f9ba2c843c190892da0f8738651e2a8e9637a098f5b4b9188294e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:21",
+      "sequence": 7482,
+      "chapter_label": "1SA 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "Don’t turn away to go after vain things which can’t profit or deliver, for they are vain.",
+      "ko": "돌이켜 유익하게도 못하며 구원하지도 못하는 헛된 것을 좇지 말라 그들은 헛되니라",
+      "source_text_hash": "034020f60386247fb2b3514a96e4ac8831d17132a4bbf3881f6f83c2ec46a31d",
+      "translation_text_hash": "097817a98d1e61436790b214274fe648578204eb54b1e73abab5114512e39e68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌이켜 유익하게도 못하며 구원하지도 못하는 헛된 것을 좇지 말라 그들은 헛되니라"
+      ],
+      "raw_text_hashes": [
+        "097817a98d1e61436790b214274fe648578204eb54b1e73abab5114512e39e68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:22",
+      "sequence": 7483,
+      "chapter_label": "1SA 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "For the LORD will not forsake his people for his great name’s sake, because it has pleased the LORD to make you a people for himself.",
+      "ko": "여호와께서는 너희로 자기 백성 삼으신 것을 기뻐하신고로 그 크신 이름을 인하여 자기 백성을 버리지 아니하실 것이요",
+      "source_text_hash": "8437ac9e49938cf9cd518aefed705634a46636956a5396796ceb4e94ad800bc5",
+      "translation_text_hash": "3c8eddda1e75e41d880accf0c4ba7d5a6e53b4485de5b944929e139743dca79c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 너희로 자기 백성 삼으신 것을 기뻐하신고로 그 크신 이름을 인하여 자기 백성을 버리지 아니하실 것이요"
+      ],
+      "raw_text_hashes": [
+        "3c8eddda1e75e41d880accf0c4ba7d5a6e53b4485de5b944929e139743dca79c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:23",
+      "sequence": 7484,
+      "chapter_label": "1SA 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "Moreover, as for me, far be it from me that I should sin against the LORD in ceasing to pray for you; but I will instruct you in the good and the right way.",
+      "ko": "나는 너희를 위하여 기도하기를 쉬는 죄를 여호와 앞에 결단코 범치 아니하고 선하고 의로운 도로 너희를 가르칠 것인즉",
+      "source_text_hash": "c87da9187fbc93ed3c1bcd047cf313e2a4e0e8cde0a7421892aa0bf8aa1998cd",
+      "translation_text_hash": "6d4e3e9c736f2954fab21d93d51afe36f08760ff6d29413d6a8eaa93af9ade31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희를 위하여 기도하기를 쉬는 죄를 여호와 앞에 결단코 범치 아니하고 선하고 의로운 도로 너희를 가르칠 것인즉"
+      ],
+      "raw_text_hashes": [
+        "6d4e3e9c736f2954fab21d93d51afe36f08760ff6d29413d6a8eaa93af9ade31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:24",
+      "sequence": 7485,
+      "chapter_label": "1SA 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "Only fear the LORD, and serve him in truth with all your heart; for consider what great things he has done for you.",
+      "ko": "너희는 여호와께서 너희를 위하여 행하신 그 큰 일을 생각하여 오직 그를 경외하며 너희의 마음을 다하여 진실히 섬기라",
+      "source_text_hash": "e4ab8cca16f6b91ff255d5ba774bf77009e4dc055048af6d17760a2c78acf706",
+      "translation_text_hash": "92eae56f8c2515230736ab2f31f25d9fc19469ea44a4cd0fc276415d54231924",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 여호와께서 너희를 위하여 행하신 그 큰 일을 생각하여 오직 그를 경외하며 너희의 마음을 다하여 진실히 섬기라"
+      ],
+      "raw_text_hashes": [
+        "92eae56f8c2515230736ab2f31f25d9fc19469ea44a4cd0fc276415d54231924"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:12:25",
+      "sequence": 7486,
+      "chapter_label": "1SA 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "But if you keep doing evil, you will be consumed, both you and your king.”",
+      "ko": "만일 너희가 여전히 악을 행하면 너희와 너희 왕이 다 멸망하리라",
+      "source_text_hash": "06f2d4def9b795c1ac5d61cdcdbd70e6a82dfbb4020d2b3e613159e7be0ea93b",
+      "translation_text_hash": "80102997386c0f55e03c33c3e7a55ee7f59fe1932775545bc12bfebfd9887c14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희가 여전히 악을 행하면 너희와 너희 왕이 다 멸망하리라"
+      ],
+      "raw_text_hashes": [
+        "80102997386c0f55e03c33c3e7a55ee7f59fe1932775545bc12bfebfd9887c14"
+      ]
+    }
+  ]
+}

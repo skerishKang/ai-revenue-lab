@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:024",
+  "unit_ordinal": 211,
+  "unit_label": "JOS 24",
+  "book_code": "JOS",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:24:1",
+      "sequence": 6478,
+      "chapter_label": "JOS 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "Joshua gathered all the tribes of Israel to Shechem, and called for the elders of Israel, for their heads, for their judges, and for their officers; and they presented themselves before God.",
+      "ko": "여호수아가 이스라엘 모든 지파를 세겜에 모으고 이스라엘 장로들과 그 두령들과 재판장들과 유사들을 부르매 그들이 하나님 앞에 보인지라",
+      "source_text_hash": "95cff24e80c879db4b4a728bc51c37ff5f6f1be8dfd8fa845b462e15af85404f",
+      "translation_text_hash": "a859cac6493f20b9cbdc8813954f6abc37b86e30440289f94fca465b29f0d2ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 이스라엘 모든 지파를 세겜에 모으고 이스라엘 장로들과 그 두령들과 재판장들과 유사들을 부르매 그들이 하나님 앞에 보인지라"
+      ],
+      "raw_text_hashes": [
+        "a859cac6493f20b9cbdc8813954f6abc37b86e30440289f94fca465b29f0d2ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:2",
+      "sequence": 6479,
+      "chapter_label": "JOS 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "Joshua said to all the people, “The LORD, the God of Israel, says, ‘Your fathers lived of old time beyond the River, even Terah, the father of Abraham, and the father of Nahor. They served other gods.",
+      "ko": "여호수아가 모든 백성에게 이르되 이스라엘 하나님 여호와의 말씀에 옛적에 너희 조상들 곧 아브라함의 아비, 나홀의 아비 데라가 강 저편에 거하여 다른 신들을 섬겼으나",
+      "source_text_hash": "5249a24d74842c0b33beef746e03e447fb704fdd00a8a57308a8a8691782e613",
+      "translation_text_hash": "23d40de9b9b847c3862c50f5b877ba8a8f94f0a9a35905f2ceae9365a11b053d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 모든 백성에게 이르되 이스라엘 하나님 여호와의 말씀에 옛적에 너희 조상들 곧 아브라함의 아비, 나홀의 아비 데라가 강 저편에 거하여 다른 신들을 섬겼으나"
+      ],
+      "raw_text_hashes": [
+        "23d40de9b9b847c3862c50f5b877ba8a8f94f0a9a35905f2ceae9365a11b053d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:3",
+      "sequence": 6480,
+      "chapter_label": "JOS 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "I took your father Abraham from beyond the River, and led him throughout all the land of Canaan, and multiplied his offspring, and gave him Isaac.",
+      "ko": "내가 너희 조상 아브라함을 강 저편에서 이끌어내어 가나안으로 인도하여 온 땅을 두루 행하게 하고 그 씨를 번성케 하려고 그에게 이삭을 주었고",
+      "source_text_hash": "8436a0396963f6fe0dd4b6582f50dd541dc2b8aff6bb84aa3b7634f8240d1960",
+      "translation_text_hash": "11c0903efe4b58761baa74b2ce15fd6f270ac5ba88fee3747a1b9ae3f976165c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 조상 아브라함을 강 저편에서 이끌어내어 가나안으로 인도하여 온 땅을 두루 행하게 하고 그 씨를 번성케 하려고 그에게 이삭을 주었고"
+      ],
+      "raw_text_hashes": [
+        "11c0903efe4b58761baa74b2ce15fd6f270ac5ba88fee3747a1b9ae3f976165c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:4",
+      "sequence": 6481,
+      "chapter_label": "JOS 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "I gave to Isaac Jacob and Esau: and I gave to Esau Mount Seir, to possess it. Jacob and his children went down into Egypt.",
+      "ko": "이삭에게는 야곱과 에서를 주었으며 에서에게는 세일산을 소유로 주었으나 야곱과 그 자손들은 애굽으로 내려 갔으므로",
+      "source_text_hash": "d7946ab8cb1ce4ca86954a209272498e8a1ab3525ed14e854ceef0ba9fbf1948",
+      "translation_text_hash": "7a02d389d2e3c93ddffb04b7de6c4504387ea6855732a6ce4dd10e93641f9153",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭에게는 야곱과 에서를 주었으며 에서에게는 세일산을 소유로 주었으나 야곱과 그 자손들은 애굽으로 내려 갔으므로"
+      ],
+      "raw_text_hashes": [
+        "7a02d389d2e3c93ddffb04b7de6c4504387ea6855732a6ce4dd10e93641f9153"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:5",
+      "sequence": 6482,
+      "chapter_label": "JOS 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "“‘I sent Moses and Aaron, and I plagued Egypt, according to that which I did among them: and afterward I brought you out.",
+      "ko": "내가 모세와 아론을 보내었고 또 애굽에 재앙을 내렸나니 곧 내가 그 가운데 행한 것과 같고 그 후에 너희를 인도하여 내었었노라",
+      "source_text_hash": "17e41ae432d197946de0c33359291b0311c24277a14fdf66a34e57d9a8be8216",
+      "translation_text_hash": "4736883ef94468d684a56954856015cb0fa5c04d3a9ff7eec6731612d2d1da3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 모세와 아론을 보내었고 또 애굽에 재앙을 내렸나니 곧 내가 그 가운데 행한 것과 같고 그 후에 너희를 인도하여 내었었노라"
+      ],
+      "raw_text_hashes": [
+        "4736883ef94468d684a56954856015cb0fa5c04d3a9ff7eec6731612d2d1da3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:6",
+      "sequence": 6483,
+      "chapter_label": "JOS 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "I brought your fathers out of Egypt: and you came to the sea. The Egyptians pursued your fathers with chariots and with horsemen to the Red Sea.",
+      "ko": "내가 너희 열조를 애굽에서 인도하여 내어 바다에 이르게 한즉 애굽 사람이 병거와 마병을 거느리고 너희 열조를 홍해까지 따르므로",
+      "source_text_hash": "50904aa3cb700a6a136baeaaa3bc15485cef53a1a0913522a7d5824079b8c86f",
+      "translation_text_hash": "f595a1fac74247bd73600542284670a1b5c144db1293ee5be9882e2e1eac3826",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 열조를 애굽에서 인도하여 내어 바다에 이르게 한즉 애굽 사람이 병거와 마병을 거느리고 너희 열조를 홍해까지 따르므로"
+      ],
+      "raw_text_hashes": [
+        "f595a1fac74247bd73600542284670a1b5c144db1293ee5be9882e2e1eac3826"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:7",
+      "sequence": 6484,
+      "chapter_label": "JOS 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "When they cried out to the LORD, he put darkness between you and the Egyptians, and brought the sea on them, and covered them; and your eyes saw what I did in Egypt. You lived in the wilderness many days.",
+      "ko": "너희 열조가 나 여호와께 부르짖기로 내가 너희와 애굽 사람 사이에 흑암을 두고 바다를 이끌어 그들을 덮었었나니 내가 애굽에서 행한 일을 너희가 목도하였으며 또 너희가 여러 날을 광야에 거하였었느니라",
+      "source_text_hash": "343c41368698a1ee3e5c13468f6b7396cb7fba4d95a53020b463f97dcd500882",
+      "translation_text_hash": "3f28e7e9b852e7e77b2e1173a56cc7141c2c4631896da7e328ab52f126259ca7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 열조가 나 여호와께 부르짖기로 내가 너희와 애굽 사람 사이에 흑암을 두고 바다를 이끌어 그들을 덮었었나니 내가 애굽에서 행한 일을 너희가 목도하였으며 또 너희가 여러 날을 광야에 거하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "3f28e7e9b852e7e77b2e1173a56cc7141c2c4631896da7e328ab52f126259ca7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:8",
+      "sequence": 6485,
+      "chapter_label": "JOS 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "“‘I brought you into the land of the Amorites, that lived beyond the Jordan. They fought with you, and I gave them into your hand. You possessed their land, and I destroyed them from before you.",
+      "ko": "내가 또 너희를 인도하여 요단 저편에 거하는 아모리 사람의 땅으로 들어가게 하매 그들이 너희와 싸우기로 내가 그들을 너희 손에 붙이매 너희가 그 땅을 점령하였고 나는 그들을 너희 앞에서 멸절시켰으며",
+      "source_text_hash": "fd04f183e72d9bdff30e1bfa5e343dc58331f4f11fafada22f7286261f0a8e4d",
+      "translation_text_hash": "8483db8610e324ef599bb5f1c7f20a32a38ce95b073b4ebd89265eca109be65a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 너희를 인도하여 요단 저편에 거하는 아모리 사람의 땅으로 들어가게 하매 그들이 너희와 싸우기로 내가 그들을 너희 손에 붙이매 너희가 그 땅을 점령하였고 나는 그들을 너희 앞에서 멸절시켰으며"
+      ],
+      "raw_text_hashes": [
+        "8483db8610e324ef599bb5f1c7f20a32a38ce95b073b4ebd89265eca109be65a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:9",
+      "sequence": 6486,
+      "chapter_label": "JOS 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "Then Balak the son of Zippor, king of Moab, arose and fought against Israel. He sent and called Balaam the son of Beor to curse you,",
+      "ko": "때에 모압 왕 십볼의 아들 발락이 일어나 이스라엘을 대적하여 사람을 보내어 브올의 아들 발람을 불러다가 너희를 저주케 하려 하였으나",
+      "source_text_hash": "49fcd8f622038c01b8e08d5408d60fc403a30e752629f7194f19d968bc14b32f",
+      "translation_text_hash": "d08fba8641c66a6b0806a77a3d0a01881074f3ee73b287a2abad7faceb3322be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 모압 왕 십볼의 아들 발락이 일어나 이스라엘을 대적하여 사람을 보내어 브올의 아들 발람을 불러다가 너희를 저주케 하려 하였으나"
+      ],
+      "raw_text_hashes": [
+        "d08fba8641c66a6b0806a77a3d0a01881074f3ee73b287a2abad7faceb3322be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:10",
+      "sequence": 6487,
+      "chapter_label": "JOS 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "but I would not listen to Balaam; therefore he blessed you still. So I delivered you out of his hand.",
+      "ko": "내가 발람을 듣기를 원치 아니한고로 그가 오히려 너희에게 축복하였고 나는 너희를 그 손에서 건져 내었으며",
+      "source_text_hash": "3356c933487174ee6ef5bb99612ca75f0a5ad5e186f544c3f867da2f5e93a2df",
+      "translation_text_hash": "2eb1df41d1ccf8f180752fecf60369a1328e447eda39d4257757c95cc42973a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 발람을 듣기를 원치 아니한고로 그가 오히려 너희에게 축복하였고 나는 너희를 그 손에서 건져 내었으며"
+      ],
+      "raw_text_hashes": [
+        "2eb1df41d1ccf8f180752fecf60369a1328e447eda39d4257757c95cc42973a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:11",
+      "sequence": 6488,
+      "chapter_label": "JOS 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "“‘You went over the Jordan, and came to Jericho. The men of Jericho fought against you, the Amorite, the Perizzite, the Canaanite, the Hittite, the Girgashite, the Hivite, and the Jebusite; and I delivered them into your hand.",
+      "ko": "너희가 요단을 건너 여리고에 이른즉 여리고 사람과 아모리 사람과 브리스 사람과 가나안 사람과 헷 사람과 기르가스 사람과 히위 사람과 여부스 사람들이 너희와 싸우기로 내가 그들을 너희의 손에 붙였으며",
+      "source_text_hash": "4a9540b546d977a8764b66f18f22a933f5bae517fbd18e5c44f3d8b9b6db2104",
+      "translation_text_hash": "7088ec418a929a89f64c010d45a557d735c82ce4e81f859db2a151f567467ba8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 요단을 건너 여리고에 이른즉 여리고 사람과 아모리 사람과 브리스 사람과 가나안 사람과 헷 사람과 기르가스 사람과 히위 사람과 여부스 사람들이 너희와 싸우기로 내가 그들을 너희의 손에 붙였으며"
+      ],
+      "raw_text_hashes": [
+        "7088ec418a929a89f64c010d45a557d735c82ce4e81f859db2a151f567467ba8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:12",
+      "sequence": 6489,
+      "chapter_label": "JOS 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "I sent the hornet before you, which drove them out from before you, even the two kings of the Amorites; not with your sword, nor with your bow.",
+      "ko": "내가 왕벌을 너희 앞에 보내어 그 아모리 사람의 두 왕을 너희 앞에서 쫓아내게 하였나니 너희 칼로나 너희 활로나 이 같이 한 것이 아니며",
+      "source_text_hash": "bf44dcdc597ced3edc079f35f0fad21d58ce8bbf0b5e0b44ba109d7c0a5ae90c",
+      "translation_text_hash": "b80a54586b0ffb5934dc21bfa879550e9b8c28082a6120c3a14212342cc6e2cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 왕벌을 너희 앞에 보내어 그 아모리 사람의 두 왕을 너희 앞에서 쫓아내게 하였나니 너희 칼로나 너희 활로나 이 같이 한 것이 아니며"
+      ],
+      "raw_text_hashes": [
+        "b80a54586b0ffb5934dc21bfa879550e9b8c28082a6120c3a14212342cc6e2cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:13",
+      "sequence": 6490,
+      "chapter_label": "JOS 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "I gave you a land on which you had not labored, and cities which you didn’t build, and you live in them. You eat of vineyards and olive groves which you didn’t plant.’",
+      "ko": "내가 또 너희의 수고하지 아니한 땅과 너희가 건축지 아니한 성읍을 너희에게 주었더니 너희가 그 가운데 거하며 너희가 또 자기의 심지 아니한 포도원과 감람원의 과실을 먹는다 하셨느니라",
+      "source_text_hash": "c1a7f09b4f4ff18786aa97dd46d2c961a69e45e26d74cb000ccf45f19a79d686",
+      "translation_text_hash": "a9dfb4dc60d4401e7997c9c313c495574e480e6ca2ec5fbc6fd8ff4de7c3ed0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 너희의 수고하지 아니한 땅과 너희가 건축지 아니한 성읍을 너희에게 주었더니 너희가 그 가운데 거하며 너희가 또 자기의 심지 아니한 포도원과 감람원의 과실을 먹는다 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "a9dfb4dc60d4401e7997c9c313c495574e480e6ca2ec5fbc6fd8ff4de7c3ed0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:14",
+      "sequence": 6491,
+      "chapter_label": "JOS 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "“Now therefore fear the LORD, and serve him in sincerity and in truth. Put away the gods which your fathers served beyond the River, in Egypt; and serve the LORD.",
+      "ko": "그러므로 이제는 여호와를 경외하며 성실과 진정으로 그를 섬길 것이라 너희의 열조가 강 저편과 애굽에서 섬기던 신들을 제하여 버리고 여호와만 섬기라",
+      "source_text_hash": "27599409b5b6bdc99fa5eaed77fb9fa160ad5a061fca5ed379b173945f76a09c",
+      "translation_text_hash": "0494b804a4d30674e7b1b18303052fa6d7f1e2323b89c3f9fbf86ded08c2ae74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이제는 여호와를 경외하며 성실과 진정으로 그를 섬길 것이라 너희의 열조가 강 저편과 애굽에서 섬기던 신들을 제하여 버리고 여호와만 섬기라"
+      ],
+      "raw_text_hashes": [
+        "0494b804a4d30674e7b1b18303052fa6d7f1e2323b89c3f9fbf86ded08c2ae74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:15",
+      "sequence": 6492,
+      "chapter_label": "JOS 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "If it seems evil to you to serve the LORD, choose today whom you will serve; whether the gods which your fathers served that were beyond the River, or the gods of the Amorites, in whose land you dwell; but as for me and my house, we will serve the LORD.”",
+      "ko": "만일 여호와를 섬기는 것이 너희에게 좋지 않게 보이거든 너희 열조가 강 저편에서 섬기던 신이든지 혹 너희의 거하는 땅 아모리 사람의 신이든지 너희 섬길 자를 오늘날 택하라 오직 나와 내 집은 여호와를 섬기겠노라",
+      "source_text_hash": "459519003e7e50d07f8ce692992b21d9df61a31eb45151a4116b1b0a442b4d9d",
+      "translation_text_hash": "4147848bc9013f2f20318c49576fd2e5f8181ece1a222039e49cb5363265b8d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 여호와를 섬기는 것이 너희에게 좋지 않게 보이거든 너희 열조가 강 저편에서 섬기던 신이든지 혹 너희의 거하는 땅 아모리 사람의 신이든지 너희 섬길 자를 오늘날 택하라 오직 나와 내 집은 여호와를 섬기겠노라"
+      ],
+      "raw_text_hashes": [
+        "4147848bc9013f2f20318c49576fd2e5f8181ece1a222039e49cb5363265b8d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:16",
+      "sequence": 6493,
+      "chapter_label": "JOS 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "The people answered, “Far be it from us that we should forsake the LORD, to serve other gods;",
+      "ko": "백성이 대답하여 가로되 여호와를 버리고 다른 신들 섬기는 일을 우리가 결단코 하지 아니하오리니",
+      "source_text_hash": "6e000b7e09be6b88784710f8cb0728894a7a81f21490b03db58a40a0a109824c",
+      "translation_text_hash": "cb43a23833151b8c4564aca8dd0a23e1e28151dc7e2f90694b74b69e2ac8b63b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 대답하여 가로되 여호와를 버리고 다른 신들 섬기는 일을 우리가 결단코 하지 아니하오리니"
+      ],
+      "raw_text_hashes": [
+        "cb43a23833151b8c4564aca8dd0a23e1e28151dc7e2f90694b74b69e2ac8b63b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:17",
+      "sequence": 6494,
+      "chapter_label": "JOS 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "for it is the LORD our God who brought us and our fathers up out of the land of Egypt, from the house of bondage, and who did those great signs in our sight, and preserved us in all the way in which we went, and among all the peoples through the middle of whom we passed.",
+      "ko": "이는 우리 하나님 여호와 그가 우리와 우리 열조를 인도하여 애굽땅 종 되었던 집에서 나오게 하시고 우리 목전에서 그 큰 이적들을 행하시고 우리가 행한 모든 길에서, 우리의 지난 모든 백성 중에서 우리를 보호하셨음이며",
+      "source_text_hash": "6059e46e9343779e50dbcd3b0f180a705b79f6d8650e88a08454378a91154ede",
+      "translation_text_hash": "90fb235c550fc71d1aabd23c8895cb1b72ae2aef1ea8c8141e4f5226fe0c4090",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리 하나님 여호와 그가 우리와 우리 열조를 인도하여 애굽땅 종 되었던 집에서 나오게 하시고 우리 목전에서 그 큰 이적들을 행하시고 우리가 행한 모든 길에서, 우리의 지난 모든 백성 중에서 우리를 보호하셨음이며"
+      ],
+      "raw_text_hashes": [
+        "90fb235c550fc71d1aabd23c8895cb1b72ae2aef1ea8c8141e4f5226fe0c4090"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:18",
+      "sequence": 6495,
+      "chapter_label": "JOS 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD drove out from before us all the peoples, even the Amorites who lived in the land. Therefore we also will serve the LORD; for he is our God.”",
+      "ko": "여호와께서 또 모든 백성 곧 이 땅에 거하던 아모리 사람을 우리 앞에서 쫓아내셨음이라 그러므로 우리도 여호와를 섬기리니 그는 우리 하나님이심이니이다",
+      "source_text_hash": "859aeb434541e8f2b79c96420d41e3fa12718e313e2b4fa6f5e86b7432888e10",
+      "translation_text_hash": "2128a52c201e9d5a8d02053846bb05339f34168ca37789cdd34944ce034535d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모든 백성 곧 이 땅에 거하던 아모리 사람을 우리 앞에서 쫓아내셨음이라 그러므로 우리도 여호와를 섬기리니 그는 우리 하나님이심이니이다"
+      ],
+      "raw_text_hashes": [
+        "2128a52c201e9d5a8d02053846bb05339f34168ca37789cdd34944ce034535d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:19",
+      "sequence": 6496,
+      "chapter_label": "JOS 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "Joshua said to the people, “You can’t serve the LORD, for he is a holy God. He is a jealous God. He will not forgive your disobedience nor your sins.",
+      "ko": "여호수아가 백성에게 이르되 너희가 여호와를 능히 섬기지 못할 것은 그는 거룩하신 하나님이시요 질투하는 하나님이시니 너희 허물과 죄를 사하지 아니하실 것임이라",
+      "source_text_hash": "35608926568640f46c023cfef48d72f82ad2abdeaf4465d3456b5e9e2a25abc0",
+      "translation_text_hash": "2ff2e599a57f50d59f43b57f0f004af108fe900078d6fe96cfa14a0a32c01334",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 백성에게 이르되 너희가 여호와를 능히 섬기지 못할 것은 그는 거룩하신 하나님이시요 질투하는 하나님이시니 너희 허물과 죄를 사하지 아니하실 것임이라"
+      ],
+      "raw_text_hashes": [
+        "2ff2e599a57f50d59f43b57f0f004af108fe900078d6fe96cfa14a0a32c01334"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:20",
+      "sequence": 6497,
+      "chapter_label": "JOS 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "If you forsake the LORD, and serve foreign gods, then he will turn and do you evil, and consume you, after he has done you good.”",
+      "ko": "만일 너희가 여호와를 버리고 이방 신들을 섬기면 너희에게 복을 내리신 후에라도 돌이켜 너희에게 화를 내리시고 너희를 멸하시리라",
+      "source_text_hash": "13e20f0c336356a935d3f280a3697e13603cac4f299e5da0fa45cbea20f9ce30",
+      "translation_text_hash": "f5a7a3cfb92b91e07705388d75825876590a752e79e5c20b7cee96b57c4924b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희가 여호와를 버리고 이방 신들을 섬기면 너희에게 복을 내리신 후에라도 돌이켜 너희에게 화를 내리시고 너희를 멸하시리라"
+      ],
+      "raw_text_hashes": [
+        "f5a7a3cfb92b91e07705388d75825876590a752e79e5c20b7cee96b57c4924b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:21",
+      "sequence": 6498,
+      "chapter_label": "JOS 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "The people said to Joshua, “No, but we will serve the LORD.”",
+      "ko": "백성이 여호수아에게 말하되 아니니이다 우리가 정녕 여호와를 섬기겠나이다",
+      "source_text_hash": "91df1108b8c0000860d82d2615c3c3c2fe2493bdc2e28c7433f632ecec7777f4",
+      "translation_text_hash": "cbbff6fe4f31ecf3dfe0460da9b247a13866521738d44c73947730ded91bd4b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 여호수아에게 말하되 아니니이다 우리가 정녕 여호와를 섬기겠나이다"
+      ],
+      "raw_text_hashes": [
+        "cbbff6fe4f31ecf3dfe0460da9b247a13866521738d44c73947730ded91bd4b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:22",
+      "sequence": 6499,
+      "chapter_label": "JOS 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "Joshua said to the people, “You are witnesses against yourselves that you have chosen the LORD yourselves, to serve him.” They said, “We are witnesses.”",
+      "ko": "여호수아가 백성에게 이르되 너희가 여호와를 택하고 그를 섬기리라 하였으니 스스로 증인이 되었느니라 그들이 가로되 우리가 증인이 되었나이다",
+      "source_text_hash": "065bdb48675a9b052378586f53b9df2922b33d725b7b14d44d92c68dc6b02333",
+      "translation_text_hash": "76b62c7a9439a39096f2a86c99dc6c56c0ce097f42914f7bf7b92b12730da7c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 백성에게 이르되 너희가 여호와를 택하고 그를 섬기리라 하였으니 스스로 증인이 되었느니라 그들이 가로되 우리가 증인이 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "76b62c7a9439a39096f2a86c99dc6c56c0ce097f42914f7bf7b92b12730da7c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:23",
+      "sequence": 6500,
+      "chapter_label": "JOS 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "“Now therefore put away the foreign gods which are among you, and incline your heart to the LORD, the God of Israel.”",
+      "ko": "여호수아가 가로되 그러면 이제 너희 중에 있는 이방신들을 제하여 버리고 너희 마음을 이스라엘의 하나님 여호와께로 향하라",
+      "source_text_hash": "ef20b2acabfefa1439c2d87c878fdab2130668fc85a164a6ea2bf8f57862acfa",
+      "translation_text_hash": "aa32cb37f97382fa17ec968840ccc672038c5298ba14ec7a9df174429ab41615",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 가로되 그러면 이제 너희 중에 있는 이방신들을 제하여 버리고 너희 마음을 이스라엘의 하나님 여호와께로 향하라"
+      ],
+      "raw_text_hashes": [
+        "aa32cb37f97382fa17ec968840ccc672038c5298ba14ec7a9df174429ab41615"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:24",
+      "sequence": 6501,
+      "chapter_label": "JOS 24",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 24
+        }
+      ],
+      "en": "The people said to Joshua, “We will serve the LORD our God, and we will listen to his voice.”",
+      "ko": "백성이 여호수아에게 말하되 우리 하나님 여호와를 우리가 섬기고 그 목소리를 우리가 청종하리이다 한지라",
+      "source_text_hash": "eaaaf6e55b078ccf4cc22f34188441e313ac7582fb6ac53c2eeb55a89d310ae6",
+      "translation_text_hash": "7325322f2a1a858689793be72affdf969a72138a42c12a0592f8ccedde56860a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 여호수아에게 말하되 우리 하나님 여호와를 우리가 섬기고 그 목소리를 우리가 청종하리이다 한지라"
+      ],
+      "raw_text_hashes": [
+        "7325322f2a1a858689793be72affdf969a72138a42c12a0592f8ccedde56860a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:25",
+      "sequence": 6502,
+      "chapter_label": "JOS 24",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 25
+        }
+      ],
+      "en": "So Joshua made a covenant with the people that day, and made for them a statute and an ordinance in Shechem.",
+      "ko": "그 날에 여호수아가 세겜에서 백성으로 더불어 언약을 세우고 그들을 위하여 율례와 법도를 베풀었더라",
+      "source_text_hash": "3134ded4567d99bf4816f69261e3fe35fc3b66598a9f9b755fbc01a5933569b0",
+      "translation_text_hash": "df51fbed89c7e4ebe6b1ba74f7f0d5edbaae4d4a45ba2f2ed9f0e83f6eb324b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 여호수아가 세겜에서 백성으로 더불어 언약을 세우고 그들을 위하여 율례와 법도를 베풀었더라"
+      ],
+      "raw_text_hashes": [
+        "df51fbed89c7e4ebe6b1ba74f7f0d5edbaae4d4a45ba2f2ed9f0e83f6eb324b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:26",
+      "sequence": 6503,
+      "chapter_label": "JOS 24",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 26
+        }
+      ],
+      "en": "Joshua wrote these words in the book of the law of God; and he took a great stone, and set it up there under the oak that was by the sanctuary of the LORD.",
+      "ko": "여호수아가 이 모든 말씀을 하나님의 율법 책에 기록하고 큰 돌을 취하여 거기 여호와의 성소 곁에 있는 상수리나무 아래 세우고",
+      "source_text_hash": "eaf31c420e02dc2e652b2373a7e0d4fdc62309d5a8e64638dd3c9ad163609734",
+      "translation_text_hash": "8dd0c9969f26b7a7ccb976937c19e877595dc34b13d33947eebfe15ae003ad67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 이 모든 말씀을 하나님의 율법 책에 기록하고 큰 돌을 취하여 거기 여호와의 성소 곁에 있는 상수리나무 아래 세우고"
+      ],
+      "raw_text_hashes": [
+        "8dd0c9969f26b7a7ccb976937c19e877595dc34b13d33947eebfe15ae003ad67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:27",
+      "sequence": 6504,
+      "chapter_label": "JOS 24",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 27
+        }
+      ],
+      "en": "Joshua said to all the people, “Behold, this stone shall be a witness against us, for it has heard all the LORD’s words which he spoke to us. It shall be therefore a witness against you, lest you deny your God.”",
+      "ko": "모든 백성에게 이르되 보라 이 돌이 우리에게 증거가 되리니 이는 여호와께서 우리에게 하신 모든 말씀을 이 돌이 들었음이라 그런즉 너희로 너희 하나님을 배반치 않게 하도록 이 돌이 증거가 되리라 하고",
+      "source_text_hash": "e1aafe2a1dc0f588e787d69b0f38ee6d0cfc97ef0afc95972e4c39475fceaaa5",
+      "translation_text_hash": "d20639d2db1ea0c7048e9d96fc3e4c1d09b7e15d6231fc3e75d49c5bde1b19a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성에게 이르되 보라 이 돌이 우리에게 증거가 되리니 이는 여호와께서 우리에게 하신 모든 말씀을 이 돌이 들었음이라 그런즉 너희로 너희 하나님을 배반치 않게 하도록 이 돌이 증거가 되리라 하고"
+      ],
+      "raw_text_hashes": [
+        "d20639d2db1ea0c7048e9d96fc3e4c1d09b7e15d6231fc3e75d49c5bde1b19a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:28",
+      "sequence": 6505,
+      "chapter_label": "JOS 24",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 28
+        }
+      ],
+      "en": "So Joshua sent the people away, each to his own inheritance.",
+      "ko": "백성을 보내어 각기 기업으로 돌아가게 하였더라",
+      "source_text_hash": "e224e5922f7fbbf791f6663d6b6a5ef85d3af29e4da1383422c3109abe03438e",
+      "translation_text_hash": "89db00bfc8d2e783ee930f2a906fd055f55487ca8c098835ccc138f82be4b6a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성을 보내어 각기 기업으로 돌아가게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "89db00bfc8d2e783ee930f2a906fd055f55487ca8c098835ccc138f82be4b6a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:29",
+      "sequence": 6506,
+      "chapter_label": "JOS 24",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 29
+        }
+      ],
+      "en": "After these things, Joshua the son of Nun, the servant of the LORD, died, being one hundred ten years old.",
+      "ko": "이 일 후에 여호와의 종 눈의 아들 여호수아가 일백 십세에 죽으매",
+      "source_text_hash": "07d744624eb5154496f6a8b2f0ff81a02d39507bf827d7e2424d83a0cbe3c344",
+      "translation_text_hash": "3474827d117a4cee81dc7531337825fa3d58fc84894c99762152b470d90cde47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일 후에 여호와의 종 눈의 아들 여호수아가 일백 십세에 죽으매"
+      ],
+      "raw_text_hashes": [
+        "3474827d117a4cee81dc7531337825fa3d58fc84894c99762152b470d90cde47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:30",
+      "sequence": 6507,
+      "chapter_label": "JOS 24",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 30
+        }
+      ],
+      "en": "They buried him in the border of his inheritance in Timnathserah, which is in the hill country of Ephraim, on the north of the mountain of Gaash.",
+      "ko": "무리가 그를 그의 기업의 경내 딤낫 세라에 장사하였으니 딤낫 세라는 에브라임 산지 가아스산 북이었더라",
+      "source_text_hash": "3b2ecc5bd4f2a3978fa4680af49c902d6b0e4a44b59d1559d23dee63cd2e3819",
+      "translation_text_hash": "6d217fb8f848a130912f6f03a5b1baf049780dc837a1794446d1699097e3ee99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 그를 그의 기업의 경내 딤낫 세라에 장사하였으니 딤낫 세라는 에브라임 산지 가아스산 북이었더라"
+      ],
+      "raw_text_hashes": [
+        "6d217fb8f848a130912f6f03a5b1baf049780dc837a1794446d1699097e3ee99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:31",
+      "sequence": 6508,
+      "chapter_label": "JOS 24",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 31
+        }
+      ],
+      "en": "Israel served the LORD all the days of Joshua, and all the days of the elders who outlived Joshua, and had known all the work of the LORD, that he had worked for Israel.",
+      "ko": "이스라엘이 여호수아의 사는 날 동안과 여호수아 뒤에 생존한 장로들 곧 여호와께서 이스라엘을 위하여 행하신 모든 일을 아는 자의 사는 날 동안 여호와를 섬겼더라",
+      "source_text_hash": "910c9067faebe8dbe82e3ad67f05b8527cf147532a0f36585ede639d7e63b3ed",
+      "translation_text_hash": "9ab75dffa9c972b8576c9568bb6cf7b3cf8a59d369ee15234815a267ee629e34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 여호수아의 사는 날 동안과 여호수아 뒤에 생존한 장로들 곧 여호와께서 이스라엘을 위하여 행하신 모든 일을 아는 자의 사는 날 동안 여호와를 섬겼더라"
+      ],
+      "raw_text_hashes": [
+        "9ab75dffa9c972b8576c9568bb6cf7b3cf8a59d369ee15234815a267ee629e34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:32",
+      "sequence": 6509,
+      "chapter_label": "JOS 24",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 32
+        }
+      ],
+      "en": "They buried the bones of Joseph, which the children of Israel brought up out of Egypt, in Shechem, in the parcel of ground which Jacob bought from the sons of Hamor the father of Shechem for a hundred pieces of silver. They became the inheritance of the children of Joseph.",
+      "ko": "이스라엘 자손이 애굽에서 이끌어 낸 요셉의 뼈를 세겜에 장사하였으니 이곳은 야곱이 세겜의 아비 하몰의 자손에게 금 일백개를 주고 산 땅이라 그것이 요셉 자손의 기업이 되었더라",
+      "source_text_hash": "060ed7198ecd26b70cc272938e4491a85db889bf136c12a68c00b239229abf2c",
+      "translation_text_hash": "68169484f389f88d931c62d18ac59d2c073885ca39e8c1ea994a17a0f3e3626b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 애굽에서 이끌어 낸 요셉의 뼈를 세겜에 장사하였으니 이곳은 야곱이 세겜의 아비 하몰의 자손에게 금 일백개를 주고 산 땅이라 그것이 요셉 자손의 기업이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "68169484f389f88d931c62d18ac59d2c073885ca39e8c1ea994a17a0f3e3626b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:24:33",
+      "sequence": 6510,
+      "chapter_label": "JOS 24",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOS",
+        "chapter": 24,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 24,
+          "verse": 33
+        }
+      ],
+      "en": "Eleazar the son of Aaron died. They buried him in the hill of Phinehas his son, which was given him in the hill country of Ephraim.",
+      "ko": "아론의 아들 엘르아살도 죽으매 무리가 그를 그 아들 비느하스가 에브라임 산지에서 받은 산에 장사하였더라",
+      "source_text_hash": "8b5cf424462b8825b2a4aced363e7fac722711c79406097509462a1615989e41",
+      "translation_text_hash": "dbebc01b4054c9fd094f3ac852851c7d37c3765c4f6eccd3e9246f5b0fda2444",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 아들 엘르아살도 죽으매 무리가 그를 그 아들 비느하스가 에브라임 산지에서 받은 산에 장사하였더라"
+      ],
+      "raw_text_hashes": [
+        "dbebc01b4054c9fd094f3ac852851c7d37c3765c4f6eccd3e9246f5b0fda2444"
+      ]
+    }
+  ]
+}

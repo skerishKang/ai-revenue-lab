@@ -18,6 +18,9 @@
 name: Nightly Main Full Suite
 
 on:
+  pull_request:
+    paths:
+      - '.github/actions/shared-python-install/**'
   schedule:
     # 19:30 UTC == 04:30 KST (KST 새벽)
     - cron: "30 19 * * *"
@@ -103,11 +106,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install test dependencies
-        working-directory: apps/claw-connect
-        run: |
-          python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'cryptography' -r requirements-wss-review.txt
-          python -m pip install --disable-pip-version-check -e ../../packages/padiem-ai-core
+      - name: Install shared Python dependencies
+        uses: ./.github/actions/shared-python-install
+        with:
+          lane: claw-connect
+
       - name: Run contract tests
         working-directory: apps/claw-connect
         run: python -m pytest -q tests
@@ -200,10 +203,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install Control Plane package
-        run: |
-          python -m pip install --disable-pip-version-check -e 'packages/padiem-control-plane[dev]' -e packages/padiem-ai-core
-          python -m pip check
+      - name: Install shared Python dependencies
+        uses: ./.github/actions/shared-python-install
+        with:
+          lane: control-plane
+
       - name: pytest
         working-directory: packages/padiem-control-plane
         run: python -m pytest -q tests
@@ -217,132 +221,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      # #3037. The wheel filename, URL, size and digest all come from the
-      # source-owned receipt module, so this workflow cannot drift away from the
-      # receipt. Nothing here resolves a version range or "latest".
-      - name: Select the approved Pillow 12.3.0 wheel receipt
-        shell: bash
-        env:
-          PYTHONPATH: packages/padiem-ai-core
-          RUNNER_FAMILY: ${{ runner.os }}
-        run: |
-          set -euo pipefail
-          eval "$(python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" "$RUNNER_FAMILY")"
-          echo "receipt_id=${PILLOW_WHEEL_RECEIPT_ID}" >> "$GITHUB_OUTPUT"
-          echo "filename=${PILLOW_WHEEL_FILENAME}" >> "$GITHUB_OUTPUT"
-          echo "sha256=${PILLOW_WHEEL_SHA256}" >> "$GITHUB_OUTPUT"
-          echo "size=${PILLOW_WHEEL_SIZE}" >> "$GITHUB_OUTPUT"
-          echo "Approved Pillow receipt: ${PILLOW_WHEEL_RECEIPT_ID}"
+      - name: Install shared Python dependencies
+        uses: ./.github/actions/shared-python-install
+        with:
+          lane: kagent
+          kagent_pytest: 'true'
 
-      - name: Download the approved Pillow wheel
-        shell: bash
-        env:
-          PYTHONPATH: packages/padiem-ai-core
-          RUNNER_FAMILY: ${{ runner.os }}
-        run: |
-          set -euo pipefail
-          eval "$(python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" "$RUNNER_FAMILY")"
-          wheel_dir="$RUNNER_TEMP/padiem-pillow-wheel"
-          mkdir -p "$wheel_dir"
-          curl --fail --location --silent --show-error \
-            --output "$wheel_dir/${PILLOW_WHEEL_FILENAME}" \
-            "$PILLOW_WHEEL_URL"
-
-      # Filename, then exact size, then exact SHA-256, all before any installer is
-      # allowed to touch the file.
-      - name: Verify the downloaded Pillow wheel against the receipt
-        shell: bash
-        env:
-          PYTHONPATH: packages/padiem-ai-core
-          RUNNER_FAMILY: ${{ runner.os }}
-        run: |
-          set -euo pipefail
-          eval "$(python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" "$RUNNER_FAMILY")"
-          python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" \
-            "$RUNNER_FAMILY" \
-            "$RUNNER_TEMP/padiem-pillow-wheel/${PILLOW_WHEEL_FILENAME}"
-          echo "verified ${PILLOW_WHEEL_FILENAME}"
-
-      # --no-index keeps pip off the network and --no-deps keeps it from pulling
-      # a second, unverified Pillow alongside the verified one.
-      - name: Install the verified local Pillow wheel
-        shell: bash
-        env:
-          PYTHONPATH: packages/padiem-ai-core
-          RUNNER_FAMILY: ${{ runner.os }}
-        run: |
-          set -euo pipefail
-          eval "$(python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" "$RUNNER_FAMILY")"
-          python -m pip install --disable-pip-version-check \
-            --no-index --no-deps --force-reinstall \
-            "$RUNNER_TEMP/padiem-pillow-wheel/${PILLOW_WHEEL_FILENAME}"
-
-      # Pillow is intentionally absent from KAgent base dependencies. The exact
-      # verified wheel above is the only image runtime admitted into this lane;
-      # later dependency installation must not re-resolve or widen that runtime.
-      # KAgent itself is exercised from ``src`` below rather than installed as an
-      # editable distribution. An editable .pth would make the reviewed parser
-      # child importable even when a test deliberately empties PYTHONPATH, so the
-      # real import-failure contract would be invalidated.
-      - name: Install monorepo conformance dependencies
-        working-directory: apps/korean-ai-code-agent
-        shell: bash
-        run: |
-          set -euo pipefail
-          python -m pip install --disable-pip-version-check \
-            -e "../../packages/padiem-ai-core[tools,documents,render,tables,authoring]"
-          python -m pip install --disable-pip-version-check \
-            -e "../../packages/padiem-control-plane"
-          python -m pip install --disable-pip-version-check \
-            -e "../../apps/padiem-ai-engine/clients/python"
-
-      # Prove the artifact that is actually installed is the approved one, rather
-      # than a same-version wheel some other step resolved.
-      - name: Prove the installed Pillow artifact
-        working-directory: apps/korean-ai-code-agent
-        shell: bash
-        env:
-          PYTHONPATH: packages/padiem-ai-core
-          RUNNER_FAMILY: ${{ runner.os }}
-        run: |
-          set -euo pipefail
-          eval "$(python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" "$RUNNER_FAMILY")"
-          python - "$PILLOW_WHEEL_PLATFORM_TAG" "$PILLOW_WHEEL_FILENAME" <<'PY'
-          import json
-          import pathlib
-          import sys
-
-          import PIL
-          from PIL import features
-
-          platform_tag, filename = sys.argv[1], sys.argv[2]
-          if PIL.__version__ != "12.3.0":
-              raise SystemExit(f"unexpected installed Pillow {PIL.__version__}")
-
-          payload = {
-              "version": PIL.__version__,
-              "interpreter_tag": f"cp{sys.version_info[0]}{sys.version_info[1]}",
-              "platform_tag": platform_tag,
-              "wheel_filename": filename,
-              "native_extensions": sorted(
-                  path.name
-                  for path in pathlib.Path(PIL.__file__).parent.glob("_imaging*")
-              ),
-              "codecs": {
-                  codec: bool(features.check(codec))
-                  for codec in ("jpg", "zlib", "webp", "libtiff")
-              },
-          }
-          record = pathlib.Path("recorded_pillow_artifact.json")
-          record.write_text(
-              json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8"
-          )
-          print(json.dumps(payload, indent=2, sort_keys=True))
-          PY
-
-      - name: Install KAgent pytest dependencies
-        working-directory: apps/korean-ai-code-agent
-        run: python -m pip install --disable-pip-version-check "pytest>=8,<10" "openpyxl>=3.1,<4"
       - name: pytest
         working-directory: apps/korean-ai-code-agent
         env:
@@ -383,7 +267,7 @@ jobs:
       - app-padiem-control-plane
       - app-korean-ai-code-agent
       - app-living-fiction
-    if: always() && contains(needs.*.result, 'failure')
+    if: always() && github.event_name != 'pull_request' && contains(needs.*.result, 'failure')
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

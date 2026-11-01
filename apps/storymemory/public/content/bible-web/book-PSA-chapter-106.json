@@ -1,0 +1,1549 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:106",
+  "unit_ordinal": 584,
+  "unit_label": "PSA 106",
+  "book_code": "PSA",
+  "chapter_number": 106,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:106:1",
+      "sequence": 15653,
+      "chapter_label": "PSA 106",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD! Give thanks to the LORD, for he is good, for his loving kindness endures forever.",
+      "ko": "할렐루야 여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다",
+      "source_text_hash": "3fd76aba46dc23f6726964ad6122638b17cd298b7dfc252a1a0c0fbd5bfe94ec",
+      "translation_text_hash": "9574fe94be8e426fcefd86e53ce3a54a3beac6d2dd052ab6dee3c7a11d4c3222",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할렐루야 여호와께 감사하라 그는 선하시며 그 인자하심이 영원함이로다"
+      ],
+      "raw_text_hashes": [
+        "9574fe94be8e426fcefd86e53ce3a54a3beac6d2dd052ab6dee3c7a11d4c3222"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:2",
+      "sequence": 15654,
+      "chapter_label": "PSA 106",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 2
+        }
+      ],
+      "en": "Who can utter the mighty acts of the LORD, or fully declare all his praise?",
+      "ko": "뉘 능히 여호와의 능하신 사적을 전파하며 그 영예를 다 광포할꼬",
+      "source_text_hash": "fa8316d0998d211cd95f3c7409fdf7924df6a1fef4aadb78faec3ed1532f5ef6",
+      "translation_text_hash": "63d3e6e98afddd40a154e53dfe3460b3690c835a03777036b690007a4eef686d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뉘 능히 여호와의 능하신 사적을 전파하며 그 영예를 다 광포할꼬"
+      ],
+      "raw_text_hashes": [
+        "63d3e6e98afddd40a154e53dfe3460b3690c835a03777036b690007a4eef686d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:3",
+      "sequence": 15655,
+      "chapter_label": "PSA 106",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 3
+        }
+      ],
+      "en": "Blessed are those who keep justice. Blessed is one who does what is right at all times.",
+      "ko": "공의를 지키는 자들과 항상 의를 행하는 자는 복이 있도다",
+      "source_text_hash": "73e06a7bd10ad69c30327e83dd45f46e1e8070cb4148260121b25b0f64bbcf70",
+      "translation_text_hash": "e9f5ac15302f3cb875ef2dc4a83a987b80d73396c26b3e67e4684f39af6c7641",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공의를 지키는 자들과 항상 의를 행하는 자는 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "e9f5ac15302f3cb875ef2dc4a83a987b80d73396c26b3e67e4684f39af6c7641"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:4",
+      "sequence": 15656,
+      "chapter_label": "PSA 106",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 4
+        }
+      ],
+      "en": "Remember me, LORD, with the favor that you show to your people. Visit me with your salvation,",
+      "ko": "여호와여 주의 백성에게 베푸시는 은혜로 나를 기억하시며 주의 구원으로 나를 권고하사",
+      "source_text_hash": "93ad6c527248069fb2973360f19d55345e4037977985cb4ac8474981dbf28e1c",
+      "translation_text_hash": "bd3415e11f9405c850fbf2d35a339618cb7b36ceb79fedda3acb983a858e103a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 백성에게 베푸시는 은혜로 나를 기억하시며 주의 구원으로 나를 권고하사"
+      ],
+      "raw_text_hashes": [
+        "bd3415e11f9405c850fbf2d35a339618cb7b36ceb79fedda3acb983a858e103a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:5",
+      "sequence": 15657,
+      "chapter_label": "PSA 106",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 5
+        }
+      ],
+      "en": "that I may see the prosperity of your chosen, that I may rejoice in the gladness of your nation, that I may glory with your inheritance.",
+      "ko": "나로 주의 택하신 자의 형통함을 보고 주의 나라의 기쁨으로 즐거워하게 하시며 주의 기업과 함께 자랑하게 하소서",
+      "source_text_hash": "c846a6e5d0908d30af01e78c30d8e9c65031bd27e03e764be30d6e8db300c671",
+      "translation_text_hash": "ff9fb586ffc871adcf671c5263c33ca5e3b9b8aa77226e8f18314895305e594d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 주의 택하신 자의 형통함을 보고 주의 나라의 기쁨으로 즐거워하게 하시며 주의 기업과 함께 자랑하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "ff9fb586ffc871adcf671c5263c33ca5e3b9b8aa77226e8f18314895305e594d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:6",
+      "sequence": 15658,
+      "chapter_label": "PSA 106",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 6
+        }
+      ],
+      "en": "We have sinned with our fathers. We have committed iniquity. We have done wickedly.",
+      "ko": "우리가 열조와 함께 범죄하여 사특을 행하며 악을 지었나이다",
+      "source_text_hash": "d75601469a58194b1523f5399461d15542fe7908a507b250aeda26546d5ca4ec",
+      "translation_text_hash": "54e861348fcfd9fa72cc11779155edb8410b793793ab638654f4b61dcf151cd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 열조와 함께 범죄하여 사특을 행하며 악을 지었나이다"
+      ],
+      "raw_text_hashes": [
+        "54e861348fcfd9fa72cc11779155edb8410b793793ab638654f4b61dcf151cd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:7",
+      "sequence": 15659,
+      "chapter_label": "PSA 106",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 7
+        }
+      ],
+      "en": "Our fathers didn’t understand your wonders in Egypt. They didn’t remember the multitude of your loving kindnesses, but were rebellious at the sea, even at the Red Sea.",
+      "ko": "우리 열조가 애굽에서 주의 기사를 깨닫지 못하며 주의 많은 인자를 기억지 아니하고 바다 곧 홍해에서 거역하였나이다",
+      "source_text_hash": "605e4bb37954ea26c0c92d2009ebc4ea624ee468c3788b224d31e224c06de577",
+      "translation_text_hash": "aba052111091ab38ad58e4b8150cc4edf28418fece618d8049b1d6ad663d72f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 열조가 애굽에서 주의 기사를 깨닫지 못하며 주의 많은 인자를 기억지 아니하고 바다 곧 홍해에서 거역하였나이다"
+      ],
+      "raw_text_hashes": [
+        "aba052111091ab38ad58e4b8150cc4edf28418fece618d8049b1d6ad663d72f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:8",
+      "sequence": 15660,
+      "chapter_label": "PSA 106",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 8
+        }
+      ],
+      "en": "Nevertheless he saved them for his name’s sake, that he might make his mighty power known.",
+      "ko": "그러나 여호와께서 자기 이름을 위하여 저희를 구원하셨으니 그 큰 권능을 알게 하려 하심이로다",
+      "source_text_hash": "f6fc0b62f200fb8694f459cd8b7afdc8f545117f680ad3693f1bd47aec7e16cd",
+      "translation_text_hash": "9fd6c9e05c2b69eecefa2ba2603bbff6190f678b8b79976943c24f9b5f4dbc85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 여호와께서 자기 이름을 위하여 저희를 구원하셨으니 그 큰 권능을 알게 하려 하심이로다"
+      ],
+      "raw_text_hashes": [
+        "9fd6c9e05c2b69eecefa2ba2603bbff6190f678b8b79976943c24f9b5f4dbc85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:9",
+      "sequence": 15661,
+      "chapter_label": "PSA 106",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 9
+        }
+      ],
+      "en": "He rebuked the Red Sea also, and it was dried up; so he led them through the depths, as through a desert.",
+      "ko": "이에 홍해를 꾸짖으시니 곧 마르매 저희를 인도하여 바다 지나기를 광야를 지남 같게 하사",
+      "source_text_hash": "9c43196da6aee8a4f3b149dd574fd2d4516cdee0e857cfcf381e4e89a8e44b18",
+      "translation_text_hash": "e48863750f8d66af94145eefdcb0a8bf922b0953d5b27b2d4f6a72f63769a923",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 홍해를 꾸짖으시니 곧 마르매 저희를 인도하여 바다 지나기를 광야를 지남 같게 하사"
+      ],
+      "raw_text_hashes": [
+        "e48863750f8d66af94145eefdcb0a8bf922b0953d5b27b2d4f6a72f63769a923"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:10",
+      "sequence": 15662,
+      "chapter_label": "PSA 106",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 10
+        }
+      ],
+      "en": "He saved them from the hand of him who hated them, and redeemed them from the hand of the enemy.",
+      "ko": "저희를 그 미워하는 자의 손에서 구원하시며 그 원수의 손에서 구속하셨고",
+      "source_text_hash": "cc67b91ceed35b0d76ff36c26503af55a851ca9f9be40293cd6c211256c3e9f7",
+      "translation_text_hash": "ebb48b6c3068eea697e70ea22ff342a990b1652ad70d415b943b71835b612e70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 그 미워하는 자의 손에서 구원하시며 그 원수의 손에서 구속하셨고"
+      ],
+      "raw_text_hashes": [
+        "ebb48b6c3068eea697e70ea22ff342a990b1652ad70d415b943b71835b612e70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:11",
+      "sequence": 15663,
+      "chapter_label": "PSA 106",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 11
+        }
+      ],
+      "en": "The waters covered their adversaries. There was not one of them left.",
+      "ko": "저희 대적은 물이 덮으매 하나도 남지 아니하였도다",
+      "source_text_hash": "21659a3542eeffe293cd466852666bfb526b7ddf4c0eaa1a6c45fd09bb371043",
+      "translation_text_hash": "29be993c59a38d1d2543ec8d8d49287f1192e180b958922be6e2c857496182bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 대적은 물이 덮으매 하나도 남지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "29be993c59a38d1d2543ec8d8d49287f1192e180b958922be6e2c857496182bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:12",
+      "sequence": 15664,
+      "chapter_label": "PSA 106",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 12
+        }
+      ],
+      "en": "Then they believed his words. They sang his praise.",
+      "ko": "이에 저희가 그 말씀을 믿고 그 찬송을 불렀도다",
+      "source_text_hash": "1978f508a6c20c40f252c7c7aa4fa12689f6887238bc12bc72e4caf6dbe31ffa",
+      "translation_text_hash": "b051ba8582c8809f92cc6ed0a918ffa77454272edd56ab36cec1b0514089c1ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 그 말씀을 믿고 그 찬송을 불렀도다"
+      ],
+      "raw_text_hashes": [
+        "b051ba8582c8809f92cc6ed0a918ffa77454272edd56ab36cec1b0514089c1ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:13",
+      "sequence": 15665,
+      "chapter_label": "PSA 106",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 13
+        }
+      ],
+      "en": "They soon forgot his works. They didn’t wait for his counsel,",
+      "ko": "저희가 미구에 그 행사를 잊어버리며 그 가르침을 기다리지 아니하고",
+      "source_text_hash": "4c53afdd4d3494f43ab49fbb8994c7fae594e91d5daed917e8016005bfc18364",
+      "translation_text_hash": "a440cc659269b0f39d3d22656ca42fc9476c8377737e72c033892c7f1b845fb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 미구에 그 행사를 잊어버리며 그 가르침을 기다리지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "a440cc659269b0f39d3d22656ca42fc9476c8377737e72c033892c7f1b845fb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:14",
+      "sequence": 15666,
+      "chapter_label": "PSA 106",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 14
+        }
+      ],
+      "en": "but gave in to craving in the desert, and tested God in the wasteland.",
+      "ko": "광야에서 욕심을 크게 발하며 사막에서 하나님을 시험하였도다",
+      "source_text_hash": "4b23041deb9ccfd4afac389540f7c8e204bf222e0e2d4a7c73b81d909d189688",
+      "translation_text_hash": "bf93c769344105f64dfbb2a620b81e0fc85ce0fac2ea74a9842e1f9ecfd06aa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야에서 욕심을 크게 발하며 사막에서 하나님을 시험하였도다"
+      ],
+      "raw_text_hashes": [
+        "bf93c769344105f64dfbb2a620b81e0fc85ce0fac2ea74a9842e1f9ecfd06aa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:15",
+      "sequence": 15667,
+      "chapter_label": "PSA 106",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 15
+        }
+      ],
+      "en": "He gave them their request, but sent leanness into their soul.",
+      "ko": "여호와께서 저희의 요구한 것을 주셨을찌라도 그 영혼을 파리하게 하셨도다",
+      "source_text_hash": "07f6f1182b777ac5dbb61edb9fb64b6e8e0b94eeb7e317f4257a22eba97a5d76",
+      "translation_text_hash": "b21e9243e4640f4cc34d37d1a915e4a7f6b78a4fcb2858a9539a7760852c3c32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 저희의 요구한 것을 주셨을찌라도 그 영혼을 파리하게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "b21e9243e4640f4cc34d37d1a915e4a7f6b78a4fcb2858a9539a7760852c3c32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:16",
+      "sequence": 15668,
+      "chapter_label": "PSA 106",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 16
+        }
+      ],
+      "en": "They envied Moses also in the camp, and Aaron, the LORD’s saint.",
+      "ko": "저희가 진에서 모세와 여호와의 성도 아론을 질투하매",
+      "source_text_hash": "7a3d18fffac90ecbca016f379500af04d355dd350d6c2f84aed85419772521f8",
+      "translation_text_hash": "8336d0ffd0f685b4da27ed40e6d6fdb5d606ad73d0b88592b1a9709a0289455f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 진에서 모세와 여호와의 성도 아론을 질투하매"
+      ],
+      "raw_text_hashes": [
+        "8336d0ffd0f685b4da27ed40e6d6fdb5d606ad73d0b88592b1a9709a0289455f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:17",
+      "sequence": 15669,
+      "chapter_label": "PSA 106",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 17
+        }
+      ],
+      "en": "The earth opened and swallowed up Dathan, and covered the company of Abiram.",
+      "ko": "땅이 갈라져 다단을 삼키며 아비람의 당을 덮었으며",
+      "source_text_hash": "bca1f632f41cdfc140e62b2d452654caf7a34b449574aa26c88f6c771429a0f6",
+      "translation_text_hash": "ccc83f6d46030ed61429a0114ddb95bcd97e0de4789cc9f5eedd98320dfcd6fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 갈라져 다단을 삼키며 아비람의 당을 덮었으며"
+      ],
+      "raw_text_hashes": [
+        "ccc83f6d46030ed61429a0114ddb95bcd97e0de4789cc9f5eedd98320dfcd6fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:18",
+      "sequence": 15670,
+      "chapter_label": "PSA 106",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 18
+        }
+      ],
+      "en": "A fire was kindled in their company. The flame burned up the wicked.",
+      "ko": "불이 그 당 중에 붙음이여 화염이 악인을 살랐도다",
+      "source_text_hash": "112967790b5347eaeece0dfcd6a180b344969e476f8bc8af7a99323d2ba07fa7",
+      "translation_text_hash": "527305a2ca092d0bab61fa45e6ea58ac652c6f5a821e76c66277b6d0b0624eb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불이 그 당 중에 붙음이여 화염이 악인을 살랐도다"
+      ],
+      "raw_text_hashes": [
+        "527305a2ca092d0bab61fa45e6ea58ac652c6f5a821e76c66277b6d0b0624eb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:19",
+      "sequence": 15671,
+      "chapter_label": "PSA 106",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 19
+        }
+      ],
+      "en": "They made a calf in Horeb, and worshiped a molten image.",
+      "ko": "저희가 호렙에서 송아지를 만들고 부어 만든 우상을 숭배하여",
+      "source_text_hash": "bab500aec42dd5deddb06470e36b47d8bc7f2432e68ac5b56a62bdc61c2634fc",
+      "translation_text_hash": "a86da22ba8287c7b9532cc9952c4d64cee076e74c2c81d43c6694a6fe129b733",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 호렙에서 송아지를 만들고 부어 만든 우상을 숭배하여"
+      ],
+      "raw_text_hashes": [
+        "a86da22ba8287c7b9532cc9952c4d64cee076e74c2c81d43c6694a6fe129b733"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:20",
+      "sequence": 15672,
+      "chapter_label": "PSA 106",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 20
+        }
+      ],
+      "en": "Thus they exchanged their glory for an image of a bull that eats grass.",
+      "ko": "자기 영광을 풀 먹는 소의 형상으로 바꾸었도다",
+      "source_text_hash": "7d3630a3fdc5971b3343944f55ce811c205b91e5996681b77ac5848e5ff503ea",
+      "translation_text_hash": "997bf4da6a642a3bb6f08510319cae467f1fe7c2d952e7422c2926c0b6ed3784",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 영광을 풀 먹는 소의 형상으로 바꾸었도다"
+      ],
+      "raw_text_hashes": [
+        "997bf4da6a642a3bb6f08510319cae467f1fe7c2d952e7422c2926c0b6ed3784"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:21",
+      "sequence": 15673,
+      "chapter_label": "PSA 106",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 21
+        }
+      ],
+      "en": "They forgot God, their Savior, who had done great things in Egypt,",
+      "ko": "애굽에서 큰 일을 행하신 그 구원자 하나님을 저희가 잊었나니",
+      "source_text_hash": "7bd98d960dc960aa8312b8302060d8ad68b60fa581b88fb7d12d8da7bab8a11e",
+      "translation_text_hash": "68ece4b0b9df065663ecf37a4c82d43ec0f83b5c0c103c7ab412b42d2200a4db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽에서 큰 일을 행하신 그 구원자 하나님을 저희가 잊었나니"
+      ],
+      "raw_text_hashes": [
+        "68ece4b0b9df065663ecf37a4c82d43ec0f83b5c0c103c7ab412b42d2200a4db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:22",
+      "sequence": 15674,
+      "chapter_label": "PSA 106",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 22
+        }
+      ],
+      "en": "wondrous works in the land of Ham, and awesome things by the Red Sea.",
+      "ko": "그는 함 땅에서 기사와 홍해에서 놀랄 일을 행하신 자로다",
+      "source_text_hash": "599bc7bae4c283a4fdda77b5877a7d04a8cb8648631b75ef315988c1e6c4ebce",
+      "translation_text_hash": "762989fe4e29bd4d6f36673ba388756004dc64f2dc7995f726d74b983c41722a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 함 땅에서 기사와 홍해에서 놀랄 일을 행하신 자로다"
+      ],
+      "raw_text_hashes": [
+        "762989fe4e29bd4d6f36673ba388756004dc64f2dc7995f726d74b983c41722a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:23",
+      "sequence": 15675,
+      "chapter_label": "PSA 106",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 23
+        }
+      ],
+      "en": "Therefore he said that he would destroy them, had Moses, his chosen, not stood before him in the breach, to turn away his wrath, so that he wouldn’t destroy them.",
+      "ko": "그러므로 여호와께서 저희를 멸하리라 하셨으나 그 택하신 모세가 그 결렬된 중에서 그 앞에 서서 그 노를 돌이켜 멸하시지 않게 하였도다",
+      "source_text_hash": "e7f6b59036264629b04a60af374b9554e2439d04a0d074513cfa0a690edb4eb4",
+      "translation_text_hash": "b3e85556cdcd50e4d91b9fef6c69530575e16d361cfdd04d3097f0d3dc8a04bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 저희를 멸하리라 하셨으나 그 택하신 모세가 그 결렬된 중에서 그 앞에 서서 그 노를 돌이켜 멸하시지 않게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "b3e85556cdcd50e4d91b9fef6c69530575e16d361cfdd04d3097f0d3dc8a04bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:24",
+      "sequence": 15676,
+      "chapter_label": "PSA 106",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 24
+        }
+      ],
+      "en": "Yes, they despised the pleasant land. They didn’t believe his word,",
+      "ko": "저희가 낙토를 멸시하며 그 말씀을 믿지 아니하고",
+      "source_text_hash": "566fe732d8cba5520a85dea5989582b09c623c90bee4720ab4c587905d067844",
+      "translation_text_hash": "136307886510da73594b1b9d8bc580ffdaf7352111a302a5e595d762304b19e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 낙토를 멸시하며 그 말씀을 믿지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "136307886510da73594b1b9d8bc580ffdaf7352111a302a5e595d762304b19e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:25",
+      "sequence": 15677,
+      "chapter_label": "PSA 106",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 25
+        }
+      ],
+      "en": "but murmured in their tents, and didn’t listen to the LORD’s voice.",
+      "ko": "저희 장막에서 원망하며 여호와의 말씀을 청종치 아니하였도다",
+      "source_text_hash": "fc43f0889be66176a8d23beeed8a452ab64082cbec9ae0cf46896e1a79f9b661",
+      "translation_text_hash": "1eb32e5b367b024863d08867559ae1ef501562fd613a9eca320e08fe31292f42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 장막에서 원망하며 여호와의 말씀을 청종치 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "1eb32e5b367b024863d08867559ae1ef501562fd613a9eca320e08fe31292f42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:26",
+      "sequence": 15678,
+      "chapter_label": "PSA 106",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 26
+        }
+      ],
+      "en": "Therefore he swore to them that he would overthrow them in the wilderness,",
+      "ko": "이러므로 저가 맹세하시기를 저희로 광야에 엎더지게 하고",
+      "source_text_hash": "dc4263234d9e1570c0c42963ac32290cb0b8c78d4a45d532859b92314bb3457b",
+      "translation_text_hash": "520a46374dba92fa3fb87f68e7e90277943393da9906ef22e419e32e6ba464f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 저가 맹세하시기를 저희로 광야에 엎더지게 하고"
+      ],
+      "raw_text_hashes": [
+        "520a46374dba92fa3fb87f68e7e90277943393da9906ef22e419e32e6ba464f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:27",
+      "sequence": 15679,
+      "chapter_label": "PSA 106",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 27
+        }
+      ],
+      "en": "that he would overthrow their offspring among the nations, and scatter them in the lands.",
+      "ko": "또 그 후손을 열방 중에 엎드러뜨리며 각지에 흩어지게 하리라 하셨도다",
+      "source_text_hash": "c2d159d5b12e40ee973bb4cc638e6aab65a982155725b73073c0ddcf573c2625",
+      "translation_text_hash": "44670a6d056168fd3fbf1a23a91fa4578d05cdc9eec7ae18557cc1eca61c62e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 후손을 열방 중에 엎드러뜨리며 각지에 흩어지게 하리라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "44670a6d056168fd3fbf1a23a91fa4578d05cdc9eec7ae18557cc1eca61c62e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:28",
+      "sequence": 15680,
+      "chapter_label": "PSA 106",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 28
+        }
+      ],
+      "en": "They joined themselves also to Baal Peor, and ate the sacrifices of the dead.",
+      "ko": "저희가 또 바알브올과 연합하여 죽은 자에게 제사한 음식을 먹어서",
+      "source_text_hash": "f28b9594031a520c820e13b7e425d29bc2e51c21a2adbc36924a3e996e2af344",
+      "translation_text_hash": "3fa8c7cbed994911618cb7b3ece2a86cdb1604845b91e6f2ed7a9b000f159477",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 또 바알브올과 연합하여 죽은 자에게 제사한 음식을 먹어서"
+      ],
+      "raw_text_hashes": [
+        "3fa8c7cbed994911618cb7b3ece2a86cdb1604845b91e6f2ed7a9b000f159477"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:29",
+      "sequence": 15681,
+      "chapter_label": "PSA 106",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 29
+        }
+      ],
+      "en": "Thus they provoked him to anger with their deeds. The plague broke in on them.",
+      "ko": "그 행위로 주를 격노케 함을 인하여 재앙이 그 중에 유행하였도다",
+      "source_text_hash": "2e2e592b3124d05012230dcca86471ea5cb04396ec2378da2aaf81ea2ae00908",
+      "translation_text_hash": "a56d3bcf32c96a9988564674ea137425d92b0cbc7c2932a53de825bbbdce439c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 행위로 주를 격노케 함을 인하여 재앙이 그 중에 유행하였도다"
+      ],
+      "raw_text_hashes": [
+        "a56d3bcf32c96a9988564674ea137425d92b0cbc7c2932a53de825bbbdce439c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:30",
+      "sequence": 15682,
+      "chapter_label": "PSA 106",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 30
+        }
+      ],
+      "en": "Then Phinehas stood up and executed judgment, so the plague was stopped.",
+      "ko": "때에 비느하스가 일어나 처벌하니 이에 재앙이 그쳤도다",
+      "source_text_hash": "3fecde423f936e1e6197822f30be662f18dbb73de61027b7782615afe92448ae",
+      "translation_text_hash": "2a653ce889f464828ad9d6b81e19e861e82a142fff6a1290b16e2a2c254ad57f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 비느하스가 일어나 처벌하니 이에 재앙이 그쳤도다"
+      ],
+      "raw_text_hashes": [
+        "2a653ce889f464828ad9d6b81e19e861e82a142fff6a1290b16e2a2c254ad57f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:31",
+      "sequence": 15683,
+      "chapter_label": "PSA 106",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 31
+        }
+      ],
+      "en": "That was credited to him for righteousness, for all generations to come.",
+      "ko": "이 일을 저에게 의로 정하였으니 대대로 무궁하리로다",
+      "source_text_hash": "a8013855a3daf761bcc98ec842ea815eee63fb2ef85dcc758fffc8368af22576",
+      "translation_text_hash": "5eb8f6adada24debf79f05e0e4f3e874291768b9353dbcd902c79b8ed864970b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일을 저에게 의로 정하였으니 대대로 무궁하리로다"
+      ],
+      "raw_text_hashes": [
+        "5eb8f6adada24debf79f05e0e4f3e874291768b9353dbcd902c79b8ed864970b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:32",
+      "sequence": 15684,
+      "chapter_label": "PSA 106",
+      "verse_label": "32",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 32
+        }
+      ],
+      "en": "They angered him also at the waters of Meribah, so that Moses was troubled for their sakes;",
+      "ko": "저희가 또 므리바 물에서 여호와를 노하시게 하였으므로 저희로 인하여 얼이 모세에게 미쳤나니",
+      "source_text_hash": "a8a0501d5be6936faf170f7808d85397f92685e0f5509084ae1be06da9b537f8",
+      "translation_text_hash": "b3c8fb6364a8134fab66db7a038f44c51c4b211f7c77faee883bbe384c797b50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 또 므리바 물에서 여호와를 노하시게 하였으므로 저희로 인하여 얼이 모세에게 미쳤나니"
+      ],
+      "raw_text_hashes": [
+        "b3c8fb6364a8134fab66db7a038f44c51c4b211f7c77faee883bbe384c797b50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:33",
+      "sequence": 15685,
+      "chapter_label": "PSA 106",
+      "verse_label": "33",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 33
+        }
+      ],
+      "en": "because they were rebellious against his spirit, he spoke rashly with his lips.",
+      "ko": "이는 저희가 그 심령을 거역함을 인하여 모세가 그 입술로 망령되이 말하였음이로다",
+      "source_text_hash": "11a13cbd9c1edfe801e3ca0b7be54c0cacc3b73a8dca759f18706112801318f1",
+      "translation_text_hash": "73ded0e7d84766f6754b39f18588c411cca11e8ca5462df3c275b3b910bb76c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희가 그 심령을 거역함을 인하여 모세가 그 입술로 망령되이 말하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "73ded0e7d84766f6754b39f18588c411cca11e8ca5462df3c275b3b910bb76c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:34",
+      "sequence": 15686,
+      "chapter_label": "PSA 106",
+      "verse_label": "34",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 34
+        }
+      ],
+      "en": "They didn’t destroy the peoples, as the LORD commanded them,",
+      "ko": "저희가 여호와의 명을 좇지 아니하여 이족들을 멸하지 아니하고",
+      "source_text_hash": "a12dd73bb9cb89abf9aac280ec3aa5af3de81a75d9ba075c5aec09a68d7b1159",
+      "translation_text_hash": "0bb796825d093a483aac76e513b97abadecbe67dfc9dd0401f6469945fc9c9e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 여호와의 명을 좇지 아니하여 이족들을 멸하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "0bb796825d093a483aac76e513b97abadecbe67dfc9dd0401f6469945fc9c9e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:35",
+      "sequence": 15687,
+      "chapter_label": "PSA 106",
+      "verse_label": "35",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 35
+        }
+      ],
+      "en": "but mixed themselves with the nations, and learned their works.",
+      "ko": "열방과 섞여서 그 행위를 배우며",
+      "source_text_hash": "b10630ccf7bdec522d0843d1de95efbc159549e13d0a36b9a666f1321cb28476",
+      "translation_text_hash": "e67c3063b508a07579577cd7dc3e28aee1761eb652ffa41465d8215de46465b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방과 섞여서 그 행위를 배우며"
+      ],
+      "raw_text_hashes": [
+        "e67c3063b508a07579577cd7dc3e28aee1761eb652ffa41465d8215de46465b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:36",
+      "sequence": 15688,
+      "chapter_label": "PSA 106",
+      "verse_label": "36",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 36
+        }
+      ],
+      "en": "They served their idols, which became a snare to them.",
+      "ko": "그 우상들을 섬기므로 그것이 저희에게 올무가 되었도다",
+      "source_text_hash": "8155e2a44238ce9396cd4c4867206935d002200ea81242e5a18271702c3dfd7a",
+      "translation_text_hash": "090d6e76443f65e4f831ede2b441af341bb068df2e8e4b653516a8bf140c59ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 우상들을 섬기므로 그것이 저희에게 올무가 되었도다"
+      ],
+      "raw_text_hashes": [
+        "090d6e76443f65e4f831ede2b441af341bb068df2e8e4b653516a8bf140c59ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:37",
+      "sequence": 15689,
+      "chapter_label": "PSA 106",
+      "verse_label": "37",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 37
+        }
+      ],
+      "en": "Yes, they sacrificed their sons and their daughters to demons.",
+      "ko": "저희가 그 자녀로 사신에게 제사하였도다",
+      "source_text_hash": "535b46976d1d0f0949f3565cc1a213fd6c973b048ce92adde5f6986db222726e",
+      "translation_text_hash": "3f2eca5f5a6f015d27adf8a27dab784f530e2bc596036c1d9b8eee437e820f4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 자녀로 사신에게 제사하였도다"
+      ],
+      "raw_text_hashes": [
+        "3f2eca5f5a6f015d27adf8a27dab784f530e2bc596036c1d9b8eee437e820f4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:38",
+      "sequence": 15690,
+      "chapter_label": "PSA 106",
+      "verse_label": "38",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 38
+        }
+      ],
+      "en": "They shed innocent blood, even the blood of their sons and of their daughters, whom they sacrificed to the idols of Canaan. The land was polluted with blood.",
+      "ko": "무죄한 피 곧 저희 자녀의 피를 흘려 가나안 우상에게 제사하므로 그 땅이 피에 더러웠도다",
+      "source_text_hash": "423f4c70dce74fad03786da37b5f68da6d3e5ffda28ea53d3589be13555f2b67",
+      "translation_text_hash": "6410b051cd043144cf1bdec66a9ede4305a47ac2e9fff6dbc9275eca51ece609",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무죄한 피 곧 저희 자녀의 피를 흘려 가나안 우상에게 제사하므로 그 땅이 피에 더러웠도다"
+      ],
+      "raw_text_hashes": [
+        "6410b051cd043144cf1bdec66a9ede4305a47ac2e9fff6dbc9275eca51ece609"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:39",
+      "sequence": 15691,
+      "chapter_label": "PSA 106",
+      "verse_label": "39",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 39
+        }
+      ],
+      "en": "Thus they were defiled with their works, and prostituted themselves in their deeds.",
+      "ko": "저희는 그 행위로 더러워지며 그 행동이 음탕하도다",
+      "source_text_hash": "4204d46834cf359aa3827739130a922077ca89293de4297949bc8284125c0ef7",
+      "translation_text_hash": "7331d2fb16df21d3a08e565fec8c6c0600d1083328979aa1c64073adc5129741",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 그 행위로 더러워지며 그 행동이 음탕하도다"
+      ],
+      "raw_text_hashes": [
+        "7331d2fb16df21d3a08e565fec8c6c0600d1083328979aa1c64073adc5129741"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:40",
+      "sequence": 15692,
+      "chapter_label": "PSA 106",
+      "verse_label": "40",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 40
+        }
+      ],
+      "en": "Therefore the LORD burned with anger against his people. He abhorred his inheritance.",
+      "ko": "그러므로 여호와께서 자기 백성에게 맹렬히 노하시며 자기 기업을 미워하사",
+      "source_text_hash": "37447c65cdcafa9a1d4f289a93e48234f6a149fbb27a947f23e948c09bc4ba89",
+      "translation_text_hash": "df8f239a69aded89fe9a3309199f29f565c75a096cdc3f0fcb1b04c49b338182",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 자기 백성에게 맹렬히 노하시며 자기 기업을 미워하사"
+      ],
+      "raw_text_hashes": [
+        "df8f239a69aded89fe9a3309199f29f565c75a096cdc3f0fcb1b04c49b338182"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:41",
+      "sequence": 15693,
+      "chapter_label": "PSA 106",
+      "verse_label": "41",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 41
+        }
+      ],
+      "en": "He gave them into the hand of the nations. Those who hated them ruled over them.",
+      "ko": "저희를 열방의 손에 붙이시매 저희를 미워하는 자들이 저희를 치리하였도다",
+      "source_text_hash": "38daa23769596ef81516404e81a6323f42440edfca0ef99e634ae7778e9a1d45",
+      "translation_text_hash": "6881ca9253cac6d7516a70659e894c903f1c9df3c587bd3c8a140737cd66bde1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 열방의 손에 붙이시매 저희를 미워하는 자들이 저희를 치리하였도다"
+      ],
+      "raw_text_hashes": [
+        "6881ca9253cac6d7516a70659e894c903f1c9df3c587bd3c8a140737cd66bde1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:42",
+      "sequence": 15694,
+      "chapter_label": "PSA 106",
+      "verse_label": "42",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 42
+        }
+      ],
+      "en": "Their enemies also oppressed them. They were brought into subjection under their hand.",
+      "ko": "저희가 원수들의 압박을 받고 그 수하에 복종케 되었도다",
+      "source_text_hash": "195e94862a84d90065ab71604d1398083394b6cda6b547fea21b131db38ee288",
+      "translation_text_hash": "cf050869065d65d46c3e85153c5dc1ce9e0288997557be11e06044eb8126f2ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 원수들의 압박을 받고 그 수하에 복종케 되었도다"
+      ],
+      "raw_text_hashes": [
+        "cf050869065d65d46c3e85153c5dc1ce9e0288997557be11e06044eb8126f2ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:43",
+      "sequence": 15695,
+      "chapter_label": "PSA 106",
+      "verse_label": "43",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 43
+        }
+      ],
+      "en": "He rescued them many times, but they were rebellious in their counsel, and were brought low in their iniquity.",
+      "ko": "여호와께서 여러번 저희를 건지시나 저희가 꾀로 거역하며 자기 죄악으로 인하여 낮아짐을 당하였도다",
+      "source_text_hash": "7f6e1173637259c8e8e256cdd01f54dfc84d40719c24389a312dd91f91cfb2f6",
+      "translation_text_hash": "817c9c63963af252c3bcd2d670434727cae6ae6e49dbbc93d8b11b94f0633a4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여러번 저희를 건지시나 저희가 꾀로 거역하며 자기 죄악으로 인하여 낮아짐을 당하였도다"
+      ],
+      "raw_text_hashes": [
+        "817c9c63963af252c3bcd2d670434727cae6ae6e49dbbc93d8b11b94f0633a4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:44",
+      "sequence": 15696,
+      "chapter_label": "PSA 106",
+      "verse_label": "44",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 44
+        }
+      ],
+      "en": "Nevertheless he regarded their distress, when he heard their cry.",
+      "ko": "그러나 여호와께서 저희의 부르짖음을 들으실 때에 그 고통을 권고하시며",
+      "source_text_hash": "0df084c8d930848c98cd78b564e0a063267a263a9dc7123b1a3f0f9966272e7f",
+      "translation_text_hash": "b3691e46153c4fd780c4ae898029bc589cbcf876fdc3fbdb6746e21099851301",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 여호와께서 저희의 부르짖음을 들으실 때에 그 고통을 권고하시며"
+      ],
+      "raw_text_hashes": [
+        "b3691e46153c4fd780c4ae898029bc589cbcf876fdc3fbdb6746e21099851301"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:45",
+      "sequence": 15697,
+      "chapter_label": "PSA 106",
+      "verse_label": "45",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 45
+        }
+      ],
+      "en": "He remembered for them his covenant, and repented according to the multitude of his loving kindnesses.",
+      "ko": "저희를 위하여 그 언약을 기억하시고 그 많은 인자하심을 따라 뜻을 돌이키사",
+      "source_text_hash": "f53829f49a12d8516ee719c3e146330209ba96d83f40014751896bfa41cb9aa8",
+      "translation_text_hash": "f9b7c27dc06d98a1c4360f2399e4b24d62a958e2ec25a6a8730465b73b0f632a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 위하여 그 언약을 기억하시고 그 많은 인자하심을 따라 뜻을 돌이키사"
+      ],
+      "raw_text_hashes": [
+        "f9b7c27dc06d98a1c4360f2399e4b24d62a958e2ec25a6a8730465b73b0f632a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:46",
+      "sequence": 15698,
+      "chapter_label": "PSA 106",
+      "verse_label": "46",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 46
+        }
+      ],
+      "en": "He made them also to be pitied by all those who carried them captive.",
+      "ko": "저희로 사로잡은 모든 자에게서 긍휼히 여김을 받게 하셨도다",
+      "source_text_hash": "e88e1799f925b3f5383220102dfef65880016433e6aaea4ec276bd6bd1efd1aa",
+      "translation_text_hash": "b1d7e2cffee4bb19da14703ceef54edd5bdc9dbb402b5b28691671e7127cc30b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희로 사로잡은 모든 자에게서 긍휼히 여김을 받게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "b1d7e2cffee4bb19da14703ceef54edd5bdc9dbb402b5b28691671e7127cc30b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:47",
+      "sequence": 15699,
+      "chapter_label": "PSA 106",
+      "verse_label": "47",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 47
+        }
+      ],
+      "en": "Save us, LORD, our God, gather us from among the nations, to give thanks to your holy name, to triumph in your praise!",
+      "ko": "여호와 우리 하나님이여 우리를 구원하사 열방 중에서 모으시고 우리로 주의 성호를 감사하며 주의 영예를 찬양하게 하소서",
+      "source_text_hash": "2d894de676d6c2d045dc3fcc09ec83fad222eacd58a7c5b4f3dcbd8701b07e5f",
+      "translation_text_hash": "0e448e85193f27f0d220140dbdfa8fc359dbfaeb1c5167d4ba7ab9580b4aa6e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 우리 하나님이여 우리를 구원하사 열방 중에서 모으시고 우리로 주의 성호를 감사하며 주의 영예를 찬양하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "0e448e85193f27f0d220140dbdfa8fc359dbfaeb1c5167d4ba7ab9580b4aa6e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:106:48",
+      "sequence": 15700,
+      "chapter_label": "PSA 106",
+      "verse_label": "48",
+      "locator": {
+        "book": "PSA",
+        "chapter": 106,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 106,
+          "verse": 48
+        }
+      ],
+      "en": "Blessed be the LORD, the God of Israel, from everlasting even to everlasting! Let all the people say, “Amen.” Praise the LORD!",
+      "ko": "여호와 이스라엘의 하나님을 영원부터 영원까지 찬양할찌어다 모든 백성들아 아멘 할찌어다 할렐루야",
+      "source_text_hash": "228658aac4f1e491cb9574ca9de57de6c5f67baf04f115d27a54237855916ae6",
+      "translation_text_hash": "3f10627518c2bfa767b23085c051eb45ea8f5a07f0b9a674ee9b699e2d71186d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 이스라엘의 하나님을 영원부터 영원까지 찬양할찌어다 모든 백성들아 아멘 할찌어다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "3f10627518c2bfa767b23085c051eb45ea8f5a07f0b9a674ee9b699e2d71186d"
+      ]
+    }
+  ]
+}

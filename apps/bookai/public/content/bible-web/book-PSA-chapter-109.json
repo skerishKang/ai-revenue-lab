@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:109",
+  "unit_ordinal": 587,
+  "unit_label": "PSA 109",
+  "book_code": "PSA",
+  "chapter_number": 109,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:109:1",
+      "sequence": 15757,
+      "chapter_label": "PSA 109",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 1
+        }
+      ],
+      "en": "God of my praise, don’t remain silent,",
+      "ko": "나의 찬송하는 하나님이여 잠잠하지 마옵소서",
+      "source_text_hash": "b63ed027553fbc6746817cb2bf4f94031739b8d8c4f3e8343097c0a2128626f6",
+      "translation_text_hash": "bdbe6b1637e9f41317ac1d169286feb5b452115577c7eb0c82c3d7a0e240fbd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 찬송하는 하나님이여 잠잠하지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "bdbe6b1637e9f41317ac1d169286feb5b452115577c7eb0c82c3d7a0e240fbd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:2",
+      "sequence": 15758,
+      "chapter_label": "PSA 109",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 2
+        }
+      ],
+      "en": "for they have opened the mouth of the wicked and the mouth of deceit against me. They have spoken to me with a lying tongue.",
+      "ko": "대저 저희가 악한 입과 궤사한 입을 열어 나를 치며 거짓된 혀로 내게 말하며",
+      "source_text_hash": "c5ae3bedfda833862bc90df9ff277b50f72d3e54f2a33bb0560b2eeb846637ca",
+      "translation_text_hash": "901c42bf7ed0ad9fee2bc2735092d5c4cf2a9978a40163ea8a7309da00218c7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 저희가 악한 입과 궤사한 입을 열어 나를 치며 거짓된 혀로 내게 말하며"
+      ],
+      "raw_text_hashes": [
+        "901c42bf7ed0ad9fee2bc2735092d5c4cf2a9978a40163ea8a7309da00218c7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:3",
+      "sequence": 15759,
+      "chapter_label": "PSA 109",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 3
+        }
+      ],
+      "en": "They have also surrounded me with words of hatred, and fought against me without a cause.",
+      "ko": "또 미워하는 말로 나를 두르고 무고히 나를 공격하였나이다",
+      "source_text_hash": "a198af399f77da99445e8833e201fc2570de96064780dedd78bcf7b42046f683",
+      "translation_text_hash": "07b946e33796ce8a0b1ad62d065df98ea0969833ceab4e2ec9037234b0dc4c5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 미워하는 말로 나를 두르고 무고히 나를 공격하였나이다"
+      ],
+      "raw_text_hashes": [
+        "07b946e33796ce8a0b1ad62d065df98ea0969833ceab4e2ec9037234b0dc4c5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:4",
+      "sequence": 15760,
+      "chapter_label": "PSA 109",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 4
+        }
+      ],
+      "en": "In return for my love, they are my adversaries; but I am in prayer.",
+      "ko": "나는 사랑하나 저희는 도리어 나를 대적하니 나는 기도할 뿐이라",
+      "source_text_hash": "044fb96d6121187dfebe812b83075817e55c3fc8c6514112f2909a5e71affb48",
+      "translation_text_hash": "09c26d854fb2bf62105f6ea0606b1e31774f2995cc2771790e625d4aa928b844",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 사랑하나 저희는 도리어 나를 대적하니 나는 기도할 뿐이라"
+      ],
+      "raw_text_hashes": [
+        "09c26d854fb2bf62105f6ea0606b1e31774f2995cc2771790e625d4aa928b844"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:5",
+      "sequence": 15761,
+      "chapter_label": "PSA 109",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 5
+        }
+      ],
+      "en": "They have rewarded me evil for good, and hatred for my love.",
+      "ko": "저희가 악으로 나의 선을 갚으며 미워함으로 나의 사랑을 갚았사오니",
+      "source_text_hash": "510a4bc60b09c243590933fd4fdeb66757e674a2728ab0747f42bbc117cbbf8d",
+      "translation_text_hash": "b9a46f9452d9eb7b7c9fed9ffac4c3d61575b08aff18e39f1dc2a336f8184e0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 악으로 나의 선을 갚으며 미워함으로 나의 사랑을 갚았사오니"
+      ],
+      "raw_text_hashes": [
+        "b9a46f9452d9eb7b7c9fed9ffac4c3d61575b08aff18e39f1dc2a336f8184e0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:6",
+      "sequence": 15762,
+      "chapter_label": "PSA 109",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 6
+        }
+      ],
+      "en": "Set a wicked man over him. Let an adversary stand at his right hand.",
+      "ko": "악인으로 저를 제어하게 하시며 대적으로 그 오른편에 서게 하소서",
+      "source_text_hash": "7ff56bdc49c1db7474cff5c9ae466453679b211671c3e36a9532e1063601f050",
+      "translation_text_hash": "917e6a805ba049d0f6f4fc44b5da8975b7493dcb40f20ea58a86b0149155d256",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인으로 저를 제어하게 하시며 대적으로 그 오른편에 서게 하소서"
+      ],
+      "raw_text_hashes": [
+        "917e6a805ba049d0f6f4fc44b5da8975b7493dcb40f20ea58a86b0149155d256"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:7",
+      "sequence": 15763,
+      "chapter_label": "PSA 109",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 7
+        }
+      ],
+      "en": "When he is judged, let him come out guilty. Let his prayer be turned into sin.",
+      "ko": "저가 판단을 받을 때에 죄를 지고 나오게 하시며 그 기도가 죄로 변케 하시며",
+      "source_text_hash": "7dd412b6ee08c22096dd0dce9a65edad5bb8607e3e2e64ec9ad6b5c0fb91b92e",
+      "translation_text_hash": "cff95ff57da8144486d3075349d9c6f1a890a37149b23e52b26f8f7d296d31c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 판단을 받을 때에 죄를 지고 나오게 하시며 그 기도가 죄로 변케 하시며"
+      ],
+      "raw_text_hashes": [
+        "cff95ff57da8144486d3075349d9c6f1a890a37149b23e52b26f8f7d296d31c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:8",
+      "sequence": 15764,
+      "chapter_label": "PSA 109",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 8
+        }
+      ],
+      "en": "Let his days be few. Let another take his office.",
+      "ko": "그 년수를 단촉케 하시며 그 직분을 타인이 취하게 하시며",
+      "source_text_hash": "8a1fd2a972f399b1ce1b08727a5a2c4f96138d939c0c46b7e3ea0d093a8d75c6",
+      "translation_text_hash": "6c0d010a0ccd840aa2d37a63709e1c99a9cbd75ba8d79a520898be413d74cd92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 년수를 단촉케 하시며 그 직분을 타인이 취하게 하시며"
+      ],
+      "raw_text_hashes": [
+        "6c0d010a0ccd840aa2d37a63709e1c99a9cbd75ba8d79a520898be413d74cd92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:9",
+      "sequence": 15765,
+      "chapter_label": "PSA 109",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 9
+        }
+      ],
+      "en": "Let his children be fatherless, and his wife a widow.",
+      "ko": "그 자녀는 고아가 되고 그 아내는 과부가 되며",
+      "source_text_hash": "ee07feb0ccb13cbd8f477a920df7776139a82ef63761ef3bd82504764c9e91a2",
+      "translation_text_hash": "743b63908dfabf16f15be0140b0b68e97ddf81585c0aaf6f05ee7b257ffcc1b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자녀는 고아가 되고 그 아내는 과부가 되며"
+      ],
+      "raw_text_hashes": [
+        "743b63908dfabf16f15be0140b0b68e97ddf81585c0aaf6f05ee7b257ffcc1b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:10",
+      "sequence": 15766,
+      "chapter_label": "PSA 109",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 10
+        }
+      ],
+      "en": "Let his children be wandering beggars. Let them be sought from their ruins.",
+      "ko": "그 자녀가 유리 구걸하며 그 황폐한 집을 떠나 빌어먹게 하소서",
+      "source_text_hash": "6fa6e686c9c90c14e1fd38f3429af74bd1a9ac4c69dc79d44eb47aaf2796da2e",
+      "translation_text_hash": "4bafa7e7cce9cd26b0ac1d262093968ad3709d2884aadac1fcdab577bda96060",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자녀가 유리 구걸하며 그 황폐한 집을 떠나 빌어먹게 하소서"
+      ],
+      "raw_text_hashes": [
+        "4bafa7e7cce9cd26b0ac1d262093968ad3709d2884aadac1fcdab577bda96060"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:11",
+      "sequence": 15767,
+      "chapter_label": "PSA 109",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 11
+        }
+      ],
+      "en": "Let the creditor seize all that he has. Let strangers plunder the fruit of his labor.",
+      "ko": "고리대금하는 자로 저의 소유를 다 취하게 하시며 저의 수고한 것을 외인이 탈취하게 하시며",
+      "source_text_hash": "9e8f4c98cc39dba6815fe07255ee24588f50dc96b11a186ab8a1ca4b46a5b2a5",
+      "translation_text_hash": "f6ce694dfd9ad9658ee8547b68d15ba9f623a8a6aec49f45963db7732492ccb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고리대금하는 자로 저의 소유를 다 취하게 하시며 저의 수고한 것을 외인이 탈취하게 하시며"
+      ],
+      "raw_text_hashes": [
+        "f6ce694dfd9ad9658ee8547b68d15ba9f623a8a6aec49f45963db7732492ccb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:12",
+      "sequence": 15768,
+      "chapter_label": "PSA 109",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 12
+        }
+      ],
+      "en": "Let there be no one to extend kindness to him, neither let there be anyone to have pity on his fatherless children.",
+      "ko": "저에게 은혜를 계속할 자가 없게 하시며 그 고아를 연휼할 자도 없게 하시며",
+      "source_text_hash": "19e2cceed08c891e9126e15762e72b97d2118eb7502c356dafa721c99aea0bb1",
+      "translation_text_hash": "f1463dbc99460608da9c32d6e1241a83637d16b9ed3719ed31b416935518d91c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저에게 은혜를 계속할 자가 없게 하시며 그 고아를 연휼할 자도 없게 하시며"
+      ],
+      "raw_text_hashes": [
+        "f1463dbc99460608da9c32d6e1241a83637d16b9ed3719ed31b416935518d91c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:13",
+      "sequence": 15769,
+      "chapter_label": "PSA 109",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 13
+        }
+      ],
+      "en": "Let his posterity be cut off. In the generation following let their name be blotted out.",
+      "ko": "그 후사가 끊어지게 하시며 후대에 저희 이름이 도말되게 하소서",
+      "source_text_hash": "fe9c921b0bc8dcd80d038172a2cb70dc314d184fc2a9fda51f1c4c141abbe85f",
+      "translation_text_hash": "598ce7ffd4752e1474b942eb6eedf9047f8567e831354ee9e525f1ebd7c78551",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후사가 끊어지게 하시며 후대에 저희 이름이 도말되게 하소서"
+      ],
+      "raw_text_hashes": [
+        "598ce7ffd4752e1474b942eb6eedf9047f8567e831354ee9e525f1ebd7c78551"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:14",
+      "sequence": 15770,
+      "chapter_label": "PSA 109",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 14
+        }
+      ],
+      "en": "Let the iniquity of his fathers be remembered by the LORD. Don’t let the sin of his mother be blotted out.",
+      "ko": "여호와는 그 열조의 죄악을 기억하시며 그 어미의 죄를 도말하지 마시고",
+      "source_text_hash": "df3a49f148f2ebcfb2300004c6520cb839e31a0216e9723778dcde9084afa51e",
+      "translation_text_hash": "c76f33200998b0ef08a8289107e5ec10cd05451b9484ac0ebf9140aa77c8083f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 그 열조의 죄악을 기억하시며 그 어미의 죄를 도말하지 마시고"
+      ],
+      "raw_text_hashes": [
+        "c76f33200998b0ef08a8289107e5ec10cd05451b9484ac0ebf9140aa77c8083f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:15",
+      "sequence": 15771,
+      "chapter_label": "PSA 109",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 15
+        }
+      ],
+      "en": "Let them be before the LORD continually, that he may cut off their memory from the earth;",
+      "ko": "그 죄악을 항상 여호와 앞에 있게 하사 저희 기념을 땅에서 끊으소서",
+      "source_text_hash": "948959d120060bc6afb2c2627c4f244fa4715ff952ba44a181e179ea4209d367",
+      "translation_text_hash": "3b1e8cddf5fd995354109dfe4de41c57fde9b2e60b1733102fc42a247fa27dab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 죄악을 항상 여호와 앞에 있게 하사 저희 기념을 땅에서 끊으소서"
+      ],
+      "raw_text_hashes": [
+        "3b1e8cddf5fd995354109dfe4de41c57fde9b2e60b1733102fc42a247fa27dab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:16",
+      "sequence": 15772,
+      "chapter_label": "PSA 109",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 16
+        }
+      ],
+      "en": "because he didn’t remember to show kindness, but persecuted the poor and needy man, the broken in heart, to kill them.",
+      "ko": "저가 긍휼히 여길 일을 생각지 아니하고 가난하고 궁핍한 자와 마음이 상한 자를 핍박하여 죽이려 한 연고니이다",
+      "source_text_hash": "b1cbca4eaa2f10878c697b68cc800afc37a6ac3df04ffabfadffbbdf1dd59554",
+      "translation_text_hash": "c9dc707dde50b01bd8bd9d5ea5ab8f923ea6c7e1537842cda8a3ef5e84fb4012",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 긍휼히 여길 일을 생각지 아니하고 가난하고 궁핍한 자와 마음이 상한 자를 핍박하여 죽이려 한 연고니이다"
+      ],
+      "raw_text_hashes": [
+        "c9dc707dde50b01bd8bd9d5ea5ab8f923ea6c7e1537842cda8a3ef5e84fb4012"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:17",
+      "sequence": 15773,
+      "chapter_label": "PSA 109",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 17
+        }
+      ],
+      "en": "Yes, he loved cursing, and it came to him. He didn’t delight in blessing, and it was far from him.",
+      "ko": "저가 저주하기를 좋아하더니 그것이 자기에게 임하고 축복하기를 기뻐 아니하더니 복이 저를 멀리 떠났으며",
+      "source_text_hash": "9f7d08a2024abf57dc557aaa9407caca0eb2b43b41dac17c43fb06f95291c3d0",
+      "translation_text_hash": "a63575f36e2d1ee5be35f7749a2c7104223652980cd1240073d92a77e4bf2583",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 저주하기를 좋아하더니 그것이 자기에게 임하고 축복하기를 기뻐 아니하더니 복이 저를 멀리 떠났으며"
+      ],
+      "raw_text_hashes": [
+        "a63575f36e2d1ee5be35f7749a2c7104223652980cd1240073d92a77e4bf2583"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:18",
+      "sequence": 15774,
+      "chapter_label": "PSA 109",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 18
+        }
+      ],
+      "en": "He clothed himself also with cursing as with his garment. It came into his inward parts like water, like oil into his bones.",
+      "ko": "또 저주하기를 옷 입듯하더니 저주가 물 같이 그 내부에 들어가며 기름 같이 그 뼈에 들어갔나이다",
+      "source_text_hash": "5b71178d3118e9f0f781b75a5e6706fa12c9d95cdc205752e8f38314d0066f5f",
+      "translation_text_hash": "055c23c5634122207297387ef68788bc77fcdf9cf7fc8de8356da2b6c582827e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저주하기를 옷 입듯하더니 저주가 물 같이 그 내부에 들어가며 기름 같이 그 뼈에 들어갔나이다"
+      ],
+      "raw_text_hashes": [
+        "055c23c5634122207297387ef68788bc77fcdf9cf7fc8de8356da2b6c582827e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:19",
+      "sequence": 15775,
+      "chapter_label": "PSA 109",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 19
+        }
+      ],
+      "en": "Let it be to him as the clothing with which he covers himself, for the belt that is always around him.",
+      "ko": "저주가 그 입는 옷 같고 항상 띠는 띠와 같게 하소서",
+      "source_text_hash": "3240c84088dbea199b45b9910f588407115291b7e74cbe3b40c79068424d4843",
+      "translation_text_hash": "2c01862dcdd69eb8aa523a7dbad730e2a580b68a3014c604371935f3cb7e763f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저주가 그 입는 옷 같고 항상 띠는 띠와 같게 하소서"
+      ],
+      "raw_text_hashes": [
+        "2c01862dcdd69eb8aa523a7dbad730e2a580b68a3014c604371935f3cb7e763f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:20",
+      "sequence": 15776,
+      "chapter_label": "PSA 109",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 20
+        }
+      ],
+      "en": "This is the reward of my adversaries from the LORD, of those who speak evil against my soul.",
+      "ko": "이는 대적 곧 내 영혼을 대적하여 악담하는 자가 여호와께 받는 보응이니이다",
+      "source_text_hash": "843a67a57cca435b7ed55087613f48bcc4a7d76780fb6e81faef3d8481761b8f",
+      "translation_text_hash": "099811755c6763ad7b6eaeba02133a1462f04b056b928b002b286b75233f13a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 대적 곧 내 영혼을 대적하여 악담하는 자가 여호와께 받는 보응이니이다"
+      ],
+      "raw_text_hashes": [
+        "099811755c6763ad7b6eaeba02133a1462f04b056b928b002b286b75233f13a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:21",
+      "sequence": 15777,
+      "chapter_label": "PSA 109",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 21
+        }
+      ],
+      "en": "But deal with me, GOD the Lord, for your name’s sake, because your loving kindness is good, deliver me;",
+      "ko": "주 여호와여 주의 이름을 인하여 나를 선대하시며 주의 인자하심이 선함을 인하여 나를 건지소서",
+      "source_text_hash": "06d67e0a6b91f668e7a5943aa65d6b4d0592c81df011ceefa4db0ce0e91583ee",
+      "translation_text_hash": "a6b64d284e4b8bb6a534cba3c7a32325460a2f9619bf92ac440bbbc94fe552ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와여 주의 이름을 인하여 나를 선대하시며 주의 인자하심이 선함을 인하여 나를 건지소서"
+      ],
+      "raw_text_hashes": [
+        "a6b64d284e4b8bb6a534cba3c7a32325460a2f9619bf92ac440bbbc94fe552ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:22",
+      "sequence": 15778,
+      "chapter_label": "PSA 109",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 22
+        }
+      ],
+      "en": "for I am poor and needy. My heart is wounded within me.",
+      "ko": "나는 가난하고 궁핍하여 중심이 상함이니이다",
+      "source_text_hash": "8dac767524c64e4ca6e57783ea692acfda5d16b3bf738da0b468fb8612e548af",
+      "translation_text_hash": "ffdb4aab940a107a49e8c86b4bde96e52ff1d1e8d48cd9b9a7b465d952f01193",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 가난하고 궁핍하여 중심이 상함이니이다"
+      ],
+      "raw_text_hashes": [
+        "ffdb4aab940a107a49e8c86b4bde96e52ff1d1e8d48cd9b9a7b465d952f01193"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:23",
+      "sequence": 15779,
+      "chapter_label": "PSA 109",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 23
+        }
+      ],
+      "en": "I fade away like an evening shadow. I am shaken off like a locust.",
+      "ko": "나의 가는 것은 석양 그림자 같고 또 메뚜기 같이 불려가오며",
+      "source_text_hash": "312a66c92069237a351ae896cfd2ebf23f996faa5255eb72ddfb4faf1ae05b28",
+      "translation_text_hash": "0307df4eafea9848c4df4200de995103beb38c68197aee0efa6824a152585d35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 가는 것은 석양 그림자 같고 또 메뚜기 같이 불려가오며"
+      ],
+      "raw_text_hashes": [
+        "0307df4eafea9848c4df4200de995103beb38c68197aee0efa6824a152585d35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:24",
+      "sequence": 15780,
+      "chapter_label": "PSA 109",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 24
+        }
+      ],
+      "en": "My knees are weak through fasting. My body is thin and lacks fat.",
+      "ko": "금식함을 인하여 내 무릎은 약하고 내 육체는 수척하오며",
+      "source_text_hash": "38cee256ed94f8e6f77468b7209b7fdf6ee1ca9382e8ee16ce92ea855da95b7e",
+      "translation_text_hash": "2d7bb62c7cfa8dd1d3944bcb7b922b620bed28c52f81c90370066dbcfbbc1f1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금식함을 인하여 내 무릎은 약하고 내 육체는 수척하오며"
+      ],
+      "raw_text_hashes": [
+        "2d7bb62c7cfa8dd1d3944bcb7b922b620bed28c52f81c90370066dbcfbbc1f1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:25",
+      "sequence": 15781,
+      "chapter_label": "PSA 109",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 25
+        }
+      ],
+      "en": "I have also become a reproach to them. When they see me, they shake their head.",
+      "ko": "나는 또 저희의 훼방거리라 저희가 나를 본즉 머리를 흔드나이다",
+      "source_text_hash": "2a4fe16de9c251e611280b6cf8e9e3f2aa099b728cc8334d2905587de10b4450",
+      "translation_text_hash": "ac0940506d49a9e8f1277e5e97cca4526361f8828d903ec4bc5ebe9b7c866f59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 또 저희의 훼방거리라 저희가 나를 본즉 머리를 흔드나이다"
+      ],
+      "raw_text_hashes": [
+        "ac0940506d49a9e8f1277e5e97cca4526361f8828d903ec4bc5ebe9b7c866f59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:26",
+      "sequence": 15782,
+      "chapter_label": "PSA 109",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 26
+        }
+      ],
+      "en": "Help me, LORD, my God. Save me according to your loving kindness;",
+      "ko": "여호와 나의 하나님이여 나를 도우시며 주의 인자하심을 좇아 나를 구원하소서",
+      "source_text_hash": "5fe6471c210fb444f6373c5e2271df004fd2314791f49ff59d5fe7e72b50609c",
+      "translation_text_hash": "068927af2f9e3bead8b5b9149562d1da463e1cf7f58f2b2545ec0f0226b588b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 나의 하나님이여 나를 도우시며 주의 인자하심을 좇아 나를 구원하소서"
+      ],
+      "raw_text_hashes": [
+        "068927af2f9e3bead8b5b9149562d1da463e1cf7f58f2b2545ec0f0226b588b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:27",
+      "sequence": 15783,
+      "chapter_label": "PSA 109",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 27
+        }
+      ],
+      "en": "that they may know that this is your hand; that you, LORD, have done it.",
+      "ko": "이것이 주의 손인 줄을 저희로 알게 하소서 여호와께서 이를 행하셨나이다",
+      "source_text_hash": "2911272a861714a65f646718708c2f22f586b542b00863269e1ebb0f266ed2cd",
+      "translation_text_hash": "5b1cae6cbfc3ea369567eb3d7e59b21e93e8a52975bfb4fbcaf91f4edec6b28f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 주의 손인 줄을 저희로 알게 하소서 여호와께서 이를 행하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "5b1cae6cbfc3ea369567eb3d7e59b21e93e8a52975bfb4fbcaf91f4edec6b28f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:28",
+      "sequence": 15784,
+      "chapter_label": "PSA 109",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 28
+        }
+      ],
+      "en": "They may curse, but you bless. When they arise, they will be shamed, but your servant shall rejoice.",
+      "ko": "저희는 저주하여도 주는 내게 복을 주소서 저희는 일어날 때에 수치를 당할찌라도 주의 종은 즐거워하리이다",
+      "source_text_hash": "4bf78fa58a12243c3c16ea77924f7d3f4e18f6bd014c54e20392df9008e6ad0c",
+      "translation_text_hash": "c04a029d00228ca975842b5ebc9a8b67db832ef22626fdffc16acb4d924997c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 저주하여도 주는 내게 복을 주소서 저희는 일어날 때에 수치를 당할찌라도 주의 종은 즐거워하리이다"
+      ],
+      "raw_text_hashes": [
+        "c04a029d00228ca975842b5ebc9a8b67db832ef22626fdffc16acb4d924997c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:29",
+      "sequence": 15785,
+      "chapter_label": "PSA 109",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 29
+        }
+      ],
+      "en": "Let my adversaries be clothed with dishonor. Let them cover themselves with their own shame as with a robe.",
+      "ko": "나의 대적으로 욕을 옷 입듯하게 하시며 자기 수치를 겉옷 같이 입게 하소서",
+      "source_text_hash": "73f84628136e06691800fdee035e170bbea915ba654996ee9db7ca6cbf75fe46",
+      "translation_text_hash": "d58e680fa6809cbabddcbdd5e378093be13305941422bae1c14268b90a6f5eb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 대적으로 욕을 옷 입듯하게 하시며 자기 수치를 겉옷 같이 입게 하소서"
+      ],
+      "raw_text_hashes": [
+        "d58e680fa6809cbabddcbdd5e378093be13305941422bae1c14268b90a6f5eb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:30",
+      "sequence": 15786,
+      "chapter_label": "PSA 109",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 30
+        }
+      ],
+      "en": "I will give great thanks to the LORD with my mouth. Yes, I will praise him among the multitude.",
+      "ko": "내가 입으로 여호와께 크게 감사하며 무리 중에서 찬송하리니",
+      "source_text_hash": "75303b3661fdaa739ae674911f4b5eed002e7e931edc86f11aef4e0ad14f4261",
+      "translation_text_hash": "34478b91b94dc77d89fb124ba25636e9253adb041b6ce03305c995d2852c07db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 입으로 여호와께 크게 감사하며 무리 중에서 찬송하리니"
+      ],
+      "raw_text_hashes": [
+        "34478b91b94dc77d89fb124ba25636e9253adb041b6ce03305c995d2852c07db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:109:31",
+      "sequence": 15787,
+      "chapter_label": "PSA 109",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 109,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 109,
+          "verse": 31
+        }
+      ],
+      "en": "For he will stand at the right hand of the needy, to save him from those who judge his soul.",
+      "ko": "저가 궁핍한 자의 우편에 서사 그 영혼을 판단하려 하는 자에게서 구원하실 것임이로다",
+      "source_text_hash": "54d6479c0d6ee29c14766a959df5d0fac8307aaa129e660aecf02439745007c2",
+      "translation_text_hash": "7b8a44524151003d163d698599da9f0ea9aba3ef49dfe6640c6b81d025b48cb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 궁핍한 자의 우편에 서사 그 영혼을 판단하려 하는 자에게서 구원하실 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "7b8a44524151003d163d698599da9f0ea9aba3ef49dfe6640c6b81d025b48cb6"
+      ]
+    }
+  ]
+}

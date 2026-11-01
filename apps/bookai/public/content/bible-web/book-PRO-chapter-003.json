@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:003",
+  "unit_ordinal": 631,
+  "unit_label": "PRO 3",
+  "book_code": "PRO",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:3:1",
+      "sequence": 16457,
+      "chapter_label": "PRO 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "My son, don’t forget my teaching, but let your heart keep my commandments,",
+      "ko": "내 아들아 나의 법을 잊어버리지 말고 네 마음으로 나의 명령을 지키라",
+      "source_text_hash": "14166ef4cbc47a06bb9a7fbb0cb61d1bcb012377c45e3703b59a253570af2ecb",
+      "translation_text_hash": "0d50be2184c31003016ae8bfb5e08b02e1cb0c27cabe345978e06d933cc63a56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 나의 법을 잊어버리지 말고 네 마음으로 나의 명령을 지키라"
+      ],
+      "raw_text_hashes": [
+        "0d50be2184c31003016ae8bfb5e08b02e1cb0c27cabe345978e06d933cc63a56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:2",
+      "sequence": 16458,
+      "chapter_label": "PRO 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "for they will add to you length of days, years of life, and peace.",
+      "ko": "그리하면 그것이 너로 장수하여 많은 해를 누리게 하며 평강을 더하게 하리라",
+      "source_text_hash": "0677d0ed9868b08d486d43ec9e0386fbae83e92553d94ff6d833a42c8aaf4ff3",
+      "translation_text_hash": "3286d3581e62a93def979c52fd694189fdf1894ff5e5653536ddf55d7d78be83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 그것이 너로 장수하여 많은 해를 누리게 하며 평강을 더하게 하리라"
+      ],
+      "raw_text_hashes": [
+        "3286d3581e62a93def979c52fd694189fdf1894ff5e5653536ddf55d7d78be83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:3",
+      "sequence": 16459,
+      "chapter_label": "PRO 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Don’t let kindness and truth forsake you. Bind them around your neck. Write them on the tablet of your heart.",
+      "ko": "인자와 진리로 네게서 떠나지 않게 하고 그것을 네 목에 매며 네 마음판에 새기라",
+      "source_text_hash": "784449cfd8bca3b33edf5b1dbbcbe6e37e50e8a31d7151e4ff5e7b19ccb6e4f4",
+      "translation_text_hash": "929fa7920271e106d541e2521a4aece43b68212cce884bae6089dab8f0b3b178",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자와 진리로 네게서 떠나지 않게 하고 그것을 네 목에 매며 네 마음판에 새기라"
+      ],
+      "raw_text_hashes": [
+        "929fa7920271e106d541e2521a4aece43b68212cce884bae6089dab8f0b3b178"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:4",
+      "sequence": 16460,
+      "chapter_label": "PRO 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "So you will find favor, and good understanding in the sight of God and man.",
+      "ko": "그리하면 네가 하나님과 사람 앞에서 은총과 귀중히 여김을 받으리라",
+      "source_text_hash": "051add6054721d9ba0873dfd2417a9578db9dd6800dc628a3d97dcbbab0c7b31",
+      "translation_text_hash": "aa31320a4fd8ea1d002f66e4aa9c8c5c3d998151c06c46d3de94b5147cad0991",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 네가 하나님과 사람 앞에서 은총과 귀중히 여김을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "aa31320a4fd8ea1d002f66e4aa9c8c5c3d998151c06c46d3de94b5147cad0991"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:5",
+      "sequence": 16461,
+      "chapter_label": "PRO 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Trust in the LORD with all your heart, and don’t lean on your own understanding.",
+      "ko": "너는 마음을 다하여 여호와를 의뢰하고 네 명철을 의지하지 말라",
+      "source_text_hash": "a012414e99bde50330483dd2710df2355fa92cd8c14feb848e58e9d718f7e96a",
+      "translation_text_hash": "31f1e84025539170abf7ce3f974535e0edef8399c0d00072f64dd58ebfc54bd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 마음을 다하여 여호와를 의뢰하고 네 명철을 의지하지 말라"
+      ],
+      "raw_text_hashes": [
+        "31f1e84025539170abf7ce3f974535e0edef8399c0d00072f64dd58ebfc54bd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:6",
+      "sequence": 16462,
+      "chapter_label": "PRO 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "In all your ways acknowledge him, and he will make your paths straight.",
+      "ko": "너는 범사에 그를 인정하라 그리하면 네 길을 지도하시리라",
+      "source_text_hash": "d222a20071d4c25413610ef55bf1e5caaffef3cb226d4b4003f0509f8edbf65a",
+      "translation_text_hash": "8bfe2ac0153694d805101f5f9d4945b9f2f20c76318e62e3b67f7d386a7451f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 범사에 그를 인정하라 그리하면 네 길을 지도하시리라"
+      ],
+      "raw_text_hashes": [
+        "8bfe2ac0153694d805101f5f9d4945b9f2f20c76318e62e3b67f7d386a7451f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:7",
+      "sequence": 16463,
+      "chapter_label": "PRO 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Don’t be wise in your own eyes. Fear the LORD, and depart from evil.",
+      "ko": "스스로 지혜롭게 여기지 말찌어다 여호와를 경외하며 악을 떠날찌어다",
+      "source_text_hash": "d0f93cbb2a37ffe34241709d978bf7af628de42cd10c67a6ce3eae2dac8d8f07",
+      "translation_text_hash": "6b7fb88e2f295ff4b9e00b690eeaa48f26bf77f36c8a7ee266ede965d7517b49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 지혜롭게 여기지 말찌어다 여호와를 경외하며 악을 떠날찌어다"
+      ],
+      "raw_text_hashes": [
+        "6b7fb88e2f295ff4b9e00b690eeaa48f26bf77f36c8a7ee266ede965d7517b49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:8",
+      "sequence": 16464,
+      "chapter_label": "PRO 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "It will be health to your body, and nourishment to your bones.",
+      "ko": "이것이 네 몸에 양약이 되어 네 골수로 윤택하게 하리라",
+      "source_text_hash": "43b62a18cd20589dd43f9aa3628c996b0eb7747f07678340dff8cd7e09be7a0a",
+      "translation_text_hash": "0f744969f31a003fecbccbf974aa73957bc2ae83a4b182b6706d0d190fca754c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 네 몸에 양약이 되어 네 골수로 윤택하게 하리라"
+      ],
+      "raw_text_hashes": [
+        "0f744969f31a003fecbccbf974aa73957bc2ae83a4b182b6706d0d190fca754c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:9",
+      "sequence": 16465,
+      "chapter_label": "PRO 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Honor the LORD with your substance, with the first fruits of all your increase;",
+      "ko": "네 재물과 네 소산물의 처음 익은 열매로 여호와를 공경하라",
+      "source_text_hash": "7964d58b40114465cd86b3ae8823f1f9a19d0fa4402607db4c2c0aa5c534be51",
+      "translation_text_hash": "460aa733edaba927c105e8095a9dccec73dc220170316fd8f2fbea3549e282e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 재물과 네 소산물의 처음 익은 열매로 여호와를 공경하라"
+      ],
+      "raw_text_hashes": [
+        "460aa733edaba927c105e8095a9dccec73dc220170316fd8f2fbea3549e282e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:10",
+      "sequence": 16466,
+      "chapter_label": "PRO 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "so your barns will be filled with plenty, and your vats will overflow with new wine.",
+      "ko": "그리하면 네 창고가 가득히 차고 네 즙틀에 새 포도즙이 넘치리라",
+      "source_text_hash": "597598040d1e94f0387b83b0b2ab1a4f220d80ac3da588c196cb887ebd21ad30",
+      "translation_text_hash": "df1d8fdb284e9c9bbc82206f0d9ef49a3ca8e6b62c860d6f759cb49cbc43603d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 네 창고가 가득히 차고 네 즙틀에 새 포도즙이 넘치리라"
+      ],
+      "raw_text_hashes": [
+        "df1d8fdb284e9c9bbc82206f0d9ef49a3ca8e6b62c860d6f759cb49cbc43603d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:11",
+      "sequence": 16467,
+      "chapter_label": "PRO 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "My son, don’t despise the LORD’s discipline, neither be weary of his correction;",
+      "ko": "내 아들아 여호와의 징계를 경히 여기지 말라 그 꾸지람을 싫어하지 말라",
+      "source_text_hash": "e58207da887a0cd92cafba253ab49b0f8e6adaeb898ce08c53605c708fdf63d8",
+      "translation_text_hash": "94a4449e4fd891ad057aa2495c8a559a2435a85eead907653c915fa2e1b3a9b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 여호와의 징계를 경히 여기지 말라 그 꾸지람을 싫어하지 말라"
+      ],
+      "raw_text_hashes": [
+        "94a4449e4fd891ad057aa2495c8a559a2435a85eead907653c915fa2e1b3a9b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:12",
+      "sequence": 16468,
+      "chapter_label": "PRO 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "for whom the LORD loves, he corrects, even as a father reproves the son in whom he delights.",
+      "ko": "대저 여호와께서 그 사랑하시는 자를 징계하시기를 마치 아비가 그 기뻐하는 아들을 징계함 같이 하시느니라",
+      "source_text_hash": "7d748fc1a8c23f055afcac51d020d76fb74d52d21ccf1a23c1ce2edc70c96d78",
+      "translation_text_hash": "5b89f00ac0795eacc3ad03e6a2794e16cc39347b2fe1ae6740f3ce65b40c7d5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와께서 그 사랑하시는 자를 징계하시기를 마치 아비가 그 기뻐하는 아들을 징계함 같이 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "5b89f00ac0795eacc3ad03e6a2794e16cc39347b2fe1ae6740f3ce65b40c7d5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:13",
+      "sequence": 16469,
+      "chapter_label": "PRO 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Happy is the man who finds wisdom, the man who gets understanding.",
+      "ko": "지혜를 얻은 자와 명철을 얻은 자는 복이 있나니",
+      "source_text_hash": "87be4e67bce6798a33c0aa0e624f896af554a46b715e83218bc0b4e9d7122158",
+      "translation_text_hash": "f149253f5a4a9b8777bf9e69782bf4acb968e65c66584f2ffbf302a9c1022c61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜를 얻은 자와 명철을 얻은 자는 복이 있나니"
+      ],
+      "raw_text_hashes": [
+        "f149253f5a4a9b8777bf9e69782bf4acb968e65c66584f2ffbf302a9c1022c61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:14",
+      "sequence": 16470,
+      "chapter_label": "PRO 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "For her good profit is better than getting silver, and her return is better than fine gold.",
+      "ko": "이는 지혜를 얻는 것이 은을 얻는 것보다 낫고 그 이익이 정금보다 나음이니라",
+      "source_text_hash": "fdf24636465ce02e2d941502566c64a791213e373acdaebedf62efe9a298a018",
+      "translation_text_hash": "f3895aabed8335e2c2dd0466f6f7a459a84aa6c08a503a2ef8d62eebf0d45a1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 지혜를 얻는 것이 은을 얻는 것보다 낫고 그 이익이 정금보다 나음이니라"
+      ],
+      "raw_text_hashes": [
+        "f3895aabed8335e2c2dd0466f6f7a459a84aa6c08a503a2ef8d62eebf0d45a1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:15",
+      "sequence": 16471,
+      "chapter_label": "PRO 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "She is more precious than rubies. None of the things you can desire are to be compared to her.",
+      "ko": "지혜는 진주보다 귀하니 너의 사모하는 모든 것으로 이에 비교할 수 없도다",
+      "source_text_hash": "c0b2d81752ae22d1e023f8782760bff76843e49c350b55cfc841ad84c8adc8f9",
+      "translation_text_hash": "43c5bd1f1528f1076209a4fa3dea3e0f113a2de14dcdd237f659f885242d1bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜는 진주보다 귀하니 너의 사모하는 모든 것으로 이에 비교할 수 없도다"
+      ],
+      "raw_text_hashes": [
+        "43c5bd1f1528f1076209a4fa3dea3e0f113a2de14dcdd237f659f885242d1bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:16",
+      "sequence": 16472,
+      "chapter_label": "PRO 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Length of days is in her right hand. In her left hand are riches and honor.",
+      "ko": "그 우편 손에는 장수가 있고 그 좌편 손에는 부귀가 있나니",
+      "source_text_hash": "bd6142c02ccfa4364e67b1d2bd50cf906eae547c3e9e6c7686c3fcd7179a675f",
+      "translation_text_hash": "daa6b9dfa4302fbdd819c62fe6fb3fd46d313569d70407349f73fc00d5b63d45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 우편 손에는 장수가 있고 그 좌편 손에는 부귀가 있나니"
+      ],
+      "raw_text_hashes": [
+        "daa6b9dfa4302fbdd819c62fe6fb3fd46d313569d70407349f73fc00d5b63d45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:17",
+      "sequence": 16473,
+      "chapter_label": "PRO 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "Her ways are ways of pleasantness. All her paths are peace.",
+      "ko": "그 길은 즐거운 길이요 그 첩경은 다 평강이니라",
+      "source_text_hash": "3632094225c785f3f4b64538097b91b5aeceac86dc2d1a3f9b7c31654c09fec1",
+      "translation_text_hash": "2e3d9ba73c5342a28d741c742787291d83b45a196c9411ea841fd6fc00ca0daf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 길은 즐거운 길이요 그 첩경은 다 평강이니라"
+      ],
+      "raw_text_hashes": [
+        "2e3d9ba73c5342a28d741c742787291d83b45a196c9411ea841fd6fc00ca0daf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:18",
+      "sequence": 16474,
+      "chapter_label": "PRO 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "She is a tree of life to those who lay hold of her. Happy is everyone who retains her.",
+      "ko": "지혜는 그 얻은 자에게 생명 나무라 지혜를 가진 자는 복되도다",
+      "source_text_hash": "dfc2d8f8abd3119dcb2dad9eee44a3cb6b9e4cfe31bd844b2478fcbdad87d8b3",
+      "translation_text_hash": "8a2880666233028a9d566ecda2f718c91744f517fa1e9abeec93ef74f1be4aff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜는 그 얻은 자에게 생명 나무라 지혜를 가진 자는 복되도다"
+      ],
+      "raw_text_hashes": [
+        "8a2880666233028a9d566ecda2f718c91744f517fa1e9abeec93ef74f1be4aff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:19",
+      "sequence": 16475,
+      "chapter_label": "PRO 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "By wisdom the LORD founded the earth. By understanding, he established the heavens.",
+      "ko": "여호와께서는 지혜로 땅을 세우셨으며 명철로 하늘을 굳게 펴셨고",
+      "source_text_hash": "392a94e9c17d297ce81973d05dc0bdd82b69259ec35cdfa9f59a34033efb22d9",
+      "translation_text_hash": "f35934f834a3c46f20e4b5f270e9e508ddd116df0c915a3fcf53a33bc78cd66b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 지혜로 땅을 세우셨으며 명철로 하늘을 굳게 펴셨고"
+      ],
+      "raw_text_hashes": [
+        "f35934f834a3c46f20e4b5f270e9e508ddd116df0c915a3fcf53a33bc78cd66b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:20",
+      "sequence": 16476,
+      "chapter_label": "PRO 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "By his knowledge, the depths were broken up, and the skies drop down the dew.",
+      "ko": "그 지식으로 해양이 갈라지게 하셨으며 공중에서 이슬이 내리게 하셨느니라",
+      "source_text_hash": "fa3a1dace281d8a64132e0a0aaa7cccf045a8d0df457feeb46170bdee58c80f9",
+      "translation_text_hash": "e1420a9aceea4c58185dc6bc8f7a85cc4d5c79b870d0ba0c980a5175093b81a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지식으로 해양이 갈라지게 하셨으며 공중에서 이슬이 내리게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "e1420a9aceea4c58185dc6bc8f7a85cc4d5c79b870d0ba0c980a5175093b81a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:21",
+      "sequence": 16477,
+      "chapter_label": "PRO 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "My son, let them not depart from your eyes. Keep sound wisdom and discretion,",
+      "ko": "내 아들아 완전한 지혜와 근신을 지키고 이것들로 네 눈 앞에서 떠나지 않게 하라",
+      "source_text_hash": "a7c3c3e5893611a860cedf0a55b491adc408906ceb76071b79b3cd614cfb0052",
+      "translation_text_hash": "84188ebed9f9f9951b525137e69c38091c778a3e71ff2bc9125698af8d35b380",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 완전한 지혜와 근신을 지키고 이것들로 네 눈 앞에서 떠나지 않게 하라"
+      ],
+      "raw_text_hashes": [
+        "84188ebed9f9f9951b525137e69c38091c778a3e71ff2bc9125698af8d35b380"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:22",
+      "sequence": 16478,
+      "chapter_label": "PRO 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "so they will be life to your soul, and grace for your neck.",
+      "ko": "그리하면 그것이 네 영혼의 생명이 되며 네 목에 장식이 되리니",
+      "source_text_hash": "ac210af2c0dcc48efe5b0afea2adc47177b7bf28e9d0428efead4b68d5eccd1a",
+      "translation_text_hash": "f1c4aec7c75470cc0a543b886ea78bb9fc128b61e1080cd721c1558fba6433ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 그것이 네 영혼의 생명이 되며 네 목에 장식이 되리니"
+      ],
+      "raw_text_hashes": [
+        "f1c4aec7c75470cc0a543b886ea78bb9fc128b61e1080cd721c1558fba6433ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:23",
+      "sequence": 16479,
+      "chapter_label": "PRO 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "Then you shall walk in your way securely. Your foot won’t stumble.",
+      "ko": "네가 네 길을 안연히 행하겠고 네 발이 거치지 아니하겠으며",
+      "source_text_hash": "e2833736a1cf2c0fa80cb50a8314fbb9f22fca8a351c9226f4799b1416bdac8e",
+      "translation_text_hash": "370b717deaf76d3279c5c0f1df35b263271a3089f6ea28c04aa9608a937fa4d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 길을 안연히 행하겠고 네 발이 거치지 아니하겠으며"
+      ],
+      "raw_text_hashes": [
+        "370b717deaf76d3279c5c0f1df35b263271a3089f6ea28c04aa9608a937fa4d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:24",
+      "sequence": 16480,
+      "chapter_label": "PRO 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "When you lie down, you will not be afraid. Yes, you will lie down, and your sleep will be sweet.",
+      "ko": "네가 누울 때에 두려워하지 아니하겠고 네가 누운즉 네 잠이 달리로다",
+      "source_text_hash": "172129c4e7e57ebcf248fce983b132982c4889a6e71266dc887a73b8177c6a16",
+      "translation_text_hash": "25f541c206627c784b3301aff160f242114b196478336777c906a0604a94afb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 누울 때에 두려워하지 아니하겠고 네가 누운즉 네 잠이 달리로다"
+      ],
+      "raw_text_hashes": [
+        "25f541c206627c784b3301aff160f242114b196478336777c906a0604a94afb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:25",
+      "sequence": 16481,
+      "chapter_label": "PRO 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "Don’t be afraid of sudden fear, neither of the desolation of the wicked, when it comes;",
+      "ko": "너는 창졸간의 두려움이나 악인의 멸망이 임할 때나 두려워하지 말라",
+      "source_text_hash": "d5ed56184d08db90adddc9a7edf037ebc7759ffcf371cf0726edf6c987ed014d",
+      "translation_text_hash": "0ebbf728104d735c2cae7b796210dac2d37e5c2198cea93af9a91d1d38bc2610",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 창졸간의 두려움이나 악인의 멸망이 임할 때나 두려워하지 말라"
+      ],
+      "raw_text_hashes": [
+        "0ebbf728104d735c2cae7b796210dac2d37e5c2198cea93af9a91d1d38bc2610"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:26",
+      "sequence": 16482,
+      "chapter_label": "PRO 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "for the LORD will be your confidence, and will keep your foot from being taken.",
+      "ko": "대저 여호와는 너의 의지할 자이시라 네 발을 지켜 걸리지 않게 하시리라",
+      "source_text_hash": "3746bc7be3c1ac171feb3e714c43202d6e822e2696fe64b414c516a87b08aad9",
+      "translation_text_hash": "85e0979192194b8b7ed1e1582511cb88e853907ff53ae7aaf018acd38f0e5bdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와는 너의 의지할 자이시라 네 발을 지켜 걸리지 않게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "85e0979192194b8b7ed1e1582511cb88e853907ff53ae7aaf018acd38f0e5bdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:27",
+      "sequence": 16483,
+      "chapter_label": "PRO 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "Don’t withhold good from those to whom it is due, when it is in the power of your hand to do it.",
+      "ko": "네 손이 선을 베풀 힘이 있거든 마땅히 받을 자에게 베풀기를 아끼지 말며",
+      "source_text_hash": "7783e8eaeb3c2e33258d5b8406847c1dc59e3ee2c54d477ef4c5e5e71caddc03",
+      "translation_text_hash": "6f64ce400d64992be96607824e01621bed990c5484646ba9c2416dd622ee91e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 손이 선을 베풀 힘이 있거든 마땅히 받을 자에게 베풀기를 아끼지 말며"
+      ],
+      "raw_text_hashes": [
+        "6f64ce400d64992be96607824e01621bed990c5484646ba9c2416dd622ee91e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:28",
+      "sequence": 16484,
+      "chapter_label": "PRO 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "Don’t say to your neighbor, “Go, and come again; tomorrow I will give it to you,” when you have it by you.",
+      "ko": "네게 있거든 이웃에게 이르기를 갔다가 다시 오라 내일 주겠노라 하지 말며",
+      "source_text_hash": "587847d4718147a06a80925d35182069b009a195b31e7851d577c32b13043edc",
+      "translation_text_hash": "0d27a627962ba85c30a5f8795bec56da9cda7a2fbbeb091bdc6e54b43bc901f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게 있거든 이웃에게 이르기를 갔다가 다시 오라 내일 주겠노라 하지 말며"
+      ],
+      "raw_text_hashes": [
+        "0d27a627962ba85c30a5f8795bec56da9cda7a2fbbeb091bdc6e54b43bc901f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:29",
+      "sequence": 16485,
+      "chapter_label": "PRO 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "Don’t devise evil against your neighbor, since he dwells securely by you.",
+      "ko": "네 이웃이 네 곁에서 안연히 살거든 그를 모해하지 말며",
+      "source_text_hash": "8ec910bd63ed9cbfe8aaab29119096d1d5bbb89c61cbad2d576f022c4757538f",
+      "translation_text_hash": "058cc0d81c2d54d2d21c2d69e3389af29b06d4294e7ce23f5911b8c2e975a6d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 이웃이 네 곁에서 안연히 살거든 그를 모해하지 말며"
+      ],
+      "raw_text_hashes": [
+        "058cc0d81c2d54d2d21c2d69e3389af29b06d4294e7ce23f5911b8c2e975a6d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:30",
+      "sequence": 16486,
+      "chapter_label": "PRO 3",
+      "verse_label": "30",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 30
+        }
+      ],
+      "en": "Don’t strive with a man without cause, if he has done you no harm.",
+      "ko": "사람이 네게 악을 행하지 아니하였거든 까닭 없이 더불어 다투지 말며",
+      "source_text_hash": "71bfdfeb80a5fd06f2f47d10e705b94426e0bb1b3a4be65fe038e72b452d9631",
+      "translation_text_hash": "554e0b9fca82a9562b377dfaa2c85fc52cc649961f8623435b68b66e9849e3ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 네게 악을 행하지 아니하였거든 까닭 없이 더불어 다투지 말며"
+      ],
+      "raw_text_hashes": [
+        "554e0b9fca82a9562b377dfaa2c85fc52cc649961f8623435b68b66e9849e3ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:31",
+      "sequence": 16487,
+      "chapter_label": "PRO 3",
+      "verse_label": "31",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 31
+        }
+      ],
+      "en": "Don’t envy the man of violence. Choose none of his ways.",
+      "ko": "포학한 자를 부러워하지 말며 그 아무 행위든지 좇지 말라",
+      "source_text_hash": "52d149468a46df9ede1d043015f417a23c3294c95148406e640f94c5d92dd7a8",
+      "translation_text_hash": "d5d1a56f977e6efe0e27224bc1067002250ba37dcdf97294e68f015ce4ebe982",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포학한 자를 부러워하지 말며 그 아무 행위든지 좇지 말라"
+      ],
+      "raw_text_hashes": [
+        "d5d1a56f977e6efe0e27224bc1067002250ba37dcdf97294e68f015ce4ebe982"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:32",
+      "sequence": 16488,
+      "chapter_label": "PRO 3",
+      "verse_label": "32",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 32
+        }
+      ],
+      "en": "For the perverse is an abomination to the LORD, but his friendship is with the upright.",
+      "ko": "대저 패역한 자는 여호와의 미워하심을 입거니와 정직한 자에게는 그의 교통하심이 있으며",
+      "source_text_hash": "0f8d4576d69f29f230708f7d10e6f05b846685c728ab43292c047bdc336848f7",
+      "translation_text_hash": "658c405af8d358a59c3626b9be3a765b80830f40ae39620589d16836083b22bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 패역한 자는 여호와의 미워하심을 입거니와 정직한 자에게는 그의 교통하심이 있으며"
+      ],
+      "raw_text_hashes": [
+        "658c405af8d358a59c3626b9be3a765b80830f40ae39620589d16836083b22bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:33",
+      "sequence": 16489,
+      "chapter_label": "PRO 3",
+      "verse_label": "33",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 33
+        }
+      ],
+      "en": "The LORD’s curse is in the house of the wicked, but he blesses the habitation of the righteous.",
+      "ko": "악인의 집에는 여호와의 저주가 있거니와 의인의 집에는 복이 있느니라",
+      "source_text_hash": "b4f477f353369fb7e37f15c36f840223194d18f2e704f5be5d4365f443219d83",
+      "translation_text_hash": "b72ff69d0e4914bd0788258db5b3f38df6381107d0e058861d0bb70f42c8df61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인의 집에는 여호와의 저주가 있거니와 의인의 집에는 복이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "b72ff69d0e4914bd0788258db5b3f38df6381107d0e058861d0bb70f42c8df61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:34",
+      "sequence": 16490,
+      "chapter_label": "PRO 3",
+      "verse_label": "34",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 34
+        }
+      ],
+      "en": "Surely he mocks the mockers, but he gives grace to the humble.",
+      "ko": "진실로 그는 거만한 자를 비웃으시며 겸손한 자에게 은혜를 베푸시나니",
+      "source_text_hash": "65f1420708570617652fc4617c3104dc72f9e99f2ea3a833de64d09cc3e8786a",
+      "translation_text_hash": "83d1c14c4fd6eff1bfb1d3fb3f8571bfbf4aecd2d8810380ba004339bfa11bdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 그는 거만한 자를 비웃으시며 겸손한 자에게 은혜를 베푸시나니"
+      ],
+      "raw_text_hashes": [
+        "83d1c14c4fd6eff1bfb1d3fb3f8571bfbf4aecd2d8810380ba004339bfa11bdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:3:35",
+      "sequence": 16491,
+      "chapter_label": "PRO 3",
+      "verse_label": "35",
+      "locator": {
+        "book": "PRO",
+        "chapter": 3,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 3,
+          "verse": 35
+        }
+      ],
+      "en": "The wise will inherit glory, but shame will be the promotion of fools.",
+      "ko": "지혜로운 자는 영광을 기업으로 받거니와 미련한 자의 현달함은 욕이 되느니라",
+      "source_text_hash": "2ca93dcfe85acfbcfaa90866ab04716a34d558c4b1f509f08951c0287f2f1c60",
+      "translation_text_hash": "cd3b478cf2884408a43975013baab4f40e613b929a5bab30b56eb3f22d6ae893",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜로운 자는 영광을 기업으로 받거니와 미련한 자의 현달함은 욕이 되느니라"
+      ],
+      "raw_text_hashes": [
+        "cd3b478cf2884408a43975013baab4f40e613b929a5bab30b56eb3f22d6ae893"
+      ]
+    }
+  ]
+}

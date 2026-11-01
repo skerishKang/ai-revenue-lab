@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:016",
+  "unit_ordinal": 203,
+  "unit_label": "JOS 16",
+  "book_code": "JOS",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:16:1",
+      "sequence": 6267,
+      "chapter_label": "JOS 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "The lot came out for the children of Joseph from the Jordan at Jericho, at the waters of Jericho on the east, even the wilderness, going up from Jericho through the hill country to Bethel.",
+      "ko": "요셉 자손이 제비 뽑은 것은 여리고 곁 요단 곧 여리고 물 동편 광야에서부터 나아가 여리고로 말미암아 올라가서 산지를 지나 벧엘에 이르고",
+      "source_text_hash": "d99d0d9c4b24471731611805b1c02c2fe73b9577202a5aa6219d7af4823cf33b",
+      "translation_text_hash": "b6d7a5b6f07e52b662629f9b475850098506bd76e25ecd71eee530de297883d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉 자손이 제비 뽑은 것은 여리고 곁 요단 곧 여리고 물 동편 광야에서부터 나아가 여리고로 말미암아 올라가서 산지를 지나 벧엘에 이르고"
+      ],
+      "raw_text_hashes": [
+        "b6d7a5b6f07e52b662629f9b475850098506bd76e25ecd71eee530de297883d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:16:2",
+      "sequence": 6268,
+      "chapter_label": "JOS 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "It went out from Bethel to Luz, and passed along to the border of the Archites to Ataroth;",
+      "ko": "벧엘에서부터 루스로 나아가 아렉 사람의 경계로 지나 아다롯에 이르고",
+      "source_text_hash": "a2a35a8a853718b11e964cf84cb84e7b9c02d5359d0dd49c73f7b2cf7429dc0f",
+      "translation_text_hash": "11e612fa2f868f318f13355ccbd6c08c11fb286820c9c687ec7e4f1935de15b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧엘에서부터 루스로 나아가 아렉 사람의 경계로 지나 아다롯에 이르고"
+      ],
+      "raw_text_hashes": [
+        "11e612fa2f868f318f13355ccbd6c08c11fb286820c9c687ec7e4f1935de15b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:16:3",
+      "sequence": 6269,
+      "chapter_label": "JOS 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "and it went down westward to the border of the Japhletites, to the border of Beth Horon the lower, and on to Gezer; and ended at the sea.",
+      "ko": "서편으로 내려가서 야블렛 사람의 경계에 이르러 아래 벧 호론 곧 게셀에 미치고 그 끝은 바다라",
+      "source_text_hash": "5c680b56af14fa95b9a696bf9ffe7368e5995779fb18fd5733c245360911bf2e",
+      "translation_text_hash": "8be8dc7ca12179e80d0b6c6760a9d9f2879ee04d14a508bece35111dfca8921e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서편으로 내려가서 야블렛 사람의 경계에 이르러 아래 벧 호론 곧 게셀에 미치고 그 끝은 바다라"
+      ],
+      "raw_text_hashes": [
+        "8be8dc7ca12179e80d0b6c6760a9d9f2879ee04d14a508bece35111dfca8921e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:16:4",
+      "sequence": 6270,
+      "chapter_label": "JOS 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "The children of Joseph, Manasseh and Ephraim, took their inheritance.",
+      "ko": "요셉의 자손 므낫세와 에브라임이 그 기업을 얻었더라",
+      "source_text_hash": "7f004df4735e6deef6b383db4ad49232d7775cf9b591dc1ad97ed6fd67fdcf49",
+      "translation_text_hash": "a3cf944ed59c5701eebea0cd758b4f1e655318fa8f01615c5dc0d5de445376ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉의 자손 므낫세와 에브라임이 그 기업을 얻었더라"
+      ],
+      "raw_text_hashes": [
+        "a3cf944ed59c5701eebea0cd758b4f1e655318fa8f01615c5dc0d5de445376ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:16:5",
+      "sequence": 6271,
+      "chapter_label": "JOS 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "This was the border of the children of Ephraim according to their families. The border of their inheritance eastward was Ataroth Addar, to Beth Horon the upper.",
+      "ko": "에브라임 자손의 그 가족대로 얻은 것의 경계는 이러하니라 그 기업의 경계는 동으로 아다롯 앗달에서 윗 벧 호론에 이르고",
+      "source_text_hash": "618252a3f1393e0e7ec03f20d00b845d944db964fee772fbcffe2c043ca8607f",
+      "translation_text_hash": "6d137cf77841882c8f95800dd98b1d0f43b216613e8e69b7c7c8ce550f6d97c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 자손의 그 가족대로 얻은 것의 경계는 이러하니라 그 기업의 경계는 동으로 아다롯 앗달에서 윗 벧 호론에 이르고"
+      ],
+      "raw_text_hashes": [
+        "6d137cf77841882c8f95800dd98b1d0f43b216613e8e69b7c7c8ce550f6d97c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:16:6",
+      "sequence": 6272,
+      "chapter_label": "JOS 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "The border went out westward at Michmethath on the north. The border turned about eastward to Taanath Shiloh, and passed along it on the east of Janoah.",
+      "ko": "또 서편으로 나아가 북편 믹므다에 이르고 동편으로 돌아 다아낫 실로에 이르러 야노아 동편을 지나고",
+      "source_text_hash": "cefbba10a686ddd0e8b588586f25fb3b2511258b93764533a3f74edac19e246d",
+      "translation_text_hash": "7158b1e34e27544a72e7011771cde603920f648e3fb9b27bb98ffd5511151755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 서편으로 나아가 북편 믹므다에 이르고 동편으로 돌아 다아낫 실로에 이르러 야노아 동편을 지나고"
+      ],
+      "raw_text_hashes": [
+        "7158b1e34e27544a72e7011771cde603920f648e3fb9b27bb98ffd5511151755"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:16:7",
+      "sequence": 6273,
+      "chapter_label": "JOS 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "It went down from Janoah to Ataroth, to Naarah, reached to Jericho, and went out at the Jordan.",
+      "ko": "야노아에서부터 아다롯과 나아라로 내려가서 여리고에 미치며 요단으로 나아가고",
+      "source_text_hash": "ac302d9488104042d961c766562bca23ab66fc557799005807f4cf58ca3294f6",
+      "translation_text_hash": "c49ee6886dee3b50f30215ec98d0e942ccf99b80ece9c31fb4590fb355041406",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야노아에서부터 아다롯과 나아라로 내려가서 여리고에 미치며 요단으로 나아가고"
+      ],
+      "raw_text_hashes": [
+        "c49ee6886dee3b50f30215ec98d0e942ccf99b80ece9c31fb4590fb355041406"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:16:8",
+      "sequence": 6274,
+      "chapter_label": "JOS 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "From Tappuah the border went along westward to the brook of Kanah; and ended at the sea. This is the inheritance of the tribe of the children of Ephraim according to their families;",
+      "ko": "또 답부아에서부터 서편으로 지나서 가나 시내에 미치나니 그 끝은 바다라 에브라임 자손의 지파가 그 가족대로 얻은 기업이 이러하였고",
+      "source_text_hash": "053bc9538390878c0c8c9a8254c396e74000901e4d6e16c1ff1e48a953bed0c1",
+      "translation_text_hash": "ea228438aa8494e58268f591e25996c27d4e6a1e315d5b8621a2076814db77dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 답부아에서부터 서편으로 지나서 가나 시내에 미치나니 그 끝은 바다라 에브라임 자손의 지파가 그 가족대로 얻은 기업이 이러하였고"
+      ],
+      "raw_text_hashes": [
+        "ea228438aa8494e58268f591e25996c27d4e6a1e315d5b8621a2076814db77dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:16:9",
+      "sequence": 6275,
+      "chapter_label": "JOS 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "together with the cities which were set apart for the children of Ephraim in the middle of the inheritance of the children of Manasseh, all the cities with their villages.",
+      "ko": "그 외에 므낫세 자손의 기업 중에서 에브라임 자손을 위하여 구별한 모든 성읍과 촌락도 있었더라",
+      "source_text_hash": "9ca06205b6ae0b84b4d12faf401638163c5bbe4595b396968ea23c57ec82b9be",
+      "translation_text_hash": "d12e98fa483e25c73752a21cf7b3b4892400ce948cc83472825ceb8015ad36f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 외에 므낫세 자손의 기업 중에서 에브라임 자손을 위하여 구별한 모든 성읍과 촌락도 있었더라"
+      ],
+      "raw_text_hashes": [
+        "d12e98fa483e25c73752a21cf7b3b4892400ce948cc83472825ceb8015ad36f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:16:10",
+      "sequence": 6276,
+      "chapter_label": "JOS 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "They didn’t drive out the Canaanites who lived in Gezer; but the Canaanites dwell in the territory of Ephraim to this day, and have become servants to do forced labor.",
+      "ko": "그들이 게셀에 거하는 가나안 사람을 쫓아내지 아니하였으므로 가나안 사람이 오늘날까지 에브라임 가운데 거하며 사역하는 종이 되니라",
+      "source_text_hash": "d9baf60fbcedfcd30f50dfdb3d8d47546a6470fd969d9d4a91ae2c8276e9ce27",
+      "translation_text_hash": "82572ece0d529d8793eb8a83a34e8e7e76267a0dc465e50984d75a0eaa33f11f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 게셀에 거하는 가나안 사람을 쫓아내지 아니하였으므로 가나안 사람이 오늘날까지 에브라임 가운데 거하며 사역하는 종이 되니라"
+      ],
+      "raw_text_hashes": [
+        "82572ece0d529d8793eb8a83a34e8e7e76267a0dc465e50984d75a0eaa33f11f"
+      ]
+    }
+  ]
+}

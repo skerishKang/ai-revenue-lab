@@ -1,0 +1,237 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:087",
+  "unit_ordinal": 565,
+  "unit_label": "PSA 87",
+  "book_code": "PSA",
+  "chapter_number": 87,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:87:1",
+      "sequence": 15303,
+      "chapter_label": "PSA 87",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 87,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 87,
+          "verse": 1
+        }
+      ],
+      "en": "His foundation is in the holy mountains.",
+      "ko": "그 기지가 성산에 있음이여",
+      "source_text_hash": "6ca45ea523ffe7f670858206c6446c801af677c2065fa056e8d339773033fe40",
+      "translation_text_hash": "34705c6c14d8ace6a96e13de9d251510d2e9bc084de1cd3f993ecfb79ec24324",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기지가 성산에 있음이여"
+      ],
+      "raw_text_hashes": [
+        "34705c6c14d8ace6a96e13de9d251510d2e9bc084de1cd3f993ecfb79ec24324"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:87:2",
+      "sequence": 15304,
+      "chapter_label": "PSA 87",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 87,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 87,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD loves the gates of Zion more than all the dwellings of Jacob.",
+      "ko": "여호와께서 야곱의 모든 거처보다 시온의 문들을 사랑하시는도다",
+      "source_text_hash": "2c5984ed9e763ea757569ee1d7244f0e757531a87a14817f1d329eb7f50cf0dc",
+      "translation_text_hash": "0b735c468c46c5b8ccaf2542cf2728a25dab2733b93569ded3b63f00f3c717bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 야곱의 모든 거처보다 시온의 문들을 사랑하시는도다"
+      ],
+      "raw_text_hashes": [
+        "0b735c468c46c5b8ccaf2542cf2728a25dab2733b93569ded3b63f00f3c717bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:87:3",
+      "sequence": 15305,
+      "chapter_label": "PSA 87",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 87,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 87,
+          "verse": 3
+        }
+      ],
+      "en": "Glorious things are spoken about you, city of God. Selah.",
+      "ko": "하나님의 성이여 너를 가리켜 영광스럽다 말하는도다(셀라)",
+      "source_text_hash": "4c432dc037cc887afc01e7c12879f2b743bc3e79b12979e5822feb8edc3e8594",
+      "translation_text_hash": "a97a5bf3127dd34e81a00ed9a921960a868158cd47565038e97ce0c1ae0dab7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 성이여 너를 가리켜 영광스럽다 말하는도다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "a97a5bf3127dd34e81a00ed9a921960a868158cd47565038e97ce0c1ae0dab7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:87:4",
+      "sequence": 15306,
+      "chapter_label": "PSA 87",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 87,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 87,
+          "verse": 4
+        }
+      ],
+      "en": "I will record Rahab and Babylon among those who acknowledge me. Behold, Philistia, Tyre, and also Ethiopia: “This one was born there.”",
+      "ko": "내가 라합과 바벨론을 나를 아는 자 중에 있다 말하리라 보라 블레셋과 두로와 구스여 이도 거기서 났다 하리로다",
+      "source_text_hash": "955fb5c341717e51912e23a0e1b413569f9f1dc1df939002efe051197d144b43",
+      "translation_text_hash": "ab5f2e1dc3d3084c83c89bce8ce5d48b51b30d1c1dc97332e30bd1a3bcf11a48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 라합과 바벨론을 나를 아는 자 중에 있다 말하리라 보라 블레셋과 두로와 구스여 이도 거기서 났다 하리로다"
+      ],
+      "raw_text_hashes": [
+        "ab5f2e1dc3d3084c83c89bce8ce5d48b51b30d1c1dc97332e30bd1a3bcf11a48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:87:5",
+      "sequence": 15307,
+      "chapter_label": "PSA 87",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 87,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 87,
+          "verse": 5
+        }
+      ],
+      "en": "Yes, of Zion it will be said, “This one and that one was born in her;” the Most High himself will establish her.",
+      "ko": "시온에 대하여 말하기를 이 사람, 저 사람이 거기서 났나니 지존자가 친히 시온을 세우리라 하리로다",
+      "source_text_hash": "f6f0df05ae9c6c6e9bd8050b2f7e3ffdda8f32bce54707ed9206376afdee527d",
+      "translation_text_hash": "1c8b396556651d8d3ba398872051ee44348a796e0401bf633dcf7151a23f231c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온에 대하여 말하기를 이 사람, 저 사람이 거기서 났나니 지존자가 친히 시온을 세우리라 하리로다"
+      ],
+      "raw_text_hashes": [
+        "1c8b396556651d8d3ba398872051ee44348a796e0401bf633dcf7151a23f231c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:87:6",
+      "sequence": 15308,
+      "chapter_label": "PSA 87",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 87,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 87,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD will count, when he writes up the peoples, “This one was born there.” Selah.",
+      "ko": "여호와께서 민족들을 등록하실 때에는 그 수를 세시며 이 사람이 거기서 났다 하시리로다(셀라)",
+      "source_text_hash": "a5b54efb19603918b097e5373112b9cebc0849320c25d97fc0b90657b82152df",
+      "translation_text_hash": "426710d8dd4d3941a5d82ebbe3f0b7150b1da22a9e520409915b4551ff8967a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 민족들을 등록하실 때에는 그 수를 세시며 이 사람이 거기서 났다 하시리로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "426710d8dd4d3941a5d82ebbe3f0b7150b1da22a9e520409915b4551ff8967a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:87:7",
+      "sequence": 15309,
+      "chapter_label": "PSA 87",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 87,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 87,
+          "verse": 7
+        }
+      ],
+      "en": "Those who sing as well as those who dance say, “All my springs are in you.”",
+      "ko": "노래하는 자와 춤추는 자는 말하기를 나의 모든 근원이 네게 있다 하리로다",
+      "source_text_hash": "f733c66b1cdf2a11e0abdb2c7102e6e573f129a5f2aded609ff3a05a9122eca5",
+      "translation_text_hash": "3c864008c49bfe9292b38ba099165070f2bc361138cd21d1e7e65be972965525",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노래하는 자와 춤추는 자는 말하기를 나의 모든 근원이 네게 있다 하리로다"
+      ],
+      "raw_text_hashes": [
+        "3c864008c49bfe9292b38ba099165070f2bc361138cd21d1e7e65be972965525"
+      ]
+    }
+  ]
+}

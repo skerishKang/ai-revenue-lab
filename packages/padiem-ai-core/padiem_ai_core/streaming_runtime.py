@@ -6,6 +6,8 @@ import time
 from typing import Any, Protocol
 import uuid
 
+from .thought_filter import ThoughtFilter
+
 from .b14_execution import (
     B14ChatRequest,
     B14ExecutionError,
@@ -231,6 +233,7 @@ class StreamingExecutionRuntime:
             ) from None
 
         answer_parts: list[str] = []
+        thought_filter = ThoughtFilter()
         last_route = B14RouteMetadata()
         last_usage = UsageMetadata()
         last_model: str | None = None
@@ -276,6 +279,19 @@ class StreamingExecutionRuntime:
                             chunk_model=last_model,
                         )
                     saw_done = True
+                    tail = thought_filter.feed("", final=True)
+                    if tail:
+                        answer_parts.append(tail)
+                        yield StreamingExecutionEvent(
+                            delta_content=tail, answer=None, finish_reason=None,
+                            route=last_route,
+                            metadata=self._metadata(
+                                request=request, trace_id=trace_id, status=RunStatus.MODEL_RUNNING,
+                                started_at=started_at, route=last_route, usage=last_usage,
+                                chunk_model=last_model,
+                            ),
+                            done=False,
+                        )
                     answer = "".join(answer_parts).strip()
                     if not answer and not (
                         b14_request.tools
@@ -312,12 +328,15 @@ class StreamingExecutionRuntime:
                     return
 
                 if event.delta_content or event.tool_call is not None:
-                    if event.delta_content:
-                        answer_parts.append(event.delta_content)
+                    safe_delta = thought_filter.feed(event.delta_content) if event.delta_content else None
+                    if safe_delta:
+                        answer_parts.append(safe_delta)
                     if event.tool_call is not None:
                         saw_tool_call = True
+                    if not safe_delta and event.tool_call is None:
+                        continue
                     yield StreamingExecutionEvent(
-                        delta_content=event.delta_content,
+                        delta_content=safe_delta or None,
                         answer=None,
                         finish_reason=event.finish_reason,
                         route=last_route,

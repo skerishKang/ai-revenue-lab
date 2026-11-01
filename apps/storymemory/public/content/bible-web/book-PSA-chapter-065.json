@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:065",
+  "unit_ordinal": 543,
+  "unit_label": "PSA 65",
+  "book_code": "PSA",
+  "chapter_number": 65,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:65:1",
+      "sequence": 14862,
+      "chapter_label": "PSA 65",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 1
+        }
+      ],
+      "en": "Praise waits for you, God, in Zion. Vows shall be performed to you.",
+      "ko": "하나님이여 찬송이 시온에서 주를 기다리오며 사람이 서원을 주께 이행하리이다",
+      "source_text_hash": "17d421e4817b4ddfe7e047ee2836e90118fa1ad2e42806fec9a4905070315248",
+      "translation_text_hash": "0e15f29904bffb27e1b46c508ec19eeb6a2a58d5257bb36cb5ed6499d367a0f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 찬송이 시온에서 주를 기다리오며 사람이 서원을 주께 이행하리이다"
+      ],
+      "raw_text_hashes": [
+        "0e15f29904bffb27e1b46c508ec19eeb6a2a58d5257bb36cb5ed6499d367a0f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:2",
+      "sequence": 14863,
+      "chapter_label": "PSA 65",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 2
+        }
+      ],
+      "en": "You who hear prayer, all men will come to you.",
+      "ko": "기도를 들으시는 주여 모든 육체가 주께 나아오리이다",
+      "source_text_hash": "e5e9293c13e69e47eae22439617372ac5926ccd24767e8a85e9b9d0c75e5f32e",
+      "translation_text_hash": "1cffa5750e4b7c1fbbc1fefb6bc26a9279347ca8fe5d879fa3cb668b2388bf9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기도를 들으시는 주여 모든 육체가 주께 나아오리이다"
+      ],
+      "raw_text_hashes": [
+        "1cffa5750e4b7c1fbbc1fefb6bc26a9279347ca8fe5d879fa3cb668b2388bf9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:3",
+      "sequence": 14864,
+      "chapter_label": "PSA 65",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 3
+        }
+      ],
+      "en": "Sins overwhelmed me, but you atoned for our transgressions.",
+      "ko": "죄악이 나를 이기었사오니 우리의 죄과를 주께서 사하시리이다",
+      "source_text_hash": "6f4ea8f21279c304dedc0032aa827e042548da9318f21b9fa3fe2755f43731a5",
+      "translation_text_hash": "248ba768895bdffa7b0414afaabe0052837c58066de22f221e91709205afc4a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄악이 나를 이기었사오니 우리의 죄과를 주께서 사하시리이다"
+      ],
+      "raw_text_hashes": [
+        "248ba768895bdffa7b0414afaabe0052837c58066de22f221e91709205afc4a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:4",
+      "sequence": 14865,
+      "chapter_label": "PSA 65",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 4
+        }
+      ],
+      "en": "Blessed is the one whom you choose and cause to come near, that he may live in your courts. We will be filled with the goodness of your house, your holy temple.",
+      "ko": "주께서 택하시고 가까이 오게 하사 주의 뜰에 거하게 하신 사람은 복이 있나이다 우리가 주의 집 곧 주의 성전의 아름다움으로 만족하리이다",
+      "source_text_hash": "6c5dc314b9397cadf92a3a4f5a1e1d46379d5477112a86e313c74d074f8cc0b0",
+      "translation_text_hash": "b4976ac767a4f1c4e17d5d9030464db82dc621f4eabf780ef2c6349db9f66833",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 택하시고 가까이 오게 하사 주의 뜰에 거하게 하신 사람은 복이 있나이다 우리가 주의 집 곧 주의 성전의 아름다움으로 만족하리이다"
+      ],
+      "raw_text_hashes": [
+        "b4976ac767a4f1c4e17d5d9030464db82dc621f4eabf780ef2c6349db9f66833"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:5",
+      "sequence": 14866,
+      "chapter_label": "PSA 65",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 5
+        }
+      ],
+      "en": "By awesome deeds of righteousness, you answer us, God of our salvation. You who are the hope of all the ends of the earth, of those who are far away on the sea.",
+      "ko": "우리 구원의 하나님이시여 땅의 모든 끝과 먼 바다에 있는 자의 의지할 주께서 의를 좇아 엄위하신 일로 우리에게 응답하시리이다",
+      "source_text_hash": "4dd7f4476b01f78e73633ee77fdb343c3e49344c334b1f57c986020668d10ab3",
+      "translation_text_hash": "cfc03cbf23ab13792194a0472aaceb7507dbc856bebc032468bde2b8e60d69da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 구원의 하나님이시여 땅의 모든 끝과 먼 바다에 있는 자의 의지할 주께서 의를 좇아 엄위하신 일로 우리에게 응답하시리이다"
+      ],
+      "raw_text_hashes": [
+        "cfc03cbf23ab13792194a0472aaceb7507dbc856bebc032468bde2b8e60d69da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:6",
+      "sequence": 14867,
+      "chapter_label": "PSA 65",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 6
+        }
+      ],
+      "en": "By your power, you form the mountains, having armed yourself with strength.",
+      "ko": "주는 주의 힘으로 산을 세우시며 권능으로 띠를 띠시며",
+      "source_text_hash": "6388c851d86dfe3d0f89213816e1c1389022948dc62ebb243cd461e9409d64c8",
+      "translation_text_hash": "aee73dad4cf661be4a9e8501c6b227e4acd866eadaa377f21f765516fac8ac2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 주의 힘으로 산을 세우시며 권능으로 띠를 띠시며"
+      ],
+      "raw_text_hashes": [
+        "aee73dad4cf661be4a9e8501c6b227e4acd866eadaa377f21f765516fac8ac2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:7",
+      "sequence": 14868,
+      "chapter_label": "PSA 65",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 7
+        }
+      ],
+      "en": "You still the roaring of the seas, the roaring of their waves, and the turmoil of the nations.",
+      "ko": "바다의 흉용과 물결의 요동과 만민의 훤화까지 진정하시나이다",
+      "source_text_hash": "d4ff3fc2519e661080ad689b6d31f065f4a9a5365e8f3660ce86657b33e2118c",
+      "translation_text_hash": "71153b7ce6adb58999bab34bfce7a40fe1fb2862fbf9a24a2c6b68918d381fbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다의 흉용과 물결의 요동과 만민의 훤화까지 진정하시나이다"
+      ],
+      "raw_text_hashes": [
+        "71153b7ce6adb58999bab34bfce7a40fe1fb2862fbf9a24a2c6b68918d381fbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:8",
+      "sequence": 14869,
+      "chapter_label": "PSA 65",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 8
+        }
+      ],
+      "en": "They also who dwell in faraway places are afraid at your wonders. You call the morning’s dawn and the evening with songs of joy.",
+      "ko": "땅 끝에 거하는 자가 주의 징조를 두려워하나이다 주께서 아침 되는 것과 저녁 되는 것을 즐거워하게 하시며",
+      "source_text_hash": "7e786850bfee6b0e74065133d08a7d500dc154bd05f4091d6b999188aaf30d0d",
+      "translation_text_hash": "9b5b50bd3c6bed962fb28dcb5e13819da5c9b5176d82c4788b8dc392beef2503",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅 끝에 거하는 자가 주의 징조를 두려워하나이다 주께서 아침 되는 것과 저녁 되는 것을 즐거워하게 하시며"
+      ],
+      "raw_text_hashes": [
+        "9b5b50bd3c6bed962fb28dcb5e13819da5c9b5176d82c4788b8dc392beef2503"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:9",
+      "sequence": 14870,
+      "chapter_label": "PSA 65",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 9
+        }
+      ],
+      "en": "You visit the earth, and water it. You greatly enrich it. The river of God is full of water. You provide them grain, for so you have ordained it.",
+      "ko": "땅을 권고하사 물을 대어 심히 윤택케 하시며 하나님의 강에 물이 가득하게 하시고 이 같이 땅을 예비하신 후에 저희에게 곡식을 주시나이다",
+      "source_text_hash": "cc1acc090786817a7e74ab2a047619cdb89ede863558146debfbe5c399330c28",
+      "translation_text_hash": "593f242e96a071ab3ff01fb4124d19c0638a3a76ea060c659af0974573707706",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅을 권고하사 물을 대어 심히 윤택케 하시며 하나님의 강에 물이 가득하게 하시고 이 같이 땅을 예비하신 후에 저희에게 곡식을 주시나이다"
+      ],
+      "raw_text_hashes": [
+        "593f242e96a071ab3ff01fb4124d19c0638a3a76ea060c659af0974573707706"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:10",
+      "sequence": 14871,
+      "chapter_label": "PSA 65",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 10
+        }
+      ],
+      "en": "You drench its furrows. You level its ridges. You soften it with showers. You bless it with a crop.",
+      "ko": "주께서 밭고랑에 물을 넉넉히 대사 그 이랑을 평평하게 하시며 또 단 비로 부드럽게 하시고 그 싹에 복 주시나이다",
+      "source_text_hash": "2b699d32214eb859d074e0da14e22748848ce1b9f1164c5bd95b4bada2a197f6",
+      "translation_text_hash": "3ec6d38c617df871cdede05cb8a9fa946d5de4e2b58a1285f1dfe48c79cd50b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 밭고랑에 물을 넉넉히 대사 그 이랑을 평평하게 하시며 또 단 비로 부드럽게 하시고 그 싹에 복 주시나이다"
+      ],
+      "raw_text_hashes": [
+        "3ec6d38c617df871cdede05cb8a9fa946d5de4e2b58a1285f1dfe48c79cd50b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:11",
+      "sequence": 14872,
+      "chapter_label": "PSA 65",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 11
+        }
+      ],
+      "en": "You crown the year with your bounty. Your carts overflow with abundance.",
+      "ko": "주의 은택으로 년사에 관 씌우시니 주의 길에는 기름이 떨어지며",
+      "source_text_hash": "203c5ea7ac6a39ded18bae2dfcd6cdb0eb7d12d88934d3bb2d8d122f5d316dcf",
+      "translation_text_hash": "dda63d6471be8e59e2b25c6381414e25d08c80e2a0fc4b7c47e154c71406003b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 은택으로 년사에 관 씌우시니 주의 길에는 기름이 떨어지며"
+      ],
+      "raw_text_hashes": [
+        "dda63d6471be8e59e2b25c6381414e25d08c80e2a0fc4b7c47e154c71406003b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:12",
+      "sequence": 14873,
+      "chapter_label": "PSA 65",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 12
+        }
+      ],
+      "en": "The wilderness grasslands overflow. The hills are clothed with gladness.",
+      "ko": "들의 초장에도 떨어지니 작은 산들이 기쁨으로 띠를 띠었나이다",
+      "source_text_hash": "22328f1b887265ab0027d66f150beacb6bf2433881ac0ea45b524e2f878dc548",
+      "translation_text_hash": "4153e60af6adb80d72f7eea473e5cd279e8881acc91f939f7612b499d4c8458c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들의 초장에도 떨어지니 작은 산들이 기쁨으로 띠를 띠었나이다"
+      ],
+      "raw_text_hashes": [
+        "4153e60af6adb80d72f7eea473e5cd279e8881acc91f939f7612b499d4c8458c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:65:13",
+      "sequence": 14874,
+      "chapter_label": "PSA 65",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 65,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 65,
+          "verse": 13
+        }
+      ],
+      "en": "The pastures are covered with flocks. The valleys also are clothed with grain. They shout for joy! They also sing.",
+      "ko": "초장에는 양떼가 입혔고 골짜기에는 곡식이 덮였으매 저희가 다 즐거이 외치고 또 노래하나이다",
+      "source_text_hash": "95ca490dc42e9f1213d40de06c47890797b9973bbe81cac87dd093eed9c0175f",
+      "translation_text_hash": "d319ad7951b4ba9c01ac484bd86b0b32368c35344fe5449df971fcb25f8678e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "초장에는 양떼가 입혔고 골짜기에는 곡식이 덮였으매 저희가 다 즐거이 외치고 또 노래하나이다"
+      ],
+      "raw_text_hashes": [
+        "d319ad7951b4ba9c01ac484bd86b0b32368c35344fe5449df971fcb25f8678e3"
+      ]
+    }
+  ]
+}

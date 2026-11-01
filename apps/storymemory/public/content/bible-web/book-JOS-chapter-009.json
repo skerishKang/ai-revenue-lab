@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:009",
+  "unit_ordinal": 196,
+  "unit_label": "JOS 9",
+  "book_code": "JOS",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:9:1",
+      "sequence": 6039,
+      "chapter_label": "JOS 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "When all the kings who were beyond the Jordan, in the hill country, and in the lowland, and on all the shore of the great sea in front of Lebanon, the Hittite, the Amorite, the Canaanite, the Perizzite, the Hivite, and the Jebusite, heard of it",
+      "ko": "요단 서편 산지와 평지와 레바논 앞 대해변에 있는 헷 사람과 아모리 사람과 가나안 사람과 브리스 사람과 히위 사람과 여부스 사람의 모든 왕이 이 일을 듣고",
+      "source_text_hash": "a30bd57b3b58d0e3133f3c10e39530f12b9705c494a639a7f57868bf866b20dc",
+      "translation_text_hash": "5138fd710c4e9631280439fd0e34ecce8ffb52133a8b85aa0ca295c282a413c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요단 서편 산지와 평지와 레바논 앞 대해변에 있는 헷 사람과 아모리 사람과 가나안 사람과 브리스 사람과 히위 사람과 여부스 사람의 모든 왕이 이 일을 듣고"
+      ],
+      "raw_text_hashes": [
+        "5138fd710c4e9631280439fd0e34ecce8ffb52133a8b85aa0ca295c282a413c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:2",
+      "sequence": 6040,
+      "chapter_label": "JOS 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "they gathered themselves together to fight with Joshua and with Israel, with one accord.",
+      "ko": "모여서 일심으로 여호수아와 이스라엘로 더불어 싸우려 하더라",
+      "source_text_hash": "f12d3643031ed672e60e06f168493d8c8ffab84ee27afc81be3ba6b2983696ae",
+      "translation_text_hash": "94022330bdb2c9cac3a6064a9eefcaed12b5076608e96e89e8d8b35d2768db02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모여서 일심으로 여호수아와 이스라엘로 더불어 싸우려 하더라"
+      ],
+      "raw_text_hashes": [
+        "94022330bdb2c9cac3a6064a9eefcaed12b5076608e96e89e8d8b35d2768db02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:3",
+      "sequence": 6041,
+      "chapter_label": "JOS 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "But when the inhabitants of Gibeon heard what Joshua had done to Jericho and to Ai,",
+      "ko": "기브온 거민들이 여호수아의 여리고와 아이에 행한 일을 듣고",
+      "source_text_hash": "49b443445bd258c8671ff38eae42a618ede17ae2a3a94a93232aaa978c50c9c6",
+      "translation_text_hash": "c6362b6e48fe3aa0ccba0563abadbdace55349c2460e5f604cf99f520dcf4d43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브온 거민들이 여호수아의 여리고와 아이에 행한 일을 듣고"
+      ],
+      "raw_text_hashes": [
+        "c6362b6e48fe3aa0ccba0563abadbdace55349c2460e5f604cf99f520dcf4d43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:4",
+      "sequence": 6042,
+      "chapter_label": "JOS 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "they also resorted to a ruse, and went and made as if they had been ambassadors, and took old sacks on their donkeys, and old, torn-up and bound up wineskins,",
+      "ko": "꾀를 내어 사신의 모양을 꾸미되 해어진 전대와 해어지고 찢어져서 기운 가죽 포도주 부대를 나귀에 싣고",
+      "source_text_hash": "7517a6d0f64b268c4b96f1366f079a22617304e82edc0ab6312c39d6b5d0beed",
+      "translation_text_hash": "7b973e1b41ac3fd11897afbb9d18a98b6d021c0596be3cd1110fb19e18bb25be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "꾀를 내어 사신의 모양을 꾸미되 해어진 전대와 해어지고 찢어져서 기운 가죽 포도주 부대를 나귀에 싣고"
+      ],
+      "raw_text_hashes": [
+        "7b973e1b41ac3fd11897afbb9d18a98b6d021c0596be3cd1110fb19e18bb25be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:5",
+      "sequence": 6043,
+      "chapter_label": "JOS 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "and old and patched sandals on their feet, and wore old garments. All the bread of their food supply was dry and moldy.",
+      "ko": "그 발에는 낡아 기운 신을 신고 낡은 옷을 입고 다 마르고 곰팡이 난 떡을 예비하고",
+      "source_text_hash": "0da45c20a6c5fe68066b5a1e4a82a13c8a8605843addf4126b25150237c09025",
+      "translation_text_hash": "e5254ceaacfebd0ca0b227aed3b820356b66b01f13496ab335a2e9146bedf450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 발에는 낡아 기운 신을 신고 낡은 옷을 입고 다 마르고 곰팡이 난 떡을 예비하고"
+      ],
+      "raw_text_hashes": [
+        "e5254ceaacfebd0ca0b227aed3b820356b66b01f13496ab335a2e9146bedf450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:6",
+      "sequence": 6044,
+      "chapter_label": "JOS 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "They went to Joshua at the camp at Gilgal, and said to him and to the men of Israel, “We have come from a far country. Now therefore make a covenant with us.”",
+      "ko": "그들이 길갈 진으로 와서 여호수아에게 이르러 그와 이스라엘 사람들에게 이르되 우리는 원방에서 왔나이다 이제 우리와 약조하사이다",
+      "source_text_hash": "3b40a553f94c92d3c4a672894a8358ecc32377244522049aff9808a898e77056",
+      "translation_text_hash": "ab7fe40c46e81abfc3e8306fc1bce432e85d6b8788259026590f4069e84a9dc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 길갈 진으로 와서 여호수아에게 이르러 그와 이스라엘 사람들에게 이르되 우리는 원방에서 왔나이다 이제 우리와 약조하사이다"
+      ],
+      "raw_text_hashes": [
+        "ab7fe40c46e81abfc3e8306fc1bce432e85d6b8788259026590f4069e84a9dc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:7",
+      "sequence": 6045,
+      "chapter_label": "JOS 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "The men of Israel said to the Hivites, “What if you live among us? How could we make a covenant with you?”",
+      "ko": "이스라엘 사람들이 히위 사람에게 이르되 너희가 우리 중에 거하는듯하니 우리가 어떻게 너희와 약조할 수 있으랴",
+      "source_text_hash": "df91b626aa04a6963ecc7a91df5bdbd7204372cc5207411df4e5f76ea069d65e",
+      "translation_text_hash": "77b3c5ce6305ea5649d40f97df56263b662a2ec40e44fb02bc4a832e5a383827",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람들이 히위 사람에게 이르되 너희가 우리 중에 거하는듯하니 우리가 어떻게 너희와 약조할 수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "77b3c5ce6305ea5649d40f97df56263b662a2ec40e44fb02bc4a832e5a383827"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:8",
+      "sequence": 6046,
+      "chapter_label": "JOS 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "They said to Joshua, “We are your servants.” Joshua said to them, “Who are you? Where do you come from?”",
+      "ko": "그들이 여호수아에게 이르되 우리는 당신의 종이니이다 여호수아가 그들에게 묻되 너희는 누구며 어디서 왔느뇨",
+      "source_text_hash": "b63d70c04ad0c24e56cde106d8b511c5fdbbeb866e71649747187606ff2ae249",
+      "translation_text_hash": "5a0421b6f41f4cd6af13e8b9c3419f6b211069f15c1ffa1860ef5a49502fadbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호수아에게 이르되 우리는 당신의 종이니이다 여호수아가 그들에게 묻되 너희는 누구며 어디서 왔느뇨"
+      ],
+      "raw_text_hashes": [
+        "5a0421b6f41f4cd6af13e8b9c3419f6b211069f15c1ffa1860ef5a49502fadbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:9",
+      "sequence": 6047,
+      "chapter_label": "JOS 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "They said to him, “Your servants have come from a very far country because of the name of the LORD your God; for we have heard of his fame, all that he did in Egypt,",
+      "ko": "그들이 여호수아에게 대답하되 종들은 당신의 하나님 여호와의 이름을 인하여 심히 먼 지방에서 왔사오니 이는 우리가 그의 명성과 그가 애굽에서 행하신 모든 일을 들으며",
+      "source_text_hash": "c157bf430121fa1f036e6c88ba70dd0b5d16ed2c5a5ddf5496c6eb085865e3a0",
+      "translation_text_hash": "5b254415ec6c2469a9860e71638e2ce62b40a42ed7da36d19dc8c63914c755c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호수아에게 대답하되 종들은 당신의 하나님 여호와의 이름을 인하여 심히 먼 지방에서 왔사오니 이는 우리가 그의 명성과 그가 애굽에서 행하신 모든 일을 들으며"
+      ],
+      "raw_text_hashes": [
+        "5b254415ec6c2469a9860e71638e2ce62b40a42ed7da36d19dc8c63914c755c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:10",
+      "sequence": 6048,
+      "chapter_label": "JOS 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "and all that he did to the two kings of the Amorites who were beyond the Jordan, to Sihon king of Heshbon and to Og king of Bashan, who was at Ashtaroth.",
+      "ko": "또 그가 요단 동편에 있는 아모리 사람의 두 왕 곧 헤스본 왕 시혼과 아스다롯에 있는 바산 왕 옥에게 행하신 모든 일을 들었음이니이다",
+      "source_text_hash": "11228097cd61255bc3dad725a8c15ad8f26dd3c003bd02eb84082668b274cc60",
+      "translation_text_hash": "1887bacdc0671dc79c1a8fd038398ec308ab951c818a58adfce520e712babf3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그가 요단 동편에 있는 아모리 사람의 두 왕 곧 헤스본 왕 시혼과 아스다롯에 있는 바산 왕 옥에게 행하신 모든 일을 들었음이니이다"
+      ],
+      "raw_text_hashes": [
+        "1887bacdc0671dc79c1a8fd038398ec308ab951c818a58adfce520e712babf3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:11",
+      "sequence": 6049,
+      "chapter_label": "JOS 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "Our elders and all the inhabitants of our country spoke to us, saying, ‘Take supplies in your hand for the journey, and go to meet them. Tell them, “We are your servants. Now make a covenant with us.”’",
+      "ko": "그러므로 우리 장로들과 우리 나라의 모든 거민이 우리에게 일러 가로되 너희는 여행할 양식을 손에 가지고 가서 그들을 맞아서 그들에게 이르기를 우리는 당신들의 종이니 청컨대 이제 우리와 약조하사이다 하라 하였나이다",
+      "source_text_hash": "fbe4dc4eb998849f736fc6d4cf7cd1215427d04e1cb38054fec947f7b5839522",
+      "translation_text_hash": "5acfbd7ce430fc521c46624bd6446c50837fdd8c6baa838d4aab94f524ce9688",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리 장로들과 우리 나라의 모든 거민이 우리에게 일러 가로되 너희는 여행할 양식을 손에 가지고 가서 그들을 맞아서 그들에게 이르기를 우리는 당신들의 종이니 청컨대 이제 우리와 약조하사이다 하라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "5acfbd7ce430fc521c46624bd6446c50837fdd8c6baa838d4aab94f524ce9688"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:12",
+      "sequence": 6050,
+      "chapter_label": "JOS 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "This our bread we took hot for our supplies out of our houses on the day we went out to go to you; but now, behold, it is dry, and has become moldy.",
+      "ko": "우리의 이 떡은 우리가 당신들에게로 오려고 떠나던 날에 우리들의 집에서 오히려 뜨거운 것을 양식으로 취하였더니 보소서 이제 말랐고 곰팡이 났으며",
+      "source_text_hash": "5dafba8c58f587aef62e940ece58633721a9809196d9f37c5844cc3499e74c90",
+      "translation_text_hash": "4015c5c8d9905b67929e2fc84cda56c6ec2ee89bf4827fc8d1a525c84e7f7fe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 이 떡은 우리가 당신들에게로 오려고 떠나던 날에 우리들의 집에서 오히려 뜨거운 것을 양식으로 취하였더니 보소서 이제 말랐고 곰팡이 났으며"
+      ],
+      "raw_text_hashes": [
+        "4015c5c8d9905b67929e2fc84cda56c6ec2ee89bf4827fc8d1a525c84e7f7fe1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:13",
+      "sequence": 6051,
+      "chapter_label": "JOS 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "These wineskins, which we filled, were new; and behold, they are torn. These our garments and our sandals have become old because of the very long journey.”",
+      "ko": "또 우리가 포도주를 담은 이 가죽 부대도 새것이더니 찢어지게 되었으며 우리의 이 옷과 신도 여행이 심히 길므로 인하여 낡아졌나이다 한지라",
+      "source_text_hash": "af9100d7ea1c74ca4aabd44b5c816a9e29dc2058585cb20c9cd949162e486eab",
+      "translation_text_hash": "eae5b27e598515a993d55c2f54f014f91252dc7eba124749b71562cb795afc34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 우리가 포도주를 담은 이 가죽 부대도 새것이더니 찢어지게 되었으며 우리의 이 옷과 신도 여행이 심히 길므로 인하여 낡아졌나이다 한지라"
+      ],
+      "raw_text_hashes": [
+        "eae5b27e598515a993d55c2f54f014f91252dc7eba124749b71562cb795afc34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:14",
+      "sequence": 6052,
+      "chapter_label": "JOS 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "The men sampled their provisions, and didn’t ask counsel from the LORD’s mouth.",
+      "ko": "무리가 그들의 양식을 취하고 어떻게 할것을 여호와께 묻지 아니하고",
+      "source_text_hash": "18e4a2709963ece9b2899c9a2cadafed7bb8fed861570ab91f029aef47572242",
+      "translation_text_hash": "fdaaed94e98e1714c692b8588b47ca51e8309dc538549777792a12a1bf8d727f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 그들의 양식을 취하고 어떻게 할것을 여호와께 묻지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "fdaaed94e98e1714c692b8588b47ca51e8309dc538549777792a12a1bf8d727f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:15",
+      "sequence": 6053,
+      "chapter_label": "JOS 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "Joshua made peace with them, and made a covenant with them, to let them live. The princes of the congregation swore to them.",
+      "ko": "여호수아가 곧 그들과 화친하여 그들을 살리리라는 언약을 맺고 회중 족장들이 그들에게 맹세하였더라",
+      "source_text_hash": "81467f15ddc9c4cb84083b6d79c2bfe10195dfabdf54314c73e610dbb8e36325",
+      "translation_text_hash": "41b3823e0e40e13bbf0519ca6785a24266c6172b31d7c0458f1941b1d13b6f42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 곧 그들과 화친하여 그들을 살리리라는 언약을 맺고 회중 족장들이 그들에게 맹세하였더라"
+      ],
+      "raw_text_hashes": [
+        "41b3823e0e40e13bbf0519ca6785a24266c6172b31d7c0458f1941b1d13b6f42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:16",
+      "sequence": 6054,
+      "chapter_label": "JOS 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "At the end of three days after they had made a covenant with them, they heard that they were their neighbors, and that they lived among them.",
+      "ko": "그들과 언약을 맺은 후 삼일이 지나서야 그들은 근린에 있어 자기들 중에 거주하는 자라 함을 들으니라",
+      "source_text_hash": "c725c9befccd49045cbbcc52bb795dd53ded7c475367339c732dbb5b087c99a9",
+      "translation_text_hash": "0ac38251b6b548f6b1af244b2950b30fd2f639c9a52791f8d8b5ebeadff9dc0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들과 언약을 맺은 후 삼일이 지나서야 그들은 근린에 있어 자기들 중에 거주하는 자라 함을 들으니라"
+      ],
+      "raw_text_hashes": [
+        "0ac38251b6b548f6b1af244b2950b30fd2f639c9a52791f8d8b5ebeadff9dc0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:17",
+      "sequence": 6055,
+      "chapter_label": "JOS 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "The children of Israel traveled and came to their cities on the third day. Now their cities were Gibeon, Chephirah, Beeroth, and Kiriath Jearim.",
+      "ko": "이스라엘 자손이 진행하여 제 삼일에 그들의 여러 성읍에 이르렀으니 그 성읍은 기브온과 그비라와 브에롯과 기럇여아림이라",
+      "source_text_hash": "09ca5118c02bcea385dabe641b238fa2172713a56c4910021bb67d9445b4324d",
+      "translation_text_hash": "a66e93e608c809dc53ef94348ed8a2fa22abe904db106cfb2ec5c5511bc19f67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 진행하여 제 삼일에 그들의 여러 성읍에 이르렀으니 그 성읍은 기브온과 그비라와 브에롯과 기럇여아림이라"
+      ],
+      "raw_text_hashes": [
+        "a66e93e608c809dc53ef94348ed8a2fa22abe904db106cfb2ec5c5511bc19f67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:18",
+      "sequence": 6056,
+      "chapter_label": "JOS 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "The children of Israel didn’t strike them, because the princes of the congregation had sworn to them by the LORD, the God of Israel. All the congregation murmured against the princes.",
+      "ko": "그러나 회중 족장들이 이스라엘 하나님 여호와로 그들에게 맹세한고로 이스라엘 자손이 그들을 치지 못한지라 그러므로 회중이 다 족장들을 원망하니",
+      "source_text_hash": "a7a38a95a1703ba718ff880eac255009136ec72682d8aa035f0203305cf99bee",
+      "translation_text_hash": "eedc3099a48ca097700d9e448a983b99981bba27b40c49e8c202b47c89f12355",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 회중 족장들이 이스라엘 하나님 여호와로 그들에게 맹세한고로 이스라엘 자손이 그들을 치지 못한지라 그러므로 회중이 다 족장들을 원망하니"
+      ],
+      "raw_text_hashes": [
+        "eedc3099a48ca097700d9e448a983b99981bba27b40c49e8c202b47c89f12355"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:19",
+      "sequence": 6057,
+      "chapter_label": "JOS 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "But all the princes said to all the congregation, “We have sworn to them by the LORD, the God of Israel. Now therefore we may not touch them.",
+      "ko": "모든 족장이 온 회중에게 이르되 우리가 이스라엘 하나님 여호와로 그들에게 맹세하였은즉 이제 그들을 건드리지 못하리라",
+      "source_text_hash": "7541f237fc64f76ce333a11b46284846f4619f2fd77540b618c0e473b311d046",
+      "translation_text_hash": "57334b4e4462c294bba03a074f4dd649ec2f08f7d71bc96353b8994265cdd019",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 족장이 온 회중에게 이르되 우리가 이스라엘 하나님 여호와로 그들에게 맹세하였은즉 이제 그들을 건드리지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "57334b4e4462c294bba03a074f4dd649ec2f08f7d71bc96353b8994265cdd019"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:20",
+      "sequence": 6058,
+      "chapter_label": "JOS 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "We will do this to them, and let them live; lest wrath be on us, because of the oath which we swore to them.”",
+      "ko": "우리가 그들에게 맹세한 맹약을 인하여 진노가 우리에게 임할까 하노니 이렇게 행하여 그들을 살리리라 하고",
+      "source_text_hash": "6db280d8bf0b24c0bd49e7a97631c7938428c38604e0b6bac08a17cbf3638c98",
+      "translation_text_hash": "f73166e710a6b1762e4cee4035737e7cb24ef8f6b2cf4aae49b64dd4a56854a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그들에게 맹세한 맹약을 인하여 진노가 우리에게 임할까 하노니 이렇게 행하여 그들을 살리리라 하고"
+      ],
+      "raw_text_hashes": [
+        "f73166e710a6b1762e4cee4035737e7cb24ef8f6b2cf4aae49b64dd4a56854a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:21",
+      "sequence": 6059,
+      "chapter_label": "JOS 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "The princes said to them, “Let them live.” So they became wood cutters and drawers of water for all the congregation, as the princes had spoken to them.",
+      "ko": "무리에게 이르되 그들을 살리라 하니 족장들이 그들에게 이른대로 그들이 온 회중을 위하여 나무 패며 물 긷는 자가 되었더라",
+      "source_text_hash": "24dba4c88d07d252f5d3ad14359e7d75801a557ce97dd574146c7266dbe9661a",
+      "translation_text_hash": "e1a41ee740ec588c91149faca01e0e34cdac7c9f47bf9610c681380591467122",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리에게 이르되 그들을 살리라 하니 족장들이 그들에게 이른대로 그들이 온 회중을 위하여 나무 패며 물 긷는 자가 되었더라"
+      ],
+      "raw_text_hashes": [
+        "e1a41ee740ec588c91149faca01e0e34cdac7c9f47bf9610c681380591467122"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:22",
+      "sequence": 6060,
+      "chapter_label": "JOS 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "Joshua called for them, and he spoke to them, saying, “Why have you deceived us, saying, ‘We are very far from you,’ when you live among us?",
+      "ko": "여호수아가 그들을 불러다가 일러 가로되 너희가 우리 가운데 거주하거늘 어찌하여 우리는 너희에게서 심히 멀다 하여 우리를 속였느냐",
+      "source_text_hash": "b4190d762a0c5027864db3a3b821d955eb387d4b2ed97646cc0bdc726bde91ab",
+      "translation_text_hash": "4bd7cb3e4f9ac7a7a94583a930e7c3317c9633a988af8b1e30f0e08d749837ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 그들을 불러다가 일러 가로되 너희가 우리 가운데 거주하거늘 어찌하여 우리는 너희에게서 심히 멀다 하여 우리를 속였느냐"
+      ],
+      "raw_text_hashes": [
+        "4bd7cb3e4f9ac7a7a94583a930e7c3317c9633a988af8b1e30f0e08d749837ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:23",
+      "sequence": 6061,
+      "chapter_label": "JOS 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "Now therefore you are cursed, and some of you will never fail to be slaves, both wood cutters and drawers of water for the house of my God.”",
+      "ko": "그러므로 너희가 저주를 받나니 너희가 영영히 종이 되어서 다 내 하나님의 집을 위하여 나무 패며 물 긷는 자가 되리라",
+      "source_text_hash": "ba5c2ccc50c277ceb9c645e77604e2328bdacb7fd4b9ad77411931d8d7f65fb5",
+      "translation_text_hash": "fb94f314fde3b94c55d41232613f7adbb2a35a60d8509d17c0c063e5fc611564",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 저주를 받나니 너희가 영영히 종이 되어서 다 내 하나님의 집을 위하여 나무 패며 물 긷는 자가 되리라"
+      ],
+      "raw_text_hashes": [
+        "fb94f314fde3b94c55d41232613f7adbb2a35a60d8509d17c0c063e5fc611564"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:24",
+      "sequence": 6062,
+      "chapter_label": "JOS 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "They answered Joshua, and said, “Because your servants were certainly told how the LORD your God commanded his servant Moses to give you all the land, and to destroy all the inhabitants of the land from before you. Therefore we were very afraid for our lives because of you, and have done this thing.",
+      "ko": "그들이 여호수아에게 대답하여 가로되 당신의 하나님 여호와께서 그 종 모세에게 명하사 이 땅을 다 당신들에게 주고 이 땅 모든 거민을 당신들의 앞에서 멸하라 하신것이 당신의 종에게 분명히 들리므로 당신들을 인하여 우리 생명을 잃을까 심히 두려워하여 이 같이 하였나이다",
+      "source_text_hash": "180ab13b9670e6492dda694a5800497208e1c2b8b5c3d14c994ede2eb01644b2",
+      "translation_text_hash": "09c605fe0683b1259143ffe3145a6366f921d94dbdb7de6a04dbe54dae07628a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호수아에게 대답하여 가로되 당신의 하나님 여호와께서 그 종 모세에게 명하사 이 땅을 다 당신들에게 주고 이 땅 모든 거민을 당신들의 앞에서 멸하라 하신것이 당신의 종에게 분명히 들리므로 당신들을 인하여 우리 생명을 잃을까 심히 두려워하여 이 같이 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "09c605fe0683b1259143ffe3145a6366f921d94dbdb7de6a04dbe54dae07628a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:25",
+      "sequence": 6063,
+      "chapter_label": "JOS 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "Now, behold, we are in your hand. Do to us as it seems good and right to you to do.”",
+      "ko": "보소서 이제 우리가 당신의 손에 있으니 당신의 의향에 좋고 옳은대로 우리에게 행하소서 한지라",
+      "source_text_hash": "e0fe6384943f68b4b65ae89dad87096b1fa56122277a2b2dda549ae97bf82621",
+      "translation_text_hash": "6b38d29f2407e2f644eeac46d9da49f1582668e5ca5c20b282aa41de64a278f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보소서 이제 우리가 당신의 손에 있으니 당신의 의향에 좋고 옳은대로 우리에게 행하소서 한지라"
+      ],
+      "raw_text_hashes": [
+        "6b38d29f2407e2f644eeac46d9da49f1582668e5ca5c20b282aa41de64a278f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:26",
+      "sequence": 6064,
+      "chapter_label": "JOS 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "He did so to them, and delivered them out of the hand of the children of Israel, so that they didn’t kill them.",
+      "ko": "여호수아가 곧 그대로 그들에게 행하여 그들을 이스라엘 자손의 손에서 건져서 죽이지 못하게 하니라",
+      "source_text_hash": "9972c5336815f867ada2c17acf3b05470b617b26881eaa6cfd25094692369fc6",
+      "translation_text_hash": "c5981900511a29c89eedc0a247358abb5cda73a6df995f507c7e42d8ff51ca65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 곧 그대로 그들에게 행하여 그들을 이스라엘 자손의 손에서 건져서 죽이지 못하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "c5981900511a29c89eedc0a247358abb5cda73a6df995f507c7e42d8ff51ca65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:9:27",
+      "sequence": 6065,
+      "chapter_label": "JOS 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOS",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "That day Joshua made them wood cutters and drawers of water for the congregation and for the LORD’s altar to this day, in the place which he should choose.",
+      "ko": "그 날에 여호수아가 그들로 여호와의 택하신 곳에서 회중을 위하며 여호와의 단을 위하여 나무 패며 물 긷는 자를 삼았더니 오늘까지 이르니라",
+      "source_text_hash": "c299f27133d44cc4e8cf96a3e3cafa5a11886130443b6865c82ae63b9009cdb1",
+      "translation_text_hash": "4187ec830e07113a8aba028a7c0ad29856dd53f2257dcf0bf95a99366cb7eacd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 여호수아가 그들로 여호와의 택하신 곳에서 회중을 위하며 여호와의 단을 위하여 나무 패며 물 긷는 자를 삼았더니 오늘까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "4187ec830e07113a8aba028a7c0ad29856dd53f2257dcf0bf95a99366cb7eacd"
+      ]
+    }
+  ]
+}

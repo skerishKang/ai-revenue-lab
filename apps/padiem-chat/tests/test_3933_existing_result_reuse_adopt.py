@@ -78,8 +78,10 @@ class FakeDocuments:
         self.puts: list[dict[str, object]] = []
         self.reads: list[dict[str, object]] = []
 
-    async def get_for_tenant(self, *, tenant_id, document_id, now=None):
-        self.reads.append({"tenant_id": tenant_id, "document_id": document_id})
+    async def get_for_tenant(self, *, tenant_id, document_id, user_id=None, now=None):
+        self.reads.append(
+            {"tenant_id": tenant_id, "document_id": document_id, "user_id": user_id}
+        )
         if self.missing:
             return None
         if tenant_id != self.tenant:
@@ -157,7 +159,8 @@ class ExistingResultReuseAdoptTests(unittest.IsolatedAsyncioTestCase):
         # Use the released metadata schema; 026 alone still rejects >10MiB
         # before the current WEB XLSX input guard can examine a corrupt row.
         for migration in ("008_claw_document_metadata.sql", "027_b66_template_source.sql",
-                          "060_byte_length_capacity_ceiling_release.sql"):
+                          "060_byte_length_capacity_ceiling_release.sql",
+                          "080_claw_document_metadata_user_id.sql"):
             self.db.executescript((ROOT / "migrations" / migration).read_text())
         self.history = D1HistoryStore(D1Sqlite(self.db))
         self.documents = FakeDocuments()
@@ -201,6 +204,7 @@ class ExistingResultReuseAdoptTests(unittest.IsolatedAsyncioTestCase):
         # Exactly the recorded bytes were re-read and re-stored, unmodified.
         self.assertEqual(self.documents.reads, [{
             "tenant_id": WORKSPACE, "document_id": record.artifact_id,
+            "user_id": OWNER,
         }])
         self.assertEqual(len(self.documents.puts), 1)
         self.assertEqual(self.documents.puts[0]["body"], PAYLOAD)

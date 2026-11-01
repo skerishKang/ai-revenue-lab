@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:005",
+  "unit_ordinal": 5,
+  "unit_label": "GEN 5",
+  "book_code": "GEN",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:5:1",
+      "sequence": 107,
+      "chapter_label": "GEN 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "This is the book of the generations of Adam. In the day that God created man, he made him in God’s likeness.",
+      "ko": "아담 자손의 계보가 이러하니라 하나님이 사람을 창조하실 때에 하나님의 형상대로 지으시되",
+      "source_text_hash": "31380d39dc78c094edc40871dc3c18b7ce2930c1a4a3da8826aa035d72d42783",
+      "translation_text_hash": "702dd6460702aaa189ca6d2a0c5b08e69ea114a19bcdafd833e016845a866e46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담 자손의 계보가 이러하니라 하나님이 사람을 창조하실 때에 하나님의 형상대로 지으시되"
+      ],
+      "raw_text_hashes": [
+        "702dd6460702aaa189ca6d2a0c5b08e69ea114a19bcdafd833e016845a866e46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:2",
+      "sequence": 108,
+      "chapter_label": "GEN 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "He created them male and female, and blessed them. On the day they were created, he named them Adam.",
+      "ko": "남자와 여자를 창조하셨고 그들이 창조되던 날에 하나님이 그들에게 복을 주시고 그들의 이름을 사람이라 일컬으셨더라",
+      "source_text_hash": "fa9ad56783de65a6a9505e417b694574bc24ff0b64b6b7aa48d9a1b3fd7a73c5",
+      "translation_text_hash": "e3373fad3eb2d2ab05e0004064eab160bb80cb8e5fcbe9228c8609d84c0aa249",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자와 여자를 창조하셨고 그들이 창조되던 날에 하나님이 그들에게 복을 주시고 그들의 이름을 사람이라 일컬으셨더라"
+      ],
+      "raw_text_hashes": [
+        "e3373fad3eb2d2ab05e0004064eab160bb80cb8e5fcbe9228c8609d84c0aa249"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:3",
+      "sequence": 109,
+      "chapter_label": "GEN 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Adam lived one hundred thirty years, and became the father of a son in his own likeness, after his image, and named him Seth.",
+      "ko": "아담이 일백 삼십세에 자기 모양 곧 자기 형상과 같은 아들을 낳아 이름을 셋이라 하였고",
+      "source_text_hash": "9fd7bedf1a34cd82561d5be480fa3603c2f883744417060a29b3812670dd8b8e",
+      "translation_text_hash": "158d69955daa123f9c1b321ff64d9d5a532de5c3e10d2e2caa2ef09694fc3f3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담이 일백 삼십세에 자기 모양 곧 자기 형상과 같은 아들을 낳아 이름을 셋이라 하였고"
+      ],
+      "raw_text_hashes": [
+        "158d69955daa123f9c1b321ff64d9d5a532de5c3e10d2e2caa2ef09694fc3f3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:4",
+      "sequence": 110,
+      "chapter_label": "GEN 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "The days of Adam after he became the father of Seth were eight hundred years, and he became the father of other sons and daughters.",
+      "ko": "아담이 셋을 낳은 후 팔백년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "20278d26a331e1f6f20856c22ea8445557847681c8f0a6eb2ae53d8174fdde24",
+      "translation_text_hash": "b7e70c469071ed256edac861bfd11cbbe68586416b2723745e30f828a585b346",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담이 셋을 낳은 후 팔백년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "b7e70c469071ed256edac861bfd11cbbe68586416b2723745e30f828a585b346"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:5",
+      "sequence": 111,
+      "chapter_label": "GEN 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "All the days that Adam lived were nine hundred thirty years, then he died.",
+      "ko": "그가 구백 삼십세를 향수하고 죽었더라",
+      "source_text_hash": "50a464a83c321b00a320f51c7628522887df02b037c1436c6790dec171359d49",
+      "translation_text_hash": "14940663312209ff674b4fb29df5740678012a05f68ad1ecaddb7a3184e2e4b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 구백 삼십세를 향수하고 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "14940663312209ff674b4fb29df5740678012a05f68ad1ecaddb7a3184e2e4b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:6",
+      "sequence": 112,
+      "chapter_label": "GEN 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "Seth lived one hundred five years, then became the father of Enosh.",
+      "ko": "셋은 일백 오세에 에노스를 낳았고",
+      "source_text_hash": "76cb13bd06da3d2ca46db2ca5dfd313b305465a5b160cb5304dfc179e9f7b463",
+      "translation_text_hash": "7008f5fe07abd075f0fef8aacd9674571e44db8bd3eaf7a8403e1fabfb6e7b04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셋은 일백 오세에 에노스를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "7008f5fe07abd075f0fef8aacd9674571e44db8bd3eaf7a8403e1fabfb6e7b04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:7",
+      "sequence": 113,
+      "chapter_label": "GEN 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Seth lived after he became the father of Enosh eight hundred seven years, and became the father of other sons and daughters.",
+      "ko": "에노스를 낳은 후 팔백 칠년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "dccbe173f7efc28e44db73b1d34abaec02c6558304ae76ce8a8452a67de303a2",
+      "translation_text_hash": "65c250b8cf6df8641c1540aa074f751f6e675eac1fe1263912ba63fa81ae58cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에노스를 낳은 후 팔백 칠년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "65c250b8cf6df8641c1540aa074f751f6e675eac1fe1263912ba63fa81ae58cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:8",
+      "sequence": 114,
+      "chapter_label": "GEN 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "All of the days of Seth were nine hundred twelve years, then he died.",
+      "ko": "그가 구백 십 이세를 향수하고 죽었더라",
+      "source_text_hash": "63abc29c0a478568ccac27bcada1f58e289a5c5cd8c05f8e8070f95e76107e2d",
+      "translation_text_hash": "44cce9417ffb341d51af1af2a629bab50e463ff82d3735f3722ffc73de9c8696",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 구백 십 이세를 향수하고 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "44cce9417ffb341d51af1af2a629bab50e463ff82d3735f3722ffc73de9c8696"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:9",
+      "sequence": 115,
+      "chapter_label": "GEN 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Enosh lived ninety years, and became the father of Kenan.",
+      "ko": "에노스는 구십세에 게난을 낳았고",
+      "source_text_hash": "6bdc99ae81d10363552fa1edd57b99bfe0594d10095c00497740b508c5f5a3ef",
+      "translation_text_hash": "23745c36bd6d963aa6b193a3da2919a7596043c9a9dff609f8c1759dea017847",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에노스는 구십세에 게난을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "23745c36bd6d963aa6b193a3da2919a7596043c9a9dff609f8c1759dea017847"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:10",
+      "sequence": 116,
+      "chapter_label": "GEN 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "Enosh lived after he became the father of Kenan eight hundred fifteen years, and became the father of other sons and daughters.",
+      "ko": "게난을 낳은 후 팔백 십 오년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "c398429c89cac8380e1440e79e47bc7b5ad60bd0dca44a61671d77792c1f8c99",
+      "translation_text_hash": "409cabbca06050c4304fcd591147daeabb7f33ea906bf91a0099678cedbe55ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게난을 낳은 후 팔백 십 오년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "409cabbca06050c4304fcd591147daeabb7f33ea906bf91a0099678cedbe55ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:11",
+      "sequence": 117,
+      "chapter_label": "GEN 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "All of the days of Enosh were nine hundred five years, then he died.",
+      "ko": "그가 구백 오세를 향수하고 죽었더라",
+      "source_text_hash": "e152e6d309b04c3a8b6995338a97c4277a446185f2c2ef2710a4e901c023dcbe",
+      "translation_text_hash": "58d551af4eb355d1b9431e611f9059144c051e1409b8ca5137c375dd77cacdea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 구백 오세를 향수하고 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "58d551af4eb355d1b9431e611f9059144c051e1409b8ca5137c375dd77cacdea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:12",
+      "sequence": 118,
+      "chapter_label": "GEN 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "Kenan lived seventy years, then became the father of Mahalalel.",
+      "ko": "게난은 칠십세에 마할랄렐을 낳았고",
+      "source_text_hash": "6c44bc0ff37d92f3014debfc701bb037a8dcc57d240f9a0e76d9d10d9db1bc9b",
+      "translation_text_hash": "ad5ca4f6d10e993584f02aa703e1023c193517dc6a117afd44ca60fc56dbb216",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게난은 칠십세에 마할랄렐을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "ad5ca4f6d10e993584f02aa703e1023c193517dc6a117afd44ca60fc56dbb216"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:13",
+      "sequence": 119,
+      "chapter_label": "GEN 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "Kenan lived after he became the father of Mahalalel eight hundred forty years, and became the father of other sons and daughters",
+      "ko": "마할랄렐을 낳은 후 팔백 사십년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "381cda33ed7407965d4ddf7173c0dc99665306bb7df2da6d894d4391bfbdff40",
+      "translation_text_hash": "90360196ffedc1312cec73fd8847e0bb810290e8fb755d0c04f940d98591b4b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마할랄렐을 낳은 후 팔백 사십년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "90360196ffedc1312cec73fd8847e0bb810290e8fb755d0c04f940d98591b4b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:14",
+      "sequence": 120,
+      "chapter_label": "GEN 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "and all of the days of Kenan were nine hundred ten years, then he died.",
+      "ko": "그가 구백 십세를 향수하고 죽었더라",
+      "source_text_hash": "ab7b52ffd1773e85438f570327638e964a12d9f16de54d8d816b37cfa645c432",
+      "translation_text_hash": "0c0f7cfbb2fa796cd1a88687b17fa586073f0b5056e9d4b51b43b67086baa669",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 구백 십세를 향수하고 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "0c0f7cfbb2fa796cd1a88687b17fa586073f0b5056e9d4b51b43b67086baa669"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:15",
+      "sequence": 121,
+      "chapter_label": "GEN 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "Mahalalel lived sixty-five years, then became the father of Jared.",
+      "ko": "마할랄렐은 육십 오세에 야렛을 낳았고",
+      "source_text_hash": "efc0580f1a7e23c38919990ac71b0825e12eca5bd2525a9921b6b7f8578fbf87",
+      "translation_text_hash": "096b70142e313486f2dfc15a3907957ab2a223b6a7e2330b10095da5bd0b1b07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마할랄렐은 육십 오세에 야렛을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "096b70142e313486f2dfc15a3907957ab2a223b6a7e2330b10095da5bd0b1b07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:16",
+      "sequence": 122,
+      "chapter_label": "GEN 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Mahalalel lived after he became the father of Jared eight hundred thirty years, and became the father of other sons and daughters.",
+      "ko": "야렛을 낳은 후 팔백 삼십년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "0b9f6f4743b2aa1190254e40f16d8709a7ba239dff429a2bd08cd8334b5fba60",
+      "translation_text_hash": "c30a0b16b58eeb6b98f4a4c96173b7acd9f4e839186f10667d6d006ed5d6af70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야렛을 낳은 후 팔백 삼십년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "c30a0b16b58eeb6b98f4a4c96173b7acd9f4e839186f10667d6d006ed5d6af70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:17",
+      "sequence": 123,
+      "chapter_label": "GEN 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "All of the days of Mahalalel were eight hundred ninety-five years, then he died.",
+      "ko": "그가 팔백 구십 오세를 향수하고 죽었더라",
+      "source_text_hash": "6616d79a58158a8766f839a24fbd11a61cc71b9603263c012ab548207fb5fe34",
+      "translation_text_hash": "b95cb180d7d68d42f05d0df12b593e2ff8897ee7477115b99563b142bd923b08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 팔백 구십 오세를 향수하고 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "b95cb180d7d68d42f05d0df12b593e2ff8897ee7477115b99563b142bd923b08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:18",
+      "sequence": 124,
+      "chapter_label": "GEN 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "Jared lived one hundred sixty-two years, then became the father of Enoch.",
+      "ko": "야렛은 일백 육십 이세에 에녹을 낳았고",
+      "source_text_hash": "c398d88ec28b9fd975528cb93aba0c7130f5ac411fd8060366d8e7f760982702",
+      "translation_text_hash": "2dcef457fb8cf04a279f3bab01ece212adc07383281990e17185dfcf3a1a5256",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야렛은 일백 육십 이세에 에녹을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "2dcef457fb8cf04a279f3bab01ece212adc07383281990e17185dfcf3a1a5256"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:19",
+      "sequence": 125,
+      "chapter_label": "GEN 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "Jared lived after he became the father of Enoch eight hundred years, and became the father of other sons and daughters.",
+      "ko": "에녹을 낳은 후 팔백년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "feda20a13fd4da750c254d7d1dd4c6fee3983ca99267eafff2b28248a4279637",
+      "translation_text_hash": "2608e3fd86bd1d6036a0d7f597c4b394d4bbd877fc97321c255ca5ec763fdc3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에녹을 낳은 후 팔백년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "2608e3fd86bd1d6036a0d7f597c4b394d4bbd877fc97321c255ca5ec763fdc3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:20",
+      "sequence": 126,
+      "chapter_label": "GEN 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "All of the days of Jared were nine hundred sixty-two years, then he died.",
+      "ko": "그가 구백 육십 이세를 향수하고 죽었더라",
+      "source_text_hash": "0e6040831ac02c184da968f965ee02f7dbc08827cbf278d1e9d101484c96fbd0",
+      "translation_text_hash": "dde24a2131aee041c08b2ef2892d4a89ab603fb8b5e62338e4bc914824cefc0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 구백 육십 이세를 향수하고 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "dde24a2131aee041c08b2ef2892d4a89ab603fb8b5e62338e4bc914824cefc0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:21",
+      "sequence": 127,
+      "chapter_label": "GEN 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "Enoch lived sixty-five years, then became the father of Methuselah.",
+      "ko": "에녹은 육십 오세에 므두셀라를 낳았고",
+      "source_text_hash": "73cdc7e80ab7d5472b9ed782d9a426920afad6856baf6d9bebf63c313e17a071",
+      "translation_text_hash": "df246ba3307d0bd5ba1a2c76a7a2631081c882f1441d13b84075d4b350d99aa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에녹은 육십 오세에 므두셀라를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "df246ba3307d0bd5ba1a2c76a7a2631081c882f1441d13b84075d4b350d99aa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:22",
+      "sequence": 128,
+      "chapter_label": "GEN 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "After Methuselah’s birth, Enoch walked with God for three hundred years, and became the father of more sons and daughters.",
+      "ko": "므두셀라를 낳은 후 삼백년을 하나님과 동행하며 자녀를 낳았으며",
+      "source_text_hash": "472627e3b88464a8878310abd375bb29494d61e609d45341fc00d9c77332385c",
+      "translation_text_hash": "1a8b515f7426679b3f4626ac8357029b4003d949adfdf91a80fce6dca3e9b0d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므두셀라를 낳은 후 삼백년을 하나님과 동행하며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "1a8b515f7426679b3f4626ac8357029b4003d949adfdf91a80fce6dca3e9b0d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:23",
+      "sequence": 129,
+      "chapter_label": "GEN 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "All the days of Enoch were three hundred sixty-five years.",
+      "ko": "그가 삼백 육십 오세를 향수하였더라",
+      "source_text_hash": "89671f2065f7e2089c0b028730aadf5e0faf0b7b8688bcbd6170a426e1ac4f90",
+      "translation_text_hash": "445bffa07f90ed044c2be7189fa61099ae4cf3a8e99649b3fddc79c868381266",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 삼백 육십 오세를 향수하였더라"
+      ],
+      "raw_text_hashes": [
+        "445bffa07f90ed044c2be7189fa61099ae4cf3a8e99649b3fddc79c868381266"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:24",
+      "sequence": 130,
+      "chapter_label": "GEN 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "Enoch walked with God, and he was not found, for God took him.",
+      "ko": "에녹이 하나님과 동행하더니 하나님이 그를 데려 가시므로 세상에 있지 아니하였더라",
+      "source_text_hash": "a8186b48d338e8224de53a577ff4b3b6aeee75f88e002f06001e8f564e1994eb",
+      "translation_text_hash": "eb7a1016ac689c0195abd4b38a326eccbd87cce8e82ce9e205c56b44264ca133",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에녹이 하나님과 동행하더니 하나님이 그를 데려 가시므로 세상에 있지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "eb7a1016ac689c0195abd4b38a326eccbd87cce8e82ce9e205c56b44264ca133"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:25",
+      "sequence": 131,
+      "chapter_label": "GEN 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "Methuselah lived one hundred eighty-seven years, then became the father of Lamech.",
+      "ko": "므두셀라는 일백 팔십 칠세에 라멕을 낳았고",
+      "source_text_hash": "489eceb216d72b8186acdc96dad2e607d5d8a3b59be8075dd169a39d808ddbfc",
+      "translation_text_hash": "f68f64ad29c53a481676a41ba227d77957a49decc57a38f6032841ec3e608951",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므두셀라는 일백 팔십 칠세에 라멕을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "f68f64ad29c53a481676a41ba227d77957a49decc57a38f6032841ec3e608951"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:26",
+      "sequence": 132,
+      "chapter_label": "GEN 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "Methuselah lived after he became the father of Lamech seven hundred eighty-two years, and became the father of other sons and daughters.",
+      "ko": "라멕을 낳은 후 칠백 팔십 이년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "16742b06af4b0b335e7af43bc87149ae54d5b63162c318e8ed8aec93eef18d6f",
+      "translation_text_hash": "cc546f66ebb63e29d1cba6c4271d62c581c5ccde142d10c780f2f225bd78c952",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라멕을 낳은 후 칠백 팔십 이년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "cc546f66ebb63e29d1cba6c4271d62c581c5ccde142d10c780f2f225bd78c952"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:27",
+      "sequence": 133,
+      "chapter_label": "GEN 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "All the days of Methuselah were nine hundred sixty-nine years, then he died.",
+      "ko": "그는 구백 육십 구세를 향수하고 죽었더라",
+      "source_text_hash": "6aab2e3bdeb1b7d67f9c7f463d1ea06b6563b7a18ffa6f3e47a142c41e70bea2",
+      "translation_text_hash": "62495522bea577c2a66d76e76adff8fd6373a3d66ebdfe529c3f6e3c90ad09fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 구백 육십 구세를 향수하고 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "62495522bea577c2a66d76e76adff8fd6373a3d66ebdfe529c3f6e3c90ad09fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:28",
+      "sequence": 134,
+      "chapter_label": "GEN 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "Lamech lived one hundred eighty-two years, then became the father of a son.",
+      "ko": "라멕은 일백 팔십 이세에 아들을 낳고",
+      "source_text_hash": "8cd3796144dba591618f6683eaf0a2549ecd97756af7345c18b4a73fc64f52fd",
+      "translation_text_hash": "80d7dd10e125def8dbd322e9cb47b9ae96f8e3b32fae94228ffb67a8c1479a84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라멕은 일백 팔십 이세에 아들을 낳고"
+      ],
+      "raw_text_hashes": [
+        "80d7dd10e125def8dbd322e9cb47b9ae96f8e3b32fae94228ffb67a8c1479a84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:29",
+      "sequence": 135,
+      "chapter_label": "GEN 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "He named him Noah, saying, “This one will comfort us in our work and in the toil of our hands, caused by the ground which the LORD has cursed.”",
+      "ko": "이름을 노아라 하여 가로되 여호와께서 땅을 저주하시므로 수고로이 일하는 우리를 이 아들이 안위하리라 하였더라",
+      "source_text_hash": "a887ef5482a73dc8b323056c790e6e0d0c3a8f9f60db986719db1528e9d62460",
+      "translation_text_hash": "c5baa49dd9275a3486c00474963ac3fec776ca4e10f6fe639f675d6486ef90a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이름을 노아라 하여 가로되 여호와께서 땅을 저주하시므로 수고로이 일하는 우리를 이 아들이 안위하리라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "c5baa49dd9275a3486c00474963ac3fec776ca4e10f6fe639f675d6486ef90a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:30",
+      "sequence": 136,
+      "chapter_label": "GEN 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "Lamech lived after he became the father of Noah five hundred ninety-five years, and became the father of other sons and daughters.",
+      "ko": "라멕이 노아를 낳은 후 오백 구십 오년을 지내며 자녀를 낳았으며",
+      "source_text_hash": "1b317d2741f1524e145b481bbe198ceb3b5a499e300a561b4184c4e0d92c608d",
+      "translation_text_hash": "46967b0501959693447835e3b1822d2e62ca913629a9c61d6acd4548b9266e69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라멕이 노아를 낳은 후 오백 구십 오년을 지내며 자녀를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "46967b0501959693447835e3b1822d2e62ca913629a9c61d6acd4548b9266e69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:31",
+      "sequence": 137,
+      "chapter_label": "GEN 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "All the days of Lamech were seven hundred seventy-seven years, then he died.",
+      "ko": "그는 칠백 칠십 칠세를 향수하고 죽었더라",
+      "source_text_hash": "a95f52ee3d7757eb112cfca68d5f3b7f6d1425f5839746152a0e80b0590462bc",
+      "translation_text_hash": "99186c44624483c5ac53f4b1d36550d9281fdf5256a2fa6688434b9523fa7573",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 칠백 칠십 칠세를 향수하고 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "99186c44624483c5ac53f4b1d36550d9281fdf5256a2fa6688434b9523fa7573"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:5:32",
+      "sequence": 138,
+      "chapter_label": "GEN 5",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 5,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 5,
+          "verse": 32
+        }
+      ],
+      "en": "Noah was five hundred years old, then Noah became the father of Shem, Ham, and Japheth.",
+      "ko": "노아가 오백세 된 후에 셈과 함과 야벳을 낳았더라",
+      "source_text_hash": "72b2ad097d513762c99ef93b2b87dddf40ff1a534bb7008c08023700f6752176",
+      "translation_text_hash": "647ef2f6920f167d332f1ea1c43e5ea5edea813e19e906d2f21fc67f341b1b96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아가 오백세 된 후에 셈과 함과 야벳을 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "647ef2f6920f167d332f1ea1c43e5ea5edea813e19e906d2f21fc67f341b1b96"
+      ]
+    }
+  ]
+}

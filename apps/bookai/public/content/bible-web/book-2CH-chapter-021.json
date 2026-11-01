@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:021",
+  "unit_ordinal": 388,
+  "unit_label": "2CH 21",
+  "book_code": "2CH",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:21:1",
+      "sequence": 11626,
+      "chapter_label": "2CH 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "Jehoshaphat slept with his fathers, and was buried with his fathers in David’s city; and Jehoram his son reigned in his place.",
+      "ko": "여호사밧이 그 열조와 함께 자매 그 열조와 함께 다윗성에 장사되고 그 아들 여호람이 대신하여 왕이 되니라",
+      "source_text_hash": "d72e2b74c16f9c5c0accf38c4fdc1a700f5cff25c66a4640a5b6f8dd06657423",
+      "translation_text_hash": "6b4a1294f69831872f3987e016913757985189cdd2561f197592182d40bc4954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧이 그 열조와 함께 자매 그 열조와 함께 다윗성에 장사되고 그 아들 여호람이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "6b4a1294f69831872f3987e016913757985189cdd2561f197592182d40bc4954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:2",
+      "sequence": 11627,
+      "chapter_label": "2CH 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "He had brothers, the sons of Jehoshaphat: Azariah, Jehiel, Zechariah, Azariah, Michael, and Shephatiah. All these were the sons of Jehoshaphat king of Israel.",
+      "ko": "여호사밧의 아들 여호람의 아우 아사랴와 여히엘과 스가랴와 아사랴와 미가엘과 스바댜는 다 유다 왕 여호사밧의 아들이라",
+      "source_text_hash": "b340c9b96e7ef9dc32831f0056dcc817ecf5343f1ad6234f00f3b047a617caa2",
+      "translation_text_hash": "c8b59015cd9197ee1074cf3981446cce63324006580d25ba2d0bd2684250e2d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호사밧의 아들 여호람의 아우 아사랴와 여히엘과 스가랴와 아사랴와 미가엘과 스바댜는 다 유다 왕 여호사밧의 아들이라"
+      ],
+      "raw_text_hashes": [
+        "c8b59015cd9197ee1074cf3981446cce63324006580d25ba2d0bd2684250e2d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:3",
+      "sequence": 11628,
+      "chapter_label": "2CH 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "Their father gave them great gifts of silver, of gold, and of precious things, with fortified cities in Judah; but he gave the kingdom to Jehoram, because he was the firstborn.",
+      "ko": "그 부친이 저희에게는 은금과 보물과 유다 견고한 성읍들을 선물로 후히 주었고 여호람은 장자인고로 왕위를 주었더니",
+      "source_text_hash": "4b111718f5d98b3ffaa0ba6372f76f8b51e22e1482c0a4314b4ed590ecf79083",
+      "translation_text_hash": "889bb8fe437323e30df13f3b9ddb702de27b2be1c14b9730497c4aca21fd4d4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부친이 저희에게는 은금과 보물과 유다 견고한 성읍들을 선물로 후히 주었고 여호람은 장자인고로 왕위를 주었더니"
+      ],
+      "raw_text_hashes": [
+        "889bb8fe437323e30df13f3b9ddb702de27b2be1c14b9730497c4aca21fd4d4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:4",
+      "sequence": 11629,
+      "chapter_label": "2CH 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "Now when Jehoram had risen up over the kingdom of his father, and had strengthened himself, he killed all his brothers with the sword, and also some of the princes of Israel.",
+      "ko": "여호람이 그 부친의 위에 올라 세력을 얻은 후에 그 모든 아우와 이스라엘 방백 중 몇 사람을 칼로 죽였더라",
+      "source_text_hash": "eb1fa8fbc8cdb6296f9aa7c68d9f941575b1ea067518940ce60a797a7c0efeec",
+      "translation_text_hash": "0d30fe7200e689c47b90eccb8234ae48bd18bdd42c76199e24004d364e84b74d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람이 그 부친의 위에 올라 세력을 얻은 후에 그 모든 아우와 이스라엘 방백 중 몇 사람을 칼로 죽였더라"
+      ],
+      "raw_text_hashes": [
+        "0d30fe7200e689c47b90eccb8234ae48bd18bdd42c76199e24004d364e84b74d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:5",
+      "sequence": 11630,
+      "chapter_label": "2CH 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "Jehoram was thirty-two years old when he began to reign, and he reigned eight years in Jerusalem.",
+      "ko": "여호람이 위에 나아갈 때에 나이 삼십 이세라 예루살렘에서 팔년을 치리하니라",
+      "source_text_hash": "4a097dcefe1253925ef364edf0fb4c990796332c5680958fb0fbe82b96465f97",
+      "translation_text_hash": "caee88de220b068f5e4e9ec4075c91855a10cb165d81d43790be285c03797e1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람이 위에 나아갈 때에 나이 삼십 이세라 예루살렘에서 팔년을 치리하니라"
+      ],
+      "raw_text_hashes": [
+        "caee88de220b068f5e4e9ec4075c91855a10cb165d81d43790be285c03797e1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:6",
+      "sequence": 11631,
+      "chapter_label": "2CH 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "He walked in the way of the kings of Israel, as did Ahab’s house, for he had Ahab’s daughter as his wife. He did that which was evil in the LORD’s sight.",
+      "ko": "저가 이스라엘 왕들의 길로 행하여 아합의 집과 같이 하였으니 이는 아합의 딸이 그 아내가 되었음이라 저가 여호와 보시기에 악을 행하였으나",
+      "source_text_hash": "529346d6fb0b61dc6ee893d493df98099c16b63a23905b67cbae5e3e952c385c",
+      "translation_text_hash": "6016cf576273268c937025c5dc315ec2dc6c1dd089eca559dd426866c07faf04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이스라엘 왕들의 길로 행하여 아합의 집과 같이 하였으니 이는 아합의 딸이 그 아내가 되었음이라 저가 여호와 보시기에 악을 행하였으나"
+      ],
+      "raw_text_hashes": [
+        "6016cf576273268c937025c5dc315ec2dc6c1dd089eca559dd426866c07faf04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:7",
+      "sequence": 11632,
+      "chapter_label": "2CH 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "However the LORD would not destroy David’s house, because of the covenant that he had made with David, and as he promised to give a lamp to him and to his children always.",
+      "ko": "여호와께서 다윗의 집을 멸하기를 즐겨하지 아니하셨음은 이전에 다윗으로 더불어 언약을 세우시고 또 다윗과 그 자손에게 항상 등불을 주겠다고 허하셨음이더라",
+      "source_text_hash": "164cb107f6a6a91db1f1d9053b7e05d33fa42c776478d127df62cd1e8c345551",
+      "translation_text_hash": "00abb2043cb574dc9aea1ba6641595383168155406d8076386e42580632254d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 다윗의 집을 멸하기를 즐겨하지 아니하셨음은 이전에 다윗으로 더불어 언약을 세우시고 또 다윗과 그 자손에게 항상 등불을 주겠다고 허하셨음이더라"
+      ],
+      "raw_text_hashes": [
+        "00abb2043cb574dc9aea1ba6641595383168155406d8076386e42580632254d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:8",
+      "sequence": 11633,
+      "chapter_label": "2CH 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "In his days Edom revolted from under the hand of Judah, and made a king over themselves.",
+      "ko": "여호람 때에 에돔이 배반하여 유다의 수하에서 벗어나 자기 위에 왕을 세운고로",
+      "source_text_hash": "24461c351cf0da21f1ef64702fee29a751b18b9278ced29dffe4816aff82b70f",
+      "translation_text_hash": "592dbb472d862af4fb1762d5e7dbbc8803443b09b52378c36621a7301a2ba04b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람 때에 에돔이 배반하여 유다의 수하에서 벗어나 자기 위에 왕을 세운고로"
+      ],
+      "raw_text_hashes": [
+        "592dbb472d862af4fb1762d5e7dbbc8803443b09b52378c36621a7301a2ba04b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:9",
+      "sequence": 11634,
+      "chapter_label": "2CH 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "Then Jehoram went there with his captains and all his chariots with him. He rose up by night and struck the Edomites who surrounded him, along with the captains of the chariots.",
+      "ko": "여호람이 장관들과 모든 병거를 거느리고 출정하였더니 밤에 일어나서 자기를 에워싼 에돔 사람과 그 병거의 장관들을 쳤더라",
+      "source_text_hash": "50aca5208abe71630d9c27285bac362eca90c07d8b589a72dec5edd4bd555158",
+      "translation_text_hash": "a24a6ea6d1e346084c978dd73f37a013ddc7288321baccd2f962d950f3af27bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람이 장관들과 모든 병거를 거느리고 출정하였더니 밤에 일어나서 자기를 에워싼 에돔 사람과 그 병거의 장관들을 쳤더라"
+      ],
+      "raw_text_hashes": [
+        "a24a6ea6d1e346084c978dd73f37a013ddc7288321baccd2f962d950f3af27bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:10",
+      "sequence": 11635,
+      "chapter_label": "2CH 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "So Edom has been in revolt from under the hand of Judah to this day. Then Libnah revolted at the same time from under his hand, because he had forsaken the LORD, the God of his fathers.",
+      "ko": "이와 같이 에돔이 배반하여 유다의 수하에서 벗어났더니 오늘날까지 그러하였으며 그 때에 립나도 배반하여 여호람의 수하에서 벗어났으니 이는 저가 그 열조의 하나님 여호와를 버렸음이더라",
+      "source_text_hash": "633704358d0a991bad9dc4511f24996c7f795055bc5399b0f952aceb0a23548a",
+      "translation_text_hash": "300fb8a87b94a8b5f804dbbdbc5ee25cbd41f5bea631174491411fc7ac59ff5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 에돔이 배반하여 유다의 수하에서 벗어났더니 오늘날까지 그러하였으며 그 때에 립나도 배반하여 여호람의 수하에서 벗어났으니 이는 저가 그 열조의 하나님 여호와를 버렸음이더라"
+      ],
+      "raw_text_hashes": [
+        "300fb8a87b94a8b5f804dbbdbc5ee25cbd41f5bea631174491411fc7ac59ff5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:11",
+      "sequence": 11636,
+      "chapter_label": "2CH 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "Moreover he made high places in the mountains of Judah, and made the inhabitants of Jerusalem play the prostitute, and led Judah astray.",
+      "ko": "여호람이 또 유다 여러 산에 산당을 세워 예루살렘 거민으로 음란하듯 우상을 섬기게 하고 또 유다를 미혹케 하였으므로",
+      "source_text_hash": "22de3649218dac2f64f3d47800dbf731babc9549ad5fa96f29af751fd6e34fc1",
+      "translation_text_hash": "add8918dbc2c1062ddc18caee7faa63c7f9711ca7400e83fec206aa02b8b03f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람이 또 유다 여러 산에 산당을 세워 예루살렘 거민으로 음란하듯 우상을 섬기게 하고 또 유다를 미혹케 하였으므로"
+      ],
+      "raw_text_hashes": [
+        "add8918dbc2c1062ddc18caee7faa63c7f9711ca7400e83fec206aa02b8b03f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:12",
+      "sequence": 11637,
+      "chapter_label": "2CH 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "A letter came to him from Elijah the prophet, saying, “the LORD, the God of David your father, says, ‘Because you have not walked in the ways of Jehoshaphat your father, nor in the ways of Asa king of Judah,",
+      "ko": "선지자 엘리야가 여호람에게 글을 보내어 가로되 왕의 조상 다윗의 하나님 여호와의 말씀이 네가 네 아비 여호사밧의 길과 유다 왕 아사의 길로 행치 아니하고",
+      "source_text_hash": "cfef69bb6ad2cd295ab4855160e372e4d2436cac49955673c0710acd1212a80d",
+      "translation_text_hash": "5cd668f3d618dcfeb0b1271899e6492fc9ba0578e6ebbcacaacc7ce0d824c22f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 엘리야가 여호람에게 글을 보내어 가로되 왕의 조상 다윗의 하나님 여호와의 말씀이 네가 네 아비 여호사밧의 길과 유다 왕 아사의 길로 행치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "5cd668f3d618dcfeb0b1271899e6492fc9ba0578e6ebbcacaacc7ce0d824c22f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:13",
+      "sequence": 11638,
+      "chapter_label": "2CH 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "but have walked in the way of the kings of Israel, and have made Judah and the inhabitants of Jerusalem to play the prostitute like Ahab’s house did, and also have slain your brothers of your father’s house, who were better than yourself,",
+      "ko": "오직 이스라엘 열왕의 길로 행하여 유다와 예루살렘 거민으로 음란하듯 우상을 섬기게 하기를 아합의 집과 같이 하며 또 너의 아비 집에서 너보다 선한 아우들을 죽였으니",
+      "source_text_hash": "97effceb61a03903035232f8dbb80a29001c3192ed3bb2af394aa6db45d38389",
+      "translation_text_hash": "c9d417f4eb4fc0a589c7a4fb4dc4e7cf1637de8251496e5fb583d1783a6b67f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 이스라엘 열왕의 길로 행하여 유다와 예루살렘 거민으로 음란하듯 우상을 섬기게 하기를 아합의 집과 같이 하며 또 너의 아비 집에서 너보다 선한 아우들을 죽였으니"
+      ],
+      "raw_text_hashes": [
+        "c9d417f4eb4fc0a589c7a4fb4dc4e7cf1637de8251496e5fb583d1783a6b67f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:14",
+      "sequence": 11639,
+      "chapter_label": "2CH 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "behold, the LORD will strike your people with a great plague, including your children, your wives, and all your possessions;",
+      "ko": "여호와가 네 백성과 네 자녀와 네 아내들과 네 모든 재물을 큰 재앙으로 치리라",
+      "source_text_hash": "cd2f4cd4d42ff612ee77141fd760377bc13f75997cff1956b9541a5bece6a8e1",
+      "translation_text_hash": "929647f44366c89d4d740cdcfc4be6300d098d98fcd3bab3d6baaf362897b4e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 네 백성과 네 자녀와 네 아내들과 네 모든 재물을 큰 재앙으로 치리라"
+      ],
+      "raw_text_hashes": [
+        "929647f44366c89d4d740cdcfc4be6300d098d98fcd3bab3d6baaf362897b4e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:15",
+      "sequence": 11640,
+      "chapter_label": "2CH 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "and you will have great sickness with a disease of your bowels, until your bowels fall out by reason of the sickness, day by day.’”",
+      "ko": "또 너는 창자에 중병이 들고 그 병이 날로 중하여 창자가 빠져나오리라 하셨다 하였더라",
+      "source_text_hash": "d3a83fd757a4e0aa3a71d2d81c7dfde2c763886d04ab75285fe9d07f2bf1ef95",
+      "translation_text_hash": "a7a2d03735fc2550f4f14d8e4345b8cd7a94dcf10217f6628add4513a56473d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너는 창자에 중병이 들고 그 병이 날로 중하여 창자가 빠져나오리라 하셨다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "a7a2d03735fc2550f4f14d8e4345b8cd7a94dcf10217f6628add4513a56473d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:16",
+      "sequence": 11641,
+      "chapter_label": "2CH 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD stirred up against Jehoram the spirit of the Philistines and of the Arabians who are beside the Ethiopians;",
+      "ko": "여호와께서 블레셋 사람과 구스에서 가까운 아라비아 사람의 마음을 격동시키사 여호람을 치게 하셨으므로",
+      "source_text_hash": "2719b0c42b46919c6282b1d1ce76c3e8d753860068a64e03890f003d81fef145",
+      "translation_text_hash": "c6b96414020ab3eaed2e681570fdaa55f305d67d6a3f06d6e2c592d916d1f1cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 블레셋 사람과 구스에서 가까운 아라비아 사람의 마음을 격동시키사 여호람을 치게 하셨으므로"
+      ],
+      "raw_text_hashes": [
+        "c6b96414020ab3eaed2e681570fdaa55f305d67d6a3f06d6e2c592d916d1f1cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:17",
+      "sequence": 11642,
+      "chapter_label": "2CH 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "and they came up against Judah, broke into it, and carried away all the possessions that were found in the king’s house, including his sons and his wives, so that there was no son left to him except Jehoahaz, the youngest of his sons.",
+      "ko": "그 무리가 올라와서 유다를 침노하여 왕궁의 모든 재물과 그 아들들과 아내들을 탈취하였으므로 말째 아들 여호아하스 외에는 한 아들도 남지 아니하였더라",
+      "source_text_hash": "29416ada59b6ef524617576cff296f0e42ea5c2bf7ace2cacfd7772caeff868a",
+      "translation_text_hash": "93376461da2646f9b6e77e43fc693d883e9dbfb73ce84d0af1a94a3de6a3c7ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 무리가 올라와서 유다를 침노하여 왕궁의 모든 재물과 그 아들들과 아내들을 탈취하였으므로 말째 아들 여호아하스 외에는 한 아들도 남지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "93376461da2646f9b6e77e43fc693d883e9dbfb73ce84d0af1a94a3de6a3c7ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:18",
+      "sequence": 11643,
+      "chapter_label": "2CH 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "After all this the LORD struck him in his bowels with an incurable disease.",
+      "ko": "이 모든 일 후에 여호와께서 여호람을 치사 능히 고치지 못할 병이 그 창자에 들게 하셨으므로",
+      "source_text_hash": "3e8b965755ca4f599228b28ccc75fd42af9d02d4f375b568d20fb346763beb40",
+      "translation_text_hash": "67ca2ca163a5ec9d8e9fedcee308298ba79d7183c571343c84aae661631969fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일 후에 여호와께서 여호람을 치사 능히 고치지 못할 병이 그 창자에 들게 하셨으므로"
+      ],
+      "raw_text_hashes": [
+        "67ca2ca163a5ec9d8e9fedcee308298ba79d7183c571343c84aae661631969fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:19",
+      "sequence": 11644,
+      "chapter_label": "2CH 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "In process of time, at the end of two years, his bowels fell out by reason of his sickness, and he died of severe diseases. His people made no burning for him, like the burning of his fathers.",
+      "ko": "여러 날 후 이년만에 그 창자가 그 병으로 인하여 빠져나오매 저가 그 심한 병으로 죽으니 백성이 그 열조에게 분향하던것 같이 저에게 분향하지 아니하였으며",
+      "source_text_hash": "a9f808a0b774765db42dec816d78ebdd2ae920b14cdeeb89df5b2ea0e2b4345d",
+      "translation_text_hash": "00377b0c83a493011db9830ad26d8151e63416d3500cdf60a24e95c38ade1668",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 날 후 이년만에 그 창자가 그 병으로 인하여 빠져나오매 저가 그 심한 병으로 죽으니 백성이 그 열조에게 분향하던것 같이 저에게 분향하지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "00377b0c83a493011db9830ad26d8151e63416d3500cdf60a24e95c38ade1668"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:21:20",
+      "sequence": 11645,
+      "chapter_label": "2CH 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "He was thirty-two years old when he began to reign, and he reigned in Jerusalem eight years. He departed with no one’s regret. They buried him in David’s city, but not in the tombs of the kings.",
+      "ko": "여호람이 삼십 이세에 즉위하고 예루살렘에서 팔년을 치리하다가 아끼는 자 없이 세상을 떠났으며 무리가 저를 다윗성에 장사하였으나 열왕의 묘실에는 두지 아니하였더라",
+      "source_text_hash": "c3776a9c48c7a9426725abe90a00001dddb7a009cbe78d534d55c79582bb92d2",
+      "translation_text_hash": "ac3c8045f0682b3ca809e8efcfc93a93b775a832f9f38857c8849e1e89081bf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호람이 삼십 이세에 즉위하고 예루살렘에서 팔년을 치리하다가 아끼는 자 없이 세상을 떠났으며 무리가 저를 다윗성에 장사하였으나 열왕의 묘실에는 두지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "ac3c8045f0682b3ca809e8efcfc93a93b775a832f9f38857c8849e1e89081bf9"
+      ]
+    }
+  ]
+}

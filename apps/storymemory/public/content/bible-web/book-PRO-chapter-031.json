@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:031",
+  "unit_ordinal": 659,
+  "unit_label": "PRO 31",
+  "book_code": "PRO",
+  "chapter_number": 31,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:31:1",
+      "sequence": 17286,
+      "chapter_label": "PRO 31",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 1
+        }
+      ],
+      "en": "The words of King Lemuel—the revelation which his mother taught him:",
+      "ko": "르무엘왕의 말씀한바 곧 그 어머니가 그를 훈계한 잠언이라",
+      "source_text_hash": "ec618cc1c10ee78c436556992f456bc8721bb3f7097e7132630e65b7f76fea2d",
+      "translation_text_hash": "f34f27ca530c1d665b4d270fbc63e100bf09636abd2c9f09c976ec7055577999",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르무엘왕의 말씀한바 곧 그 어머니가 그를 훈계한 잠언이라"
+      ],
+      "raw_text_hashes": [
+        "f34f27ca530c1d665b4d270fbc63e100bf09636abd2c9f09c976ec7055577999"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:2",
+      "sequence": 17287,
+      "chapter_label": "PRO 31",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 2
+        }
+      ],
+      "en": "“Oh, my son! Oh, son of my womb! Oh, son of my vows!",
+      "ko": "내 아들아 내가 무엇을 말할꼬 내 태에서 난 아들아 내가 무엇을 말할꼬 서원대로 얻은 아들아 내가 무엇을 말할꼬",
+      "source_text_hash": "290dc3ae6c69c9e364ca23fe745014e3351d4f525095a6dba5a2c516a6ac6ec0",
+      "translation_text_hash": "2fdbc333dfb60fd0673c08d7c17035b8f33530e4b9c5dda24882382e1c244511",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 내가 무엇을 말할꼬 내 태에서 난 아들아 내가 무엇을 말할꼬 서원대로 얻은 아들아 내가 무엇을 말할꼬"
+      ],
+      "raw_text_hashes": [
+        "2fdbc333dfb60fd0673c08d7c17035b8f33530e4b9c5dda24882382e1c244511"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:3",
+      "sequence": 17288,
+      "chapter_label": "PRO 31",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 3
+        }
+      ],
+      "en": "Don’t give your strength to women, nor your ways to that which destroys kings.",
+      "ko": "네 힘을 여자들에게 쓰지 말며 왕들을 멸망시키는 일을 행치 말찌어다",
+      "source_text_hash": "d6903637f1a6465489a2d90f7262fae64a1b6a595a3f4ec0a653e02c637fb9d8",
+      "translation_text_hash": "431c16acb795bc306d023b600e9edd7f3de9071f490d6c69b2dfbad26725d477",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 힘을 여자들에게 쓰지 말며 왕들을 멸망시키는 일을 행치 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "431c16acb795bc306d023b600e9edd7f3de9071f490d6c69b2dfbad26725d477"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:4",
+      "sequence": 17289,
+      "chapter_label": "PRO 31",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 4
+        }
+      ],
+      "en": "It is not for kings, Lemuel, it is not for kings to drink wine, nor for princes to say, ‘Where is strong drink?’",
+      "ko": "르무엘아 포도주를 마시는 것이 왕에게 마땅치 아니하고 왕에게 마땅치 아니하며 독주를 찾는 것이 주권자에게 마땅치 않도다",
+      "source_text_hash": "22defe7b7af28eac14c8525498844542d97828e3dddb45bba15376ed79cbc68f",
+      "translation_text_hash": "5867182566c2a155fd36a32f1470c7d6c7208601b3548be0be17b79f480e7483",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르무엘아 포도주를 마시는 것이 왕에게 마땅치 아니하고 왕에게 마땅치 아니하며 독주를 찾는 것이 주권자에게 마땅치 않도다"
+      ],
+      "raw_text_hashes": [
+        "5867182566c2a155fd36a32f1470c7d6c7208601b3548be0be17b79f480e7483"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:5",
+      "sequence": 17290,
+      "chapter_label": "PRO 31",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 5
+        }
+      ],
+      "en": "lest they drink, and forget the law, and pervert the justice due to anyone who is afflicted.",
+      "ko": "술을 마시다가 법을 잊어버리고 모든 간곤한 백성에게 공의를 굽게 할까 두려우니라",
+      "source_text_hash": "f3782d460ebed900978cb1cfae07fb4030f1fdcb203567b3557b5ae6b83e75fc",
+      "translation_text_hash": "0f3568f30238181b637b6f26c3a9955445d915908a493bec5abbbed7c29172fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술을 마시다가 법을 잊어버리고 모든 간곤한 백성에게 공의를 굽게 할까 두려우니라"
+      ],
+      "raw_text_hashes": [
+        "0f3568f30238181b637b6f26c3a9955445d915908a493bec5abbbed7c29172fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:6",
+      "sequence": 17291,
+      "chapter_label": "PRO 31",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 6
+        }
+      ],
+      "en": "Give strong drink to him who is ready to perish, and wine to the bitter in soul.",
+      "ko": "독주는 죽게된 자에게, 포도주는 마음에 근심하는 자에게 줄찌어다",
+      "source_text_hash": "c71a2251d4bc75982507c9e1d62577d24cf29c63ef11ab38fbe649db2675abce",
+      "translation_text_hash": "6c0e4ea7f4420ff701311079cb11f60f8c8901c3ae41603d0fe07763870a9ce5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "독주는 죽게된 자에게, 포도주는 마음에 근심하는 자에게 줄찌어다"
+      ],
+      "raw_text_hashes": [
+        "6c0e4ea7f4420ff701311079cb11f60f8c8901c3ae41603d0fe07763870a9ce5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:7",
+      "sequence": 17292,
+      "chapter_label": "PRO 31",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 7
+        }
+      ],
+      "en": "Let him drink, and forget his poverty, and remember his misery no more.",
+      "ko": "그는 마시고 그 빈궁한 것을 잊어버리겠고 다시 그 고통을 기억지 아니하리라",
+      "source_text_hash": "7d98764942d692d44746d2078dee49e35689bebd6b4f5c2d6b1fd3bc0e6b5377",
+      "translation_text_hash": "db58c4eb045cbcce658e6353c3885ba6e03a49b1109ad2cd45aa5f9ec0ae9a7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 마시고 그 빈궁한 것을 잊어버리겠고 다시 그 고통을 기억지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "db58c4eb045cbcce658e6353c3885ba6e03a49b1109ad2cd45aa5f9ec0ae9a7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:8",
+      "sequence": 17293,
+      "chapter_label": "PRO 31",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 8
+        }
+      ],
+      "en": "Open your mouth for the mute, in the cause of all who are left desolate.",
+      "ko": "너는 벙어리와 고독한 자의 송사를 위하여 입을 열찌니라",
+      "source_text_hash": "14be03d8dccd8d2172fd6152b15fdd08f4af0b4d821a3dc5e32daf973ba93e06",
+      "translation_text_hash": "e20f5c0be486ec114391b755470b2dd9604d0b0c5bb3437c26db8663a8b4abc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 벙어리와 고독한 자의 송사를 위하여 입을 열찌니라"
+      ],
+      "raw_text_hashes": [
+        "e20f5c0be486ec114391b755470b2dd9604d0b0c5bb3437c26db8663a8b4abc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:9",
+      "sequence": 17294,
+      "chapter_label": "PRO 31",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 9
+        }
+      ],
+      "en": "Open your mouth, judge righteously, and serve justice to the poor and needy.”",
+      "ko": "너는 입을 열어 공의로 재판하여 간곤한 자와 궁핍한 자를 신원할찌니라",
+      "source_text_hash": "f52b4062499b1a60a83f2538e17c58c3c45dbc195bd67ecc51bcda200f7b8e15",
+      "translation_text_hash": "2cde5ca5f40ab1ec0e91e5178651767dc8c3a297b887cc80e6a1a10f0cacc7c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 입을 열어 공의로 재판하여 간곤한 자와 궁핍한 자를 신원할찌니라"
+      ],
+      "raw_text_hashes": [
+        "2cde5ca5f40ab1ec0e91e5178651767dc8c3a297b887cc80e6a1a10f0cacc7c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:10",
+      "sequence": 17295,
+      "chapter_label": "PRO 31",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 10
+        }
+      ],
+      "en": "Who can find a worthy woman? For her value is far above rubies.",
+      "ko": "누가 현숙한 여인을 찾아 얻겠느냐 그 값은 진주보다 더 하니라",
+      "source_text_hash": "5b51575108eadd9a549035c5acc4f9729ad0f08fc65071082607e99e5d392e30",
+      "translation_text_hash": "64892f41be326fbdfb4970c57db824fbe0abcbf235620e1a34b84702bfc18c30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 현숙한 여인을 찾아 얻겠느냐 그 값은 진주보다 더 하니라"
+      ],
+      "raw_text_hashes": [
+        "64892f41be326fbdfb4970c57db824fbe0abcbf235620e1a34b84702bfc18c30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:11",
+      "sequence": 17296,
+      "chapter_label": "PRO 31",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 11
+        }
+      ],
+      "en": "The heart of her husband trusts in her. He shall have no lack of gain.",
+      "ko": "그런 자의 남편의 마음은 그를 믿나니 산업이 핍절치 아니하겠으며",
+      "source_text_hash": "c6ddd93112ce372cfebe9beb583e217fa61796cab25be9269bc16c34fb81fe0e",
+      "translation_text_hash": "2fabc0baf4b35e1050dd0d8ba0d75c1f33dace0adc6e6d3a127b4ec0b7263f51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런 자의 남편의 마음은 그를 믿나니 산업이 핍절치 아니하겠으며"
+      ],
+      "raw_text_hashes": [
+        "2fabc0baf4b35e1050dd0d8ba0d75c1f33dace0adc6e6d3a127b4ec0b7263f51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:12",
+      "sequence": 17297,
+      "chapter_label": "PRO 31",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 12
+        }
+      ],
+      "en": "She does him good, and not harm, all the days of her life.",
+      "ko": "그런 자는 살아 있는 동안에 그 남편에게 선을 행하고 악을 행치 아니하느니라",
+      "source_text_hash": "c31c823dca7aa09577bbdc8ae93df5cc79c3a84932369590f929f44fc7b6a29f",
+      "translation_text_hash": "98538f9863e877701c562e73059c6aeb06daf288956a7468cfad091280e47c12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런 자는 살아 있는 동안에 그 남편에게 선을 행하고 악을 행치 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "98538f9863e877701c562e73059c6aeb06daf288956a7468cfad091280e47c12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:13",
+      "sequence": 17298,
+      "chapter_label": "PRO 31",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 13
+        }
+      ],
+      "en": "She seeks wool and flax, and works eagerly with her hands.",
+      "ko": "그는 양털과 삼을 구하여 부지런히 손으로 일하며",
+      "source_text_hash": "0f6ae01cf2378203dbabde8c5a988e76af065c0844e4a708c889b4c3d99ce7d0",
+      "translation_text_hash": "9363257dc770d3f3d50614c7c53228d1cf824d6fa28ef4da3447b2dd32073b18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 양털과 삼을 구하여 부지런히 손으로 일하며"
+      ],
+      "raw_text_hashes": [
+        "9363257dc770d3f3d50614c7c53228d1cf824d6fa28ef4da3447b2dd32073b18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:14",
+      "sequence": 17299,
+      "chapter_label": "PRO 31",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 14
+        }
+      ],
+      "en": "She is like the merchant ships. She brings her bread from afar.",
+      "ko": "상고의 배와 같아서 먼데서 양식을 가져 오며",
+      "source_text_hash": "c3d57404b56024cd798aba485d3b0a2b1762be3023dd912629db1333c2ce5aa7",
+      "translation_text_hash": "2dbc93dee7d3aaa183b37e0d4dfcbab07c8e1b0059da321231c6c62b0ceacc22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상고의 배와 같아서 먼데서 양식을 가져 오며"
+      ],
+      "raw_text_hashes": [
+        "2dbc93dee7d3aaa183b37e0d4dfcbab07c8e1b0059da321231c6c62b0ceacc22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:15",
+      "sequence": 17300,
+      "chapter_label": "PRO 31",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 15
+        }
+      ],
+      "en": "She rises also while it is yet night, gives food to her household, and portions for her servant girls.",
+      "ko": "밤이 새기 전에 일어나서 그 집 사람에게 식물을 나눠주며 여종에게 일을 정하여 맡기며",
+      "source_text_hash": "d693230073474554406ff335eb3b995220d95c950c2199da210f59322cd0d5bd",
+      "translation_text_hash": "28b40a20ea43dc883352aafabbae567b1621e8246ad63a81937979246fb8a948",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤이 새기 전에 일어나서 그 집 사람에게 식물을 나눠주며 여종에게 일을 정하여 맡기며"
+      ],
+      "raw_text_hashes": [
+        "28b40a20ea43dc883352aafabbae567b1621e8246ad63a81937979246fb8a948"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:16",
+      "sequence": 17301,
+      "chapter_label": "PRO 31",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 16
+        }
+      ],
+      "en": "She considers a field, and buys it. With the fruit of her hands, she plants a vineyard.",
+      "ko": "밭을 간품하여 사며 그 손으로 번 것을 가지고 포도원을 심으며",
+      "source_text_hash": "864fe4abe174cab920507366beaad2c153a37f7d33f86e6ead18bbe9765e6559",
+      "translation_text_hash": "5fbe23babc2df044034d45b97a2fa02116fa6b664d86cbd7f13b704929b9de4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭을 간품하여 사며 그 손으로 번 것을 가지고 포도원을 심으며"
+      ],
+      "raw_text_hashes": [
+        "5fbe23babc2df044034d45b97a2fa02116fa6b664d86cbd7f13b704929b9de4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:17",
+      "sequence": 17302,
+      "chapter_label": "PRO 31",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 17
+        }
+      ],
+      "en": "She arms her waist with strength, and makes her arms strong.",
+      "ko": "힘으로 허리를 묶으며 그 팔을 강하게 하며",
+      "source_text_hash": "d1d85c6dc2904e7dde320ccdea5249f24df80f6a98823d6e755d0cc9bccde507",
+      "translation_text_hash": "490937c238afebc6972aa49fa4d804ce0d7fa4f881053c51dc4b66206174557b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힘으로 허리를 묶으며 그 팔을 강하게 하며"
+      ],
+      "raw_text_hashes": [
+        "490937c238afebc6972aa49fa4d804ce0d7fa4f881053c51dc4b66206174557b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:18",
+      "sequence": 17303,
+      "chapter_label": "PRO 31",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 18
+        }
+      ],
+      "en": "She perceives that her merchandise is profitable. Her lamp doesn’t go out by night.",
+      "ko": "자기의 무역하는 것이 이로운 줄을 깨닫고 밤에 등불을 끄지 아니하고",
+      "source_text_hash": "f021094c31e0cd7d11d125ca7e2afd7d0fb2a96fe5ad191be98f70894fc3eebe",
+      "translation_text_hash": "2c13e046cde8bec4e6fc4e3a01a10cea8b059685c3c22d24e7f8e75328dfc251",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 무역하는 것이 이로운 줄을 깨닫고 밤에 등불을 끄지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "2c13e046cde8bec4e6fc4e3a01a10cea8b059685c3c22d24e7f8e75328dfc251"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:19",
+      "sequence": 17304,
+      "chapter_label": "PRO 31",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 19
+        }
+      ],
+      "en": "She lays her hands to the distaff, and her hands hold the spindle.",
+      "ko": "손으로 솜뭉치를 들고 손가락으로 가락을 잡으며",
+      "source_text_hash": "f798c613e7f2a9114510b141acd275ad3a75519aac0b79c86f915e0e92d495f7",
+      "translation_text_hash": "5b38a2148981cea9b005d56706691da562a67707d133a67c7e99a8025bd1277c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손으로 솜뭉치를 들고 손가락으로 가락을 잡으며"
+      ],
+      "raw_text_hashes": [
+        "5b38a2148981cea9b005d56706691da562a67707d133a67c7e99a8025bd1277c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:20",
+      "sequence": 17305,
+      "chapter_label": "PRO 31",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 20
+        }
+      ],
+      "en": "She opens her arms to the poor; yes, she extends her hands to the needy.",
+      "ko": "그는 간곤한 자에게 손을 펴며 궁핍한 자를 위하여 손을 내밀며",
+      "source_text_hash": "3f235af1f1d3bee062276566a69d7f635f43f66e31d0345a95195b4a3d3a7880",
+      "translation_text_hash": "c040ac1b3d56eb242e284058cdcd7311dc38623482feb1f633900357380386e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 간곤한 자에게 손을 펴며 궁핍한 자를 위하여 손을 내밀며"
+      ],
+      "raw_text_hashes": [
+        "c040ac1b3d56eb242e284058cdcd7311dc38623482feb1f633900357380386e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:21",
+      "sequence": 17306,
+      "chapter_label": "PRO 31",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 21
+        }
+      ],
+      "en": "She is not afraid of the snow for her household, for all her household are clothed with scarlet.",
+      "ko": "그 집 사람들은 다 홍색 옷을 입었으므로 눈이 와도 그는 집 사람을 위하여 두려워하지 아니하며",
+      "source_text_hash": "86e31d9e4b960e97987d1e66939a196d4a08f1ed32d96e5edab6887d99e3604f",
+      "translation_text_hash": "7918b8f2e5262b43a32939328ad56f93a012a2c8b00ec8727b45a94e457b5b4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집 사람들은 다 홍색 옷을 입었으므로 눈이 와도 그는 집 사람을 위하여 두려워하지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "7918b8f2e5262b43a32939328ad56f93a012a2c8b00ec8727b45a94e457b5b4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:22",
+      "sequence": 17307,
+      "chapter_label": "PRO 31",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 22
+        }
+      ],
+      "en": "She makes for herself carpets of tapestry. Her clothing is fine linen and purple.",
+      "ko": "그는 자기를 위하여 아름다운 방석을 지으며 세마포와 자색 옷을 입으며",
+      "source_text_hash": "8c60e862e679f4482c768a4594dc51301a68d042a94e5a70334da2508ce9f37d",
+      "translation_text_hash": "ce5f12d127d3af547ecd1546e60501541d32ea9d672cec4e6d56a5654f8ea241",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 자기를 위하여 아름다운 방석을 지으며 세마포와 자색 옷을 입으며"
+      ],
+      "raw_text_hashes": [
+        "ce5f12d127d3af547ecd1546e60501541d32ea9d672cec4e6d56a5654f8ea241"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:23",
+      "sequence": 17308,
+      "chapter_label": "PRO 31",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 23
+        }
+      ],
+      "en": "Her husband is respected in the gates, when he sits among the elders of the land.",
+      "ko": "그 남편은 그 땅의 장로로 더불어 성문에 앉으며 사람의 아는 바가 되며",
+      "source_text_hash": "848184df35aa4736ebe64b616fb60d0f247f6203dabe205ced8d4cadbde09c0a",
+      "translation_text_hash": "5926c47965356ea1c15e38321d43f6f99a949a49d9ef92a6fdfb739a72fe0807",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편은 그 땅의 장로로 더불어 성문에 앉으며 사람의 아는 바가 되며"
+      ],
+      "raw_text_hashes": [
+        "5926c47965356ea1c15e38321d43f6f99a949a49d9ef92a6fdfb739a72fe0807"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:24",
+      "sequence": 17309,
+      "chapter_label": "PRO 31",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 24
+        }
+      ],
+      "en": "She makes linen garments and sells them, and delivers sashes to the merchant.",
+      "ko": "그는 베로 옷을 지어 팔며 띠를 만들어 상고에게 맡기며",
+      "source_text_hash": "f7b0a6454c3199bb28baac9305e037c07021196c4387997cad1fce0f2e160754",
+      "translation_text_hash": "161c7bc42bbaaa382de29a4d7010dcc0ff79809802c6962b80f4d8511ab5c7c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 베로 옷을 지어 팔며 띠를 만들어 상고에게 맡기며"
+      ],
+      "raw_text_hashes": [
+        "161c7bc42bbaaa382de29a4d7010dcc0ff79809802c6962b80f4d8511ab5c7c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:25",
+      "sequence": 17310,
+      "chapter_label": "PRO 31",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 25
+        }
+      ],
+      "en": "Strength and dignity are her clothing. She laughs at the time to come.",
+      "ko": "능력과 존귀로 옷을 삼고 후일을 웃으며",
+      "source_text_hash": "b57bfc4856c6072deb6c28787a26e7e700a996672fcb32eebbda3a713bd60ad2",
+      "translation_text_hash": "14ead1a4975f222d66e1ca4d7ab425213c13555cd33e3968d670c44a09ee05f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "능력과 존귀로 옷을 삼고 후일을 웃으며"
+      ],
+      "raw_text_hashes": [
+        "14ead1a4975f222d66e1ca4d7ab425213c13555cd33e3968d670c44a09ee05f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:26",
+      "sequence": 17311,
+      "chapter_label": "PRO 31",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 26
+        }
+      ],
+      "en": "She opens her mouth with wisdom. Kind instruction is on her tongue.",
+      "ko": "입을 열어 지혜를 베풀며 그 혀로 인애의 법을 말하며",
+      "source_text_hash": "f48459c5dcd15ec45311b79934993edd6c29a91d84d363dc2d82e64c45bad797",
+      "translation_text_hash": "cfe723455c705c0e5b1c41a2a5fc11ba6896e690bb2324b18373b0b533a8340c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입을 열어 지혜를 베풀며 그 혀로 인애의 법을 말하며"
+      ],
+      "raw_text_hashes": [
+        "cfe723455c705c0e5b1c41a2a5fc11ba6896e690bb2324b18373b0b533a8340c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:27",
+      "sequence": 17312,
+      "chapter_label": "PRO 31",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 27
+        }
+      ],
+      "en": "She looks well to the ways of her household, and doesn’t eat the bread of idleness.",
+      "ko": "그 집안 일을 보살피고 게을리 얻은 양식을 먹지 아니하나니",
+      "source_text_hash": "d4897ef3b004a67c8e14c8975d2d125b508da57e89ce277c0023efc40c924d72",
+      "translation_text_hash": "f5afef48e9d76605219fb44f9ed027d8bb4007066be85b808303604c628d675b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집안 일을 보살피고 게을리 얻은 양식을 먹지 아니하나니"
+      ],
+      "raw_text_hashes": [
+        "f5afef48e9d76605219fb44f9ed027d8bb4007066be85b808303604c628d675b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:28",
+      "sequence": 17313,
+      "chapter_label": "PRO 31",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 28
+        }
+      ],
+      "en": "Her children rise up and call her blessed. Her husband also praises her:",
+      "ko": "그 자식들은 일어나 사례하며 그 남편은 칭찬하기를",
+      "source_text_hash": "6dea189b9a0f8d1664f9443accb35eaa106e8d800326b193686aff6617f1c076",
+      "translation_text_hash": "c83c88fc7bef0f29bcf11370a47d70349720ebdcde0e7ac2e933cb4e81af8f5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자식들은 일어나 사례하며 그 남편은 칭찬하기를"
+      ],
+      "raw_text_hashes": [
+        "c83c88fc7bef0f29bcf11370a47d70349720ebdcde0e7ac2e933cb4e81af8f5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:29",
+      "sequence": 17314,
+      "chapter_label": "PRO 31",
+      "verse_label": "29",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 29
+        }
+      ],
+      "en": "“Many women do noble things, but you excel them all.”",
+      "ko": "덕행 있는 여자가 많으나 그대는 여러 여자보다 뛰어난다 하느니라",
+      "source_text_hash": "5c8a5d73564b1a3e6631ff9fd210d745e6ccedb55798cb631c9ea30c7dfe8886",
+      "translation_text_hash": "62a58fd05bd8b9a3c18afda1ffc8b98d14b76776fa3beba0e30bb5d1a6ad89a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "덕행 있는 여자가 많으나 그대는 여러 여자보다 뛰어난다 하느니라"
+      ],
+      "raw_text_hashes": [
+        "62a58fd05bd8b9a3c18afda1ffc8b98d14b76776fa3beba0e30bb5d1a6ad89a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:30",
+      "sequence": 17315,
+      "chapter_label": "PRO 31",
+      "verse_label": "30",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 30
+        }
+      ],
+      "en": "Charm is deceitful, and beauty is vain; but a woman who fears the LORD, she shall be praised.",
+      "ko": "고운 것도 거짓되고 아름다운 것도 헛되나 오직 여호와를 경외하는 여자는 칭찬을 받을 것이라",
+      "source_text_hash": "7b3fafc8ec73b962be07ba331cbc03a9e2267acc37817c337850f0814b14828b",
+      "translation_text_hash": "cefe69fee24c37e5a17eaaeb7a6920666ccce63af54ec2ee38e4040b1e4d8ea0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고운 것도 거짓되고 아름다운 것도 헛되나 오직 여호와를 경외하는 여자는 칭찬을 받을 것이라"
+      ],
+      "raw_text_hashes": [
+        "cefe69fee24c37e5a17eaaeb7a6920666ccce63af54ec2ee38e4040b1e4d8ea0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:31:31",
+      "sequence": 17316,
+      "chapter_label": "PRO 31",
+      "verse_label": "31",
+      "locator": {
+        "book": "PRO",
+        "chapter": 31,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 31,
+          "verse": 31
+        }
+      ],
+      "en": "Give her of the fruit of her hands! Let her works praise her in the gates!",
+      "ko": "그 손의 열매가 그에게로 돌아갈 것이요 그 행한 일을 인하여 성문에서 칭찬을 받으리라",
+      "source_text_hash": "9dbc0bae216535bbe244de9a8fec7327411d95117817894bce98b2b29afb7b72",
+      "translation_text_hash": "9d0a44fcf3a6322f2e57fc2eb51138ca02c37a6141a6b0d8b17c7a6355af9468",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 손의 열매가 그에게로 돌아갈 것이요 그 행한 일을 인하여 성문에서 칭찬을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "9d0a44fcf3a6322f2e57fc2eb51138ca02c37a6141a6b0d8b17c7a6355af9468"
+      ]
+    }
+  ]
+}

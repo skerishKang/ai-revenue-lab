@@ -26,7 +26,13 @@ is absent, the composition is the unbound one, and every model route refuses.
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import hmac
+import logging
 import os
+import stat
+import time
+from pathlib import Path
 import sys
 import types
 from dataclasses import dataclass, field
@@ -36,6 +42,7 @@ from urllib.parse import urlsplit
 import httpx
 
 from app.local_admission_binding import admission_binding_for
+from app.local_identity_binding import identity_binding_for
 from app.local_sqlite_d1 import (
     LocalSqliteD1,
     apply_engine_migrations,
@@ -47,6 +54,11 @@ HOST_ENV = "PADIEM_ENGINE_CPYTHON_HOST"
 BIND_HOST_ENV = "P01_HOST"
 BIND_PORT_ENV = "P01_PORT"
 B14_ORIGIN_ENV = "PADIEM_ENGINE_LOCAL_B14_ORIGIN"
+B14_PROOF_SECRET_ENV = "PADIEM_B14_SERVICE_PROOF_SECRET"
+B14_SECRET_DIR_ENV = "B14_SECRET_DIR"
+B14_PROOF_HEADER = "x-padiem-b14-proof"
+B14_PROOF_TIME_HEADER = "x-padiem-b14-time"
+logger = logging.getLogger(__name__)
 DB_PATH_ENV = "PADIEM_ENGINE_LOCAL_DB"
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8811
@@ -327,7 +339,7 @@ class _EnvironmentMap:
 class LocalB14Binding:
     """Loopback B14 reached through the Service Binding's own ``fetch`` call."""
 
-    def __init__(self, origin: str, *, timeout: float = 600.0) -> None:
+    def __init__(self, origin: str, *, values: Mapping[str, str] | None = None, timeout: float = 600.0) -> None:
         parsed = urlsplit(origin)
         if (
             parsed.scheme not in {"http", "https"}
@@ -342,6 +354,25 @@ class LocalB14Binding:
             raise LocalRuntimeError("p01_local_b14_origin_invalid")
         self._origin = f"{parsed.scheme}://{parsed.netloc}"
         self._timeout = timeout
+        source = os.environ if values is None else values
+        self._values = {name: source.get(name, "") for name in (B14_PROOF_SECRET_ENV, B14_SECRET_DIR_ENV)}
+
+    def _proof_secret(self) -> str:
+        """Environment first, then the private named file used by B14."""
+        raw = self._values.get(B14_PROOF_SECRET_ENV, "")
+        if isinstance(raw, str) and raw:
+            return raw
+        directory = str(self._values.get(B14_SECRET_DIR_ENV, "") or "").strip()
+        if not directory:
+            return ""
+        path = Path(directory).expanduser() / B14_PROOF_SECRET_ENV
+        try:
+            mode = path.stat().st_mode
+            if not stat.S_ISREG(mode) or (os.name == "posix" and mode & 0o077):
+                return ""
+            return path.read_text(encoding="utf-8").strip()
+        except (OSError, UnicodeError):
+            return ""
 
     async def fetch(self, request: Any) -> LocalResponse:
         path = urlsplit(str(request.url)).path
@@ -354,13 +385,23 @@ class LocalB14Binding:
         body = getattr(request, "body", b"")
         if not isinstance(body, (bytes, bytearray)):
             body = bytes(body)
+        payload = bytes(body)
+        secret = self._proof_secret()
+        if len(secret) < 32:
+            raise LocalRuntimeError("p01_local_b14_proof_unconfigured")
+        timestamp = str(int(time.time()))
+        proof = hmac.new(secret.encode("utf-8"), timestamp.encode("ascii") + b"." + payload, hashlib.sha256).hexdigest()
+        # Replace any incoming proof case-insensitively with one made for these exact bytes.
+        headers = {k: v for k, v in headers.items() if str(k).lower() not in {B14_PROOF_HEADER, B14_PROOF_TIME_HEADER}}
+        headers[B14_PROOF_TIME_HEADER] = timestamp
+        headers[B14_PROOF_HEADER] = proof
         async with httpx.AsyncClient(follow_redirects=False, timeout=self._timeout) as client:
             try:
                 response = await client.request(
                     getattr(request, "method", "POST"),
                     self._origin + path,
                     headers=headers,
-                    content=bytes(body),
+                    content=payload,
                 )
             except httpx.HTTPError:
                 raise LocalRuntimeError("p01_local_b14_unreachable") from None
@@ -411,7 +452,10 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
     bindings: dict[str, Any] = {}
     origin = str(values.get(B14_ORIGIN_ENV, "")).strip()
     if origin:
-        bindings["B14_SERVICE"] = LocalB14Binding(origin)
+        binding = LocalB14Binding(origin, values=values)
+        if len(binding._proof_secret()) < 32:
+            logger.warning("p01_local_b14_proof_unconfigured")
+        bindings["B14_SERVICE"] = binding
     path = str(values.get(DB_PATH_ENV, "")).strip()
     if path:
         bindings["ENGINE_IDEMPOTENCY"] = _local_database(path)
@@ -420,6 +464,10 @@ def _local_bindings(values: Mapping[str, str]) -> dict[str, Any]:
     # adapter composes unchanged; without them the binding is absent and every
     # model route keeps the Worker's 503 `entitlement_unavailable`.
     bindings.update(admission_binding_for(values))
+    # Same session/scope authority as worker_identity.py on Cloudflare. This
+    # read does not substitute for Chat's canonical-subject resolution or the
+    # admission Worker's own authoritative entitlement/session checks.
+    bindings.update(identity_binding_for(values))
     # Without a configured path the binding stays absent, so every durable lane
     # keeps the Worker's own fail-closed answer instead of a process-local fake.
     return bindings

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GAL:chapter:006",
+  "unit_ordinal": 1097,
+  "unit_label": "GAL 6",
+  "book_code": "GAL",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GAL:6:1",
+      "sequence": 29186,
+      "chapter_label": "GAL 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Brothers, even if a man is caught in some fault, you who are spiritual must restore such a one in a spirit of gentleness, looking to yourself so that you also aren’t tempted.",
+      "ko": "형제들아 사람이 만일 무슨 범죄한 일이 드러나거든 신령한 너희는 온유한 심령으로 그러한 자를 바로잡고 네 자신을 돌아보아 너도 시험을 받을까 두려워하라",
+      "source_text_hash": "6b2ef0c05ff5a67cc387260fb0572e13872c707fbeb6157c61b757374ab23173",
+      "translation_text_hash": "151aa9b32cae0e936f976de00504f30358068ae6ac8dc8fca66cbd83d064c4b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 사람이 만일 무슨 범죄한 일이 드러나거든 신령한 너희는 온유한 심령으로 그러한 자를 바로잡고 네 자신을 돌아보아 너도 시험을 받을까 두려워하라"
+      ],
+      "raw_text_hashes": [
+        "151aa9b32cae0e936f976de00504f30358068ae6ac8dc8fca66cbd83d064c4b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:2",
+      "sequence": 29187,
+      "chapter_label": "GAL 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "Bear one another’s burdens, and so fulfill the law of Christ.",
+      "ko": "너희가 짐을 서로 지라 그리하여 그리스도의 법을 성취하라",
+      "source_text_hash": "26108db7bd8ddd9b052f294ee604e3641284dec57bd6c1eb695687e416e7d42d",
+      "translation_text_hash": "b985df5eb9f718ad420442b4f69301c09ebeee0bb97b64cdafd1271928b53727",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 짐을 서로 지라 그리하여 그리스도의 법을 성취하라"
+      ],
+      "raw_text_hashes": [
+        "b985df5eb9f718ad420442b4f69301c09ebeee0bb97b64cdafd1271928b53727"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:3",
+      "sequence": 29188,
+      "chapter_label": "GAL 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "For if a man thinks himself to be something when he is nothing, he deceives himself.",
+      "ko": "만일 누가 아무것도 되지 못하고 된줄로 생각하면 스스로 속임이니라",
+      "source_text_hash": "1f0ad1f9db3b4836c07a8312f625a0d4c6edd26ed6b0a30c14f10bc614bba53f",
+      "translation_text_hash": "57d11cf6ec5ec40e56a981b7ff18ea52dd289c180b0e4d7d9394e8bc95ffef0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누가 아무것도 되지 못하고 된줄로 생각하면 스스로 속임이니라"
+      ],
+      "raw_text_hashes": [
+        "57d11cf6ec5ec40e56a981b7ff18ea52dd289c180b0e4d7d9394e8bc95ffef0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:4",
+      "sequence": 29189,
+      "chapter_label": "GAL 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "But let each man examine his own work, and then he will have reason to boast in himself, and not in someone else.",
+      "ko": "각각 자기의 일을 살피라 그리하면 자랑할 것이 자기에게만 있고 남에게는 있지 아니하리니",
+      "source_text_hash": "608a71c106423382b9e9adee9d3672e677e6e221e64fd92b1b9ca4dfe4728fa9",
+      "translation_text_hash": "279267e5b15791ac0f68da769e153b0b6e95568254a1d2049e3a062544fb6e36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각각 자기의 일을 살피라 그리하면 자랑할 것이 자기에게만 있고 남에게는 있지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "279267e5b15791ac0f68da769e153b0b6e95568254a1d2049e3a062544fb6e36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:5",
+      "sequence": 29190,
+      "chapter_label": "GAL 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "For each man will bear his own burden.",
+      "ko": "각각 자기의 짐을 질 것임이니라",
+      "source_text_hash": "4ec9087bef899c92cb0766704a9c13586fa155cae695dabae4f0b33dce6e5675",
+      "translation_text_hash": "0cd0d51ab2ed0a4ebe5647113db1aeb89c12b4a150300ffba5b043e86f8d00da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각각 자기의 짐을 질 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "0cd0d51ab2ed0a4ebe5647113db1aeb89c12b4a150300ffba5b043e86f8d00da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:6",
+      "sequence": 29191,
+      "chapter_label": "GAL 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "But let him who is taught in the word share all good things with him who teaches.",
+      "ko": "가르침을 받는 자는 말씀을 가르치는 자와 모든 좋은 것을 함께 하라",
+      "source_text_hash": "3bc57a23e2778a1dcecac7b1cc5236192ff35f82056db0522bd851d7fefcd384",
+      "translation_text_hash": "ca346197750deb9425809f49b26bbbdd699659ed99cd4d925e98e26a4e8c6ac8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가르침을 받는 자는 말씀을 가르치는 자와 모든 좋은 것을 함께 하라"
+      ],
+      "raw_text_hashes": [
+        "ca346197750deb9425809f49b26bbbdd699659ed99cd4d925e98e26a4e8c6ac8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:7",
+      "sequence": 29192,
+      "chapter_label": "GAL 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "Don’t be deceived. God is not mocked, for whatever a man sows, that he will also reap.",
+      "ko": "스스로 속이지 말라 하나님은 만홀히 여김을 받지 아니하시나니 사람이 무엇으로 심든지 그대로 거두리라",
+      "source_text_hash": "98ecccae9e85014ce939ffc2f198504045c9e09f6b869d1f9d77a65482216cae",
+      "translation_text_hash": "0b93c73ba9852a13620647151f05c2341d7da4aa2a6a29d67955735ae3745ed6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 속이지 말라 하나님은 만홀히 여김을 받지 아니하시나니 사람이 무엇으로 심든지 그대로 거두리라"
+      ],
+      "raw_text_hashes": [
+        "0b93c73ba9852a13620647151f05c2341d7da4aa2a6a29d67955735ae3745ed6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:8",
+      "sequence": 29193,
+      "chapter_label": "GAL 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "For he who sows to his own flesh will from the flesh reap corruption. But he who sows to the Spirit will from the Spirit reap eternal life.",
+      "ko": "자기의 육체를 위하여 심는 자는 육체로부터 썩어진 것을 거두고 성령을 위하여 심는 자는 성령으로부터 영생을 거두리라",
+      "source_text_hash": "b8ec6759cc609dd9faa245eb71effc587cd98199fba03100141075b1cf3877d2",
+      "translation_text_hash": "268223b12ff62cf9f9ec1ba327ff86b5e8a1de2e07a772c145eb60ebfa033bad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 육체를 위하여 심는 자는 육체로부터 썩어진 것을 거두고 성령을 위하여 심는 자는 성령으로부터 영생을 거두리라"
+      ],
+      "raw_text_hashes": [
+        "268223b12ff62cf9f9ec1ba327ff86b5e8a1de2e07a772c145eb60ebfa033bad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:9",
+      "sequence": 29194,
+      "chapter_label": "GAL 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Let’s not be weary in doing good, for we will reap in due season if we don’t give up.",
+      "ko": "우리가 선을 행하되 낙심하지 말찌니 피곤하지 아니하면 때가 이르매 거두리라",
+      "source_text_hash": "1f6aad7ebb2b9408485c27ecb3b11ab83adf0dc37dba169cea3fe6abfacf9fec",
+      "translation_text_hash": "332f0eb9d4703db5106405009958e9fff9a16b5dffebf9c5e2cef06dcecf5c71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 선을 행하되 낙심하지 말찌니 피곤하지 아니하면 때가 이르매 거두리라"
+      ],
+      "raw_text_hashes": [
+        "332f0eb9d4703db5106405009958e9fff9a16b5dffebf9c5e2cef06dcecf5c71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:10",
+      "sequence": 29195,
+      "chapter_label": "GAL 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "So then, as we have opportunity, let’s do what is good toward all men, and especially toward those who are of the household of the faith.",
+      "ko": "그러므로 우리는 기회 있는대로 모든 이에게 착한 일을 하되 더욱 믿음의 가정들에게 할찌니라",
+      "source_text_hash": "023359336db8b5c63aaed6be756c8a1bf17600fe8fb5d1bb6256b4f0176e3e4d",
+      "translation_text_hash": "678809aface7d1e8c5c22bbe1659c0070e162c1b0a4464331b7e6f78ea74f19b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리는 기회 있는대로 모든 이에게 착한 일을 하되 더욱 믿음의 가정들에게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "678809aface7d1e8c5c22bbe1659c0070e162c1b0a4464331b7e6f78ea74f19b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:11",
+      "sequence": 29196,
+      "chapter_label": "GAL 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "See with what large letters I write to you with my own hand.",
+      "ko": "내 손으로 너희에게 이렇게 큰 글자로 쓴 것을 보라",
+      "source_text_hash": "44b55adef46fe556111b69ee6e2b582309499f866da2ac752429fa13c0fae22e",
+      "translation_text_hash": "085411ea6e5f768d44f165bfe5b51a981d3a59c5b172c97f8fc453936918c611",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 손으로 너희에게 이렇게 큰 글자로 쓴 것을 보라"
+      ],
+      "raw_text_hashes": [
+        "085411ea6e5f768d44f165bfe5b51a981d3a59c5b172c97f8fc453936918c611"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:12",
+      "sequence": 29197,
+      "chapter_label": "GAL 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "As many as desire to make a good impression in the flesh compel you to be circumcised, just so they may not be persecuted for the cross of Christ.",
+      "ko": "무릇 육체의 모양을 내려 하는 자들이 억지로 너희로 할례 받게 함은 저희가 그리스도의 십자가를 인하여 핍박을 면하려 함 뿐이라",
+      "source_text_hash": "5db707f7cf2e3423ac4c6b122a97ebe97cfcfa90b19478ae5565564b055c4630",
+      "translation_text_hash": "254823d450d7fd6a3fd2c73ba4c2de1a89e7a575c263667e3ca23eb833e864eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 육체의 모양을 내려 하는 자들이 억지로 너희로 할례 받게 함은 저희가 그리스도의 십자가를 인하여 핍박을 면하려 함 뿐이라"
+      ],
+      "raw_text_hashes": [
+        "254823d450d7fd6a3fd2c73ba4c2de1a89e7a575c263667e3ca23eb833e864eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:13",
+      "sequence": 29198,
+      "chapter_label": "GAL 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "For even they who receive circumcision don’t keep the law themselves, but they desire to have you circumcised, so that they may boast in your flesh.",
+      "ko": "할례 받은 저희라도 스스로 율법은 지키지 아니하고 너희로 할례 받게 하려 하는 것은 너희의 육체로 자랑하려 함이니라",
+      "source_text_hash": "15183c461f32fb14c7b92a7d6d01c6f7b8ae5597c87f2ea28307f40208a393a7",
+      "translation_text_hash": "8c5eaeec871399c0ea7ada6d1f50785ab15d8129eb099a316444722c6044fe01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할례 받은 저희라도 스스로 율법은 지키지 아니하고 너희로 할례 받게 하려 하는 것은 너희의 육체로 자랑하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "8c5eaeec871399c0ea7ada6d1f50785ab15d8129eb099a316444722c6044fe01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:14",
+      "sequence": 29199,
+      "chapter_label": "GAL 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "But far be it from me to boast except in the cross of our Lord Jesus Christ, through which the world has been crucified to me, and I to the world.",
+      "ko": "그러나 내게는 우리 주 예수 그리스도의 십자가 외에 결코 자랑할 것이 없으니 그리스도로 말미암아 세상이 나를 대하여 십자가에 못 박히고 내가 또한 세상을 대하여 그러하니라",
+      "source_text_hash": "22db6213a27a1b6583d399847afcf3195ec1b2887ffb30a77a9aa4a9c95b0391",
+      "translation_text_hash": "4cc3008a7604462db15ecb4dbd89fda86ba85219d5fbaa000221bdcfe004f318",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내게는 우리 주 예수 그리스도의 십자가 외에 결코 자랑할 것이 없으니 그리스도로 말미암아 세상이 나를 대하여 십자가에 못 박히고 내가 또한 세상을 대하여 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "4cc3008a7604462db15ecb4dbd89fda86ba85219d5fbaa000221bdcfe004f318"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:15",
+      "sequence": 29200,
+      "chapter_label": "GAL 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "For in Christ Jesus neither is circumcision anything, nor uncircumcision, but a new creation.",
+      "ko": "할례나 무할례가 아무 것도 아니로되 오직 새로 지으심을 받은 자 뿐이니라",
+      "source_text_hash": "7d55c0be9a7e32ef25d20daddf31260b23bbcdfed8aef723089fdd6efcc2189d",
+      "translation_text_hash": "b791b51ef2a20f06f7d1a826cad58f6444eb88c16a23e7d9f1220e1433787101",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할례나 무할례가 아무 것도 아니로되 오직 새로 지으심을 받은 자 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "b791b51ef2a20f06f7d1a826cad58f6444eb88c16a23e7d9f1220e1433787101"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:16",
+      "sequence": 29201,
+      "chapter_label": "GAL 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "As many as walk by this rule, peace and mercy be on them, and on God’s Israel.",
+      "ko": "무릇 이 규례를 행하는 자에게와 하나님의 이스라엘에게 평강과 긍휼이 있을찌어다",
+      "source_text_hash": "b93146bb8de5486b6e90ae57ecb5f171d7699a1cbfd0be62c1ec6f60af11dc7e",
+      "translation_text_hash": "fad68053f05e6ab077a99af3acdb9e8bc7c42795575ab0f1fc5f41c0704c41af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이 규례를 행하는 자에게와 하나님의 이스라엘에게 평강과 긍휼이 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "fad68053f05e6ab077a99af3acdb9e8bc7c42795575ab0f1fc5f41c0704c41af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:17",
+      "sequence": 29202,
+      "chapter_label": "GAL 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "From now on, let no one cause me any trouble, for I bear the marks of the Lord Jesus branded on my body.",
+      "ko": "이 후로는 누구든지 나를 괴롭게 말라 내가 내 몸에 예수의 흔적을 가졌노라",
+      "source_text_hash": "1dcbfed3ab806c72410d32abad8c903f3487d35e50df892fe4110d9089ccd9fe",
+      "translation_text_hash": "db9e628d61e1976273eb1f63ac04a6ae50f50a8f878eeee957ca77a73b234112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후로는 누구든지 나를 괴롭게 말라 내가 내 몸에 예수의 흔적을 가졌노라"
+      ],
+      "raw_text_hashes": [
+        "db9e628d61e1976273eb1f63ac04a6ae50f50a8f878eeee957ca77a73b234112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:6:18",
+      "sequence": 29203,
+      "chapter_label": "GAL 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "GAL",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "The grace of our Lord Jesus Christ be with your spirit, brothers. Amen.",
+      "ko": "형제들아 우리 주 예수 그리스도의 은혜가 너희 심령에 있을찌어다 아멘",
+      "source_text_hash": "fd8c247ef114903769ef5a806710bd095b3a178793e0c48a6d07df2cf014dd26",
+      "translation_text_hash": "ece7ef77cd89e9d594fad98defec76c7291a625926bbc9e40328aeaff11a9545",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 우리 주 예수 그리스도의 은혜가 너희 심령에 있을찌어다 아멘"
+      ],
+      "raw_text_hashes": [
+        "ece7ef77cd89e9d594fad98defec76c7291a625926bbc9e40328aeaff11a9545"
+      ]
+    }
+  ]
+}

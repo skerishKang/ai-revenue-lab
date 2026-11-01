@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:018",
+  "unit_ordinal": 331,
+  "unit_label": "2KI 18",
+  "book_code": "2KI",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:18:1",
+      "sequence": 10026,
+      "chapter_label": "2KI 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "Now in the third year of Hoshea son of Elah king of Israel, Hezekiah the son of Ahaz king of Judah began to reign.",
+      "ko": "이스라엘 왕 엘라의 아들 호세아 삼년에 유다 왕 아하스의 아들 히스기야가 왕이 되니",
+      "source_text_hash": "72434ea05006fa835969c597655ceb99cbfad68c9d3a76d4f72da188fa2d4889",
+      "translation_text_hash": "0d483f01b8f8f422e70885dff4b8a0fd0ca962f737f0b38d49835941ab4bea3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕 엘라의 아들 호세아 삼년에 유다 왕 아하스의 아들 히스기야가 왕이 되니"
+      ],
+      "raw_text_hashes": [
+        "0d483f01b8f8f422e70885dff4b8a0fd0ca962f737f0b38d49835941ab4bea3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:2",
+      "sequence": 10027,
+      "chapter_label": "2KI 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "He was twenty-five years old when he began to reign, and he reigned twenty-nine years in Jerusalem. His mother’s name was Abi the daughter of Zechariah.",
+      "ko": "위에 나아갈 때에 나이 이십 오세라 예루살렘에서 이십 구년을 치리하니라 그 모친의 이름은 아비라 스가리야의 딸이더라",
+      "source_text_hash": "deb11dc3dcb53853819d8f2ce512cf24f4143779b7fed268b6ba4086402ba439",
+      "translation_text_hash": "5fe6eaa240948d6f2fdf84465c8743bd559b0bf302cc6f58f3ff4bab6efc32ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위에 나아갈 때에 나이 이십 오세라 예루살렘에서 이십 구년을 치리하니라 그 모친의 이름은 아비라 스가리야의 딸이더라"
+      ],
+      "raw_text_hashes": [
+        "5fe6eaa240948d6f2fdf84465c8743bd559b0bf302cc6f58f3ff4bab6efc32ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:3",
+      "sequence": 10028,
+      "chapter_label": "2KI 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "He did that which was right in the LORD’s eyes, according to all that David his father had done.",
+      "ko": "히스기야가 그 조상 다윗의 모든 행위와 같이 여호와 보시기에 정직히 행하여",
+      "source_text_hash": "e36f2d530ca1c3b8e3d540ff5e9ec793e5f3e3990fa53a14bcf1de3b3dc566ef",
+      "translation_text_hash": "220ee1aab10ec691096cf83860650d1011e1affc618438dce17243d7e6b4b72a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 그 조상 다윗의 모든 행위와 같이 여호와 보시기에 정직히 행하여"
+      ],
+      "raw_text_hashes": [
+        "220ee1aab10ec691096cf83860650d1011e1affc618438dce17243d7e6b4b72a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:4",
+      "sequence": 10029,
+      "chapter_label": "2KI 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "He removed the high places, broke the pillars, and cut down the Asherah. He also broke in pieces the bronze serpent that Moses had made, because in those days the children of Israel burned incense to it; and he called it Nehushtan.",
+      "ko": "여러 산당을 제하며 주상을 깨뜨리며 아세라 목상을 찍으며 모세가 만들었던 놋뱀을 이스라엘 자손이 이때까지 향하여 분향하므로 그것을 부수고 느후스단이라 일컬었더라",
+      "source_text_hash": "8b44c71424a1377b7b3472a6e98628426b78c112116ce02b3f4622dbeb6996f7",
+      "translation_text_hash": "63f76ccf8a59fcfedbdbaf7d319cbf857c4d733f92e71948c166d2e5208e54c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 산당을 제하며 주상을 깨뜨리며 아세라 목상을 찍으며 모세가 만들었던 놋뱀을 이스라엘 자손이 이때까지 향하여 분향하므로 그것을 부수고 느후스단이라 일컬었더라"
+      ],
+      "raw_text_hashes": [
+        "63f76ccf8a59fcfedbdbaf7d319cbf857c4d733f92e71948c166d2e5208e54c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:5",
+      "sequence": 10030,
+      "chapter_label": "2KI 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "He trusted in the LORD, the God of Israel, so that after him was no one like him among all the kings of Judah, nor among them that were before him.",
+      "ko": "히스기야가 이스라엘 하나님 여호와를 의지하였는데 그의 전후 유다 여러 왕 중에 그러한 자가 없었으니",
+      "source_text_hash": "06af123f1b699912c110b13477cd656398a8ee0cb44a55e81b44e697a438cfc1",
+      "translation_text_hash": "77ab9c13863d29e5836f99940faad36ac89217d06c4dc1f0b9fffc3a709e859d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 이스라엘 하나님 여호와를 의지하였는데 그의 전후 유다 여러 왕 중에 그러한 자가 없었으니"
+      ],
+      "raw_text_hashes": [
+        "77ab9c13863d29e5836f99940faad36ac89217d06c4dc1f0b9fffc3a709e859d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:6",
+      "sequence": 10031,
+      "chapter_label": "2KI 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "For he joined with the LORD. He didn’t depart from following him, but kept his commandments, which the LORD commanded Moses.",
+      "ko": "곧 저가 여호와께 연합하여 떠나지 아니하고 여호와께서 모세에게 명하신 계명을 지켰더라",
+      "source_text_hash": "8f23ede1a571892f2c4600d8bbab97c60267fe247255c19b307b254c459666a1",
+      "translation_text_hash": "d2950650de822c7d68c75cd828b6ef1755ba08911c99200b912f92c3cc7dbd4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 저가 여호와께 연합하여 떠나지 아니하고 여호와께서 모세에게 명하신 계명을 지켰더라"
+      ],
+      "raw_text_hashes": [
+        "d2950650de822c7d68c75cd828b6ef1755ba08911c99200b912f92c3cc7dbd4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:7",
+      "sequence": 10032,
+      "chapter_label": "2KI 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD was with him. Wherever he went, he prospered. He rebelled against the king of Assyria, and didn’t serve him.",
+      "ko": "여호와께서 저와 함께 하시매 저가 어디로 가든지 형통하였더라 저가 앗수르 왕을 배척하고 섬기지 아니하였고",
+      "source_text_hash": "17615e536d8249d845a91d03558b9d609c93ff13f818aa23183ae3f6ece8d650",
+      "translation_text_hash": "d58155302d17cbbca4732f0036e746a4b0853f32f0848487402e1b370f8a0f7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 저와 함께 하시매 저가 어디로 가든지 형통하였더라 저가 앗수르 왕을 배척하고 섬기지 아니하였고"
+      ],
+      "raw_text_hashes": [
+        "d58155302d17cbbca4732f0036e746a4b0853f32f0848487402e1b370f8a0f7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:8",
+      "sequence": 10033,
+      "chapter_label": "2KI 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "He struck the Philistines to Gaza and its borders, from the tower of the watchmen to the fortified city.",
+      "ko": "블레셋 사람을 쳐서 가사와 그 사방에 이르고 망대에서부터 견고한 성까지 이르렀더라",
+      "source_text_hash": "6ad85298a292843a29dbca21eda1625dfbb70b6a409aed14963eee6e04ede0ca",
+      "translation_text_hash": "8635f9b9dbd73e80ecf37d0d06a05939f78a2c88fdbe053e08527f1c9f960b2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람을 쳐서 가사와 그 사방에 이르고 망대에서부터 견고한 성까지 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "8635f9b9dbd73e80ecf37d0d06a05939f78a2c88fdbe053e08527f1c9f960b2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:9",
+      "sequence": 10034,
+      "chapter_label": "2KI 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "In the fourth year of King Hezekiah, which was the seventh year of Hoshea son of Elah king of Israel, Shalmaneser king of Assyria came up against Samaria and besieged it.",
+      "ko": "히스기야왕 사년 곧 이스라엘 왕 엘라의 아들 호세아 칠년에 앗수르 왕 살만에셀이 사마리아로 올라와서 에워쌌더라",
+      "source_text_hash": "ca683fc735e74609ab306cf24338835bd3ed4f33a36d50d49086a0d4b110bee4",
+      "translation_text_hash": "f40040c97e39a369dfb40dd388529ae4e7a9ac760ddbd9e1a48cf577356cd5a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야왕 사년 곧 이스라엘 왕 엘라의 아들 호세아 칠년에 앗수르 왕 살만에셀이 사마리아로 올라와서 에워쌌더라"
+      ],
+      "raw_text_hashes": [
+        "f40040c97e39a369dfb40dd388529ae4e7a9ac760ddbd9e1a48cf577356cd5a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:10",
+      "sequence": 10035,
+      "chapter_label": "2KI 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "At the end of three years they took it. In the sixth year of Hezekiah, which was the ninth year of Hoshea king of Israel, Samaria was taken.",
+      "ko": "삼년 후에 그 성이 함락되니 곧 히스기야의 육년이요 이스라엘 왕 호세아의 구년이라 사마리아가 함락되매",
+      "source_text_hash": "4942a138962f028e8221825c2f32dd01f492ed59f0797c019c21d01e10f3bdf3",
+      "translation_text_hash": "f1fff0b4d1c8b647c91a771581558289dfac3fe0656520e7f56de9e0a9e20961",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼년 후에 그 성이 함락되니 곧 히스기야의 육년이요 이스라엘 왕 호세아의 구년이라 사마리아가 함락되매"
+      ],
+      "raw_text_hashes": [
+        "f1fff0b4d1c8b647c91a771581558289dfac3fe0656520e7f56de9e0a9e20961"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:11",
+      "sequence": 10036,
+      "chapter_label": "2KI 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "The king of Assyria carried Israel away to Assyria, and put them in Halah, and on the Habor, the river of Gozan, and in the cities of the Medes,",
+      "ko": "앗수르 왕이 이스라엘을 사로잡아 앗수르에 이르러 할라와 고산 하볼 하숫가와 메대 사람의 여러 성읍에 두었으니",
+      "source_text_hash": "020d030f865818773b7b261cbc64288343e85ef5c17d8bf1797abd4d88072a59",
+      "translation_text_hash": "ddb80abaa5476c50f5a4c9286b5de7db04fb0a8a1bbc44186e75baf968b85c61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕이 이스라엘을 사로잡아 앗수르에 이르러 할라와 고산 하볼 하숫가와 메대 사람의 여러 성읍에 두었으니"
+      ],
+      "raw_text_hashes": [
+        "ddb80abaa5476c50f5a4c9286b5de7db04fb0a8a1bbc44186e75baf968b85c61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:12",
+      "sequence": 10037,
+      "chapter_label": "2KI 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "because they didn’t obey the LORD their God’s voice, but transgressed his covenant, even all that Moses the servant of the LORD commanded, and would not hear it or do it.",
+      "ko": "이는 저희가 그 하나님 여호와의 말씀을 준행치 아니하고 그 언약을 배반하고 여호와의 종 모세의 모든 명한 것을 거스려 듣지도 아니하며 행치도 아니하였음이더라",
+      "source_text_hash": "762cf25896ddd5e8806ccab02af1d72e2570ee466b696858c28106371792c4d0",
+      "translation_text_hash": "ff038379b5d074cf618890ed11732ddeea5dc2e05d5456ce92a36c4c8a037d2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희가 그 하나님 여호와의 말씀을 준행치 아니하고 그 언약을 배반하고 여호와의 종 모세의 모든 명한 것을 거스려 듣지도 아니하며 행치도 아니하였음이더라"
+      ],
+      "raw_text_hashes": [
+        "ff038379b5d074cf618890ed11732ddeea5dc2e05d5456ce92a36c4c8a037d2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:13",
+      "sequence": 10038,
+      "chapter_label": "2KI 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "Now in the fourteenth year of King Hezekiah, Sennacherib king of Assyria came up against all the fortified cities of Judah and took them.",
+      "ko": "히스기야왕 십 사년에 앗수르 왕 산헤립이 올라와서 유다 모든 견고한 성읍들을 쳐서 취하매",
+      "source_text_hash": "43fc8e8fa521e8ecc637b2d12ddcb2aa52230d9c1df45a3b9ba6c9e4cfddddd6",
+      "translation_text_hash": "f87fa6fe8931c90714f0d9d0051fd78adedfaecfd7b209be4c8fec1ef2d3b715",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야왕 십 사년에 앗수르 왕 산헤립이 올라와서 유다 모든 견고한 성읍들을 쳐서 취하매"
+      ],
+      "raw_text_hashes": [
+        "f87fa6fe8931c90714f0d9d0051fd78adedfaecfd7b209be4c8fec1ef2d3b715"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:14",
+      "sequence": 10039,
+      "chapter_label": "2KI 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "Hezekiah king of Judah sent to the king of Assyria at Lachish, saying, “I have offended you. Withdraw from me. That which you put on me, I will bear.” The king of Assyria appointed to Hezekiah king of Judah three hundred talents of silver and thirty talents of gold.",
+      "ko": "유다 왕 히스기야가 라기스로 보내어 앗수르 왕에게 이르되 내가 범죄하였나이다 나를 떠나 돌아가소서 왕이 내게 지우시는 것을 내가 당하리이다 하였더니 앗수르 왕이 곧 은 삼백 달란트와 금 삼십 달란트를 정하여 유다 왕 히스기야로 내게 한지라",
+      "source_text_hash": "fa25d8e0e91da4825776ece0947794a04afd166b99bf2d00dc34a086df6edaf6",
+      "translation_text_hash": "16881524c18b77f228f79c5ced35707937bac054d0d2c90806708c4473536e56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 히스기야가 라기스로 보내어 앗수르 왕에게 이르되 내가 범죄하였나이다 나를 떠나 돌아가소서 왕이 내게 지우시는 것을 내가 당하리이다 하였더니 앗수르 왕이 곧 은 삼백 달란트와 금 삼십 달란트를 정하여 유다 왕 히스기야로 내게 한지라"
+      ],
+      "raw_text_hashes": [
+        "16881524c18b77f228f79c5ced35707937bac054d0d2c90806708c4473536e56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:15",
+      "sequence": 10040,
+      "chapter_label": "2KI 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "Hezekiah gave him all the silver that was found in the LORD’s house and in the treasures of the king’s house.",
+      "ko": "히스기야가 이에 여호와의 전과 왕궁 곳간에 있는 은을 다 주었고",
+      "source_text_hash": "beb92fcece9bbd56db7ec96928d9ff44dbe32fafdcc6d0c4ae938dba7b8278f5",
+      "translation_text_hash": "be202aa974342c1d2ab9aec8d836fab9a7dc504345ea6aa50c97a86a0cc4caee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 이에 여호와의 전과 왕궁 곳간에 있는 은을 다 주었고"
+      ],
+      "raw_text_hashes": [
+        "be202aa974342c1d2ab9aec8d836fab9a7dc504345ea6aa50c97a86a0cc4caee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:16",
+      "sequence": 10041,
+      "chapter_label": "2KI 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "At that time, Hezekiah cut off the gold from the doors of the LORD’s temple, and from the pillars which Hezekiah king of Judah had overlaid, and gave it to the king of Assyria.",
+      "ko": "또 그 때에 유다 왕 히스기야가 여호와의 전 문의 금과 자기가 모든 기둥에 입힌 금을 벗겨 모두 앗수르 왕에게 주었더라",
+      "source_text_hash": "1ce540e6932ec1d2a974900d29c4910ed2b233ecb3fcb37a785dae5b606f55a5",
+      "translation_text_hash": "8652faac05ecb2364bcae3ab168ae136bba0aa0d44f42cd01c35e5e241c614ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 때에 유다 왕 히스기야가 여호와의 전 문의 금과 자기가 모든 기둥에 입힌 금을 벗겨 모두 앗수르 왕에게 주었더라"
+      ],
+      "raw_text_hashes": [
+        "8652faac05ecb2364bcae3ab168ae136bba0aa0d44f42cd01c35e5e241c614ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:17",
+      "sequence": 10042,
+      "chapter_label": "2KI 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "The king of Assyria sent Tartan, Rabsaris, and Rabshakeh from Lachish to King Hezekiah with a great army to Jerusalem. They went up and came to Jerusalem. When they had come up, they came and stood by the conduit of the upper pool, which is in the highway of the fuller’s field.",
+      "ko": "앗수르 왕이 다르단과 랍사리스와 랍사게로 대군을 거느리고 라기스에서부터 예루살렘으로 가서 히스기야왕을 치게 하매 저희가 예루살렘으로 올라가니라 저희가 올라가서 윗못 수도 곁 곧 세탁자의 밭에 있는 큰 길에 이르러 서니라",
+      "source_text_hash": "5fbede3f98ffeb10ddf765a2c0e1de1581beae8fe5b861a19d3102c3487833ca",
+      "translation_text_hash": "290df27341d39ef72e16f5f04806d02c2f8654cbdbd7dd68620da6cbb48804f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗수르 왕이 다르단과 랍사리스와 랍사게로 대군을 거느리고 라기스에서부터 예루살렘으로 가서 히스기야왕을 치게 하매 저희가 예루살렘으로 올라가니라 저희가 올라가서 윗못 수도 곁 곧 세탁자의 밭에 있는 큰 길에 이르러 서니라"
+      ],
+      "raw_text_hashes": [
+        "290df27341d39ef72e16f5f04806d02c2f8654cbdbd7dd68620da6cbb48804f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:18",
+      "sequence": 10043,
+      "chapter_label": "2KI 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "When they had called to the king, Eliakim the son of Hilkiah, who was over the household, and Shebnah the scribe, and Joah the son of Asaph the recorder came out to them.",
+      "ko": "저희가 왕을 부르매 힐기야의 아들 궁내대신 엘리야김과 서기관 셉나와 아삽의 아들 사관 요아가 저에게 나가니",
+      "source_text_hash": "737dbb886aa19742df3bb45348d917a08310a7ebeaa2ace0d499362ee5d0d921",
+      "translation_text_hash": "4bb01761bc421fd349d91377343c638f145b008b19fc11050d914ccafed753da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 왕을 부르매 힐기야의 아들 궁내대신 엘리야김과 서기관 셉나와 아삽의 아들 사관 요아가 저에게 나가니"
+      ],
+      "raw_text_hashes": [
+        "4bb01761bc421fd349d91377343c638f145b008b19fc11050d914ccafed753da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:19",
+      "sequence": 10044,
+      "chapter_label": "2KI 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "Rabshakeh said to them, “Say now to Hezekiah, ‘The great king, the king of Assyria, says, “What confidence is this in which you trust?",
+      "ko": "랍사게가 저희에게 이르되 너희는 히스기야에게 고하라 대왕 앗수르 왕의 말씀이 너의 의뢰하는 이 의뢰가 무엇이냐",
+      "source_text_hash": "7afef8c855d598726b87467834022ea04e99e325c8a5aaec2ca9caeac500842c",
+      "translation_text_hash": "cb46c1d3533afea238d5030cf7aa1d37f4c99353492572644abfb24dda3a9c52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "랍사게가 저희에게 이르되 너희는 히스기야에게 고하라 대왕 앗수르 왕의 말씀이 너의 의뢰하는 이 의뢰가 무엇이냐"
+      ],
+      "raw_text_hashes": [
+        "cb46c1d3533afea238d5030cf7aa1d37f4c99353492572644abfb24dda3a9c52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:20",
+      "sequence": 10045,
+      "chapter_label": "2KI 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "You say (but they are but vain words), ‘There is counsel and strength for war.’ Now on whom do you trust, that you have rebelled against me?",
+      "ko": "네가 싸울만한 계교와 용력이 있다고 한다마는 이는 입에 붙은 말 뿐이라 네가 이제 누구를 의뢰하고 나를 반역하였느냐",
+      "source_text_hash": "8c984badb9fd53d9463b8efb53ef0aa31f853fe26720ab067dbfa2753c79ab34",
+      "translation_text_hash": "f45f5a10af028ae4b4aac571ff48723f11bc730f3f626533f190e9f2e777cf03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 싸울만한 계교와 용력이 있다고 한다마는 이는 입에 붙은 말 뿐이라 네가 이제 누구를 의뢰하고 나를 반역하였느냐"
+      ],
+      "raw_text_hashes": [
+        "f45f5a10af028ae4b4aac571ff48723f11bc730f3f626533f190e9f2e777cf03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:21",
+      "sequence": 10046,
+      "chapter_label": "2KI 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "Now, behold, you trust in the staff of this bruised reed, even in Egypt. If a man leans on it, it will go into his hand and pierce it. So is Pharaoh king of Egypt to all who trust on him.",
+      "ko": "이제 네가 저 상한 갈대 지팡이 애굽을 의뢰하도다 사람이 그것을 의지하면 그 손에 찔려 들어갈찌라 애굽 왕 바로는 무릇 의뢰하는 자에게 이와 같으니라",
+      "source_text_hash": "712f48293fcfce2ca1dbeccfa8a7948cf43d63aa8987d2f130755621f337d9c3",
+      "translation_text_hash": "f9f0c5803af644d760dabab0cc8af7c62aa3d64d5bd909bf10aa6a44beb9e8cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 네가 저 상한 갈대 지팡이 애굽을 의뢰하도다 사람이 그것을 의지하면 그 손에 찔려 들어갈찌라 애굽 왕 바로는 무릇 의뢰하는 자에게 이와 같으니라"
+      ],
+      "raw_text_hashes": [
+        "f9f0c5803af644d760dabab0cc8af7c62aa3d64d5bd909bf10aa6a44beb9e8cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:22",
+      "sequence": 10047,
+      "chapter_label": "2KI 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "But if you tell me, ‘We trust in the LORD our God,’ isn’t that he whose high places and whose altars Hezekiah has taken away, and has said to Judah and to Jerusalem, ‘You shall worship before this altar in Jerusalem’?",
+      "ko": "너희가 혹시 내게 이르기를 우리는 우리 하나님 여호와를 의뢰하노라 하리라마는 히스기야가 여호와의 산당과 제단을 제하고 유다와 예루살렘 사람에게 명하기를 예루살렘 이 단 앞에서만 숭배하라 하지 아니하였느냐 하셨나니",
+      "source_text_hash": "44ead2e13e7765257189aa55becb40ebc6d5db4ebedb8d004111ecab11cfb133",
+      "translation_text_hash": "a6703f88c177f5d546890db8ba0ed6624fef4cc090e4186de16a26a6c92b081c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 혹시 내게 이르기를 우리는 우리 하나님 여호와를 의뢰하노라 하리라마는 히스기야가 여호와의 산당과 제단을 제하고 유다와 예루살렘 사람에게 명하기를 예루살렘 이 단 앞에서만 숭배하라 하지 아니하였느냐 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "a6703f88c177f5d546890db8ba0ed6624fef4cc090e4186de16a26a6c92b081c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:23",
+      "sequence": 10048,
+      "chapter_label": "2KI 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "Now therefore, please give pledges to my master the king of Assyria, and I will give you two thousand horses if you are able on your part to set riders on them.",
+      "ko": "이제 너는 내 주 앗수르 왕과 내기하라 네가 만일 그 말 탈 사람을 낼 수 있다면 나는 네게 말 이천필을 주리라",
+      "source_text_hash": "583740ca70aaccf3890c8d07d51fb6c4b430baa987943127b5f3e8e717e0a7ba",
+      "translation_text_hash": "87a60f28ac2a7cce626daf7f2486a24a4dc80822f5c37a162b193240b551ddfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너는 내 주 앗수르 왕과 내기하라 네가 만일 그 말 탈 사람을 낼 수 있다면 나는 네게 말 이천필을 주리라"
+      ],
+      "raw_text_hashes": [
+        "87a60f28ac2a7cce626daf7f2486a24a4dc80822f5c37a162b193240b551ddfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:24",
+      "sequence": 10049,
+      "chapter_label": "2KI 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "How then can you turn away the face of one captain of the least of my master’s servants, and put your trust on Egypt for chariots and for horsemen?",
+      "ko": "네가 어찌 내 주의 신복 중 지극히 작은 장관 하나인들 물리치며 애굽을 의뢰하고 그 병거와 기병을 얻을듯하냐",
+      "source_text_hash": "6a890f38d2624d8f64f9fd3714405200cc5323959a8e64241373e7a134def243",
+      "translation_text_hash": "f5be93f3df436748b7cd639dc4e40587b251a15c7c561fed6fd437d8a8e8f5e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌 내 주의 신복 중 지극히 작은 장관 하나인들 물리치며 애굽을 의뢰하고 그 병거와 기병을 얻을듯하냐"
+      ],
+      "raw_text_hashes": [
+        "f5be93f3df436748b7cd639dc4e40587b251a15c7c561fed6fd437d8a8e8f5e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:25",
+      "sequence": 10050,
+      "chapter_label": "2KI 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "Have I now come up without the LORD against this place to destroy it? The LORD said to me, ‘Go up against this land, and destroy it.’”’”",
+      "ko": "내가 어찌 여호와의 뜻이 아니고야 이제 이곳을 멸하러 올라왔겠느냐 여호와께서 전에 내게 이르시기를 이 땅으로 올라와서 쳐서 멸하라 하셨느니라",
+      "source_text_hash": "196b482a7081b0929734c223831f9cf869f3e7ba74bb8f3e2acd7b00cd6675fc",
+      "translation_text_hash": "c10b4f60fc156514b93959a8cc6a319360670c2bb85b558c0f37aee0b0997675",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 어찌 여호와의 뜻이 아니고야 이제 이곳을 멸하러 올라왔겠느냐 여호와께서 전에 내게 이르시기를 이 땅으로 올라와서 쳐서 멸하라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "c10b4f60fc156514b93959a8cc6a319360670c2bb85b558c0f37aee0b0997675"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:26",
+      "sequence": 10051,
+      "chapter_label": "2KI 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "Then Eliakim the son of Hilkiah, Shebnah, and Joah, said to Rabshakeh, “Please speak to your servants in the Syrian language, for we understand it. Don’t speak with us in the Jews’ language, in the hearing of the people who are on the wall.”",
+      "ko": "힐기야의 아들 엘리야김과 셉나와 요아가 랍사게에게 이르되 우리가 알아듣겠사오니 청컨대 아람 방언으로 당신의 종들에게 말씀하시고 성 위에 있는 백성의 듣는데 유다 방언으로 우리에게 말씀하지 마옵소서",
+      "source_text_hash": "b3ddaedc277532304bd741d55c175fbbcd3284ee2b64a24dbe634d343ea2651f",
+      "translation_text_hash": "244e2e3fa541efb7adcad6760c90370946b3a6ee6fc5367f87eaa36a20d56288",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힐기야의 아들 엘리야김과 셉나와 요아가 랍사게에게 이르되 우리가 알아듣겠사오니 청컨대 아람 방언으로 당신의 종들에게 말씀하시고 성 위에 있는 백성의 듣는데 유다 방언으로 우리에게 말씀하지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "244e2e3fa541efb7adcad6760c90370946b3a6ee6fc5367f87eaa36a20d56288"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:27",
+      "sequence": 10052,
+      "chapter_label": "2KI 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "But Rabshakeh said to them, “Has my master sent me to your master and to you, to speak these words? Hasn’t he sent me to the men who sit on the wall, to eat their own dung, and to drink their own urine with you?”",
+      "ko": "랍사게가 저에게 이르되 내 주께서 네 주와 네게만 이 말을 하라고 나를 보내신 것이냐 성 위에 앉은 사람들로도 너희와 함께 자기의 대변을 먹게 하고 자기의 소변을 마시게 하신 것이 아니냐 하고",
+      "source_text_hash": "de3a2e42fe81da86bb4c1749dda63aa95d0f27a04d87b89d7708e2fbcac28e0a",
+      "translation_text_hash": "b127ff3caac849fad5c87206d59cfd85ea1cd61efdf8a3df2bda5748e796636b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "랍사게가 저에게 이르되 내 주께서 네 주와 네게만 이 말을 하라고 나를 보내신 것이냐 성 위에 앉은 사람들로도 너희와 함께 자기의 대변을 먹게 하고 자기의 소변을 마시게 하신 것이 아니냐 하고"
+      ],
+      "raw_text_hashes": [
+        "b127ff3caac849fad5c87206d59cfd85ea1cd61efdf8a3df2bda5748e796636b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:28",
+      "sequence": 10053,
+      "chapter_label": "2KI 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "Then Rabshakeh stood and cried with a loud voice in the Jews’ language, and spoke, saying, “Hear the word of the great king, the king of Assyria.",
+      "ko": "랍사게가 드디어 일어 서서 유다 방언으로 크게 소리질러 불러 가로되 너희는 대왕 앗수르 왕의 말씀을 들으라",
+      "source_text_hash": "ce328c4d513af5d811640ddd93e25c7b322df9a7b4735e6c3304c1e1d7d6be35",
+      "translation_text_hash": "e43bb00735b82a31c036b536a0fcc5fb84bf647490b285376fef54b8447575fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "랍사게가 드디어 일어 서서 유다 방언으로 크게 소리질러 불러 가로되 너희는 대왕 앗수르 왕의 말씀을 들으라"
+      ],
+      "raw_text_hashes": [
+        "e43bb00735b82a31c036b536a0fcc5fb84bf647490b285376fef54b8447575fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:29",
+      "sequence": 10054,
+      "chapter_label": "2KI 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "The king says, ‘Don’t let Hezekiah deceive you, for he will not be able to deliver you out of his hand.",
+      "ko": "왕의 말씀이 너희는 히스기야에게 속지 말라 저가 너희를 내 손에서 건져내지 못하리라",
+      "source_text_hash": "effdb0929ad7e49450dd1b9f73fafddff4454086a0f33a6f3640ff6bcd4ea1a3",
+      "translation_text_hash": "048377546df6c4df0bc8fbb310a327e4c90cf68a60a03088552a38b881ce9873",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 말씀이 너희는 히스기야에게 속지 말라 저가 너희를 내 손에서 건져내지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "048377546df6c4df0bc8fbb310a327e4c90cf68a60a03088552a38b881ce9873"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:30",
+      "sequence": 10055,
+      "chapter_label": "2KI 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "Don’t let Hezekiah make you trust in the LORD, saying, “The LORD will surely deliver us, and this city shall not be given into the hand of the king of Assyria.”",
+      "ko": "또한 히스기야가 너희로 여호와를 의뢰하라 함을 듣지 말라 저가 이르기를 여호와께서 정녕 우리를 건지실찌라 이 성이 앗수르 왕의 손에 함락되지 않게 하시리라 할찌라도",
+      "source_text_hash": "89734f54342362e1328abf643efcb843391c1f2e2f09f8f253ea8b2cc2e9bd59",
+      "translation_text_hash": "434d082359f824aa893320b95e775e1198e291c85462044cab2bc9e5ed3e036f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 히스기야가 너희로 여호와를 의뢰하라 함을 듣지 말라 저가 이르기를 여호와께서 정녕 우리를 건지실찌라 이 성이 앗수르 왕의 손에 함락되지 않게 하시리라 할찌라도"
+      ],
+      "raw_text_hashes": [
+        "434d082359f824aa893320b95e775e1198e291c85462044cab2bc9e5ed3e036f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:31",
+      "sequence": 10056,
+      "chapter_label": "2KI 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "Don’t listen to Hezekiah.’ For the king of Assyria says, ‘Make your peace with me, and come out to me; and everyone of you eat from his own vine, and everyone from his own fig tree, and everyone drink water from his own cistern;",
+      "ko": "너희는 히스기야의 말을 듣지 말라 앗수르 왕의 말씀이 너희는 내게 항복하고 내게로 나아오라 그리하고 너희는 각각 그 포도와 무화과를 먹고 또한 각각 자기의 우물의 물을 마시라",
+      "source_text_hash": "0f2865f9d9cc6fe9eab48372a0f6ad02d87084225917b4529d15b18cdf2f009a",
+      "translation_text_hash": "39342521ba04de7e572a17bb92231d3628b9a06d2661d19c92d8a5400a272b3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 히스기야의 말을 듣지 말라 앗수르 왕의 말씀이 너희는 내게 항복하고 내게로 나아오라 그리하고 너희는 각각 그 포도와 무화과를 먹고 또한 각각 자기의 우물의 물을 마시라"
+      ],
+      "raw_text_hashes": [
+        "39342521ba04de7e572a17bb92231d3628b9a06d2661d19c92d8a5400a272b3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:32",
+      "sequence": 10057,
+      "chapter_label": "2KI 18",
+      "verse_label": "32",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 32
+        }
+      ],
+      "en": "until I come and take you away to a land like your own land, a land of grain and new wine, a land of bread and vineyards, a land of olive trees and of honey, that you may live and not die. Don’t listen to Hezekiah when he persuades you, saying, “The LORD will deliver us.”",
+      "ko": "내가 장차 와서 너희를 한 지방으로 옮기리니 그곳은 너희 본토와 같은 지방 곧 곡식과 포도주가 있는 지방이요 떡과 포도원이 있는 지방이요 기름 나는 감람과 꿀이 있는 지방이라 너희가 살고 죽지 아니하리라 히스기야가 너희를 면려하여 이르기를 여호와께서 우리를 건지시리라 하여도 듣지 말라",
+      "source_text_hash": "01bf1d6c1457d0c823b2bfbe7a43f79ca466d078a8cd1760e14165cccb4cac97",
+      "translation_text_hash": "4443bb451403cad1939b70753bf284b97708fb656446db50b860c4dac91bdbe6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 장차 와서 너희를 한 지방으로 옮기리니 그곳은 너희 본토와 같은 지방 곧 곡식과 포도주가 있는 지방이요 떡과 포도원이 있는 지방이요 기름 나는 감람과 꿀이 있는 지방이라 너희가 살고 죽지 아니하리라 히스기야가 너희를 면려하여 이르기를 여호와께서 우리를 건지시리라 하여도 듣지 말라"
+      ],
+      "raw_text_hashes": [
+        "4443bb451403cad1939b70753bf284b97708fb656446db50b860c4dac91bdbe6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:33",
+      "sequence": 10058,
+      "chapter_label": "2KI 18",
+      "verse_label": "33",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 33
+        }
+      ],
+      "en": "Has any of the gods of the nations ever delivered his land out of the hand of the king of Assyria?",
+      "ko": "열국의 신들 중에 그 땅을 앗수르 왕의 손에서 건진 자가 있느냐",
+      "source_text_hash": "7dab951fa2b7d9b37cad0baae33f8c6475952922dda90c100c9fb112e4a3b2b7",
+      "translation_text_hash": "18f7e136aeed52d9d0be2b334a774ecdd6dbf3f24f8e0bea59dc308350b27c23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국의 신들 중에 그 땅을 앗수르 왕의 손에서 건진 자가 있느냐"
+      ],
+      "raw_text_hashes": [
+        "18f7e136aeed52d9d0be2b334a774ecdd6dbf3f24f8e0bea59dc308350b27c23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:34",
+      "sequence": 10059,
+      "chapter_label": "2KI 18",
+      "verse_label": "34",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 34
+        }
+      ],
+      "en": "Where are the gods of Hamath and of Arpad? Where are the gods of Sepharvaim, of Hena, and Ivvah? Have they delivered Samaria out of my hand?",
+      "ko": "하맛과 아르밧의 신들이 어디 있으며 스발와임과 헤나와 아와의 신들이 어디 있느냐 그들이 사마리아를 내 손에서 건졌느냐",
+      "source_text_hash": "d63a97a15f2de2d5bf9ebde66694ca7cff94f378da359f2d051d07ec9e41e34c",
+      "translation_text_hash": "c2749eb0cfa447f77ee8d87a697fff79adc4b73a00b1ee4fd50aada1c061cca7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하맛과 아르밧의 신들이 어디 있으며 스발와임과 헤나와 아와의 신들이 어디 있느냐 그들이 사마리아를 내 손에서 건졌느냐"
+      ],
+      "raw_text_hashes": [
+        "c2749eb0cfa447f77ee8d87a697fff79adc4b73a00b1ee4fd50aada1c061cca7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:35",
+      "sequence": 10060,
+      "chapter_label": "2KI 18",
+      "verse_label": "35",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 35
+        }
+      ],
+      "en": "Who are they among all the gods of the countries, that have delivered their country out of my hand, that the LORD should deliver Jerusalem out of my hand?’”",
+      "ko": "열국의 모든 신 중에 누가 그 땅을 내 손에서 건졌기에 여호와가 예루살렘을 내 손에서 능히 건지겠느냐 하셨느니라",
+      "source_text_hash": "61f09b873181e3db2d8adbb5d9bdd9cc97f38bc9c8112d78b2e41bae728f427c",
+      "translation_text_hash": "490f4fdc63c1a22d9e037519c1b9a014bbdb1a270758798bb762c526d20767d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국의 모든 신 중에 누가 그 땅을 내 손에서 건졌기에 여호와가 예루살렘을 내 손에서 능히 건지겠느냐 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "490f4fdc63c1a22d9e037519c1b9a014bbdb1a270758798bb762c526d20767d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:36",
+      "sequence": 10061,
+      "chapter_label": "2KI 18",
+      "verse_label": "36",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 36
+        }
+      ],
+      "en": "But the people stayed quiet, and answered him not a word; for the king’s commandment was, “Don’t answer him.”",
+      "ko": "그러나 백성이 잠잠하고 한 말도 대답지 아니하니 이는 왕이 명하여 대답하지 말라 하였음이라",
+      "source_text_hash": "7e589ddc6ef9aebcf40b3a16daf2518fd8f1a13840ae99432aa8d6181f92169e",
+      "translation_text_hash": "c826da24b35dcee950a3d373d4187dd3f28f4a800b5ce25ae830fa7a251908a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 백성이 잠잠하고 한 말도 대답지 아니하니 이는 왕이 명하여 대답하지 말라 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "c826da24b35dcee950a3d373d4187dd3f28f4a800b5ce25ae830fa7a251908a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:18:37",
+      "sequence": 10062,
+      "chapter_label": "2KI 18",
+      "verse_label": "37",
+      "locator": {
+        "book": "2KI",
+        "chapter": 18,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 18,
+          "verse": 37
+        }
+      ],
+      "en": "Then Eliakim the son of Hilkiah, who was over the household, came with Shebna the scribe and Joah the son of Asaph the recorder to Hezekiah with their clothes torn, and told him Rabshakeh’s words.",
+      "ko": "이에 힐기야의 아들 궁내대신 엘리야김과 서기관 셉나와 아삽의 아들 사관 요아가 그 옷을 찢고 히스기야에게 나아가서 랍사게의 말을 고하니라",
+      "source_text_hash": "9212857516d3053133bb70b5ae92fc232dda97e5b21bad590754e0b92a4dcf24",
+      "translation_text_hash": "254919103d16115a4f065f832a291f6a15650a44bc660742b8102acadea2dfa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 힐기야의 아들 궁내대신 엘리야김과 서기관 셉나와 아삽의 아들 사관 요아가 그 옷을 찢고 히스기야에게 나아가서 랍사게의 말을 고하니라"
+      ],
+      "raw_text_hashes": [
+        "254919103d16115a4f065f832a291f6a15650a44bc660742b8102acadea2dfa5"
+      ]
+    }
+  ]
+}

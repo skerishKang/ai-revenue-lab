@@ -468,7 +468,7 @@
     var input = h(doc, "input", {
       id: FILE_INPUT_ID,
       type: "file",
-      accept: ".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp",
+      accept: ".pdf,.docx,.pptx,.xlsx,.hwp,.hwpx,.jpg,.jpeg,.png,.webp",
       hidden: true
     }, []);
     input.addEventListener("change", onFileChosen);

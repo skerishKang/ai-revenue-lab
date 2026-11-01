@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:011",
+  "unit_ordinal": 813,
+  "unit_label": "EZK 11",
+  "book_code": "EZK",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:11:1",
+      "sequence": 20657,
+      "chapter_label": "EZK 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Moreover the Spirit lifted me up and brought me to the east gate of the LORD’s house, which looks eastward. Behold, twenty-five men were at the door of the gate; and I saw among them Jaazaniah the son of Azzur, and Pelatiah the son of Benaiah, princes of the people.",
+      "ko": "때에 주의 신이 나를 들어 데리고 여호와의 전 동문 곧 동향한 문에 이르시기로 본즉 그 문에 이십 오인이 있는데 내가 그 중에서 앗술의 아들 야아사냐와 브나야의 아들 블라댜를 보았으니 그들은 백성의 방백이라",
+      "source_text_hash": "5f941a5735ad52762b8eb03037e48e17d58fe7518130509525a7bcff2e93495f",
+      "translation_text_hash": "63a9dfaf003bbdd0be5d31b45987685f4c90f044376ae17d937ca0eb58a9f141",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 주의 신이 나를 들어 데리고 여호와의 전 동문 곧 동향한 문에 이르시기로 본즉 그 문에 이십 오인이 있는데 내가 그 중에서 앗술의 아들 야아사냐와 브나야의 아들 블라댜를 보았으니 그들은 백성의 방백이라"
+      ],
+      "raw_text_hashes": [
+        "63a9dfaf003bbdd0be5d31b45987685f4c90f044376ae17d937ca0eb58a9f141"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:2",
+      "sequence": 20658,
+      "chapter_label": "EZK 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "He said to me, “Son of man, these are the men who devise iniquity, and who give wicked counsel in this city;",
+      "ko": "그가 내게 이르시되 인자야 이 사람들은 불의를 품고 이 성중에서 악한 꾀를 베푸는 자니라",
+      "source_text_hash": "d738285ad65e1b08cb485846a1f7ffc83224ca2d80e3e716d221c24c666ea94c",
+      "translation_text_hash": "4f857f72724d155c8c44f9889c583d16568930ca15c2cab721106f425e5a8459",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 인자야 이 사람들은 불의를 품고 이 성중에서 악한 꾀를 베푸는 자니라"
+      ],
+      "raw_text_hashes": [
+        "4f857f72724d155c8c44f9889c583d16568930ca15c2cab721106f425e5a8459"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:3",
+      "sequence": 20659,
+      "chapter_label": "EZK 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "who say, ‘The time is not near to build houses. This is the cauldron, and we are the meat.’",
+      "ko": "그들의 말이 집 건축할 때가 가깝지 아니한즉 이 성읍은 가마가 되고 우리는 고기가 된다 하나니",
+      "source_text_hash": "2374284ce70a280d5190db4651160a30d953700fd77b5238cbc4c5ec258122d6",
+      "translation_text_hash": "58a20278476ef8a4d5c7a2db6adddc0ee6587f132a325d75dd538f9c6dbcbb18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 말이 집 건축할 때가 가깝지 아니한즉 이 성읍은 가마가 되고 우리는 고기가 된다 하나니"
+      ],
+      "raw_text_hashes": [
+        "58a20278476ef8a4d5c7a2db6adddc0ee6587f132a325d75dd538f9c6dbcbb18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:4",
+      "sequence": 20660,
+      "chapter_label": "EZK 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "Therefore prophesy against them. Prophesy, son of man.”",
+      "ko": "그러므로 인자야 너는 그들을 쳐서 예언하고 예언할찌니라",
+      "source_text_hash": "a58447974f9961b1e30acbdd8a11e36d7a37fee14082d6656f1186bf0959b768",
+      "translation_text_hash": "0c9ce9fdd356274c42692fbeb11b4839e97bce9a4640cdd144507e57546e4013",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 인자야 너는 그들을 쳐서 예언하고 예언할찌니라"
+      ],
+      "raw_text_hashes": [
+        "0c9ce9fdd356274c42692fbeb11b4839e97bce9a4640cdd144507e57546e4013"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:5",
+      "sequence": 20661,
+      "chapter_label": "EZK 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD’s Spirit fell on me, and he said to me, “Speak, ‘The LORD says: “Thus you have said, house of Israel; for I know the things that come into your mind.",
+      "ko": "여호와의 신이 내게 임하여 가라사대 너는 말하기를 여호와의 말씀에 이스라엘 족속아 너희가 이렇게 말하였도다 너희 마음에서 일어나는 것을 내가 다 아노라",
+      "source_text_hash": "4423cce9040fb9ce2007c17532f3e63d671b6a4cfa9ab1ef658de47525fa13f9",
+      "translation_text_hash": "e2e11d950bbdfb18322394f6e12efbf9a25f2aa2d471c49b92b604c6a4ad655b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 신이 내게 임하여 가라사대 너는 말하기를 여호와의 말씀에 이스라엘 족속아 너희가 이렇게 말하였도다 너희 마음에서 일어나는 것을 내가 다 아노라"
+      ],
+      "raw_text_hashes": [
+        "e2e11d950bbdfb18322394f6e12efbf9a25f2aa2d471c49b92b604c6a4ad655b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:6",
+      "sequence": 20662,
+      "chapter_label": "EZK 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "You have multiplied your slain in this city, and you have filled its streets with the slain.”",
+      "ko": "너희가 이 성읍에서 많이 살륙하여 그 시체로 거리에 채웠도다",
+      "source_text_hash": "9784e55f839f8c2470845c3653b18cb5a9c5c9be2ba3e425dd9ef384c1ca1e2b",
+      "translation_text_hash": "e2b9a83aeb18a15aae507c37b9a2fada140c79820d981fd4017f992e814f12ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이 성읍에서 많이 살륙하여 그 시체로 거리에 채웠도다"
+      ],
+      "raw_text_hashes": [
+        "e2b9a83aeb18a15aae507c37b9a2fada140c79820d981fd4017f992e814f12ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:7",
+      "sequence": 20663,
+      "chapter_label": "EZK 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "“‘Therefore the Lord GOD says: “Your slain whom you have laid in the middle of it, they are the meat, and this is the cauldron; but you will be brought out of the middle of it.",
+      "ko": "그러므로 나 주 여호와가 말하노라 이 성읍 중에서 너희가 살륙한 시체는 그 고기요 이 성읍은 그 가마려니와 너희는 그 가운데서 끌려 나오리라",
+      "source_text_hash": "68eacc390c986cee90b8ef244abb0213277def50600e62a8f31212dfba979f4e",
+      "translation_text_hash": "f50794de990ab9149619b397b28c884103ee4c68b854b709409086ced51efdd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 이 성읍 중에서 너희가 살륙한 시체는 그 고기요 이 성읍은 그 가마려니와 너희는 그 가운데서 끌려 나오리라"
+      ],
+      "raw_text_hashes": [
+        "f50794de990ab9149619b397b28c884103ee4c68b854b709409086ced51efdd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:8",
+      "sequence": 20664,
+      "chapter_label": "EZK 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "You have feared the sword; and I will bring the sword on you,” says the Lord GOD.",
+      "ko": "나 주 여호와가 말하노라 너희가 칼을 두려워하니 내가 칼로 너희에게 임하게 하고",
+      "source_text_hash": "9b32cbffd27709ed8900cddf4b1cace3b3878bbbdc076501082bde9e4bebbeca",
+      "translation_text_hash": "4ca6f033792a6b55ddca8d20f04e80f49551079df63e36b5084597baf6ba0de9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 너희가 칼을 두려워하니 내가 칼로 너희에게 임하게 하고"
+      ],
+      "raw_text_hashes": [
+        "4ca6f033792a6b55ddca8d20f04e80f49551079df63e36b5084597baf6ba0de9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:9",
+      "sequence": 20665,
+      "chapter_label": "EZK 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "“I will bring you out of the middle of it, and deliver you into the hands of strangers, and will execute judgments among you.",
+      "ko": "너희를 그 성읍 가운데서 끌어내어 타국인의 손에 붙여 너희에게 벌을 내리리니",
+      "source_text_hash": "44776a37c2fb49a44b34c9f917e9b47cc9f830c1fe1ec61fb430987a1ab56fa6",
+      "translation_text_hash": "33c40385f7b669bc737f9b14df1c277f39075f1d72c411affca115267b7554b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 그 성읍 가운데서 끌어내어 타국인의 손에 붙여 너희에게 벌을 내리리니"
+      ],
+      "raw_text_hashes": [
+        "33c40385f7b669bc737f9b14df1c277f39075f1d72c411affca115267b7554b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:10",
+      "sequence": 20666,
+      "chapter_label": "EZK 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "You will fall by the sword. I will judge you in the border of Israel. Then you will know that I am the LORD.",
+      "ko": "너희가 칼에 엎드러질 것이라 내가 이스라엘 변경에서 너희를 국문하리니 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "849da49154c6d209a620386b2aab9b40a325d096730725f7c6747faa43129f7a",
+      "translation_text_hash": "942882953df083e05e887e1723f4b0ba044b7c445df940d1fd65321898d9ed49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 칼에 엎드러질 것이라 내가 이스라엘 변경에서 너희를 국문하리니 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "942882953df083e05e887e1723f4b0ba044b7c445df940d1fd65321898d9ed49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:11",
+      "sequence": 20667,
+      "chapter_label": "EZK 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "This will not be your cauldron, neither will you be the meat in the middle of it. I will judge you in the border of Israel.",
+      "ko": "이 성읍은 너희 가마가 되지 아니하고 너희는 그 가운데 고기가 되지 아니할찌라 내가 너희를 이스라엘 변경에서 국문하리니",
+      "source_text_hash": "a4ed21ea25c89ec9a8d9a5ab7868112af3ad0b509865e0b37936d64edaa6a91b",
+      "translation_text_hash": "ceb7347d9f0b8a3f29211bf5f6f46362e2cb6a8599c36662acc9018c4833635a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 성읍은 너희 가마가 되지 아니하고 너희는 그 가운데 고기가 되지 아니할찌라 내가 너희를 이스라엘 변경에서 국문하리니"
+      ],
+      "raw_text_hashes": [
+        "ceb7347d9f0b8a3f29211bf5f6f46362e2cb6a8599c36662acc9018c4833635a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:12",
+      "sequence": 20668,
+      "chapter_label": "EZK 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "You will know that I am the LORD, for you have not walked in my statutes. You have not executed my ordinances, but have done after the ordinances of the nations that are around you.”’”",
+      "ko": "너희가 나를 여호와인줄 알리라 너희가 내 율례를 행치 아니하며 규례를 지키지 아니하고 너희 사면에 있는 이방인의 규례대로 행하였느니라 하셨다 하라",
+      "source_text_hash": "12be65116fcd0a7f6c3bba8b32232fb80d2b714fa8eb033a6544b7f815f96440",
+      "translation_text_hash": "03ddf3bb04682c8de7d8f36c658541d4f9ee456853ff9d06cf31d622930e43ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나를 여호와인줄 알리라 너희가 내 율례를 행치 아니하며 규례를 지키지 아니하고 너희 사면에 있는 이방인의 규례대로 행하였느니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "03ddf3bb04682c8de7d8f36c658541d4f9ee456853ff9d06cf31d622930e43ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:13",
+      "sequence": 20669,
+      "chapter_label": "EZK 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "When I prophesied, Pelatiah the son of Benaiah died. Then I fell down on my face, and cried with a loud voice, and said, “Ah Lord GOD! Will you make a full end of the remnant of Israel?”",
+      "ko": "이에 내가 예언할 때에 브나야의 아들 블라댜가 죽기로 내가 엎드리어 큰 소리로 부르짖어 가로되 오호라 주 여호와여 이스라엘의 남은 자를 다 멸절하고자 하시나이까 하니라",
+      "source_text_hash": "5f3421bdde27f6075def8163b855b588fb1adb5017cb51b7c6768346e75f47be",
+      "translation_text_hash": "795a195e0eccdeff50706fbe58cf754da7fa302cb1066b17a83ad8e3eaa9bead",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 예언할 때에 브나야의 아들 블라댜가 죽기로 내가 엎드리어 큰 소리로 부르짖어 가로되 오호라 주 여호와여 이스라엘의 남은 자를 다 멸절하고자 하시나이까 하니라"
+      ],
+      "raw_text_hashes": [
+        "795a195e0eccdeff50706fbe58cf754da7fa302cb1066b17a83ad8e3eaa9bead"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:14",
+      "sequence": 20670,
+      "chapter_label": "EZK 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:15",
+      "sequence": 20671,
+      "chapter_label": "EZK 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "“Son of man, your brothers, even your brothers, the men of your relatives, and all the house of Israel, all of them, are the ones to whom the inhabitants of Jerusalem have said, ‘Go far away from the LORD. This land has been given to us for a possession.’",
+      "ko": "인자야 예루살렘 거민이 너의 형제 곧 너의 형제와 친속과 이스라엘 온 족속을 향하여 이르기를 너희는 여호와에게서 멀리 떠나라 이 땅은 우리에게 주어 기업이 되게 하신 것이라 하였나니",
+      "source_text_hash": "690ca402a6085f1f6e85e4a69bd6cd39c0a4158214dc46983f621842464345e3",
+      "translation_text_hash": "c0e6c675ea2e8baa6636694d21b667228fae2f38a317277e48c46afd80bc0d6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 예루살렘 거민이 너의 형제 곧 너의 형제와 친속과 이스라엘 온 족속을 향하여 이르기를 너희는 여호와에게서 멀리 떠나라 이 땅은 우리에게 주어 기업이 되게 하신 것이라 하였나니"
+      ],
+      "raw_text_hashes": [
+        "c0e6c675ea2e8baa6636694d21b667228fae2f38a317277e48c46afd80bc0d6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:16",
+      "sequence": 20672,
+      "chapter_label": "EZK 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "“Therefore say, ‘The Lord GOD says: “Whereas I have removed them far off among the nations, and whereas I have scattered them among the countries, yet I will be to them a sanctuary for a little while in the countries where they have come.”’",
+      "ko": "그런즉 너는 말하기를 주 여호와의 말씀에 내가 비록 그들을 멀리 이방인 가운데로 쫓고 열방에 흩었으나 그들이 이른 열방에서 내가 잠간 그들에게 성소가 되리라 하셨다 하고",
+      "source_text_hash": "0902dc869f6c1ee7ba13fef3e27469fae6379e8e33ed32a8f7fd5e99cfd9cee3",
+      "translation_text_hash": "0eb2997bdb774dfd99065eb00cca73fb5ab247785ae8e3c298a64dbdba95fe01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 말하기를 주 여호와의 말씀에 내가 비록 그들을 멀리 이방인 가운데로 쫓고 열방에 흩었으나 그들이 이른 열방에서 내가 잠간 그들에게 성소가 되리라 하셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "0eb2997bdb774dfd99065eb00cca73fb5ab247785ae8e3c298a64dbdba95fe01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:17",
+      "sequence": 20673,
+      "chapter_label": "EZK 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "“Therefore say, ‘The Lord GOD says: “I will gather you from the peoples, and assemble you out of the countries where you have been scattered, and I will give you the land of Israel.”",
+      "ko": "너는 또 말하기를 주 여호와의 말씀에 내가 너희를 만민 가운데서 모으며 너희를 흩은 열방 가운데서 모아 내고 이스라엘 땅으로 너희에게 주리라 하셨다 하라",
+      "source_text_hash": "c904f8018c142d7121f72d63cef7172bdfa1d24d4f3c3e4763fb77db7e6a33bd",
+      "translation_text_hash": "1eb9051e6b469e6a885f620bebf201d08ef53358bdaa7bd1391242e1d9830fa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 말하기를 주 여호와의 말씀에 내가 너희를 만민 가운데서 모으며 너희를 흩은 열방 가운데서 모아 내고 이스라엘 땅으로 너희에게 주리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "1eb9051e6b469e6a885f620bebf201d08ef53358bdaa7bd1391242e1d9830fa0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:18",
+      "sequence": 20674,
+      "chapter_label": "EZK 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "“‘They will come there, and they will take away all its detestable things and all its abominations from there.",
+      "ko": "그들이 그리로 가서 그 가운데 모든 미운 물건과 가증한 것을 제하여 버릴찌라",
+      "source_text_hash": "57c323edb1e2b76e22a331c63dc521cd72e3712eb3a24553192498a2af4b70fd",
+      "translation_text_hash": "227a5e88b458fea8f8b6d9a353b6a69af7c0781f3b617330ecc8ac72965be3cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그리로 가서 그 가운데 모든 미운 물건과 가증한 것을 제하여 버릴찌라"
+      ],
+      "raw_text_hashes": [
+        "227a5e88b458fea8f8b6d9a353b6a69af7c0781f3b617330ecc8ac72965be3cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:19",
+      "sequence": 20675,
+      "chapter_label": "EZK 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "I will give them one heart, and I will put a new spirit within them. I will take the stony heart out of their flesh, and will give them a heart of flesh,",
+      "ko": "내가 그들에게 일치한 마음을 주고 그 속에 새 신을 주며 그 몸에서 굳은 마음을 제하고 부드러운 마음을 주어서",
+      "source_text_hash": "a1d13f66b586ce6709652a050db85fd42d59752b24142199a96eead4d246b437",
+      "translation_text_hash": "354d78c0617d9ba5692b0d0fec0c93822a6f34ad3430da9b6434340add814d77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들에게 일치한 마음을 주고 그 속에 새 신을 주며 그 몸에서 굳은 마음을 제하고 부드러운 마음을 주어서"
+      ],
+      "raw_text_hashes": [
+        "354d78c0617d9ba5692b0d0fec0c93822a6f34ad3430da9b6434340add814d77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:20",
+      "sequence": 20676,
+      "chapter_label": "EZK 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "that they may walk in my statutes, and keep my ordinances, and do them. They will be my people, and I will be their God.",
+      "ko": "내 율례를 좇으며 내 규례를 지켜 행하게 하리니 그들은 내 백성이 되고 나는 그들의 하나님이 되리라",
+      "source_text_hash": "e73b651b6862cbd151f0575d1c46d1b5b484ee4a8983922ca444845e04d60448",
+      "translation_text_hash": "2cfc2765e3a706f7cb37bd344bf73fe1dfb57247a72c5f6e8708114a42fd0c98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 율례를 좇으며 내 규례를 지켜 행하게 하리니 그들은 내 백성이 되고 나는 그들의 하나님이 되리라"
+      ],
+      "raw_text_hashes": [
+        "2cfc2765e3a706f7cb37bd344bf73fe1dfb57247a72c5f6e8708114a42fd0c98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:21",
+      "sequence": 20677,
+      "chapter_label": "EZK 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "But as for them whose heart walks after the heart of their detestable things and their abominations, I will bring their way on their own heads,’ says the Lord GOD.”",
+      "ko": "그러나 미운 것과 가증한 것을 마음으로 좇는 자는 내가 그 행위대로 그 머리에 갚으리라 나 주 여호와의 말이니라",
+      "source_text_hash": "0939162e8dfa76c3acceec8924cf017f629100282d4d0fac920b12ef69fe410d",
+      "translation_text_hash": "e200931be7219db0b1f36c5c588093db8def27d438ea283f075a29c0370131fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 미운 것과 가증한 것을 마음으로 좇는 자는 내가 그 행위대로 그 머리에 갚으리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "e200931be7219db0b1f36c5c588093db8def27d438ea283f075a29c0370131fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:22",
+      "sequence": 20678,
+      "chapter_label": "EZK 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "Then the cherubim lifted up their wings, and the wheels were beside them. The glory of the God of Israel was over them above.",
+      "ko": "때에 그룹들이 날개를 드는데 바퀴도 그 곁에 있고 이스라엘 하나님의 영광도 그 위에 덮였더니",
+      "source_text_hash": "293a514ca9040f75d0bb2826ae3fb1e70e530077d2ea714166e71198c5fd6c96",
+      "translation_text_hash": "56838833829c1b0d8ebccc46a2491ce1b92ee4771ebc5a219708424211cf5ae7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 그룹들이 날개를 드는데 바퀴도 그 곁에 있고 이스라엘 하나님의 영광도 그 위에 덮였더니"
+      ],
+      "raw_text_hashes": [
+        "56838833829c1b0d8ebccc46a2491ce1b92ee4771ebc5a219708424211cf5ae7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:23",
+      "sequence": 20679,
+      "chapter_label": "EZK 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD’s glory went up from the middle of the city, and stood on the mountain which is on the east side of the city.",
+      "ko": "여호와의 영광이 성읍 중에서부터 올라가서 성읍 동편 산에 머물고",
+      "source_text_hash": "e5bbaedc320965e57885033520406496ddfd551988f90ee7e5a0bbf3d561aeba",
+      "translation_text_hash": "c3943965e858919adbd59d766b4d30eaa88f586c5460e4450d8fa199f49df3cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 영광이 성읍 중에서부터 올라가서 성읍 동편 산에 머물고"
+      ],
+      "raw_text_hashes": [
+        "c3943965e858919adbd59d766b4d30eaa88f586c5460e4450d8fa199f49df3cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:24",
+      "sequence": 20680,
+      "chapter_label": "EZK 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "The Spirit lifted me up, and brought me in the vision by the Spirit of God into Chaldea, to the captives. So the vision that I had seen went up from me.",
+      "ko": "주의 신이 나를 들어 하나님의 신의 이상 중에 데리고 갈대아에 있는 사로잡힌 자 중에 이르시더니 내가 보는 이상이 나를 떠난지라",
+      "source_text_hash": "512eac0cc4bacdb97cf1d87e6d1f6ef2a1dd04e87d28b8aa403db3383d51f927",
+      "translation_text_hash": "59999b5b815e5fa1b92f894ed3691571f0dc7c6710435cd8df50a452f371688e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 신이 나를 들어 하나님의 신의 이상 중에 데리고 갈대아에 있는 사로잡힌 자 중에 이르시더니 내가 보는 이상이 나를 떠난지라"
+      ],
+      "raw_text_hashes": [
+        "59999b5b815e5fa1b92f894ed3691571f0dc7c6710435cd8df50a452f371688e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:11:25",
+      "sequence": 20681,
+      "chapter_label": "EZK 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "Then I spoke to the captives all the things that the LORD had shown me.",
+      "ko": "내가 사로잡힌 자들에게 여호와께서 내게 보이신 모든 일로 고하니라",
+      "source_text_hash": "d8d7f74844eea980df3fad43454b263f8b32c7db9ff57968c23144baa713d53c",
+      "translation_text_hash": "04e562c3e25c828004202c7757221b0887ae8b5e6cb11ebad155706d1f59b19c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사로잡힌 자들에게 여호와께서 내게 보이신 모든 일로 고하니라"
+      ],
+      "raw_text_hashes": [
+        "04e562c3e25c828004202c7757221b0887ae8b5e6cb11ebad155706d1f59b19c"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:021",
+  "unit_ordinal": 111,
+  "unit_label": "LEV 21",
+  "book_code": "LEV",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:21:1",
+      "sequence": 3347,
+      "chapter_label": "LEV 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Moses, “Speak to the priests, the sons of Aaron, and say to them, ‘A priest shall not defile himself for the dead among his people,",
+      "ko": "여호와께서 모세에게 이르시되 아론의 자손 제사장들에게 고하여 이르라 백성 중의 죽은 자로 인하여 스스로 더럽히지 말려니와",
+      "source_text_hash": "5768395aa7e7d577d3c69c9da8b173eb00e59989d135ad5b177f59f2233a19a5",
+      "translation_text_hash": "3649ee5682a6503b861842459aad754dd6f00117253e3c0e5d70939af8a49bcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 아론의 자손 제사장들에게 고하여 이르라 백성 중의 죽은 자로 인하여 스스로 더럽히지 말려니와"
+      ],
+      "raw_text_hashes": [
+        "3649ee5682a6503b861842459aad754dd6f00117253e3c0e5d70939af8a49bcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:2",
+      "sequence": 3348,
+      "chapter_label": "LEV 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "except for his relatives that are near to him: for his mother, for his father, for his son, for his daughter, for his brother,",
+      "ko": "골육지친인 부모나 자녀나 형제나",
+      "source_text_hash": "9583ac0c8fc199c2dbaf2379c8a262238a8203f1bea80c0a09a55f99b77eb789",
+      "translation_text_hash": "34612d0865e975f4cc34a1fd4cd8e39cee82bb58a2b35fd7893458f381677b8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "골육지친인 부모나 자녀나 형제나"
+      ],
+      "raw_text_hashes": [
+        "34612d0865e975f4cc34a1fd4cd8e39cee82bb58a2b35fd7893458f381677b8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:3",
+      "sequence": 3349,
+      "chapter_label": "LEV 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "and for his virgin sister who is near to him, who has had no husband; for her he may defile himself.",
+      "ko": "출가하지 아니한 처녀인 친 자매로 인하여는 몸을 더럽힐 수 있느니라",
+      "source_text_hash": "15d21c480a6820c978ab7b9105ec9a9667ef848936c796ed5404aed026c41667",
+      "translation_text_hash": "e78260aac88392250e658b990235f581edf0c1d9f3e13d893df5adafefc197f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "출가하지 아니한 처녀인 친 자매로 인하여는 몸을 더럽힐 수 있느니라"
+      ],
+      "raw_text_hashes": [
+        "e78260aac88392250e658b990235f581edf0c1d9f3e13d893df5adafefc197f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:4",
+      "sequence": 3350,
+      "chapter_label": "LEV 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "He shall not defile himself, being a chief man among his people, to profane himself.",
+      "ko": "제사장은 백성의 어른인즉 스스로 더럽혀 욕되게 하지 말지니라",
+      "source_text_hash": "90a531316260c393f6af135d7dfb38c4aa1b3aab34d22b8e0ae720f069a60426",
+      "translation_text_hash": "ec27df77d2d8b6110970b4e30c8b1ff01094b9ef41d7d1ff9e31de56db95ae01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 백성의 어른인즉 스스로 더럽혀 욕되게 하지 말지니라"
+      ],
+      "raw_text_hashes": [
+        "ec27df77d2d8b6110970b4e30c8b1ff01094b9ef41d7d1ff9e31de56db95ae01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:5",
+      "sequence": 3351,
+      "chapter_label": "LEV 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "“‘They shall not shave their heads or shave off the corners of their beards or make any cuttings in their flesh.",
+      "ko": "제사장들은 머리털을 깎아 대머리 같게 하지 말며 그 수염 양편을 깎지 말며 살을 베지 말고",
+      "source_text_hash": "610fc53451fd2a4b77583a98be8bc849d392b73fc1490334358d9a11863d4883",
+      "translation_text_hash": "13fadb78805b9bf9e8d33fc525f9d693123b13f299a5b58b32bec92d8911fb7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들은 머리털을 깎아 대머리 같게 하지 말며 그 수염 양편을 깎지 말며 살을 베지 말고"
+      ],
+      "raw_text_hashes": [
+        "13fadb78805b9bf9e8d33fc525f9d693123b13f299a5b58b32bec92d8911fb7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:6",
+      "sequence": 3352,
+      "chapter_label": "LEV 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "They shall be holy to their God, and not profane the name of their God, for they offer the offerings of the LORD made by fire, the bread of their God. Therefore they shall be holy.",
+      "ko": "그 하나님께 대하여 거룩하고 그 하나님의 이름을 욕되게 하지 말것이며 그들은 여호와의 화제 곧 그 하나님의 식물을 드리는 자인즉 거룩할 것이라",
+      "source_text_hash": "db9a95b1ce02db6f3d810319794670b273782bf3eca7c45243e463fcb0bb8736",
+      "translation_text_hash": "6767302695cf3b9fad7ab44843bbbac03dfddad071a1cafc9810564a46a9a80d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 하나님께 대하여 거룩하고 그 하나님의 이름을 욕되게 하지 말것이며 그들은 여호와의 화제 곧 그 하나님의 식물을 드리는 자인즉 거룩할 것이라"
+      ],
+      "raw_text_hashes": [
+        "6767302695cf3b9fad7ab44843bbbac03dfddad071a1cafc9810564a46a9a80d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:7",
+      "sequence": 3353,
+      "chapter_label": "LEV 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "“‘They shall not marry a woman who is a prostitute, or profane. A priest shall not marry a woman divorced from her husband; for he is holy to his God.",
+      "ko": "그들은 기생이나 부정한 여인을 취하지 말것이며 이혼 당한 여인을 취하지 말지니 이는 그가 여호와께 거룩함이니라",
+      "source_text_hash": "58fdef8a3898b5d35f712a509207199598999ee0837c925ef4ab42b318580090",
+      "translation_text_hash": "f32dba1d7dc819b7daa85fd00f2c39a3fde7343ae155c0e88410b3ccd0add3f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 기생이나 부정한 여인을 취하지 말것이며 이혼 당한 여인을 취하지 말지니 이는 그가 여호와께 거룩함이니라"
+      ],
+      "raw_text_hashes": [
+        "f32dba1d7dc819b7daa85fd00f2c39a3fde7343ae155c0e88410b3ccd0add3f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:8",
+      "sequence": 3354,
+      "chapter_label": "LEV 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore you shall sanctify him, for he offers the bread of your God. He shall be holy to you, for I the LORD, who sanctify you, am holy.",
+      "ko": "너는 그를 거룩하게 하라 그는 네 하나님의 식물을 드림이니라 너는 그를 거룩히 여기라 나 여호와 너희를 거룩하게 하는 자는 거룩함이니라",
+      "source_text_hash": "e3e6e3e4ab2946f3fabf5e5476ef320534b06eceb2caf9b07efc8982990d00bc",
+      "translation_text_hash": "263acb2f4f3642d265e8d68ee61950d532faf6430c731784167e2d139d3a7420",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그를 거룩하게 하라 그는 네 하나님의 식물을 드림이니라 너는 그를 거룩히 여기라 나 여호와 너희를 거룩하게 하는 자는 거룩함이니라"
+      ],
+      "raw_text_hashes": [
+        "263acb2f4f3642d265e8d68ee61950d532faf6430c731784167e2d139d3a7420"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:9",
+      "sequence": 3355,
+      "chapter_label": "LEV 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "“‘The daughter of any priest, if she profanes herself by playing the prostitute, she profanes her father. She shall be burned with fire.",
+      "ko": "아무 제사장의 딸이든지 행음하여 스스로 더럽히면 그 아비를 욕되게 함이니 그를 불사를찌니라",
+      "source_text_hash": "a649eb7dc4a3fbfc4be8c998ce4b71e0d9a2cb4abe752d7fe8d7811dcda02b72",
+      "translation_text_hash": "2822b457152f3d7e57749f74ef184b993afcff1e5c4c091124de9cdedac8de56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무 제사장의 딸이든지 행음하여 스스로 더럽히면 그 아비를 욕되게 함이니 그를 불사를찌니라"
+      ],
+      "raw_text_hashes": [
+        "2822b457152f3d7e57749f74ef184b993afcff1e5c4c091124de9cdedac8de56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:10",
+      "sequence": 3356,
+      "chapter_label": "LEV 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "“‘He who is the high priest among his brothers, upon whose head the anointing oil is poured, and who is consecrated to put on the garments, shall not let the hair of his head hang loose, or tear his clothes.",
+      "ko": "자기 형제중 관유로 부음을 받고 위임되어 예복을 입은 대제사장은 그 머리를 풀지 말며 그 옷을 찢지 말며",
+      "source_text_hash": "5be81736d1b41e842cd408304b9f73cdb2d8d25059f27437f3062ea9bfd31374",
+      "translation_text_hash": "417146c9f911deefe73ba5d3959478edfed0a946ba9528c05489e7062f47c0e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 형제중 관유로 부음을 받고 위임되어 예복을 입은 대제사장은 그 머리를 풀지 말며 그 옷을 찢지 말며"
+      ],
+      "raw_text_hashes": [
+        "417146c9f911deefe73ba5d3959478edfed0a946ba9528c05489e7062f47c0e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:11",
+      "sequence": 3357,
+      "chapter_label": "LEV 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "He must not go in to any dead body, or defile himself for his father or for his mother.",
+      "ko": "어떤 시체에든지 가까이 말찌니 부모로 인하여도 더러워지게 말며",
+      "source_text_hash": "6cef3cf5339017e28c6b7b71d0bede3625f42fd9adfc9f22d53b7be44171a924",
+      "translation_text_hash": "46b6d8c0830266e32196e29e6e5ed8b045db210b0ec5abb3060cfa548be4984f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 시체에든지 가까이 말찌니 부모로 인하여도 더러워지게 말며"
+      ],
+      "raw_text_hashes": [
+        "46b6d8c0830266e32196e29e6e5ed8b045db210b0ec5abb3060cfa548be4984f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:12",
+      "sequence": 3358,
+      "chapter_label": "LEV 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "He shall not go out of the sanctuary, nor profane the sanctuary of his God; for the crown of the anointing oil of his God is upon him. I am the LORD.",
+      "ko": "성소에서 나오지 말며 그 하나님의 성소를 더럽히지 말라 이는 하나님의 위임한 관유가 그 위에 있음이니라 나는 여호와니라",
+      "source_text_hash": "4795fc94e19896082d18b757b2d3b9f5a73f0c4029a1eff06503cef3e4c1073f",
+      "translation_text_hash": "1fbc9925038e78ef0f7a6b8dd52909ef237a6bf967328fa50102992431663fa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성소에서 나오지 말며 그 하나님의 성소를 더럽히지 말라 이는 하나님의 위임한 관유가 그 위에 있음이니라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "1fbc9925038e78ef0f7a6b8dd52909ef237a6bf967328fa50102992431663fa7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:13",
+      "sequence": 3359,
+      "chapter_label": "LEV 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "“‘He shall take a wife in her virginity.",
+      "ko": "그는 처녀를 취하여 아내를 삼을찌니",
+      "source_text_hash": "aa40b91bfcbefc38c1c5256757f108c1c66e7cb0c08057d67a3b017dd9419169",
+      "translation_text_hash": "0b5402bbbc1b38e61bb8a89a7f15bb0acde0ab051600f8a6641f0cbef7635b4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 처녀를 취하여 아내를 삼을찌니"
+      ],
+      "raw_text_hashes": [
+        "0b5402bbbc1b38e61bb8a89a7f15bb0acde0ab051600f8a6641f0cbef7635b4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:14",
+      "sequence": 3360,
+      "chapter_label": "LEV 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "He shall not marry a widow, or one divorced, or a woman who has been defiled, or a prostitute. He shall take a virgin of his own people as a wife.",
+      "ko": "과부나 이혼 된 여인이나 더러운 여인이나 기생을 취하지 말고 자기 백성중 처녀를 취하여 아내를 삼아",
+      "source_text_hash": "01816a054114090a52376988efe9a0a4334ade7b01f97535f2eaeacc60881731",
+      "translation_text_hash": "a50e4eb3a85aac7d319fbbf0044b43d8888d061ac1e2b3693434e35511b02b1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과부나 이혼 된 여인이나 더러운 여인이나 기생을 취하지 말고 자기 백성중 처녀를 취하여 아내를 삼아"
+      ],
+      "raw_text_hashes": [
+        "a50e4eb3a85aac7d319fbbf0044b43d8888d061ac1e2b3693434e35511b02b1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:15",
+      "sequence": 3361,
+      "chapter_label": "LEV 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "He shall not profane his offspring among his people, for I am the LORD who sanctifies him.’”",
+      "ko": "그 자손으로 백성 중에서 더럽히지 말찌니 나는 그를 거룩하게 하는 여호와임이니라",
+      "source_text_hash": "14a7db6e0072e44346b78fe048c634ce26c3954f74fb67982f3ee1d271f9c29f",
+      "translation_text_hash": "fc85924fb82c15bf9dbb960eb59bf14f5a100005acf72a044056f3ec17f5e3a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자손으로 백성 중에서 더럽히지 말찌니 나는 그를 거룩하게 하는 여호와임이니라"
+      ],
+      "raw_text_hashes": [
+        "fc85924fb82c15bf9dbb960eb59bf14f5a100005acf72a044056f3ec17f5e3a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:16",
+      "sequence": 3362,
+      "chapter_label": "LEV 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:17",
+      "sequence": 3363,
+      "chapter_label": "LEV 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "“Say to Aaron, ‘None of your offspring throughout their generations who has a defect may approach to offer the bread of his God.",
+      "ko": "아론에게 고하여 이르라 무릇 너의 대대 자손중 육체에 흠이 있는 자는 그 하나님의 식물을 드리려고 가까이 오지 못할 것이라",
+      "source_text_hash": "2d5d352d8f3e7255e59acaa3ba6a0ac1f1481515e8f2e8a6003f1f8f2aec13ab",
+      "translation_text_hash": "6a4a30f53263268a9e6166d648c241acdc41fabd93221572e123b28f3bedacc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론에게 고하여 이르라 무릇 너의 대대 자손중 육체에 흠이 있는 자는 그 하나님의 식물을 드리려고 가까이 오지 못할 것이라"
+      ],
+      "raw_text_hashes": [
+        "6a4a30f53263268a9e6166d648c241acdc41fabd93221572e123b28f3bedacc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:18",
+      "sequence": 3364,
+      "chapter_label": "LEV 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "For whatever man he is that has a defect, he shall not draw near: a blind man, or a lame, or he who has a flat nose, or any deformity,",
+      "ko": "무릇 흠이 있는 자는 가까이 못할찌니 곧 소경이나 절뚝발이나 코가 불완전한 자나 지체가 더한 자나",
+      "source_text_hash": "6e0db182384d7459c090160d60bdd9a80d35f0689f3ebd336b37ac2a5e97d9a5",
+      "translation_text_hash": "464e1061892c61a9d2b9a9ddab355713f1371db367cbe41e58202fc149fd818d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 흠이 있는 자는 가까이 못할찌니 곧 소경이나 절뚝발이나 코가 불완전한 자나 지체가 더한 자나"
+      ],
+      "raw_text_hashes": [
+        "464e1061892c61a9d2b9a9ddab355713f1371db367cbe41e58202fc149fd818d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:19",
+      "sequence": 3365,
+      "chapter_label": "LEV 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "or a man who has an injured foot, or an injured hand,",
+      "ko": "발 부러진 자나 손 부러진 자나",
+      "source_text_hash": "4609ebdb4c5b1c7aa3bf8474d771bd2b870c094f0a9c7d0d90b2f3362c532637",
+      "translation_text_hash": "d66aa65e833361aef470fb20aacdaa860336fb1ecf692651d8883061a0c8561f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발 부러진 자나 손 부러진 자나"
+      ],
+      "raw_text_hashes": [
+        "d66aa65e833361aef470fb20aacdaa860336fb1ecf692651d8883061a0c8561f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:20",
+      "sequence": 3366,
+      "chapter_label": "LEV 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "or hunchbacked, or a dwarf, or one who has a defect in his eye, or an itching disease, or scabs, or who has damaged testicles.",
+      "ko": "곱사등이나 난장이나 눈에 백막이 있는 자나 괴혈병이나 버짐이 있는 자나 불알 상한 자나",
+      "source_text_hash": "06ab2e9d5305cd7b7776db460e9ae10bf99810c49e3b7c86ba5d4bd49dfc0b14",
+      "translation_text_hash": "76a858c2853713bd3ac81bbb9f57e5979cd2e79e2526a617b6a125b400cfb8eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곱사등이나 난장이나 눈에 백막이 있는 자나 괴혈병이나 버짐이 있는 자나 불알 상한 자나"
+      ],
+      "raw_text_hashes": [
+        "76a858c2853713bd3ac81bbb9f57e5979cd2e79e2526a617b6a125b400cfb8eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:21",
+      "sequence": 3367,
+      "chapter_label": "LEV 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "No man of the offspring of Aaron the priest who has a defect shall come near to offer the offerings of the LORD made by fire. Since he has a defect, he shall not come near to offer the bread of his God.",
+      "ko": "제사장 아론의 자손 중에 흠이 있는 자는 나아와 여호와의 화제를 드리지 못할찌니 그는 흠이 있은즉 나아와 하나님의 식물을 드리지 못하느니라",
+      "source_text_hash": "b75e1c48dc56c5a6f805711b9a461ebeb1b6d90327cddb4ce8a75444a5a95fad",
+      "translation_text_hash": "20a1eb3fd0054db573d20397965365eceaf936ed5b6bf1c7b7a5747846676133",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 아론의 자손 중에 흠이 있는 자는 나아와 여호와의 화제를 드리지 못할찌니 그는 흠이 있은즉 나아와 하나님의 식물을 드리지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "20a1eb3fd0054db573d20397965365eceaf936ed5b6bf1c7b7a5747846676133"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:22",
+      "sequence": 3368,
+      "chapter_label": "LEV 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "He shall eat the bread of his God, both of the most holy, and of the holy.",
+      "ko": "그는 하나님의 식물의 지성물이든지 성물이든지 먹을 것이나",
+      "source_text_hash": "8f460d628549f782b5dce31bad3b120ac6cfe6e393aabf497212d0be13aa5156",
+      "translation_text_hash": "176f30d4ebf68587cc028286376282a2fc3291599676d15cc1c179be3f9f35dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 하나님의 식물의 지성물이든지 성물이든지 먹을 것이나"
+      ],
+      "raw_text_hashes": [
+        "176f30d4ebf68587cc028286376282a2fc3291599676d15cc1c179be3f9f35dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:23",
+      "sequence": 3369,
+      "chapter_label": "LEV 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "He shall not come near to the veil, nor come near to the altar, because he has a defect; that he may not profane my sanctuaries, for I am the LORD who sanctifies them.’”",
+      "ko": "장 안에 들어가지 못할 것이요 단에 가까이 못할찌니 이는 그가 흠이 있음이라 이와 같이 그가 나의 성소를 더럽히지 못할 것은 나는 그들을 거룩하게 하는 여호와임이니라",
+      "source_text_hash": "1e1075255a3bec09b7da39df47323b94571b63e7e8f01f1c2d98f48302788269",
+      "translation_text_hash": "281e1387baa74c453e417f97586a249bd054d6336aa2f7fe17c5454736b8381e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장 안에 들어가지 못할 것이요 단에 가까이 못할찌니 이는 그가 흠이 있음이라 이와 같이 그가 나의 성소를 더럽히지 못할 것은 나는 그들을 거룩하게 하는 여호와임이니라"
+      ],
+      "raw_text_hashes": [
+        "281e1387baa74c453e417f97586a249bd054d6336aa2f7fe17c5454736b8381e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:21:24",
+      "sequence": 3370,
+      "chapter_label": "LEV 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "So Moses spoke to Aaron, and to his sons, and to all the children of Israel.",
+      "ko": "모세가 이대로 아론과 그 아들들과 온 이스라엘 자손에게 고하였더라",
+      "source_text_hash": "209097fafeb8a9533d341e6a15be1748ca7ccdde916d0fd1ce99c9522039a7ed",
+      "translation_text_hash": "221826cf3f486dfffdb8f0d9e63d92cf826333e16be045ff1d4690282180a870",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이대로 아론과 그 아들들과 온 이스라엘 자손에게 고하였더라"
+      ],
+      "raw_text_hashes": [
+        "221826cf3f486dfffdb8f0d9e63d92cf826333e16be045ff1d4690282180a870"
+      ]
+    }
+  ]
+}

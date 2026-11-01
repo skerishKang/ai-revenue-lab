@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:052",
+  "unit_ordinal": 731,
+  "unit_label": "ISA 52",
+  "book_code": "ISA",
+  "chapter_number": 52,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:52:1",
+      "sequence": 18698,
+      "chapter_label": "ISA 52",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 1
+        }
+      ],
+      "en": "Awake, awake! Put on your strength, Zion. Put on your beautiful garments, Jerusalem, the holy city, for from now on the uncircumcised and the unclean will no more come into you.",
+      "ko": "시온이여 깰찌어다 깰찌어다 네 힘을 입을찌어다 거룩한 성 예루살렘이여 네 아름다운 옷을 입을찌어다 이제부터 할례 받지 않은 자와 부정한 자가 다시는 네게로 들어옴이 없을 것임이니라",
+      "source_text_hash": "821ec8fbb98b1138518649bb91c6e8407ba615f95c490139bbded8aadcacf250",
+      "translation_text_hash": "5c9b45c29f5b4e2502fe90465cf89e3599b9ef1be30ac557c70ccd6fcceb287a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온이여 깰찌어다 깰찌어다 네 힘을 입을찌어다 거룩한 성 예루살렘이여 네 아름다운 옷을 입을찌어다 이제부터 할례 받지 않은 자와 부정한 자가 다시는 네게로 들어옴이 없을 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "5c9b45c29f5b4e2502fe90465cf89e3599b9ef1be30ac557c70ccd6fcceb287a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:2",
+      "sequence": 18699,
+      "chapter_label": "ISA 52",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 2
+        }
+      ],
+      "en": "Shake yourself from the dust! Arise, sit up, Jerusalem! Release yourself from the bonds of your neck, captive daughter of Zion!",
+      "ko": "너는 티끌을 떨어버릴찌어다 예루살렘이여 일어나 보좌에 앉을찌어다 사로잡힌 딸 시온이여 네 목의 줄을 스스로 풀찌어다",
+      "source_text_hash": "27c3b071d55297c39538fe391b24b8e7a0d16e72c2ad804d6a290ff80f5f75b7",
+      "translation_text_hash": "37e08613b1742b441a021e039533d87757178d755a463632d0bff6d60420c463",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 티끌을 떨어버릴찌어다 예루살렘이여 일어나 보좌에 앉을찌어다 사로잡힌 딸 시온이여 네 목의 줄을 스스로 풀찌어다"
+      ],
+      "raw_text_hashes": [
+        "37e08613b1742b441a021e039533d87757178d755a463632d0bff6d60420c463"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:3",
+      "sequence": 18700,
+      "chapter_label": "ISA 52",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 3
+        }
+      ],
+      "en": "For the LORD says, “You were sold for nothing; and you will be redeemed without money.”",
+      "ko": "여호와께서 이같이 말씀하시되 너희가 값 없이 팔렸으니 돈 없이 속량되리라",
+      "source_text_hash": "0873f76b8e41aaf9b6691fbe9afd6871265a3beb3bb119fef9f02f7b7bb1e67c",
+      "translation_text_hash": "7a84e3f44d12a967fd21e2d6b944f191d3b291fcd6e1be9a94485d1f48a6de5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 너희가 값 없이 팔렸으니 돈 없이 속량되리라"
+      ],
+      "raw_text_hashes": [
+        "7a84e3f44d12a967fd21e2d6b944f191d3b291fcd6e1be9a94485d1f48a6de5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:4",
+      "sequence": 18701,
+      "chapter_label": "ISA 52",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 4
+        }
+      ],
+      "en": "For the Lord GOD says: “My people went down at the first into Egypt to live there; and the Assyrian has oppressed them without cause.",
+      "ko": "주 여호와께서 이같이 말씀하시되 내 백성이 이왕에 애굽에 내려가서 거기 우거하였었고 앗수르인은 공연히 그들을 압박하였도다",
+      "source_text_hash": "78967a3f20f19fe55b9ec15b7b5443e923bb8c2662d6b75892b05271f9ff425f",
+      "translation_text_hash": "3f2fa786f5cacecce2bb681e2a5950d603347d0d831f2e2e8256448b1c010aac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 이같이 말씀하시되 내 백성이 이왕에 애굽에 내려가서 거기 우거하였었고 앗수르인은 공연히 그들을 압박하였도다"
+      ],
+      "raw_text_hashes": [
+        "3f2fa786f5cacecce2bb681e2a5950d603347d0d831f2e2e8256448b1c010aac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:5",
+      "sequence": 18702,
+      "chapter_label": "ISA 52",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 5
+        }
+      ],
+      "en": "“Now therefore, what do I do here,” says the LORD, “seeing that my people are taken away for nothing? Those who rule over them mock,” says the LORD, “and my name is blasphemed continually all day long.",
+      "ko": "여호와께서 말씀하시되 내 백성이 까닭 없이 잡혀갔으니 내가 여기서 어떻게 할꼬 여호와께서 말씀하시되 그들을 관할하는 자들이 떠들며 내 이름을 항상 종일 더럽히도다",
+      "source_text_hash": "53fb292084109afbe2793045789be9e12b6e73302431268a89032930dfeb988a",
+      "translation_text_hash": "88e5a62824105dbaa117ca5bc04d84dacbd1b40938a759df265f3566b11070ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 내 백성이 까닭 없이 잡혀갔으니 내가 여기서 어떻게 할꼬 여호와께서 말씀하시되 그들을 관할하는 자들이 떠들며 내 이름을 항상 종일 더럽히도다"
+      ],
+      "raw_text_hashes": [
+        "88e5a62824105dbaa117ca5bc04d84dacbd1b40938a759df265f3566b11070ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:6",
+      "sequence": 18703,
+      "chapter_label": "ISA 52",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore my people shall know my name. Therefore they shall know in that day that I am he who speaks. Behold, it is I.”",
+      "ko": "그러므로 내 백성은 내 이름을 알리라 그러므로 그 날에는 그들이 이 말을 하는 자가 나인줄 알리라 곧 내니라",
+      "source_text_hash": "0a0d13dec0144c6d9b963f245c4910c532074d19d0946de1f822382a7e8bdd1d",
+      "translation_text_hash": "78546488db6fe36478891b0d047f27302066202febbe0a83cee1bf44f431bcbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내 백성은 내 이름을 알리라 그러므로 그 날에는 그들이 이 말을 하는 자가 나인줄 알리라 곧 내니라"
+      ],
+      "raw_text_hashes": [
+        "78546488db6fe36478891b0d047f27302066202febbe0a83cee1bf44f431bcbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:7",
+      "sequence": 18704,
+      "chapter_label": "ISA 52",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 7
+        }
+      ],
+      "en": "How beautiful on the mountains are the feet of him who brings good news, who publishes peace, who brings good news, who proclaims salvation, who says to Zion, “Your God reigns!”",
+      "ko": "좋은 소식을 가져오며 평화를 공포하며 복된 좋은 소식을 가져오며 구원을 공포하며 시온을 향하여 이르기를 네 하나님이 통치하신다 하는 자의 산을 넘는 발이 어찌 그리 아름다운고",
+      "source_text_hash": "810704dc353eb15b9ee33b9ecb0faf3942fb30ee110ba0d8b8f5897a551fd87a",
+      "translation_text_hash": "6d8fd530e29f42150c91dfcc281c516615a9928f5a7fe235e686444583f73207",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좋은 소식을 가져오며 평화를 공포하며 복된 좋은 소식을 가져오며 구원을 공포하며 시온을 향하여 이르기를 네 하나님이 통치하신다 하는 자의 산을 넘는 발이 어찌 그리 아름다운고"
+      ],
+      "raw_text_hashes": [
+        "6d8fd530e29f42150c91dfcc281c516615a9928f5a7fe235e686444583f73207"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:8",
+      "sequence": 18705,
+      "chapter_label": "ISA 52",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 8
+        }
+      ],
+      "en": "Your watchmen lift up their voice. Together they sing; for they shall see eye to eye when the LORD returns to Zion.",
+      "ko": "들을찌어다 너의 파숫군들의 소리로다 그들이 소리를 높여 일제히 노래하니 이는 여호와께서 시온으로 돌아오실 때에 그들의 눈이 마주 봄이로다",
+      "source_text_hash": "e8c3823d6d854c28bd84e33837f4e00779e656ff3da129a607fcdca438b0f092",
+      "translation_text_hash": "edb4da83eb5f4546bab6e87b341de6f24460c3a82136a54c7435d6dbd3957b4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들을찌어다 너의 파숫군들의 소리로다 그들이 소리를 높여 일제히 노래하니 이는 여호와께서 시온으로 돌아오실 때에 그들의 눈이 마주 봄이로다"
+      ],
+      "raw_text_hashes": [
+        "edb4da83eb5f4546bab6e87b341de6f24460c3a82136a54c7435d6dbd3957b4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:9",
+      "sequence": 18706,
+      "chapter_label": "ISA 52",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 9
+        }
+      ],
+      "en": "Break out into joy! Sing together, you waste places of Jerusalem; for the LORD has comforted his people. He has redeemed Jerusalem.",
+      "ko": "너 예루살렘의 황폐한 곳들아 기쁜 소리를 발하여 함께 노래할찌어다 이는 여호와께서 그 백성을 위로하셨고 예루살렘을 구속하셨음이라",
+      "source_text_hash": "fb489f8f01ed3cc6d0324db0305883372da4ff44260451e7cc2e3032e0f224d0",
+      "translation_text_hash": "bc83a91edce78a7616f4b596e246ea75b2cdc9c64b489592139cf4a3725875be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 예루살렘의 황폐한 곳들아 기쁜 소리를 발하여 함께 노래할찌어다 이는 여호와께서 그 백성을 위로하셨고 예루살렘을 구속하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "bc83a91edce78a7616f4b596e246ea75b2cdc9c64b489592139cf4a3725875be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:10",
+      "sequence": 18707,
+      "chapter_label": "ISA 52",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD has made his holy arm bare in the eyes of all the nations. All the ends of the earth have seen the salvation of our God.",
+      "ko": "여호와께서 열방의 목전에서 그 거룩한 팔을 나타내셨으므로 모든 땅 끝까지도 우리 하나님의 구원을 보았도다",
+      "source_text_hash": "0bdce1158fc207c4ca5c2796328d60050666e499807bfbc2e940887688bd5186",
+      "translation_text_hash": "b1a4c80d0df4f0a1779b875598eed249841d96e4afa04c1aa17eeb0b0fa3635a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 열방의 목전에서 그 거룩한 팔을 나타내셨으므로 모든 땅 끝까지도 우리 하나님의 구원을 보았도다"
+      ],
+      "raw_text_hashes": [
+        "b1a4c80d0df4f0a1779b875598eed249841d96e4afa04c1aa17eeb0b0fa3635a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:11",
+      "sequence": 18708,
+      "chapter_label": "ISA 52",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 11
+        }
+      ],
+      "en": "Depart! Depart! Go out from there! Touch no unclean thing! Go out from among her! Cleanse yourselves, you who carry the LORD’s vessels.",
+      "ko": "너희는 떠날찌어다 떠날찌어다 거기서 나오고 부정한 것을 만지지 말찌어다 그 가운데서 나올찌어다 여호와의 기구를 메는 자여 스스로 정결케 할찌어다",
+      "source_text_hash": "af40e616b07274f015d97adfa6fc64b718ac0ce33fc22148afe9b76acbf84560",
+      "translation_text_hash": "25b982e9e7ea3262f51b0f216857a562ffa9f773ed99a910344fd7566a93c3d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 떠날찌어다 떠날찌어다 거기서 나오고 부정한 것을 만지지 말찌어다 그 가운데서 나올찌어다 여호와의 기구를 메는 자여 스스로 정결케 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "25b982e9e7ea3262f51b0f216857a562ffa9f773ed99a910344fd7566a93c3d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:12",
+      "sequence": 18709,
+      "chapter_label": "ISA 52",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 12
+        }
+      ],
+      "en": "For you shall not go out in haste, neither shall you go by flight; for the LORD will go before you, and the God of Israel will be your rear guard.",
+      "ko": "여호와께서 너희 앞에 행하시며 이스라엘의 하나님이 너희 뒤에 호위하시리니 너희가 황급히 나오지 아니하며 도망하여 행하지 아니하리라",
+      "source_text_hash": "29d55befd1b01442d12fc46938db205771e1e1c4af04c0ce0e098fc9baaadfb6",
+      "translation_text_hash": "582a7283080e87cd7e6635b8ab5b054d6c123b716b0964bb7777e996af6ee118",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희 앞에 행하시며 이스라엘의 하나님이 너희 뒤에 호위하시리니 너희가 황급히 나오지 아니하며 도망하여 행하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "582a7283080e87cd7e6635b8ab5b054d6c123b716b0964bb7777e996af6ee118"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:13",
+      "sequence": 18710,
+      "chapter_label": "ISA 52",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 13
+        }
+      ],
+      "en": "Behold, my servant will deal wisely. He will be exalted and lifted up, and will be very high.",
+      "ko": "여호와께서 가라사대 보라 내 종이 형통하리니 받들어 높이 들려서 지극히 존귀하게 되리라",
+      "source_text_hash": "c58d65c01098b95d9929cb5d1e73f7fe78e8b7b4470d868a13cb3532aa6022e5",
+      "translation_text_hash": "4cd3f57d481d4e78688e2dcb83b110e37a6c74cc9f999e73e61857b8b31498b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 보라 내 종이 형통하리니 받들어 높이 들려서 지극히 존귀하게 되리라"
+      ],
+      "raw_text_hashes": [
+        "4cd3f57d481d4e78688e2dcb83b110e37a6c74cc9f999e73e61857b8b31498b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:14",
+      "sequence": 18711,
+      "chapter_label": "ISA 52",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 14
+        }
+      ],
+      "en": "Just as many were astonished at you— his appearance was marred more than any man, and his form more than the sons of men—",
+      "ko": "이왕에는 그 얼굴이 타인보다 상하였고 그 모양이 인생보다 상하였으므로 무리가 그를 보고 놀랐거니와",
+      "source_text_hash": "4d83504796267a03c6d061ce027d6e5dbc325ec484766416c8c1bb92d6c4aaf2",
+      "translation_text_hash": "5721f2d41afc0895fc7cba7128ecded9b33f17d802e82725bc2f2a95e2ace265",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이왕에는 그 얼굴이 타인보다 상하였고 그 모양이 인생보다 상하였으므로 무리가 그를 보고 놀랐거니와"
+      ],
+      "raw_text_hashes": [
+        "5721f2d41afc0895fc7cba7128ecded9b33f17d802e82725bc2f2a95e2ace265"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:52:15",
+      "sequence": 18712,
+      "chapter_label": "ISA 52",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 52,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 52,
+          "verse": 15
+        }
+      ],
+      "en": "so he will cleanse many nations. Kings will shut their mouths at him; for they will see that which had not been told them, and they will understand that which they had not heard.",
+      "ko": "후에는 그가 열방을 놀랠 것이며 열왕은 그를 인하여 입을 봉하리니 이는 그들이 아직 전파되지 않은 것을 볼 것이요 아직 듣지 못한 것을 깨달을 것임이라 하시니라",
+      "source_text_hash": "ff2aac4dbde72695ed1f49b406b9a801a0aa1fbbd3341e6c18bae06dfd0843bb",
+      "translation_text_hash": "b6d70c0f6628630c1f2a94afd9c1503418ddc4fac93b3d52fb9d5eb7c074f33b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후에는 그가 열방을 놀랠 것이며 열왕은 그를 인하여 입을 봉하리니 이는 그들이 아직 전파되지 않은 것을 볼 것이요 아직 듣지 못한 것을 깨달을 것임이라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "b6d70c0f6628630c1f2a94afd9c1503418ddc4fac93b3d52fb9d5eb7c074f33b"
+      ]
+    }
+  ]
+}

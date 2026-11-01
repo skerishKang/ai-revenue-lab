@@ -1,0 +1,1453 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:105",
+  "unit_ordinal": 583,
+  "unit_label": "PSA 105",
+  "book_code": "PSA",
+  "chapter_number": 105,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:105:1",
+      "sequence": 15608,
+      "chapter_label": "PSA 105",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 1
+        }
+      ],
+      "en": "Give thanks to the LORD! Call on his name! Make his doings known among the peoples.",
+      "ko": "여호와께 감사하며 그 이름을 불러 아뢰며 그 행사를 만민 중에 알게 할찌어다",
+      "source_text_hash": "e2d86f557754f3d28a244d93854dc068221f56d9f0eb06ef15812ca9a7a30a9a",
+      "translation_text_hash": "780250ba099d77b5c9065c8a2be66101a1f7cbd7d35065bafd8c339694dd09da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 감사하며 그 이름을 불러 아뢰며 그 행사를 만민 중에 알게 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "780250ba099d77b5c9065c8a2be66101a1f7cbd7d35065bafd8c339694dd09da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:2",
+      "sequence": 15609,
+      "chapter_label": "PSA 105",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 2
+        }
+      ],
+      "en": "Sing to him, sing praises to him! Tell of all his marvelous works.",
+      "ko": "그에게 노래하며 그를 찬양하며 그의 모든 기사를 말할찌어다",
+      "source_text_hash": "24cc92d604d8eb989c3bfc89f9ee5882e75a10b2c3f67b0b944393ef5c0add79",
+      "translation_text_hash": "83f228f92123752d4d2b394c9aabbd87c0190207dffc7a13bdb1e3a1a6ae0a04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 노래하며 그를 찬양하며 그의 모든 기사를 말할찌어다"
+      ],
+      "raw_text_hashes": [
+        "83f228f92123752d4d2b394c9aabbd87c0190207dffc7a13bdb1e3a1a6ae0a04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:3",
+      "sequence": 15610,
+      "chapter_label": "PSA 105",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 3
+        }
+      ],
+      "en": "Glory in his holy name. Let the heart of those who seek the LORD rejoice.",
+      "ko": "그 성호를 자랑하라 무릇 여호와를 구하는 자는 마음이 즐거울찌로다",
+      "source_text_hash": "f13aad97a69a487a2beaaafe14588a4b332c40faf3d142911d2e604c143476cf",
+      "translation_text_hash": "5dfc11044d1a422a95e0f07f129867da9686d37884dbea884d54bf627ecfac8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성호를 자랑하라 무릇 여호와를 구하는 자는 마음이 즐거울찌로다"
+      ],
+      "raw_text_hashes": [
+        "5dfc11044d1a422a95e0f07f129867da9686d37884dbea884d54bf627ecfac8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:4",
+      "sequence": 15611,
+      "chapter_label": "PSA 105",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 4
+        }
+      ],
+      "en": "Seek the LORD and his strength. Seek his face forever more.",
+      "ko": "여호와와 그 능력을 구할찌어다 그 얼굴을 항상 구할찌어다",
+      "source_text_hash": "648f1f1dbadf9e70b614cccf87eae20e78e7c1add43520d3ac6047a874557447",
+      "translation_text_hash": "33d73d2326598592903e80e49f8d66483fbc79466fe08d8756b9bc15dbcbfc51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와와 그 능력을 구할찌어다 그 얼굴을 항상 구할찌어다"
+      ],
+      "raw_text_hashes": [
+        "33d73d2326598592903e80e49f8d66483fbc79466fe08d8756b9bc15dbcbfc51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:5",
+      "sequence": 15612,
+      "chapter_label": "PSA 105",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 5
+        }
+      ],
+      "en": "Remember his marvelous works that he has done: his wonders, and the judgments of his mouth,",
+      "ko": "그 종 아브라함의 후손 곧 택하신 야곱의 자손 너희는 그의 행하신 기사와 그 이적과 그 입의 판단을 기억할찌어다",
+      "source_text_hash": "f02ac2d9a7af6402fdd0d2b42599b812a6f72a17748410ff92c78da47c291768",
+      "translation_text_hash": "de5a8485f8e432c4aa81f0a641ea10ccdac03cb916aa51482c1d951123828cfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 종 아브라함의 후손 곧 택하신 야곱의 자손 너희는 그의 행하신 기사와 그 이적과 그 입의 판단을 기억할찌어다"
+      ],
+      "raw_text_hashes": [
+        "de5a8485f8e432c4aa81f0a641ea10ccdac03cb916aa51482c1d951123828cfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:6",
+      "sequence": 15613,
+      "chapter_label": "PSA 105",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 6
+        }
+      ],
+      "en": "you offspring of Abraham, his servant, you children of Jacob, his chosen ones.",
+      "ko": "(5절에 포함되어 있음)",
+      "source_text_hash": "a53cc9e40bb1e097cdb570d55a44a59e03ce1a7f2a84a47e73485aae7ac06663",
+      "translation_text_hash": "16308cc9314cf96d57cf8df2170ca6c5acf272458ab80ef95c54091ab8f230af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(5절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "16308cc9314cf96d57cf8df2170ca6c5acf272458ab80ef95c54091ab8f230af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:7",
+      "sequence": 15614,
+      "chapter_label": "PSA 105",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 7
+        }
+      ],
+      "en": "He is the LORD, our God. His judgments are in all the earth.",
+      "ko": "그는 여호와 우리 하나님이시라 그의 판단이 온 땅에 있도다",
+      "source_text_hash": "bade5cdd3adeabe1161e52dc9fb37e4b6a96d4335124598345a6593cd4147a2f",
+      "translation_text_hash": "fa96f4a3aeff3cf0b2863d8a897fbed48aed885bf3df51aeeac3e45268c5b1b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 여호와 우리 하나님이시라 그의 판단이 온 땅에 있도다"
+      ],
+      "raw_text_hashes": [
+        "fa96f4a3aeff3cf0b2863d8a897fbed48aed885bf3df51aeeac3e45268c5b1b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:8",
+      "sequence": 15615,
+      "chapter_label": "PSA 105",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 8
+        }
+      ],
+      "en": "He has remembered his covenant forever, the word which he commanded to a thousand generations,",
+      "ko": "그는 그 언약 곧 천대에 명하신 말씀을 영원히 기억하셨으니",
+      "source_text_hash": "4b1c5f2c93f4ea5765622903ff23ef65450e5adeed3ea6160ec96a249e3c3401",
+      "translation_text_hash": "304d4594cf580aa52fd8220a7dfd811923f45b1f123b2145bb0926b6bebf811d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 그 언약 곧 천대에 명하신 말씀을 영원히 기억하셨으니"
+      ],
+      "raw_text_hashes": [
+        "304d4594cf580aa52fd8220a7dfd811923f45b1f123b2145bb0926b6bebf811d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:9",
+      "sequence": 15616,
+      "chapter_label": "PSA 105",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 9
+        }
+      ],
+      "en": "the covenant which he made with Abraham, his oath to Isaac,",
+      "ko": "이것은 아브라함에게 하신 언약이며 이삭에게 하신 맹세며",
+      "source_text_hash": "cf7f62237414ccdf9878dd27d20d5d20ada60fa70078a39565a1992fd3ca95a8",
+      "translation_text_hash": "52a533c2fc72e452ae692603655d44e6685018a3e35c71b0382d7fbc5ddc1717",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 아브라함에게 하신 언약이며 이삭에게 하신 맹세며"
+      ],
+      "raw_text_hashes": [
+        "52a533c2fc72e452ae692603655d44e6685018a3e35c71b0382d7fbc5ddc1717"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:10",
+      "sequence": 15617,
+      "chapter_label": "PSA 105",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 10
+        }
+      ],
+      "en": "and confirmed it to Jacob for a statute; to Israel for an everlasting covenant,",
+      "ko": "야곱에게 세우신 율례 곧 이스라엘에게 하신 영영한 언약이라",
+      "source_text_hash": "3a895da92623623dfbd95cee615c005cd8ed66efab1b541b1ef6435b7bdf4afa",
+      "translation_text_hash": "425a4b425dabb6c5ddc5a9536c91f712b5fa2373ef740e4117a689894b7ae443",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱에게 세우신 율례 곧 이스라엘에게 하신 영영한 언약이라"
+      ],
+      "raw_text_hashes": [
+        "425a4b425dabb6c5ddc5a9536c91f712b5fa2373ef740e4117a689894b7ae443"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:11",
+      "sequence": 15618,
+      "chapter_label": "PSA 105",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 11
+        }
+      ],
+      "en": "saying, “To you I will give the land of Canaan, the lot of your inheritance,”",
+      "ko": "이르시기를 내가 가나안 땅을 네게 주어 너희 기업의 지경이 되게 하리라 하셨도다",
+      "source_text_hash": "52930328a9ae765d95dd0fcfef44a889375d257f21836f67d9e78a180d348cd2",
+      "translation_text_hash": "cee24af55bf0228598bd1f82d7cf6326845d4d618bb636ec274768afa9b86d82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시기를 내가 가나안 땅을 네게 주어 너희 기업의 지경이 되게 하리라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "cee24af55bf0228598bd1f82d7cf6326845d4d618bb636ec274768afa9b86d82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:12",
+      "sequence": 15619,
+      "chapter_label": "PSA 105",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 12
+        }
+      ],
+      "en": "when they were but a few men in number, yes, very few, and foreigners in it.",
+      "ko": "때에 저희 인수가 적어 매우 영성하며 그 땅에 객이 되어",
+      "source_text_hash": "7d6a366ed99c78ea1ef2b88c1bd683da2cb2b8ed64837c998c6f89b85f297803",
+      "translation_text_hash": "7eddc0736441997c6e7e72728296c102d61a8781011fc9f32b9408730328aa00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 저희 인수가 적어 매우 영성하며 그 땅에 객이 되어"
+      ],
+      "raw_text_hashes": [
+        "7eddc0736441997c6e7e72728296c102d61a8781011fc9f32b9408730328aa00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:13",
+      "sequence": 15620,
+      "chapter_label": "PSA 105",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 13
+        }
+      ],
+      "en": "They went about from nation to nation, from one kingdom to another people.",
+      "ko": "이 족속에게서 저 족속에게로, 이 나라에서 다른 민족에게로 유리하였도다",
+      "source_text_hash": "4e1aae883f842de5e076d721dc6860af3085f26569a776d7a8e68f9f679d5382",
+      "translation_text_hash": "f5134c9a350471db9900cec54f3253494a470b692b526612c171b83bf44f37b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 족속에게서 저 족속에게로, 이 나라에서 다른 민족에게로 유리하였도다"
+      ],
+      "raw_text_hashes": [
+        "f5134c9a350471db9900cec54f3253494a470b692b526612c171b83bf44f37b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:14",
+      "sequence": 15621,
+      "chapter_label": "PSA 105",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 14
+        }
+      ],
+      "en": "He allowed no one to do them wrong. Yes, he reproved kings for their sakes,",
+      "ko": "사람이 그들을 해하기를 용납지 아니하시고 그들의 연고로 열왕을 꾸짖어",
+      "source_text_hash": "c405edb687abc31b33a434956baaa969e72556dd29688769a8fcb53eeae9b2ba",
+      "translation_text_hash": "e735464c158fbc65bb6046944093f0e9eb03ceedb0b8fb9292dd9804074e7631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 그들을 해하기를 용납지 아니하시고 그들의 연고로 열왕을 꾸짖어"
+      ],
+      "raw_text_hashes": [
+        "e735464c158fbc65bb6046944093f0e9eb03ceedb0b8fb9292dd9804074e7631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:15",
+      "sequence": 15622,
+      "chapter_label": "PSA 105",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 15
+        }
+      ],
+      "en": "“Don’t touch my anointed ones! Do my prophets no harm!”",
+      "ko": "이르시기를 나의 기름 부은 자를 만지지 말며 나의 선지자를 상하지 말라 하셨도다",
+      "source_text_hash": "a282da254103b2c3d1657ed3da69b48535bc230c41c675d2efa300034f26727a",
+      "translation_text_hash": "79a847ffb257b8afdd60a49f0591e4fcdced6d92e98d44096f78b89d971deba3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시기를 나의 기름 부은 자를 만지지 말며 나의 선지자를 상하지 말라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "79a847ffb257b8afdd60a49f0591e4fcdced6d92e98d44096f78b89d971deba3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:16",
+      "sequence": 15623,
+      "chapter_label": "PSA 105",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 16
+        }
+      ],
+      "en": "He called for a famine on the land. He destroyed the food supplies.",
+      "ko": "그가 또 기근을 불러 그 땅에 임하게 하여 그 의뢰하는 양식을 다 끊으셨도다",
+      "source_text_hash": "dee2d6c60fa91a45cf2590b60579c5ae2119774f862e40a3e014dea8c0d422cd",
+      "translation_text_hash": "f8156276821d42060aa28032474b8d8b81ebd8b61b25050d2fbfe2c2975c65d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 기근을 불러 그 땅에 임하게 하여 그 의뢰하는 양식을 다 끊으셨도다"
+      ],
+      "raw_text_hashes": [
+        "f8156276821d42060aa28032474b8d8b81ebd8b61b25050d2fbfe2c2975c65d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:17",
+      "sequence": 15624,
+      "chapter_label": "PSA 105",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 17
+        }
+      ],
+      "en": "He sent a man before them. Joseph was sold for a slave.",
+      "ko": "한 사람을 앞서 보내셨음이여 요셉이 종으로 팔렸도다",
+      "source_text_hash": "955138d2b294d35dfb35cc896ed41dec8c15b87aa6c50bd009bee870a260b7be",
+      "translation_text_hash": "8b000e90a8c20ddbf1c36965a0d8031fc74489ad3d897e6b502d41e01f72fece",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람을 앞서 보내셨음이여 요셉이 종으로 팔렸도다"
+      ],
+      "raw_text_hashes": [
+        "8b000e90a8c20ddbf1c36965a0d8031fc74489ad3d897e6b502d41e01f72fece"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:18",
+      "sequence": 15625,
+      "chapter_label": "PSA 105",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 18
+        }
+      ],
+      "en": "They bruised his feet with shackles. His neck was locked in irons,",
+      "ko": "그 발이 착고에 상하며 그 몸이 쇠사슬에 매였으니",
+      "source_text_hash": "35a2dd963d48199c2c5332985c822c930e1b95fe2fbfdca3f612da1da6332a89",
+      "translation_text_hash": "d7df01e8e90768bd78f17d28a043611149f9d905b8ba6b5b48ee7661b7d67536",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 발이 착고에 상하며 그 몸이 쇠사슬에 매였으니"
+      ],
+      "raw_text_hashes": [
+        "d7df01e8e90768bd78f17d28a043611149f9d905b8ba6b5b48ee7661b7d67536"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:19",
+      "sequence": 15626,
+      "chapter_label": "PSA 105",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 19
+        }
+      ],
+      "en": "until the time that his word happened, and the LORD’s word proved him true.",
+      "ko": "곧 여호와의 말씀이 응할 때까지라 그 말씀이 저를 단련하였도다",
+      "source_text_hash": "233c7ec29cc16b446692c4b2779b00ba9429496eebb0b6b38e6d000d74e9493d",
+      "translation_text_hash": "987cf4e3bdc9430ded40fd01b2f10907a1c28fbe509e7a63badd3d42e2c778a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 여호와의 말씀이 응할 때까지라 그 말씀이 저를 단련하였도다"
+      ],
+      "raw_text_hashes": [
+        "987cf4e3bdc9430ded40fd01b2f10907a1c28fbe509e7a63badd3d42e2c778a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:20",
+      "sequence": 15627,
+      "chapter_label": "PSA 105",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 20
+        }
+      ],
+      "en": "The king sent and freed him, even the ruler of peoples, and let him go free.",
+      "ko": "왕이 사람을 보내어 저를 방석함이여 열방의 통치자가 저로 자유케 하였도다",
+      "source_text_hash": "ac67a2d3ff02e98a046ce9a181c234aa0d278ffdba743c9d1327b8e67b1d26fe",
+      "translation_text_hash": "7fd8aaf744d823a165234526fc5782e97fd5f426539a7b1b3e6db8f47dc3de02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 사람을 보내어 저를 방석함이여 열방의 통치자가 저로 자유케 하였도다"
+      ],
+      "raw_text_hashes": [
+        "7fd8aaf744d823a165234526fc5782e97fd5f426539a7b1b3e6db8f47dc3de02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:21",
+      "sequence": 15628,
+      "chapter_label": "PSA 105",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 21
+        }
+      ],
+      "en": "He made him lord of his house, and ruler of all of his possessions,",
+      "ko": "저로 그 집의 주관자를 삼아 그 모든 소유를 관리케 하고",
+      "source_text_hash": "391436dab726cf34a4ea39b92aafd14463767bb1b7d4b6e759cf90e7dae110ad",
+      "translation_text_hash": "f8dd397be7347416d6f338eaed4447faa8434ea50f16fb2629a8712b77f87f94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저로 그 집의 주관자를 삼아 그 모든 소유를 관리케 하고"
+      ],
+      "raw_text_hashes": [
+        "f8dd397be7347416d6f338eaed4447faa8434ea50f16fb2629a8712b77f87f94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:22",
+      "sequence": 15629,
+      "chapter_label": "PSA 105",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 22
+        }
+      ],
+      "en": "to discipline his princes at his pleasure, and to teach his elders wisdom.",
+      "ko": "임의로 백관을 제어하며 지혜로 장로들을 교훈하게 하였도다",
+      "source_text_hash": "2a76c1b456f64e21c8ad35de1941e362f0cbf1ecdbc82da168a1345f44ae8c76",
+      "translation_text_hash": "972c630160e279d478a5f45d798a569c751d916252004fde98380231051a095b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "임의로 백관을 제어하며 지혜로 장로들을 교훈하게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "972c630160e279d478a5f45d798a569c751d916252004fde98380231051a095b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:23",
+      "sequence": 15630,
+      "chapter_label": "PSA 105",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 23
+        }
+      ],
+      "en": "Israel also came into Egypt. Jacob lived in the land of Ham.",
+      "ko": "이에 이스라엘이 애굽에 들어감이여 야곱이 함 땅에 객이 되었도다",
+      "source_text_hash": "5eadbe1bb789f1aa8905501c8e581c576ff1451dd6403f7462a2f326bbba02d4",
+      "translation_text_hash": "ae59a58946c607b32de6e8ecc44d50128856103d1cea725a36e14bb4c3f226f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이스라엘이 애굽에 들어감이여 야곱이 함 땅에 객이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "ae59a58946c607b32de6e8ecc44d50128856103d1cea725a36e14bb4c3f226f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:24",
+      "sequence": 15631,
+      "chapter_label": "PSA 105",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 24
+        }
+      ],
+      "en": "He increased his people greatly, and made them stronger than their adversaries.",
+      "ko": "여호와께서 그 백성을 크게 번성케 하사 그들의 대적보다 강하게 하셨으며",
+      "source_text_hash": "e650f9e1f295dd7e48585df7d5fa1c0a9f6bb4dae7426d2b63b2ef091b95b244",
+      "translation_text_hash": "9e781ca66ff4091cd7c87febb494e08f27737b1b38bad2fe22b7f8827b48c556",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 백성을 크게 번성케 하사 그들의 대적보다 강하게 하셨으며"
+      ],
+      "raw_text_hashes": [
+        "9e781ca66ff4091cd7c87febb494e08f27737b1b38bad2fe22b7f8827b48c556"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:25",
+      "sequence": 15632,
+      "chapter_label": "PSA 105",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 25
+        }
+      ],
+      "en": "He turned their heart to hate his people, to conspire against his servants.",
+      "ko": "또 저희 마음을 변하여 그 백성을 미워하게 하시며 그 종들에게 교활히 행하게 하셨도다",
+      "source_text_hash": "d89795d22369e9fd4e3ed0bb1f9bceea1382090b3cc3f82464d03766d33face2",
+      "translation_text_hash": "4ddd097409efa213e37fc24c4994d9b23e48b024cba5f5ee41d6c88ebac58e77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희 마음을 변하여 그 백성을 미워하게 하시며 그 종들에게 교활히 행하게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "4ddd097409efa213e37fc24c4994d9b23e48b024cba5f5ee41d6c88ebac58e77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:26",
+      "sequence": 15633,
+      "chapter_label": "PSA 105",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 26
+        }
+      ],
+      "en": "He sent Moses, his servant, and Aaron, whom he had chosen.",
+      "ko": "또 그 종 모세와 그 택하신 아론을 보내시니",
+      "source_text_hash": "ddc969ad46e808d3ccc38b5bc8c92aa2207e5a3fbdaea545695e9adfa2309058",
+      "translation_text_hash": "a0de8fe70c372d23f4b90c74ba921e18447aab69206cbe763c311156ffe8f00e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 종 모세와 그 택하신 아론을 보내시니"
+      ],
+      "raw_text_hashes": [
+        "a0de8fe70c372d23f4b90c74ba921e18447aab69206cbe763c311156ffe8f00e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:27",
+      "sequence": 15634,
+      "chapter_label": "PSA 105",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 27
+        }
+      ],
+      "en": "They performed miracles among them, and wonders in the land of Ham.",
+      "ko": "저희가 그 백성 중에 여호와의 표징을 보이고 함 땅에서 기사를 행하였도다",
+      "source_text_hash": "8459c13b8ae0dbc326e45bf6192a17a6973164c40d82a09052c9798779f06ebd",
+      "translation_text_hash": "8545b80cd717f8a55f9a4ed196adf302e3b9de333156c7bc22d4d917b7ecca86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 백성 중에 여호와의 표징을 보이고 함 땅에서 기사를 행하였도다"
+      ],
+      "raw_text_hashes": [
+        "8545b80cd717f8a55f9a4ed196adf302e3b9de333156c7bc22d4d917b7ecca86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:28",
+      "sequence": 15635,
+      "chapter_label": "PSA 105",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 28
+        }
+      ],
+      "en": "He sent darkness, and made it dark. They didn’t rebel against his words.",
+      "ko": "여호와께서 흑암을 보내사 어둡게 하시니 그 말씀을 어기지 아니하였도다",
+      "source_text_hash": "c4b510233eaee8d4dfe5a4399020ce993fdc17ac51418961a931ec88f3a77026",
+      "translation_text_hash": "89b9d5b84e62e680b37aace93f46ccbdde1b07715f54548e60003ccc28cd2906",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 흑암을 보내사 어둡게 하시니 그 말씀을 어기지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "89b9d5b84e62e680b37aace93f46ccbdde1b07715f54548e60003ccc28cd2906"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:29",
+      "sequence": 15636,
+      "chapter_label": "PSA 105",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 29
+        }
+      ],
+      "en": "He turned their waters into blood, and killed their fish.",
+      "ko": "저희 물을 변하여 피가 되게 하사 저희 물고기를 죽이셨도다",
+      "source_text_hash": "111df6214a5746d471faf28d64cf83382def1b79c7de09ecd49832fe882bdacb",
+      "translation_text_hash": "2892d2c16a6b6ebd7a0a0e4ae7cda3c22bfa52dfe7361c82cfd3589411908504",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 물을 변하여 피가 되게 하사 저희 물고기를 죽이셨도다"
+      ],
+      "raw_text_hashes": [
+        "2892d2c16a6b6ebd7a0a0e4ae7cda3c22bfa52dfe7361c82cfd3589411908504"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:30",
+      "sequence": 15637,
+      "chapter_label": "PSA 105",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 30
+        }
+      ],
+      "en": "Their land swarmed with frogs, even in the rooms of their kings.",
+      "ko": "그 땅에 개구리가 번성하여 왕의 궁실에도 있었도다",
+      "source_text_hash": "f6acce35ae3d91a84db6e39d7ae141304075900038afd871ec43f3f3c36bd39e",
+      "translation_text_hash": "2dc8ad69583e1f75d4321702e1614f055cd492f0424ab6e8fd7ba143cc2a9761",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅에 개구리가 번성하여 왕의 궁실에도 있었도다"
+      ],
+      "raw_text_hashes": [
+        "2dc8ad69583e1f75d4321702e1614f055cd492f0424ab6e8fd7ba143cc2a9761"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:31",
+      "sequence": 15638,
+      "chapter_label": "PSA 105",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 31
+        }
+      ],
+      "en": "He spoke, and swarms of flies came, and lice in all their borders.",
+      "ko": "여호와께서 말씀하신즉 파리떼가 오며 저희 사경에 이가 생겼도다",
+      "source_text_hash": "568ed524678f458dcd56775994fb6a6caaa2a05719a6bede299fcff1cec7ff34",
+      "translation_text_hash": "0a484ba1e36a4f235fc5c6e8dbf3e26f70973f6bca0e3dcc1d37e824839a3c46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하신즉 파리떼가 오며 저희 사경에 이가 생겼도다"
+      ],
+      "raw_text_hashes": [
+        "0a484ba1e36a4f235fc5c6e8dbf3e26f70973f6bca0e3dcc1d37e824839a3c46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:32",
+      "sequence": 15639,
+      "chapter_label": "PSA 105",
+      "verse_label": "32",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 32
+        }
+      ],
+      "en": "He gave them hail for rain, with lightning in their land.",
+      "ko": "비 대신 우박을 내리시며 저희 땅에 화염을 내리셨도다",
+      "source_text_hash": "1e696bf673edceb6ce639b1b3b56b282fe33b59ae5c1695780dd11cdaf43a754",
+      "translation_text_hash": "e8348e2688c0126645cdac4419f3413ba6f747fb435620e825cb615c1877db92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비 대신 우박을 내리시며 저희 땅에 화염을 내리셨도다"
+      ],
+      "raw_text_hashes": [
+        "e8348e2688c0126645cdac4419f3413ba6f747fb435620e825cb615c1877db92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:33",
+      "sequence": 15640,
+      "chapter_label": "PSA 105",
+      "verse_label": "33",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 33
+        }
+      ],
+      "en": "He struck their vines and also their fig trees, and shattered the trees of their country.",
+      "ko": "저희 포도나무와 무화과나무를 치시며 저희 사경의 나무를 찍으셨도다",
+      "source_text_hash": "39433021fb312d390aa312bb7ccfc027afa1144523a7941421262f140904f8ed",
+      "translation_text_hash": "5d7579b9e7df335ba8fee14dd9aac0b52fb9f608414618b9e4b23dc2beb31532",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 포도나무와 무화과나무를 치시며 저희 사경의 나무를 찍으셨도다"
+      ],
+      "raw_text_hashes": [
+        "5d7579b9e7df335ba8fee14dd9aac0b52fb9f608414618b9e4b23dc2beb31532"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:34",
+      "sequence": 15641,
+      "chapter_label": "PSA 105",
+      "verse_label": "34",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 34
+        }
+      ],
+      "en": "He spoke, and the locusts came with the grasshoppers, without number.",
+      "ko": "여호와께서 말씀하신즉 황충과 무수한 메뚜기가 이르러",
+      "source_text_hash": "a36ce982ead57dac1d714f7b05bda7418b0fe02ae09f5c3ef701e1c4e8abd568",
+      "translation_text_hash": "df64bf546bd9f0d8e675c57b9ebe9d44dc9dc876f111df60988518abf2d0317a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하신즉 황충과 무수한 메뚜기가 이르러"
+      ],
+      "raw_text_hashes": [
+        "df64bf546bd9f0d8e675c57b9ebe9d44dc9dc876f111df60988518abf2d0317a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:35",
+      "sequence": 15642,
+      "chapter_label": "PSA 105",
+      "verse_label": "35",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 35
+        }
+      ],
+      "en": "They ate up every plant in their land, and ate up the fruit of their ground.",
+      "ko": "저희 땅에 모든 채소를 먹으며 그 밭에 열매를 먹었도다",
+      "source_text_hash": "b30df49589a7c9122f5e848b9daa114fa138ae4474ba9bf6fbe8f802d98bb68c",
+      "translation_text_hash": "26b47e6ab718186ce4ba6cd28497898fbe35cfae8d42c3070124a6160603e76f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 땅에 모든 채소를 먹으며 그 밭에 열매를 먹었도다"
+      ],
+      "raw_text_hashes": [
+        "26b47e6ab718186ce4ba6cd28497898fbe35cfae8d42c3070124a6160603e76f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:36",
+      "sequence": 15643,
+      "chapter_label": "PSA 105",
+      "verse_label": "36",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 36
+        }
+      ],
+      "en": "He struck also all the firstborn in their land, the first fruits of all their manhood.",
+      "ko": "여호와께서 또 저희 땅의 모든 장자를 치시니 곧 저희 모든 기력의 시작이로다",
+      "source_text_hash": "11f186614a7239fbdaa1abaaebc7833e391680cf7d52d1652f3be1a13f955ecf",
+      "translation_text_hash": "733f1da6acf4b0a61cb5cba86e70df0e8a14b65d12ded76806ab6be57c4214ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 저희 땅의 모든 장자를 치시니 곧 저희 모든 기력의 시작이로다"
+      ],
+      "raw_text_hashes": [
+        "733f1da6acf4b0a61cb5cba86e70df0e8a14b65d12ded76806ab6be57c4214ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:37",
+      "sequence": 15644,
+      "chapter_label": "PSA 105",
+      "verse_label": "37",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 37
+        }
+      ],
+      "en": "He brought them out with silver and gold. There was not one feeble person among his tribes.",
+      "ko": "그들을 인도하여 은금을 가지고 나오게 하시니 그 지파 중에 약한 자가 하나도 없었도다",
+      "source_text_hash": "f8d14a442485a69b2b2cc876f1247f7e5b3d1e20a9d1d1d97042fcf9ec856af5",
+      "translation_text_hash": "14965746f539464645a76135ccf16baf103a7df68ef1b237483c5b0e2c2cda2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 인도하여 은금을 가지고 나오게 하시니 그 지파 중에 약한 자가 하나도 없었도다"
+      ],
+      "raw_text_hashes": [
+        "14965746f539464645a76135ccf16baf103a7df68ef1b237483c5b0e2c2cda2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:38",
+      "sequence": 15645,
+      "chapter_label": "PSA 105",
+      "verse_label": "38",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 38
+        }
+      ],
+      "en": "Egypt was glad when they departed, for the fear of them had fallen on them.",
+      "ko": "그들의 떠날 때에 애굽이 기뻐하였으니 저희가 그들을 두려워함이로다",
+      "source_text_hash": "61e3838fb42257c76a64d8a6bfc85fac940488aca2e97d01aa70634f44491861",
+      "translation_text_hash": "1f0f4998e5787f47b166cf4e9dbcfe0ebdb14ef0dbf73600907687a05f87f299",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 떠날 때에 애굽이 기뻐하였으니 저희가 그들을 두려워함이로다"
+      ],
+      "raw_text_hashes": [
+        "1f0f4998e5787f47b166cf4e9dbcfe0ebdb14ef0dbf73600907687a05f87f299"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:39",
+      "sequence": 15646,
+      "chapter_label": "PSA 105",
+      "verse_label": "39",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 39
+        }
+      ],
+      "en": "He spread a cloud for a covering, fire to give light in the night.",
+      "ko": "여호와께서 구름을 펴사 덮개를 삼으시고 밤에 불로 밝히셨으며",
+      "source_text_hash": "3ce384f03ea80367ded661a0767f10f819c4bfd0a400ea25d1e9e0aa4179072f",
+      "translation_text_hash": "de71bd59a5604f15ce35deea7375c3dcdf708a626b73d13c33af01d7de5cac56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 구름을 펴사 덮개를 삼으시고 밤에 불로 밝히셨으며"
+      ],
+      "raw_text_hashes": [
+        "de71bd59a5604f15ce35deea7375c3dcdf708a626b73d13c33af01d7de5cac56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:40",
+      "sequence": 15647,
+      "chapter_label": "PSA 105",
+      "verse_label": "40",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 40
+        }
+      ],
+      "en": "They asked, and he brought quails, and satisfied them with the bread of the sky.",
+      "ko": "그들이 구한즉 메추라기로 오게 하시며 또 하늘 양식으로 그들을 만족케 하셨도다",
+      "source_text_hash": "28b702ef38f5653fd865ea30ccf79b377902f9c458c836e369a1d3f9ad58c0ab",
+      "translation_text_hash": "905d0510f89bd37086195034301e91276863b4f6aa63043ae3abe143f14c6c7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 구한즉 메추라기로 오게 하시며 또 하늘 양식으로 그들을 만족케 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "905d0510f89bd37086195034301e91276863b4f6aa63043ae3abe143f14c6c7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:41",
+      "sequence": 15648,
+      "chapter_label": "PSA 105",
+      "verse_label": "41",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 41
+        }
+      ],
+      "en": "He opened the rock, and waters gushed out. They ran as a river in the dry places.",
+      "ko": "반석을 가르신즉 물이 흘러나서 마른 땅에 강 같이 흘렀으니",
+      "source_text_hash": "869476a6f0d742951d8e39c6597d04fcbb0cc766fdbcab40d2bd06ea2bd6fd88",
+      "translation_text_hash": "fc873b1cc12d91ef752080a08e4c2f759296eab0880e5db8665bbec2b8cb3b86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "반석을 가르신즉 물이 흘러나서 마른 땅에 강 같이 흘렀으니"
+      ],
+      "raw_text_hashes": [
+        "fc873b1cc12d91ef752080a08e4c2f759296eab0880e5db8665bbec2b8cb3b86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:42",
+      "sequence": 15649,
+      "chapter_label": "PSA 105",
+      "verse_label": "42",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 42
+        }
+      ],
+      "en": "For he remembered his holy word, and Abraham, his servant.",
+      "ko": "이는 그 거룩한 말씀과 그 종 아브라함을 기억하셨음이로다",
+      "source_text_hash": "9ef12433bbcefda3a680c3220fd5fd9c0011d70c540f9d0974badbd92675351b",
+      "translation_text_hash": "d0e2556623e9984166680dda516c8ff29c6b89db4dfccf07c7177b42394d5feb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 거룩한 말씀과 그 종 아브라함을 기억하셨음이로다"
+      ],
+      "raw_text_hashes": [
+        "d0e2556623e9984166680dda516c8ff29c6b89db4dfccf07c7177b42394d5feb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:43",
+      "sequence": 15650,
+      "chapter_label": "PSA 105",
+      "verse_label": "43",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 43
+        }
+      ],
+      "en": "He brought his people out with joy, his chosen with singing.",
+      "ko": "그 백성으로 즐거이 나오게 하시며 그 택한 자로 노래하며 나오게 하시고",
+      "source_text_hash": "b677c26ad14c6fbf7983dbbeacbc8601eb87ae98b3350fc2f8fee589de9bb303",
+      "translation_text_hash": "8b7cd8d4a0eac849a4faf8aa7d318502123b9ff0aaba2058079c1dbad613a361",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 백성으로 즐거이 나오게 하시며 그 택한 자로 노래하며 나오게 하시고"
+      ],
+      "raw_text_hashes": [
+        "8b7cd8d4a0eac849a4faf8aa7d318502123b9ff0aaba2058079c1dbad613a361"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:44",
+      "sequence": 15651,
+      "chapter_label": "PSA 105",
+      "verse_label": "44",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 44
+        }
+      ],
+      "en": "He gave them the lands of the nations. They took the labor of the peoples in possession,",
+      "ko": "열방의 땅을 저희에게 주시며 민족들의 수고한 것을 소유로 취하게 하셨으니",
+      "source_text_hash": "81dde0f43fb827949d7fa0e1d7e7fa3cc82027abd6889b63231adb00a35db67d",
+      "translation_text_hash": "f4a795dd1061acbd9dfafea5c76a0dc5505b80ea9ad4136f54f38f88b44063d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방의 땅을 저희에게 주시며 민족들의 수고한 것을 소유로 취하게 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "f4a795dd1061acbd9dfafea5c76a0dc5505b80ea9ad4136f54f38f88b44063d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:105:45",
+      "sequence": 15652,
+      "chapter_label": "PSA 105",
+      "verse_label": "45",
+      "locator": {
+        "book": "PSA",
+        "chapter": 105,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 105,
+          "verse": 45
+        }
+      ],
+      "en": "that they might keep his statutes, and observe his laws. Praise the LORD!",
+      "ko": "이는 저희로 그 율례를 지키며 그 법을 좇게 하려 하심이로다 할렐루야",
+      "source_text_hash": "a9141d08c5cec39c883027f2f9f609d42003b6a6b3d1487743980e04f55bff98",
+      "translation_text_hash": "a864d30cef074ec5f086efd5948bbd85b89927d7b853c78b180381f960c5b62c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희로 그 율례를 지키며 그 법을 좇게 하려 하심이로다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "a864d30cef074ec5f086efd5948bbd85b89927d7b853c78b180381f960c5b62c"
+      ]
+    }
+  ]
+}

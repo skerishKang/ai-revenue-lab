@@ -1,0 +1,141 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:123",
+  "unit_ordinal": 601,
+  "unit_label": "PSA 123",
+  "book_code": "PSA",
+  "chapter_number": 123,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:123:1",
+      "sequence": 16100,
+      "chapter_label": "PSA 123",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 123,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 123,
+          "verse": 1
+        }
+      ],
+      "en": "I lift up my eyes to you, you who sit in the heavens.",
+      "ko": "하늘에 계신 주여 내가 눈을 들어 주께 향하나이다",
+      "source_text_hash": "2df485424999bbd5f2e2d56b6643b9894c45de279268d1c40c9aa1d90c47415e",
+      "translation_text_hash": "fe91f649a60a2135ec34b6451c9e463a5f504180e897dffc8740bcc1bbd7e21c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 계신 주여 내가 눈을 들어 주께 향하나이다"
+      ],
+      "raw_text_hashes": [
+        "fe91f649a60a2135ec34b6451c9e463a5f504180e897dffc8740bcc1bbd7e21c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:123:2",
+      "sequence": 16101,
+      "chapter_label": "PSA 123",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 123,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 123,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, as the eyes of servants look to the hand of their master, as the eyes of a maid to the hand of her mistress, so our eyes look to the LORD, our God, until he has mercy on us.",
+      "ko": "종의 눈이 그 상전의 손을, 여종의 눈이 그 주모의 손을 바람 같이 우리 눈이 여호와 우리 하나님을 바라며 우리를 긍휼히 여기시기를 기다리나이다",
+      "source_text_hash": "fe8553f7fce6b78185f506ee4d26627361fe139c20db4455d0cfc23b30578eb6",
+      "translation_text_hash": "df740c55368ff6f9973fcf41e09898afe13200562188824b467d8768a2429ca5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종의 눈이 그 상전의 손을, 여종의 눈이 그 주모의 손을 바람 같이 우리 눈이 여호와 우리 하나님을 바라며 우리를 긍휼히 여기시기를 기다리나이다"
+      ],
+      "raw_text_hashes": [
+        "df740c55368ff6f9973fcf41e09898afe13200562188824b467d8768a2429ca5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:123:3",
+      "sequence": 16102,
+      "chapter_label": "PSA 123",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 123,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 123,
+          "verse": 3
+        }
+      ],
+      "en": "Have mercy on us, LORD, have mercy on us, for we have endured much contempt.",
+      "ko": "여호와여 우리를 긍휼히 여기시고 긍휼히 여기소서 심한 멸시가 우리에게 넘치나이다",
+      "source_text_hash": "18c3803f1d14ff8964419ccd0e967eb767c5fa269b726d619714f953120ef4e3",
+      "translation_text_hash": "607bfe51a984d4baadd63d8626c8335cf39e1450e45f1422c16bfe847d4bbd05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 우리를 긍휼히 여기시고 긍휼히 여기소서 심한 멸시가 우리에게 넘치나이다"
+      ],
+      "raw_text_hashes": [
+        "607bfe51a984d4baadd63d8626c8335cf39e1450e45f1422c16bfe847d4bbd05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:123:4",
+      "sequence": 16103,
+      "chapter_label": "PSA 123",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 123,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 123,
+          "verse": 4
+        }
+      ],
+      "en": "Our soul is exceedingly filled with the scoffing of those who are at ease, with the contempt of the proud.",
+      "ko": "평안한 자의 조소와 교만한 자의 멸시가 우리 심령에 넘치나이다",
+      "source_text_hash": "f7d5fbfa7c68a7d7d2e729ba9c9bf013718a23abb1e472a40b1f739c66ddc332",
+      "translation_text_hash": "93ee3db03d9dc47f3f77604b1a1a91667ad8a60b716afb8693378d903e45cb2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평안한 자의 조소와 교만한 자의 멸시가 우리 심령에 넘치나이다"
+      ],
+      "raw_text_hashes": [
+        "93ee3db03d9dc47f3f77604b1a1a91667ad8a60b716afb8693378d903e45cb2f"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2125 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:008",
+  "unit_ordinal": 299,
+  "unit_label": "1KI 8",
+  "book_code": "1KI",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:8:1",
+      "sequence": 8987,
+      "chapter_label": "1KI 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Then Solomon assembled the elders of Israel with all the heads of the tribes, the princes of the fathers’ households of the children of Israel, to King Solomon in Jerusalem, to bring up the ark of the LORD’s covenant out of David’s city, which is Zion.",
+      "ko": "이에 솔로몬이 여호와의 언약궤를 다윗성 곧 시온에서 메어 올리고자 하여 이스라엘 장로와 모든 지파의 두목 곧 이스라엘 자손의 족장들을 예루살렘 자기에게로 소집하니",
+      "source_text_hash": "d0e35d55ffc127608987ebe9ef6dbb6f04219faef117456559747a3fe8aaa9f5",
+      "translation_text_hash": "0a5d23a549da137436ffc99faad9c53d09dd30ce972b471e6f33278148e29d3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 솔로몬이 여호와의 언약궤를 다윗성 곧 시온에서 메어 올리고자 하여 이스라엘 장로와 모든 지파의 두목 곧 이스라엘 자손의 족장들을 예루살렘 자기에게로 소집하니"
+      ],
+      "raw_text_hashes": [
+        "0a5d23a549da137436ffc99faad9c53d09dd30ce972b471e6f33278148e29d3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:2",
+      "sequence": 8988,
+      "chapter_label": "1KI 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "All the men of Israel assembled themselves to King Solomon at the feast in the month Ethanim, which is the seventh month.",
+      "ko": "이스라엘 모든 사람이 다 에다님월 곧 칠월 절기에 솔로몬왕에게 모이고",
+      "source_text_hash": "3b6659e17790f99e2340cf807fd333d882753ae0f21cec57c9b55e5c5208b294",
+      "translation_text_hash": "a596a81fbe23f7049bf581d0f8caa340fa1a1bcea5e50c78bc8b0ab8faf114af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 사람이 다 에다님월 곧 칠월 절기에 솔로몬왕에게 모이고"
+      ],
+      "raw_text_hashes": [
+        "a596a81fbe23f7049bf581d0f8caa340fa1a1bcea5e50c78bc8b0ab8faf114af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:3",
+      "sequence": 8989,
+      "chapter_label": "1KI 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "All the elders of Israel came, and the priests picked up the ark.",
+      "ko": "이스라엘 장로들이 다 이르매 제사장들이 궤를 메니라",
+      "source_text_hash": "3187178cd83e8f18a26789fe6a613473843c9510b1234c3f94c7f8437b96ac6a",
+      "translation_text_hash": "05a9637260bfd411440ff306c96fa849a00050624827dcb2acf22688384ffd48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 장로들이 다 이르매 제사장들이 궤를 메니라"
+      ],
+      "raw_text_hashes": [
+        "05a9637260bfd411440ff306c96fa849a00050624827dcb2acf22688384ffd48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:4",
+      "sequence": 8990,
+      "chapter_label": "1KI 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "They brought up the LORD’s ark, the Tent of Meeting, and all the holy vessels that were in the Tent. The priests and the Levites brought these up.",
+      "ko": "여호와의 궤와 회막과 성막 안의 모든 거룩한 기구들을 메고 올라가되 제사장과 레위 사람이 그것들을 메고 올라가매",
+      "source_text_hash": "28958bbdc98cd4f6c4004b9254d2918fba0f72d38904534865f866493791a86b",
+      "translation_text_hash": "35c75b9c998881efbf64abdffc2ff7d2f212183ca1430a113e089be14a3bf3c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 궤와 회막과 성막 안의 모든 거룩한 기구들을 메고 올라가되 제사장과 레위 사람이 그것들을 메고 올라가매"
+      ],
+      "raw_text_hashes": [
+        "35c75b9c998881efbf64abdffc2ff7d2f212183ca1430a113e089be14a3bf3c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:5",
+      "sequence": 8991,
+      "chapter_label": "1KI 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "King Solomon and all the congregation of Israel, who were assembled to him, were with him before the ark, sacrificing sheep and cattle that could not be counted or numbered for multitude.",
+      "ko": "솔로몬왕과 그 앞에 모인 이스라엘 회중이 저와 함께 궤 앞에 있어 양과 소로 제사를 드렸으니 그 수가 많아 기록할 수도 없고 셀 수도 없었더라",
+      "source_text_hash": "964d848edf21a65305df9156f78993cb8b74d7aa0b16fb8b5e2de437663137ce",
+      "translation_text_hash": "5770cf1b06d54c19e977ec3dc3e7691dd5b9eccad05f1e8e2311967712c5c517",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕과 그 앞에 모인 이스라엘 회중이 저와 함께 궤 앞에 있어 양과 소로 제사를 드렸으니 그 수가 많아 기록할 수도 없고 셀 수도 없었더라"
+      ],
+      "raw_text_hashes": [
+        "5770cf1b06d54c19e977ec3dc3e7691dd5b9eccad05f1e8e2311967712c5c517"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:6",
+      "sequence": 8992,
+      "chapter_label": "1KI 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "The priests brought in the ark of the LORD’s covenant to its place, into the inner sanctuary of the house, to the most holy place, even under the cherubim’s wings.",
+      "ko": "제사장들이 여호와의 언약궤를 그 처소로 메어 들였으니 곧 내전 지성소 그룹들의 날개 아래라",
+      "source_text_hash": "ce07feeb3c18e810ecc200b00694572a9e6f9d02d31c5c8621af3a5cf07917c7",
+      "translation_text_hash": "9030a801b22ea4b44f461d02e6fe9995ad4ea178b1904b7cea661b52bfdeef92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들이 여호와의 언약궤를 그 처소로 메어 들였으니 곧 내전 지성소 그룹들의 날개 아래라"
+      ],
+      "raw_text_hashes": [
+        "9030a801b22ea4b44f461d02e6fe9995ad4ea178b1904b7cea661b52bfdeef92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:7",
+      "sequence": 8993,
+      "chapter_label": "1KI 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "For the cherubim spread their wings out over the place of the ark, and the cherubim covered the ark and its poles above.",
+      "ko": "그룹들이 궤 처소 위에서 날개를 펴서 궤와 그 채를 덮었는데",
+      "source_text_hash": "57233d6a174254fc535f7cdef9785672b87c6b8ac3bf53258ce51f8a33d3add4",
+      "translation_text_hash": "7a15c684f9518f3c8d6aae17c3ab41dee8cda169e980b34f2dec1d17fdcc54d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹들이 궤 처소 위에서 날개를 펴서 궤와 그 채를 덮었는데"
+      ],
+      "raw_text_hashes": [
+        "7a15c684f9518f3c8d6aae17c3ab41dee8cda169e980b34f2dec1d17fdcc54d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:8",
+      "sequence": 8994,
+      "chapter_label": "1KI 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "The poles were so long that the ends of the poles were seen from the holy place before the inner sanctuary, but they were not seen outside. They are there to this day.",
+      "ko": "채가 긴고로 채 끝이 내전 앞 성소에서 보이나 밖에서는 보이지 아니하며 그 채는 오늘까지 그곳에 있으며",
+      "source_text_hash": "3428787df3cd3a7b7f678c8f6f356d4aca47d4cda8895d73c62f3d5c0c2ff522",
+      "translation_text_hash": "21f23c49fe0de1762d3b0343ca35d312d6f4395936a38966f028f978918392c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "채가 긴고로 채 끝이 내전 앞 성소에서 보이나 밖에서는 보이지 아니하며 그 채는 오늘까지 그곳에 있으며"
+      ],
+      "raw_text_hashes": [
+        "21f23c49fe0de1762d3b0343ca35d312d6f4395936a38966f028f978918392c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:9",
+      "sequence": 8995,
+      "chapter_label": "1KI 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "There was nothing in the ark except the two stone tablets which Moses put there at Horeb, when the LORD made a covenant with the children of Israel, when they came out of the land of Egypt.",
+      "ko": "궤 안에는 두 돌판 외에 아무 것도 없으니 이것은 이스라엘 자손이 애굽 땅에서 나온 후 여호와께서 저희와 언약을 세우실 때에 모세가 호렙에서 그 안에 넣은 것이더라",
+      "source_text_hash": "24b472c197ce9caf5b929e87551351f2b1ba7e4ec4e33cdec11c65c26528ab5d",
+      "translation_text_hash": "3a3442c2880fb9530ea0f7cea40b90e1b6190b145bcfa8064c6ed53a8cebc49a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궤 안에는 두 돌판 외에 아무 것도 없으니 이것은 이스라엘 자손이 애굽 땅에서 나온 후 여호와께서 저희와 언약을 세우실 때에 모세가 호렙에서 그 안에 넣은 것이더라"
+      ],
+      "raw_text_hashes": [
+        "3a3442c2880fb9530ea0f7cea40b90e1b6190b145bcfa8064c6ed53a8cebc49a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:10",
+      "sequence": 8996,
+      "chapter_label": "1KI 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "It came to pass, when the priests had come out of the holy place, that the cloud filled the LORD’s house,",
+      "ko": "제사장이 성소에서 나올 때에 구름이 여호와의 전에 가득하매",
+      "source_text_hash": "e726c732dc785a691d2ad6af10f85c15c2f1f7828ae1937952a0f2296a7015b9",
+      "translation_text_hash": "3e0766e360a5f3ffc08bbb681acfd04b4f152687c8bdc6e57ecba251b319ab7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 성소에서 나올 때에 구름이 여호와의 전에 가득하매"
+      ],
+      "raw_text_hashes": [
+        "3e0766e360a5f3ffc08bbb681acfd04b4f152687c8bdc6e57ecba251b319ab7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:11",
+      "sequence": 8997,
+      "chapter_label": "1KI 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "so that the priests could not stand to minister by reason of the cloud; for the LORD’s glory filled the LORD’s house.",
+      "ko": "제사장이 그 구름으로 인하여 능히 서서 섬기지 못하였으니 이는 여호와의 영광이 여호와의 전에 가득함이었더라",
+      "source_text_hash": "5af84c6785e57c20f2ab4ba92478004fa67f01a33d55373820aa1717589a1c4d",
+      "translation_text_hash": "86b9114c3d5fd005574a35f38e8613ce96262ec1fd5b3c8b45269a97fce7123e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 그 구름으로 인하여 능히 서서 섬기지 못하였으니 이는 여호와의 영광이 여호와의 전에 가득함이었더라"
+      ],
+      "raw_text_hashes": [
+        "86b9114c3d5fd005574a35f38e8613ce96262ec1fd5b3c8b45269a97fce7123e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:12",
+      "sequence": 8998,
+      "chapter_label": "1KI 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Then Solomon said, “The LORD has said that he would dwell in the thick darkness.",
+      "ko": "그 때에 솔로몬이 가로되 여호와께서 캄캄한데 계시겠다 말씀하셨사오나",
+      "source_text_hash": "67658cb08fc9700cb180593e0b71843437d6346245ad89615c4993febc4a8337",
+      "translation_text_hash": "9bd6faf02c4ac8f2b26452ce2e5bf2b102ada0189e84ee0ed39dc8f62d694170",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 솔로몬이 가로되 여호와께서 캄캄한데 계시겠다 말씀하셨사오나"
+      ],
+      "raw_text_hashes": [
+        "9bd6faf02c4ac8f2b26452ce2e5bf2b102ada0189e84ee0ed39dc8f62d694170"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:13",
+      "sequence": 8999,
+      "chapter_label": "1KI 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "I have surely built you a house of habitation, a place for you to dwell in forever.”",
+      "ko": "내가 참으로 주를 위하여 계실 전을 건축하였사오니 주께서 영원히 거하실 처소로소이다 하고",
+      "source_text_hash": "5743b7efcf1904ff0bf83bf7740726ac61db484f4172adbde519a9dcb90f5299",
+      "translation_text_hash": "412122285b116fef593766ff32707f606c225178738a18673b08d4bc2dddaf16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 참으로 주를 위하여 계실 전을 건축하였사오니 주께서 영원히 거하실 처소로소이다 하고"
+      ],
+      "raw_text_hashes": [
+        "412122285b116fef593766ff32707f606c225178738a18673b08d4bc2dddaf16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:14",
+      "sequence": 9000,
+      "chapter_label": "1KI 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "The king turned his face around and blessed all the assembly of Israel; and all the assembly of Israel stood.",
+      "ko": "얼굴을 돌이켜 이스라엘의 온 회중을 위하여 축복하니 때에 이스라엘의 온 회중이 섰더라",
+      "source_text_hash": "a9192960a3d0adf4a36780dd233d6989267c8414aec385196bf16f5b90d33897",
+      "translation_text_hash": "9a4f7f804518fb39c3e7674e1a225e8926901b4bd2fbbe5a6ec81e92d7612f23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "얼굴을 돌이켜 이스라엘의 온 회중을 위하여 축복하니 때에 이스라엘의 온 회중이 섰더라"
+      ],
+      "raw_text_hashes": [
+        "9a4f7f804518fb39c3e7674e1a225e8926901b4bd2fbbe5a6ec81e92d7612f23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:15",
+      "sequence": 9001,
+      "chapter_label": "1KI 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "He said, “Blessed is the LORD, the God of Israel, who spoke with his mouth to David your father, and has with his hand fulfilled it, saying,",
+      "ko": "왕이 가로되 이스라엘 하나님 여호와를 송축할찌로다 여호와께서 그 입으로 나의 부친 다윗에게 말씀하신 것을 이제 그 손으로 이루셨도다 이르시기를",
+      "source_text_hash": "7b351a6686b19a27142209a8a6d8dd05e6597d0ffc951397993acc0d7236f700",
+      "translation_text_hash": "5e4c84672e48d78e985a25aaa469e2c5d0bb4ed893c532d54b01086e09f2d5f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 이스라엘 하나님 여호와를 송축할찌로다 여호와께서 그 입으로 나의 부친 다윗에게 말씀하신 것을 이제 그 손으로 이루셨도다 이르시기를"
+      ],
+      "raw_text_hashes": [
+        "5e4c84672e48d78e985a25aaa469e2c5d0bb4ed893c532d54b01086e09f2d5f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:16",
+      "sequence": 9002,
+      "chapter_label": "1KI 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "‘Since the day that I brought my people Israel out of Egypt, I chose no city out of all the tribes of Israel to build a house, that my name might be there; but I chose David to be over my people Israel.’",
+      "ko": "내가 내 백성 이스라엘을 애굽에서 인도하여 낸 날부터 내 이름을 둘만한 집을 건축하기 위하여 이스라엘 모든 지파 가운데서 아무 성읍도 택하지 아니하고 다만 다윗을 택하여 내 백성 이스라엘을 다스리게 하였노라 하신지라",
+      "source_text_hash": "cabfbe8f8dbf0d8c81218b8f73970ccf59519886113d43e1d6da251057f29d95",
+      "translation_text_hash": "a192d20887805376f46221ca58226803a1d0b5aa62e3f05bd1d3f9587a294160",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 백성 이스라엘을 애굽에서 인도하여 낸 날부터 내 이름을 둘만한 집을 건축하기 위하여 이스라엘 모든 지파 가운데서 아무 성읍도 택하지 아니하고 다만 다윗을 택하여 내 백성 이스라엘을 다스리게 하였노라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "a192d20887805376f46221ca58226803a1d0b5aa62e3f05bd1d3f9587a294160"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:17",
+      "sequence": 9003,
+      "chapter_label": "1KI 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "“Now it was in the heart of David my father to build a house for the name of the LORD, the God of Israel.",
+      "ko": "내 부친 다윗이 이스라엘 하나님 여호와의 이름을 위하여 전을 건축할 마음이 있었더니",
+      "source_text_hash": "6f26d5dc4f922f365e91a8955a86220cc8b595c3c3df2c2c8b42507d053b7b8a",
+      "translation_text_hash": "dbdbc750cc0e301fb98762b3c9a9c2781f3c1412224445977b6adbe5d8818916",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 부친 다윗이 이스라엘 하나님 여호와의 이름을 위하여 전을 건축할 마음이 있었더니"
+      ],
+      "raw_text_hashes": [
+        "dbdbc750cc0e301fb98762b3c9a9c2781f3c1412224445977b6adbe5d8818916"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:18",
+      "sequence": 9004,
+      "chapter_label": "1KI 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "But the LORD said to David my father, ‘Whereas it was in your heart to build a house for my name, you did well that it was in your heart.",
+      "ko": "여호와께서 내 부친 다윗에게 이르시되 네가 내 이름을 위하여 전을 건축할 마음이 있으니 이 마음이 네게 있는 것이 좋도다",
+      "source_text_hash": "8b831d2c12b3ce19891178ffa1a6308afb871f60cc12c10595a43425e81e71c3",
+      "translation_text_hash": "be439961bfb1f545093f03a1cb1ddb33f63c8835ffd21d03e7970c9a0eaaa3da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내 부친 다윗에게 이르시되 네가 내 이름을 위하여 전을 건축할 마음이 있으니 이 마음이 네게 있는 것이 좋도다"
+      ],
+      "raw_text_hashes": [
+        "be439961bfb1f545093f03a1cb1ddb33f63c8835ffd21d03e7970c9a0eaaa3da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:19",
+      "sequence": 9005,
+      "chapter_label": "1KI 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "Nevertheless, you shall not build the house; but your son who shall come out of your body, he shall build the house for my name.’",
+      "ko": "그러나 너는 그 전을 건축하지 못할 것이요 네 몸에서 낳을 네 아들 그가 내 이름을 위하여 전을 건축하리라 하시더니",
+      "source_text_hash": "eab36298a9c36853a9f3a840f3ab5c81a38f00861dd0c0e6c68e41608fff302a",
+      "translation_text_hash": "ce626aeb722ccece6e598a8587db9925521e22ec3295a6b0e4939850fb32790f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너는 그 전을 건축하지 못할 것이요 네 몸에서 낳을 네 아들 그가 내 이름을 위하여 전을 건축하리라 하시더니"
+      ],
+      "raw_text_hashes": [
+        "ce626aeb722ccece6e598a8587db9925521e22ec3295a6b0e4939850fb32790f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:20",
+      "sequence": 9006,
+      "chapter_label": "1KI 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD has established his word that he spoke; for I have risen up in the place of David my father, and I sit on the throne of Israel, as the LORD promised, and have built the house for the name of the LORD, the God of Israel.",
+      "ko": "이제 여호와께서 말씀하신대로 이루시도다 내가 여호와의 허하신대로 내 부친 다윗을 대신하여 일어나서 이스라엘 위에 앉고 이스라엘 하나님 여호와의 이름을 위하여 전을 건축하고",
+      "source_text_hash": "476987cbba6ea36813e7b7ce245e8fac3a526ec3e46482eef0d402466cf49cce",
+      "translation_text_hash": "85254c1dab35244b14e697659832ffa3036fe4b43fb91e75987418b005291874",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 여호와께서 말씀하신대로 이루시도다 내가 여호와의 허하신대로 내 부친 다윗을 대신하여 일어나서 이스라엘 위에 앉고 이스라엘 하나님 여호와의 이름을 위하여 전을 건축하고"
+      ],
+      "raw_text_hashes": [
+        "85254c1dab35244b14e697659832ffa3036fe4b43fb91e75987418b005291874"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:21",
+      "sequence": 9007,
+      "chapter_label": "1KI 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "There I have set a place for the ark, in which is the LORD’s covenant, which he made with our fathers when he brought them out of the land of Egypt.”",
+      "ko": "내가 또 그곳에 우리 열조를 애굽 땅에서 인도하여 내실 때에 저희와 세우신 바 여호와의 언약 넣은 궤를 위하여 한 처소를 설치하였노라",
+      "source_text_hash": "3cf847692301cc08cff2e88c45a42f100a1fa2da0767ef59c640b347a27a951e",
+      "translation_text_hash": "984d5a6d1b240b2a0bdb52a198904141d6ffc1f356476344c9822f3ae9ff6db9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 그곳에 우리 열조를 애굽 땅에서 인도하여 내실 때에 저희와 세우신 바 여호와의 언약 넣은 궤를 위하여 한 처소를 설치하였노라"
+      ],
+      "raw_text_hashes": [
+        "984d5a6d1b240b2a0bdb52a198904141d6ffc1f356476344c9822f3ae9ff6db9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:22",
+      "sequence": 9008,
+      "chapter_label": "1KI 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "Solomon stood before the LORD’s altar in the presence of all the assembly of Israel, and spread out his hands toward heaven;",
+      "ko": "솔로몬이 여호와의 단 앞에서 이스라엘의 온 회중을 마주서서 하늘을 향하여 손을 펴고",
+      "source_text_hash": "1c67cbcb99d861e5c528260b77e63f58c491557991a4f444af0fcf37fa5036ca",
+      "translation_text_hash": "ebf66457a9eb501478fab3556262e8c683525a8c05b7c8ddf3e87c707be17dd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 여호와의 단 앞에서 이스라엘의 온 회중을 마주서서 하늘을 향하여 손을 펴고"
+      ],
+      "raw_text_hashes": [
+        "ebf66457a9eb501478fab3556262e8c683525a8c05b7c8ddf3e87c707be17dd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:23",
+      "sequence": 9009,
+      "chapter_label": "1KI 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "and he said, “LORD, the God of Israel, there is no God like you, in heaven above, or on earth beneath; who keeps covenant and loving kindness with your servants who walk before you with all their heart;",
+      "ko": "가로되 이스라엘 하나님 여호와여 상천 하지에 주와 같은 신이 없나이다 주께서는 온 마음으로 주의 앞에서 행하는 종들에게 언약을 지키시고 은혜를 베푸시나이다",
+      "source_text_hash": "914af0deb21bfd4c4528abf5f55a234c7e49fa6fba4be1fc36893072db5a4ec2",
+      "translation_text_hash": "4cc6e96b999e9645063b2099fbf8e7729f75f925a3a38b8bdc53ad45c3ba337a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 이스라엘 하나님 여호와여 상천 하지에 주와 같은 신이 없나이다 주께서는 온 마음으로 주의 앞에서 행하는 종들에게 언약을 지키시고 은혜를 베푸시나이다"
+      ],
+      "raw_text_hashes": [
+        "4cc6e96b999e9645063b2099fbf8e7729f75f925a3a38b8bdc53ad45c3ba337a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:24",
+      "sequence": 9010,
+      "chapter_label": "1KI 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "who has kept with your servant David my father that which you promised him. Yes, you spoke with your mouth, and have fulfilled it with your hand, as it is today.",
+      "ko": "주께서 주의 종 내 아비 다윗에게 허하신 말씀을 지키사 주의 입으로 말씀하신 것을 손으로 이루심이 오늘날과 같으니이다",
+      "source_text_hash": "237bd857ce638b044673324460600b9a1006a42434d6688a082c6cad74cae2f7",
+      "translation_text_hash": "4651201a41e1d9af3f25244ce3b19133a629dd8607f6300dbba6a759930b7f42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 종 내 아비 다윗에게 허하신 말씀을 지키사 주의 입으로 말씀하신 것을 손으로 이루심이 오늘날과 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "4651201a41e1d9af3f25244ce3b19133a629dd8607f6300dbba6a759930b7f42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:25",
+      "sequence": 9011,
+      "chapter_label": "1KI 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "Now therefore, may LORD, the God of Israel, keep with your servant David my father that which you have promised him, saying, ‘There shall not fail from you a man in my sight to sit on the throne of Israel, if only your children take heed to their way, to walk before me as you have walked before me.’",
+      "ko": "이스라엘 하나님 여호와여 주께서 주의 종 내 아비 다윗에게 말씀하시기를 네 자손이 자기 길을 삼가서 네가 내 앞에서 행한것 같이 내 앞에서 행하기만 하면 네게로 좇아나서 이스라엘 위에 앉을 사람이 내 앞에서 끊어지지 아니하리라 하셨사오니 이제 다윗을 위하여 그 허하신 말씀을 지키시옵소서",
+      "source_text_hash": "10664b766eb4e951c84d9a9c35fd0215877435fc7f0e6f122dbf68fff0004bd8",
+      "translation_text_hash": "3ed4a3471712157d82a05dd1a304304514e1de92077fe8805559b5bcea81977e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 하나님 여호와여 주께서 주의 종 내 아비 다윗에게 말씀하시기를 네 자손이 자기 길을 삼가서 네가 내 앞에서 행한것 같이 내 앞에서 행하기만 하면 네게로 좇아나서 이스라엘 위에 앉을 사람이 내 앞에서 끊어지지 아니하리라 하셨사오니 이제 다윗을 위하여 그 허하신 말씀을 지키시옵소서"
+      ],
+      "raw_text_hashes": [
+        "3ed4a3471712157d82a05dd1a304304514e1de92077fe8805559b5bcea81977e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:26",
+      "sequence": 9012,
+      "chapter_label": "1KI 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "“Now therefore, God of Israel, please let your word be verified, which you spoke to your servant David my father.",
+      "ko": "그런즉 이스라엘 하나님이여 원컨대 주는 주의 종 내 아비 다윗에게 하신 말씀이 확실하게 하옵소서",
+      "source_text_hash": "1d7fb43afbbabb4cb61e62415f1acc11226fa926ed711540efeadf95530a896d",
+      "translation_text_hash": "3120c0b7aa724b2890d0bd951a0abd9d5f4ceef8d02b48d979cde8b207827baf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 이스라엘 하나님이여 원컨대 주는 주의 종 내 아비 다윗에게 하신 말씀이 확실하게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "3120c0b7aa724b2890d0bd951a0abd9d5f4ceef8d02b48d979cde8b207827baf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:27",
+      "sequence": 9013,
+      "chapter_label": "1KI 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "But will God in very deed dwell on the earth? Behold, heaven and the heaven of heavens can’t contain you; how much less this house that I have built!",
+      "ko": "하나님이 참으로 땅에 거하시리이까 하늘과 하늘들의 하늘이라도 주를 용납지 못하겠거든 하물며 내가 건축한 이 전이오리이까",
+      "source_text_hash": "189ebbe46b498463cb8d8c08ddf30e7b5cd47a4d7dbe15a4a09bb2d88a161157",
+      "translation_text_hash": "a8a2e27348e95bec69518fa8de2ee1982db9ba748ffe91f4da0aae207a6a96d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 참으로 땅에 거하시리이까 하늘과 하늘들의 하늘이라도 주를 용납지 못하겠거든 하물며 내가 건축한 이 전이오리이까"
+      ],
+      "raw_text_hashes": [
+        "a8a2e27348e95bec69518fa8de2ee1982db9ba748ffe91f4da0aae207a6a96d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:28",
+      "sequence": 9014,
+      "chapter_label": "1KI 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "Yet have respect for the prayer of your servant and for his supplication, LORD my God, to listen to the cry and to the prayer which your servant prays before you today;",
+      "ko": "그러나 나의 하나님 여호와여 종의 기도와 간구를 돌아보시며 종이 오늘날 주의 앞에서 부르짖음과 비는 기도를 들으시옵소서",
+      "source_text_hash": "40c6cb48064716c9976487d95570c81dc9966dc2195f52784cafcf8d595e08bf",
+      "translation_text_hash": "ef3cfe19b651a2d19506f885ca7f3ade6a70b5c6d71a441362c0758859ab1c62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나의 하나님 여호와여 종의 기도와 간구를 돌아보시며 종이 오늘날 주의 앞에서 부르짖음과 비는 기도를 들으시옵소서"
+      ],
+      "raw_text_hashes": [
+        "ef3cfe19b651a2d19506f885ca7f3ade6a70b5c6d71a441362c0758859ab1c62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:29",
+      "sequence": 9015,
+      "chapter_label": "1KI 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "that your eyes may be open toward this house night and day, even toward the place of which you have said, ‘My name shall be there;’ to listen to the prayer which your servant prays toward this place.",
+      "ko": "주께서 전에 말씀하시기를 내 이름이 거기 있으리라 하신 곳 이 전을 향하여 주의 눈이 주야로 보옵시며 종이 이곳을 향하여 비는 기도를 들으시옵소서",
+      "source_text_hash": "f3d5d7e6bc034049713bcd6348f7292025b93dd7f2ad3b32c23ba37acb612ab6",
+      "translation_text_hash": "7f00cfd8c52f783675776da7304cd9e5865e7a6bd543bcdf90481960839c3433",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 전에 말씀하시기를 내 이름이 거기 있으리라 하신 곳 이 전을 향하여 주의 눈이 주야로 보옵시며 종이 이곳을 향하여 비는 기도를 들으시옵소서"
+      ],
+      "raw_text_hashes": [
+        "7f00cfd8c52f783675776da7304cd9e5865e7a6bd543bcdf90481960839c3433"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:30",
+      "sequence": 9016,
+      "chapter_label": "1KI 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "Listen to the supplication of your servant, and of your people Israel, when they pray toward this place. Yes, hear in heaven, your dwelling place; and when you hear, forgive.",
+      "ko": "종과 주의 백성 이스라엘이 이곳을 향하여 기도할 때에 주는 그 간구함을 들으시되 주의 계신 곳 하늘에서 들으시고 들으시사 사하여 주옵소서",
+      "source_text_hash": "42eb5ab85d526e9abb0e947b37ece86f40a1e4439809d6e04198d8a7f44c4c12",
+      "translation_text_hash": "91beae4b228bc528ca5d7846ccb92240b8b197142c3b6d40e8002873d25fc8f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종과 주의 백성 이스라엘이 이곳을 향하여 기도할 때에 주는 그 간구함을 들으시되 주의 계신 곳 하늘에서 들으시고 들으시사 사하여 주옵소서"
+      ],
+      "raw_text_hashes": [
+        "91beae4b228bc528ca5d7846ccb92240b8b197142c3b6d40e8002873d25fc8f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:31",
+      "sequence": 9017,
+      "chapter_label": "1KI 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "“If a man sins against his neighbor, and an oath is laid on him to cause him to swear, and he comes and swears before your altar in this house,",
+      "ko": "만일 어떤 사람이 그 이웃에게 범죄함으로 맹세시킴을 받고 저가 와서 이 전에 있는 주의 단 앞에서 맹세하거든",
+      "source_text_hash": "dee008d0fbc43c127cdb3157c4ed45cadd9ec741ce826dbefb346eaf0233ced6",
+      "translation_text_hash": "afb46a0b788bb8653cfd56315ab25270cda6fe10d649eaeaf33cff90114598ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 어떤 사람이 그 이웃에게 범죄함으로 맹세시킴을 받고 저가 와서 이 전에 있는 주의 단 앞에서 맹세하거든"
+      ],
+      "raw_text_hashes": [
+        "afb46a0b788bb8653cfd56315ab25270cda6fe10d649eaeaf33cff90114598ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:32",
+      "sequence": 9018,
+      "chapter_label": "1KI 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "then hear in heaven, and act, and judge your servants, condemning the wicked, to bring his way on his own head, and justifying the righteous, to give him according to his righteousness.",
+      "ko": "주는 하늘에서 들으시고 행하시되 주의 종들을 국문하사 악한 자의 죄를 정하여 그 행위대로 그 머리에 돌리시고 의로운 자를 의롭다 하사 그 의로운대로 갚으시옵소서",
+      "source_text_hash": "bb192e8a2fced3e744d5d7f0f63dda00a0ecf55e39863694d700335dcef5aa4c",
+      "translation_text_hash": "f5565561a09dbcbaf668340093602952fefe2e9150a46b5331b31c37779f470d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 하늘에서 들으시고 행하시되 주의 종들을 국문하사 악한 자의 죄를 정하여 그 행위대로 그 머리에 돌리시고 의로운 자를 의롭다 하사 그 의로운대로 갚으시옵소서"
+      ],
+      "raw_text_hashes": [
+        "f5565561a09dbcbaf668340093602952fefe2e9150a46b5331b31c37779f470d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:33",
+      "sequence": 9019,
+      "chapter_label": "1KI 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "“When your people Israel are struck down before the enemy because they have sinned against you, if they turn again to you and confess your name, and pray and make supplication to you in this house,",
+      "ko": "만일 주의 백성 이스라엘이 주께 범죄하여 적국 앞에 패하게 되므로 주께로 돌아와서 주의 이름을 인정하고 이 전에서 주께 빌며 간구하거든",
+      "source_text_hash": "f33e84858d0a1b159d92e8361dca7c8cad84149108969fd5ced1850b0f0c7a31",
+      "translation_text_hash": "d6ce648fce0aa8a32e796476c913dcfecd1dc283a6b12488eb1bed867f6741fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 주의 백성 이스라엘이 주께 범죄하여 적국 앞에 패하게 되므로 주께로 돌아와서 주의 이름을 인정하고 이 전에서 주께 빌며 간구하거든"
+      ],
+      "raw_text_hashes": [
+        "d6ce648fce0aa8a32e796476c913dcfecd1dc283a6b12488eb1bed867f6741fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:34",
+      "sequence": 9020,
+      "chapter_label": "1KI 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "then hear in heaven, and forgive the sin of your people Israel, and bring them again to the land which you gave to their fathers.",
+      "ko": "주는 하늘에서 들으시고 주의 백성 이스라엘의 죄를 사하시고 그 열조에게 주신 땅으로 돌아오게 하옵소서",
+      "source_text_hash": "deb3e0ba9de3ff1253f5c0888609e55fd96eb24a23e653f8678978c74e576a4f",
+      "translation_text_hash": "60b7a0e799c0db5ad3eecc41c1cee897efd7d60e17f17e92a7b6acd9d081829a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 하늘에서 들으시고 주의 백성 이스라엘의 죄를 사하시고 그 열조에게 주신 땅으로 돌아오게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "60b7a0e799c0db5ad3eecc41c1cee897efd7d60e17f17e92a7b6acd9d081829a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:35",
+      "sequence": 9021,
+      "chapter_label": "1KI 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "“When the sky is shut up and there is no rain because they have sinned against you, if they pray toward this place and confess your name, and turn from their sin when you afflict them,",
+      "ko": "만일 저희가 주께 범죄함을 인하여 하늘이 닫히고 비가 없어서 주의 벌을 받을 때에 이곳을 향하여 빌며 주의 이름을 인정하고 그 죄에서 떠나거든",
+      "source_text_hash": "78bdcbc259aa4bda75f06ed9d31d21dce656d9a48fcf70d1b80567a0d98d2d3c",
+      "translation_text_hash": "e885d384cf916ed8ba589d7fe5a6124dc9f46c359d777272755f61eb4b87872a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 저희가 주께 범죄함을 인하여 하늘이 닫히고 비가 없어서 주의 벌을 받을 때에 이곳을 향하여 빌며 주의 이름을 인정하고 그 죄에서 떠나거든"
+      ],
+      "raw_text_hashes": [
+        "e885d384cf916ed8ba589d7fe5a6124dc9f46c359d777272755f61eb4b87872a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:36",
+      "sequence": 9022,
+      "chapter_label": "1KI 8",
+      "verse_label": "36",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 36
+        }
+      ],
+      "en": "then hear in heaven, and forgive the sin of your servants, and of your people Israel, when you teach them the good way in which they should walk; and send rain on your land which you have given to your people for an inheritance.",
+      "ko": "주는 하늘에서 들으사 주의 종들과 주의 백성 이스라엘의 죄를 사하시고 그 마땅히 행할 선한 길을 가르쳐 주옵시며 주의 백성에게 기업으로 주신 주의 땅에 비를 내리시옵소서",
+      "source_text_hash": "9e0ed459b7e3f7060cce6623b21a7f0a1a89b8f349bea4b7f819c1efb15b9c06",
+      "translation_text_hash": "4c063fbd8e6cdd94ecf648fb4a68c0bfd31a3a0ca2635b4d4859ee0cb233bfa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 하늘에서 들으사 주의 종들과 주의 백성 이스라엘의 죄를 사하시고 그 마땅히 행할 선한 길을 가르쳐 주옵시며 주의 백성에게 기업으로 주신 주의 땅에 비를 내리시옵소서"
+      ],
+      "raw_text_hashes": [
+        "4c063fbd8e6cdd94ecf648fb4a68c0bfd31a3a0ca2635b4d4859ee0cb233bfa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:37",
+      "sequence": 9023,
+      "chapter_label": "1KI 8",
+      "verse_label": "37",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 37
+        }
+      ],
+      "en": "“If there is famine in the land, if there is pestilence, if there is blight, mildew, locust or caterpillar; if their enemy besieges them in the land of their cities, whatever plague, whatever sickness there is,",
+      "ko": "만일 이 땅에 기근이나 온역이 있거나 곡식이 시들거나 깜부기가 나거나 메뚜기나 황충이 나거나 적국이 와서 성읍을 에워싸거나 무슨 재앙이나 무슨 질병이 있든지 무론하고",
+      "source_text_hash": "64fea401be75e3bb54a39e4fb6900b5d391523bd7c8e6d983bc3c0a27d57be2a",
+      "translation_text_hash": "6a0d1e586a28c4b66959cdd232df3192b9f6b73450e488264a46a7e2a22b3f37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 이 땅에 기근이나 온역이 있거나 곡식이 시들거나 깜부기가 나거나 메뚜기나 황충이 나거나 적국이 와서 성읍을 에워싸거나 무슨 재앙이나 무슨 질병이 있든지 무론하고"
+      ],
+      "raw_text_hashes": [
+        "6a0d1e586a28c4b66959cdd232df3192b9f6b73450e488264a46a7e2a22b3f37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:38",
+      "sequence": 9024,
+      "chapter_label": "1KI 8",
+      "verse_label": "38",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 38
+        }
+      ],
+      "en": "whatever prayer and supplication is made by any man, or by all your people Israel, who shall each know the plague of his own heart, and spread out his hands toward this house,",
+      "ko": "한 사람이나 혹 주의 온 백성 이스라엘이 다 각각 자기의 마음에 재앙을 깨닫고 이 전을 향하여 손을 펴고 무슨 기도나 무슨 간구를 하거든",
+      "source_text_hash": "5337d455aa38245a73927e704a304b21cde90c7fe94d5e9ad87d4c69030bd40b",
+      "translation_text_hash": "5547b5d14cc5b75e30f8f99e16e9c0133122de0d02be68feba6e06d6dcbedcd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이나 혹 주의 온 백성 이스라엘이 다 각각 자기의 마음에 재앙을 깨닫고 이 전을 향하여 손을 펴고 무슨 기도나 무슨 간구를 하거든"
+      ],
+      "raw_text_hashes": [
+        "5547b5d14cc5b75e30f8f99e16e9c0133122de0d02be68feba6e06d6dcbedcd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:39",
+      "sequence": 9025,
+      "chapter_label": "1KI 8",
+      "verse_label": "39",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 39
+        }
+      ],
+      "en": "then hear in heaven, your dwelling place, and forgive, and act, and give to every man according to all his ways, whose heart you know (for you, even you only, know the hearts of all the children of men);",
+      "ko": "주는 계신 곳 하늘에서 들으시고 사유하시며 각 사람의 마음을 아시오니 그 모든 행위대로 행하사 갚으시옵소서 주만 홀로 인생의 마음을 다 아심이니이다",
+      "source_text_hash": "33783c471b4afda224009eccf611130037435516f33ae915ddc97e3cb30bb891",
+      "translation_text_hash": "d187ecc3a06b114b3b145fca8d08bf81e2d2a45c0a2cd8422f5748ed967819f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 계신 곳 하늘에서 들으시고 사유하시며 각 사람의 마음을 아시오니 그 모든 행위대로 행하사 갚으시옵소서 주만 홀로 인생의 마음을 다 아심이니이다"
+      ],
+      "raw_text_hashes": [
+        "d187ecc3a06b114b3b145fca8d08bf81e2d2a45c0a2cd8422f5748ed967819f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:40",
+      "sequence": 9026,
+      "chapter_label": "1KI 8",
+      "verse_label": "40",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 40
+        }
+      ],
+      "en": "that they may fear you all the days that they live in the land which you gave to our fathers.",
+      "ko": "그리하시면 저희가 주께서 우리 열조에게 주신 땅에서 사는 동안에 항상 주를 경외하리이다",
+      "source_text_hash": "d2c27d0242135703412c9117632c245bdcb70ffe7ea1b2cb09e979dff635e6e3",
+      "translation_text_hash": "4eb00baafd51ed29a4f2dd26bf38aff3e63046da9ef1f2204d30bc61c350ad44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하시면 저희가 주께서 우리 열조에게 주신 땅에서 사는 동안에 항상 주를 경외하리이다"
+      ],
+      "raw_text_hashes": [
+        "4eb00baafd51ed29a4f2dd26bf38aff3e63046da9ef1f2204d30bc61c350ad44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:41",
+      "sequence": 9027,
+      "chapter_label": "1KI 8",
+      "verse_label": "41",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 41
+        }
+      ],
+      "en": "“Moreover, concerning the foreigner, who is not of your people Israel, when he comes out of a far country for your name’s sake",
+      "ko": "또 주의 백성 이스라엘에 속하지 아니한 자 곧 주의 이름을 위하여 먼 지방에서 온 이방인이라도",
+      "source_text_hash": "a7294fecf573e6b0668cfd79069596fe0c6f2017633e670996e6058f09900d8f",
+      "translation_text_hash": "206a4359850ff478155e83d16b63de758bc974f6bd4254dc75ba4f3b54605e1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주의 백성 이스라엘에 속하지 아니한 자 곧 주의 이름을 위하여 먼 지방에서 온 이방인이라도"
+      ],
+      "raw_text_hashes": [
+        "206a4359850ff478155e83d16b63de758bc974f6bd4254dc75ba4f3b54605e1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:42",
+      "sequence": 9028,
+      "chapter_label": "1KI 8",
+      "verse_label": "42",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 42
+        }
+      ],
+      "en": "(for they shall hear of your great name and of your mighty hand and of your outstretched arm), when he comes and prays toward this house,",
+      "ko": "저희가 주의 광대한 이름과 주의 능한 손과 주의 펴신 팔의 소문을 듣고 와서 이 전을 향하여 기도하거든",
+      "source_text_hash": "8e89c2701fbe90a7e22efeb36ec050a6eb44d30c45aea877b33db6181376a7cf",
+      "translation_text_hash": "302c5dab48d8de18a7892714dc37389fa4ccfd641e26d731611268368ddc39bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주의 광대한 이름과 주의 능한 손과 주의 펴신 팔의 소문을 듣고 와서 이 전을 향하여 기도하거든"
+      ],
+      "raw_text_hashes": [
+        "302c5dab48d8de18a7892714dc37389fa4ccfd641e26d731611268368ddc39bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:43",
+      "sequence": 9029,
+      "chapter_label": "1KI 8",
+      "verse_label": "43",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 43
+        }
+      ],
+      "en": "hear in heaven, your dwelling place, and do according to all that the foreigner calls to you for; that all the peoples of the earth may know your name, to fear you, as do your people Israel, and that they may know that this house which I have built is called by your name.",
+      "ko": "주는 계신 곳 하늘에서 들으시고 무릇 이방인이 주께 부르짖는대로 이루사 땅의 만민으로 주의 이름을 알고 주의 백성 이스라엘처럼 경외하게 하옵시며 또 내가 건축한 이 전을 주의 이름으로 일컫는 줄을 알게 하옵소서",
+      "source_text_hash": "418fb39f930a68bb7c74a87343a1d11c918c7498a76641115d15c0ba122b744d",
+      "translation_text_hash": "81182ae70b806cf8213ae0efeb5f20ef65b39f4c118d6b4e76641c684c15024b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 계신 곳 하늘에서 들으시고 무릇 이방인이 주께 부르짖는대로 이루사 땅의 만민으로 주의 이름을 알고 주의 백성 이스라엘처럼 경외하게 하옵시며 또 내가 건축한 이 전을 주의 이름으로 일컫는 줄을 알게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "81182ae70b806cf8213ae0efeb5f20ef65b39f4c118d6b4e76641c684c15024b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:44",
+      "sequence": 9030,
+      "chapter_label": "1KI 8",
+      "verse_label": "44",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 44
+        }
+      ],
+      "en": "“If your people go out to battle against their enemy, by whatever way you shall send them, and they pray to the LORD toward the city which you have chosen, and toward the house which I have built for your name,",
+      "ko": "주의 백성이 그 적국으로 더불어 싸우고자 하여 주의 보내신 길로 나갈 때에 저희가 주의 빼신 성과 내가 주의 이름을 위하여 건축한 전 있는 편을 향하여 여호와께 기도하거든",
+      "source_text_hash": "517d32b7fd9c51e969fde151e41ed0d5556b87df3781c437eeb1939cdc1d1029",
+      "translation_text_hash": "7240f7754ac5ae82c1f8237a8c6476545c79768f277cb3794aa109173594427b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 백성이 그 적국으로 더불어 싸우고자 하여 주의 보내신 길로 나갈 때에 저희가 주의 빼신 성과 내가 주의 이름을 위하여 건축한 전 있는 편을 향하여 여호와께 기도하거든"
+      ],
+      "raw_text_hashes": [
+        "7240f7754ac5ae82c1f8237a8c6476545c79768f277cb3794aa109173594427b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:45",
+      "sequence": 9031,
+      "chapter_label": "1KI 8",
+      "verse_label": "45",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 45
+        }
+      ],
+      "en": "then hear in heaven their prayer and their supplication, and maintain their cause.",
+      "ko": "주는 하늘에서 저희의 기도와 간구를 들으시고 그 일을 돌아보옵소서",
+      "source_text_hash": "f290e5d9c035b63789daf8276ebf9512f3319499ee0f5c9db23f169b2d98098c",
+      "translation_text_hash": "5d4c26db34e4ff81c5786532f736427a7e6aa33feee9218057c914b150b60897",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 하늘에서 저희의 기도와 간구를 들으시고 그 일을 돌아보옵소서"
+      ],
+      "raw_text_hashes": [
+        "5d4c26db34e4ff81c5786532f736427a7e6aa33feee9218057c914b150b60897"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:46",
+      "sequence": 9032,
+      "chapter_label": "1KI 8",
+      "verse_label": "46",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 46
+        }
+      ],
+      "en": "If they sin against you (for there is no man who doesn’t sin), and you are angry with them and deliver them to the enemy, so that they carry them away captive to the land of the enemy, far off or near;",
+      "ko": "범죄치 아니하는 사람이 없사오니 저희가 주께 범죄함으로 주께서 저희에게 진노하사 저희를 적국에게 붙이시매 적국이 저희를 사로잡아 원근을 물론하고 적국의 땅으로 끌어간 후에",
+      "source_text_hash": "7769f50faa25543565e3de5ca4a024a3a38f307f9a42f57963283861ca49e322",
+      "translation_text_hash": "98131c7e14b5d613d0038b20b949ea5f0ef91907c709375a9e757a5602a81a74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범죄치 아니하는 사람이 없사오니 저희가 주께 범죄함으로 주께서 저희에게 진노하사 저희를 적국에게 붙이시매 적국이 저희를 사로잡아 원근을 물론하고 적국의 땅으로 끌어간 후에"
+      ],
+      "raw_text_hashes": [
+        "98131c7e14b5d613d0038b20b949ea5f0ef91907c709375a9e757a5602a81a74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:47",
+      "sequence": 9033,
+      "chapter_label": "1KI 8",
+      "verse_label": "47",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 47
+        }
+      ],
+      "en": "yet if they repent in the land where they are carried captive, and turn again, and make supplication to you in the land of those who carried them captive, saying, ‘We have sinned and have done perversely; we have dealt wickedly,’",
+      "ko": "저희가 사로잡혀 간 땅에서 스스로 깨닫고 그 사로잡은 자의 땅에서 돌이켜 주께 간구하기를 우리가 범죄하여 패역을 행하며 악을 지었나이다 하며",
+      "source_text_hash": "3895bf6b2ea3f9180544c6efe86a792cf80f2866531eb0240bee803e1587bc48",
+      "translation_text_hash": "d1d11f2a1ac0cf8b32893fa730157090380e293711ac777ad9b4eb6d713a71aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 사로잡혀 간 땅에서 스스로 깨닫고 그 사로잡은 자의 땅에서 돌이켜 주께 간구하기를 우리가 범죄하여 패역을 행하며 악을 지었나이다 하며"
+      ],
+      "raw_text_hashes": [
+        "d1d11f2a1ac0cf8b32893fa730157090380e293711ac777ad9b4eb6d713a71aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:48",
+      "sequence": 9034,
+      "chapter_label": "1KI 8",
+      "verse_label": "48",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 48
+        }
+      ],
+      "en": "if they return to you with all their heart and with all their soul in the land of their enemies who carried them captive, and pray to you toward their land which you gave to their fathers, the city which you have chosen and the house which I have built for your name,",
+      "ko": "자기를 사로잡아 간 적국의 땅에서 온 마음과 온 뜻으로 주께 돌아와서 주께서 그 열조에게 주신 땅 곧 주의 빼신 성과 내가 주의 이름을 위하여 건축한 전 있는 편을 향하여 주께 기도하거든",
+      "source_text_hash": "c8dfebb0c9e42ae2e09b4cff2b74a45910c1253c2242959f632eb75f7daf8a2f",
+      "translation_text_hash": "6a194486e02e87f61746e9e3dcb2ca2cc87ad1cb230c66438f43158a0eb1f537",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기를 사로잡아 간 적국의 땅에서 온 마음과 온 뜻으로 주께 돌아와서 주께서 그 열조에게 주신 땅 곧 주의 빼신 성과 내가 주의 이름을 위하여 건축한 전 있는 편을 향하여 주께 기도하거든"
+      ],
+      "raw_text_hashes": [
+        "6a194486e02e87f61746e9e3dcb2ca2cc87ad1cb230c66438f43158a0eb1f537"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:49",
+      "sequence": 9035,
+      "chapter_label": "1KI 8",
+      "verse_label": "49",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 49
+        }
+      ],
+      "en": "then hear their prayer and their supplication in heaven, your dwelling place, and maintain their cause;",
+      "ko": "주는 계신 곳 하늘에서 저희 기도와 간구를 들으시고 저희의 일을 돌아보옵시며",
+      "source_text_hash": "442a72ccbda87cf427a5a0b514943dc85f7b55f5d84a5b61c739425f847293ad",
+      "translation_text_hash": "da6c0f133541dca53319b246271bc020e911d46cbf2fabec28ffb8411c22c513",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 계신 곳 하늘에서 저희 기도와 간구를 들으시고 저희의 일을 돌아보옵시며"
+      ],
+      "raw_text_hashes": [
+        "da6c0f133541dca53319b246271bc020e911d46cbf2fabec28ffb8411c22c513"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:50",
+      "sequence": 9036,
+      "chapter_label": "1KI 8",
+      "verse_label": "50",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 50
+        }
+      ],
+      "en": "and forgive your people who have sinned against you, and all their transgressions in which they have transgressed against you; and give them compassion before those who carried them captive, that they may have compassion on them",
+      "ko": "주께 범죄한 백성을 용서하시며 주께 범한 그 모든 허물을 사하시고 저희를 사로잡아 간 자의 앞에서 저희로 불쌍히 여김을 얻게 하사 그 사람들로 저희를 불쌍히 여기게 하옵소서",
+      "source_text_hash": "87ee6a63827d1d9fe80bbac1b1d9500382fdd168f044cfddd926e2f872f64eac",
+      "translation_text_hash": "1c2eea16bedd7a84b7200312eb535640faf0c8f36ff0dd02623ac85ef92d0498",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께 범죄한 백성을 용서하시며 주께 범한 그 모든 허물을 사하시고 저희를 사로잡아 간 자의 앞에서 저희로 불쌍히 여김을 얻게 하사 그 사람들로 저희를 불쌍히 여기게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "1c2eea16bedd7a84b7200312eb535640faf0c8f36ff0dd02623ac85ef92d0498"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:51",
+      "sequence": 9037,
+      "chapter_label": "1KI 8",
+      "verse_label": "51",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 51
+        }
+      ],
+      "en": "(for they are your people and your inheritance, which you brought out of Egypt, from the middle of the iron furnace);",
+      "ko": "저희는 주께서 철 풀무 같은 애굽에서 인도하여 내신 주의 백성, 주의 산업이 됨이니이다",
+      "source_text_hash": "1f76e6a37a764fec794e07ad77fc0f7769e3b6563efff4fd34555f91edbeec2c",
+      "translation_text_hash": "d3564872de93fa26aaef0e03cd64e39bf927ef8923aba00d379f908cdbea4084",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 주께서 철 풀무 같은 애굽에서 인도하여 내신 주의 백성, 주의 산업이 됨이니이다"
+      ],
+      "raw_text_hashes": [
+        "d3564872de93fa26aaef0e03cd64e39bf927ef8923aba00d379f908cdbea4084"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:52",
+      "sequence": 9038,
+      "chapter_label": "1KI 8",
+      "verse_label": "52",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 52
+        }
+      ],
+      "en": "that your eyes may be open to the supplication of your servant and to the supplication of your people Israel, to listen to them whenever they cry to you.",
+      "ko": "원컨대 주는 눈을 들어 종의 간구함과 주의 백성 이스라엘의 간구함을 보시고 무릇 주께 부르짖는대로 들으시옵소서",
+      "source_text_hash": "b8f24a106ff8dcccc5f5fd21618872ec7ee2f269ec1d67c79f345e411ff1e0f5",
+      "translation_text_hash": "0dce4bed481839128ce4d6ccf36117684dffcf27709e0329ec6a93340387aab6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원컨대 주는 눈을 들어 종의 간구함과 주의 백성 이스라엘의 간구함을 보시고 무릇 주께 부르짖는대로 들으시옵소서"
+      ],
+      "raw_text_hashes": [
+        "0dce4bed481839128ce4d6ccf36117684dffcf27709e0329ec6a93340387aab6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:53",
+      "sequence": 9039,
+      "chapter_label": "1KI 8",
+      "verse_label": "53",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 53
+        }
+      ],
+      "en": "For you separated them from among all the peoples of the earth to be your inheritance, as you spoke by Moses your servant, when you brought our fathers out of Egypt, Lord GOD.”",
+      "ko": "주 여호와여 주께서 우리 조상을 애굽에서 인도하여 내실 때에 주의 종 모세로 말씀하심 같이 주께서 세상 만민 가운데서 저희를 구별하여 주의 산업을 삼으셨나이다",
+      "source_text_hash": "d13edd439dd66fd75950a34ff74d9696196708e10057f5d62b5c87a4511c6279",
+      "translation_text_hash": "09a2b5fe1fca78c9032db60cf31b7e86478a714c9a2f4d3691f9bd9d514b227c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와여 주께서 우리 조상을 애굽에서 인도하여 내실 때에 주의 종 모세로 말씀하심 같이 주께서 세상 만민 가운데서 저희를 구별하여 주의 산업을 삼으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "09a2b5fe1fca78c9032db60cf31b7e86478a714c9a2f4d3691f9bd9d514b227c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:54",
+      "sequence": 9040,
+      "chapter_label": "1KI 8",
+      "verse_label": "54",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 54
+        }
+      ],
+      "en": "It was so, that when Solomon had finished praying all this prayer and supplication to the LORD, he arose from before the LORD’s altar, from kneeling on his knees with his hands spread out toward heaven.",
+      "ko": "솔로몬이 무릎을 꿇고 손을 펴서 하늘을 향하여 이 기도와 간구로 여호와께 아뢰기를 마치고 여호와의 단 앞에서 일어나",
+      "source_text_hash": "4f0dd672763181a22857d707fce153b1624cb3e43ddfc5164db110af7d4f1a73",
+      "translation_text_hash": "aef3f60bf71219e5cf226732a79d42de788cc262ff595924d35f3c53b3f2fd7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 무릎을 꿇고 손을 펴서 하늘을 향하여 이 기도와 간구로 여호와께 아뢰기를 마치고 여호와의 단 앞에서 일어나"
+      ],
+      "raw_text_hashes": [
+        "aef3f60bf71219e5cf226732a79d42de788cc262ff595924d35f3c53b3f2fd7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:55",
+      "sequence": 9041,
+      "chapter_label": "1KI 8",
+      "verse_label": "55",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 55
+        }
+      ],
+      "en": "He stood and blessed all the assembly of Israel with a loud voice, saying,",
+      "ko": "서서 큰 소리로 이스라엘의 온 회중을 위하여 축복하며 가로되",
+      "source_text_hash": "773f96a55ab068639bcef9b61a86ae5a6d068ecab312e8647bda939718d62a3b",
+      "translation_text_hash": "9d705e6b211fad7536c65086211f8ce0bbd9b1f378b4042ad7282e22c039ccd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서서 큰 소리로 이스라엘의 온 회중을 위하여 축복하며 가로되"
+      ],
+      "raw_text_hashes": [
+        "9d705e6b211fad7536c65086211f8ce0bbd9b1f378b4042ad7282e22c039ccd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:56",
+      "sequence": 9042,
+      "chapter_label": "1KI 8",
+      "verse_label": "56",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 56
+        }
+      ],
+      "en": "“Blessed be the LORD, who has given rest to his people Israel, according to all that he promised. There has not failed one word of all his good promise, which he promised by Moses his servant.",
+      "ko": "여호와를 찬송할찌로다 저가 무릇 허하신대로 그 백성 이스라엘에게 태평을 주셨으니 그 종 모세를 빙자하여 무릇 허하신 그 선한 말씀이 하나도 이루지 않음이 없도다",
+      "source_text_hash": "2e107da08ad8a7fbcc3f73d75e14fecc1ab06ebd91623f45bc89c3b2b91211fe",
+      "translation_text_hash": "ae2f6d08307125eb745c8e43fa991b922bfde12427cff2faf371f2fcf88fb848",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 찬송할찌로다 저가 무릇 허하신대로 그 백성 이스라엘에게 태평을 주셨으니 그 종 모세를 빙자하여 무릇 허하신 그 선한 말씀이 하나도 이루지 않음이 없도다"
+      ],
+      "raw_text_hashes": [
+        "ae2f6d08307125eb745c8e43fa991b922bfde12427cff2faf371f2fcf88fb848"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:57",
+      "sequence": 9043,
+      "chapter_label": "1KI 8",
+      "verse_label": "57",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 57
+        }
+      ],
+      "en": "May the LORD our God be with us as he was with our fathers. Let him not leave us or forsake us,",
+      "ko": "우리 하나님 여호와께서 우리 열조와 함께 계시던것 같이 우리와 함께 계시옵고 우리를 떠나지 마옵시며 버리지 마옵시고",
+      "source_text_hash": "56d924cbaf902d0e811b4561a1664476dd1e1b5962b845f548db4971a973f2d7",
+      "translation_text_hash": "75b4422ed342eac9ddfd89d25097af094785fc7e4ee16500dc97b8a1ff4b3efe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와께서 우리 열조와 함께 계시던것 같이 우리와 함께 계시옵고 우리를 떠나지 마옵시며 버리지 마옵시고"
+      ],
+      "raw_text_hashes": [
+        "75b4422ed342eac9ddfd89d25097af094785fc7e4ee16500dc97b8a1ff4b3efe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:58",
+      "sequence": 9044,
+      "chapter_label": "1KI 8",
+      "verse_label": "58",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 58
+        }
+      ],
+      "en": "that he may incline our hearts to him, to walk in all his ways, and to keep his commandments, his statutes, and his ordinances, which he commanded our fathers.",
+      "ko": "우리의 마음을 자기에게로 향하여 그 모든 길로 행하게 하옵시며 우리 열조에게 명하신 계명과 법도와 율례를 지키게 하시기를 원하오며",
+      "source_text_hash": "c9b0e2cddbadbb713bff7b9f9257238ed32d66a6c7e9c285f6d9f435206d4825",
+      "translation_text_hash": "f852e8d863739f4573839d4babfdff92f27702e02734135df0263bb1f561c67d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 마음을 자기에게로 향하여 그 모든 길로 행하게 하옵시며 우리 열조에게 명하신 계명과 법도와 율례를 지키게 하시기를 원하오며"
+      ],
+      "raw_text_hashes": [
+        "f852e8d863739f4573839d4babfdff92f27702e02734135df0263bb1f561c67d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:59",
+      "sequence": 9045,
+      "chapter_label": "1KI 8",
+      "verse_label": "59",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 59
+        }
+      ],
+      "en": "Let these my words, with which I have made supplication before the LORD, be near to the LORD our God day and night, that he may maintain the cause of his servant and the cause of his people Israel, as every day requires;",
+      "ko": "여호와의 앞에서 나의 간구한 이 말씀을 주야로 우리 하나님 여호와께 가까이 있게 하옵시고 또 주의 종의 일과 주의 백성 이스라엘의 일을 날마다 당하는대로 돌아보사",
+      "source_text_hash": "b7c1d1c8b4487ed178519aef17e4363abba99fbf1dc55263ba6624798ece963b",
+      "translation_text_hash": "34a7ebc50b2b4297957dceb59f6d2ad8b7b9bf263cb5ec66fc941ce5f1192005",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 앞에서 나의 간구한 이 말씀을 주야로 우리 하나님 여호와께 가까이 있게 하옵시고 또 주의 종의 일과 주의 백성 이스라엘의 일을 날마다 당하는대로 돌아보사"
+      ],
+      "raw_text_hashes": [
+        "34a7ebc50b2b4297957dceb59f6d2ad8b7b9bf263cb5ec66fc941ce5f1192005"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:60",
+      "sequence": 9046,
+      "chapter_label": "1KI 8",
+      "verse_label": "60",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 60
+        }
+      ],
+      "en": "that all the peoples of the earth may know that the LORD himself is God. There is no one else.",
+      "ko": "이에 세상 만민에게 여호와께서만 하나님이시고 그 외에는 없는 줄을 알게 하시기를 원하노라",
+      "source_text_hash": "59bec92c2f494c70f7f670cc96affb5d2dc07158c188c4cc8477abd48656a4c8",
+      "translation_text_hash": "0c659160744bf4e91a44241237287fe371a1dff4e37d94789fb3123de2429f07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 세상 만민에게 여호와께서만 하나님이시고 그 외에는 없는 줄을 알게 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "0c659160744bf4e91a44241237287fe371a1dff4e37d94789fb3123de2429f07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:61",
+      "sequence": 9047,
+      "chapter_label": "1KI 8",
+      "verse_label": "61",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 61
+        }
+      ],
+      "en": "“Let your heart therefore be perfect with the LORD our God, to walk in his statutes, and to keep his commandments, as it is today.”",
+      "ko": "그런즉 너희 마음을 우리 하나님 여호와와 화합하여 완전케 하여 오늘날과 같이 그 법도를 행하며 그 계명을 지킬찌어다",
+      "source_text_hash": "efdcb1ff5c37dea9d0163b7d6cb149b8c67228a3e537b830e8bb3134a8ad49de",
+      "translation_text_hash": "bbdd8e596eb6e2a78e8bf00439e5a52ba8b6aae6a5b615945ec12abc58919860",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희 마음을 우리 하나님 여호와와 화합하여 완전케 하여 오늘날과 같이 그 법도를 행하며 그 계명을 지킬찌어다"
+      ],
+      "raw_text_hashes": [
+        "bbdd8e596eb6e2a78e8bf00439e5a52ba8b6aae6a5b615945ec12abc58919860"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:62",
+      "sequence": 9048,
+      "chapter_label": "1KI 8",
+      "verse_label": "62",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 62
+        }
+      ],
+      "en": "The king, and all Israel with him, offered sacrifice before the LORD.",
+      "ko": "이에 왕과 왕과 함께한 이스라엘이 다 여호와 앞에 희생을 드리니라",
+      "source_text_hash": "7cdd90643a45b9d7c725fac32055b7c202cfed69d615a6de1035fe327ecb3833",
+      "translation_text_hash": "ecc5b3fb26e0ee7dabcd95a08b5d00fdf8267dc04154f8258d0ec46db51fde9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 왕과 왕과 함께한 이스라엘이 다 여호와 앞에 희생을 드리니라"
+      ],
+      "raw_text_hashes": [
+        "ecc5b3fb26e0ee7dabcd95a08b5d00fdf8267dc04154f8258d0ec46db51fde9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:63",
+      "sequence": 9049,
+      "chapter_label": "1KI 8",
+      "verse_label": "63",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 63
+        }
+      ],
+      "en": "Solomon offered for the sacrifice of peace offerings, which he offered to the LORD, twenty two thousand head of cattle and one hundred twenty thousand sheep. So the king and all the children of Israel dedicated the LORD’s house.",
+      "ko": "솔로몬이 화목제의 희생을 드렸으니 곧 여호와께 드린 소가 이만 이천이요 양이 십 이만이라 이와 같이 왕과 모든 이스라엘 자손이 여호와의 전의 낙성식을 행하였는데",
+      "source_text_hash": "c45e1585315bcad3ba2d21244c6e81c6ee2c676c6630ac89583cc7ed849544e3",
+      "translation_text_hash": "156e70dd083274f84c5cb185ef73656f3208a78828da39d07520f1340e655595",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 화목제의 희생을 드렸으니 곧 여호와께 드린 소가 이만 이천이요 양이 십 이만이라 이와 같이 왕과 모든 이스라엘 자손이 여호와의 전의 낙성식을 행하였는데"
+      ],
+      "raw_text_hashes": [
+        "156e70dd083274f84c5cb185ef73656f3208a78828da39d07520f1340e655595"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:64",
+      "sequence": 9050,
+      "chapter_label": "1KI 8",
+      "verse_label": "64",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 64
+        }
+      ],
+      "en": "The same day the king made the middle of the court holy that was before the LORD’s house; for there he offered the burnt offering, the meal offering, and the fat of the peace offerings, because the bronze altar that was before the LORD was too little to receive the burnt offering, the meal offering, and the fat of the peace offerings.",
+      "ko": "그 날에 왕이 여호와의 전 앞뜰 가운데를 거룩히 구별하고 거기서 번제와 소제와 감사제의 기름을 드렸으니 이는 여호와의 앞 놋단이 작으므로 번제물과 소제물과 화목제의 기름을 다 용납할 수 없음이라",
+      "source_text_hash": "4505ef4910fb07b897d5a0f8c276a92a0e110ba8d52517bafefb5b134acf04c5",
+      "translation_text_hash": "b8e6552b4f8974e53c29a8550d71aa4bd89e53183a5cec9d827c72c940db689c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 왕이 여호와의 전 앞뜰 가운데를 거룩히 구별하고 거기서 번제와 소제와 감사제의 기름을 드렸으니 이는 여호와의 앞 놋단이 작으므로 번제물과 소제물과 화목제의 기름을 다 용납할 수 없음이라"
+      ],
+      "raw_text_hashes": [
+        "b8e6552b4f8974e53c29a8550d71aa4bd89e53183a5cec9d827c72c940db689c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:65",
+      "sequence": 9051,
+      "chapter_label": "1KI 8",
+      "verse_label": "65",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 65
+        }
+      ],
+      "en": "So Solomon held the feast at that time, and all Israel with him, a great assembly, from the entrance of Hamath to the brook of Egypt, before the LORD our God, seven days and seven more days, even fourteen days.",
+      "ko": "그 때에 솔로몬이 칠일 칠일 합 십 사일을 우리 하나님 여호와 앞에서 절기로 지켰는데 하맛 어귀에서부터 애굽 하수까지의 온 이스라엘의 큰 회중이 모여 저와 함께 하였더니",
+      "source_text_hash": "ceace0d03a40244c2427eefd8a4844c829ee938c3456c8b3a07db1f4ecbad429",
+      "translation_text_hash": "fb1c3d05bc87e66e6ac2104497727baa7e2c1550983489636fd88626bbfe77e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 솔로몬이 칠일 칠일 합 십 사일을 우리 하나님 여호와 앞에서 절기로 지켰는데 하맛 어귀에서부터 애굽 하수까지의 온 이스라엘의 큰 회중이 모여 저와 함께 하였더니"
+      ],
+      "raw_text_hashes": [
+        "fb1c3d05bc87e66e6ac2104497727baa7e2c1550983489636fd88626bbfe77e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:8:66",
+      "sequence": 9052,
+      "chapter_label": "1KI 8",
+      "verse_label": "66",
+      "locator": {
+        "book": "1KI",
+        "chapter": 8,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 8,
+          "verse": 66
+        }
+      ],
+      "en": "On the eighth day he sent the people away; and they blessed the king, and went to their tents joyful and glad in their hearts for all the goodness that the LORD had shown to David his servant, and to Israel his people.",
+      "ko": "제 팔일에 솔로몬이 백성을 돌려 보내매 백성이 왕을 위하여 축복하고 자기 장막으로 돌아가는데 여호와께서 그 종 다윗과 그 백성 이스라엘에게 베푸신 모든 은혜를 인하여 기뻐하며 마음에 즐거워하였더라",
+      "source_text_hash": "bc534fe6af53ad0add26980d00ad9dfef0cbf8248e36d6123b83551a504e6595",
+      "translation_text_hash": "a55b8ec71f0f1c193e3120da56a09a89f032b7a13181eb184f9d1fda5e2eeaca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 팔일에 솔로몬이 백성을 돌려 보내매 백성이 왕을 위하여 축복하고 자기 장막으로 돌아가는데 여호와께서 그 종 다윗과 그 백성 이스라엘에게 베푸신 모든 은혜를 인하여 기뻐하며 마음에 즐거워하였더라"
+      ],
+      "raw_text_hashes": [
+        "a55b8ec71f0f1c193e3120da56a09a89f032b7a13181eb184f9d1fda5e2eeaca"
+      ]
+    }
+  ]
+}

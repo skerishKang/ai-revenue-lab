@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:011",
+  "unit_ordinal": 1029,
+  "unit_label": "ACT 11",
+  "book_code": "ACT",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:11:1",
+      "sequence": 27307,
+      "chapter_label": "ACT 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Now the apostles and the brothers who were in Judea heard that the Gentiles had also received the word of God.",
+      "ko": "유대에 있는 사도들과 형제들이 이방인들도 하나님 말씀을 받았다 함을 들었더니",
+      "source_text_hash": "ef54bcb7afd08a095977db59e2bce19190bbe1ec2d7a13a5eb2f0f432b91bf8f",
+      "translation_text_hash": "fc751d9a8dc4d531f4d74a2b5f14285a507942b9e73b099142748be5ca97b85e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대에 있는 사도들과 형제들이 이방인들도 하나님 말씀을 받았다 함을 들었더니"
+      ],
+      "raw_text_hashes": [
+        "fc751d9a8dc4d531f4d74a2b5f14285a507942b9e73b099142748be5ca97b85e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:2",
+      "sequence": 27308,
+      "chapter_label": "ACT 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "When Peter had come up to Jerusalem, those who were of the circumcision contended with him,",
+      "ko": "베드로가 예루살렘에 올라갔을 때에 할례자들이 힐난하여",
+      "source_text_hash": "4abc325e986c2157f8a6e274f70ba9bdde31b97e17ce861cae866644b3ae5c2c",
+      "translation_text_hash": "b7506ad22a084023a6237b15c28667243af6b638cd3372495d0ac1a4dbdbc336",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 예루살렘에 올라갔을 때에 할례자들이 힐난하여"
+      ],
+      "raw_text_hashes": [
+        "b7506ad22a084023a6237b15c28667243af6b638cd3372495d0ac1a4dbdbc336"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:3",
+      "sequence": 27309,
+      "chapter_label": "ACT 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "saying, “You went in to uncircumcised men and ate with them!”",
+      "ko": "가로되 네가 무할례자의 집에 들어가 함께 먹었다 하니",
+      "source_text_hash": "f1f21f6ae3e7fb0c62970bfa759ca84631f59ad0f71c0ba3067f085e5a5f1e7d",
+      "translation_text_hash": "71641fa05a75fb333d78b19e5a4431e5bd31a016c6275563abc926d0b06e0f7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 네가 무할례자의 집에 들어가 함께 먹었다 하니"
+      ],
+      "raw_text_hashes": [
+        "71641fa05a75fb333d78b19e5a4431e5bd31a016c6275563abc926d0b06e0f7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:4",
+      "sequence": 27310,
+      "chapter_label": "ACT 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "But Peter began, and explained to them in order, saying,",
+      "ko": "베드로가 저희에게 이 일을 차례로 설명하여",
+      "source_text_hash": "f9b29d715e153b8aebd906aed0eaced75d4e1f719f109a96a9572fb46a0cf9a4",
+      "translation_text_hash": "7cf765b54fc288dc633e1c859f75b5390454fcc2bb970e237ba5e1cb226f6ca2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 저희에게 이 일을 차례로 설명하여"
+      ],
+      "raw_text_hashes": [
+        "7cf765b54fc288dc633e1c859f75b5390454fcc2bb970e237ba5e1cb226f6ca2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:5",
+      "sequence": 27311,
+      "chapter_label": "ACT 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "“I was in the city of Joppa praying, and in a trance I saw a vision: a certain container descending, like it was a great sheet let down from heaven by four corners. It came as far as me.",
+      "ko": "가로되 내가 욥바성에서 기도할 때에 비몽사몽간에 환상을 보니 큰 보자기 같은 그릇을 네 귀를 매어 하늘로부터 내리워 내 앞에까지 드리우거늘",
+      "source_text_hash": "965af736d94ed8d97df4360ddb53404ccccc8cedde1c9c1ec26f29f678960af9",
+      "translation_text_hash": "3ca9ea7bcf1df47caeb169afc4a9f983a8ed73ecd10489841150a0ab2108888d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내가 욥바성에서 기도할 때에 비몽사몽간에 환상을 보니 큰 보자기 같은 그릇을 네 귀를 매어 하늘로부터 내리워 내 앞에까지 드리우거늘"
+      ],
+      "raw_text_hashes": [
+        "3ca9ea7bcf1df47caeb169afc4a9f983a8ed73ecd10489841150a0ab2108888d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:6",
+      "sequence": 27312,
+      "chapter_label": "ACT 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "When I had looked intently at it, I considered, and saw the four-footed animals of the earth, wild animals, creeping things, and birds of the sky.",
+      "ko": "이것을 주목하여 보니 땅에 네 발 가진 것과 들짐승과 기는 것과 공중에 나는 것들이 보이더라",
+      "source_text_hash": "c98110c0276a7a88eeb4cbb223fc3bb6f34ae1a70f062a0bc6e0bbd46ba66224",
+      "translation_text_hash": "54973ec43f5339c7921896edd7d6998c5b7dee17013f5e28662bd1675a83e533",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것을 주목하여 보니 땅에 네 발 가진 것과 들짐승과 기는 것과 공중에 나는 것들이 보이더라"
+      ],
+      "raw_text_hashes": [
+        "54973ec43f5339c7921896edd7d6998c5b7dee17013f5e28662bd1675a83e533"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:7",
+      "sequence": 27313,
+      "chapter_label": "ACT 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "I also heard a voice saying to me, ‘Rise, Peter, kill and eat!’",
+      "ko": "또 들으니 소리 있어 내게 이르되 베드로야 일어나 잡아 먹으라 하거늘",
+      "source_text_hash": "bae8825ad216b7f9193d3de17d5c7463a04726f0ec0a87a3a54b5b086bb392c0",
+      "translation_text_hash": "9586677af29e2f7ad3df06a111d7df5bebb41056e6ffc45d735e908c45a2c214",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 들으니 소리 있어 내게 이르되 베드로야 일어나 잡아 먹으라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "9586677af29e2f7ad3df06a111d7df5bebb41056e6ffc45d735e908c45a2c214"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:8",
+      "sequence": 27314,
+      "chapter_label": "ACT 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "But I said, ‘Not so, Lord, for nothing unholy or unclean has ever entered into my mouth.’",
+      "ko": "내가 가로되 주여 그럴 수 없나이다 속되거나 깨끗지 아니한 물건은 언제든지 내 입에 들어간 일이 없나이다 하니",
+      "source_text_hash": "8edacdeadb645ba8b8e43599bd314051ba45f0d6536c48d7749558a9e5102e2f",
+      "translation_text_hash": "85db1fb98a0be873dac62e7155f14aea63718d1ed83526c2f97a8dd18d712d28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가로되 주여 그럴 수 없나이다 속되거나 깨끗지 아니한 물건은 언제든지 내 입에 들어간 일이 없나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "85db1fb98a0be873dac62e7155f14aea63718d1ed83526c2f97a8dd18d712d28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:9",
+      "sequence": 27315,
+      "chapter_label": "ACT 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "But a voice answered me the second time out of heaven, ‘What God has cleansed, don’t you call unclean.’",
+      "ko": "또 하늘로부터 두 번째 소리 있어 내게 대답하되 하나님이 깨끗하게 하신 것을 네가 속되다 말라 하더라",
+      "source_text_hash": "5910f025181f704ac26adeda142777f3f4e080c5de0accaf19dd75e21b7eb966",
+      "translation_text_hash": "4938889a52302c3ece519bc2b3fce85d41b5bf56e011bc80759a6e65aec4f330",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하늘로부터 두 번째 소리 있어 내게 대답하되 하나님이 깨끗하게 하신 것을 네가 속되다 말라 하더라"
+      ],
+      "raw_text_hashes": [
+        "4938889a52302c3ece519bc2b3fce85d41b5bf56e011bc80759a6e65aec4f330"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:10",
+      "sequence": 27316,
+      "chapter_label": "ACT 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "This was done three times, and all were drawn up again into heaven.",
+      "ko": "이런 일이 세 번 있은 후에 모든 것이 다시 하늘로 끌려 올라가더라",
+      "source_text_hash": "db51cd7cf8edc0e78bde83f836763a265e1b401f49d18c86a982be9cb07c31e6",
+      "translation_text_hash": "407f2d06748cc56fa3dc1e13b7560e1aeaa975c2993de04663e50b701968a95e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 일이 세 번 있은 후에 모든 것이 다시 하늘로 끌려 올라가더라"
+      ],
+      "raw_text_hashes": [
+        "407f2d06748cc56fa3dc1e13b7560e1aeaa975c2993de04663e50b701968a95e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:11",
+      "sequence": 27317,
+      "chapter_label": "ACT 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "Behold, immediately three men stood before the house where I was, having been sent from Caesarea to me.",
+      "ko": "마침 세 사람이 내 우거한 집 앞에 섰으니 가이사랴에서 내게로 보낸 사람이라",
+      "source_text_hash": "772923da2656173b8bb58e604a67b3c6c7b968bf356f014dcd979586f98a5cdd",
+      "translation_text_hash": "82f51d9baa38447fa8eb09f8ac71490ec85b165c1063a0fd6eb5b257c0817821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 세 사람이 내 우거한 집 앞에 섰으니 가이사랴에서 내게로 보낸 사람이라"
+      ],
+      "raw_text_hashes": [
+        "82f51d9baa38447fa8eb09f8ac71490ec85b165c1063a0fd6eb5b257c0817821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:12",
+      "sequence": 27318,
+      "chapter_label": "ACT 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "The Spirit told me to go with them without discriminating. These six brothers also accompanied me, and we entered into the man’s house.",
+      "ko": "성령이 내게 명하사 아무 의심 말고 함께 가라 하시매 이 여섯 형제도 나와 함께 가서 그 사람의 집에 들어가니",
+      "source_text_hash": "938b3290878044abf5df8d50a9359bc4109edb09a50afd0faaa9be863065ef60",
+      "translation_text_hash": "288bb37072c836d334e139b4df9c507d07fc46df430c78090396b5820341a09c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령이 내게 명하사 아무 의심 말고 함께 가라 하시매 이 여섯 형제도 나와 함께 가서 그 사람의 집에 들어가니"
+      ],
+      "raw_text_hashes": [
+        "288bb37072c836d334e139b4df9c507d07fc46df430c78090396b5820341a09c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:13",
+      "sequence": 27319,
+      "chapter_label": "ACT 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "He told us how he had seen the angel standing in his house and saying to him, ‘Send to Joppa and get Simon, who is called Peter,",
+      "ko": "그가 우리에게 말하기를 천사가 내 집에 서서 말하되 네가 사람을 욥바에 보내어 베드로라 하는 시몬을 청하라",
+      "source_text_hash": "b5b9875c12087910c3ef722ed3b3ad2080466c670398b74b8ca1915f463cf9a2",
+      "translation_text_hash": "dcb7ccd84fabe09b8447d4ce961f944958fbe789e40cdd5aacb5e18ba846b7e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 우리에게 말하기를 천사가 내 집에 서서 말하되 네가 사람을 욥바에 보내어 베드로라 하는 시몬을 청하라"
+      ],
+      "raw_text_hashes": [
+        "dcb7ccd84fabe09b8447d4ce961f944958fbe789e40cdd5aacb5e18ba846b7e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:14",
+      "sequence": 27320,
+      "chapter_label": "ACT 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "who will speak to you words by which you will be saved, you and all your house.’",
+      "ko": "그가 너와 네 온 집의 구원 얻을 말씀을 네게 이르리라 함을 보았다 하거늘",
+      "source_text_hash": "094213df642d93bf28bffdd8a2d9a2e4749b936752cce58808fad42cae378250",
+      "translation_text_hash": "a1ce2d6ebe12e2cc2955cde38c1ae4d660731ad32a44aee01f7f93347ce9e50b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 너와 네 온 집의 구원 얻을 말씀을 네게 이르리라 함을 보았다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "a1ce2d6ebe12e2cc2955cde38c1ae4d660731ad32a44aee01f7f93347ce9e50b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:15",
+      "sequence": 27321,
+      "chapter_label": "ACT 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "As I began to speak, the Holy Spirit fell on them, even as on us at the beginning.",
+      "ko": "내가 말을 시작할 때에 성령이 저희에게 임하시기를 처음 우리에게 하신 것과 같이 하는지라",
+      "source_text_hash": "98fd76728f60e7244202a9aa0344d5461a65ca45d1531e69974b7e9156332069",
+      "translation_text_hash": "76757700e5b0b987786a124c818bbadfee674133fc490fd07b89fd1da1178762",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말을 시작할 때에 성령이 저희에게 임하시기를 처음 우리에게 하신 것과 같이 하는지라"
+      ],
+      "raw_text_hashes": [
+        "76757700e5b0b987786a124c818bbadfee674133fc490fd07b89fd1da1178762"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:16",
+      "sequence": 27322,
+      "chapter_label": "ACT 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "I remembered the word of the Lord, how he said, ‘John indeed baptized in water, but you will be baptized in the Holy Spirit.’",
+      "ko": "내가 주의 말씀에 요한은 물로 세례 주었으나 너희는 성령으로 세례 받으리라 하신것이 생각났노라",
+      "source_text_hash": "32a45562519edba480c056ae7333ec341c3536f2f24b2aad59a2919316d554f6",
+      "translation_text_hash": "fea4b102daf0c11f62289d863384259ff684fc1aafcebad449b2429583856ae2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 말씀에 요한은 물로 세례 주었으나 너희는 성령으로 세례 받으리라 하신것이 생각났노라"
+      ],
+      "raw_text_hashes": [
+        "fea4b102daf0c11f62289d863384259ff684fc1aafcebad449b2429583856ae2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:17",
+      "sequence": 27323,
+      "chapter_label": "ACT 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "If then God gave to them the same gift as us when we believed in the Lord Jesus Christ, who was I, that I could withstand God?”",
+      "ko": "그런즉 하나님이 우리가 주 예수 그리스도를 믿을 때에 주신 것과 같은 선물을 저희에게도 주셨으니 내가 누구관대 하나님을 능히 막겠느냐 하더라",
+      "source_text_hash": "b7c8a7f41ed3c34574b94c78c4cbf9d9e956be5328197baa35455760d6002652",
+      "translation_text_hash": "945111217d96a7a71f7e79ffc90d0aa9ec08c707d0e720cbdff5cdab2c09d241",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 하나님이 우리가 주 예수 그리스도를 믿을 때에 주신 것과 같은 선물을 저희에게도 주셨으니 내가 누구관대 하나님을 능히 막겠느냐 하더라"
+      ],
+      "raw_text_hashes": [
+        "945111217d96a7a71f7e79ffc90d0aa9ec08c707d0e720cbdff5cdab2c09d241"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:18",
+      "sequence": 27324,
+      "chapter_label": "ACT 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "When they heard these things, they held their peace and glorified God, saying, “Then God has also granted to the Gentiles repentance to life!”",
+      "ko": "저희가 이 말을 듣고 잠잠하여 하나님께 영광을 돌려 가로되 그러면 하나님께서 이방인에게도 생명 얻는 회개를 주셨도다 하니라",
+      "source_text_hash": "af9d5b687427db1c98a210f0167a68aaa62c5fc88f146acab8be473dcfee7ffd",
+      "translation_text_hash": "3c23a9e095489c4ee019ae8c67bdd70b3a2450584d362ad06d7ee248141a6e35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이 말을 듣고 잠잠하여 하나님께 영광을 돌려 가로되 그러면 하나님께서 이방인에게도 생명 얻는 회개를 주셨도다 하니라"
+      ],
+      "raw_text_hashes": [
+        "3c23a9e095489c4ee019ae8c67bdd70b3a2450584d362ad06d7ee248141a6e35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:19",
+      "sequence": 27325,
+      "chapter_label": "ACT 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "They therefore who were scattered abroad by the oppression that arose about Stephen traveled as far as Phoenicia, Cyprus, and Antioch, speaking the word to no one except to Jews only.",
+      "ko": "때에 스데반의 일로 일어난 환난을 인하여 흩어진 자들이 베니게와 구브로와 안디옥까지 이르러 도를 유대인에게만 전하는데",
+      "source_text_hash": "8f0a2ce561b66005225dae35898ae7a59d9a293658841b59f78572236949731e",
+      "translation_text_hash": "0208728d880a38f252eae78040bbbb062f1c645a30ae61a1387cd4f61e7e9563",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 스데반의 일로 일어난 환난을 인하여 흩어진 자들이 베니게와 구브로와 안디옥까지 이르러 도를 유대인에게만 전하는데"
+      ],
+      "raw_text_hashes": [
+        "0208728d880a38f252eae78040bbbb062f1c645a30ae61a1387cd4f61e7e9563"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:20",
+      "sequence": 27326,
+      "chapter_label": "ACT 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "But there were some of them, men of Cyprus and Cyrene, who, when they had come to Antioch, spoke to the Hellenists, preaching the Lord Jesus.",
+      "ko": "그 중에 구브로와 구레네 몇 사람이 안디옥에 이르러 헬라인에게도 말하여 주 예수를 전파하니",
+      "source_text_hash": "0d59c06c0afd584d8db3e59437cc7b7a36a88d9078459e316b4f3e480ccccd3a",
+      "translation_text_hash": "641f12f30348e2034de4f2fbab61b2b7d19576496827f3ad5166a2ac7e8d15d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 구브로와 구레네 몇 사람이 안디옥에 이르러 헬라인에게도 말하여 주 예수를 전파하니"
+      ],
+      "raw_text_hashes": [
+        "641f12f30348e2034de4f2fbab61b2b7d19576496827f3ad5166a2ac7e8d15d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:21",
+      "sequence": 27327,
+      "chapter_label": "ACT 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "The hand of the Lord was with them, and a great number believed and turned to the Lord.",
+      "ko": "주의 손이 그들과 함께 하시매 수다한 사람이 믿고 주께 돌아오더라",
+      "source_text_hash": "c8594e270dc27eec7fb84fb2d8a0f7fe533bac3064eccb3f419955cc1efce62c",
+      "translation_text_hash": "53a7d1afc35b6c3b675dfe1184413d196cffb0968fbf446c4ffeea112db41b63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 손이 그들과 함께 하시매 수다한 사람이 믿고 주께 돌아오더라"
+      ],
+      "raw_text_hashes": [
+        "53a7d1afc35b6c3b675dfe1184413d196cffb0968fbf446c4ffeea112db41b63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:22",
+      "sequence": 27328,
+      "chapter_label": "ACT 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "The report concerning them came to the ears of the assembly which was in Jerusalem. They sent out Barnabas to go as far as Antioch,",
+      "ko": "예루살렘 교회가 이 사람들의 소문을 듣고 바나바를 안디옥까지 보내니",
+      "source_text_hash": "55302dc519749cfecb33509c2a46a93e4c6db697d261188915ef8f6d6a5d4149",
+      "translation_text_hash": "0ace7d92120d99a3f52341674b191610ecde4f4a136ed565bb1abcd3a5312527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 교회가 이 사람들의 소문을 듣고 바나바를 안디옥까지 보내니"
+      ],
+      "raw_text_hashes": [
+        "0ace7d92120d99a3f52341674b191610ecde4f4a136ed565bb1abcd3a5312527"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:23",
+      "sequence": 27329,
+      "chapter_label": "ACT 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "who, when he had come, and had seen the grace of God, was glad. He exhorted them all, that with purpose of heart they should remain near to the Lord.",
+      "ko": "저가 이르러 하나님의 은혜를 보고 기뻐하여 모든 사람에게 굳은 마음으로 주께 붙어 있으라 권하니",
+      "source_text_hash": "ae1a58e350af77b8ad067ecefec699e5b6843b03157592f10c1dd65e7e002f5f",
+      "translation_text_hash": "c2c7574bfccffa9bea83d6ddcf944772a289f01afcf879453619eb520767ab86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이르러 하나님의 은혜를 보고 기뻐하여 모든 사람에게 굳은 마음으로 주께 붙어 있으라 권하니"
+      ],
+      "raw_text_hashes": [
+        "c2c7574bfccffa9bea83d6ddcf944772a289f01afcf879453619eb520767ab86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:24",
+      "sequence": 27330,
+      "chapter_label": "ACT 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "For he was a good man, and full of the Holy Spirit and of faith, and many people were added to the Lord.",
+      "ko": "바나바는 착한 사람이요 성령과 믿음이 충만한 자라 이에 큰 무리가 주께 더하더라",
+      "source_text_hash": "9ac075983efe9783bb2c34d462fbf233ec2df8ebae5c9870441248b143e9b3ab",
+      "translation_text_hash": "533ad1f5ffd6b3d882f53e85543196f29271a4ece7f5c5358016b9bde1d6b823",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바나바는 착한 사람이요 성령과 믿음이 충만한 자라 이에 큰 무리가 주께 더하더라"
+      ],
+      "raw_text_hashes": [
+        "533ad1f5ffd6b3d882f53e85543196f29271a4ece7f5c5358016b9bde1d6b823"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:25",
+      "sequence": 27331,
+      "chapter_label": "ACT 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "Barnabas went out to Tarsus to look for Saul.",
+      "ko": "바나바가 사울을 찾으러 다소에 가서",
+      "source_text_hash": "ce6776c48ffbfed6a83432edb94989264d8978ecc147bcbb6b7b1eb3a6b3b502",
+      "translation_text_hash": "662ffe6c9906387b1fd79a788ffce0c348a403d3604bf7fa5c8ed3e6ce97b219",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바나바가 사울을 찾으러 다소에 가서"
+      ],
+      "raw_text_hashes": [
+        "662ffe6c9906387b1fd79a788ffce0c348a403d3604bf7fa5c8ed3e6ce97b219"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:26",
+      "sequence": 27332,
+      "chapter_label": "ACT 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "When he had found him, he brought him to Antioch. For a whole year they were gathered together with the assembly, and taught many people. The disciples were first called Christians in Antioch.",
+      "ko": "만나매 안디옥에 데리고 와서 둘이 교회에 일년간 모여 있어 큰 무리를 가르쳤고 제자들이 안디옥에서 비로소 그리스도인이라 일컬음을 받게 되었더라",
+      "source_text_hash": "8e1bd15db6fb4f352aa936626dde59a3597ef5e42caa13edcaccf332878d5100",
+      "translation_text_hash": "c68f410c55ad91e6dbb6d069b00973ded54ec9f7bf297c7f065e1a003cce0220",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만나매 안디옥에 데리고 와서 둘이 교회에 일년간 모여 있어 큰 무리를 가르쳤고 제자들이 안디옥에서 비로소 그리스도인이라 일컬음을 받게 되었더라"
+      ],
+      "raw_text_hashes": [
+        "c68f410c55ad91e6dbb6d069b00973ded54ec9f7bf297c7f065e1a003cce0220"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:27",
+      "sequence": 27333,
+      "chapter_label": "ACT 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "Now in these days, prophets came down from Jerusalem to Antioch.",
+      "ko": "그 때에 선지자들이 예루살렘에서 안디옥에 이르니",
+      "source_text_hash": "95ea2492c3992694bba5cb826cc5d9ace2c9ca5acdaa9f244646b96c95a59085",
+      "translation_text_hash": "fb4081ff9299753eb623ad928b146ba6552ecd8cf56e70d75967dc74fb90a2fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 선지자들이 예루살렘에서 안디옥에 이르니"
+      ],
+      "raw_text_hashes": [
+        "fb4081ff9299753eb623ad928b146ba6552ecd8cf56e70d75967dc74fb90a2fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:28",
+      "sequence": 27334,
+      "chapter_label": "ACT 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "One of them named Agabus stood up and indicated by the Spirit that there should be a great famine all over the world, which also happened in the days of Claudius.",
+      "ko": "그 중에 아가보라 하는 한 사람이 일어나 성령으로 말하되 천하가 크게 흉년 들리라 하더니 글라우디오 때에 그렇게 되니라",
+      "source_text_hash": "c8747a118745506e5ce93108578f1f5bdc2d6769624d03cf00ea1ae5a44849cb",
+      "translation_text_hash": "8438e3f6bb199563a2dd9d2ae7a886193f39e9703bc0f441d673c9bf13cf69f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 아가보라 하는 한 사람이 일어나 성령으로 말하되 천하가 크게 흉년 들리라 하더니 글라우디오 때에 그렇게 되니라"
+      ],
+      "raw_text_hashes": [
+        "8438e3f6bb199563a2dd9d2ae7a886193f39e9703bc0f441d673c9bf13cf69f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:29",
+      "sequence": 27335,
+      "chapter_label": "ACT 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "As any of the disciples had plenty, each determined to send relief to the brothers who lived in Judea;",
+      "ko": "제자들이 각각 그 힘대로 유대에 사는 형제들에게 부조를 보내기로 작정하고",
+      "source_text_hash": "43600875e03525671b79f0165008bed5d81b95be281f7f4169297a4205458416",
+      "translation_text_hash": "b3c3cfd5c01258deb1e9d8d0b944fe88a1b0836ac6037b979c73a7fc1c8ee13b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 각각 그 힘대로 유대에 사는 형제들에게 부조를 보내기로 작정하고"
+      ],
+      "raw_text_hashes": [
+        "b3c3cfd5c01258deb1e9d8d0b944fe88a1b0836ac6037b979c73a7fc1c8ee13b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:11:30",
+      "sequence": 27336,
+      "chapter_label": "ACT 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "which they also did, sending it to the elders by the hands of Barnabas and Saul.",
+      "ko": "이를 실행하여 바나바와 사울의 손으로 장로들에게 보내니라",
+      "source_text_hash": "e748f88a537e15de56ce782550f023a14693656a4a191b6888cf2d200659d3d6",
+      "translation_text_hash": "b6ed772dd2d103dc291ab900e79b84f397263a3108cf6547d28d7c74fa76bb24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 실행하여 바나바와 사울의 손으로 장로들에게 보내니라"
+      ],
+      "raw_text_hashes": [
+        "b6ed772dd2d103dc291ab900e79b84f397263a3108cf6547d28d7c74fa76bb24"
+      ]
+    }
+  ]
+}

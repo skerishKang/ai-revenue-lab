@@ -23,6 +23,7 @@ name: Claw Connect Contract Tests
 on:
   pull_request:
     paths:
+      - '.github/actions/shared-python-install/**'
       - "apps/claw-connect/**"
       # #6265 retroactive guard: the contract tests install the shared Core
       # with pip install -e, so a Core source change is a claw-connect
@@ -57,10 +58,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install test dependencies
-        run: |
-          python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'cryptography' -r requirements-wss-review.txt
-          python -m pip install --disable-pip-version-check -e ../../packages/padiem-ai-core
+      - name: Install shared Python dependencies
+        uses: ./.github/actions/shared-python-install
+        with:
+          lane: claw-connect
 
       - name: Run connector contract tests
         run: python -m pytest -q tests

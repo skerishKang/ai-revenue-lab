@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:011",
+  "unit_ordinal": 128,
+  "unit_label": "NUM 11",
+  "book_code": "NUM",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:11:1",
+      "sequence": 4026,
+      "chapter_label": "NUM 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "The people were complaining in the ears of the LORD. When the LORD heard it, his anger burned; and the LORD’s fire burned among them, and consumed some of the outskirts of the camp.",
+      "ko": "백성이 여호와의 들으시기에 악한 말로 원망하매 여호와께서 들으시고 진노하사 여호와의 불로 그들 중에 붙어서 진 끝을 사르게 하시매",
+      "source_text_hash": "70e945ff9d9a3d84736e3116c4d8ee399c2fc5fd65f727c31e37a38b88da34aa",
+      "translation_text_hash": "4187ffa206e07928217ec44c7c0bd63154a3c2a7d1d20a96a33a7d8b6a4b1005",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 여호와의 들으시기에 악한 말로 원망하매 여호와께서 들으시고 진노하사 여호와의 불로 그들 중에 붙어서 진 끝을 사르게 하시매"
+      ],
+      "raw_text_hashes": [
+        "4187ffa206e07928217ec44c7c0bd63154a3c2a7d1d20a96a33a7d8b6a4b1005"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:2",
+      "sequence": 4027,
+      "chapter_label": "NUM 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "The people cried to Moses; and Moses prayed to the LORD, and the fire abated.",
+      "ko": "백성이 모세에게 부르짖으므로 모세가 여호와께 기도하니 불이 꺼졌더라",
+      "source_text_hash": "e8365369135309b89a6a60d5c912cb3017496538fe25d96eae80f367a9c40efc",
+      "translation_text_hash": "ea2704677b6983c6e468f5cf62bc90bf0c54bc79a452d180ae630c4d049cae02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 모세에게 부르짖으므로 모세가 여호와께 기도하니 불이 꺼졌더라"
+      ],
+      "raw_text_hashes": [
+        "ea2704677b6983c6e468f5cf62bc90bf0c54bc79a452d180ae630c4d049cae02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:3",
+      "sequence": 4028,
+      "chapter_label": "NUM 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "The name of that place was called Taberah, because the LORD’s fire burned among them.",
+      "ko": "그곳 이름을 다베라라 칭하였으니 이는 여호와의 불이 그들 중에 붙은 연고였더라",
+      "source_text_hash": "7621b044e7849ddb8c0856d82b3a176fa326425e90b4002818fadbb2b267dfb1",
+      "translation_text_hash": "8556c1055ddd37095806af81bc116a30f68d83412216e68cd1b8c0cc9a8a6459",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그곳 이름을 다베라라 칭하였으니 이는 여호와의 불이 그들 중에 붙은 연고였더라"
+      ],
+      "raw_text_hashes": [
+        "8556c1055ddd37095806af81bc116a30f68d83412216e68cd1b8c0cc9a8a6459"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:4",
+      "sequence": 4029,
+      "chapter_label": "NUM 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "The mixed multitude that was among them lusted exceedingly; and the children of Israel also wept again, and said, “Who will give us meat to eat?",
+      "ko": "이스라엘 중에 섞여 사는 무리가 탐욕을 품으매 이스라엘 자손도 다시 울며 가로되 누가 우리에게 고기를 주어 먹게 할꼬",
+      "source_text_hash": "bf0aebe971d0d12c5d4538cdff82a6c801a4609b60a6ba0a12748810ea606be7",
+      "translation_text_hash": "181a1a9912bbd54dffe1c07e6f805dbeb726fb43da72cadc1ada114784c92a9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 중에 섞여 사는 무리가 탐욕을 품으매 이스라엘 자손도 다시 울며 가로되 누가 우리에게 고기를 주어 먹게 할꼬"
+      ],
+      "raw_text_hashes": [
+        "181a1a9912bbd54dffe1c07e6f805dbeb726fb43da72cadc1ada114784c92a9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:5",
+      "sequence": 4030,
+      "chapter_label": "NUM 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "We remember the fish, which we ate in Egypt for nothing; the cucumbers, and the melons, and the leeks, and the onions, and the garlic;",
+      "ko": "우리가 애굽에 있을 때에는 값 없이 생선과 외와 수박과 부추와 파와 마늘들을 먹은 것이 생각나거늘",
+      "source_text_hash": "7b68c5d169851f8b573ef8d6113ee54014127ac036a619ab18e26650cbb03bbe",
+      "translation_text_hash": "27750bb298d5092c44c2f3e3de923a3e3ae155fdafdacb40fd97ee5ed813d0fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 애굽에 있을 때에는 값 없이 생선과 외와 수박과 부추와 파와 마늘들을 먹은 것이 생각나거늘"
+      ],
+      "raw_text_hashes": [
+        "27750bb298d5092c44c2f3e3de923a3e3ae155fdafdacb40fd97ee5ed813d0fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:6",
+      "sequence": 4031,
+      "chapter_label": "NUM 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "but now we have lost our appetite. There is nothing at all except this manna to look at.”",
+      "ko": "이제는 우리 정력이 쇠약하되 이 만나 외에는 보이는 것이 아무 것도 없도다 하니",
+      "source_text_hash": "ee151258816d8b492df3c600106318ba65a36704908ee37c40754c378d1a60af",
+      "translation_text_hash": "23971f3509cc6c3372fc270ed0f3f36dcdc06f7a85dfd6eadcfd0abea6d0d291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 우리 정력이 쇠약하되 이 만나 외에는 보이는 것이 아무 것도 없도다 하니"
+      ],
+      "raw_text_hashes": [
+        "23971f3509cc6c3372fc270ed0f3f36dcdc06f7a85dfd6eadcfd0abea6d0d291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:7",
+      "sequence": 4032,
+      "chapter_label": "NUM 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "The manna was like coriander seed, and it looked like bdellium.",
+      "ko": "만나는 깟씨와 같고 모양은 진주와 같은 것이라",
+      "source_text_hash": "f7d4dff585d14223971a03fbcc547d8c987c2fea34990f169f9ea0376f384d64",
+      "translation_text_hash": "d3fa0d1d075f71cfda4810b7d63b33dadde23e552fb38bcfef743cfc12c99e25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만나는 깟씨와 같고 모양은 진주와 같은 것이라"
+      ],
+      "raw_text_hashes": [
+        "d3fa0d1d075f71cfda4810b7d63b33dadde23e552fb38bcfef743cfc12c99e25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:8",
+      "sequence": 4033,
+      "chapter_label": "NUM 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "The people went around, gathered it, and ground it in mills, or beat it in mortars, and boiled it in pots, and made cakes of it. Its taste was like the taste of fresh oil.",
+      "ko": "백성이 두루 다니며 그것을 거두어 맷돌에 갈기도 하며 절구에 찧기도 하고 가마에 삶기도 하여 과자를 만들었으니 그 맛이 기름 섞은 과자맛 같았더라",
+      "source_text_hash": "1a8f9db3bebec5416cfde88d4f57dbc2bfee84213658f7a57bf6bcdba8c8cd7f",
+      "translation_text_hash": "ea6a4ffcc0c81902bc71b7c4bb93e55f1e308acdaf2ca554a538dd03d420fb35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 두루 다니며 그것을 거두어 맷돌에 갈기도 하며 절구에 찧기도 하고 가마에 삶기도 하여 과자를 만들었으니 그 맛이 기름 섞은 과자맛 같았더라"
+      ],
+      "raw_text_hashes": [
+        "ea6a4ffcc0c81902bc71b7c4bb93e55f1e308acdaf2ca554a538dd03d420fb35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:9",
+      "sequence": 4034,
+      "chapter_label": "NUM 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "When the dew fell on the camp in the night, the manna fell on it.",
+      "ko": "밤에 이슬이 진에 내릴 때에 만나도 같이 내렸더라",
+      "source_text_hash": "21bdf29785fd326a0b5f3996778cca7200fee369337e8c50b209997a1f55bb90",
+      "translation_text_hash": "f83c0ea30b6d9314af7c30421fb640f4e387ffaf2593e909b0a456cefa974c2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 이슬이 진에 내릴 때에 만나도 같이 내렸더라"
+      ],
+      "raw_text_hashes": [
+        "f83c0ea30b6d9314af7c30421fb640f4e387ffaf2593e909b0a456cefa974c2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:10",
+      "sequence": 4035,
+      "chapter_label": "NUM 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Moses heard the people weeping throughout their families, every man at the door of his tent; and the LORD’s anger burned greatly; and Moses was displeased.",
+      "ko": "백성의 온 가족들이 각기 장막 문에서 우는 것을 모세가 들으니라 이러므로 여호와의 진노가 심히 크고 모세도 기뻐하지 아니하여",
+      "source_text_hash": "2183f6820dc574b3a4546de03810d5103f10fa9ecb39f172a208d8f5276f4044",
+      "translation_text_hash": "4729ea3d3a9e7a073f3434922f3cfec78fec92cf8f7fd7216cafec0ed35e4521",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성의 온 가족들이 각기 장막 문에서 우는 것을 모세가 들으니라 이러므로 여호와의 진노가 심히 크고 모세도 기뻐하지 아니하여"
+      ],
+      "raw_text_hashes": [
+        "4729ea3d3a9e7a073f3434922f3cfec78fec92cf8f7fd7216cafec0ed35e4521"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:11",
+      "sequence": 4036,
+      "chapter_label": "NUM 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "Moses said to the LORD, “Why have you treated your servant so badly? Why haven’t I found favor in your sight, that you lay the burden of all this people on me?",
+      "ko": "여호와께 여짜오되 주께서 어찌하여 종을 괴롭게 하시나이까 어찌하여 나로 주의 목전에 은혜를 입게 아니하시고 이 모든 백성을 내게 맡기사 나로 그 짐을 지게 하시나이까",
+      "source_text_hash": "3e7b85fd2c3d7c4b5d0f2d41d55680dc8c38c41e811bd1411945f1279ea7e5b4",
+      "translation_text_hash": "9c3aab13599b3c83301cbc6336c14071ecaca5811484a545b235d861b4160480",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 여짜오되 주께서 어찌하여 종을 괴롭게 하시나이까 어찌하여 나로 주의 목전에 은혜를 입게 아니하시고 이 모든 백성을 내게 맡기사 나로 그 짐을 지게 하시나이까"
+      ],
+      "raw_text_hashes": [
+        "9c3aab13599b3c83301cbc6336c14071ecaca5811484a545b235d861b4160480"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:12",
+      "sequence": 4037,
+      "chapter_label": "NUM 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "Have I conceived all this people? Have I brought them out, that you should tell me, ‘Carry them in your bosom, as a nurse carries a nursing infant, to the land which you swore to their fathers’?",
+      "ko": "이 모든 백성을 내가 잉태하였나이까 내가 어찌 그들을 생산하였기에 주께서 나더러 양육하는 아비가 젖 먹는 아이를 품듯 그들을 품에 품고 주께서 그들의 열조에게 맹세하신 땅으로 가라 하시나이까",
+      "source_text_hash": "6fc353ab77c7572691116e7b627839e38aaa10fcffcc81012741b56945ed6ef6",
+      "translation_text_hash": "b5a1e3099c9172ae6a8d9f8e9515d437a27e2a43247e3a38790de281dba107f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 백성을 내가 잉태하였나이까 내가 어찌 그들을 생산하였기에 주께서 나더러 양육하는 아비가 젖 먹는 아이를 품듯 그들을 품에 품고 주께서 그들의 열조에게 맹세하신 땅으로 가라 하시나이까"
+      ],
+      "raw_text_hashes": [
+        "b5a1e3099c9172ae6a8d9f8e9515d437a27e2a43247e3a38790de281dba107f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:13",
+      "sequence": 4038,
+      "chapter_label": "NUM 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "Where could I get meat to give all these people? For they weep before me, saying, ‘Give us meat, that we may eat.’",
+      "ko": "이 모든 백성에게 줄 고기를 내가 어디서 얻으리이까 그들이 나를 향하여 울며 가로되 우리에게 고기를 주어 먹게 하라 하온즉",
+      "source_text_hash": "f617f9e3cfa7b218ae5ddda5bb422205ab789133256dbdf671ab9292965a27f9",
+      "translation_text_hash": "c2fab0405cdb6f56877ab7695d5a501b27222080f12b4843421157b0d86a8748",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 백성에게 줄 고기를 내가 어디서 얻으리이까 그들이 나를 향하여 울며 가로되 우리에게 고기를 주어 먹게 하라 하온즉"
+      ],
+      "raw_text_hashes": [
+        "c2fab0405cdb6f56877ab7695d5a501b27222080f12b4843421157b0d86a8748"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:14",
+      "sequence": 4039,
+      "chapter_label": "NUM 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "I am not able to bear all this people alone, because it is too heavy for me.",
+      "ko": "책임이 심히 중하여 나 혼자는 이 모든 백성을 질 수 없나이다",
+      "source_text_hash": "26f1f5ac9d0274313d91ea0740c1ada417a88cc861f6a53e6836d1b9b734dfd3",
+      "translation_text_hash": "cf80014ee21254333fd30e9f43a0e52735522263c88233a142ac444db675e240",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "책임이 심히 중하여 나 혼자는 이 모든 백성을 질 수 없나이다"
+      ],
+      "raw_text_hashes": [
+        "cf80014ee21254333fd30e9f43a0e52735522263c88233a142ac444db675e240"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:15",
+      "sequence": 4040,
+      "chapter_label": "NUM 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "If you treat me this way, please kill me right now, if I have found favor in your sight; and don’t let me see my wretchedness.”",
+      "ko": "주께서 내게 이같이 행하실찐대 구하옵나니 내게 은혜를 베푸사 즉시 나를 죽여 나로 나의 곤고함을 보지 않게 하옵소서",
+      "source_text_hash": "a39d35b9ca00190f7c2dd27242c4c6b6aa6943b8110cdbf89df5e33848181513",
+      "translation_text_hash": "7143017fa64c9563398bd8f792b037f0044e357d2f226bd77617faa88ce845a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내게 이같이 행하실찐대 구하옵나니 내게 은혜를 베푸사 즉시 나를 죽여 나로 나의 곤고함을 보지 않게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "7143017fa64c9563398bd8f792b037f0044e357d2f226bd77617faa88ce845a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:16",
+      "sequence": 4041,
+      "chapter_label": "NUM 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD said to Moses, “Gather to me seventy men of the elders of Israel, whom you know to be the elders of the people and officers over them; and bring them to the Tent of Meeting, that they may stand there with you.",
+      "ko": "여호와께서 모세에게 이르시되 이스라엘 노인 중 백성의 장로와 유사 되는 줄을 네가 아는 자 칠십인을 모아 데리고 회막 내 앞에 이르러 거기서 너와 함께 서게 하라",
+      "source_text_hash": "09d43a688987770a51b0cd1616e8e9dfe0022a2c77e14cb392de7afc8b720dc2",
+      "translation_text_hash": "890293b33f92fbd51c325d15483df95eee15d51a6ff2ae68c46c88f7aefb6844",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 이스라엘 노인 중 백성의 장로와 유사 되는 줄을 네가 아는 자 칠십인을 모아 데리고 회막 내 앞에 이르러 거기서 너와 함께 서게 하라"
+      ],
+      "raw_text_hashes": [
+        "890293b33f92fbd51c325d15483df95eee15d51a6ff2ae68c46c88f7aefb6844"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:17",
+      "sequence": 4042,
+      "chapter_label": "NUM 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "I will come down and talk with you there. I will take of the Spirit which is on you, and will put it on them; and they shall bear the burden of the people with you, that you don’t bear it yourself alone.",
+      "ko": "내가 강림하여 거기서 너와 말하고 네게 임한 신을 그들에게도 임하게 하리니 그들이 너와 함께 백성의 짐을 담당하고 너 혼자 지지 아니하리라",
+      "source_text_hash": "9ab0b88de6b1e8b11fc2dfc94c8963e6c539bc7f19599ca071f38527d90ae956",
+      "translation_text_hash": "bc5527a4ad199a1e157d010ce3b4e5f5d74e88727eaab788ffa920bf194b93ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 강림하여 거기서 너와 말하고 네게 임한 신을 그들에게도 임하게 하리니 그들이 너와 함께 백성의 짐을 담당하고 너 혼자 지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "bc5527a4ad199a1e157d010ce3b4e5f5d74e88727eaab788ffa920bf194b93ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:18",
+      "sequence": 4043,
+      "chapter_label": "NUM 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "“Say to the people, ‘Sanctify yourselves in preparation for tomorrow, and you will eat meat; for you have wept in the ears of the LORD, saying, “Who will give us meat to eat? For it was well with us in Egypt.” Therefore the LORD will give you meat, and you will eat.",
+      "ko": "또 백성에게 이르기를 너희 몸을 거룩히 하여 내일 고기 먹기를 기다리라 너희가 울며 이르기를 누가 우리에게 고기를 주어 먹게 할꼬 애굽에 있을 때가 우리에게 재미 있었다 하는 말이 여호와께 들렸으므로 여호와께서 너희에게 고기를 주어 먹게 하실 것이라",
+      "source_text_hash": "0056f30ad1c901a741851fc16e1680ad7c4e3cb0a68c3dca631944b4aba00381",
+      "translation_text_hash": "66393fac2c29458dba65df03cc252964c352668c9faa520efa19192895cd1b15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 백성에게 이르기를 너희 몸을 거룩히 하여 내일 고기 먹기를 기다리라 너희가 울며 이르기를 누가 우리에게 고기를 주어 먹게 할꼬 애굽에 있을 때가 우리에게 재미 있었다 하는 말이 여호와께 들렸으므로 여호와께서 너희에게 고기를 주어 먹게 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "66393fac2c29458dba65df03cc252964c352668c9faa520efa19192895cd1b15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:19",
+      "sequence": 4044,
+      "chapter_label": "NUM 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "You will not eat just one day, or two days, or five days, or ten days, or twenty days,",
+      "ko": "하루나 이틀이나 닷새나 열흘이나 이십일만 먹을 뿐 아니라",
+      "source_text_hash": "ce00a0ebc5e6e19b44df1b832fd7f641b2fbb04c1b3d54769ba62f60ef46f1aa",
+      "translation_text_hash": "63d92ae2759fb108866f2bbdc56619f069c0fdc6af51c4a2dc9c72961fcc9e0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하루나 이틀이나 닷새나 열흘이나 이십일만 먹을 뿐 아니라"
+      ],
+      "raw_text_hashes": [
+        "63d92ae2759fb108866f2bbdc56619f069c0fdc6af51c4a2dc9c72961fcc9e0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:20",
+      "sequence": 4045,
+      "chapter_label": "NUM 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "but a whole month, until it comes out at your nostrils, and it is loathsome to you; because you have rejected the LORD who is among you, and have wept before him, saying, “Why did we come out of Egypt?”’”",
+      "ko": "코에서 넘쳐서 싫어하기까지 일개월간을 먹게 하시리니 이는 너희가 너희 중에 거하시는 여호와를 멸시하고 그 앞에서 울며 이르기를 우리가 어찌하여 애굽에서 나왔던고 함이라 하라",
+      "source_text_hash": "ffeda5a7382d0d32568fd23faecb27e0355cda4d5c43cf9ec9638ed29e49dc87",
+      "translation_text_hash": "66eacd6d7889efdf3bc88f6565e3e601c307e34f8f18404ca9b65908cff14be4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "코에서 넘쳐서 싫어하기까지 일개월간을 먹게 하시리니 이는 너희가 너희 중에 거하시는 여호와를 멸시하고 그 앞에서 울며 이르기를 우리가 어찌하여 애굽에서 나왔던고 함이라 하라"
+      ],
+      "raw_text_hashes": [
+        "66eacd6d7889efdf3bc88f6565e3e601c307e34f8f18404ca9b65908cff14be4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:21",
+      "sequence": 4046,
+      "chapter_label": "NUM 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "Moses said, “The people, among whom I am, are six hundred thousand men on foot; and you have said, ‘I will give them meat, that they may eat a whole month.’",
+      "ko": "모세가 가로되 나와 함께 있는 이 백성의 보행자가 육십만명이온데 주의 말씀이 일개월간 고기를 주어 먹게 하겠다 하시오니",
+      "source_text_hash": "2ccce33da3c66ac18a116fc151ce430942e5344f930a1e6bf7e31ece6911b67a",
+      "translation_text_hash": "2ed178263ca571c09dcca065da2a9cbe2e3ee6dd894a8766010bad4fe98d2cf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 나와 함께 있는 이 백성의 보행자가 육십만명이온데 주의 말씀이 일개월간 고기를 주어 먹게 하겠다 하시오니"
+      ],
+      "raw_text_hashes": [
+        "2ed178263ca571c09dcca065da2a9cbe2e3ee6dd894a8766010bad4fe98d2cf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:22",
+      "sequence": 4047,
+      "chapter_label": "NUM 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "Shall flocks and herds be slaughtered for them, to be sufficient for them? Shall all the fish of the sea be gathered together for them, to be sufficient for them?”",
+      "ko": "그들을 위하여 양떼와 소떼를 잡은들 족하오며 바다의 모든 고기를 모은들 족하오리이까",
+      "source_text_hash": "b7188d702f583e0fea7a0a096ddaf78f94acb9b96d24e6c6b8bf14b8399a43a8",
+      "translation_text_hash": "830fe1bc8a4eb7eb83a0a0abfde7823ffd707e52828b77871bf9ed5ccff67e28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 위하여 양떼와 소떼를 잡은들 족하오며 바다의 모든 고기를 모은들 족하오리이까"
+      ],
+      "raw_text_hashes": [
+        "830fe1bc8a4eb7eb83a0a0abfde7823ffd707e52828b77871bf9ed5ccff67e28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:23",
+      "sequence": 4048,
+      "chapter_label": "NUM 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD said to Moses, “Has the LORD’s hand grown short? Now you will see whether my word will happen to you or not.”",
+      "ko": "여호와께서 모세에게 이르시되 여호와의 손이 짧아졌느냐 네가 이제 내 말이 네게 응하는 여부를 보리라",
+      "source_text_hash": "f88aed6a5521f45ce94794cb04e548355bcf0d2231d377c4e66dce115b41e202",
+      "translation_text_hash": "6c71336a7d62766aaf292bff432db1f401f9bc7e474ba778c69730860455b871",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 여호와의 손이 짧아졌느냐 네가 이제 내 말이 네게 응하는 여부를 보리라"
+      ],
+      "raw_text_hashes": [
+        "6c71336a7d62766aaf292bff432db1f401f9bc7e474ba778c69730860455b871"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:24",
+      "sequence": 4049,
+      "chapter_label": "NUM 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "Moses went out, and told the people the LORD’s words; and he gathered seventy men of the elders of the people, and set them around the Tent.",
+      "ko": "모세가 나가서 여호와의 말씀을 백성에게 고하고 백성의 장로 칠십인을 모아 장막에 둘러 세우매",
+      "source_text_hash": "16b4f7312fd22dc5ca95262521cb1f306cf4fd0c4374e432ed1686c561cb51de",
+      "translation_text_hash": "c26c6fb0376a5bf0d314c83745f9cdba9345a3a3d62a7a1711c2f26a598a79b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 나가서 여호와의 말씀을 백성에게 고하고 백성의 장로 칠십인을 모아 장막에 둘러 세우매"
+      ],
+      "raw_text_hashes": [
+        "c26c6fb0376a5bf0d314c83745f9cdba9345a3a3d62a7a1711c2f26a598a79b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:25",
+      "sequence": 4050,
+      "chapter_label": "NUM 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD came down in the cloud, and spoke to him, and took of the Spirit that was on him, and put it on the seventy elders. When the Spirit rested on them, they prophesied, but they did so no more.",
+      "ko": "여호와께서 구름 가운데 강림하사 모세에게 말씀하시고 그에게 임한 신을 칠십 장로에게도 임하게 하시니 신이 임하신 때에 그들이 예언을 하다가 다시는 아니하였더라",
+      "source_text_hash": "caa99ab32ae8d5f9fad1e1867018a7c23be96812692c5ac1cb88484980f87653",
+      "translation_text_hash": "041403a810889a80c2b30d6b3cbd491b64f0b1b9d73792ed5c164cd84bb04680",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 구름 가운데 강림하사 모세에게 말씀하시고 그에게 임한 신을 칠십 장로에게도 임하게 하시니 신이 임하신 때에 그들이 예언을 하다가 다시는 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "041403a810889a80c2b30d6b3cbd491b64f0b1b9d73792ed5c164cd84bb04680"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:26",
+      "sequence": 4051,
+      "chapter_label": "NUM 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "But two men remained in the camp. The name of one was Eldad, and the name of the other Medad; and the Spirit rested on them. They were of those who were written, but had not gone out to the Tent; and they prophesied in the camp.",
+      "ko": "그 녹명된 자 중 엘닷이라 하는 자와 메닷이라 하는 자 두 사람이 진에 머물고 회막에 나아가지 아니하였으나 그들에게도 신이 임하였으므로 진에서 예언한지라",
+      "source_text_hash": "2773ef2c721170fa084ad46c726efb77e0dedd73ce669e92096eee9741325e09",
+      "translation_text_hash": "c1549e39cda117b602b7f33a58b40c208cc7819245d3f58399ec82e519d01674",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 녹명된 자 중 엘닷이라 하는 자와 메닷이라 하는 자 두 사람이 진에 머물고 회막에 나아가지 아니하였으나 그들에게도 신이 임하였으므로 진에서 예언한지라"
+      ],
+      "raw_text_hashes": [
+        "c1549e39cda117b602b7f33a58b40c208cc7819245d3f58399ec82e519d01674"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:27",
+      "sequence": 4052,
+      "chapter_label": "NUM 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "A young man ran, and told Moses, and said, “Eldad and Medad are prophesying in the camp!”",
+      "ko": "한 소년이 달려와서 모세에게 고하여 가로되 엘닷과 메닷이 진중에서 예언하더이다 하매",
+      "source_text_hash": "a901918fbb88d087950c85c089541ec58a8dd14182bd369da9f63f0cbc060755",
+      "translation_text_hash": "72c26448e6059e04e251aa4dd0039b871d3798c5a743f3eb2f2640829a9ff4a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 소년이 달려와서 모세에게 고하여 가로되 엘닷과 메닷이 진중에서 예언하더이다 하매"
+      ],
+      "raw_text_hashes": [
+        "72c26448e6059e04e251aa4dd0039b871d3798c5a743f3eb2f2640829a9ff4a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:28",
+      "sequence": 4053,
+      "chapter_label": "NUM 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "Joshua the son of Nun, the servant of Moses, one of his chosen men, answered, “My lord Moses, forbid them!”",
+      "ko": "택한 자 중 한 사람 곧 모세를 섬기는 눈의 아들 여호수아가 말하여 가로되 내 주 모세여 금하소서",
+      "source_text_hash": "c71f8a40442be7bc2556de8ddeeb2724f6d384df775f9f66da3418a23aefd144",
+      "translation_text_hash": "80cc2634bf2457c75f8155d0b4eb8e4aded3769493306d2c06d52c8d19a06599",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "택한 자 중 한 사람 곧 모세를 섬기는 눈의 아들 여호수아가 말하여 가로되 내 주 모세여 금하소서"
+      ],
+      "raw_text_hashes": [
+        "80cc2634bf2457c75f8155d0b4eb8e4aded3769493306d2c06d52c8d19a06599"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:29",
+      "sequence": 4054,
+      "chapter_label": "NUM 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "Moses said to him, “Are you jealous for my sake? I wish that all the LORD’s people were prophets, that the LORD would put his Spirit on them!”",
+      "ko": "모세가 그에게 이르되 네가 나를 위하여 시기하느냐 여호와께서 그 신을 그 모든 백성에게 주사 다 선지자 되게 하시기를 원하노라",
+      "source_text_hash": "7870e0fca04ef0d7abd70d998dfb43cc39fa5234852f81b2034473f9b328bfe5",
+      "translation_text_hash": "82770353c5d7975f82a740780e4e1a93a5a261202e11062881d1172a7ac2a54e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그에게 이르되 네가 나를 위하여 시기하느냐 여호와께서 그 신을 그 모든 백성에게 주사 다 선지자 되게 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "82770353c5d7975f82a740780e4e1a93a5a261202e11062881d1172a7ac2a54e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:30",
+      "sequence": 4055,
+      "chapter_label": "NUM 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "Moses went into the camp, he and the elders of Israel.",
+      "ko": "모세와 이스라엘 장로들이 진중으로 돌아왔더라",
+      "source_text_hash": "e69c2e7038a80ac6d24436caf4eb0655c4915030c09cbac9f17d66d1f9aacaec",
+      "translation_text_hash": "9a7c5abec216db2c87be1d1662ce090adfdbab18b49212fdd72aa55aa60f7651",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 이스라엘 장로들이 진중으로 돌아왔더라"
+      ],
+      "raw_text_hashes": [
+        "9a7c5abec216db2c87be1d1662ce090adfdbab18b49212fdd72aa55aa60f7651"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:31",
+      "sequence": 4056,
+      "chapter_label": "NUM 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "A wind from the LORD went out and brought quails from the sea, and let them fall by the camp, about a day’s journey on this side, and a day’s journey on the other side, around the camp, and about two cubits above the surface of the earth.",
+      "ko": "바람이 여호와에게로서 나와 바다에서부터 메추라기를 몰아 진 곁 이편 저편 곧 진 사방으로 각기 하룻길 되는 지면 위 두 규빗쯤에 내리게 한지라",
+      "source_text_hash": "12508ef78f5dbc9c5f9e18d56c4e2c65cb9420b80fe3aeadfecc346204c54d5d",
+      "translation_text_hash": "4b8a1d59e9c721920628f0700fdb8fdda4837b2027c88c25b4f0544228f659b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바람이 여호와에게로서 나와 바다에서부터 메추라기를 몰아 진 곁 이편 저편 곧 진 사방으로 각기 하룻길 되는 지면 위 두 규빗쯤에 내리게 한지라"
+      ],
+      "raw_text_hashes": [
+        "4b8a1d59e9c721920628f0700fdb8fdda4837b2027c88c25b4f0544228f659b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:32",
+      "sequence": 4057,
+      "chapter_label": "NUM 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "The people rose up all that day, and all of that night, and all the next day, and gathered the quails. He who gathered least gathered ten homers; and they spread them all out for themselves around the camp.",
+      "ko": "백성이 일어나 종일 종야와 그 이튿날 종일토록 메추라기를 모으니 적게 모은 자도 십 호멜이라 그들이 자기를 위하여 진 사면에 펴 두었더라",
+      "source_text_hash": "35902d1f15eec6cc059128bcc063f2493fe93e5bc01e1e788744c160c15fad67",
+      "translation_text_hash": "6672e650b427794ae4492633da870059324a31c7f606bd2a82e9d86bac6fcb16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 일어나 종일 종야와 그 이튿날 종일토록 메추라기를 모으니 적게 모은 자도 십 호멜이라 그들이 자기를 위하여 진 사면에 펴 두었더라"
+      ],
+      "raw_text_hashes": [
+        "6672e650b427794ae4492633da870059324a31c7f606bd2a82e9d86bac6fcb16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:33",
+      "sequence": 4058,
+      "chapter_label": "NUM 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "While the meat was still between their teeth, before it was chewed, the LORD’s anger burned against the people, and the LORD struck the people with a very great plague.",
+      "ko": "고기가 아직 잇사이에 있어 씹히기 전에 여호와께서 백성에게 대하여 진노하사 심히 큰 재앙으로 치셨으므로",
+      "source_text_hash": "85a74476b3d38e59497b171c08e375292b1bc6ce54fdd17da94577ff3a85f012",
+      "translation_text_hash": "e5e64839989f2c33ee17c840ab6e04d38dfb2d6f2442e3d989a63ba6fb1751a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고기가 아직 잇사이에 있어 씹히기 전에 여호와께서 백성에게 대하여 진노하사 심히 큰 재앙으로 치셨으므로"
+      ],
+      "raw_text_hashes": [
+        "e5e64839989f2c33ee17c840ab6e04d38dfb2d6f2442e3d989a63ba6fb1751a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:34",
+      "sequence": 4059,
+      "chapter_label": "NUM 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "The name of that place was called Kibroth Hattaavah, because there they buried the people who lusted.",
+      "ko": "그 곳 이름을 기브롯 핫다아와라 칭하였으니 탐욕을 낸 백성을 거기 장사함이었더라",
+      "source_text_hash": "5b5c745e1e2ad9cb789dfb7fcddebf23fd1552bbde1596dfc8d88962d2ee2ded",
+      "translation_text_hash": "53a3583a89a614a52239eee87d3c4eeecc27a8433c247789fca84e28a8eb726b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 곳 이름을 기브롯 핫다아와라 칭하였으니 탐욕을 낸 백성을 거기 장사함이었더라"
+      ],
+      "raw_text_hashes": [
+        "53a3583a89a614a52239eee87d3c4eeecc27a8433c247789fca84e28a8eb726b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:11:35",
+      "sequence": 4060,
+      "chapter_label": "NUM 11",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 11,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 11,
+          "verse": 35
+        }
+      ],
+      "en": "From Kibroth Hattaavah the people traveled to Hazeroth; and they stayed at Hazeroth.",
+      "ko": "백성이 기브롯 핫다아와에서 진행하여 하세롯에 이르러 거기 거하니라",
+      "source_text_hash": "1b8351f2bed11ad1509605e6a67b4abf9e5d669d72ce3cba7a120c06bbfca347",
+      "translation_text_hash": "c31943cd8b0d0231687e5c0353717f0a23b1659ad94339c3b0a472a1bcab2eb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 기브롯 핫다아와에서 진행하여 하세롯에 이르러 거기 거하니라"
+      ],
+      "raw_text_hashes": [
+        "c31943cd8b0d0231687e5c0353717f0a23b1659ad94339c3b0a472a1bcab2eb4"
+      ]
+    }
+  ]
+}

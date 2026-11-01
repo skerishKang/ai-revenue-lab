@@ -213,6 +213,10 @@ async def test_actual_existing_d1_schema_sql_and_r2_bytes_across_store_recreatio
     conn.row_factory = sqlite3.Row
     sql = (Path(__file__).resolve().parents[1] / "migrations" / "008_claw_document_metadata.sql").read_text()
     conn.executescript(sql)
+    conn.executescript((
+        Path(__file__).resolve().parents[1]
+        / "migrations" / "080_claw_document_metadata_user_id.sql"
+    ).read_text())
 
     class Statement:
         def __init__(self, query):

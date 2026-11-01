@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:041",
+  "unit_ordinal": 477,
+  "unit_label": "JOB 41",
+  "book_code": "JOB",
+  "chapter_number": 41,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:41:1",
+      "sequence": 13890,
+      "chapter_label": "JOB 41",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 1
+        }
+      ],
+      "en": "“Can you draw out Leviathan with a fish hook, or press down his tongue with a cord?",
+      "ko": "네가 능히 낚시로 악어를 낚을 수 있겠느냐 노끈으로 그 혀를 맬 수 있겠느냐",
+      "source_text_hash": "d68546c8843f1e3e14ee65f625e64e57767539d09b31e5c82e41ea00c5f13d56",
+      "translation_text_hash": "1b2834ab318bb006b66c84c000312fb8f9fc190ae491799b3408e3d60bc12138",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 능히 낚시로 악어를 낚을 수 있겠느냐 노끈으로 그 혀를 맬 수 있겠느냐"
+      ],
+      "raw_text_hashes": [
+        "1b2834ab318bb006b66c84c000312fb8f9fc190ae491799b3408e3d60bc12138"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:2",
+      "sequence": 13891,
+      "chapter_label": "JOB 41",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 2
+        }
+      ],
+      "en": "Can you put a rope into his nose, or pierce his jaw through with a hook?",
+      "ko": "줄로 그 코를 꿸 수 있겠느냐 갈고리로 그 아가미를 꿸 수 있겠느냐",
+      "source_text_hash": "214941e135d1a8f03860cf27ce8252c66a3bb764448592f2787dade816a68512",
+      "translation_text_hash": "1f39d649269dd2c57b4fc22bddb0bec9a355b3bf611c36ccb795862803adc89d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "줄로 그 코를 꿸 수 있겠느냐 갈고리로 그 아가미를 꿸 수 있겠느냐"
+      ],
+      "raw_text_hashes": [
+        "1f39d649269dd2c57b4fc22bddb0bec9a355b3bf611c36ccb795862803adc89d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:3",
+      "sequence": 13892,
+      "chapter_label": "JOB 41",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 3
+        }
+      ],
+      "en": "Will he make many petitions to you, or will he speak soft words to you?",
+      "ko": "그것이 어찌 네게 연속 간구하겠느냐 유순한 말로 네게 이야기하겠느냐",
+      "source_text_hash": "9f54d4ad90b8e7630e9a8ca0d6fe842bd0d3cfd3aaa41027a079fa9dba0856de",
+      "translation_text_hash": "873f5385dac31e49c29bdd48fb91ed8a9e1cebeb678a40102c654b4287248f7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 어찌 네게 연속 간구하겠느냐 유순한 말로 네게 이야기하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "873f5385dac31e49c29bdd48fb91ed8a9e1cebeb678a40102c654b4287248f7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:4",
+      "sequence": 13893,
+      "chapter_label": "JOB 41",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 4
+        }
+      ],
+      "en": "Will he make a covenant with you, that you should take him for a servant forever?",
+      "ko": "어찌 너와 계약하고 영영히 네 종이 되겠느냐",
+      "source_text_hash": "ac71c77b51bd9478667abbb589af75d86f3548baf15287d513df2172c3a91d8e",
+      "translation_text_hash": "4319268587f5c1db21a91647e6d0679d523a264f04d883ee7b53eeb2c6e638dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌 너와 계약하고 영영히 네 종이 되겠느냐"
+      ],
+      "raw_text_hashes": [
+        "4319268587f5c1db21a91647e6d0679d523a264f04d883ee7b53eeb2c6e638dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:5",
+      "sequence": 13894,
+      "chapter_label": "JOB 41",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 5
+        }
+      ],
+      "en": "Will you play with him as with a bird? Or will you bind him for your girls?",
+      "ko": "네가 어찌 새를 놀리는것 같이 그것을 놀리겠으며 네 소녀들을 위하여 그것을 매어 두겠느냐",
+      "source_text_hash": "4700c8c6c97449b12956a40b9f0f2d2a872539fd0a186337a75201abb8dd726c",
+      "translation_text_hash": "8d57512ea0e0e28555e0ea0de53854c2deffe6264864e157e465cdd0f0d0a006",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌 새를 놀리는것 같이 그것을 놀리겠으며 네 소녀들을 위하여 그것을 매어 두겠느냐"
+      ],
+      "raw_text_hashes": [
+        "8d57512ea0e0e28555e0ea0de53854c2deffe6264864e157e465cdd0f0d0a006"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:6",
+      "sequence": 13895,
+      "chapter_label": "JOB 41",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 6
+        }
+      ],
+      "en": "Will traders barter for him? Will they part him among the merchants?",
+      "ko": "어찌 어부의 떼가 그것으로 상품을 삼아 상고들 가운데 나눌 수 있겠느냐",
+      "source_text_hash": "516569a83e874c3d34db1a9e23f888425bdbebb44f9f6361a6f54904f7b8bc5b",
+      "translation_text_hash": "02c46a830368943800bfe7a8b918523cc0b131ef8f8c5bdd1f9f1141d62846c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌 어부의 떼가 그것으로 상품을 삼아 상고들 가운데 나눌 수 있겠느냐"
+      ],
+      "raw_text_hashes": [
+        "02c46a830368943800bfe7a8b918523cc0b131ef8f8c5bdd1f9f1141d62846c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:7",
+      "sequence": 13896,
+      "chapter_label": "JOB 41",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 7
+        }
+      ],
+      "en": "Can you fill his skin with barbed irons, or his head with fish spears?",
+      "ko": "네가 능히 창으로 그 가죽을 찌르거나 작살로 그 머리를 찌를 수 있겠느냐",
+      "source_text_hash": "e1ebd506ca70b071ade99141aeed9e5311c473378c425b842a486dec74e0bfb2",
+      "translation_text_hash": "9a50c9488a94cff7000738efa411842e95fe0af51a5a5627eaef9f1dd4aa6e95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 능히 창으로 그 가죽을 찌르거나 작살로 그 머리를 찌를 수 있겠느냐"
+      ],
+      "raw_text_hashes": [
+        "9a50c9488a94cff7000738efa411842e95fe0af51a5a5627eaef9f1dd4aa6e95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:8",
+      "sequence": 13897,
+      "chapter_label": "JOB 41",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 8
+        }
+      ],
+      "en": "Lay your hand on him. Remember the battle, and do so no more.",
+      "ko": "손을 그것에게 좀 대어 보라 싸울 일이 생각나서 다시는 아니하리라",
+      "source_text_hash": "df01facf5699af64dac6eb2caa5919c093957129e04a76393f8e6a42eed1735a",
+      "translation_text_hash": "3c38ba2a7c598e45fe2b2c6ac81b218d2420f6a2a18a85c496cd2253ed1057da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손을 그것에게 좀 대어 보라 싸울 일이 생각나서 다시는 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "3c38ba2a7c598e45fe2b2c6ac81b218d2420f6a2a18a85c496cd2253ed1057da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:9",
+      "sequence": 13898,
+      "chapter_label": "JOB 41",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 9
+        }
+      ],
+      "en": "Behold, the hope of him is in vain. Won’t one be cast down even at the sight of him?",
+      "ko": "잡으려는 소망은 헛것이라 그것을 보기만 하여도 낙담하지 않겠느냐",
+      "source_text_hash": "abc82fc7cb67a4baaa4d7cc7f1eb3815475646b74bdcb7f381ae3ec5d1f942a5",
+      "translation_text_hash": "22c1cd1c9d2b8f79caefc129db5e6eb8220ee58a881e6fff932816e0d3e60622",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잡으려는 소망은 헛것이라 그것을 보기만 하여도 낙담하지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "22c1cd1c9d2b8f79caefc129db5e6eb8220ee58a881e6fff932816e0d3e60622"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:10",
+      "sequence": 13899,
+      "chapter_label": "JOB 41",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 10
+        }
+      ],
+      "en": "None is so fierce that he dare stir him up. Who then is he who can stand before me?",
+      "ko": "아무도 그것을 격동시킬 용맹이 없거든 능히 나를 당할 자가 누구냐",
+      "source_text_hash": "05a5fff9010fa1eb4d20a5857e765204017e3b9f63fbe6e7266853651eeed1bb",
+      "translation_text_hash": "e8d87b5d928831395f8e17b3ae3ee821fe0c382d953d02b7ce8fe2afba0e08cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무도 그것을 격동시킬 용맹이 없거든 능히 나를 당할 자가 누구냐"
+      ],
+      "raw_text_hashes": [
+        "e8d87b5d928831395f8e17b3ae3ee821fe0c382d953d02b7ce8fe2afba0e08cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:11",
+      "sequence": 13900,
+      "chapter_label": "JOB 41",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 11
+        }
+      ],
+      "en": "Who has first given to me, that I should repay him? Everything under the heavens is mine.",
+      "ko": "누가 먼저 내게 주고 나로 갚게 하였느냐 온 천하에 있는 것이 다 내 것이니라",
+      "source_text_hash": "e511279c22142289d9cf94801719694719d591442b24d8c4f0958d2164eae17d",
+      "translation_text_hash": "226f9e2aa19205aef21d9c85e3c9375624e2c266bad8853ed91dbed12117e8ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 먼저 내게 주고 나로 갚게 하였느냐 온 천하에 있는 것이 다 내 것이니라"
+      ],
+      "raw_text_hashes": [
+        "226f9e2aa19205aef21d9c85e3c9375624e2c266bad8853ed91dbed12117e8ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:12",
+      "sequence": 13901,
+      "chapter_label": "JOB 41",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 12
+        }
+      ],
+      "en": "“I will not keep silence concerning his limbs, nor his mighty strength, nor his goodly frame.",
+      "ko": "내가 악어의 지체와 큰 힘과 훌륭한 구조에 대하여 잠잠치 아니하리라",
+      "source_text_hash": "1ff8944c0f680e4a4d5bca121a5682ba2a92ede59fe059711c6a778461233313",
+      "translation_text_hash": "bcd807169df688d64c980c83e072540747984aaf5a6b8a95a9e05f3f390fad37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 악어의 지체와 큰 힘과 훌륭한 구조에 대하여 잠잠치 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "bcd807169df688d64c980c83e072540747984aaf5a6b8a95a9e05f3f390fad37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:13",
+      "sequence": 13902,
+      "chapter_label": "JOB 41",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 13
+        }
+      ],
+      "en": "Who can strip off his outer garment? Who will come within his jaws?",
+      "ko": "누가 그 가죽을 벗기겠으며 그 아가미 사이로 들어가겠는고",
+      "source_text_hash": "5c17eeebd50c58838a791c58a6dd77b65fc637c6c98c86b9da546f62c064eae8",
+      "translation_text_hash": "4705e25853f109957c4340a7568726c18b7395f2ef38b527e71c7a6151cab9b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 그 가죽을 벗기겠으며 그 아가미 사이로 들어가겠는고"
+      ],
+      "raw_text_hashes": [
+        "4705e25853f109957c4340a7568726c18b7395f2ef38b527e71c7a6151cab9b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:14",
+      "sequence": 13903,
+      "chapter_label": "JOB 41",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 14
+        }
+      ],
+      "en": "Who can open the doors of his face? Around his teeth is terror.",
+      "ko": "누가 그 얼굴의 문을 열 수 있을까 그 두루 있는 이가 두렵구나",
+      "source_text_hash": "558949f6526177bf654fc3999537b8df3a2589112a10deec675b11f3844788fc",
+      "translation_text_hash": "3ebaea3cb4185fca10cd70dd9bdd3a47604da5539b21e7a8cd7eb72132716527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 그 얼굴의 문을 열 수 있을까 그 두루 있는 이가 두렵구나"
+      ],
+      "raw_text_hashes": [
+        "3ebaea3cb4185fca10cd70dd9bdd3a47604da5539b21e7a8cd7eb72132716527"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:15",
+      "sequence": 13904,
+      "chapter_label": "JOB 41",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 15
+        }
+      ],
+      "en": "Strong scales are his pride, shut up together with a close seal.",
+      "ko": "견고한 비늘은 그의 자랑이라 서로 연함이 봉한것 같구나",
+      "source_text_hash": "7e6cec49f3a779ebd2afbcd4723431dede47d58866fd7148e8daebe6e4daa5c8",
+      "translation_text_hash": "0db43c313cdcc7331c1cfb783a4c5920630f7513f94f4a8f61551c5a0c557fa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "견고한 비늘은 그의 자랑이라 서로 연함이 봉한것 같구나"
+      ],
+      "raw_text_hashes": [
+        "0db43c313cdcc7331c1cfb783a4c5920630f7513f94f4a8f61551c5a0c557fa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:16",
+      "sequence": 13905,
+      "chapter_label": "JOB 41",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 16
+        }
+      ],
+      "en": "One is so near to another, that no air can come between them.",
+      "ko": "이것, 저것이 한데 붙었으니 바람도 그 사이로 들어가지 못하겠고",
+      "source_text_hash": "693201ae1c45930cc20b47872e28acde286e50b04351f9c5d709436f71b69025",
+      "translation_text_hash": "b107ec7aedf03b0cb790e1055332bdb8508373b6e1ab9db308a3e624c284010c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것, 저것이 한데 붙었으니 바람도 그 사이로 들어가지 못하겠고"
+      ],
+      "raw_text_hashes": [
+        "b107ec7aedf03b0cb790e1055332bdb8508373b6e1ab9db308a3e624c284010c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:17",
+      "sequence": 13906,
+      "chapter_label": "JOB 41",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 17
+        }
+      ],
+      "en": "They are joined to one another. They stick together, so that they can’t be pulled apart.",
+      "ko": "서로 연하여 붙었으니 능히 나눌 수도 없구나",
+      "source_text_hash": "ddfd8298c749c7ea200fb9a54ca9e59f99c62f98f1e7b8e7df627cfb80d25eb4",
+      "translation_text_hash": "bfe6eafe6075da9f7e403eba5e6d72592bb267c1f7e0c9f9bdbc9fe7bb584759",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 연하여 붙었으니 능히 나눌 수도 없구나"
+      ],
+      "raw_text_hashes": [
+        "bfe6eafe6075da9f7e403eba5e6d72592bb267c1f7e0c9f9bdbc9fe7bb584759"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:18",
+      "sequence": 13907,
+      "chapter_label": "JOB 41",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 18
+        }
+      ],
+      "en": "His sneezing flashes out light. His eyes are like the eyelids of the morning.",
+      "ko": "그것이 재채기를 한즉 광채가 발하고 그 눈은 새벽 눈꺼풀이 열림 같으며",
+      "source_text_hash": "21300a08cce5837400e1d423dbe8d3c53e6023298c5d7abd9eab7b9704aaaad7",
+      "translation_text_hash": "369eb3cc66eba06203bf66db09329f7a2942800303cb50c18813cde6f933abf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 재채기를 한즉 광채가 발하고 그 눈은 새벽 눈꺼풀이 열림 같으며"
+      ],
+      "raw_text_hashes": [
+        "369eb3cc66eba06203bf66db09329f7a2942800303cb50c18813cde6f933abf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:19",
+      "sequence": 13908,
+      "chapter_label": "JOB 41",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 19
+        }
+      ],
+      "en": "Out of his mouth go burning torches. Sparks of fire leap out.",
+      "ko": "그 입에서는 횃불이 나오고 불똥이 뛰어나며",
+      "source_text_hash": "c031f9b6f0a9cb1ccc8b3aaa76611567722a80fcaecff48f4ec88361703d78e8",
+      "translation_text_hash": "7964db8d506c53e23b4794a72bed402728414daab539a20dc501432c14ff5a7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입에서는 횃불이 나오고 불똥이 뛰어나며"
+      ],
+      "raw_text_hashes": [
+        "7964db8d506c53e23b4794a72bed402728414daab539a20dc501432c14ff5a7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:20",
+      "sequence": 13909,
+      "chapter_label": "JOB 41",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 20
+        }
+      ],
+      "en": "Out of his nostrils a smoke goes, as of a boiling pot over a fire of reeds.",
+      "ko": "그 콧구멍에서는 연기가 나오니 마치 솥이 끓는 것과 갈대의 타는것 같구나",
+      "source_text_hash": "08b8634558a5699c4a800a9693b4ef11987a074022270b74fed05e8c9ac408e7",
+      "translation_text_hash": "271363889bd83f1ac1b112ea9f93140c2a836bb4dfd8b87fc013b4a57c96e582",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 콧구멍에서는 연기가 나오니 마치 솥이 끓는 것과 갈대의 타는것 같구나"
+      ],
+      "raw_text_hashes": [
+        "271363889bd83f1ac1b112ea9f93140c2a836bb4dfd8b87fc013b4a57c96e582"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:21",
+      "sequence": 13910,
+      "chapter_label": "JOB 41",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 21
+        }
+      ],
+      "en": "His breath kindles coals. A flame goes out of his mouth.",
+      "ko": "그 숨이 능히 숯불을 피우니 불꽃이 그 입에서 나오며",
+      "source_text_hash": "c750e92d07ad76d81f4d607b77cad307611399bfa3386d766ad58a1e3e83dbab",
+      "translation_text_hash": "8b9fa09b6f0d403e35123f399b86702227b1f80d9a89b224b4bd8854b97b26ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 숨이 능히 숯불을 피우니 불꽃이 그 입에서 나오며"
+      ],
+      "raw_text_hashes": [
+        "8b9fa09b6f0d403e35123f399b86702227b1f80d9a89b224b4bd8854b97b26ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:22",
+      "sequence": 13911,
+      "chapter_label": "JOB 41",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 22
+        }
+      ],
+      "en": "There is strength in his neck. Terror dances before him.",
+      "ko": "힘이 그 목에 뭉키었고 두려움이 그 앞에서 뛰는구나",
+      "source_text_hash": "6c47ee7f4549b69e26dcc8f3ab1868131ad7d845f991cfb897077d6206ea6f4d",
+      "translation_text_hash": "7ecae54e3b597f529dba339ab9697d228b23cf889fd7f7e400dceb128274a335",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힘이 그 목에 뭉키었고 두려움이 그 앞에서 뛰는구나"
+      ],
+      "raw_text_hashes": [
+        "7ecae54e3b597f529dba339ab9697d228b23cf889fd7f7e400dceb128274a335"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:23",
+      "sequence": 13912,
+      "chapter_label": "JOB 41",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 23
+        }
+      ],
+      "en": "The flakes of his flesh are joined together. They are firm on him. They can’t be moved.",
+      "ko": "그 살의 조각들이 서로 연하고 그 몸에 견고하여 움직이지 아니하며",
+      "source_text_hash": "9bc3c780db2343b2b208f8583b13cb659f5ef67c342c145083234a44f04ea7ed",
+      "translation_text_hash": "c3f077dbfdb3e310701b3589cad48bf84e09d44373aa193673ee2a74f368bca2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 살의 조각들이 서로 연하고 그 몸에 견고하여 움직이지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "c3f077dbfdb3e310701b3589cad48bf84e09d44373aa193673ee2a74f368bca2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:24",
+      "sequence": 13913,
+      "chapter_label": "JOB 41",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 24
+        }
+      ],
+      "en": "His heart is as firm as a stone, yes, firm as the lower millstone.",
+      "ko": "그 마음이 돌 같이 단단하니 그 단단함이 맷돌 아랫짝 같구나",
+      "source_text_hash": "3195f5ac37ba6c2d961172621afd33ea3245918c16a7c2251a33571703199bf9",
+      "translation_text_hash": "60e3a013431e57283504a111b341fcdfa20e479a347f5413d2e4c4f49b2a0db7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음이 돌 같이 단단하니 그 단단함이 맷돌 아랫짝 같구나"
+      ],
+      "raw_text_hashes": [
+        "60e3a013431e57283504a111b341fcdfa20e479a347f5413d2e4c4f49b2a0db7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:25",
+      "sequence": 13914,
+      "chapter_label": "JOB 41",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 25
+        }
+      ],
+      "en": "When he raises himself up, the mighty are afraid. They retreat before his thrashing.",
+      "ko": "그것이 일어나면 용사라도 두려워하며 경겁하여 창황하며",
+      "source_text_hash": "a4925401204a6284a84616a83464398c5362f8f5d666b2ad7ad81ef9b6f82907",
+      "translation_text_hash": "c5504e5fe074e2321a504a9391bfd952553a819b34607f1a9b58f1ddd2d97cb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 일어나면 용사라도 두려워하며 경겁하여 창황하며"
+      ],
+      "raw_text_hashes": [
+        "c5504e5fe074e2321a504a9391bfd952553a819b34607f1a9b58f1ddd2d97cb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:26",
+      "sequence": 13915,
+      "chapter_label": "JOB 41",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 26
+        }
+      ],
+      "en": "If one attacks him with the sword, it can’t prevail; nor the spear, the dart, nor the pointed shaft.",
+      "ko": "칼로 칠찌라도 쓸데 없고 창이나 살이나 작살도 소용이 없구나",
+      "source_text_hash": "073f84fe0c8ded6b92fb2e2a77a214a5549deaa10207680ba4118b577c67c739",
+      "translation_text_hash": "2f112789afd977b4dab692cb16254f93703babb060593ec4e0cb0f864b2fbaae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칼로 칠찌라도 쓸데 없고 창이나 살이나 작살도 소용이 없구나"
+      ],
+      "raw_text_hashes": [
+        "2f112789afd977b4dab692cb16254f93703babb060593ec4e0cb0f864b2fbaae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:27",
+      "sequence": 13916,
+      "chapter_label": "JOB 41",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 27
+        }
+      ],
+      "en": "He counts iron as straw, and bronze as rotten wood.",
+      "ko": "그것이 철을 초개 같이, 놋을 썩은 나무 같이 여기니",
+      "source_text_hash": "c1ce912bd989faabef072fa1ddb0742ab7bf4c7f12b65f0c671f730fe18441c8",
+      "translation_text_hash": "9df410c53dc74b3b9d868f53476f49b9b72d690438fddb7fe1d93678e9dfa620",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 철을 초개 같이, 놋을 썩은 나무 같이 여기니"
+      ],
+      "raw_text_hashes": [
+        "9df410c53dc74b3b9d868f53476f49b9b72d690438fddb7fe1d93678e9dfa620"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:28",
+      "sequence": 13917,
+      "chapter_label": "JOB 41",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 28
+        }
+      ],
+      "en": "The arrow can’t make him flee. Sling stones are like chaff to him.",
+      "ko": "살이라도 그것으로 도망하게 못하겠고 물매 돌도 그것에게는 겨 같이 여기우는구나",
+      "source_text_hash": "96be365805667472c22185345a91898d951a2d911971a66eb6de95ce2b408561",
+      "translation_text_hash": "9c4dee16695c77434fa6a3f62df7d170cbfcb4683fc1b7a462fd69d92adcbf8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살이라도 그것으로 도망하게 못하겠고 물매 돌도 그것에게는 겨 같이 여기우는구나"
+      ],
+      "raw_text_hashes": [
+        "9c4dee16695c77434fa6a3f62df7d170cbfcb4683fc1b7a462fd69d92adcbf8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:29",
+      "sequence": 13918,
+      "chapter_label": "JOB 41",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 29
+        }
+      ],
+      "en": "Clubs are counted as stubble. He laughs at the rushing of the javelin.",
+      "ko": "몽둥이도 검불 같이 보고 창을 던짐을 우습게 여기며",
+      "source_text_hash": "1c8da93b833513b44140ef20ccc16d79530383ab9dfb95963360b398a6ef69cf",
+      "translation_text_hash": "55ae12896d8727af0aa3e3fb15ac47c80581b03882a1606f7137f64676730b70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몽둥이도 검불 같이 보고 창을 던짐을 우습게 여기며"
+      ],
+      "raw_text_hashes": [
+        "55ae12896d8727af0aa3e3fb15ac47c80581b03882a1606f7137f64676730b70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:30",
+      "sequence": 13919,
+      "chapter_label": "JOB 41",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 30
+        }
+      ],
+      "en": "His undersides are like sharp potsherds, leaving a trail in the mud like a threshing sledge.",
+      "ko": "그 배 아래는 날카로운 와륵 같으니 진흙 위에 타작 기계 같이 자취를 내는구나",
+      "source_text_hash": "261e679fb50afd435fab100e94ac05df7f4fd47c62b09bfb877646f8b188c0be",
+      "translation_text_hash": "e571a3d5ee29399c4c1d6ced88b437f0a1e8a4eb38cc72d4b84ac4e2d570bf81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 배 아래는 날카로운 와륵 같으니 진흙 위에 타작 기계 같이 자취를 내는구나"
+      ],
+      "raw_text_hashes": [
+        "e571a3d5ee29399c4c1d6ced88b437f0a1e8a4eb38cc72d4b84ac4e2d570bf81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:31",
+      "sequence": 13920,
+      "chapter_label": "JOB 41",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 31
+        }
+      ],
+      "en": "He makes the deep to boil like a pot. He makes the sea like a pot of ointment.",
+      "ko": "깊은 물로 솥의 물이 끓음 같게 하며 바다로 젖는 향기름 같게 하고",
+      "source_text_hash": "1deed998b5c88fe18ff116dde6e823a6c1507f31614bb1c5e38f6499ea326ced",
+      "translation_text_hash": "fa4659dce8e4aa942372a07493976f779ed776625380a51d3ef92e4f7752b869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깊은 물로 솥의 물이 끓음 같게 하며 바다로 젖는 향기름 같게 하고"
+      ],
+      "raw_text_hashes": [
+        "fa4659dce8e4aa942372a07493976f779ed776625380a51d3ef92e4f7752b869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:32",
+      "sequence": 13921,
+      "chapter_label": "JOB 41",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 32
+        }
+      ],
+      "en": "He makes a path shine after him. One would think the deep had white hair.",
+      "ko": "자기 뒤에 광채나는 길을 내니 사람의 보기에 바닷물이 백발 같구나",
+      "source_text_hash": "c7c14a1faa9fe8f556df4c80ceee1d12919bb202f720550db1df2313756d3eda",
+      "translation_text_hash": "d57a9e20d554bc6e796f6a91dbb701e3672a768ba1a57dd3abd35c75f70c8b4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 뒤에 광채나는 길을 내니 사람의 보기에 바닷물이 백발 같구나"
+      ],
+      "raw_text_hashes": [
+        "d57a9e20d554bc6e796f6a91dbb701e3672a768ba1a57dd3abd35c75f70c8b4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:33",
+      "sequence": 13922,
+      "chapter_label": "JOB 41",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 33
+        }
+      ],
+      "en": "On earth there is not his equal, that is made without fear.",
+      "ko": "땅 위에는 그것 같은 것이 없나니 두려움 없게 지음을 받았음이라",
+      "source_text_hash": "7b2f36af3f56ef4a6f4028f94f096153c59ddf76857a7d3bcaebf623cba8e0e2",
+      "translation_text_hash": "e0a8ffb557979afa335a6b193eed918871f6541c2f0dbfad8a7436f82a31438d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅 위에는 그것 같은 것이 없나니 두려움 없게 지음을 받았음이라"
+      ],
+      "raw_text_hashes": [
+        "e0a8ffb557979afa335a6b193eed918871f6541c2f0dbfad8a7436f82a31438d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:41:34",
+      "sequence": 13923,
+      "chapter_label": "JOB 41",
+      "verse_label": "34",
+      "locator": {
+        "book": "JOB",
+        "chapter": 41,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 41,
+          "verse": 34
+        }
+      ],
+      "en": "He sees everything that is high. He is king over all the sons of pride.”",
+      "ko": "모든 높은 것을 낮게 보고 모든 교만한 것의 왕이 되느니라",
+      "source_text_hash": "bbb1a653f4ccf5fce97430085f8b43451bc442cffe6ecacefa5198c51f919023",
+      "translation_text_hash": "5cd10f9c6b9a629450ad00494882034b89a11f6f25a97b35f68f2d1e0beaa8fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 높은 것을 낮게 보고 모든 교만한 것의 왕이 되느니라"
+      ],
+      "raw_text_hashes": [
+        "5cd10f9c6b9a629450ad00494882034b89a11f6f25a97b35f68f2d1e0beaa8fc"
+      ]
+    }
+  ]
+}

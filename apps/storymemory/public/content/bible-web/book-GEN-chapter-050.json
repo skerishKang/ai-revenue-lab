@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:050",
+  "unit_ordinal": 50,
+  "unit_label": "GEN 50",
+  "book_code": "GEN",
+  "chapter_number": 50,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:50:1",
+      "sequence": 1508,
+      "chapter_label": "GEN 50",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 1
+        }
+      ],
+      "en": "Joseph fell on his father’s face, wept on him, and kissed him.",
+      "ko": "요셉이 아비 얼굴에 구푸려 울며 입맞추고",
+      "source_text_hash": "b777b6db4cdfd4dfae675f0cefd3bf3415582f21c607c04fedb4a808c5f5ae18",
+      "translation_text_hash": "a91e16d0c3bb7dd4ed78b7c914e8f6773de551207f17a6dc695db99e81cf6674",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 아비 얼굴에 구푸려 울며 입맞추고"
+      ],
+      "raw_text_hashes": [
+        "a91e16d0c3bb7dd4ed78b7c914e8f6773de551207f17a6dc695db99e81cf6674"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:2",
+      "sequence": 1509,
+      "chapter_label": "GEN 50",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 2
+        }
+      ],
+      "en": "Joseph commanded his servants, the physicians, to embalm his father; and the physicians embalmed Israel.",
+      "ko": "그 수종 의사에게 명하여 향 재료로 아비의 몸에 넣게 하매 의사가 이스라엘에게 그대로 하되",
+      "source_text_hash": "ced1ad324322481b0b09f8d41a8721bb8aad57c3844a62a62c22b2bbbae22cf4",
+      "translation_text_hash": "549aff5345dd9e90408cdc0a39d1703a3f8e28cf60edb34693807de8f12020c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수종 의사에게 명하여 향 재료로 아비의 몸에 넣게 하매 의사가 이스라엘에게 그대로 하되"
+      ],
+      "raw_text_hashes": [
+        "549aff5345dd9e90408cdc0a39d1703a3f8e28cf60edb34693807de8f12020c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:3",
+      "sequence": 1510,
+      "chapter_label": "GEN 50",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 3
+        }
+      ],
+      "en": "Forty days were used for him, for that is how many days it takes to embalm. The Egyptians wept for Israel for seventy days.",
+      "ko": "사십일이 걸렸으니 향 재료를 넣는데는 이 날수가 걸림이며 애굽 사람들은 칠십일 동안 그를 위하여 곡하였더라",
+      "source_text_hash": "c6ce7d7db0d1f80edee5df35f411393b23588a0e6beddf49d8c79241fccfd191",
+      "translation_text_hash": "a5a5aecc5fea3c0600ddf7282ed6905a731f5305a3e68692b24037d76d82229d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사십일이 걸렸으니 향 재료를 넣는데는 이 날수가 걸림이며 애굽 사람들은 칠십일 동안 그를 위하여 곡하였더라"
+      ],
+      "raw_text_hashes": [
+        "a5a5aecc5fea3c0600ddf7282ed6905a731f5305a3e68692b24037d76d82229d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:4",
+      "sequence": 1511,
+      "chapter_label": "GEN 50",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 4
+        }
+      ],
+      "en": "When the days of weeping for him were past, Joseph spoke to Pharaoh’s staff, saying, “If now I have found favor in your eyes, please speak in the ears of Pharaoh, saying,",
+      "ko": "곡하는 기한이 지나매 요셉이 바로의 궁에 말하여 가로되 내가 너희에게 은혜를 입었으면 청컨대 바로의 귀에 고하기를",
+      "source_text_hash": "1cdb2266b89c13362f1bbd86d4692299e2e68615a772596571fd64b6c65e8580",
+      "translation_text_hash": "98b8e5169168b5adafa801a66897595f566a8b9b8cabdf5c9f837e504dcdc816",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곡하는 기한이 지나매 요셉이 바로의 궁에 말하여 가로되 내가 너희에게 은혜를 입었으면 청컨대 바로의 귀에 고하기를"
+      ],
+      "raw_text_hashes": [
+        "98b8e5169168b5adafa801a66897595f566a8b9b8cabdf5c9f837e504dcdc816"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:5",
+      "sequence": 1512,
+      "chapter_label": "GEN 50",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 5
+        }
+      ],
+      "en": "‘My father made me swear, saying, “Behold, I am dying. Bury me in my grave which I have dug for myself in the land of Canaan.” Now therefore, please let me go up and bury my father, and I will come again.’”",
+      "ko": "우리 아버지가 나로 맹세하게 하여 이르되 내가 죽거든 가나안 땅에 내가 파서 둔 묘실에 나를 장사하라 하였나니 나로 올라가서 아버지를 장사하게 하소서 내가 다시 오리이다 하라 하였더니",
+      "source_text_hash": "d04382d08423ae9b6d6d48b1061634dde75bac38eb2546e55571dfec51bba056",
+      "translation_text_hash": "1f0aaa7bbcdda9c1c889044bd2781b9265df043f71ef92903b14e2cf48bb0ab8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 아버지가 나로 맹세하게 하여 이르되 내가 죽거든 가나안 땅에 내가 파서 둔 묘실에 나를 장사하라 하였나니 나로 올라가서 아버지를 장사하게 하소서 내가 다시 오리이다 하라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "1f0aaa7bbcdda9c1c889044bd2781b9265df043f71ef92903b14e2cf48bb0ab8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:6",
+      "sequence": 1513,
+      "chapter_label": "GEN 50",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 6
+        }
+      ],
+      "en": "Pharaoh said, “Go up, and bury your father, just like he made you swear.”",
+      "ko": "바로가 가로되 그가 네게 시킨 맹세대로 올라가서 네 아비를 장사하라",
+      "source_text_hash": "c738aa9f8b8fb887b885030a3f57ec071605f3c96ccb60874546bd37a53d5104",
+      "translation_text_hash": "1c23f461d5de90db95f24036b8714f687cc49164cc9084de06d6cd3afd01846d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 가로되 그가 네게 시킨 맹세대로 올라가서 네 아비를 장사하라"
+      ],
+      "raw_text_hashes": [
+        "1c23f461d5de90db95f24036b8714f687cc49164cc9084de06d6cd3afd01846d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:7",
+      "sequence": 1514,
+      "chapter_label": "GEN 50",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 7
+        }
+      ],
+      "en": "Joseph went up to bury his father; and with him went up all the servants of Pharaoh, the elders of his house, all the elders of the land of Egypt,",
+      "ko": "요셉이 자기 아비를 장사하러 올라가니 바로의 모든 신하와 바로 궁의 장로들과 애굽 땅의 모든 장로와",
+      "source_text_hash": "edc0336c1ca02fb701685bead12090d70902822236db498efd8d07c21ca05972",
+      "translation_text_hash": "9f043aa16b811fc04f9a64e557323923e43b985bd574d6a32a2348a2763b2b70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 자기 아비를 장사하러 올라가니 바로의 모든 신하와 바로 궁의 장로들과 애굽 땅의 모든 장로와"
+      ],
+      "raw_text_hashes": [
+        "9f043aa16b811fc04f9a64e557323923e43b985bd574d6a32a2348a2763b2b70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:8",
+      "sequence": 1515,
+      "chapter_label": "GEN 50",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 8
+        }
+      ],
+      "en": "all the house of Joseph, his brothers, and his father’s house. Only their little ones, their flocks, and their herds, they left in the land of Goshen.",
+      "ko": "요셉의 온 집과 그 형제들과 그 아비의 집이 그와 함께 올라가고 그들의 어린 아이들과 양떼와 소떼만 고센 땅에 남겼으며",
+      "source_text_hash": "a2256638f773f46f8dccb8e72162c03f95545b0ba38a0f229ac2f40d00ab582a",
+      "translation_text_hash": "c79f2bc72eda10fcaa8044e5c91aec0769da9a4dfed19d22c08ee700db8253d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉의 온 집과 그 형제들과 그 아비의 집이 그와 함께 올라가고 그들의 어린 아이들과 양떼와 소떼만 고센 땅에 남겼으며"
+      ],
+      "raw_text_hashes": [
+        "c79f2bc72eda10fcaa8044e5c91aec0769da9a4dfed19d22c08ee700db8253d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:9",
+      "sequence": 1516,
+      "chapter_label": "GEN 50",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 9
+        }
+      ],
+      "en": "Both chariots and horsemen went up with him. It was a very great company.",
+      "ko": "병거와 기병이 요셉을 따라 올라가니 그 떼가 심히 컸더라",
+      "source_text_hash": "43b2e896e10e0a40fd40139386392eb47d5b05fb2cab10b51d5c32ee2c38572f",
+      "translation_text_hash": "909eca0f3421b0dd7b29ebe5e8f191657685a3b873d03876c50078cd81544311",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "병거와 기병이 요셉을 따라 올라가니 그 떼가 심히 컸더라"
+      ],
+      "raw_text_hashes": [
+        "909eca0f3421b0dd7b29ebe5e8f191657685a3b873d03876c50078cd81544311"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:10",
+      "sequence": 1517,
+      "chapter_label": "GEN 50",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 10
+        }
+      ],
+      "en": "They came to the threshing floor of Atad, which is beyond the Jordan, and there they lamented with a very great and severe lamentation. He mourned for his father seven days.",
+      "ko": "그들이 요단강 건너편 아닷 타작마당에 이르러 거기서 크게 호곡하고 애통하며 요셉이 아비를 위하여 칠일 동안 애곡하였더니",
+      "source_text_hash": "9e9e539399d46a7ecbeaf74fecdb36b79743e024d416cf566d073c544fa7e4ba",
+      "translation_text_hash": "f2b236b3c52debd3c40ef76e6de87e7527e26f34b1c9126697578b2b92ba3bef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 요단강 건너편 아닷 타작마당에 이르러 거기서 크게 호곡하고 애통하며 요셉이 아비를 위하여 칠일 동안 애곡하였더니"
+      ],
+      "raw_text_hashes": [
+        "f2b236b3c52debd3c40ef76e6de87e7527e26f34b1c9126697578b2b92ba3bef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:11",
+      "sequence": 1518,
+      "chapter_label": "GEN 50",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 11
+        }
+      ],
+      "en": "When the inhabitants of the land, the Canaanites, saw the mourning in the floor of Atad, they said, “This is a grievous mourning by the Egyptians.” Therefore its name was called Abel Mizraim, which is beyond the Jordan.",
+      "ko": "그 땅 거민 가나안 백성들이 아닷 마당의 애통을 보고 가로되 이는 애굽 사람의 큰 애통이라 하였으므로 그 땅 이름을 아벨미스라임이라 하였으니 곧 요단강 건너편이더라",
+      "source_text_hash": "524ff72903be6612eb241d29104ab0ac75913c114b3649ecf118bdf28cfd6cba",
+      "translation_text_hash": "7033a179a48b47de9341fe0dc0aa6d68a3a4e304c47531d81d780ccb1192ca69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅 거민 가나안 백성들이 아닷 마당의 애통을 보고 가로되 이는 애굽 사람의 큰 애통이라 하였으므로 그 땅 이름을 아벨미스라임이라 하였으니 곧 요단강 건너편이더라"
+      ],
+      "raw_text_hashes": [
+        "7033a179a48b47de9341fe0dc0aa6d68a3a4e304c47531d81d780ccb1192ca69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:12",
+      "sequence": 1519,
+      "chapter_label": "GEN 50",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 12
+        }
+      ],
+      "en": "His sons did to him just as he commanded them,",
+      "ko": "야곱의 아들들이 부명을 좇아 행하여",
+      "source_text_hash": "f16d5bf59d100316c9d1cda6664f33c8166dee5cba5f2e1e476fd48e3ef54a91",
+      "translation_text_hash": "dccdc64f6e24b32443c50ba00971c5525f41601de010f300231e0c45f1acf266",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 아들들이 부명을 좇아 행하여"
+      ],
+      "raw_text_hashes": [
+        "dccdc64f6e24b32443c50ba00971c5525f41601de010f300231e0c45f1acf266"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:13",
+      "sequence": 1520,
+      "chapter_label": "GEN 50",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 13
+        }
+      ],
+      "en": "for his sons carried him into the land of Canaan, and buried him in the cave of the field of Machpelah, which Abraham bought with the field, as a possession for a burial site, from Ephron the Hittite, near Mamre.",
+      "ko": "그를 가나안 땅으로 메어다가 마므레 앞 막벨라 밭 굴에 장사하였으니 이는 아브라함이 헷 족속 에브론에게 밭과 함께 사서 소유 매장지를 삼은 곳이더라",
+      "source_text_hash": "347f7d2b53a8d7697f3cf09f96cc2b29911150e8d9c9b5b0b0f6ec0483de0097",
+      "translation_text_hash": "38ac3521a4cda6ea946e8c3e5e5472169d45e73baa492e3fe88c94e30eb99ddc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 가나안 땅으로 메어다가 마므레 앞 막벨라 밭 굴에 장사하였으니 이는 아브라함이 헷 족속 에브론에게 밭과 함께 사서 소유 매장지를 삼은 곳이더라"
+      ],
+      "raw_text_hashes": [
+        "38ac3521a4cda6ea946e8c3e5e5472169d45e73baa492e3fe88c94e30eb99ddc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:14",
+      "sequence": 1521,
+      "chapter_label": "GEN 50",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 14
+        }
+      ],
+      "en": "Joseph returned into Egypt—he, and his brothers, and all that went up with him to bury his father, after he had buried his father.",
+      "ko": "요셉이 아비를 장사한 후에 자기 형제와 호상군과 함께 애굽으로 돌아왔더라",
+      "source_text_hash": "7d3c531976f7ef0439e363086acc5b56bd1c3be03e9362fc8942d2e1b539b768",
+      "translation_text_hash": "5730f8ad64fc41fb4a634b8f792315f3344c79a072e3e222e59f88a16db8c112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 아비를 장사한 후에 자기 형제와 호상군과 함께 애굽으로 돌아왔더라"
+      ],
+      "raw_text_hashes": [
+        "5730f8ad64fc41fb4a634b8f792315f3344c79a072e3e222e59f88a16db8c112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:15",
+      "sequence": 1522,
+      "chapter_label": "GEN 50",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 15
+        }
+      ],
+      "en": "When Joseph’s brothers saw that their father was dead, they said, “It may be that Joseph will hate us, and will fully pay us back for all the evil which we did to him.”",
+      "ko": "요셉의 형제들이 그 아비가 죽었음을 보고 말하되 요셉이 혹시 우리를 미워하여 우리가 그에게 행한 모든 악을 다 갚지나 아니할까 하고",
+      "source_text_hash": "a7570d11c0395e07b9600623d1e1a5535510218184beb03a8f425b17aa9af5c7",
+      "translation_text_hash": "cff1dda782fc2a8ec5f5e58f0d9f05a63e37fcfb64fb0295736b24176e071b49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉의 형제들이 그 아비가 죽었음을 보고 말하되 요셉이 혹시 우리를 미워하여 우리가 그에게 행한 모든 악을 다 갚지나 아니할까 하고"
+      ],
+      "raw_text_hashes": [
+        "cff1dda782fc2a8ec5f5e58f0d9f05a63e37fcfb64fb0295736b24176e071b49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:16",
+      "sequence": 1523,
+      "chapter_label": "GEN 50",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 16
+        }
+      ],
+      "en": "They sent a message to Joseph, saying, “Your father commanded before he died, saying,",
+      "ko": "요셉에게 말을 전하여 가로되 당신의 아버지가 돌아가시기 전에 명하여 이르시기를",
+      "source_text_hash": "d3d976c2ae0c7106851da70e9fe27591b54b35743089ae67e92115c2b3012c54",
+      "translation_text_hash": "0ac533242cab0e03aad58a23f40e93901cdeb8069c5ba03fb76a05d998a454ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉에게 말을 전하여 가로되 당신의 아버지가 돌아가시기 전에 명하여 이르시기를"
+      ],
+      "raw_text_hashes": [
+        "0ac533242cab0e03aad58a23f40e93901cdeb8069c5ba03fb76a05d998a454ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:17",
+      "sequence": 1524,
+      "chapter_label": "GEN 50",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 17
+        }
+      ],
+      "en": "‘You shall tell Joseph, “Now please forgive the disobedience of your brothers, and their sin, because they did evil to you.”’ Now, please forgive the disobedience of the servants of the God of your father.” Joseph wept when they spoke to him.",
+      "ko": "너희는 이같이 요셉에게 이르라 네 형들이 네게 악을 행하였을찌라도 이제 바라건대 그 허물과 죄를 용서하라 하셨다 하라 하셨나니 당신의 아버지의 하나님의 종들의 죄를 이제 용서하소서 하매 요셉이 그 말을 들을 때에 울었더라",
+      "source_text_hash": "f1c9a5c396c4093b51ec31f21d191dab2c2bec0f05834445a563657287a2ff53",
+      "translation_text_hash": "7354aad34ec1fb63e8e6555460fc02b73bcd1ab5e42ff42ea294c8e675e0abc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이같이 요셉에게 이르라 네 형들이 네게 악을 행하였을찌라도 이제 바라건대 그 허물과 죄를 용서하라 하셨다 하라 하셨나니 당신의 아버지의 하나님의 종들의 죄를 이제 용서하소서 하매 요셉이 그 말을 들을 때에 울었더라"
+      ],
+      "raw_text_hashes": [
+        "7354aad34ec1fb63e8e6555460fc02b73bcd1ab5e42ff42ea294c8e675e0abc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:18",
+      "sequence": 1525,
+      "chapter_label": "GEN 50",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 18
+        }
+      ],
+      "en": "His brothers also went and fell down before his face; and they said, “Behold, we are your servants.”",
+      "ko": "그 형들이 또 친히 와서 요셉의 앞에 엎드려 가로되 우리는 당신의 종이니이다",
+      "source_text_hash": "117981a059803d43882eeb0f5ef4a6eaac51ab39c8e3052afa4661db69d0f08f",
+      "translation_text_hash": "92ac2138cafa1315426fbdce0bb889435425623d0b9ee61770b1375a61a80e51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형들이 또 친히 와서 요셉의 앞에 엎드려 가로되 우리는 당신의 종이니이다"
+      ],
+      "raw_text_hashes": [
+        "92ac2138cafa1315426fbdce0bb889435425623d0b9ee61770b1375a61a80e51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:19",
+      "sequence": 1526,
+      "chapter_label": "GEN 50",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 19
+        }
+      ],
+      "en": "Joseph said to them, “Don’t be afraid, for am I in the place of God?",
+      "ko": "요셉이 그들에게 이르되 두려워 마소서 내가 하나님을 대신하리이까",
+      "source_text_hash": "45d94c2f87d14ee0ff884364f5a5de5d6694c32cb21ac800b044d1c0605518c2",
+      "translation_text_hash": "6df583b67fc02810b0907f6a8a817bdc668e8ea265afceeee114a6a787b442b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그들에게 이르되 두려워 마소서 내가 하나님을 대신하리이까"
+      ],
+      "raw_text_hashes": [
+        "6df583b67fc02810b0907f6a8a817bdc668e8ea265afceeee114a6a787b442b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:20",
+      "sequence": 1527,
+      "chapter_label": "GEN 50",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 20
+        }
+      ],
+      "en": "As for you, you meant evil against me, but God meant it for good, to save many people alive, as is happening today.",
+      "ko": "당신들은 나를 해하려 하였으나 하나님은 그것을 선으로 바꾸사 오늘과 같이 만민의 생명을 구원하게 하시려 하셨나니",
+      "source_text_hash": "d8b19003793e9f067fce3a243e4ca8b1baf0265e8eb8fe41131cd3e8008ed11d",
+      "translation_text_hash": "5899576d0c0b2619ed567cb96961e02dea99fb4a0a15d1e3cfb48b0ed8dfb7de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신들은 나를 해하려 하였으나 하나님은 그것을 선으로 바꾸사 오늘과 같이 만민의 생명을 구원하게 하시려 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "5899576d0c0b2619ed567cb96961e02dea99fb4a0a15d1e3cfb48b0ed8dfb7de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:21",
+      "sequence": 1528,
+      "chapter_label": "GEN 50",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 21
+        }
+      ],
+      "en": "Now therefore don’t be afraid. I will provide for you and your little ones.” He comforted them, and spoke kindly to them.",
+      "ko": "당신들은 두려워 마소서 내가 당신들과 당신들의 자녀를 기르리이다 하고 그들을 간곡한 말로 위로하였더라",
+      "source_text_hash": "fc02646fc15ce0eda77ab2017f3abfd23dc80308c88182766be3399d1812da56",
+      "translation_text_hash": "9ab7a24967c3d9b548a405c30753d3b99cfe5db4f02b7b9d0f96c70101387b74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신들은 두려워 마소서 내가 당신들과 당신들의 자녀를 기르리이다 하고 그들을 간곡한 말로 위로하였더라"
+      ],
+      "raw_text_hashes": [
+        "9ab7a24967c3d9b548a405c30753d3b99cfe5db4f02b7b9d0f96c70101387b74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:22",
+      "sequence": 1529,
+      "chapter_label": "GEN 50",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 22
+        }
+      ],
+      "en": "Joseph lived in Egypt, he, and his father’s house. Joseph lived one hundred ten years.",
+      "ko": "요셉이 그 아비의 가족과 함께 애굽에 거하여 일백 십세를 살며",
+      "source_text_hash": "d245af18dd86a0de454063856c5803718e2017e70cd170a6cb0c620df5f58493",
+      "translation_text_hash": "5c2090f6470c0c9f383171e04fe18d6533aae9ad851c471c7471ac0e28ee637a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그 아비의 가족과 함께 애굽에 거하여 일백 십세를 살며"
+      ],
+      "raw_text_hashes": [
+        "5c2090f6470c0c9f383171e04fe18d6533aae9ad851c471c7471ac0e28ee637a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:23",
+      "sequence": 1530,
+      "chapter_label": "GEN 50",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 23
+        }
+      ],
+      "en": "Joseph saw Ephraim’s children to the third generation. The children also of Machir, the son of Manasseh, were born on Joseph’s knees.",
+      "ko": "에브라임의 자손 삼대를 보았으며 므낫세의 아들 마길의 아들들도 요셉의 슬하에서 양육되었더라",
+      "source_text_hash": "138394bc8a32ba64702e0e74509e45179e4a75ee3e4bdeb783a7a8a38bb6ee57",
+      "translation_text_hash": "235052b6af3bcca426428d55cc5259f18871e6993bf74034c9470ec6e5d39980",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임의 자손 삼대를 보았으며 므낫세의 아들 마길의 아들들도 요셉의 슬하에서 양육되었더라"
+      ],
+      "raw_text_hashes": [
+        "235052b6af3bcca426428d55cc5259f18871e6993bf74034c9470ec6e5d39980"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:24",
+      "sequence": 1531,
+      "chapter_label": "GEN 50",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 24
+        }
+      ],
+      "en": "Joseph said to his brothers, “I am dying, but God will surely visit you, and bring you up out of this land to the land which he swore to Abraham, to Isaac, and to Jacob.”",
+      "ko": "요셉이 그 형제에게 이르되 나는 죽으나 하나님이 너희를 권고하시고 너희를 이 땅에서 인도하여 내사 아브라함과 이삭과 야곱에게 맹세하신 땅에 이르게 하시리라 하고",
+      "source_text_hash": "d3b9e2c1549e94d4fc48f2b416a7ae686f8638019a2c7fd47a0be85ae847ecfa",
+      "translation_text_hash": "a37fd118eb541281417431a809b1dda89d3d56038cf053c6dcac8a44800f71ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그 형제에게 이르되 나는 죽으나 하나님이 너희를 권고하시고 너희를 이 땅에서 인도하여 내사 아브라함과 이삭과 야곱에게 맹세하신 땅에 이르게 하시리라 하고"
+      ],
+      "raw_text_hashes": [
+        "a37fd118eb541281417431a809b1dda89d3d56038cf053c6dcac8a44800f71ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:25",
+      "sequence": 1532,
+      "chapter_label": "GEN 50",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 25
+        }
+      ],
+      "en": "Joseph took an oath from the children of Israel, saying, “God will surely visit you, and you shall carry up my bones from here.”",
+      "ko": "요셉이 또 이스라엘 자손에게 맹세시켜 이르기를 하나님이 정녕 너희를 권고하시리니 너희는 여기서 내 해골을 메고 올라가겠다 하라 하였더라",
+      "source_text_hash": "06fa650571798bbf9d26ef29d9d25870a827fa27e1ad7eb0e31e64d6dd9e2901",
+      "translation_text_hash": "a771f4c56038733e1729ca4b942306980685b7a9460172a7333921f5e1a7afdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 또 이스라엘 자손에게 맹세시켜 이르기를 하나님이 정녕 너희를 권고하시리니 너희는 여기서 내 해골을 메고 올라가겠다 하라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "a771f4c56038733e1729ca4b942306980685b7a9460172a7333921f5e1a7afdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:50:26",
+      "sequence": 1533,
+      "chapter_label": "GEN 50",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 50,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 50,
+          "verse": 26
+        }
+      ],
+      "en": "So Joseph died, being one hundred ten years old, and they embalmed him, and he was put in a coffin in Egypt.",
+      "ko": "요셉이 일백 십세에 죽으매 그들이 그의 몸에 향 재료를 넣고 애굽에서 입관하였더라",
+      "source_text_hash": "36189141583f09e5e5f3de2ee84ae6f88e1998ea727178dde3355e0f1fdff8c7",
+      "translation_text_hash": "ecb961d8ed7771a4ee69fea5e623782c39d64ceefbbc854c08f8e98dbc9e1a36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 일백 십세에 죽으매 그들이 그의 몸에 향 재료를 넣고 애굽에서 입관하였더라"
+      ],
+      "raw_text_hashes": [
+        "ecb961d8ed7771a4ee69fea5e623782c39d64ceefbbc854c08f8e98dbc9e1a36"
+      ]
+    }
+  ]
+}

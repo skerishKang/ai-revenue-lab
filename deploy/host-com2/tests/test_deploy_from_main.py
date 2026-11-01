@@ -39,8 +39,14 @@ import os
 import sys
 once = os.path.join(os.environ.get("FAKE_ROOT", ""), "fail_once_{svc}")
 if os.path.exists(once):
-    os.remove(once)
+    count = int(open(once).read().strip())
+    if count <= 1:
+        os.remove(once)
+    else:
+        open(once, "w").write(str(count - 1))
+    print("HEALTH=FAIL STATUS=0")
     sys.exit(1)
+print("HEALTH=PASS STATUS=200")
 sys.exit(0)
 """
 
@@ -64,13 +70,24 @@ b14_app=$B14_APP
 systemctl_bin=$SYSTEMCTL_BIN
 python_bin=$PYTHON_BIN
 git_bin=git
+ai_check=${FAKE_AI_MODE:-warn}
 run_deploy "$1"
 """
 
 BASE_FILES = {
     "apps/padiem-chat/app/chat_marker.py": "CHAT = 1\n",
+    "apps/padiem-chat/app/__init__.py": "",
     "apps/padiem-chat/migrations/001_auth_history.sql": "CREATE TABLE a (id INTEGER);\n",
     "apps/padiem-ai-engine/asgi.py": "# engine\n",
+    "apps/padiem-ai-engine/app/__init__.py": "",
+    "apps/padiem-ai-engine/clients/placeholder": "clients",
+    "apps/padiem-ai-engine/ingress/placeholder": "ingress",
+    "apps/padiem-ai-engine/migrations/placeholder": "migrations",
+    "apps/padiem-ai-engine/worker.py": "# worker\n",
+    "apps/padiem-ai-engine/worker_identity.py": "# identity\n",
+    "packages/padiem-ai-core/padiem_ai_core/__init__.py": "# core\n",
+    "packages/padiem-control-plane/padiem_control_plane/__init__.py": "# control\n",
+    "apps/korean-ai-code-agent/src/kagent/__init__.py": "# kagent\n",
     "apps/korean-ai-platform/asgi.py": "# b14\n",
     "packages/shared/placeholder.txt": "shared\n",
 }
@@ -78,6 +95,7 @@ BASE_FILES = {
 # The second commit decides which service the change belongs to.
 CHANGES = {
     "chat": ("apps/padiem-chat/app/chat_marker.py", "CHAT = 2\n"),
+    "council": ("apps/padiem-council-apps/static/index.html", "council update\n"),
     "p01": ("apps/padiem-ai-engine/asgi.py", "# engine 2\n"),
     "b14": ("apps/korean-ai-platform/asgi.py", "# b14 2\n"),
     "migration": (
@@ -114,11 +132,21 @@ class DeployHarness(unittest.TestCase):
         self._git(str(self.ops), "checkout", "-q", "--detach", self.first)
 
         self.state = self.tmp / "state"
+        self.previous = self.tmp / "releases" / "previous"
         self.fakes = self.tmp / "fakes"
         self.fakes.mkdir()
         self.log = self.tmp / "calls.log"
         self.p01 = self.tmp / "p01"
         (self.p01 / "rollback").mkdir(parents=True)
+        release = self.p01 / "releases" / "initial"
+        shutil.copytree(self.ops / "apps/padiem-ai-engine", release)
+        for source, name in (
+            ("packages/padiem-ai-core/padiem_ai_core", "padiem_ai_core"),
+            ("packages/padiem-control-plane/padiem_control_plane", "padiem_control_plane"),
+            ("apps/korean-ai-code-agent/src/kagent", "kagent"),
+        ):
+            shutil.copytree(self.ops / source, release / name)
+        (self.p01 / "app").symlink_to(release, target_is_directory=True)
         self.b14 = self.tmp / "b14-app"
         self.b14.mkdir()
         self.db = self.tmp / "chat.sqlite3"
@@ -136,6 +164,10 @@ class DeployHarness(unittest.TestCase):
             "P01_ROOT": str(self.p01),
             "PADIEM_COM2_STAGING_CHECKOUT": str(self.tmp / "staging-elsewhere"),
             "PADIEM_COM2_PYTHON": Path(sys.executable).as_posix(),
+            "PADIEM_COM2_PREVIOUS_DIR": self.previous.as_posix(),
+            "PADIEM_COM2_P01_APP": self.p01.as_posix(),
+            "PADIEM_COM2_CHAT_HEALTH_ATTEMPTS": "1",
+            "PADIEM_COM2_CHAT_HEALTH_INTERVAL": "0",
         }
 
     # --- harness -----------------------------------------------------------
@@ -157,6 +189,13 @@ class DeployHarness(unittest.TestCase):
         target = self.ops / "deploy/host-com2"
         target.mkdir(parents=True, exist_ok=True)
         shutil.copy2(SCRIPT, target / "deploy_from_main.sh")
+        self._write(".github/scripts/post_deploy_ai_answer_check.py", """
+import os
+import sys
+code = os.getenv("FAKE_AI_CODE", "none")
+print("ai:PASS" if code == "none" else "ai:FAIL error_code=" + code)
+sys.exit(0 if code == "none" else 1)
+""")
         for service in ("chat", "p01", "b14"):
             install = self.ops / f"deploy/host-com2/{service}/install.sh"
             install.parent.mkdir(parents=True, exist_ok=True)
@@ -252,8 +291,61 @@ class ChatScenarioTest(DeployHarness):
         self.assertFalse([line for line in calls if line.startswith("install b14")])
         self.assertIn("systemctl stop padiem-chat-com2.service", calls)
         self.assertIn("systemctl start padiem-chat-com2.service", calls)
-        previous = self.state / "previous" / self.first
+        previous = self.previous / self.first
         self.assertTrue((previous / "apps/padiem-chat/app/chat_marker.py").is_file())
+
+    def test_checkout_repairs_restricted_tracked_files_without_exposing_secrets(self) -> None:
+        import stat
+        unchanged = self.ops / "apps/padiem-chat/app/__init__.py"
+        unchanged.chmod(0o600)
+        secret = self.ops / "private.env"
+        secret.write_text("test-only", encoding="utf-8")
+        secret.chmod(0o600)
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source = self.ops / "apps/padiem-chat/app/chat_marker.py"
+        self.assertEqual(stat.S_IMODE(unchanged.stat().st_mode), 0o644)
+        self.assertTrue(source.stat().st_mode & stat.S_IROTH)
+        self.assertEqual(stat.S_IMODE(secret.stat().st_mode), 0o600)
+        if os.name == "posix" and os.geteuid() == 0:
+            import pwd
+            self.tmp.chmod(0o755)
+            try:
+                user = pwd.getpwnam("padiem-chat")
+            except KeyError:
+                user = pwd.getpwnam("nobody")
+            def drop():
+                os.setgroups([])
+                os.setgid(user.pw_gid)
+                os.setuid(user.pw_uid)
+            probe = subprocess.run(
+                [sys.executable, "-I", "-c",
+                 "import sys; sys.path.insert(0, sys.argv[1]); import app.chat_marker",
+                 str(self.ops / "apps/padiem-chat")],
+                preexec_fn=drop, capture_output=True, text=True,
+            )
+            self.assertEqual(probe.returncode, 0, probe.stderr)
+
+    def test_ai_503_warn_leaves_deploy_in_place(self) -> None:
+        self.env["FAKE_AI_CODE"] = "entitlement_unavailable"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ai:FAIL error_code=entitlement_unavailable", result.stdout)
+        self.assertEqual(len([x for x in self._calls() if x.startswith("install chat")]), 1)
+
+    def test_ai_401_required_rolls_back(self) -> None:
+        self.env["FAKE_AI_CODE"] = "qa_login_refused"
+        self.env["FAKE_AI_MODE"] = "required"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("chat:ROLLBACK", result.stdout)
+        self.assertIn("ai:FAIL error_code=qa_login_refused", result.stdout)
+        self.assertEqual(len([x for x in self._calls() if x.startswith("install chat")]), 2)
+
+    def test_ai_pass_has_no_error_code(self) -> None:
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("ai:PASS", result.stdout)
 
     def test_a_failed_health_check_rolls_the_service_back(self) -> None:
         self._fail_health_once("chat")
@@ -262,8 +354,57 @@ class ChatScenarioTest(DeployHarness):
         self.assertIn("COM2_DEPLOY_SUMMARY=chat:ROLLBACK p01:SKIP b14:SKIP", result.stdout)
         installs = [line for line in self._calls() if line.startswith("install chat")]
         self.assertEqual(len(installs), 2, installs)
-        self.assertIn((self.state / "previous" / self.first).as_posix(), installs[1])
+        self.assertIn((self.previous / self.first).as_posix(), installs[1])
         self.assertIn("systemctl start padiem-chat-com2.service", self._calls())
+
+    def test_slow_chat_start_is_retried_without_rollback(self) -> None:
+        import time
+        (self.fakes / "fail_once_chat").write_text("5", encoding="utf-8")
+        self.env["PADIEM_COM2_CHAT_HEALTH_ATTEMPTS"] = "6"
+        self.env["PADIEM_COM2_CHAT_HEALTH_INTERVAL"] = "2"
+        started = time.monotonic()
+        result = self._run_apply()
+        self.assertGreaterEqual(time.monotonic() - started, 10)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.count("HEALTH=FAIL STATUS=0"), 5)
+        self.assertIn("COM2_DEPLOY_SUMMARY=chat:PASS", result.stdout)
+        self.assertEqual(len([c for c in self._calls() if c.startswith("install chat")]), 1)
+
+    def test_previous_checkout_is_readable_not_writable_by_service_user(self) -> None:
+        import stat
+        self._fail_health_once("chat")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        previous = self.previous / self.first
+        source = previous / "apps/padiem-chat/app/chat_marker.py"
+        for part in (self.previous, previous, previous / "apps",
+                     previous / "apps/padiem-chat", source.parent):
+            self.assertTrue(part.stat().st_mode & stat.S_IROTH, str(part))
+            self.assertTrue(part.stat().st_mode & stat.S_IXOTH, str(part))
+            self.assertFalse(part.stat().st_mode & stat.S_IWOTH, str(part))
+        self.assertTrue(source.stat().st_mode & stat.S_IROTH)
+        self.assertFalse(source.stat().st_mode & stat.S_IWOTH)
+        self.assertFalse(source.stat().st_mode & stat.S_IWGRP)
+        # When root is available, run the actual import as an unprivileged
+        # service identity rather than inferring access from modes alone.
+        if os.name == "posix" and os.geteuid() == 0:
+            import pwd
+            self.tmp.chmod(0o755)
+            try:
+                user = pwd.getpwnam("padiem-chat")
+            except KeyError:
+                user = pwd.getpwnam("nobody")
+            def drop_privileges():
+                os.setgroups([])
+                os.setgid(user.pw_gid)
+                os.setuid(user.pw_uid)
+            probe = subprocess.run(
+                [sys.executable, "-I", "-c",
+                 "import sys; sys.path.insert(0, sys.argv[1]); import app.chat_marker",
+                 str(previous / "apps/padiem-chat")],
+                preexec_fn=drop_privileges, capture_output=True, text=True,
+            )
+            self.assertEqual(probe.returncode, 0, probe.stderr)
 
     def test_a_sha_that_is_not_origin_main_is_refused(self) -> None:
         result = self._run_main(
@@ -289,6 +430,19 @@ class ChatScenarioTest(DeployHarness):
         self.assertIn("CHAT_DB_UNREADABLE", result.stderr)
         self.assertEqual(self._head(), self.first)
         self.assertEqual(self._calls(), [])
+
+
+class CouncilAssetScenarioTest(DeployHarness):
+    scenario = "council"
+
+    def test_council_asset_change_selects_chat_deploy(self):
+        result = self._run_main(
+            self.second, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("COM2_DEPLOY_SERVICES=chat", result.stdout)
+        self.assertIn("COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY", result.stdout)
 
 
 class MigrationScenarioTest(DeployHarness):
@@ -318,6 +472,41 @@ class P01ScenarioTest(DeployHarness):
         self.assertEqual(len(snapshots), 1, snapshots)
         marker = (self.p01 / "app" / "SNAPSHOT_ID").read_text(encoding="utf-8").strip()
         self.assertEqual(marker, snapshots[0].name)
+
+
+    def test_rollback_replaces_real_app_directory(self) -> None:
+        (self.p01 / "app").unlink()
+        (self.p01 / "app").mkdir()
+        (self.p01 / "app" / "marker").write_text("current", encoding="utf-8")
+        (self.p01 / "app" / "cycle").symlink_to(".", target_is_directory=True)
+        self._fail_health_once("p01")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("p01:ROLLBACK", result.stdout)
+        self.assertTrue((self.p01 / "app").is_symlink())
+        self.assertTrue((self.p01 / "app" / "SNAPSHOT_ID").is_file())
+        moved = list((self.p01 / "releases").glob("p01.displaced.*/marker"))
+        self.assertEqual(len(moved), 1)
+        self.assertEqual(moved[0].read_text(encoding="utf-8"), "current")
+
+    def test_shared_package_drift_is_not_skipped(self) -> None:
+        release = (self.p01 / "app").resolve()
+        (release / "padiem_ai_core" / "__init__.py").write_text("# stale\n", encoding="utf-8")
+        self._git(str(self.ops), "checkout", "-q", "--detach", self.second)
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_P01_RUNNING_CODE=DIFF_OR_UNVERIFIABLE", result.stdout)
+        self.assertIn("p01:PASS", result.stdout)
+
+    def test_p01_running_link_mismatch_is_not_skipped(self) -> None:
+        release = (self.p01 / "app").resolve()
+        (release / "asgi.py").write_text("# stale release\n", encoding="utf-8")
+        self._git(str(self.ops), "checkout", "-q", "--detach", self.second)
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_P01_RUNNING_CODE=DIFF_OR_UNVERIFIABLE", result.stdout)
+        self.assertIn("COM2_DEPLOY_SUMMARY=chat:SKIP p01:PASS b14:SKIP", result.stdout)
+        self.assertTrue(any(c.startswith("install p01") for c in self._calls()))
 
 
 class B14ScenarioTest(DeployHarness):

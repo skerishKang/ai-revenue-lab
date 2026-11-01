@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAL:chapter:002",
+  "unit_ordinal": 927,
+  "unit_label": "MAL 2",
+  "book_code": "MAL",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAL:2:1",
+      "sequence": 23105,
+      "chapter_label": "MAL 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "“Now, you priests, this commandment is for you.",
+      "ko": "너희 제사장들아 이제 너희에게 이같이 명령하노라",
+      "source_text_hash": "96fcb3943f682a2fdb85b788f49c02e46eaf7c06f6b9b238f29623f5255d67d8",
+      "translation_text_hash": "1b68abd236e25a7f279719dc0d947769afb2e7e37131d9df5669081bffb5e101",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 제사장들아 이제 너희에게 이같이 명령하노라"
+      ],
+      "raw_text_hashes": [
+        "1b68abd236e25a7f279719dc0d947769afb2e7e37131d9df5669081bffb5e101"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:2",
+      "sequence": 23106,
+      "chapter_label": "MAL 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "If you will not listen, and if you will not take it to heart, to give glory to my name,” says the LORD of Armies, “then I will send the curse on you, and I will curse your blessings. Indeed, I have cursed them already, because you do not take it to heart.",
+      "ko": "만군의 여호와가 이르노라 너희가 만일 듣지 아니하며 마음에 두지 아니하여 내 이름을 영화롭게 하지 아니하면 내가 너희에게 저주를 내려 너희의 복을 저주하리라 내가 이미 저주하였나니 이는 너희가 그것을 마음에 두지 아니하였음이니라",
+      "source_text_hash": "25b5515fe1cd661fb20f615c8d6f66c641736f246359d2e130a574943258f7ba",
+      "translation_text_hash": "a988852201fb25ab74807ad31038d098191d54c07502c798a6a0c5c9c08db3b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 너희가 만일 듣지 아니하며 마음에 두지 아니하여 내 이름을 영화롭게 하지 아니하면 내가 너희에게 저주를 내려 너희의 복을 저주하리라 내가 이미 저주하였나니 이는 너희가 그것을 마음에 두지 아니하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "a988852201fb25ab74807ad31038d098191d54c07502c798a6a0c5c9c08db3b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:3",
+      "sequence": 23107,
+      "chapter_label": "MAL 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Behold, I will rebuke your offspring, and will spread dung on your faces, even the dung of your feasts; and you will be taken away with it.",
+      "ko": "보라 내가 너희의 종자를 견책할 것이요 똥 곧 너희 절기의 희생의 똥을 너희 얼굴에 바를 것이라 너희가 그것과 함께 제하여 버림을 당하리라",
+      "source_text_hash": "73fdaf2c313b6fed007435829cb07ebcf99b05b44798b0f93ab62c50ad29b0a1",
+      "translation_text_hash": "6153a6f3dd6869378a48619f6109c4aeda38b7ca99057ecce88a3c28d314091d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 너희의 종자를 견책할 것이요 똥 곧 너희 절기의 희생의 똥을 너희 얼굴에 바를 것이라 너희가 그것과 함께 제하여 버림을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "6153a6f3dd6869378a48619f6109c4aeda38b7ca99057ecce88a3c28d314091d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:4",
+      "sequence": 23108,
+      "chapter_label": "MAL 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "You will know that I have sent this commandment to you, that my covenant may be with Levi,” says the LORD of Armies.",
+      "ko": "만군의 여호와가 이르노라 내가 이 명령을 너희에게 내린 것은 레위와 세운 나의 언약이 항상 있게 하려 함인줄을 너희가 알리라",
+      "source_text_hash": "7730a53463e9833a0608f19d36148afbe7b2e53565568983227b911fa78c6015",
+      "translation_text_hash": "5ff5ecd6ff7f47b83953232c664cfea7122310462d30908b28eeb24373ff3806",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 내가 이 명령을 너희에게 내린 것은 레위와 세운 나의 언약이 항상 있게 하려 함인줄을 너희가 알리라"
+      ],
+      "raw_text_hashes": [
+        "5ff5ecd6ff7f47b83953232c664cfea7122310462d30908b28eeb24373ff3806"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:5",
+      "sequence": 23109,
+      "chapter_label": "MAL 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "“My covenant was with him of life and peace; and I gave them to him that he might be reverent toward me; and he was reverent toward me, and stood in awe of my name.",
+      "ko": "레위와 세운 나의 언약은 생명과 평강의 언약이라 내가 이것으로 그에게 준 것은 그로 경외하게 하려 함이라 그가 나를 경외하고 내 이름을 두려워하였으며",
+      "source_text_hash": "34b3e38ba3fabd3bc2d9ab54ff93aa5b2c9c6890a2a8249eadfbda1971880dba",
+      "translation_text_hash": "3e6de8e9a8a43d308ce13e12dec3fb4c32ea03d4e82e68441c096aa6bc261bd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위와 세운 나의 언약은 생명과 평강의 언약이라 내가 이것으로 그에게 준 것은 그로 경외하게 하려 함이라 그가 나를 경외하고 내 이름을 두려워하였으며"
+      ],
+      "raw_text_hashes": [
+        "3e6de8e9a8a43d308ce13e12dec3fb4c32ea03d4e82e68441c096aa6bc261bd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:6",
+      "sequence": 23110,
+      "chapter_label": "MAL 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "The law of truth was in his mouth, and unrighteousness was not found in his lips. He walked with me in peace and uprightness, and turned many away from iniquity.",
+      "ko": "그 입에는 진리의 법이 있었고 그 입술에는 불의함이 없었으며 그가 화평과 정직한 중에서 나와 동행하며 많은 사람을 돌이켜 죄악에서 떠나게 하였느니라",
+      "source_text_hash": "8aaeaeffaf52722baf2d557fb23153181fdb06e879e42144bbc8e196ff4d2f2f",
+      "translation_text_hash": "23fd7a4f2287b8597fa592180cc251fc3150fbeb7e1640318067dc164478f7cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입에는 진리의 법이 있었고 그 입술에는 불의함이 없었으며 그가 화평과 정직한 중에서 나와 동행하며 많은 사람을 돌이켜 죄악에서 떠나게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "23fd7a4f2287b8597fa592180cc251fc3150fbeb7e1640318067dc164478f7cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:7",
+      "sequence": 23111,
+      "chapter_label": "MAL 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "For the priest’s lips should keep knowledge, and they should seek the law at his mouth; for he is the messenger of the LORD of Armies.",
+      "ko": "대저 제사장의 입술은 지식을 지켜야 하겠고 사람들이 그 입에서 율법을 구하게 되어야 할 것이니 제사장은 만군의 여호와의 사자가 됨이어늘",
+      "source_text_hash": "c1e890c05c404e312b6ee1a103a3cea3585ef8fe8df8e0bf82c39fff1ebf4a33",
+      "translation_text_hash": "51b33c2da635c3eff66569c36d6cc00aae56980963818baa9bf816d8cd3404fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 제사장의 입술은 지식을 지켜야 하겠고 사람들이 그 입에서 율법을 구하게 되어야 할 것이니 제사장은 만군의 여호와의 사자가 됨이어늘"
+      ],
+      "raw_text_hashes": [
+        "51b33c2da635c3eff66569c36d6cc00aae56980963818baa9bf816d8cd3404fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:8",
+      "sequence": 23112,
+      "chapter_label": "MAL 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "But you have turned away from the path. You have caused many to stumble in the law. You have corrupted the covenant of Levi,” says the LORD of Armies.",
+      "ko": "너희는 정도에서 떠나 많은 사람으로 율법에 거치게 하도다 나 만군의 여호와가 이르노니 너희가 레위의 언약을 파하였느니라",
+      "source_text_hash": "9bc915b9c2230260b21eddf72398d2128681a49b21d7a12c6dcd52ed9f633367",
+      "translation_text_hash": "5815fa44e1cb58c4d9e6ea4169126434b423946d5f618f3c8d5b9e33369031ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 정도에서 떠나 많은 사람으로 율법에 거치게 하도다 나 만군의 여호와가 이르노니 너희가 레위의 언약을 파하였느니라"
+      ],
+      "raw_text_hashes": [
+        "5815fa44e1cb58c4d9e6ea4169126434b423946d5f618f3c8d5b9e33369031ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:9",
+      "sequence": 23113,
+      "chapter_label": "MAL 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "“Therefore I have also made you contemptible and wicked before all the people, according to the way you have not kept my ways, but have had respect for persons in the law.",
+      "ko": "너희가 내 도를 지키지 아니하고 율법을 행할 때에 사람에게 편벽되이 하였으므로 나도 너희로 모든 백성 앞에 멸시와 천대를 당하게 하였느니라 하시니라",
+      "source_text_hash": "34637f8394a8dd6aa2e80e913c49b0c8882632885c6d69110bbb5cda629be17c",
+      "translation_text_hash": "4ed4b1d7d23bd758d90b5cf5206774cb90bb5085f5e62f180422c5e8e2f12ab0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 내 도를 지키지 아니하고 율법을 행할 때에 사람에게 편벽되이 하였으므로 나도 너희로 모든 백성 앞에 멸시와 천대를 당하게 하였느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "4ed4b1d7d23bd758d90b5cf5206774cb90bb5085f5e62f180422c5e8e2f12ab0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:10",
+      "sequence": 23114,
+      "chapter_label": "MAL 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Don’t we all have one father? Hasn’t one God created us? Why do we deal treacherously every man against his brother, profaning the covenant of our fathers?",
+      "ko": "우리는 한 아버지를 가지지 아니하였느냐 한 하나님의 지으신 바가 아니냐 어찌하여 우리 각 사람이 자기 형제에게 궤사를 행하여 우리 열조의 언약을 욕되게 하느냐",
+      "source_text_hash": "9f4470c456ede63a8f370c2d735718f906014bf00a4c4b5ffbd380a8d29c6156",
+      "translation_text_hash": "fe74aa900d241f0c46dff28a5590e9d93998992d0d726153316f2bc10ea2eaae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 한 아버지를 가지지 아니하였느냐 한 하나님의 지으신 바가 아니냐 어찌하여 우리 각 사람이 자기 형제에게 궤사를 행하여 우리 열조의 언약을 욕되게 하느냐"
+      ],
+      "raw_text_hashes": [
+        "fe74aa900d241f0c46dff28a5590e9d93998992d0d726153316f2bc10ea2eaae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:11",
+      "sequence": 23115,
+      "chapter_label": "MAL 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Judah has dealt treacherously, and an abomination is committed in Israel and in Jerusalem; for Judah has profaned the holiness of the LORD which he loves, and has married the daughter of a foreign god.",
+      "ko": "유다는 궤사를 행하였고 이스라엘과 예루살렘 중에서는 가증한 일을 행하였으며 유다는 여호와의 사랑하시는 그 성결을 욕되게 하여 이방 신의 딸과 결혼하였으니",
+      "source_text_hash": "130b19e5f79033b24309387c765190cfd23d284cb425f2bc9a872924e2660772",
+      "translation_text_hash": "b1ef64bf3fb66c3f66303efb4e4032ab1203ec22b41853898b1fd532c44b9a8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다는 궤사를 행하였고 이스라엘과 예루살렘 중에서는 가증한 일을 행하였으며 유다는 여호와의 사랑하시는 그 성결을 욕되게 하여 이방 신의 딸과 결혼하였으니"
+      ],
+      "raw_text_hashes": [
+        "b1ef64bf3fb66c3f66303efb4e4032ab1203ec22b41853898b1fd532c44b9a8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:12",
+      "sequence": 23116,
+      "chapter_label": "MAL 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD will cut off the man who does this, him who wakes and him who answers, out of the tents of Jacob and him who offers an offering to the LORD of Armies.",
+      "ko": "이 일을 행하는 사람에게 속한 자는 깨는 자나 응답하는 자는 물론이요 만군의 여호와께 제사를 드리는 자도 여호와께서 야곱의 장막 가운데서 끊어 버리시리라",
+      "source_text_hash": "67b19c75a7bfeb4280ffb4555368ff9e38fab728784581d5920af74c40ee836c",
+      "translation_text_hash": "e2b33d3a20d8ee83b42b83f7d7dc5b4c68f5b6292843935ad69697d192551440",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일을 행하는 사람에게 속한 자는 깨는 자나 응답하는 자는 물론이요 만군의 여호와께 제사를 드리는 자도 여호와께서 야곱의 장막 가운데서 끊어 버리시리라"
+      ],
+      "raw_text_hashes": [
+        "e2b33d3a20d8ee83b42b83f7d7dc5b4c68f5b6292843935ad69697d192551440"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:13",
+      "sequence": 23117,
+      "chapter_label": "MAL 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "“This again you do: you cover the LORD’s altar with tears, with weeping, and with sighing, because he doesn’t regard the offering any more, neither receives it with good will at your hand.",
+      "ko": "너희가 이런 일도 행하나니 곧 눈물과 울음과 탄식으로 여호와의 단을 가리우게 하도다 그러므로 여호와께서 다시는 너희의 헌물을 돌아보지도 아니하시며 그것을 너희 손에서 기꺼이 받지도 아니하시거늘",
+      "source_text_hash": "12ac83145f745193a268465db10729eac233c789b06fe8693e00b0ac642fc89b",
+      "translation_text_hash": "86bf992ff53898b900bc0fab9f03581894d908be300bbcc9f4237453f9ca36b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 이런 일도 행하나니 곧 눈물과 울음과 탄식으로 여호와의 단을 가리우게 하도다 그러므로 여호와께서 다시는 너희의 헌물을 돌아보지도 아니하시며 그것을 너희 손에서 기꺼이 받지도 아니하시거늘"
+      ],
+      "raw_text_hashes": [
+        "86bf992ff53898b900bc0fab9f03581894d908be300bbcc9f4237453f9ca36b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:14",
+      "sequence": 23118,
+      "chapter_label": "MAL 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Yet you say, ‘Why?’ Because the LORD has been witness between you and the wife of your youth, against whom you have dealt treacherously, though she is your companion and the wife of your covenant.",
+      "ko": "너희는 이르기를 어찜이니까 하는도다 이는 너와 너의 어려서 취한 아내 사이에 여호와께서 일찌기 증거하셨음을 인함이니라 그는 네 짝이요 너와 맹약한 아내로되 네가 그에게 궤사를 행하도다",
+      "source_text_hash": "b430a22ec21f77e769d8842da35201a3af5dcab6e05ec6f7bec3506df6e09054",
+      "translation_text_hash": "0e2750df62035a3a9754ffc06ad603658208b7511e45f18ec839d46dd6ec97f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이르기를 어찜이니까 하는도다 이는 너와 너의 어려서 취한 아내 사이에 여호와께서 일찌기 증거하셨음을 인함이니라 그는 네 짝이요 너와 맹약한 아내로되 네가 그에게 궤사를 행하도다"
+      ],
+      "raw_text_hashes": [
+        "0e2750df62035a3a9754ffc06ad603658208b7511e45f18ec839d46dd6ec97f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:15",
+      "sequence": 23119,
+      "chapter_label": "MAL 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Did he not make you one, although he had the residue of the Spirit? Why one? He sought godly offspring. Therefore take heed to your spirit, and let no one deal treacherously against the wife of his youth.",
+      "ko": "여호와는 영이 유여하실찌라도 오직 하나를 짓지 아니하셨느냐 어찌하여 하나만 지으셨느냐 이는 경건한 자손을 얻고자 하심이니라 그러므로 네 심령을 삼가 지켜 어려서 취한 아내에게 궤사를 행치 말찌니라",
+      "source_text_hash": "3954d92aa4e5c28986015e343e6d7a48c591c437bbbfa4f24e1a47c37a62f836",
+      "translation_text_hash": "23b5cc74b2f0944503301bf0614f17572791c5653770dbd9f098dd76d8eed2b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 영이 유여하실찌라도 오직 하나를 짓지 아니하셨느냐 어찌하여 하나만 지으셨느냐 이는 경건한 자손을 얻고자 하심이니라 그러므로 네 심령을 삼가 지켜 어려서 취한 아내에게 궤사를 행치 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "23b5cc74b2f0944503301bf0614f17572791c5653770dbd9f098dd76d8eed2b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:16",
+      "sequence": 23120,
+      "chapter_label": "MAL 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "One who hates and divorces”, says the LORD, the God of Israel, “covers his garment with violence!” says the LORD of Armies. “Therefore pay attention to your spirit, that you don’t be unfaithful.",
+      "ko": "이스라엘의 하나님 여호와가 이르노니 나는 이혼하는 것과 학대로 옷을 가리우는 자를 미워하노라 만군의 여호와의 말이니라 그러므로 너희 심령을 삼가 지켜 궤사를 행치 말찌니라",
+      "source_text_hash": "ed03fb8dc0623ff85a4086d0783a769b0537e7c35640632051a79c4b30dbb84a",
+      "translation_text_hash": "cbfbce4a8f17a0d31594cfc63a737c603cba1301ca79270d341f95171ca07f1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님 여호와가 이르노니 나는 이혼하는 것과 학대로 옷을 가리우는 자를 미워하노라 만군의 여호와의 말이니라 그러므로 너희 심령을 삼가 지켜 궤사를 행치 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "cbfbce4a8f17a0d31594cfc63a737c603cba1301ca79270d341f95171ca07f1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:2:17",
+      "sequence": 23121,
+      "chapter_label": "MAL 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAL",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "You have wearied the LORD with your words. Yet you say, ‘How have we wearied him?’ In that you say, ‘Everyone who does evil is good in the LORD’s sight, and he delights in them;’ or ‘Where is the God of justice?’",
+      "ko": "너희가 말로 여호와를 괴로우시게 하고도 이르기를 우리가 어떻게 여호와를 괴로우시게 하였나 하는도다 이는 너희가 말하기를 모든 행악하는 자는 여호와의 눈에 선히 보이며 그에게 기쁨이 된다 하며 또 말하기를 공의의 하나님이 어디 계시냐 함이니라",
+      "source_text_hash": "116186d87c7209248d44fc28e405935f3cb3b72bb8961c190739e3efb76cba9c",
+      "translation_text_hash": "ed5c78e351ee321bb9af0a21565ffe258eb34847be3ab37a6d56e1baec16413f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 말로 여호와를 괴로우시게 하고도 이르기를 우리가 어떻게 여호와를 괴로우시게 하였나 하는도다 이는 너희가 말하기를 모든 행악하는 자는 여호와의 눈에 선히 보이며 그에게 기쁨이 된다 하며 또 말하기를 공의의 하나님이 어디 계시냐 함이니라"
+      ],
+      "raw_text_hashes": [
+        "ed5c78e351ee321bb9af0a21565ffe258eb34847be3ab37a6d56e1baec16413f"
+      ]
+    }
+  ]
+}

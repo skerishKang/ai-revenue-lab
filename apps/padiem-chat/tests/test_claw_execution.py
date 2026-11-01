@@ -396,6 +396,10 @@ class _RouteMemoryMetadata:
     async def get_active(self, document_id):
         return self.rows.get(document_id)
 
+    async def get_active_owned(self, document_id, user_id):
+        row = self.rows.get(document_id)
+        return row if row is not None and row.user_id == user_id else None
+
     async def mark_deleted(self, document_id, deleted_at):
         self.rows.pop(document_id, None)
 
@@ -443,7 +447,8 @@ def _artifact_route_client(tenant_id: str, store: WorkspaceDocumentStore) -> Tes
 async def test_artifact_route_same_tenant_download_returns_docx_headers() -> None:
     store = _real_workspace_store()
     saved = await store.put_generated_docx(
-        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+        tenant_id=OWNER_TENANT, user_id=SIGNED_IN_USER_ID,
+        filename="quote.docx", body=_DOCX_BODY
     )
     client = _artifact_route_client(OWNER_TENANT, store)
 
@@ -459,7 +464,8 @@ async def test_artifact_route_same_tenant_download_returns_docx_headers() -> Non
 async def test_artifact_route_missing_and_foreign_tenant_are_observationally_identical() -> None:
     store = _real_workspace_store()
     saved = await store.put_generated_docx(
-        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+        tenant_id=OWNER_TENANT, user_id=SIGNED_IN_USER_ID,
+        filename="quote.docx", body=_DOCX_BODY
     )
     owner = _artifact_route_client(OWNER_TENANT, store)
     foreign = _artifact_route_client(FOREIGN_TENANT, store)
@@ -487,7 +493,8 @@ async def test_artifact_route_missing_and_foreign_tenant_are_observationally_ide
 async def test_artifact_route_real_storage_failure_returns_503() -> None:
     store = _real_workspace_store()
     saved = await store.put_generated_docx(
-        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+        tenant_id=OWNER_TENANT, user_id=SIGNED_IN_USER_ID,
+        filename="quote.docx", body=_DOCX_BODY
     )
 
     async def fail_get_for_tenant(**kwargs):
@@ -519,7 +526,8 @@ async def test_artifact_route_storage_failure_detail_is_closed_and_non_secret(
 ) -> None:
     store = _real_workspace_store()
     saved = await store.put_generated_docx(
-        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+        tenant_id=OWNER_TENANT, user_id=SIGNED_IN_USER_ID,
+        filename="quote.docx", body=_DOCX_BODY
     )
 
     async def fail_get_for_tenant(**kwargs):
@@ -545,7 +553,8 @@ async def test_artifact_route_storage_failure_detail_is_closed_and_non_secret(
 async def test_artifact_route_error_json_discloses_no_internal_material() -> None:
     store = _real_workspace_store()
     saved = await store.put_generated_docx(
-        tenant_id=OWNER_TENANT, filename="quote.docx", body=_DOCX_BODY
+        tenant_id=OWNER_TENANT, user_id=SIGNED_IN_USER_ID,
+        filename="quote.docx", body=_DOCX_BODY
     )
     foreign = _artifact_route_client(FOREIGN_TENANT, store)
 
@@ -1462,7 +1471,7 @@ def test_usage_gate_is_applied_before_p01_adapter_construction() -> None:
     assert "_usage_gate_denial(request)" in execute_handler
     assert "claw_p01_adapter" in execute_handler
     assert execute_handler.index(
-        "artifact_tenant_id = await _resolve_canonical_tenant(request)"
+        "artifact_owner = await _resolve_canonical_owner(request)"
     ) < execute_handler.index("_usage_gate_denial(request)")
     # #3382: the adapter reference is read before the usage gate (for the
     # canonical USER lane check), but the usage gate is still applied before

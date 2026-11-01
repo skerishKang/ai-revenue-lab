@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOL:chapter:002",
+  "unit_ordinal": 878,
+  "unit_label": "JOL 2",
+  "book_code": "JOL",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOL:2:1",
+      "sequence": 22313,
+      "chapter_label": "JOL 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Blow the trumpet in Zion, and sound an alarm in my holy mountain! Let all the inhabitants of the land tremble, for the day of the LORD comes, for it is close at hand:",
+      "ko": "시온에서 나팔을 불며 나의 성산에서 호각을 불어 이 땅 거민으로 다 떨게 할찌니 이는 여호와의 날이 이르게 됨이니라 이제 임박하였으니",
+      "source_text_hash": "4ff3b6a94d0427205b77d99e4231e9ced225718eadf9242b0c03f205b9e7e4dd",
+      "translation_text_hash": "b1dc206061c320afe6b749b3241677ab8dc1b990291a683b1b4714f03c94653d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온에서 나팔을 불며 나의 성산에서 호각을 불어 이 땅 거민으로 다 떨게 할찌니 이는 여호와의 날이 이르게 됨이니라 이제 임박하였으니"
+      ],
+      "raw_text_hashes": [
+        "b1dc206061c320afe6b749b3241677ab8dc1b990291a683b1b4714f03c94653d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:2",
+      "sequence": 22314,
+      "chapter_label": "JOL 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "A day of darkness and gloominess, a day of clouds and thick darkness. As the dawn spreading on the mountains, a great and strong people; there has never been the like, neither will there be any more after them, even to the years of many generations.",
+      "ko": "곧 어둡고 캄캄한 날이요 빽빽한 구름이 끼인 날이라 새벽 빛이 산 꼭대기에 덮인 것과 같으니 이는 많고 강한 백성이 이르렀음이라 이같은 것이 자고 이래로 없었고 이후 세세에 없으리로다",
+      "source_text_hash": "c3e6ca5952cef96b94fe246bb8ce380fb81df0c8fbbd7fae9ae72bdd2c9caccc",
+      "translation_text_hash": "ec67c40df3959ada6cd5c055d74887ad06b4473d206a03be4b362f0dd710dfa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 어둡고 캄캄한 날이요 빽빽한 구름이 끼인 날이라 새벽 빛이 산 꼭대기에 덮인 것과 같으니 이는 많고 강한 백성이 이르렀음이라 이같은 것이 자고 이래로 없었고 이후 세세에 없으리로다"
+      ],
+      "raw_text_hashes": [
+        "ec67c40df3959ada6cd5c055d74887ad06b4473d206a03be4b362f0dd710dfa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:3",
+      "sequence": 22315,
+      "chapter_label": "JOL 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "A fire devours before them, and behind them, a flame burns. The land is as the garden of Eden before them, and behind them, a desolate wilderness. Yes, and no one has escaped them.",
+      "ko": "불이 그들의 앞을 사르며 불꽃이 그들의 뒤를 태우니 그 전의 땅은 에덴 동산 같았으나 그 후의 땅은 황무한 들 같으니 그 들을 피한 자가 없도다",
+      "source_text_hash": "d5ee2d5b51661ac2f11691ffb93ab20f58d84188590edf66954757c16c9371d4",
+      "translation_text_hash": "f7c05e1c6ff1a4750e62806126b0dc14e011d7ab960ceddbee378fb8d644361d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불이 그들의 앞을 사르며 불꽃이 그들의 뒤를 태우니 그 전의 땅은 에덴 동산 같았으나 그 후의 땅은 황무한 들 같으니 그 들을 피한 자가 없도다"
+      ],
+      "raw_text_hashes": [
+        "f7c05e1c6ff1a4750e62806126b0dc14e011d7ab960ceddbee378fb8d644361d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:4",
+      "sequence": 22316,
+      "chapter_label": "JOL 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Their appearance is as the appearance of horses, and they run as horsemen.",
+      "ko": "그 모양은 말 같고 그 달리는 것은 기병 같으며",
+      "source_text_hash": "a2bc8d5d4ed9b347e9a7ef36f5e2608d5df2e9626870b86874191ed5548f3b5c",
+      "translation_text_hash": "6d695c36d77248376e0029b050a4a113208932ab14f638956c17f041356496e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모양은 말 같고 그 달리는 것은 기병 같으며"
+      ],
+      "raw_text_hashes": [
+        "6d695c36d77248376e0029b050a4a113208932ab14f638956c17f041356496e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:5",
+      "sequence": 22317,
+      "chapter_label": "JOL 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Like the noise of chariots on the tops of the mountains, they leap, like the noise of a flame of fire that devours the stubble, like a strong people set in battle array.",
+      "ko": "그들의 산 꼭대기에서 뛰는 소리가 병거 소리와도 같고 불꽃이 초개를 사르는 소리와도 같으며 강한 군사가 항오를 벌이고 싸우는 것 같으니",
+      "source_text_hash": "3fd90f691586581ce21cb471f71d7b319151995d1cb09ca22ace2b3b13b725d8",
+      "translation_text_hash": "8d9d3d632c88958e500dd28b7cd297e22c0f7ffb661390ebfbdca73f5f88c13b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 산 꼭대기에서 뛰는 소리가 병거 소리와도 같고 불꽃이 초개를 사르는 소리와도 같으며 강한 군사가 항오를 벌이고 싸우는 것 같으니"
+      ],
+      "raw_text_hashes": [
+        "8d9d3d632c88958e500dd28b7cd297e22c0f7ffb661390ebfbdca73f5f88c13b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:6",
+      "sequence": 22318,
+      "chapter_label": "JOL 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "At their presence the peoples are in anguish. All faces have grown pale.",
+      "ko": "그 앞에서 만민이 송구하여 하며 무리의 낯빛이 하얘졌도다",
+      "source_text_hash": "dd9a4ffe0749869391a6c33a38337d3a87bb67d2b44730ac0165c3fa6734c127",
+      "translation_text_hash": "539d767bd93f0b0b4f7f2ae06e8b531eabda98547935ad80b6a9b086e3c3fe5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앞에서 만민이 송구하여 하며 무리의 낯빛이 하얘졌도다"
+      ],
+      "raw_text_hashes": [
+        "539d767bd93f0b0b4f7f2ae06e8b531eabda98547935ad80b6a9b086e3c3fe5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:7",
+      "sequence": 22319,
+      "chapter_label": "JOL 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "They run like mighty men. They climb the wall like warriors. They each march in his line, and they don’t swerve off course.",
+      "ko": "그들이 용사 같이 달리며 무사 같이 성을 더위잡고 오르며 각기 자기의 길로 행하되 그 항오를 어기지 아니하며",
+      "source_text_hash": "437f1015b4b57aac365f02b8e3723f011e3dc9c2c1fdd712fabc29a9ff3a60ca",
+      "translation_text_hash": "a73a04afe63fccec23ee7ccb290fa78fcd98f5182e4a9a1fdbe1a3d9fe7288f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 용사 같이 달리며 무사 같이 성을 더위잡고 오르며 각기 자기의 길로 행하되 그 항오를 어기지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "a73a04afe63fccec23ee7ccb290fa78fcd98f5182e4a9a1fdbe1a3d9fe7288f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:8",
+      "sequence": 22320,
+      "chapter_label": "JOL 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "One doesn’t jostle another. They each march in their own path. They burst through the defenses and don’t break ranks.",
+      "ko": "피차에 부딪히지 아니하고 각기 자기의 길로 행하며 병기를 충돌하고 나아가나 상치 아니하며",
+      "source_text_hash": "26fd26b09df4e82b0746831745722862f43500663ef9e6cd74ee05a38a05e816",
+      "translation_text_hash": "a3c7af855a9e2d0851a0011d920b96cc88921f596d149897436df1268fed6405",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피차에 부딪히지 아니하고 각기 자기의 길로 행하며 병기를 충돌하고 나아가나 상치 아니하며"
+      ],
+      "raw_text_hashes": [
+        "a3c7af855a9e2d0851a0011d920b96cc88921f596d149897436df1268fed6405"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:9",
+      "sequence": 22321,
+      "chapter_label": "JOL 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "They rush on the city. They run on the wall. They climb up into the houses. They enter in at the windows like thieves.",
+      "ko": "성중에 뛰어 들어가며 성 위에 달리며 집에 더위잡고 오르며 도적 같이 창으로 들어가니",
+      "source_text_hash": "1f22514d2c764a103eb9a57111fc80708d6e03c8fdf23f97673230e33b904ca2",
+      "translation_text_hash": "703cd3ff99b15837d92d19dea46859b0b96076fdffc328fa9a78996f2fed89c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성중에 뛰어 들어가며 성 위에 달리며 집에 더위잡고 오르며 도적 같이 창으로 들어가니"
+      ],
+      "raw_text_hashes": [
+        "703cd3ff99b15837d92d19dea46859b0b96076fdffc328fa9a78996f2fed89c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:10",
+      "sequence": 22322,
+      "chapter_label": "JOL 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "The earth quakes before them. The heavens tremble. The sun and the moon are darkened, and the stars withdraw their shining.",
+      "ko": "그 앞에서 땅이 진동하며 하늘이 떨며 일월이 캄캄하며 별들이 빛을 거두도다",
+      "source_text_hash": "5804d603e9976a71877a074bfcb92e5210d97d87dbc1276132d190d211ecc9b9",
+      "translation_text_hash": "9dd3ef1ebf9f63d9553a2ea96f6d885b06c2cdd5c00cc7462a8b10f25ac1b9b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앞에서 땅이 진동하며 하늘이 떨며 일월이 캄캄하며 별들이 빛을 거두도다"
+      ],
+      "raw_text_hashes": [
+        "9dd3ef1ebf9f63d9553a2ea96f6d885b06c2cdd5c00cc7462a8b10f25ac1b9b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:11",
+      "sequence": 22323,
+      "chapter_label": "JOL 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD thunders his voice before his army, for his forces are very great; for he is strong who obeys his command; for the day of the LORD is great and very awesome, and who can endure it?",
+      "ko": "여호와께서 그 군대 앞에서 소리를 발하시고 그 진은 심히 크고 그 명령을 행하는 자는 강하니 여호와의 날이 크고 심히 두렵도다 당할 자가 누구이랴",
+      "source_text_hash": "42d8db6476810575c318c4834abd2f2d090f58bc249c3281bdf8261e957492c2",
+      "translation_text_hash": "98e64549400ca1593f7082750c9b3a2efb487732f329c0656a5d3df697670ab7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 군대 앞에서 소리를 발하시고 그 진은 심히 크고 그 명령을 행하는 자는 강하니 여호와의 날이 크고 심히 두렵도다 당할 자가 누구이랴"
+      ],
+      "raw_text_hashes": [
+        "98e64549400ca1593f7082750c9b3a2efb487732f329c0656a5d3df697670ab7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:12",
+      "sequence": 22324,
+      "chapter_label": "JOL 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "“Yet even now,” says the LORD, “turn to me with all your heart, and with fasting, and with weeping, and with mourning.”",
+      "ko": "여호와의 말씀에 너희는 이제라도 금식하며 울며 애통하고 마음을 다하여 내게로 돌아오라 하셨나니",
+      "source_text_hash": "3582607c385fecfcf223bac07eb2d513ebaef602a0de36987e663c25b1efb3f8",
+      "translation_text_hash": "7b0683d91a55903d2fe745f17cc32063235bc87eb4ab3e5e3a84839ec6432d5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀에 너희는 이제라도 금식하며 울며 애통하고 마음을 다하여 내게로 돌아오라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "7b0683d91a55903d2fe745f17cc32063235bc87eb4ab3e5e3a84839ec6432d5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:13",
+      "sequence": 22325,
+      "chapter_label": "JOL 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Tear your heart and not your garments, and turn to the LORD, your God; for he is gracious and merciful, slow to anger, and abundant in loving kindness, and relents from sending calamity.",
+      "ko": "너희는 옷을 찢지 말고 마음을 찢고 너희 하나님 여호와께로 돌아올찌어다 그는 은혜로우시며 자비로우시며 노하기를 더디하시며 인애가 크시사 뜻을 돌이켜 재앙을 내리지 아니하시나니",
+      "source_text_hash": "68464e9f18424939ef5a7e10197ff7bf261abea3cce9173822e795c098614b35",
+      "translation_text_hash": "40221536ad0f70f27b6b13f9865a818c61ca1e186fae0ac870633cd38b2a4072",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 옷을 찢지 말고 마음을 찢고 너희 하나님 여호와께로 돌아올찌어다 그는 은혜로우시며 자비로우시며 노하기를 더디하시며 인애가 크시사 뜻을 돌이켜 재앙을 내리지 아니하시나니"
+      ],
+      "raw_text_hashes": [
+        "40221536ad0f70f27b6b13f9865a818c61ca1e186fae0ac870633cd38b2a4072"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:14",
+      "sequence": 22326,
+      "chapter_label": "JOL 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Who knows? He may turn and relent, and leave a blessing behind him, even a meal offering and a drink offering to the LORD, your God.",
+      "ko": "주께서 혹시 마음과 뜻을 돌이키시고 그 뒤에 복을 끼치사 너희 하나님 여호와께 소제와 전제를 드리게 하지 아니하실는지 누가 알겠느냐",
+      "source_text_hash": "d2f9a847938126914eb7c8310062333c7ce1bc569b923c250f612007bba625d1",
+      "translation_text_hash": "0a7f3671b4e2efc3288ec6c7e3a838367ce52c65bdbbab8f36dd5e01d3bc7c77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 혹시 마음과 뜻을 돌이키시고 그 뒤에 복을 끼치사 너희 하나님 여호와께 소제와 전제를 드리게 하지 아니하실는지 누가 알겠느냐"
+      ],
+      "raw_text_hashes": [
+        "0a7f3671b4e2efc3288ec6c7e3a838367ce52c65bdbbab8f36dd5e01d3bc7c77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:15",
+      "sequence": 22327,
+      "chapter_label": "JOL 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Blow the trumpet in Zion! Sanctify a fast. Call a solemn assembly.",
+      "ko": "너희는 시온에서 나팔을 불어 거룩한 금식일을 정하고 성회를 선고하고",
+      "source_text_hash": "347d689af358e0402225675cee0e9456630b14023aee41e59dca1013b9725f2c",
+      "translation_text_hash": "33994ff741e6a72a099f4af9efc68062ef4c95758ab03a07c6d81120f967a4ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 시온에서 나팔을 불어 거룩한 금식일을 정하고 성회를 선고하고"
+      ],
+      "raw_text_hashes": [
+        "33994ff741e6a72a099f4af9efc68062ef4c95758ab03a07c6d81120f967a4ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:16",
+      "sequence": 22328,
+      "chapter_label": "JOL 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "Gather the people. Sanctify the assembly. Assemble the elders. Gather the children, and those who nurse from breasts. Let the bridegroom go out of his room, and the bride out of her chamber.",
+      "ko": "백성을 모아 그 회를 거룩케 하고 장로를 모으며 소아와 젖먹는 자를 모으며 신랑을 그 방에서 나오게 하며 신부도 그 골방에서 나오게 하고",
+      "source_text_hash": "7a83041b1bb09d193cf44f08cecc74107b14a848e0b1475e1eb214227083df47",
+      "translation_text_hash": "2a5bef62828ed8c788546f38518aa0be8ad465aeb2e74b019a135f5babae6ae7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성을 모아 그 회를 거룩케 하고 장로를 모으며 소아와 젖먹는 자를 모으며 신랑을 그 방에서 나오게 하며 신부도 그 골방에서 나오게 하고"
+      ],
+      "raw_text_hashes": [
+        "2a5bef62828ed8c788546f38518aa0be8ad465aeb2e74b019a135f5babae6ae7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:17",
+      "sequence": 22329,
+      "chapter_label": "JOL 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "Let the priests, the ministers of the LORD, weep between the porch and the altar, and let them say, “Spare your people, LORD, and don’t give your heritage to reproach, that the nations should rule over them. Why should they say among the peoples, ‘Where is their God?’”",
+      "ko": "여호와께 수종드는 제사장들은 낭실과 단 사이에서 울며 이르기를 여호와여 주의 백성을 긍휼히 여기소서 주의 기업으로 욕되게 하여 열국들로 그들을 관할하지 못하게 하옵소서 어찌하여 이방인으로 그들의 하나님이 어디 있느뇨 말하게 하겠나이까 할찌어다",
+      "source_text_hash": "5538e3fc4f35378e832f2d4a7cebfe870f886bbaf6b4269c92d81dd58e11d23b",
+      "translation_text_hash": "060291b10667b4764bffbc243f4f532bff2bf9506fb292ee58aceea772beb1c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 수종드는 제사장들은 낭실과 단 사이에서 울며 이르기를 여호와여 주의 백성을 긍휼히 여기소서 주의 기업으로 욕되게 하여 열국들로 그들을 관할하지 못하게 하옵소서 어찌하여 이방인으로 그들의 하나님이 어디 있느뇨 말하게 하겠나이까 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "060291b10667b4764bffbc243f4f532bff2bf9506fb292ee58aceea772beb1c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:18",
+      "sequence": 22330,
+      "chapter_label": "JOL 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Then the LORD was jealous for his land, and had pity on his people.",
+      "ko": "그 때에 여호와께서 자기 땅을 위하여 중심이 뜨거우시며 그 백성을 긍휼히 여기실 것이라",
+      "source_text_hash": "2cc5a947ce5f717c38b93a2f97123f6cfbdcabf630b46a254d2032f70a8d3e30",
+      "translation_text_hash": "ffd01614620e5a75d2ce4e5a872267d5379776d780443845c1dc7d97a9ec67fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호와께서 자기 땅을 위하여 중심이 뜨거우시며 그 백성을 긍휼히 여기실 것이라"
+      ],
+      "raw_text_hashes": [
+        "ffd01614620e5a75d2ce4e5a872267d5379776d780443845c1dc7d97a9ec67fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:19",
+      "sequence": 22331,
+      "chapter_label": "JOL 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD answered his people, “Behold, I will send you grain, new wine, and oil, and you will be satisfied with them; and I will no more make you a reproach among the nations.",
+      "ko": "여호와께서 그들에게 응답하여 이르시기를 내가 너희에게 곡식과 새 포도주와 기름을 주리니 너희가 이로 인하여 흡족하리라 내가 다시는 너희로 열국 중에서 욕을 당하지 않게 할 것이며",
+      "source_text_hash": "70486fbc26a86a022fef46b7168dac9f4d2f87f869c6d2aff126468b5524d363",
+      "translation_text_hash": "02801e47f3cfb94fb1b0956e0e378d1121e017cd13a3978b8f54ac6903c3ea51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그들에게 응답하여 이르시기를 내가 너희에게 곡식과 새 포도주와 기름을 주리니 너희가 이로 인하여 흡족하리라 내가 다시는 너희로 열국 중에서 욕을 당하지 않게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "02801e47f3cfb94fb1b0956e0e378d1121e017cd13a3978b8f54ac6903c3ea51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:20",
+      "sequence": 22332,
+      "chapter_label": "JOL 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "But I will remove the northern army far away from you, and will drive it into a barren and desolate land, its front into the eastern sea, and its back into the western sea; and its stench will come up, and its bad smell will rise.” Surely he has done great things.",
+      "ko": "내가 북편 군대를 너희에게서 멀리 떠나게 하여 메마르고 적막한 땅으로 쫓아내리니 그 전군은 동해로, 그 후군은 서해로 들어갈 것이라 상한 냄새가 일어나고 악취가 오르리니 이는 큰 일을 행하였음이니라 하시리라",
+      "source_text_hash": "af0871b0bafc5b8a4ed2e652200561ed2963f3df6afa7d168361aeaf66509858",
+      "translation_text_hash": "b2fc0b9a1f3b8494df0153772e5fafe0af53d3dc7037262c4d6c96b15f85bd2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 북편 군대를 너희에게서 멀리 떠나게 하여 메마르고 적막한 땅으로 쫓아내리니 그 전군은 동해로, 그 후군은 서해로 들어갈 것이라 상한 냄새가 일어나고 악취가 오르리니 이는 큰 일을 행하였음이니라 하시리라"
+      ],
+      "raw_text_hashes": [
+        "b2fc0b9a1f3b8494df0153772e5fafe0af53d3dc7037262c4d6c96b15f85bd2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:21",
+      "sequence": 22333,
+      "chapter_label": "JOL 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "Land, don’t be afraid. Be glad and rejoice, for the LORD has done great things.",
+      "ko": "땅이여 두려워 말고 기뻐하며 즐거워할찌어다 여호와께서 큰 일을 행하셨음이로다",
+      "source_text_hash": "2e2b21aca0799b1c6219ff4939810f25765bc7e5a98084d26234c64eeeafdb5f",
+      "translation_text_hash": "6c211581175a156aa8bc8329d537efc976d6435a0464c49cb57d76ae76d3db3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이여 두려워 말고 기뻐하며 즐거워할찌어다 여호와께서 큰 일을 행하셨음이로다"
+      ],
+      "raw_text_hashes": [
+        "6c211581175a156aa8bc8329d537efc976d6435a0464c49cb57d76ae76d3db3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:22",
+      "sequence": 22334,
+      "chapter_label": "JOL 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "Don’t be afraid, you animals of the field; for the pastures of the wilderness spring up, for the tree bears its fruit. The fig tree and the vine yield their strength.",
+      "ko": "들짐승들아 두려워 말찌어다 들의 풀이 싹이 나며 나무가 열매를 맺으며 무화과나무와 포도나무가 다 힘을 내는도다",
+      "source_text_hash": "faaf4b974e831dd4100a4310810dc4ff8e1306b50b36cc87e68381409c176ab7",
+      "translation_text_hash": "c5700124c3dc57a4b64104541836cb4337a68c032f92cd2598f38e63034869bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들짐승들아 두려워 말찌어다 들의 풀이 싹이 나며 나무가 열매를 맺으며 무화과나무와 포도나무가 다 힘을 내는도다"
+      ],
+      "raw_text_hashes": [
+        "c5700124c3dc57a4b64104541836cb4337a68c032f92cd2598f38e63034869bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:23",
+      "sequence": 22335,
+      "chapter_label": "JOL 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "“Be glad then, you children of Zion, and rejoice in the LORD, your God; for he gives you the early rain in just measure, and he causes the rain to come down for you, the early rain and the latter rain, as before.",
+      "ko": "시온의 자녀들아 너희는 너희 하나님 여호와로 인하여 기뻐하며 즐거워할찌어다 그가 너희를 위하여 비를 내리시되 이른 비를 너희에게 적당하게 주시리니 이른 비와 늦은 비가 전과 같을 것이라",
+      "source_text_hash": "3294fb06a11984bceb3826994a0cf3325d60f40742fc18b4a13c546e269a7731",
+      "translation_text_hash": "abcf0f0f2bfec46f5b327a32fbe7c78a9302263d8220e371215ed1335f33ead9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온의 자녀들아 너희는 너희 하나님 여호와로 인하여 기뻐하며 즐거워할찌어다 그가 너희를 위하여 비를 내리시되 이른 비를 너희에게 적당하게 주시리니 이른 비와 늦은 비가 전과 같을 것이라"
+      ],
+      "raw_text_hashes": [
+        "abcf0f0f2bfec46f5b327a32fbe7c78a9302263d8220e371215ed1335f33ead9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:24",
+      "sequence": 22336,
+      "chapter_label": "JOL 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "The threshing floors will be full of wheat, and the vats will overflow with new wine and oil.",
+      "ko": "마당에는 밀이 가득하고 독에는 새 포도주와 기름이 넘치리로다",
+      "source_text_hash": "3faeaa77031822681879f2f013e4d790cd8e327d3a644652527e0b2ab77ee51c",
+      "translation_text_hash": "3f6ee070060537370829681c42cdaa092202d765b48331a24ca00610a5592ef8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마당에는 밀이 가득하고 독에는 새 포도주와 기름이 넘치리로다"
+      ],
+      "raw_text_hashes": [
+        "3f6ee070060537370829681c42cdaa092202d765b48331a24ca00610a5592ef8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:25",
+      "sequence": 22337,
+      "chapter_label": "JOL 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "I will restore to you the years that the swarming locust has eaten, the great locust, the grasshopper, and the caterpillar, my great army, which I sent among you.",
+      "ko": "내가 전에 너희에게 보낸 큰 군대 곧 메뚜기와 늣과 황충과 팟종이의 먹은 햇수대로 너희에게 갚아주리니",
+      "source_text_hash": "dc416de046316e1b24797da5ddcca25f68f3662dcdf1b811a0015b3250b0428f",
+      "translation_text_hash": "27136326094a178a7ce13bd9db35a3e790d259cfb26e7e04831d63fb9d8b195e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전에 너희에게 보낸 큰 군대 곧 메뚜기와 늣과 황충과 팟종이의 먹은 햇수대로 너희에게 갚아주리니"
+      ],
+      "raw_text_hashes": [
+        "27136326094a178a7ce13bd9db35a3e790d259cfb26e7e04831d63fb9d8b195e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:26",
+      "sequence": 22338,
+      "chapter_label": "JOL 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "You will have plenty to eat and be satisfied, and will praise the name of the LORD, your God, who has dealt wondrously with you; and my people will never again be disappointed.",
+      "ko": "너희는 먹되 풍족히 먹고 너희를 기이히 대접한 너희 하나님 여호와의 이름을 찬송할 것이라 내 백성이 영영히 수치를 당치 아니하리로다",
+      "source_text_hash": "997800572a7436af5d88ccacaf54174e21a9bd98d6deab66a41a10e507a91335",
+      "translation_text_hash": "856f4ba71858a5033e1789dcfaa1df90c3dd292545b477dd189c24e00e5e9d74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 먹되 풍족히 먹고 너희를 기이히 대접한 너희 하나님 여호와의 이름을 찬송할 것이라 내 백성이 영영히 수치를 당치 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "856f4ba71858a5033e1789dcfaa1df90c3dd292545b477dd189c24e00e5e9d74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:27",
+      "sequence": 22339,
+      "chapter_label": "JOL 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "You will know that I am among Israel, and that I am the LORD, your God, and there is no one else; and my people will never again be disappointed.",
+      "ko": "그런즉 내가 이스라엘 가운데 있어 너희 하나님 여호와가 되고 다른 이가 없는줄을 너희가 알 것이라 내 백성이 영영히 수치를 당치 아니하리로다",
+      "source_text_hash": "3673ac3e99bee18d746d039f5b6b60da0fc8c9d7566483aa239efdc876ec38ec",
+      "translation_text_hash": "43b7b2a2a93234fb84ad14652d41e65ac1674b5cf90fa5fc733fce5dfb90891b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내가 이스라엘 가운데 있어 너희 하나님 여호와가 되고 다른 이가 없는줄을 너희가 알 것이라 내 백성이 영영히 수치를 당치 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "43b7b2a2a93234fb84ad14652d41e65ac1674b5cf90fa5fc733fce5dfb90891b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:28",
+      "sequence": 22340,
+      "chapter_label": "JOL 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "“It will happen afterward, that I will pour out my Spirit on all flesh; and your sons and your daughters will prophesy. Your old men will dream dreams. Your young men will see visions.",
+      "ko": "그 후에 내가 내 신을 만민에게 부어 주리니 너희 자녀들이 장래 일을 말할 것이며 너희 늙은이는 꿈을 꾸며 너희 젊은이는 이상을 볼 것이며",
+      "source_text_hash": "3012db22afeebe91c74acbdc7427a0105a37e92699b0b1fb6de9744b54d468bc",
+      "translation_text_hash": "1901c4b5ab972c86861728e72808b37ded405bf17ed60dd0b185a8249db8622b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 내가 내 신을 만민에게 부어 주리니 너희 자녀들이 장래 일을 말할 것이며 너희 늙은이는 꿈을 꾸며 너희 젊은이는 이상을 볼 것이며"
+      ],
+      "raw_text_hashes": [
+        "1901c4b5ab972c86861728e72808b37ded405bf17ed60dd0b185a8249db8622b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:29",
+      "sequence": 22341,
+      "chapter_label": "JOL 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "And also on the servants and on the handmaids in those days, I will pour out my Spirit.",
+      "ko": "그 때에 내가 또 내 신으로 남종과 여종에게 부어 줄 것이며",
+      "source_text_hash": "73e5455c40b3141cf30473fc3d7ed49d6f373d25cf2e8e27caf9b5cec207410d",
+      "translation_text_hash": "313ba8ae15d589f2d3282de59ce581b9fd12d61e6575ebd9b86651005f8a80a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 또 내 신으로 남종과 여종에게 부어 줄 것이며"
+      ],
+      "raw_text_hashes": [
+        "313ba8ae15d589f2d3282de59ce581b9fd12d61e6575ebd9b86651005f8a80a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:30",
+      "sequence": 22342,
+      "chapter_label": "JOL 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "I will show wonders in the heavens and on the earth: blood, fire, and pillars of smoke.",
+      "ko": "내가 이적을 하늘과 땅에 베풀리니 곧 피와 불과 연기 기둥이라",
+      "source_text_hash": "3593cdc0e5a14b58c7da96f0a996302d14b3dd6def309deb980e0aa3c8fb75b6",
+      "translation_text_hash": "1486466a8885be332163fb2b70d8baf4669a8c2f793f4066d0f8e834ab9e961d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이적을 하늘과 땅에 베풀리니 곧 피와 불과 연기 기둥이라"
+      ],
+      "raw_text_hashes": [
+        "1486466a8885be332163fb2b70d8baf4669a8c2f793f4066d0f8e834ab9e961d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:31",
+      "sequence": 22343,
+      "chapter_label": "JOL 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "The sun will be turned into darkness, and the moon into blood, before the great and terrible day of the LORD comes.",
+      "ko": "여호와의 크고 두려운 날이 이르기 전에 해가 어두워지고 달이 핏빛 같이 변하려니와",
+      "source_text_hash": "0ef5ead0e5e748aa45a954a3ed1742ad745236ce2ed3adafbc1e767239c2cca1",
+      "translation_text_hash": "845a78b5e3fff41bfeb0d9d41da78248fbe6e48b6d121fc715f4117449248448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 크고 두려운 날이 이르기 전에 해가 어두워지고 달이 핏빛 같이 변하려니와"
+      ],
+      "raw_text_hashes": [
+        "845a78b5e3fff41bfeb0d9d41da78248fbe6e48b6d121fc715f4117449248448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOL:2:32",
+      "sequence": 22344,
+      "chapter_label": "JOL 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOL",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOL",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "It will happen that whoever will call on the LORD’s name shall be saved; for in Mount Zion and in Jerusalem there will be those who escape, as the LORD has said, and among the remnant, those whom the LORD calls.",
+      "ko": "누구든지 여호와의 이름을 부르는 자는 구원을 얻으리니 이는 나 여호와의 말대로 시온산과 예루살렘에서 피할 자가 있을 것임이요 남은 자 중에 나 여호와의 부름을 받을 자가 있을 것임이니라",
+      "source_text_hash": "08203e8654b205dfd2502fab647f2c9bd46b944b48ec314ad6c98adaa8292a61",
+      "translation_text_hash": "98c27f52abc3372b3f3d8a70a63723a894ba3421dac7e6d4e0987fb7d8a78b04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 여호와의 이름을 부르는 자는 구원을 얻으리니 이는 나 여호와의 말대로 시온산과 예루살렘에서 피할 자가 있을 것임이요 남은 자 중에 나 여호와의 부름을 받을 자가 있을 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "98c27f52abc3372b3f3d8a70a63723a894ba3421dac7e6d4e0987fb7d8a78b04"
+      ]
+    }
+  ]
+}

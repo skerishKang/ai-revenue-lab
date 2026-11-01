@@ -200,9 +200,15 @@
     var busy = false;
     var initializingConnection = true;
 
-    function setStatus(text, tone) {
+    function setStatus(text, tone, code) {
       status.textContent = typeof text === "string" ? text : "";
       status.dataset.tone = tone || "info";
+      if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)) {
+        var note = doc.createElement("small");
+        note.className = "error-code";
+        note.textContent = "참고 코드: " + code;
+        status.appendChild(note);
+      }
       if (!initializingConnection && bridge && typeof bridge.toast === "function" && typeof text === "string" && text) {
         bridge.toast(text, 4200);
       }
@@ -237,11 +243,11 @@
       if (silent) return;
       if (!configured) {
         var readiness = describeConfiguration(opts);
-        var reason = readiness.invalid.length
-          ? "설정값 형식이 올바르지 않습니다: " + readiness.invalid.join(", ")
-          : "필요한 설정이 없습니다: " + readiness.blocking.join(", ");
-        setStatus("Google Drive 연결 설정이 준비되지 않았습니다. (" + reason + ") " +
-          "견적 작성과 PDF 다운로드는 그대로 사용할 수 있습니다.", "info");
+        setStatus((readiness.invalid.length
+          ? "Google Drive 연결 설정 형식이 올바르지 않습니다. "
+          : "Google Drive 연결 설정이 준비되지 않았습니다. ") +
+          "견적 작성과 PDF 다운로드는 그대로 사용할 수 있습니다.", "info",
+          readiness.invalid.length ? "drive_configuration_invalid" : "drive_configuration_missing");
       } else if (!connected) {
         setStatus("연결된 Google 계정이 없습니다. 저장·불러오기를 하려면 먼저 연결해 주세요.", "info");
       } else {
@@ -405,8 +411,8 @@
           if (pdf && pdf.code === "cgi_unsupported_rows") {
             setStatus("현재 CGI 견적서 PDF는 품목 최대 3개까지만 지원합니다. 품목을 3개 이하로 줄인 뒤 다시 저장해 주세요.", "error");
           } else {
-            setStatus("인증된 PDF를 만들지 못해 저장을 시작하지 않았습니다. 견적 내용을 확인해 주세요. (" +
-              ((pdf && pdf.code) || "pdf_source_unavailable") + ")", "error");
+            setStatus("PDF를 만들지 못해 저장을 시작하지 않았습니다. 견적 내용을 확인해 주세요.",
+              "error", (pdf && pdf.code) || "pdf_source_unavailable");
           }
           return;
         }
@@ -429,7 +435,7 @@
           setStatus(outcome.message, "warn");
         } else {
           retryButton.hidden = true;
-          setStatus(outcome.message || (outcome.code ? "저장에 실패했습니다. (" + outcome.code + ")" : "저장에 실패했습니다."), "error");
+          setStatus("저장에 실패했습니다. 잠시 후 다시 시도해 주세요.", "error", outcome.code);
         }
       } finally {
         busy = false;
@@ -468,7 +474,9 @@
           /* 내용이 바뀌었거나 유지된 파일을 확인할 수 없으면 이어서 저장하지 않는다. */
           pendingOutcome = null;
           retryButton.hidden = true;
-          setStatus(outcome.message || ("이어서 저장하지 못했습니다. (" + (outcome.code || "retry_failed") + ")"), "error");
+          setStatus(outcome.code === "pending_pair_stale"
+            ? "저장 도중 견적 내용이 바뀌었습니다. 이어서 저장하지 않고 새 견적서로 저장해야 합니다."
+            : "이어서 저장하지 못했습니다. 내용을 확인한 뒤 다시 시도해 주세요.", "error", outcome.code);
         }
       } finally {
         busy = false;
@@ -553,11 +561,13 @@
       if (superseded(epoch)) return;
       if (!opened.ok) {
         /* 승인 템플릿 권위가 확인되지 않으면 편집기에 적용하지 않는다. */
-        setStatus(opened.message || ("선택한 파일을 불러올 수 없습니다. (" + opened.code + ")"), "error");
+        setStatus(typeof opened.code === "string" && /^(template_|saved_skill_)/.test(opened.code)
+          ? "승인된 견적서 양식을 확인할 수 없어 다른 양식으로 자동 대체하지 않았습니다."
+          : "선택한 파일을 불러올 수 없습니다. 파일을 확인한 뒤 다시 시도해 주세요.", "error", opened.code);
         return;
       }
       if (!bridge || typeof bridge.applyImportedDraft !== "function") {
-        setStatus("불러온 견적을 안전하게 적용할 수 없습니다. (import_helper_unavailable)", "error");
+        setStatus("불러온 견적을 안전하게 적용할 수 없습니다. 잠시 후 다시 시도해 주세요.", "error", "import_helper_unavailable");
         return;
       }
 
@@ -610,7 +620,7 @@
       }
 
       if (typeof bridge.applyImportedDraft !== "function") {
-        setStatus("불러온 견적을 안전하게 적용할 수 없습니다. (import_helper_unavailable)", "error");
+        setStatus("불러온 견적을 안전하게 적용할 수 없습니다. 잠시 후 다시 시도해 주세요.", "error", "import_helper_unavailable");
         return;
       }
 
@@ -647,13 +657,12 @@
       var code = (result && result.code) || "apply_failed";
       if (result && result.preserved === true) {
         /* 복구가 지문으로 확인된 경우에만 보존을 주장한다. */
-        setStatus("견적을 불러오지 못했습니다. 작성 중이던 견적과 선택한 양식은 그대로 유지됩니다. (" +
-          code + ")", "error");
+        setStatus("견적을 불러오지 못했습니다. 작성 중이던 견적과 선택한 양식은 그대로 유지됩니다.", "error", code);
         return;
       }
       /* 복구가 확인되지 않았으면 보존을 주장하지 않는다. */
       setStatus("견적을 불러오지 못했고, 작성 중이던 내용을 복구했다고 확인하지 못했습니다. " +
-        "견적 내용과 선택된 양식을 확인해 주세요. (" + code + ")", "error");
+        "견적 내용과 선택된 양식을 확인해 주세요.", "error", code);
     }
 
     async function onConfirmOpen() {

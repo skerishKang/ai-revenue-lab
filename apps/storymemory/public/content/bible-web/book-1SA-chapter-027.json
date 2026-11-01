@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:027",
+  "unit_ordinal": 263,
+  "unit_label": "1SA 27",
+  "book_code": "1SA",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:27:1",
+      "sequence": 7932,
+      "chapter_label": "1SA 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "David said in his heart, “I will now perish one day by the hand of Saul. There is nothing better for me than that I should escape into the land of the Philistines; and Saul will despair of me, to seek me any more in all the borders of Israel. So I will escape out of his hand.”",
+      "ko": "다윗이 그 마음에 생각하기를 내가 후일에는 사울의 손에 망하리니 블레셋 사람의 땅으로 피하여 들어가는 것이 상책이로다 사울이 이스라엘 온 경내에서 나를 수색하다가 절망하리니 내가 그 손에서 벗어나리라 하고",
+      "source_text_hash": "81d0f54fa3b20f75a9058f55817cc45bc0bdb78af4a71d9b2b89486de80a2230",
+      "translation_text_hash": "4bc9132133c6e6ab69cf598ac34871c8347e01fa00870fb72b91f4bf161dd212",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 마음에 생각하기를 내가 후일에는 사울의 손에 망하리니 블레셋 사람의 땅으로 피하여 들어가는 것이 상책이로다 사울이 이스라엘 온 경내에서 나를 수색하다가 절망하리니 내가 그 손에서 벗어나리라 하고"
+      ],
+      "raw_text_hashes": [
+        "4bc9132133c6e6ab69cf598ac34871c8347e01fa00870fb72b91f4bf161dd212"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:2",
+      "sequence": 7933,
+      "chapter_label": "1SA 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "David arose and passed over, he and the six hundred men who were with him, to Achish the son of Maoch, king of Gath.",
+      "ko": "일어나 함께 있는 육백인으로 더불어 가드왕 마옥의 아들 아기스에게로 건너가니라",
+      "source_text_hash": "410e15b8faa9c679673432f653b7a85e3d1c947272a42309f551b35d6e58ba57",
+      "translation_text_hash": "bfdc7ab73c296682d6299657fcf577a5f497ee2e532f44ef735127ad6d7a5184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 함께 있는 육백인으로 더불어 가드왕 마옥의 아들 아기스에게로 건너가니라"
+      ],
+      "raw_text_hashes": [
+        "bfdc7ab73c296682d6299657fcf577a5f497ee2e532f44ef735127ad6d7a5184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:3",
+      "sequence": 7934,
+      "chapter_label": "1SA 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "David lived with Achish at Gath, he and his men, every man with his household, even David with his two wives, Ahinoam the Jezreelitess and Abigail the Carmelitess, Nabal’s wife.",
+      "ko": "다윗과 그의 사람들이 각기 가족을 거느리고 가드에서 아기스와 동거하였는데 다윗이 그 두 아내 이스르엘 여자 아히노암과 나발의 아내 되었던 갈멜 여자 아비가일과 함께 하였더니",
+      "source_text_hash": "5beb7de386d8f179c793e043a903e070291cdb2a76e0edd77fcb7c8ef47a4e45",
+      "translation_text_hash": "5dc18fbd4ad252ed53c21216ceddfea43ad6c582121798e9407c4bbd49fbe978",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 그의 사람들이 각기 가족을 거느리고 가드에서 아기스와 동거하였는데 다윗이 그 두 아내 이스르엘 여자 아히노암과 나발의 아내 되었던 갈멜 여자 아비가일과 함께 하였더니"
+      ],
+      "raw_text_hashes": [
+        "5dc18fbd4ad252ed53c21216ceddfea43ad6c582121798e9407c4bbd49fbe978"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:4",
+      "sequence": 7935,
+      "chapter_label": "1SA 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "Saul was told that David had fled to Gath, so he stopped looking for him.",
+      "ko": "다윗이 가드에 도망한 것을 혹이 사울에게 고하매 사울이 다시는 그를 수색하지 아니하니라",
+      "source_text_hash": "f789a0340c809efcd8e6fe34b35dd548d07766a37fb771d75c00d4377166740f",
+      "translation_text_hash": "357553536e67c3a217bf6c1378b03e297c52a93f63a56726048cd34fea71a4d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가드에 도망한 것을 혹이 사울에게 고하매 사울이 다시는 그를 수색하지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "357553536e67c3a217bf6c1378b03e297c52a93f63a56726048cd34fea71a4d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:5",
+      "sequence": 7936,
+      "chapter_label": "1SA 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "David said to Achish, “If now I have found favor in your eyes, let them give me a place in one of the cities in the country, that I may dwell there. For why should your servant dwell in the royal city with you?”",
+      "ko": "다윗이 아기스에게 이르되 내가 당신께 은혜를 받았거든 지방 성읍 중 한 곳을 주어 나로 거하게 하소서 당신의 종이 어찌 당신과 함께 왕도에 거하리이까",
+      "source_text_hash": "65446e9a405e1b46395e3d21bd86ac8c76e5e956e801cd093d84bd433bd91765",
+      "translation_text_hash": "e12d0894a1c3ca103e3c041506bb5cc87356ec644a009b50383bc9afb23e6867",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아기스에게 이르되 내가 당신께 은혜를 받았거든 지방 성읍 중 한 곳을 주어 나로 거하게 하소서 당신의 종이 어찌 당신과 함께 왕도에 거하리이까"
+      ],
+      "raw_text_hashes": [
+        "e12d0894a1c3ca103e3c041506bb5cc87356ec644a009b50383bc9afb23e6867"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:6",
+      "sequence": 7937,
+      "chapter_label": "1SA 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "Then Achish gave him Ziklag that day: therefore Ziklag belongs to the kings of Judah to this day.",
+      "ko": "아기스가 그 날에 시글락을 그에게 주었으므로 시글락이 오늘까지 유다 왕에게 속하니라",
+      "source_text_hash": "10bffddf4cb49dfa194350bf5a22db6f1af7ea1eefd2d06269119ba83d2a06ff",
+      "translation_text_hash": "36498fa701a95caf3b18565fe68b38ab9876a7d677e6537f7c831861d37d67c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아기스가 그 날에 시글락을 그에게 주었으므로 시글락이 오늘까지 유다 왕에게 속하니라"
+      ],
+      "raw_text_hashes": [
+        "36498fa701a95caf3b18565fe68b38ab9876a7d677e6537f7c831861d37d67c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:7",
+      "sequence": 7938,
+      "chapter_label": "1SA 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "The number of the days that David lived in the country of the Philistines was a full year and four months.",
+      "ko": "다윗이 블레셋 사람의 지방에 거한 날 수는 일년 넉달이었더라",
+      "source_text_hash": "0769dc13623eb7f3f6b4bc768a67d9684a5fef46e77a37e2db4a29284decef83",
+      "translation_text_hash": "6617920adb6d21c3ea2acb34ef83a099cecc9ffbf3526f2d1410e67e420ecc76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 블레셋 사람의 지방에 거한 날 수는 일년 넉달이었더라"
+      ],
+      "raw_text_hashes": [
+        "6617920adb6d21c3ea2acb34ef83a099cecc9ffbf3526f2d1410e67e420ecc76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:8",
+      "sequence": 7939,
+      "chapter_label": "1SA 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "David and his men went up and raided the Geshurites, the Girzites, and the Amalekites; for those were the inhabitants of the land who were of old, on the way to Shur, even to the land of Egypt.",
+      "ko": "다윗과 그의 사람들이 올라가서 그술 사람과 기르스 사람과 아말렉 사람을 침로하였으니 그들은 옛적부터 술과 애굽 땅으로 지나가는 지방의 거민이라",
+      "source_text_hash": "8e8068b302286098b1ab892a5217ca1b07cd3e4c22c75cd80b42d2ddcb05c271",
+      "translation_text_hash": "fcf3158bde3b8fdde68ac9a90b9afac2c1eac83672e36f45b5a05a9c8ab4dd06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 그의 사람들이 올라가서 그술 사람과 기르스 사람과 아말렉 사람을 침로하였으니 그들은 옛적부터 술과 애굽 땅으로 지나가는 지방의 거민이라"
+      ],
+      "raw_text_hashes": [
+        "fcf3158bde3b8fdde68ac9a90b9afac2c1eac83672e36f45b5a05a9c8ab4dd06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:9",
+      "sequence": 7940,
+      "chapter_label": "1SA 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "David struck the land, and saved no man or woman alive, and took away the sheep, the cattle, the donkeys, the camels, and the clothing. Then he returned, and came to Achish.",
+      "ko": "다윗이 그 땅을 쳐서 남녀를 살려두지 아니하고 양과 소와 나귀와 약대와 의복을 취하고 돌아와서 아기스에게 이르매",
+      "source_text_hash": "4732dfa2db92960e8ff161011ce5be7f6260e76a12ef2dd5ce3813fe6e6ec191",
+      "translation_text_hash": "74fddaad20847ae6cd08aa92929d2092ef9fbbd35b44716054fbe84cdbc74b36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 땅을 쳐서 남녀를 살려두지 아니하고 양과 소와 나귀와 약대와 의복을 취하고 돌아와서 아기스에게 이르매"
+      ],
+      "raw_text_hashes": [
+        "74fddaad20847ae6cd08aa92929d2092ef9fbbd35b44716054fbe84cdbc74b36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:10",
+      "sequence": 7941,
+      "chapter_label": "1SA 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "Achish said, “Against whom have you made a raid today?” David said, “Against the South of Judah, against the South of the Jerahmeelites, and against the South of the Kenites.”",
+      "ko": "아기스가 가로되 너희가 오늘은 누구를 침로하였느냐 다윗이 가로되 유다 남방과 여라무엘 사람의 남방과 겐 사람의 남방이니이다",
+      "source_text_hash": "d2fd9ac97efba05032243e02eb5ce58af95495d69b3c1786b093b0644d283173",
+      "translation_text_hash": "8c9a2be511045369398e47d23ed37ebf5c8b31c37ff763e6522b548813b550c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아기스가 가로되 너희가 오늘은 누구를 침로하였느냐 다윗이 가로되 유다 남방과 여라무엘 사람의 남방과 겐 사람의 남방이니이다"
+      ],
+      "raw_text_hashes": [
+        "8c9a2be511045369398e47d23ed37ebf5c8b31c37ff763e6522b548813b550c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:11",
+      "sequence": 7942,
+      "chapter_label": "1SA 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "David saved neither man nor woman alive to bring them to Gath, saying, “Lest they should tell about us, saying, ‘David did this, and this has been his way all the time he has lived in the country of the Philistines.’”",
+      "ko": "다윗이 그 남녀를 살려 가드로 데려가지 아니한 것은 그의 생각에 그들이 우리에게 대하여 이르기를 다윗의 행사가 이러하여 블레셋 사람의 지방에 거하는 동안에 이같이 행하는 습관이 있다 할까 두려워함이었더라",
+      "source_text_hash": "944d4a1f93eccbfc91613290cd0784fd951e4d9a4d16e6e1a7fb65174c963a05",
+      "translation_text_hash": "a01af6fe71376ea1e447d12298331390b210998cc1cc223865a111a200ed71b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 남녀를 살려 가드로 데려가지 아니한 것은 그의 생각에 그들이 우리에게 대하여 이르기를 다윗의 행사가 이러하여 블레셋 사람의 지방에 거하는 동안에 이같이 행하는 습관이 있다 할까 두려워함이었더라"
+      ],
+      "raw_text_hashes": [
+        "a01af6fe71376ea1e447d12298331390b210998cc1cc223865a111a200ed71b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:27:12",
+      "sequence": 7943,
+      "chapter_label": "1SA 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "Achish believed David, saying, “He has made his people Israel utterly to abhor him. Therefore he will be my servant forever.”",
+      "ko": "아기스가 다윗을 믿고 말하기를 다윗이 자기 백성 이스라엘에게 심히 미움을 받게 하였으니 그는 영영히 내 사역자가 되리라 하니라",
+      "source_text_hash": "adf13bb3245b4de7fcb6f6f40d9d8caf24abf6ba740132d7be1230c1bf0e3aa5",
+      "translation_text_hash": "c2e053198c1ede2be7cc2a2a76a5398602c79f06bbdddb98f481f94315321d00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아기스가 다윗을 믿고 말하기를 다윗이 자기 백성 이스라엘에게 심히 미움을 받게 하였으니 그는 영영히 내 사역자가 되리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "c2e053198c1ede2be7cc2a2a76a5398602c79f06bbdddb98f481f94315321d00"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:043",
+  "unit_ordinal": 788,
+  "unit_label": "JER 43",
+  "book_code": "JER",
+  "chapter_number": 43,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:43:1",
+      "sequence": 19999,
+      "chapter_label": "JER 43",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 1
+        }
+      ],
+      "en": "When Jeremiah had finished speaking to all the people all the words of the LORD their God, with which the LORD their God had sent him to them, even all these words,",
+      "ko": "예레미야가 모든 백성에게 그들의 하나님 여호와의 말씀 곧 그들의 하나님 여호와께서 자기를 보내사 그들에게 이르게 하신 이 모든 말씀을 다 말하매",
+      "source_text_hash": "bcd7436ea49f3df8fce26d3cd25f107bdabb0bb391cc6cf69f6e7c1ca76f7dcf",
+      "translation_text_hash": "dae0a1ac49a4ab7c839b32f9e55371407d23c0efc0c7756b91a91fe2e0e9a6fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 모든 백성에게 그들의 하나님 여호와의 말씀 곧 그들의 하나님 여호와께서 자기를 보내사 그들에게 이르게 하신 이 모든 말씀을 다 말하매"
+      ],
+      "raw_text_hashes": [
+        "dae0a1ac49a4ab7c839b32f9e55371407d23c0efc0c7756b91a91fe2e0e9a6fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:2",
+      "sequence": 20000,
+      "chapter_label": "JER 43",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 2
+        }
+      ],
+      "en": "then Azariah the son of Hoshaiah, Johanan the son of Kareah, and all the proud men spoke, saying to Jeremiah, “You speak falsely. The LORD our God has not sent you to say, ‘You shall not go into Egypt to live there;’",
+      "ko": "호사야의 아들 아사랴와 가레아의 아들 요하난과 및 모든 교만한 자가 예레미야에게 말하여 가로되 네가 거짓을 말하는도다 우리 하나님 여호와께서는 너희는 애굽에 거하려고 그리로 가지 말라고 너를 보내어 말하게 하지 아니하셨느니라",
+      "source_text_hash": "a0c78eb79634aa721afb83e4e34c8e18322c3605f053eaf4b8485a74c50246ce",
+      "translation_text_hash": "14366c1a1371180f0aee8c7ab668b023750a75c12c54278032a300193f741587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호사야의 아들 아사랴와 가레아의 아들 요하난과 및 모든 교만한 자가 예레미야에게 말하여 가로되 네가 거짓을 말하는도다 우리 하나님 여호와께서는 너희는 애굽에 거하려고 그리로 가지 말라고 너를 보내어 말하게 하지 아니하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "14366c1a1371180f0aee8c7ab668b023750a75c12c54278032a300193f741587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:3",
+      "sequence": 20001,
+      "chapter_label": "JER 43",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 3
+        }
+      ],
+      "en": "but Baruch the son of Neriah has turned you against us, to deliver us into the hand of the Chaldeans, that they may put us to death or carry us away captive to Babylon.”",
+      "ko": "이는 네리야의 아들 바룩이 너를 꼬드겨서 우리를 대적하여 갈대아인의 손에 붙여 죽이며 바벨론으로 잡아가게 하려 함이니라 하고",
+      "source_text_hash": "9847983b3b2c20b38fa8a592dd3fdc79abb308cc802d8253f7be9f8be55a9269",
+      "translation_text_hash": "7b54b8b1ecdf7e6192d94a52bd4cba2f773411d4361a67980f0af480cd92adc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 네리야의 아들 바룩이 너를 꼬드겨서 우리를 대적하여 갈대아인의 손에 붙여 죽이며 바벨론으로 잡아가게 하려 함이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "7b54b8b1ecdf7e6192d94a52bd4cba2f773411d4361a67980f0af480cd92adc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:4",
+      "sequence": 20002,
+      "chapter_label": "JER 43",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 4
+        }
+      ],
+      "en": "So Johanan the son of Kareah, and all the captains of the forces, and all the people, didn’t obey the LORD’s voice, to dwell in the land of Judah.",
+      "ko": "이에 가레아의 아들 요하난과 모든 군대장관과 모든 백성이 유다 땅에 거하라 하시는 여호와의 목소리를 청종치 아니하고",
+      "source_text_hash": "a9fafb1fc418ac0c550b1407d9f71290ae292856d5867ff48987f95f7bc0da2e",
+      "translation_text_hash": "b907bdd040a3348f92240dc8135ba1e497c5fc79b58619e7912b7bdc0e09bbcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 가레아의 아들 요하난과 모든 군대장관과 모든 백성이 유다 땅에 거하라 하시는 여호와의 목소리를 청종치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "b907bdd040a3348f92240dc8135ba1e497c5fc79b58619e7912b7bdc0e09bbcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:5",
+      "sequence": 20003,
+      "chapter_label": "JER 43",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 5
+        }
+      ],
+      "en": "But Johanan the son of Kareah and all the captains of the forces took all the remnant of Judah, who had returned from all the nations where they had been driven, to live in the land of Judah—",
+      "ko": "가레아의 아들 요하난과 모든 군대장관이 유다의 남은 자 곧 쫓겨났던 열방 중에서 유다 땅에 거하려하여 돌아온 자",
+      "source_text_hash": "935d1e4bfc7566192cfb52817f0fdb2180dadd1faf3712bb1c92d32e4e2c7595",
+      "translation_text_hash": "7c8b2aa6b849862c51773a32ec5aa7a12a19ac2fa6efc35639a7032602e59f5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가레아의 아들 요하난과 모든 군대장관이 유다의 남은 자 곧 쫓겨났던 열방 중에서 유다 땅에 거하려하여 돌아온 자"
+      ],
+      "raw_text_hashes": [
+        "7c8b2aa6b849862c51773a32ec5aa7a12a19ac2fa6efc35639a7032602e59f5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:6",
+      "sequence": 20004,
+      "chapter_label": "JER 43",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 6
+        }
+      ],
+      "en": "the men, the women, the children, the king’s daughters, and every person who Nebuzaradan the captain of the guard had left with Gedaliah the son of Ahikam, the son of Shaphan; and Jeremiah the prophet, and Baruch the son of Neriah.",
+      "ko": "곧 남자와 여자와 유아와 왕의 딸들과 시위대장 느부사라단이 사반의 손자 아히감의 아들 그다랴에게 넘겨 둔 모든 사람과 선지자 예레미야와 네리야의 아들 바룩을 영솔하고",
+      "source_text_hash": "3b2f6126413aa8f1f1dee2bbdfbf0b6d3e85151d63d54bea9188b0ba48198ce2",
+      "translation_text_hash": "eb1ca9a625dce09efb694a8ecc4cdda2cf53d3c2713f5981fedc7c5e23209995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 남자와 여자와 유아와 왕의 딸들과 시위대장 느부사라단이 사반의 손자 아히감의 아들 그다랴에게 넘겨 둔 모든 사람과 선지자 예레미야와 네리야의 아들 바룩을 영솔하고"
+      ],
+      "raw_text_hashes": [
+        "eb1ca9a625dce09efb694a8ecc4cdda2cf53d3c2713f5981fedc7c5e23209995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:7",
+      "sequence": 20005,
+      "chapter_label": "JER 43",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 7
+        }
+      ],
+      "en": "They came into the land of Egypt, for they didn’t obey the LORD’s voice; and they came to Tahpanhes.",
+      "ko": "애굽 땅에 들어가 다바네스에 이르렀으니 그들이 여호와의 목소리를 청종치 아니함이 이러하였더라",
+      "source_text_hash": "261cdb79a25bc2bff36ae460fa2466cef32987311f79e608f5865eb4fdb696be",
+      "translation_text_hash": "0df458dc8ba9e742c877e865740dfcc3619cf4b52859c19109f0f0e6470e2817",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 땅에 들어가 다바네스에 이르렀으니 그들이 여호와의 목소리를 청종치 아니함이 이러하였더라"
+      ],
+      "raw_text_hashes": [
+        "0df458dc8ba9e742c877e865740dfcc3619cf4b52859c19109f0f0e6470e2817"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:8",
+      "sequence": 20006,
+      "chapter_label": "JER 43",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 8
+        }
+      ],
+      "en": "Then the LORD’s word came to Jeremiah in Tahpanhes, saying,",
+      "ko": "다바네스에서 여호와의 말씀이 예레미야에게 임하여 가라사대",
+      "source_text_hash": "d85e03c133b6d6b1b7292bb3d14a685f0997c825f591d68ac70df73b26028820",
+      "translation_text_hash": "572efc24e65c5a13282d4aee95ace31a8bbf0f7d2e714c6bc80edd3193c972ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다바네스에서 여호와의 말씀이 예레미야에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "572efc24e65c5a13282d4aee95ace31a8bbf0f7d2e714c6bc80edd3193c972ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:9",
+      "sequence": 20007,
+      "chapter_label": "JER 43",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 9
+        }
+      ],
+      "en": "“Take great stones in your hand and hide them in mortar in the brick work which is at the entry of Pharaoh’s house in Tahpanhes, in the sight of the men of Judah.",
+      "ko": "너는 유다 사람의 목전에서 네 손으로 큰 돌들을 가져다가 다바네스 바로의 집 어귀의 벽돌 깔린 곳에 진흙으로 감추고",
+      "source_text_hash": "afde30eab0d870cef61159fde56658e5865140bb2780211fb5c67dd59951bde6",
+      "translation_text_hash": "34ca28ec23adbeb0c1d3d241867b263879d3ead88a8e73163e9da796d4259328",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 유다 사람의 목전에서 네 손으로 큰 돌들을 가져다가 다바네스 바로의 집 어귀의 벽돌 깔린 곳에 진흙으로 감추고"
+      ],
+      "raw_text_hashes": [
+        "34ca28ec23adbeb0c1d3d241867b263879d3ead88a8e73163e9da796d4259328"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:10",
+      "sequence": 20008,
+      "chapter_label": "JER 43",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 10
+        }
+      ],
+      "en": "Tell them, the LORD of Armies, the God of Israel, says: ‘Behold, I will send and take Nebuchadnezzar the king of Babylon, my servant, and will set his throne on these stones that I have hidden; and he will spread his royal pavilion over them.",
+      "ko": "그들에게 이르기를 만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 보라 내가 내 종 바벨론 왕 느부갓네살을 불러오리니 그가 그 보좌를 내가 감추게 한 이 돌위에 두고 또 그 화려한 큰 장막을 그 위에 치리라",
+      "source_text_hash": "ec8f592fbc2bf388e764dae8aca48bbb1aaf050636a557d300ccec57524d3ff5",
+      "translation_text_hash": "0cda3c87dcf9460c35788d79122202222cc55e69884d2f5b3241749ce3881af4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르기를 만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 보라 내가 내 종 바벨론 왕 느부갓네살을 불러오리니 그가 그 보좌를 내가 감추게 한 이 돌위에 두고 또 그 화려한 큰 장막을 그 위에 치리라"
+      ],
+      "raw_text_hashes": [
+        "0cda3c87dcf9460c35788d79122202222cc55e69884d2f5b3241749ce3881af4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:11",
+      "sequence": 20009,
+      "chapter_label": "JER 43",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 11
+        }
+      ],
+      "en": "He will come, and will strike the land of Egypt; such as are for death will be put to death, and such as are for captivity to captivity, and such as are for the sword to the sword.",
+      "ko": "그가 와서 애굽 땅을 치고 죽일 자는 죽이고 사로잡을 자는 사로잡고 칼로 칠 자는 칼로 칠 것이라",
+      "source_text_hash": "c8fa0d3b5984eb253c8a3bddb55e78b7766db27308d22ea61f52f5bc25b837f3",
+      "translation_text_hash": "cad5fbc304f4e6563accf0f6adf98ee91e491b0cb4c406370c3fb963c8cfdf91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 와서 애굽 땅을 치고 죽일 자는 죽이고 사로잡을 자는 사로잡고 칼로 칠 자는 칼로 칠 것이라"
+      ],
+      "raw_text_hashes": [
+        "cad5fbc304f4e6563accf0f6adf98ee91e491b0cb4c406370c3fb963c8cfdf91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:12",
+      "sequence": 20010,
+      "chapter_label": "JER 43",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 12
+        }
+      ],
+      "en": "I will kindle a fire in the houses of the gods of Egypt. He will burn them, and carry them away captive. He will array himself with the land of Egypt, as a shepherd puts on his garment; and he will go out from there in peace.",
+      "ko": "내가 애굽 신들의 집에 불을 놓을 것인즉 느부갓네살이 그들을 불사르며 그들을 사로잡을 것이요 목자가 그 몸에 옷을 두름 같이 애굽 땅을 자기 몸에 두르고 평안히 그곳을 떠날 것이며",
+      "source_text_hash": "9f19da5ac384a24bb76d0bdd7acc8308ade93da39f714a0360846c10c204ce02",
+      "translation_text_hash": "5b36812c48f61f1a7bc7984fbf381b9f5976a4bf6d073a8aac001358a5acd586",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽 신들의 집에 불을 놓을 것인즉 느부갓네살이 그들을 불사르며 그들을 사로잡을 것이요 목자가 그 몸에 옷을 두름 같이 애굽 땅을 자기 몸에 두르고 평안히 그곳을 떠날 것이며"
+      ],
+      "raw_text_hashes": [
+        "5b36812c48f61f1a7bc7984fbf381b9f5976a4bf6d073a8aac001358a5acd586"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:43:13",
+      "sequence": 20011,
+      "chapter_label": "JER 43",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 43,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 43,
+          "verse": 13
+        }
+      ],
+      "en": "He will also break the pillars of Beth Shemesh that is in the land of Egypt; and he will burn the houses of the gods of Egypt with fire.’”",
+      "ko": "그가 또 애굽 땅 벧세메스의 주상들을 깨뜨리고 애굽 신들의 집을 불사르리라 하셨다 할찌니라",
+      "source_text_hash": "2242c9d9bcab15ff75c4270979789b5000648c81f86f1c356104bdea239fe815",
+      "translation_text_hash": "b1a24006457a9220a35a431f557954d15f1d7ed88d656d5e2878446389d5271b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 애굽 땅 벧세메스의 주상들을 깨뜨리고 애굽 신들의 집을 불사르리라 하셨다 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "b1a24006457a9220a35a431f557954d15f1d7ed88d656d5e2878446389d5271b"
+      ]
+    }
+  ]
+}

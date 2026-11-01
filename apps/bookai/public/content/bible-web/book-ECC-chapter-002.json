@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:002",
+  "unit_ordinal": 661,
+  "unit_label": "ECC 2",
+  "book_code": "ECC",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:2:1",
+      "sequence": 17335,
+      "chapter_label": "ECC 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "I said in my heart, “Come now, I will test you with mirth; therefore enjoy pleasure;” and behold, this also was vanity.",
+      "ko": "나는 내 마음에 이르기를 자, 내가 시험적으로 너를 즐겁게 하리니 너는 낙을 누리라 하였으나 본즉 이것도 헛되도다",
+      "source_text_hash": "670e50bf7fd07785bf3a3dc632ed8a0a4f05ba3ee62bd13a0c96705de2c2bc4d",
+      "translation_text_hash": "2d015aff1c30eb5eb2ce5598a03a8d2a0d2bc234a63ce9eaa61ed7b861713d8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 내 마음에 이르기를 자, 내가 시험적으로 너를 즐겁게 하리니 너는 낙을 누리라 하였으나 본즉 이것도 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "2d015aff1c30eb5eb2ce5598a03a8d2a0d2bc234a63ce9eaa61ed7b861713d8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:2",
+      "sequence": 17336,
+      "chapter_label": "ECC 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "I said of laughter, “It is foolishness;” and of mirth, “What does it accomplish?”",
+      "ko": "내가 웃음을 논하여 이르기를 미친 것이라 하였고 희락을 논하여 이르기를 저가 무엇을 하는가 하였노라",
+      "source_text_hash": "191e6264e93f76c3688dfed1dae61b59040c985f0133709760970ea560e806e8",
+      "translation_text_hash": "5aefc791e8db5b52f7696430e50284a520147bc7eb28c53b351105364b139940",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 웃음을 논하여 이르기를 미친 것이라 하였고 희락을 논하여 이르기를 저가 무엇을 하는가 하였노라"
+      ],
+      "raw_text_hashes": [
+        "5aefc791e8db5b52f7696430e50284a520147bc7eb28c53b351105364b139940"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:3",
+      "sequence": 17337,
+      "chapter_label": "ECC 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "I searched in my heart how to cheer my flesh with wine, my heart yet guiding me with wisdom, and how to lay hold of folly, until I might see what it was good for the sons of men that they should do under heaven all the days of their lives.",
+      "ko": "내 마음에 궁구하기를 내가 어떻게 하여야 내 마음에 지혜로 다스림을 받으면서 술로 내 육신을 즐겁게 할까 또 어떻게 하여야 어리석음을 취하여서 천하 인생의 종신토록 생활함에 어떤 것이 쾌락인지 알까 하여",
+      "source_text_hash": "85d482ef50ed6bfe04c21421039386d0028116f74354ec8b676afeeae928c751",
+      "translation_text_hash": "8e6ffa8d1a919cd968237cdb8372e49cff1a40c5140dcf667997ee7287deeebe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음에 궁구하기를 내가 어떻게 하여야 내 마음에 지혜로 다스림을 받으면서 술로 내 육신을 즐겁게 할까 또 어떻게 하여야 어리석음을 취하여서 천하 인생의 종신토록 생활함에 어떤 것이 쾌락인지 알까 하여"
+      ],
+      "raw_text_hashes": [
+        "8e6ffa8d1a919cd968237cdb8372e49cff1a40c5140dcf667997ee7287deeebe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:4",
+      "sequence": 17338,
+      "chapter_label": "ECC 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "I made myself great works. I built myself houses. I planted myself vineyards.",
+      "ko": "나의 사업을 크게 하였노라 내가 나를 위하여 집들을 지으며 포도원을 심으며",
+      "source_text_hash": "8f9c11a5ae25d1627d3137512412a3ccec1a7fa3c4899ffc6c7bef8203e95ebd",
+      "translation_text_hash": "59af8d2dd1a2f1168db558e540b43f5c9e070b54d29d3a30f3919bc025795c64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사업을 크게 하였노라 내가 나를 위하여 집들을 지으며 포도원을 심으며"
+      ],
+      "raw_text_hashes": [
+        "59af8d2dd1a2f1168db558e540b43f5c9e070b54d29d3a30f3919bc025795c64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:5",
+      "sequence": 17339,
+      "chapter_label": "ECC 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "I made myself gardens and parks, and I planted trees in them of all kinds of fruit.",
+      "ko": "여러 동산과 과원을 만들고 그 가운데 각종 과목을 심었으며",
+      "source_text_hash": "1b70e8d64869f315749654fe9be6f49f2435aa48f2d08265d3999cf89b88f4ec",
+      "translation_text_hash": "6c256a9f40521a865111fbd191e0c3189bd997b6eb23ce2bb9826184f454113c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 동산과 과원을 만들고 그 가운데 각종 과목을 심었으며"
+      ],
+      "raw_text_hashes": [
+        "6c256a9f40521a865111fbd191e0c3189bd997b6eb23ce2bb9826184f454113c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:6",
+      "sequence": 17340,
+      "chapter_label": "ECC 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "I made myself pools of water, to water the forest where trees were grown.",
+      "ko": "수목을 기르는 삼림에 물주기 위하여 못을 팠으며",
+      "source_text_hash": "58677390eca0f9ef8703b3a3677faeaea1fbcf52493f2ef61eeea759652a86f2",
+      "translation_text_hash": "fd87de431335fc5a6381ef566035640e252656adcdbc7b5f2ec3b26878033353",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수목을 기르는 삼림에 물주기 위하여 못을 팠으며"
+      ],
+      "raw_text_hashes": [
+        "fd87de431335fc5a6381ef566035640e252656adcdbc7b5f2ec3b26878033353"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:7",
+      "sequence": 17341,
+      "chapter_label": "ECC 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "I bought male servants and female servants, and had servants born in my house. I also had great possessions of herds and flocks, above all who were before me in Jerusalem.",
+      "ko": "노비는 사기도 하였고 집에서 나게도 하였으며 나보다 먼저 예루살렘에 있던 모든 자보다도 소와 양떼의 소유를 많게 하였으며",
+      "source_text_hash": "4ad3197590e96a502ff0aeece38a3f66e8ce9a8e3c89aa275ce0f12543aaf8bb",
+      "translation_text_hash": "3d2677e4fcf390bf248d4b6ca3e9c0288ebde7dfba3ca1963801bfe730ec6e73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노비는 사기도 하였고 집에서 나게도 하였으며 나보다 먼저 예루살렘에 있던 모든 자보다도 소와 양떼의 소유를 많게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "3d2677e4fcf390bf248d4b6ca3e9c0288ebde7dfba3ca1963801bfe730ec6e73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:8",
+      "sequence": 17342,
+      "chapter_label": "ECC 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "I also gathered silver and gold for myself, and the treasure of kings and of the provinces. I got myself male and female singers, and the delights of the sons of men: musical instruments of all sorts.",
+      "ko": "은금과 왕들의 보배와 여러 도의 보배를 쌓고 또 노래하는 남녀와 인생들의 기뻐하는 처와 첩들을 많이 두었노라",
+      "source_text_hash": "27a7cfe0adb121ec2063a838e529a0d98d0a4d73818e2ac0310c39920fec5ea4",
+      "translation_text_hash": "e9fbe20a981703602fed2cae999c0c83ee71ff32484a5b5ed31ef9935eafdc33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은금과 왕들의 보배와 여러 도의 보배를 쌓고 또 노래하는 남녀와 인생들의 기뻐하는 처와 첩들을 많이 두었노라"
+      ],
+      "raw_text_hashes": [
+        "e9fbe20a981703602fed2cae999c0c83ee71ff32484a5b5ed31ef9935eafdc33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:9",
+      "sequence": 17343,
+      "chapter_label": "ECC 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "So I was great, and increased more than all who were before me in Jerusalem. My wisdom also remained with me.",
+      "ko": "내가 이같이 창성하여 나보다 먼저 예루살렘에 있던 모든 자보다 지나고 내 지혜도 내게 여전하여",
+      "source_text_hash": "2698ecfc2967305720b656741b94548752a9304ce8aa86a22bf4e2e7bcb61e86",
+      "translation_text_hash": "a7f05f6fec614379397e8a0a87832996504af2f59f2a22aa04ddc76fbf1a108f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이같이 창성하여 나보다 먼저 예루살렘에 있던 모든 자보다 지나고 내 지혜도 내게 여전하여"
+      ],
+      "raw_text_hashes": [
+        "a7f05f6fec614379397e8a0a87832996504af2f59f2a22aa04ddc76fbf1a108f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:10",
+      "sequence": 17344,
+      "chapter_label": "ECC 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Whatever my eyes desired, I didn’t keep from them. I didn’t withhold my heart from any joy, for my heart rejoiced because of all my labor, and this was my portion from all my labor.",
+      "ko": "무엇이든지 내 눈이 원하는 것을 내가 금하지 아니하며 무엇이든지 내 마음이 즐거워하는 것을 내가 막지 아니하였으니 이는 나의 모든 수고를 내 마음이 기뻐하였음이라 이것이 나의 모든 수고로 말미암아 얻은 분복이로다",
+      "source_text_hash": "ef10e92bf66078ec50ec01b5d49820ee612ac0d16494e38248d0313f0a0411d1",
+      "translation_text_hash": "487f1ab357d6ad58dccc15c1315a8183bed2ec89151cac5dd9fafda71cf82026",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무엇이든지 내 눈이 원하는 것을 내가 금하지 아니하며 무엇이든지 내 마음이 즐거워하는 것을 내가 막지 아니하였으니 이는 나의 모든 수고를 내 마음이 기뻐하였음이라 이것이 나의 모든 수고로 말미암아 얻은 분복이로다"
+      ],
+      "raw_text_hashes": [
+        "487f1ab357d6ad58dccc15c1315a8183bed2ec89151cac5dd9fafda71cf82026"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:11",
+      "sequence": 17345,
+      "chapter_label": "ECC 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Then I looked at all the works that my hands had worked, and at the labor that I had labored to do; and behold, all was vanity and a chasing after wind, and there was no profit under the sun.",
+      "ko": "그 후에 본즉 내 손으로 한 모든 일과 수고한 모든 수고가 다 헛되어 바람을 잡으려는 것이며 해 아래서 무익한 것이로다",
+      "source_text_hash": "1a7a3e7ecc2930da2d1047c35fc9f08dddefaf69c78eba158282ab197d936903",
+      "translation_text_hash": "995ff5e799be771b2e11e186dffef08828afd080b41c7eca13f79b48bbf10d44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 본즉 내 손으로 한 모든 일과 수고한 모든 수고가 다 헛되어 바람을 잡으려는 것이며 해 아래서 무익한 것이로다"
+      ],
+      "raw_text_hashes": [
+        "995ff5e799be771b2e11e186dffef08828afd080b41c7eca13f79b48bbf10d44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:12",
+      "sequence": 17346,
+      "chapter_label": "ECC 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "I turned myself to consider wisdom, madness, and folly; for what can the king’s successor do? Just that which has been done long ago.",
+      "ko": "내가 돌이켜 지혜와 망령됨과 어리석음을 보았나니 왕의 뒤에 오는 자는 무슨 일을 행할꼬 행한지 오랜 일일 뿐이리라",
+      "source_text_hash": "cb9f95d1aa039d568d0ad119d6990266802a57ff5fb863b40e45134f39ea1b30",
+      "translation_text_hash": "556da634e59c78531f9ba8f888a07b4b4b6dd1a8273817ababecf9a1d081b997",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 돌이켜 지혜와 망령됨과 어리석음을 보았나니 왕의 뒤에 오는 자는 무슨 일을 행할꼬 행한지 오랜 일일 뿐이리라"
+      ],
+      "raw_text_hashes": [
+        "556da634e59c78531f9ba8f888a07b4b4b6dd1a8273817ababecf9a1d081b997"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:13",
+      "sequence": 17347,
+      "chapter_label": "ECC 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Then I saw that wisdom excels folly, as far as light excels darkness.",
+      "ko": "내가 보건대 지혜가 우매보다 뛰어남이 빛이 어두움보다 뛰어남 같도다",
+      "source_text_hash": "6e30ba5fb20dc0043de54c466b1f0108468aaac2376b1188a2ae8348ef0d3f06",
+      "translation_text_hash": "c4a0e8e2af05fe9a979d4bed2018328aad9e35331dadab148c3b80b28bd7b99a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보건대 지혜가 우매보다 뛰어남이 빛이 어두움보다 뛰어남 같도다"
+      ],
+      "raw_text_hashes": [
+        "c4a0e8e2af05fe9a979d4bed2018328aad9e35331dadab148c3b80b28bd7b99a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:14",
+      "sequence": 17348,
+      "chapter_label": "ECC 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "The wise man’s eyes are in his head, and the fool walks in darkness—and yet I perceived that one event happens to them all.",
+      "ko": "지혜자는 눈이 밝고 우매자는 어두움에 다니거니와 이들의 당하는 일이 일반인 줄을 내가 깨닫고",
+      "source_text_hash": "6e3ad29c68bd3e7c8501bed5cff4ce6fe05bb26d058d5d188b1d1b11d5f7acb4",
+      "translation_text_hash": "22a3c80024c8d6f0879fff432e9d3d74ceacb6a3aefd902782433c9e44bd091b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜자는 눈이 밝고 우매자는 어두움에 다니거니와 이들의 당하는 일이 일반인 줄을 내가 깨닫고"
+      ],
+      "raw_text_hashes": [
+        "22a3c80024c8d6f0879fff432e9d3d74ceacb6a3aefd902782433c9e44bd091b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:15",
+      "sequence": 17349,
+      "chapter_label": "ECC 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Then I said in my heart, “As it happens to the fool, so will it happen even to me; and why was I then more wise?” Then I said in my heart that this also is vanity.",
+      "ko": "심중에 이르기를 우매자의 당한 것을 나도 당하리니 내가 어찌하여 지혜가 더하였던고 이에 내가 심중에 이르기를 이것도 헛되도다",
+      "source_text_hash": "0b687f851ca9f725985f6d3178b70f34e875a54f9de1cc31b0b92648b3847f8c",
+      "translation_text_hash": "897555a56b09830108f5b4b42d2db60d6d40740e10b20109c3832352f16c8391",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심중에 이르기를 우매자의 당한 것을 나도 당하리니 내가 어찌하여 지혜가 더하였던고 이에 내가 심중에 이르기를 이것도 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "897555a56b09830108f5b4b42d2db60d6d40740e10b20109c3832352f16c8391"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:16",
+      "sequence": 17350,
+      "chapter_label": "ECC 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "For of the wise man, even as of the fool, there is no memory forever, since in the days to come all will have been long forgotten. Indeed, the wise man must die just like the fool!",
+      "ko": "지혜자나 우매자나 영원토록 기억함을 얻지 못하나니 후일에는 다 잊어버린지 오랠 것임이라 오호라 지혜자의 죽음이 우매자의 죽음과 일반이로다",
+      "source_text_hash": "5b271aef838be9cb92eb8cfe91e89b0cc526e0d2ad91f7808312446e7c086c73",
+      "translation_text_hash": "5350734f6db8d7c86235955a2a9197481a8aed045c559eae9be315fc88fb7e99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜자나 우매자나 영원토록 기억함을 얻지 못하나니 후일에는 다 잊어버린지 오랠 것임이라 오호라 지혜자의 죽음이 우매자의 죽음과 일반이로다"
+      ],
+      "raw_text_hashes": [
+        "5350734f6db8d7c86235955a2a9197481a8aed045c559eae9be315fc88fb7e99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:17",
+      "sequence": 17351,
+      "chapter_label": "ECC 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "So I hated life, because the work that is worked under the sun was grievous to me; for all is vanity and a chasing after wind.",
+      "ko": "이러므로 내가 사는 것을 한하였노니 이는 해 아래서 하는 일이 내게 괴로움이요 다 헛되어 바람을 잡으려는 것임이로다",
+      "source_text_hash": "9512af953cadee5d1884304ecc7d83a06ae77505237621d4426d302192f81499",
+      "translation_text_hash": "de5ddc193d2caf30e5adf11269e207389c1ca75df79f867828a11adad71a2c0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 사는 것을 한하였노니 이는 해 아래서 하는 일이 내게 괴로움이요 다 헛되어 바람을 잡으려는 것임이로다"
+      ],
+      "raw_text_hashes": [
+        "de5ddc193d2caf30e5adf11269e207389c1ca75df79f867828a11adad71a2c0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:18",
+      "sequence": 17352,
+      "chapter_label": "ECC 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "I hated all my labor in which I labored under the sun, because I must leave it to the man who comes after me.",
+      "ko": "내가 해 아래서 나의 수고한 모든 수고를 한하였노니 이는 내 뒤를 이을 자에게 끼치게 됨이라",
+      "source_text_hash": "cab7a65eb3e298018887100cb9342afc7ef6d3c6a90d99c81a2f1e5631ad39c7",
+      "translation_text_hash": "6d2e57ed54b5e61ddfd170301bf8a1dae195af96f02bbebacef037c6a141a219",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 해 아래서 나의 수고한 모든 수고를 한하였노니 이는 내 뒤를 이을 자에게 끼치게 됨이라"
+      ],
+      "raw_text_hashes": [
+        "6d2e57ed54b5e61ddfd170301bf8a1dae195af96f02bbebacef037c6a141a219"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:19",
+      "sequence": 17353,
+      "chapter_label": "ECC 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Who knows whether he will be a wise man or a fool? Yet he will have rule over all of my labor in which I have labored, and in which I have shown myself wise under the sun. This also is vanity.",
+      "ko": "그 사람이 지혜자일찌 우매자일찌야 누가 알랴마는 내가 해 아래서 내 지혜를 나타내어 수고한 모든 결과를 저가 다 관리하리니 이것도 헛되도다",
+      "source_text_hash": "07416e87ae14be64c76e6651e362a6e49bb5184662f4a83665982759e7afdc63",
+      "translation_text_hash": "8cb990f3d7c9944b8aa2bfbc25af5d30e8c9304bac0eb96f7dd7f8052aae8872",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 지혜자일찌 우매자일찌야 누가 알랴마는 내가 해 아래서 내 지혜를 나타내어 수고한 모든 결과를 저가 다 관리하리니 이것도 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "8cb990f3d7c9944b8aa2bfbc25af5d30e8c9304bac0eb96f7dd7f8052aae8872"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:20",
+      "sequence": 17354,
+      "chapter_label": "ECC 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Therefore I began to cause my heart to despair concerning all the labor in which I had labored under the sun.",
+      "ko": "이러므로 내가 해 아래서 수고한 모든 수고에 대하여 도리어 마음으로 실망케 하였도다",
+      "source_text_hash": "d48e145ef4eee0667f54cc71eb360fd301f53818ff684f7260d24e9d895399cc",
+      "translation_text_hash": "e09c4b3b970d890888500bb0ee7466bfdc9e5de2f453dc0666b3b9fb6685d572",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 해 아래서 수고한 모든 수고에 대하여 도리어 마음으로 실망케 하였도다"
+      ],
+      "raw_text_hashes": [
+        "e09c4b3b970d890888500bb0ee7466bfdc9e5de2f453dc0666b3b9fb6685d572"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:21",
+      "sequence": 17355,
+      "chapter_label": "ECC 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "For there is a man whose labor is with wisdom, with knowledge, and with skillfulness; yet he shall leave it for his portion to a man who has not labored for it. This also is vanity and a great evil.",
+      "ko": "어떤 사람은 그 지혜와 지식과 재주를 써서 수고하였어도 그 얻은 것을 수고하지 아니한 자에게 업으로 끼치리니 이것도 헛된 것이라 큰 해로다",
+      "source_text_hash": "3dda93b17af13ee2d5a29ffe5c66605c8d47e9ba87bd0af3ce83daecbaac2469",
+      "translation_text_hash": "bbca63753a3f9281934243b330f835f87a1503ce47ef95b944183f0c9856acb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람은 그 지혜와 지식과 재주를 써서 수고하였어도 그 얻은 것을 수고하지 아니한 자에게 업으로 끼치리니 이것도 헛된 것이라 큰 해로다"
+      ],
+      "raw_text_hashes": [
+        "bbca63753a3f9281934243b330f835f87a1503ce47ef95b944183f0c9856acb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:22",
+      "sequence": 17356,
+      "chapter_label": "ECC 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "For what does a man have of all his labor and of the striving of his heart, in which he labors under the sun?",
+      "ko": "사람이 해 아래서 수고하는 모든 수고와 마음에 애쓰는 것으로 소득이 무엇이랴",
+      "source_text_hash": "ce9dedd0a6390fff34e44491fdaafeecc0845c7e71a4fd241760cbb07e63a42d",
+      "translation_text_hash": "14b439166f4eaa9e26c190c11e0d396b4254adb416cecd829308d2103dab33b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 해 아래서 수고하는 모든 수고와 마음에 애쓰는 것으로 소득이 무엇이랴"
+      ],
+      "raw_text_hashes": [
+        "14b439166f4eaa9e26c190c11e0d396b4254adb416cecd829308d2103dab33b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:23",
+      "sequence": 17357,
+      "chapter_label": "ECC 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "For all his days are sorrows, and his travail is grief; yes, even in the night his heart takes no rest. This also is vanity.",
+      "ko": "일평생에 근심하며 수고하는 것이 슬픔 뿐이라 그 마음이 밤에도 쉬지 못하나니 이것도 헛되도다",
+      "source_text_hash": "f233b53eb3f05ab1911c43633c153f46efeef2ee4a8ee4774396021d0bc1bef1",
+      "translation_text_hash": "6380acc87cc513ec9e403b63fe54048ef621065fd8ad7c47641d7d8801294593",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일평생에 근심하며 수고하는 것이 슬픔 뿐이라 그 마음이 밤에도 쉬지 못하나니 이것도 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "6380acc87cc513ec9e403b63fe54048ef621065fd8ad7c47641d7d8801294593"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:24",
+      "sequence": 17358,
+      "chapter_label": "ECC 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "There is nothing better for a man than that he should eat and drink, and make his soul enjoy good in his labor. This also I saw, that it is from the hand of God.",
+      "ko": "사람이 먹고 마시며 수고하는 가운데서 심령으로 낙을 누리게 하는 것보다 나은 것이 없나니 내가 이것도 본즉 하나님의 손에서 나는 것이로다",
+      "source_text_hash": "a1e60bc3c1a084c7220fe98aa87dd09044c6de4a34ad21e5f98a62b099561070",
+      "translation_text_hash": "c9652306648411600c13cd8a134fbd6f8897d5ef1020d501bcb30dda41a5f4b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 먹고 마시며 수고하는 가운데서 심령으로 낙을 누리게 하는 것보다 나은 것이 없나니 내가 이것도 본즉 하나님의 손에서 나는 것이로다"
+      ],
+      "raw_text_hashes": [
+        "c9652306648411600c13cd8a134fbd6f8897d5ef1020d501bcb30dda41a5f4b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:25",
+      "sequence": 17359,
+      "chapter_label": "ECC 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "For who can eat, or who can have enjoyment, more than I?",
+      "ko": "먹고 즐거워하는 일에 누가 나보다 승하랴",
+      "source_text_hash": "1c2e2007d880d79f554e2d1e5455061fa24d9617556cd57393e18a2f5919bae7",
+      "translation_text_hash": "553ce043eb6419872cb1b356ee0708718c0d7ae1001b995269cfad667e44a7ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먹고 즐거워하는 일에 누가 나보다 승하랴"
+      ],
+      "raw_text_hashes": [
+        "553ce043eb6419872cb1b356ee0708718c0d7ae1001b995269cfad667e44a7ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:2:26",
+      "sequence": 17360,
+      "chapter_label": "ECC 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "ECC",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "For to the man who pleases him, God gives wisdom, knowledge, and joy; but to the sinner he gives travail, to gather and to heap up, that he may give to him who pleases God. This also is vanity and a chasing after wind.",
+      "ko": "하나님이 그 기뻐하시는 자에게는 지혜와 지식과 희락을 주시나 죄인에게는 노고를 주시고 저로 모아 쌓게 하사 하나님을 기뻐하는 자에게 주게 하시나니 이것도 헛되어 바람을 잡으려는 것이로다",
+      "source_text_hash": "6d8fdc17349fab78914c868ab7e075f93ba3e012c6577bc32cdc84a179b051cd",
+      "translation_text_hash": "06373537e0ef0532836cc32410f65d91565fffada2e15e1a74e475122cfd038c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 기뻐하시는 자에게는 지혜와 지식과 희락을 주시나 죄인에게는 노고를 주시고 저로 모아 쌓게 하사 하나님을 기뻐하는 자에게 주게 하시나니 이것도 헛되어 바람을 잡으려는 것이로다"
+      ],
+      "raw_text_hashes": [
+        "06373537e0ef0532836cc32410f65d91565fffada2e15e1a74e475122cfd038c"
+      ]
+    }
+  ]
+}

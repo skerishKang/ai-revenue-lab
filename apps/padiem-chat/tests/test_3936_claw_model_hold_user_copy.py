@@ -144,8 +144,9 @@ def test_hold_copy_is_selected_only_after_a_verified_terminal_outranks_it():
     assert "showVerifiedClawRecovery(verifiedClawRecovery.state());" in outrank
     assert "return true;" in outrank
     assert "const message = clawGeneralRequest" in frame
-    # Standalone Chat still renders its own bounded server copy; Claw does not.
-    assert "data.error.message" in frame[frame.index("const message"):]
+    # Standalone Chat maps the code to safe copy; Claw keeps its own refusal copy.
+    assert "chatTransport.streamErrorMessage(data)" in frame[frame.index("const message"):]
+    assert "data.error.message" not in frame[frame.index("const message"):]
 
 
 def test_closed_map_holds_only_the_public_refusal_code():

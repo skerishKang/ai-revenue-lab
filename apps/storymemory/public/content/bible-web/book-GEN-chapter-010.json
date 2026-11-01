@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:010",
+  "unit_ordinal": 10,
+  "unit_label": "GEN 10",
+  "book_code": "GEN",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:10:1",
+      "sequence": 236,
+      "chapter_label": "GEN 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Now this is the history of the generations of the sons of Noah and of Shem, Ham, and Japheth. Sons were born to them after the flood.",
+      "ko": "노아의 아들 셈과 함과 야벳의 후예는 이러하니라 홍수 후에 그들이 아들들을 낳았으니",
+      "source_text_hash": "3ff83bf82c323e6c994cb23cb61dabad18b84aee0266250a4cbe4b3f862af272",
+      "translation_text_hash": "0e61f052e0a58c69c298f1e6dd1bfa9555afac321b00c611b459adcb1e375805",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아의 아들 셈과 함과 야벳의 후예는 이러하니라 홍수 후에 그들이 아들들을 낳았으니"
+      ],
+      "raw_text_hashes": [
+        "0e61f052e0a58c69c298f1e6dd1bfa9555afac321b00c611b459adcb1e375805"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:2",
+      "sequence": 237,
+      "chapter_label": "GEN 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "The sons of Japheth were: Gomer, Magog, Madai, Javan, Tubal, Meshech, and Tiras.",
+      "ko": "야벳의 아들은 고멜과 마곡과 마대와 야완과 두발과 메섹과 디라스요",
+      "source_text_hash": "aab77e8b764ea825475139c1d893e51666b6efaeff0131559c579c337108a01c",
+      "translation_text_hash": "8ef8a2fe1a8a63269ee710fe7276becfb7beaff974e31cf77f009be739a8bba4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야벳의 아들은 고멜과 마곡과 마대와 야완과 두발과 메섹과 디라스요"
+      ],
+      "raw_text_hashes": [
+        "8ef8a2fe1a8a63269ee710fe7276becfb7beaff974e31cf77f009be739a8bba4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:3",
+      "sequence": 238,
+      "chapter_label": "GEN 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "The sons of Gomer were: Ashkenaz, Riphath, and Togarmah.",
+      "ko": "고멜의 아들은 아스그나스와 리밧과 도갈마요",
+      "source_text_hash": "dd947e33ebd59e3c2b1eec5145ed72f9daea944f64f6defde846c73800e3c842",
+      "translation_text_hash": "5db46d0a1c89db7fc217e1f59126acb91f63acb05b44241da982b64324e76560",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고멜의 아들은 아스그나스와 리밧과 도갈마요"
+      ],
+      "raw_text_hashes": [
+        "5db46d0a1c89db7fc217e1f59126acb91f63acb05b44241da982b64324e76560"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:4",
+      "sequence": 239,
+      "chapter_label": "GEN 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "The sons of Javan were: Elishah, Tarshish, Kittim, and Dodanim.",
+      "ko": "야완의 아들은 엘리사와 달시스와 깃딤과 도다님이라",
+      "source_text_hash": "574959c83da47405be2a0cf87a0ea2f7d0f1f7c471a20a8c83b79723d0a729e1",
+      "translation_text_hash": "076abf7ace47ca675a1dad16d4e712ada89ea7393d6486fe9f3ee828f0939603",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야완의 아들은 엘리사와 달시스와 깃딤과 도다님이라"
+      ],
+      "raw_text_hashes": [
+        "076abf7ace47ca675a1dad16d4e712ada89ea7393d6486fe9f3ee828f0939603"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:5",
+      "sequence": 240,
+      "chapter_label": "GEN 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "Of these were the islands of the nations divided in their lands, everyone after his language, after their families, in their nations.",
+      "ko": "이들로부터 여러 나라 백성으로 나뉘어서 각기 방언과 종족과 나라대로 바닷가의 땅에 머물렀더라",
+      "source_text_hash": "de25417db7de5cebf116af3de7039df6dde84b2de188581e257c14ff2cb120b8",
+      "translation_text_hash": "658dd5150baaad9c95ba391bc5117f18d21943a085fc585270b9e05bf07a9711",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들로부터 여러 나라 백성으로 나뉘어서 각기 방언과 종족과 나라대로 바닷가의 땅에 머물렀더라"
+      ],
+      "raw_text_hashes": [
+        "658dd5150baaad9c95ba391bc5117f18d21943a085fc585270b9e05bf07a9711"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:6",
+      "sequence": 241,
+      "chapter_label": "GEN 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "The sons of Ham were: Cush, Mizraim, Put, and Canaan.",
+      "ko": "함의 아들은 구스와 미스라임과 붓과 가나안이요",
+      "source_text_hash": "3b3a5230facf7d0fe7b8f32c0158b1bec1ed25f5ae18b755f7dd3ae4c4d46c61",
+      "translation_text_hash": "ec31247b833cb6bcb9055b2f1c95d51814e7c7c8438dfb056c2f5b234b354870",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "함의 아들은 구스와 미스라임과 붓과 가나안이요"
+      ],
+      "raw_text_hashes": [
+        "ec31247b833cb6bcb9055b2f1c95d51814e7c7c8438dfb056c2f5b234b354870"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:7",
+      "sequence": 242,
+      "chapter_label": "GEN 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "The sons of Cush were: Seba, Havilah, Sabtah, Raamah, and Sabteca. The sons of Raamah were: Sheba and Dedan.",
+      "ko": "구스의 아들은 스바와 하윌라와 삽다와 라아마와 삽드가요 라아마의 아들은 스바와 드단이며",
+      "source_text_hash": "73361c2c68b5be16bf6f3416b89f862dd176cea44a39658d256eb9497fd510bb",
+      "translation_text_hash": "cdedff0c4c6a73398462647fdf0439db88fc4d7bdc91b0669a92c0192ff19061",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구스의 아들은 스바와 하윌라와 삽다와 라아마와 삽드가요 라아마의 아들은 스바와 드단이며"
+      ],
+      "raw_text_hashes": [
+        "cdedff0c4c6a73398462647fdf0439db88fc4d7bdc91b0669a92c0192ff19061"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:8",
+      "sequence": 243,
+      "chapter_label": "GEN 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "Cush became the father of Nimrod. He began to be a mighty one on the earth.",
+      "ko": "구스가 또 니므롯을 낳았으니 그는 세상에 처음 영걸이라",
+      "source_text_hash": "be92b02366a0ba3e89f3d007e553a450eb07baae037fe68f40d9e6209cd4de51",
+      "translation_text_hash": "a9ff85775bb99fc1059657c0146b25271bcd297c422ed8cca1f7f70c74bfc91f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구스가 또 니므롯을 낳았으니 그는 세상에 처음 영걸이라"
+      ],
+      "raw_text_hashes": [
+        "a9ff85775bb99fc1059657c0146b25271bcd297c422ed8cca1f7f70c74bfc91f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:9",
+      "sequence": 244,
+      "chapter_label": "GEN 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "He was a mighty hunter before the LORD. Therefore it is said, “like Nimrod, a mighty hunter before the LORD”.",
+      "ko": "그가 여호와 앞에서 특이한 사냥군이 되었으므로 속담에 이르기를 아무는 여호와 앞에 니므롯 같은 특이한 사냥군이로다 하더라",
+      "source_text_hash": "b7a8ddb01c447b18c54ba9b07342d0cd06ce6897ab1cadfa4ca802984b8cb950",
+      "translation_text_hash": "2a793d3b08ea6765a181816644e900a4d2e1401df8016af5398bcefcf12d2cd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 여호와 앞에서 특이한 사냥군이 되었으므로 속담에 이르기를 아무는 여호와 앞에 니므롯 같은 특이한 사냥군이로다 하더라"
+      ],
+      "raw_text_hashes": [
+        "2a793d3b08ea6765a181816644e900a4d2e1401df8016af5398bcefcf12d2cd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:10",
+      "sequence": 245,
+      "chapter_label": "GEN 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "The beginning of his kingdom was Babel, Erech, Accad, and Calneh, in the land of Shinar.",
+      "ko": "그의 나라는 시날 땅의 바벨과 에렉과 악갓과 갈레에서 시작되었으며",
+      "source_text_hash": "c91e794ff4f3f2413531a7bb6f662f339332ea45b85a13b7e9b1ab2f3f7f1cd9",
+      "translation_text_hash": "c355bcb7bdad06cb1586178dc22fc746249a5a8747b66a4734508faa915b645d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 나라는 시날 땅의 바벨과 에렉과 악갓과 갈레에서 시작되었으며"
+      ],
+      "raw_text_hashes": [
+        "c355bcb7bdad06cb1586178dc22fc746249a5a8747b66a4734508faa915b645d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:11",
+      "sequence": 246,
+      "chapter_label": "GEN 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "Out of that land he went into Assyria, and built Nineveh, Rehoboth Ir, Calah,",
+      "ko": "그가 그 땅에서 앗수르로 나아가 니느웨와 르호보딜과 갈라와",
+      "source_text_hash": "7667135b4fd999704b94308d4e3411a07daf1d2f0b408a99890de62dc68395aa",
+      "translation_text_hash": "5e3f56667599a5ce47719a1e34a1b43db3b8af49d3b765ec90fd0e191fc57391",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 땅에서 앗수르로 나아가 니느웨와 르호보딜과 갈라와"
+      ],
+      "raw_text_hashes": [
+        "5e3f56667599a5ce47719a1e34a1b43db3b8af49d3b765ec90fd0e191fc57391"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:12",
+      "sequence": 247,
+      "chapter_label": "GEN 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "and Resen between Nineveh and the great city Calah.",
+      "ko": "및 니느웨와 갈라 사이의 레센(이는 큰 성이라)을 건축하였으며",
+      "source_text_hash": "a6a86ee4f64759c1a3872a53cd7565a81451df06ca90ae8740f2d62595cddf6f",
+      "translation_text_hash": "e5dbf9eef1c59e68b1d5cd28a6627560630c96ef61b513a9a43d0c5d648c025e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "및 니느웨와 갈라 사이의 레센(이는 큰 성이라)을 건축하였으며"
+      ],
+      "raw_text_hashes": [
+        "e5dbf9eef1c59e68b1d5cd28a6627560630c96ef61b513a9a43d0c5d648c025e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:13",
+      "sequence": 248,
+      "chapter_label": "GEN 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "Mizraim became the father of Ludim, Anamim, Lehabim, Naphtuhim,",
+      "ko": "미스라임은 루딤과 아나밈과 르하빔과 납두힘과",
+      "source_text_hash": "c08632e42e1bc590b8333030c3789dab5eaae947f47210e0ca0a78d8ed3128b3",
+      "translation_text_hash": "aef27d79ac73fc3ff6da23cfe2edec647f175ea15812b40512767ebfa9c24259",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미스라임은 루딤과 아나밈과 르하빔과 납두힘과"
+      ],
+      "raw_text_hashes": [
+        "aef27d79ac73fc3ff6da23cfe2edec647f175ea15812b40512767ebfa9c24259"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:14",
+      "sequence": 249,
+      "chapter_label": "GEN 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Pathrusim, Casluhim (which the Philistines descended from), and Caphtorim.",
+      "ko": "바드루심과 가슬루힘과 갑도림을 낳았더라 (블레셋이 가슬루힘에게서 나왔더라)",
+      "source_text_hash": "f53831c167aac5891817788391bfc9cf793857dcc289415d979ca410da68b3c5",
+      "translation_text_hash": "d9f51d87eb3f8bad83d0bb79a04df2698bf139fc6d20b870828d322083b9e488",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바드루심과 가슬루힘과 갑도림을 낳았더라 (블레셋이 가슬루힘에게서 나왔더라)"
+      ],
+      "raw_text_hashes": [
+        "d9f51d87eb3f8bad83d0bb79a04df2698bf139fc6d20b870828d322083b9e488"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:15",
+      "sequence": 250,
+      "chapter_label": "GEN 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "Canaan became the father of Sidon (his firstborn), Heth,",
+      "ko": "가나안은 장자 시돈과 헷을 낳고",
+      "source_text_hash": "64b1c8ae02e8c9f3a034e1328c31c540b7f88c5b37eea5a3a76ab8a09ef6f66e",
+      "translation_text_hash": "f1ac01a7f43c3bbaf49b773b4981ccb593b2b11ab5941937a490bbe1796101d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가나안은 장자 시돈과 헷을 낳고"
+      ],
+      "raw_text_hashes": [
+        "f1ac01a7f43c3bbaf49b773b4981ccb593b2b11ab5941937a490bbe1796101d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:16",
+      "sequence": 251,
+      "chapter_label": "GEN 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "the Jebusites, the Amorites, the Girgashites,",
+      "ko": "또 여부스 족속과 아모리 족속과 기르가스 족속과",
+      "source_text_hash": "78983da30a90bb908e29518a341643fab45c04e4d11dc8aa2e2e9ea0ed431fd9",
+      "translation_text_hash": "fc09f0eb20b8b75fd935322f12745e280e898ee7cf6d83c25c36ed60e87142a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여부스 족속과 아모리 족속과 기르가스 족속과"
+      ],
+      "raw_text_hashes": [
+        "fc09f0eb20b8b75fd935322f12745e280e898ee7cf6d83c25c36ed60e87142a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:17",
+      "sequence": 252,
+      "chapter_label": "GEN 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "the Hivites, the Arkites, the Sinites,",
+      "ko": "히위 족속과 알가 족속과 신 족속과",
+      "source_text_hash": "e05cfc5dfcae6edca43549def3971fc467f85c214857db70bc9e3cf1c51837ed",
+      "translation_text_hash": "0e797c4aada42923f2de2ef61d58dc1d56fcb91e9d3ae771b8cbe4a50867e713",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히위 족속과 알가 족속과 신 족속과"
+      ],
+      "raw_text_hashes": [
+        "0e797c4aada42923f2de2ef61d58dc1d56fcb91e9d3ae771b8cbe4a50867e713"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:18",
+      "sequence": 253,
+      "chapter_label": "GEN 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "the Arvadites, the Zemarites, and the Hamathites. Afterward the families of the Canaanites were spread abroad.",
+      "ko": "아르왓 족속과 스말 족속과 하맛 족속의 조상을 낳았더니 이 후로 가나안 자손의 족속이 흩어져 처하였더라",
+      "source_text_hash": "e3accf7c812b120f301e530e0b52c0d3949cd3a466981781cf49a856a15d52e0",
+      "translation_text_hash": "8d7fae4e6bd7892c2210faf0fb2ba66c3a048a3070cc6642d9a6934101def9a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아르왓 족속과 스말 족속과 하맛 족속의 조상을 낳았더니 이 후로 가나안 자손의 족속이 흩어져 처하였더라"
+      ],
+      "raw_text_hashes": [
+        "8d7fae4e6bd7892c2210faf0fb2ba66c3a048a3070cc6642d9a6934101def9a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:19",
+      "sequence": 254,
+      "chapter_label": "GEN 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "The border of the Canaanites was from Sidon—as you go toward Gerar—to Gaza—as you go toward Sodom, Gomorrah, Admah, and Zeboiim—to Lasha.",
+      "ko": "가나안의 지경은 시돈에서부터 그랄을 지나 가사까지와 소돔과 고모라와 아드마와 스보임을 지나 라사까지였더라",
+      "source_text_hash": "a06260f335e3a2bdb03d2cf6695320faa934cef4448a008c26a184f2f0c5e0e3",
+      "translation_text_hash": "63c0015624b2dfeb4b1d4ce6e283c0938799c7a6dc426f96d62c4e140fe6f93b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가나안의 지경은 시돈에서부터 그랄을 지나 가사까지와 소돔과 고모라와 아드마와 스보임을 지나 라사까지였더라"
+      ],
+      "raw_text_hashes": [
+        "63c0015624b2dfeb4b1d4ce6e283c0938799c7a6dc426f96d62c4e140fe6f93b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:20",
+      "sequence": 255,
+      "chapter_label": "GEN 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "These are the sons of Ham, after their families, according to their languages, in their lands and their nations.",
+      "ko": "이들은 함의 자손이라 각기 족속과 방언과 지방과 나라대로이었더라",
+      "source_text_hash": "207d7cbadca3e6b41fa10da12542e45319be061faf6e3cc63c729d7fd487c2a1",
+      "translation_text_hash": "aba2bb5f434aaf4601a7580c291bd4bf664fff1b3fd30b158ecb908bd66c7fc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 함의 자손이라 각기 족속과 방언과 지방과 나라대로이었더라"
+      ],
+      "raw_text_hashes": [
+        "aba2bb5f434aaf4601a7580c291bd4bf664fff1b3fd30b158ecb908bd66c7fc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:21",
+      "sequence": 256,
+      "chapter_label": "GEN 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "Children were also born to Shem (the elder brother of Japheth), the father of all the children of Eber.",
+      "ko": "셈은 에벨 온 자손의 조상이요 야벳의 형이라 그에게도 자녀가 출생하였으니",
+      "source_text_hash": "40db5feecd14c4b4fe20d8d13b4d74d2295912b1aa6743500b9b45094c3de94a",
+      "translation_text_hash": "79b653f77dd5c4761fc5edb20cc7931156a8905485f79b7874fd1673912b6235",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셈은 에벨 온 자손의 조상이요 야벳의 형이라 그에게도 자녀가 출생하였으니"
+      ],
+      "raw_text_hashes": [
+        "79b653f77dd5c4761fc5edb20cc7931156a8905485f79b7874fd1673912b6235"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:22",
+      "sequence": 257,
+      "chapter_label": "GEN 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "The sons of Shem were: Elam, Asshur, Arpachshad, Lud, and Aram.",
+      "ko": "셈의 아들은 엘람과 앗수르와 아르박삿과 룻과 아람이요",
+      "source_text_hash": "ba434431af9475b748b8a8f02475fb025ac2718fdbc438d15c3dbdf6f4801130",
+      "translation_text_hash": "d3b43abed5c2f9cf4796e328e5f0fa1125cf0ddd92785009d6ec73b368755036",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셈의 아들은 엘람과 앗수르와 아르박삿과 룻과 아람이요"
+      ],
+      "raw_text_hashes": [
+        "d3b43abed5c2f9cf4796e328e5f0fa1125cf0ddd92785009d6ec73b368755036"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:23",
+      "sequence": 258,
+      "chapter_label": "GEN 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "The sons of Aram were: Uz, Hul, Gether, and Mash.",
+      "ko": "아람의 아들은 우스와 훌과 게델과 마스며",
+      "source_text_hash": "f54d760173bbd9e2a5dda4ba8f8d276435a9b3e9981e448c58395777f299fe8a",
+      "translation_text_hash": "df64d88bb17dd1dd0e9997b34013fa26d31c4e66a3ae4dec670c7db6c8c06b4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람의 아들은 우스와 훌과 게델과 마스며"
+      ],
+      "raw_text_hashes": [
+        "df64d88bb17dd1dd0e9997b34013fa26d31c4e66a3ae4dec670c7db6c8c06b4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:24",
+      "sequence": 259,
+      "chapter_label": "GEN 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "Arpachshad became the father of Shelah. Shelah became the father of Eber.",
+      "ko": "아르박삿은 셀라를 낳고 셀라는 에벨을 낳았으며",
+      "source_text_hash": "44cd2084f7ebbf960f38776a89c38c4a6e59c46e39d691b0ba482f758f5dcc9e",
+      "translation_text_hash": "5d417de697f88f5587e9c85ccb1763f153c9edd3fdc8824ce9dc33f263365165",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아르박삿은 셀라를 낳고 셀라는 에벨을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "5d417de697f88f5587e9c85ccb1763f153c9edd3fdc8824ce9dc33f263365165"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:25",
+      "sequence": 260,
+      "chapter_label": "GEN 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "To Eber were born two sons. The name of the one was Peleg, for in his days the earth was divided. His brother’s name was Joktan.",
+      "ko": "에벨은 두 아들을 낳고 하나의 이름을 벨렉이라 하였으니 그 때에 세상이 나뉘었음이요 벨렉의 아우의 이름은 욕단이며",
+      "source_text_hash": "7075b03a7ce34c3480f36caec381c830cd55362ec21158fc419de4e66c36af70",
+      "translation_text_hash": "5e1167a6a438624c9b4118e0be27a558193cd23a61dda47ec0c6b59200735f02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에벨은 두 아들을 낳고 하나의 이름을 벨렉이라 하였으니 그 때에 세상이 나뉘었음이요 벨렉의 아우의 이름은 욕단이며"
+      ],
+      "raw_text_hashes": [
+        "5e1167a6a438624c9b4118e0be27a558193cd23a61dda47ec0c6b59200735f02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:26",
+      "sequence": 261,
+      "chapter_label": "GEN 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "Joktan became the father of Almodad, Sheleph, Hazarmaveth, Jerah,",
+      "ko": "욕단은 알모닷과 셀렙과 하살마웻과 예라와",
+      "source_text_hash": "045610f09f9331631017bd95076663a8bb0d5689c79746c533eb51d8a2ba6cc0",
+      "translation_text_hash": "a402f0ecf10e95c19915387354d3ec40db638c06c49c1b5675bc2cf057bfab53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욕단은 알모닷과 셀렙과 하살마웻과 예라와"
+      ],
+      "raw_text_hashes": [
+        "a402f0ecf10e95c19915387354d3ec40db638c06c49c1b5675bc2cf057bfab53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:27",
+      "sequence": 262,
+      "chapter_label": "GEN 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "Hadoram, Uzal, Diklah,",
+      "ko": "하도람과 우살과 디글라와",
+      "source_text_hash": "ca2313511dde66275578ddf2e1b7f14e754c97205176dd832513c4e9a9225895",
+      "translation_text_hash": "1982c879a535608240e965de018c278507f61ac0bf24a315b62f6e971f036e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하도람과 우살과 디글라와"
+      ],
+      "raw_text_hashes": [
+        "1982c879a535608240e965de018c278507f61ac0bf24a315b62f6e971f036e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:28",
+      "sequence": 263,
+      "chapter_label": "GEN 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "Obal, Abimael, Sheba,",
+      "ko": "오발과 아비마엘과 스바와",
+      "source_text_hash": "d50872bb487e16ffd7ecb932ebc9a23f7b9da225ace60ec31a585af090297243",
+      "translation_text_hash": "8d7e0c38640127773d1c3cb697f8b06b186b5fa71130d7161fa99dfd2d7d9ec0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오발과 아비마엘과 스바와"
+      ],
+      "raw_text_hashes": [
+        "8d7e0c38640127773d1c3cb697f8b06b186b5fa71130d7161fa99dfd2d7d9ec0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:29",
+      "sequence": 264,
+      "chapter_label": "GEN 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "Ophir, Havilah, and Jobab. All these were the sons of Joktan.",
+      "ko": "오빌과 하윌라와 요밥을 낳았으니 이들은 다 욕단의 아들이며",
+      "source_text_hash": "242ffe59c233f61c537155c7ca034e38a883e97632f0a5291bcebb02129c96aa",
+      "translation_text_hash": "7f5b236a43a12332132778247bc27e0463e371f1e7e44e692827c9f638d4de93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오빌과 하윌라와 요밥을 낳았으니 이들은 다 욕단의 아들이며"
+      ],
+      "raw_text_hashes": [
+        "7f5b236a43a12332132778247bc27e0463e371f1e7e44e692827c9f638d4de93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:30",
+      "sequence": 265,
+      "chapter_label": "GEN 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "Their dwelling extended from Mesha, as you go toward Sephar, the mountain of the east.",
+      "ko": "그들의 거하는 곳은 메사에서부터 스발로 가는 길의 동편 산이었더라",
+      "source_text_hash": "c80fb310dbee681a9855d8298c196648aa257ea6ae75fb9bb8a2520cc0aefa6a",
+      "translation_text_hash": "02e55e69f30a224f411818b6554ff587edaaac56649a24a72c134da390197fb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 거하는 곳은 메사에서부터 스발로 가는 길의 동편 산이었더라"
+      ],
+      "raw_text_hashes": [
+        "02e55e69f30a224f411818b6554ff587edaaac56649a24a72c134da390197fb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:31",
+      "sequence": 266,
+      "chapter_label": "GEN 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "These are the sons of Shem, by their families, according to their languages, lands, and nations.",
+      "ko": "이들은 셈의 자손이라 그 족속과 방언과 지방과 나라대로였더라",
+      "source_text_hash": "0353e261094211bcdbdf70598effb98141065df666eb0a81a1cb5d1b67cf5276",
+      "translation_text_hash": "7e11b4cb31c4ce6742fcc1ccca22918bdf5b6fefadd595246f3b1c40deedf4b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 셈의 자손이라 그 족속과 방언과 지방과 나라대로였더라"
+      ],
+      "raw_text_hashes": [
+        "7e11b4cb31c4ce6742fcc1ccca22918bdf5b6fefadd595246f3b1c40deedf4b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:10:32",
+      "sequence": 267,
+      "chapter_label": "GEN 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "These are the families of the sons of Noah, by their generations, according to their nations. The nations divided from these on the earth after the flood.",
+      "ko": "이들은 노아 자손의 족속들이요 그 세계와 나라대로라 홍수 후에 이들에게서 땅의 열국 백성이 나뉘었더라",
+      "source_text_hash": "05977c20d28626b66be2e25b03aaa406dd329ababa3dc5565e83bfe0dee6c27e",
+      "translation_text_hash": "3764ff29a47c54ceda75bb0245283e9f3be323c296a23d20814e2d579015496f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 노아 자손의 족속들이요 그 세계와 나라대로라 홍수 후에 이들에게서 땅의 열국 백성이 나뉘었더라"
+      ],
+      "raw_text_hashes": [
+        "3764ff29a47c54ceda75bb0245283e9f3be323c296a23d20814e2d579015496f"
+      ]
+    }
+  ]
+}

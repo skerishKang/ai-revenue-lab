@@ -1,0 +1,1357 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:010",
+  "unit_ordinal": 1007,
+  "unit_label": "JHN 10",
+  "book_code": "JHN",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:10:1",
+      "sequence": 26482,
+      "chapter_label": "JHN 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "“Most certainly, I tell you, one who doesn’t enter by the door into the sheep fold, but climbs up some other way, is a thief and a robber.",
+      "ko": "내가 진실로 진실로 너희에게 이르노니 양의 우리에 문으로 들어가지 아니하고 다른데로 넘어가는 자는 절도며 강도요",
+      "source_text_hash": "e6a5ad82f78b72b5bf6011432f12ec313e9962f48931b5466b97b30dff299b11",
+      "translation_text_hash": "83009ebdd1f7cf7bea9f834f7b57ecf12355979a2fb6568e8cf8c3c82a5d0b35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 진실로 너희에게 이르노니 양의 우리에 문으로 들어가지 아니하고 다른데로 넘어가는 자는 절도며 강도요"
+      ],
+      "raw_text_hashes": [
+        "83009ebdd1f7cf7bea9f834f7b57ecf12355979a2fb6568e8cf8c3c82a5d0b35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:2",
+      "sequence": 26483,
+      "chapter_label": "JHN 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "But one who enters in by the door is the shepherd of the sheep.",
+      "ko": "문으로 들어가는 이가 양의 목자라",
+      "source_text_hash": "129285a481cec55d2768e4df2d748321d788099b9935eb59a9c94c02faeccb5e",
+      "translation_text_hash": "40a0f84c625dc9fa96c604b8ffbe2b40846984f425e618b42c86a60802188df8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문으로 들어가는 이가 양의 목자라"
+      ],
+      "raw_text_hashes": [
+        "40a0f84c625dc9fa96c604b8ffbe2b40846984f425e618b42c86a60802188df8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:3",
+      "sequence": 26484,
+      "chapter_label": "JHN 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "The gatekeeper opens the gate for him, and the sheep listen to his voice. He calls his own sheep by name and leads them out.",
+      "ko": "문지기는 그를 위하여 문을 열고 양은 그의 음성을 듣나니 그가 자기 양의 이름을 각각 불러 인도하여 내느니라",
+      "source_text_hash": "1be69a5e26bcaffd2df1b9d2a0b7b3a99d37b3fb2222d57fd072411f89c2b98d",
+      "translation_text_hash": "3775151b48ad33693be37948e6442cc0a74bd9dc5f3a8cdf3b0957d470af6acc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문지기는 그를 위하여 문을 열고 양은 그의 음성을 듣나니 그가 자기 양의 이름을 각각 불러 인도하여 내느니라"
+      ],
+      "raw_text_hashes": [
+        "3775151b48ad33693be37948e6442cc0a74bd9dc5f3a8cdf3b0957d470af6acc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:4",
+      "sequence": 26485,
+      "chapter_label": "JHN 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "Whenever he brings out his own sheep, he goes before them; and the sheep follow him, for they know his voice.",
+      "ko": "자기 양을 다 내어 놓은 후에 앞서 가면 양들이 그의 음성을 아는고로 따라 오되",
+      "source_text_hash": "85be81ae76f0818132566f34b816b0cffe49079b59e43e193e744b13f87d3ab4",
+      "translation_text_hash": "fa00986c4c1f19d6b4a7083ef24f19a34f02d063cf537d9b2cf2ca10b2966c42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 양을 다 내어 놓은 후에 앞서 가면 양들이 그의 음성을 아는고로 따라 오되"
+      ],
+      "raw_text_hashes": [
+        "fa00986c4c1f19d6b4a7083ef24f19a34f02d063cf537d9b2cf2ca10b2966c42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:5",
+      "sequence": 26486,
+      "chapter_label": "JHN 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "They will by no means follow a stranger, but will flee from him; for they don’t know the voice of strangers.”",
+      "ko": "타인의 음성은 알지 못하는고로 타인을 따르지 아니하고 도리어 도망하느니라",
+      "source_text_hash": "493b5bd64edbff346adf19a2db625c48c97e724275d62fe83030e574aa3f5701",
+      "translation_text_hash": "e9765eea23ae6e7a7abf590fece77c0dc586251aa50b7e742b1e2c7175a215b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "타인의 음성은 알지 못하는고로 타인을 따르지 아니하고 도리어 도망하느니라"
+      ],
+      "raw_text_hashes": [
+        "e9765eea23ae6e7a7abf590fece77c0dc586251aa50b7e742b1e2c7175a215b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:6",
+      "sequence": 26487,
+      "chapter_label": "JHN 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "Jesus spoke this parable to them, but they didn’t understand what he was telling them.",
+      "ko": "예수께서 이 비유로 저희에게 말씀하셨으나 저희는 그 하신 말씀이 무엇인지 알지 못하니라",
+      "source_text_hash": "2f69448450bc831d8dbc4d1095d6d34f4cd71a8ee531bb723c2e1b0bce8e40d5",
+      "translation_text_hash": "a71c671ff5659b82cc2f93a973ab8665c085fedcab5c4f74c4a6099587c11a6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 비유로 저희에게 말씀하셨으나 저희는 그 하신 말씀이 무엇인지 알지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "a71c671ff5659b82cc2f93a973ab8665c085fedcab5c4f74c4a6099587c11a6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:7",
+      "sequence": 26488,
+      "chapter_label": "JHN 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "Jesus therefore said to them again, “Most certainly, I tell you, I am the sheep’s door.",
+      "ko": "그러므로 예수께서 다시 이르시되 내가 진실로 진실로 너희에게 말하노니 나는 양의 문이라",
+      "source_text_hash": "133d5751b8b61bdd459ba18e3da8cb9ded73d35f370f1ce6d9ba0f8c96a1c724",
+      "translation_text_hash": "743538446422e9dd21588cffb707ca284366d3c012f73917d79738f76a402df8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 예수께서 다시 이르시되 내가 진실로 진실로 너희에게 말하노니 나는 양의 문이라"
+      ],
+      "raw_text_hashes": [
+        "743538446422e9dd21588cffb707ca284366d3c012f73917d79738f76a402df8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:8",
+      "sequence": 26489,
+      "chapter_label": "JHN 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "All who came before me are thieves and robbers, but the sheep didn’t listen to them.",
+      "ko": "나보다 먼저 온 자는 다 절도요 강도니 양들이 듣지 아니하였느니라",
+      "source_text_hash": "048aa578e0c45e475836415d8ec0fba210f0db612f9127dda531db67a3bd348b",
+      "translation_text_hash": "c5b838f7c8f70ca612944d55c7b254339fb5c7758dfe492b35272f8b5c9c1dfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나보다 먼저 온 자는 다 절도요 강도니 양들이 듣지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "c5b838f7c8f70ca612944d55c7b254339fb5c7758dfe492b35272f8b5c9c1dfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:9",
+      "sequence": 26490,
+      "chapter_label": "JHN 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "I am the door. If anyone enters in by me, he will be saved, and will go in and go out and will find pasture.",
+      "ko": "내가 문이니 누구든지 나로 말미암아 들어가면 구원을 얻고 또는 들어가며 나오며 꼴을 얻으리라",
+      "source_text_hash": "f206b86be002474d28b56323240541565e9290d730f3971782c644697511f909",
+      "translation_text_hash": "559e0703b601c9b253ec7975c0639305d4f9be5cd5de9573892b13b81aab4a73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 문이니 누구든지 나로 말미암아 들어가면 구원을 얻고 또는 들어가며 나오며 꼴을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "559e0703b601c9b253ec7975c0639305d4f9be5cd5de9573892b13b81aab4a73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:10",
+      "sequence": 26491,
+      "chapter_label": "JHN 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "The thief only comes to steal, kill, and destroy. I came that they may have life, and may have it abundantly.",
+      "ko": "도적이 오는 것은 도적질하고 죽이고 멸망시키려는 것뿐이요 내가 온 것은 양으로 생명을 얻게 하고 더 풍성히 얻게 하려는 것이라",
+      "source_text_hash": "d65e64a30cdb3d5eb4d55e7d4e829f0a36cf1bf014c6bff3f2d6d721d790b95e",
+      "translation_text_hash": "be3644a6a164602e203a28d8a7c592ce6870f881ab4b5bafff782f441630dc3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적이 오는 것은 도적질하고 죽이고 멸망시키려는 것뿐이요 내가 온 것은 양으로 생명을 얻게 하고 더 풍성히 얻게 하려는 것이라"
+      ],
+      "raw_text_hashes": [
+        "be3644a6a164602e203a28d8a7c592ce6870f881ab4b5bafff782f441630dc3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:11",
+      "sequence": 26492,
+      "chapter_label": "JHN 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "“I am the good shepherd.The good shepherd lays down his life for the sheep.",
+      "ko": "나는 선한 목자라 선한 목자는 양들을 위하여 목숨을 버리거니와",
+      "source_text_hash": "b586d9bc8c996be78467bcfbe313d34990cbaa8adb921671b637ef5db74edc15",
+      "translation_text_hash": "7fcf9bdbd57a6ce330ea97eb88a68c3bf9bd427417ca4700a179c131e5bda144",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 선한 목자라 선한 목자는 양들을 위하여 목숨을 버리거니와"
+      ],
+      "raw_text_hashes": [
+        "7fcf9bdbd57a6ce330ea97eb88a68c3bf9bd427417ca4700a179c131e5bda144"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:12",
+      "sequence": 26493,
+      "chapter_label": "JHN 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "He who is a hired hand, and not a shepherd, who doesn’t own the sheep, sees the wolf coming, leaves the sheep, and flees. The wolf snatches the sheep and scatters them.",
+      "ko": "삯군은 목자도 아니요 양도 제 양이 아니라 이리가 오는 것을 보면 양을 버리고 달아나나니 이리가 양을 늑탈하고 또 헤치느니라",
+      "source_text_hash": "58176356c5e6c729a96442fde34d6e5e590b36a11d537fcf268707015dda4ad8",
+      "translation_text_hash": "438c49e8032d3032d00bbef23c216597a8dd3b12cd86db029df89f3ffa56b527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삯군은 목자도 아니요 양도 제 양이 아니라 이리가 오는 것을 보면 양을 버리고 달아나나니 이리가 양을 늑탈하고 또 헤치느니라"
+      ],
+      "raw_text_hashes": [
+        "438c49e8032d3032d00bbef23c216597a8dd3b12cd86db029df89f3ffa56b527"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:13",
+      "sequence": 26494,
+      "chapter_label": "JHN 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "The hired hand flees because he is a hired hand and doesn’t care for the sheep.",
+      "ko": "달아나는 것은 저가 삯군인 까닭에 양을 돌아보지 아니함이나",
+      "source_text_hash": "63e851c653288c7a897081ad67256edc75527e5299e6d7c26357ae432714a084",
+      "translation_text_hash": "00a1e2ea66873c6a6c1426f62deed0f3fea53b90c176c515486ba25172256a6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "달아나는 것은 저가 삯군인 까닭에 양을 돌아보지 아니함이나"
+      ],
+      "raw_text_hashes": [
+        "00a1e2ea66873c6a6c1426f62deed0f3fea53b90c176c515486ba25172256a6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:14",
+      "sequence": 26495,
+      "chapter_label": "JHN 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "I am the good shepherd. I know my own, and I’m known by my own;",
+      "ko": "나는 선한 목자라 내가 내 양을 알고 양도 나를 아는 것이",
+      "source_text_hash": "4b44dc2234fd26e39d9df21d03b351417feb5c607ed9d5e78e74d82aea117c95",
+      "translation_text_hash": "c796f68389e06650332537eec3413edecb6d51fd856579f61059566c43179d16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 선한 목자라 내가 내 양을 알고 양도 나를 아는 것이"
+      ],
+      "raw_text_hashes": [
+        "c796f68389e06650332537eec3413edecb6d51fd856579f61059566c43179d16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:15",
+      "sequence": 26496,
+      "chapter_label": "JHN 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "even as the Father knows me, and I know the Father. I lay down my life for the sheep.",
+      "ko": "아버지께서 나를 아시고 내가 아버지를 아는 것 같으니 나는 양을 위하여 목숨을 버리노라",
+      "source_text_hash": "040e52d089494025c4e8f1b6106c6b5d08781c32d9ff74d7dc4b3bd48cdb7031",
+      "translation_text_hash": "fafb3233ce1f355f5fa95ddd9a09093a2cbfd0e3922803fd6159d61831816ffd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 나를 아시고 내가 아버지를 아는 것 같으니 나는 양을 위하여 목숨을 버리노라"
+      ],
+      "raw_text_hashes": [
+        "fafb3233ce1f355f5fa95ddd9a09093a2cbfd0e3922803fd6159d61831816ffd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:16",
+      "sequence": 26497,
+      "chapter_label": "JHN 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "I have other sheep which are not of this fold.I must bring them also, and they will hear my voice. They will become one flock with one shepherd.",
+      "ko": "또 이 우리에 들지 아니한 다른 양들이 내게 있어 내가 인도하여야 할터이니 저희도 내 음성을 듣고 한 무리가 되어 한 목자에게 있으리라",
+      "source_text_hash": "74954afa6ae87f0768e69ccc27f7d2a6dc7eda64cefe6366f7e99d914bbab77c",
+      "translation_text_hash": "7b4e978596af3ec88595abb770948dc9a53f9e32ede8ec2babaf732c242eb516",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이 우리에 들지 아니한 다른 양들이 내게 있어 내가 인도하여야 할터이니 저희도 내 음성을 듣고 한 무리가 되어 한 목자에게 있으리라"
+      ],
+      "raw_text_hashes": [
+        "7b4e978596af3ec88595abb770948dc9a53f9e32ede8ec2babaf732c242eb516"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:17",
+      "sequence": 26498,
+      "chapter_label": "JHN 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "Therefore the Father loves me, because I lay down my life, that I may take it again.",
+      "ko": "아버지께서 나를 사랑하시는 것은 내가 다시 목숨을 얻기 위하여 목숨을 버림이라",
+      "source_text_hash": "32153f68d73fe7fc48bfb1b8a73a18d039734df58d11c7dd749e860e68ebcbf5",
+      "translation_text_hash": "ba30baf918f348c66f92e2fbcc7a461ba6afdcc0f4edb0f33871a22a9671e7a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 나를 사랑하시는 것은 내가 다시 목숨을 얻기 위하여 목숨을 버림이라"
+      ],
+      "raw_text_hashes": [
+        "ba30baf918f348c66f92e2fbcc7a461ba6afdcc0f4edb0f33871a22a9671e7a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:18",
+      "sequence": 26499,
+      "chapter_label": "JHN 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "No one takes it away from me, but I lay it down by myself. I have power to lay it down, and I have power to take it again. I received this commandment from my Father.”",
+      "ko": "이를 내게서 빼앗는 자가 있는 것이 아니라 내가 스스로 버리노라 나는 버릴 권세도 있고 다시 얻을 권세도 있으니 이 계명은 내 아버지에게서 받았노라 하시니라",
+      "source_text_hash": "2d554e77f876dd159c57e6654969f558a7a30ddefe3c1d7d68d57db44f5210a7",
+      "translation_text_hash": "c9cdb28d0a700064913f9aaad2176c904ecef166fd74bd254675faf65a21619f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 내게서 빼앗는 자가 있는 것이 아니라 내가 스스로 버리노라 나는 버릴 권세도 있고 다시 얻을 권세도 있으니 이 계명은 내 아버지에게서 받았노라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "c9cdb28d0a700064913f9aaad2176c904ecef166fd74bd254675faf65a21619f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:19",
+      "sequence": 26500,
+      "chapter_label": "JHN 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "Therefore a division arose again among the Jews because of these words.",
+      "ko": "이 말씀을 인하여 유대인 중에 다시 분쟁이 일어나니",
+      "source_text_hash": "0790d6708cfbd0652f78d5a76323d88780b21d93c7446a71348020f8c8fe5d68",
+      "translation_text_hash": "34c2a89cfbbac4f36f284beb2309c568c97d084571f3047f3ea528507fe5a14f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 인하여 유대인 중에 다시 분쟁이 일어나니"
+      ],
+      "raw_text_hashes": [
+        "34c2a89cfbbac4f36f284beb2309c568c97d084571f3047f3ea528507fe5a14f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:20",
+      "sequence": 26501,
+      "chapter_label": "JHN 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "Many of them said, “He has a demon and is insane! Why do you listen to him?”",
+      "ko": "그 중에 많은 사람이 말하되 저가 귀신 들려 미쳤거늘 어찌하여 그 말을 듣느냐 하며",
+      "source_text_hash": "ec46b651af004ed79966b6e17accdbccac00675a7abf932644141f5143899456",
+      "translation_text_hash": "986e0a16d08b8267e6ee45867bc69f65ae18f16bbf26601ebbf1ea7b2eb35f75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 많은 사람이 말하되 저가 귀신 들려 미쳤거늘 어찌하여 그 말을 듣느냐 하며"
+      ],
+      "raw_text_hashes": [
+        "986e0a16d08b8267e6ee45867bc69f65ae18f16bbf26601ebbf1ea7b2eb35f75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:21",
+      "sequence": 26502,
+      "chapter_label": "JHN 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "Others said, “These are not the sayings of one possessed by a demon. It isn’t possible for a demon to open the eyes of the blind, is it?”",
+      "ko": "혹은 말하되 이 말은 귀신 들린 자의 말이 아니라 귀신이 소경의 눈을 뜨게 할 수 있느냐 하더라",
+      "source_text_hash": "6a6b27f163c46c3998a98c07ea0feecdfa48981f80f6535f189eee4fea1c4271",
+      "translation_text_hash": "2d7d7f93cdd2f8a54a3a64dbc2205c07ccbbfaa0890fc93db77c60738094efee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 말하되 이 말은 귀신 들린 자의 말이 아니라 귀신이 소경의 눈을 뜨게 할 수 있느냐 하더라"
+      ],
+      "raw_text_hashes": [
+        "2d7d7f93cdd2f8a54a3a64dbc2205c07ccbbfaa0890fc93db77c60738094efee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:22",
+      "sequence": 26503,
+      "chapter_label": "JHN 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "It was the Feast of the Dedication at Jerusalem.",
+      "ko": "예루살렘에 수전절이 이르니 때는 겨울이라",
+      "source_text_hash": "4a25ad7f626184676a4b6e4f029dc5b835023ee916993541470c4642d72cc617",
+      "translation_text_hash": "ab7662a4937596698e5007caeb5fff081c2fd40438f99b70a36e1691f2f37e41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 수전절이 이르니 때는 겨울이라"
+      ],
+      "raw_text_hashes": [
+        "ab7662a4937596698e5007caeb5fff081c2fd40438f99b70a36e1691f2f37e41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:23",
+      "sequence": 26504,
+      "chapter_label": "JHN 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "It was winter, and Jesus was walking in the temple, in Solomon’s porch.",
+      "ko": "예수께서 성전 안 솔로몬 행각에서 다니시니",
+      "source_text_hash": "f69eeb0872dd5cd05e64fef909e6c5b8e8f991abce5305a24433b5629d276eff",
+      "translation_text_hash": "97b1fad679dbfe46a178f88c57e5721582c54dbb80e92eff4683a5b4023f05be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 성전 안 솔로몬 행각에서 다니시니"
+      ],
+      "raw_text_hashes": [
+        "97b1fad679dbfe46a178f88c57e5721582c54dbb80e92eff4683a5b4023f05be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:24",
+      "sequence": 26505,
+      "chapter_label": "JHN 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "The Jews therefore came around him and said to him, “How long will you hold us in suspense? If you are the Christ, tell us plainly.”",
+      "ko": "유대인들이 에워싸고 가로되 당신이 언제까지나 우리 마음을 의혹케 하려나이까 그리스도여든 밝히 말하시오 하니",
+      "source_text_hash": "7bb82bdc31ee69241dcd910e5b207967c01a861e646f577ff7f00a87e539f813",
+      "translation_text_hash": "59548a6086b4214799599aaebdf146b537633d57cbf816c9cd53503a5702eaea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 에워싸고 가로되 당신이 언제까지나 우리 마음을 의혹케 하려나이까 그리스도여든 밝히 말하시오 하니"
+      ],
+      "raw_text_hashes": [
+        "59548a6086b4214799599aaebdf146b537633d57cbf816c9cd53503a5702eaea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:25",
+      "sequence": 26506,
+      "chapter_label": "JHN 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "Jesus answered them, “I told you, and you don’t believe. The works that I do in my Father’s name, these testify about me.",
+      "ko": "예수께서 대답하시되 내가 너희에게 말하였으되 믿지 아니하는도다 내가 내 아버지의 이름으로 행하는 일들이 나를 증거하는 것이어늘",
+      "source_text_hash": "65f67c022719aee9e3067fed82a2f9b151e397f4ef457f7c47718deacc77ba92",
+      "translation_text_hash": "8d62bf5121554f38dbdf0bae4e4b7594534d5fb48d803fa2be690f3a5f9d953b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 내가 너희에게 말하였으되 믿지 아니하는도다 내가 내 아버지의 이름으로 행하는 일들이 나를 증거하는 것이어늘"
+      ],
+      "raw_text_hashes": [
+        "8d62bf5121554f38dbdf0bae4e4b7594534d5fb48d803fa2be690f3a5f9d953b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:26",
+      "sequence": 26507,
+      "chapter_label": "JHN 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "But you don’t believe, because you are not of my sheep, as I told you.",
+      "ko": "너희가 내 양이 아니므로 믿지 아니하는도다",
+      "source_text_hash": "cfd2423b8cb75db53fa9baf0bc55a4046b38cf0272537b519efaed18340e08a5",
+      "translation_text_hash": "e9a4c995f5c5c8b45a9f1bab2825ec55b4034171f47adb0aff85b2fd833af5a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 내 양이 아니므로 믿지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "e9a4c995f5c5c8b45a9f1bab2825ec55b4034171f47adb0aff85b2fd833af5a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:27",
+      "sequence": 26508,
+      "chapter_label": "JHN 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "My sheep hear my voice, and I know them, and they follow me.",
+      "ko": "내 양은 내 음성을 들으며 나는 저희를 알며 저희는 나를 따르느니라",
+      "source_text_hash": "29261f258f337534f4535a5d2039fb911fe1bd7f037205b00f83715fe9e0b1f3",
+      "translation_text_hash": "bbf7497537732fcd204383c867a07f5c20c8771bd87aa37009ddd5cc9fcbbd4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 양은 내 음성을 들으며 나는 저희를 알며 저희는 나를 따르느니라"
+      ],
+      "raw_text_hashes": [
+        "bbf7497537732fcd204383c867a07f5c20c8771bd87aa37009ddd5cc9fcbbd4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:28",
+      "sequence": 26509,
+      "chapter_label": "JHN 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "I give eternal life to them. They will never perish, and no one will snatch them out of my hand.",
+      "ko": "내가 저희에게 영생을 주노니 영원히 멸망치 아니할 터이요 또 저희를 내 손에서 빼앗을 자가 없느니라",
+      "source_text_hash": "90970832ad8e46ba77485de221bf9d4702799047f9b405bb78028148dd860df8",
+      "translation_text_hash": "6e0cca543e078ec0e84729b59c7cb81b4dc477545a555ee43d3cc89d0c6a3c51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희에게 영생을 주노니 영원히 멸망치 아니할 터이요 또 저희를 내 손에서 빼앗을 자가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "6e0cca543e078ec0e84729b59c7cb81b4dc477545a555ee43d3cc89d0c6a3c51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:29",
+      "sequence": 26510,
+      "chapter_label": "JHN 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "My Father who has given them to me is greater than all. No one is able to snatch them out of my Father’s hand.",
+      "ko": "저희를 주신 내 아버지는 만유보다 크시매 아무도 아버지 손에서 빼앗을 수 없느니라",
+      "source_text_hash": "77bd84e1678f7cc40c7db65e8eda08362b6ae3a09fba3c8cf00ec9d98ddce7a0",
+      "translation_text_hash": "80faa83c08805cfb246918224468f820b959edf8cd614fa6bb6bf1cd7c11955e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 주신 내 아버지는 만유보다 크시매 아무도 아버지 손에서 빼앗을 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "80faa83c08805cfb246918224468f820b959edf8cd614fa6bb6bf1cd7c11955e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:30",
+      "sequence": 26511,
+      "chapter_label": "JHN 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "I and the Father are one.”",
+      "ko": "나와 아버지는 하나이니라 하신대",
+      "source_text_hash": "19697dae7116cb58d3b6d1f0d503d02c3332aa6bcd3083b7a78ab6d9bff473d3",
+      "translation_text_hash": "4c3ed2fbb553f10ea5954c36cfb6356c531ea172fb8b350ebc5d9adcfb10546c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 아버지는 하나이니라 하신대"
+      ],
+      "raw_text_hashes": [
+        "4c3ed2fbb553f10ea5954c36cfb6356c531ea172fb8b350ebc5d9adcfb10546c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:31",
+      "sequence": 26512,
+      "chapter_label": "JHN 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "Therefore the Jews took up stones again to stone him.",
+      "ko": "유대인들이 다시 돌을 들어 치려 하거늘",
+      "source_text_hash": "6718b2758b39e1c14d8467dc7d2da9b0da2238ae0c692c69145ed623dd509fda",
+      "translation_text_hash": "4c0bd65c28a507c58a49ff8fab8683c871bbe1b4c900a3935a14f7674c1579a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 다시 돌을 들어 치려 하거늘"
+      ],
+      "raw_text_hashes": [
+        "4c0bd65c28a507c58a49ff8fab8683c871bbe1b4c900a3935a14f7674c1579a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:32",
+      "sequence": 26513,
+      "chapter_label": "JHN 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "Jesus answered them, “I have shown you many good works from my Father. For which of those works do you stone me?”",
+      "ko": "예수께서 대답하시되 내가 아버지께로 말미암아 여러가지 선한 일을 너희에게 보였거늘 그 중에 어떤 일로 나를 돌로 치려하느냐",
+      "source_text_hash": "2bcbe5328e49d4ad8859c90e2e55dfccb8dfe45a9b2a500cdac54ec054d9fd19",
+      "translation_text_hash": "5181d9dfbe9e08888c8b158dc8eaf0931ea065010dcbe92ce95c340efbc088aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 내가 아버지께로 말미암아 여러가지 선한 일을 너희에게 보였거늘 그 중에 어떤 일로 나를 돌로 치려하느냐"
+      ],
+      "raw_text_hashes": [
+        "5181d9dfbe9e08888c8b158dc8eaf0931ea065010dcbe92ce95c340efbc088aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:33",
+      "sequence": 26514,
+      "chapter_label": "JHN 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "The Jews answered him, “We don’t stone you for a good work, but for blasphemy, because you, being a man, make yourself God.”",
+      "ko": "유대인들이 대답하되 선한 일을 인하여 우리가 너를 돌로 치려는 것이 아니라 참람함을 인함이니 네가 사람이 되어 자칭 하나님이라 함이로라",
+      "source_text_hash": "1cb772a17f8043806682c35847776c4c6ed07c89cb7d069a21ff19789a42f21d",
+      "translation_text_hash": "b292c03b5daffdbe8db235511cb4bedacb2d3b40e9f7e443d8a48b3e1bfca341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 대답하되 선한 일을 인하여 우리가 너를 돌로 치려는 것이 아니라 참람함을 인함이니 네가 사람이 되어 자칭 하나님이라 함이로라"
+      ],
+      "raw_text_hashes": [
+        "b292c03b5daffdbe8db235511cb4bedacb2d3b40e9f7e443d8a48b3e1bfca341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:34",
+      "sequence": 26515,
+      "chapter_label": "JHN 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus answered them, “Isn’t it written in your law, ‘I said, you are gods’?",
+      "ko": "예수께서 가라사대 너희 율법에 기록한바 내가 너희를 신이라 하였노라 하지 아니하였느냐",
+      "source_text_hash": "72091ece9f44498388e880720592e5a8d27f440e7d99c7d5cc8afcbcdfc828ac",
+      "translation_text_hash": "194c283132aa4e11eee0b7f9136b75c8d1524163ddc6e58c9336866a990ea7f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너희 율법에 기록한바 내가 너희를 신이라 하였노라 하지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "194c283132aa4e11eee0b7f9136b75c8d1524163ddc6e58c9336866a990ea7f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:35",
+      "sequence": 26516,
+      "chapter_label": "JHN 10",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 35
+        }
+      ],
+      "en": "If he called them gods, to whom the word of God came (and the Scripture can’t be broken),",
+      "ko": "성경은 폐하지 못하나니 하나님의 말씀을 받은 사람들을 신이라 하셨거든",
+      "source_text_hash": "584a25f40914812dcee2f9ba24be67e1cbf08c34ca40091147c0ebdadf8ca74a",
+      "translation_text_hash": "f47cf20b7cdb7490ea983d3ddec4077b5217225553c65653a0b8c90b2fa21c4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성경은 폐하지 못하나니 하나님의 말씀을 받은 사람들을 신이라 하셨거든"
+      ],
+      "raw_text_hashes": [
+        "f47cf20b7cdb7490ea983d3ddec4077b5217225553c65653a0b8c90b2fa21c4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:36",
+      "sequence": 26517,
+      "chapter_label": "JHN 10",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 36
+        }
+      ],
+      "en": "do you say of him whom the Father sanctified and sent into the world, ‘You blaspheme,’ because I said, ‘I am the Son of God’?",
+      "ko": "하물며 아버지께서 거룩하게 하사 세상에 보내신 자가 나는 하나님 아들이라 하는 것으로 너희가 어찌 참람하다 하느냐",
+      "source_text_hash": "8377f6bcad2f52074281a600727e1cdba2c66408b5af692d703572052f6a057d",
+      "translation_text_hash": "092b57301a6afc3f5934ffaba344a5d2e81337428960e742c4706d4161313dd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하물며 아버지께서 거룩하게 하사 세상에 보내신 자가 나는 하나님 아들이라 하는 것으로 너희가 어찌 참람하다 하느냐"
+      ],
+      "raw_text_hashes": [
+        "092b57301a6afc3f5934ffaba344a5d2e81337428960e742c4706d4161313dd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:37",
+      "sequence": 26518,
+      "chapter_label": "JHN 10",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 37
+        }
+      ],
+      "en": "If I don’t do the works of my Father, don’t believe me.",
+      "ko": "만일 내가 내 아버지의 일을 행치 아니하거든 나를 믿지 말려니와",
+      "source_text_hash": "275108573e04438aa2c02a7bd91e0d52544dfd4f3d43b89ee8ebf5371b4cf5c3",
+      "translation_text_hash": "e321c6658641f1eff03fed07266f5ab2551ff6ba86e77495f5acda0811141255",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 내가 내 아버지의 일을 행치 아니하거든 나를 믿지 말려니와"
+      ],
+      "raw_text_hashes": [
+        "e321c6658641f1eff03fed07266f5ab2551ff6ba86e77495f5acda0811141255"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:38",
+      "sequence": 26519,
+      "chapter_label": "JHN 10",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 38
+        }
+      ],
+      "en": "But if I do them, though you don’t believe me, believe the works, that you may know and believe that the Father is in me, and I in the Father.”",
+      "ko": "내가 행하거든 나를 믿지 아니할찌라도 그 일은 믿으라 그러면 너희가 아버지께서 내 안에 계시고 내가 아버지 안에 있음을 깨달아 알리라 하신대",
+      "source_text_hash": "2bc3913391cea7842a762c402f84e91b10cd006181376ca020a27e1bdff60132",
+      "translation_text_hash": "6a637e77da8217768c33b31339f5d2c09d122cbea08d3755f86e12734d35cf9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 행하거든 나를 믿지 아니할찌라도 그 일은 믿으라 그러면 너희가 아버지께서 내 안에 계시고 내가 아버지 안에 있음을 깨달아 알리라 하신대"
+      ],
+      "raw_text_hashes": [
+        "6a637e77da8217768c33b31339f5d2c09d122cbea08d3755f86e12734d35cf9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:39",
+      "sequence": 26520,
+      "chapter_label": "JHN 10",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 39
+        }
+      ],
+      "en": "They sought again to seize him, and he went out of their hand.",
+      "ko": "저희가 다시 예수를 잡고자 하였으나 그 손에서 벗어나 나가시니라",
+      "source_text_hash": "681cfd232a55dd4c485599e30bdf22d6a7479679ceb553f01ed7969ee29793b2",
+      "translation_text_hash": "a99bae173f733b9b6bee7eb6e0d65aea422f5e0ef5eb7fd0906658df228241eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 다시 예수를 잡고자 하였으나 그 손에서 벗어나 나가시니라"
+      ],
+      "raw_text_hashes": [
+        "a99bae173f733b9b6bee7eb6e0d65aea422f5e0ef5eb7fd0906658df228241eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:40",
+      "sequence": 26521,
+      "chapter_label": "JHN 10",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 40
+        }
+      ],
+      "en": "He went away again beyond the Jordan into the place where John was baptizing at first, and he stayed there.",
+      "ko": "다시 요단강 저편 요한이 처음으로 세례 주던 곳에 가사 거기 거하시니",
+      "source_text_hash": "03aca46bff9ff3bdfddfc1214a93c781a87108799019a3a37887953bb0357774",
+      "translation_text_hash": "895ed6dcf9fd1d743bb8b21664c9aad57594ea7941020187af5ddb98a18e2384",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 요단강 저편 요한이 처음으로 세례 주던 곳에 가사 거기 거하시니"
+      ],
+      "raw_text_hashes": [
+        "895ed6dcf9fd1d743bb8b21664c9aad57594ea7941020187af5ddb98a18e2384"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:41",
+      "sequence": 26522,
+      "chapter_label": "JHN 10",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 41
+        }
+      ],
+      "en": "Many came to him. They said, “John indeed did no sign, but everything that John said about this man is true.”",
+      "ko": "많은 사람이 왔다가 말하되 요한은 아무 표적도 행치 아니하였으나 요한이 이 사람을 가리켜 말한 것은 다 참이라 하더라",
+      "source_text_hash": "d3e86599766b0f8915d237ed762a72c226edc7bf5fd2d6414adf7f3b8ec93031",
+      "translation_text_hash": "1720a6c0be877ff8455403abe47fc86f94206930df070d642c02e4561183fd69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 사람이 왔다가 말하되 요한은 아무 표적도 행치 아니하였으나 요한이 이 사람을 가리켜 말한 것은 다 참이라 하더라"
+      ],
+      "raw_text_hashes": [
+        "1720a6c0be877ff8455403abe47fc86f94206930df070d642c02e4561183fd69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:10:42",
+      "sequence": 26523,
+      "chapter_label": "JHN 10",
+      "verse_label": "42",
+      "locator": {
+        "book": "JHN",
+        "chapter": 10,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 10,
+          "verse": 42
+        }
+      ],
+      "en": "Many believed in him there.",
+      "ko": "그리하여 거기서 많은 사람이 예수를 믿으니라",
+      "source_text_hash": "d583b01d06dcbe7b3cd85e3599423e871cf3f00a7a9fad9b3755dea7d64e2318",
+      "translation_text_hash": "94c5992643f84009dcb303ea14df64fe37778b9b1bd14d1d556b616dbb3c0be9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하여 거기서 많은 사람이 예수를 믿으니라"
+      ],
+      "raw_text_hashes": [
+        "94c5992643f84009dcb303ea14df64fe37778b9b1bd14d1d556b616dbb3c0be9"
+      ]
+    }
+  ]
+}

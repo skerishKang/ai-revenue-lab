@@ -1,0 +1,344 @@
+/* ===== B61 #1717 · StoryMemory global typography authority v1 =====
+   Root cause: --serif pointed at "Noto Serif KR" which is never loaded
+   (only Noto Sans KR is fetched), so every Korean display/title usage
+   fell back to system Myeongjo/Batang — the old/prototype look flagged in
+   동행 독자 / 창세기 1장. This file defines ONE authority and retires --serif
+   for user-facing text. Decorative Latin/artistic uses are explicitly
+   preserved on --serif-decorative (documented list below).
+
+   Authority map (#1717 Phase B):
+   DISPLAY_TITLE  = --sm-display   (Noto Sans KR 500-700, size/weight hierarchy)
+   SECTION_TITLE  = --sm-display
+   BODY_KO        = --sm-body-ko   (same loaded Korean sans — no mid-string fallback)
+   BODY_EN        = --sm-body-en   (Inter → system-ui Segoe UI; deliberate Latin support face)
+   META_LABEL     = --sm-meta      (BODY_EN, uppercase micro-labels keep tracking)
+   BUTTON_PILL    = --sm-pill      (BODY_EN 600)
+   No font binaries added; all stacks are bundled/system-safe. */
+
+:root{
+  --sm-display:"Noto Sans KR","Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --sm-section:var(--sm-display);
+  --sm-body-ko:var(--sm-display);
+  --sm-body-en:Inter,system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;
+  --sm-meta:var(--sm-body-en);
+  --sm-pill:var(--sm-body-en);
+  --serif-decorative:"Noto Serif KR","Source Han Serif KR",Georgia,"Times New Roman",serif;
+  /* Single authority point: every legacy var(--serif) rule becomes the
+     contemporary Korean sans unless explicitly preserved below. */
+  --serif:var(--sm-display);
+}
+
+/* PRESERVE decisions (#1717 Phase C — documented, non-user-facing or
+   deliberately artistic Latin/decorative roles, not Korean titles):
+   - .cover-copy/.spine-copy/.bookplate b: book-cover & spine art lettering
+   - .collection-stamp strong/.resume-seal/.back-monogram/.paper-seal: wax-stamp/monogram glyphs
+   - .motif-iliad span/.motif-personal span: decorative motif inscriptions
+   - .reader-ambient-number/.morph-center strong/.paper-morph-inner strong/
+     .volume-morph-cover strong/.cinematic-page-right strong: oversized transition numerals
+   - .rail-folio/.ai-folio/.paper-folio-mark/.book-inner-leaf .leaf-folio/.cinematic-folio: Latin folio marks
+   - .scene-meta b: Latin scene meta
+   - .reader-toolbar::before: literal "Aa" specimen glyph
+   - .wordmark: Latin brand wordmark
+   - .dropcap: decorative opening initial of the reading copy */
+.cover-copy,.spine-copy,.bookplate b,
+.collection-stamp strong,.resume-seal,.back-monogram,.paper-seal,
+.motif-iliad span,.motif-personal span,
+.reader-ambient-number,.morph-center strong,.paper-morph-inner strong,
+.volume-morph-cover strong,.cinematic-page-right strong,
+.rail-folio,.ai-folio,.paper-folio-mark,.book-inner-leaf .leaf-folio,.cinematic-folio,
+.scene-meta b,.reader-toolbar::before,.wordmark,.dropcap{font-family:var(--serif-decorative)}
+
+/* --- #1681: Library/Chapter typography consistency (authority already
+       flows through --serif redefinition; these tune hierarchy via
+       size/weight/tracking instead of a decorative face) --- */
+.sel-title{font-weight:700;letter-spacing:-.02em}
+#libGhost{font-weight:700;letter-spacing:-.02em}
+.chapter-no{font-weight:600;letter-spacing:-.03em;color:#28241f}
+.chapter-preview{font-family:var(--sm-body-ko);letter-spacing:-.01em}
+.chapter-small{font-family:var(--sm-meta)}
+.folio-tab,.chapter-folio{font-family:var(--sm-meta)}
+.volume b,.volume small{font-family:var(--sm-display)}
+.volume-focus strong{font-weight:600;letter-spacing:-.01em}
+.resume-card strong{font-weight:600;letter-spacing:-.01em}
+.index-hero h1,.hero-title{font-weight:700;letter-spacing:-.02em}
+.chapter-title h2{font-weight:600;letter-spacing:-.01em}
+
+/* --- #1717: companion/context headings that leaked the old display face --- */
+.context-card b{font-family:var(--sm-display);font-weight:600;letter-spacing:-.01em}
+.ai-panel .side-head strong{font-family:var(--sm-display);font-weight:700;letter-spacing:-.02em;color:var(--ink)}
+.memory-item b,.annotation-stat b{font-family:var(--sm-display)}
+.reader-page-note{font-family:var(--sm-body-ko)}
+.selection-context-chip{font-family:var(--sm-body-ko)}
+
+/* ===== B61 #1684 · desktop Memory/AI panel state contract =====
+   Replaces the fixed overlay sheet (which intercepted Reader controls)
+   with real grid columns + persistent collapsed rails.
+   Mobile (<=768px) bottom-sheet contract is untouched. */
+.panel-rail-tab{display:none}
+@media(min-width:769px){
+  .reader-layout{grid-template-columns:var(--sm-mem-col,44px) minmax(0,1fr) var(--sm-ai-col,44px)!important;transition:grid-template-columns .22s ease}
+  body.memory-open .reader-layout{--sm-mem-col:214px}
+  body.ai-open .reader-layout{--sm-ai-col:340px}
+  .reader-layout>.memory-rail,.reader-layout>.ai-panel{
+    display:flex!important;flex-direction:column;
+    position:relative!important;inset:auto!important;width:auto!important;
+    z-index:auto!important;box-shadow:none!important;
+    transform:none!important;
+  }
+  body.ai-open .reader-layout>.ai-panel{
+    display:flex!important;position:relative!important;inset:auto!important;
+    width:auto!important;z-index:auto!important;box-shadow:none!important;
+    border-left:1px solid var(--line);
+  }
+  .reader-layout>.memory-rail{border-right:1px solid var(--line);grid-column:1}
+  .reader-layout>.reader-stage{grid-column:2}
+  .reader-layout>.ai-panel{grid-column:3}
+  /* collapsed state: strip + vertical opener rail */
+  body:not(.memory-open) .reader-layout>.memory-rail>*:not(.panel-rail-tab),
+  body:not(.ai-open) .reader-layout>.ai-panel>*:not(.panel-rail-tab){display:none}
+  body:not(.memory-open) .reader-layout>.memory-rail,
+  body:not(.ai-open) .reader-layout>.ai-panel{padding:0!important;overflow:hidden}
+  .panel-rail-tab{
+    display:none;align-items:center;justify-content:center;
+    width:100%;height:100%;min-height:120px;border:0;cursor:pointer;
+    background:linear-gradient(180deg,rgba(250,247,242,.98),rgba(246,241,234,.98));
+    color:var(--ink);writing-mode:vertical-rl;text-orientation:mixed;
+    font:600 11px/1 var(--sm-meta);letter-spacing:.14em;text-transform:uppercase;
+  }
+  .panel-rail-tab:hover{background:rgba(177,112,78,.08)}
+  .panel-rail-tab:focus-visible{outline:2px solid #b1704e;outline-offset:-3px}
+  body:not(.memory-open) .rail-tab-memory{display:flex}
+  body:not(.ai-open) .rail-tab-ai{display:flex}
+  .rail-tab-memory{border-right:1px solid var(--line)}
+  .rail-tab-ai{border-left:1px solid var(--line)}
+  /* redundant decorative masthead labels while panel content is visible */
+  body.memory-open .memory-rail>.rail-rule-label,
+  body.ai-open .ai-panel>.ai-rule-label{display:none}
+  /* focus-reading keeps full-width Reader */
+  body.focus-reading .reader-layout{grid-template-columns:0 minmax(0,1fr) 0!important}
+  body.focus-reading .reader-layout>.memory-rail,
+  body.focus-reading .reader-layout>.ai-panel{display:none!important}
+}
+
+/* ===== B61 #1684 §1 · Memory entity-card polish ===== */
+.memory-rail .memory-focus-card h4{font-family:var(--sm-display);font-weight:600;font-size:13px;letter-spacing:-.01em;color:var(--ink)}
+.memory-rail .memory-focus-type{font-family:var(--sm-meta);font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+.memory-rail .memory-focus-summary{font-family:var(--sm-body-ko);font-size:12px;line-height:1.65}
+.memory-rail .memory-provenance-chip,
+.memory-rail .memory-distance-chip{
+  font-family:var(--sm-pill);font-size:10px;line-height:1.5;
+  padding:2px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;
+}
+.memory-rail .memory-focus-view-toggle button{font-family:var(--sm-pill);font-size:10px;padding:3px 9px;border-radius:999px}
+.memory-rail .memory-item{display:flex;flex-direction:column;justify-content:center;min-height:34px}
+.memory-rail .memory-item b{line-height:1.35}
+
+/* ===== B61 #1715 · Companion chat presentation ===== */
+.ai-panel .chat-thread{display:flex;flex-direction:column;gap:12px}
+.msg.ai{background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.msg.ai h3{font-family:var(--sm-display);font-weight:700;font-size:14px;letter-spacing:-.01em;line-height:1.35}
+.msg.ai .verified{font-family:var(--sm-meta);font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+.msg.ai .source{font-family:var(--sm-meta);font-size:9.5px;line-height:1.55}
+.msg.ai .answer-contract{display:flex;gap:5px;margin:5px 0 7px}
+.msg.ai .route-badge,.msg.ai .spoiler-badge{font-family:var(--sm-pill);font-size:9.5px;line-height:1.5;padding:2px 8px;border-radius:999px}
+/* rendered markdown body (#1715 §1) */
+.msg.ai .md-body{font-family:var(--sm-body-ko);font-size:12.5px;line-height:1.72;color:#453f38;letter-spacing:-.01em}
+.msg.ai .md-body p{margin:0 0 8px}
+.msg.ai .md-body p:last-child{margin-bottom:0}
+.msg.ai .md-body ul,.msg.ai .md-body ol{margin:0 0 8px;padding-left:19px}
+.msg.ai .md-body li{margin:3px 0;line-height:1.65}
+.msg.ai .md-body strong{font-weight:700}
+.msg.ai .md-body em{font-style:italic}
+.msg.ai .md-body code{font:500 11px var(--sm-body-en);background:rgba(46,35,25,.07);border-radius:5px;padding:1px 5px}
+.msg.ai .md-body blockquote{margin:0 0 8px;padding:3px 0 3px 10px;border-left:2px solid rgba(177,112,78,.45);color:#6b6560}
+.msg.ai .md-body>*:last-child{margin-bottom:0}
+/* persona clarity (#1715 §3): AI reading-companion persona, not a human entity */
+.ai-persona-chip{
+  display:inline-flex;vertical-align:2px;margin-left:7px;padding:2px 8px;border-radius:999px;
+  border:1px solid rgba(177,112,78,.35);background:rgba(177,112,78,.08);color:#8a5a37;
+  font:600 9.5px/1.5 var(--sm-pill);letter-spacing:0;
+}
+/* answer actions (#1715 §4) */
+.save-ai-memory{font-family:var(--sm-pill);font-size:10.5px;font-weight:600;padding:5px 11px;border-radius:999px;line-height:1.5}
+.save-ai-memory:focus-visible,.panel-rail-tab:focus-visible{outline:2px solid #b1704e;outline-offset:2px}
+.answer-disambiguation button{font-family:var(--sm-pill);font-size:10.5px;padding:4px 10px;border-radius:999px}
+/* user vs companion distinction */
+.msg.user{font-family:var(--sm-body-ko);font-size:12.5px;line-height:1.7}
+.msg.user .msg-source-packet{font-family:var(--sm-meta);font-size:9.5px;line-height:1.55}
+/* #1652: side-head status label is now truthful; keep meta-label styling only */
+.ai-panel .side-head small{font-family:var(--sm-meta)}
+
+
+/* ===== B61 #1684 · CENTRAL visual correction 2026-09-04 =====
+   Direct product polish after visual review.
+   UI-only: no AI packet/grounding/boundary semantics. */
+@media(min-width:769px){
+  /* Memory is a real scroll column: children never compress into each other. */
+  .reader-layout>.memory-rail{
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain;
+    padding-bottom:28px!important;
+    scrollbar-width:thin;
+  }
+  body.memory-open .reader-layout>.memory-rail>*:not(.panel-rail-tab){
+    flex:0 0 auto;
+  }
+  .memory-rail .side-head{margin-bottom:12px!important}
+  .memory-rail .memory-scope-bar{margin-bottom:10px!important}
+  .memory-rail .memory-scope-toggle button{font:600 10.5px/1.35 var(--sm-body-ko)!important;min-height:30px!important}
+  .memory-rail .memory-search-wrap input{font:400 11.5px/1.4 var(--sm-body-ko)!important}
+  .memory-rail .memory-filter-nav{flex-wrap:wrap!important;row-gap:6px!important;margin-bottom:10px!important}
+  .memory-rail .memory-filter-nav .pill{font:600 10.5px/1.35 var(--sm-body-ko)!important;min-height:28px!important;padding:5px 9px!important}
+  .memory-rail .memory-focus{
+    position:relative!important;inset:auto!important;
+    min-height:92px!important;max-height:150px!important;
+    overflow:auto!important;margin:0 0 14px!important;
+  }
+  .memory-rail .memory-focus-empty{min-height:76px!important;padding:12px 13px!important}
+  .memory-rail .memory-focus-empty b{font:700 12px/1.35 var(--sm-meta)!important;letter-spacing:.06em!important}
+  .memory-rail .memory-focus-empty span{font:400 11.5px/1.55 var(--sm-body-ko)!important;color:#6f675f!important}
+  .memory-rail .memory-section-label{
+    position:relative!important;inset:auto!important;
+    min-height:20px!important;margin:12px 0 7px!important;
+    font:600 11.5px/1.45 var(--sm-body-ko)!important;
+    letter-spacing:-.01em!important;color:#6a625a!important;
+  }
+  .memory-rail .memory-section-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important}
+  .memory-rail .memory-section-head button{font:600 10.5px/1.4 var(--sm-pill)!important}
+  .memory-rail .annotation-counts{position:relative!important;inset:auto!important;margin:0 0 10px!important}
+  .memory-rail .annotation-stat{min-height:54px!important;padding:10px 12px!important}
+  .memory-rail .annotation-stat b{font-size:14px!important;line-height:1.2!important}
+  .memory-rail .annotation-stat span{font:400 11px/1.45 var(--sm-body-ko)!important;color:#746b62!important}
+  .memory-rail .annotation-memory-list,
+  .memory-rail .user-memory-list{position:relative!important;inset:auto!important;margin:0 0 8px!important;max-height:none!important;overflow:visible!important}
+  .memory-rail .annotation-empty{font:400 11px/1.5 var(--sm-body-ko)!important;color:#82786f!important;padding:10px 12px!important}
+  .memory-rail .memory-item{
+    position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+    display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;
+    width:100%!important;height:auto!important;min-height:58px!important;
+    margin:0 0 8px!important;padding:10px 12px!important;
+    overflow:visible!important;box-sizing:border-box!important;
+  }
+  .memory-rail .memory-item b{
+    display:block!important;width:100%!important;margin:0 0 3px!important;
+    font-family:var(--sm-display)!important;font-size:13.5px!important;font-weight:600!important;line-height:1.35!important;
+    white-space:normal!important;overflow:visible!important;text-overflow:clip!important;color:#3d3731!important;
+  }
+  .memory-rail .memory-item small{
+    display:block!important;width:100%!important;margin:0!important;
+    font:400 11px/1.5 var(--sm-body-ko)!important;color:#71685f!important;
+    white-space:normal!important;overflow:visible!important;text-overflow:clip!important;
+  }
+  .memory-rail .entity-context-sync{
+    position:relative!important;inset:auto!important;min-height:34px!important;
+    margin:8px 0 0!important;padding:8px 0 0!important;gap:8px!important;
+  }
+  .memory-rail .entity-context-sync>small{font:700 9px/1.4 var(--sm-meta)!important}
+  .memory-rail .entity-context-sync>b{font:600 11.5px/1.4 var(--sm-body-ko)!important}
+  .memory-rail .entity-context-sync button{font:600 10px/1.3 var(--sm-pill)!important;padding:5px 9px!important}
+
+  /* AI rail: conversation first. Remove duplicated chapter/status chrome. */
+  .reader-layout>.ai-panel{min-height:0!important;overflow:hidden!important}
+  .ai-panel .ai-head-compact{
+    flex:0 0 auto!important;min-height:42px!important;height:42px!important;
+    margin:0 0 8px!important;padding:0 2px 8px!important;
+    display:flex!important;align-items:center!important;justify-content:space-between!important;
+    border-bottom:1px solid var(--line)!important;
+  }
+  .ai-panel .ai-head-compact strong{
+    font:700 12px/1.2 var(--sm-meta)!important;letter-spacing:.08em!important;text-transform:uppercase!important;color:#4c463f!important;
+  }
+  .ai-panel .ai-head-compact small{font:600 8.5px/1.2 var(--sm-meta)!important;letter-spacing:.08em!important;color:#9a9188!important}
+  .ai-panel>.ai-context-runtime{
+    flex:0 0 auto!important;margin:0!important;padding:0!important;
+    border:0!important;background:transparent!important;box-shadow:none!important;
+    min-height:0!important;
+  }
+  .ai-panel>.ai-context-runtime:empty{display:none!important}
+  .ai-panel>.ai-context-runtime .entity-context-sync{margin:0 0 8px!important;padding:7px 0!important}
+  .ai-panel .quick{
+    flex:0 0 auto!important;display:flex!important;gap:6px!important;
+    overflow-x:auto!important;overflow-y:hidden!important;white-space:nowrap!important;
+    margin:0 0 8px!important;padding:0 0 4px!important;scrollbar-width:none;
+  }
+  .ai-panel .quick::-webkit-scrollbar{display:none}
+  .ai-panel .quick button{flex:0 0 auto!important;font-size:10px!important;padding:6px 9px!important}
+  .ai-panel .voice-status{flex:0 0 auto!important;font:400 9.5px/1.45 var(--sm-body-ko)!important;margin:0 0 8px!important;color:#8b8178!important}
+  .ai-panel .chat-thread{
+    flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;
+    padding:2px 2px 14px 0!important;margin:0!important;overscroll-behavior:contain;
+  }
+  .ai-panel .ask{flex:0 0 auto!important;position:relative!important;inset:auto!important;margin-top:8px!important;padding-top:8px!important}
+  /* Keep collapsed rails truly collapsed even after later component overrides. */
+  body:not(.memory-open) .reader-layout>.memory-rail>*:not(.panel-rail-tab),
+  body:not(.ai-open) .reader-layout>.ai-panel>*:not(.panel-rail-tab){display:none!important}
+}
+@media (min-width:769px) and (orientation:landscape){
+  body.reader-mode .mobile-dock{display:none!important}
+}
+
+/* B61 #1684 CENTRAL v2 — conversation-first Companion empty-state */
+@media (min-width:769px){
+  .ai-panel .ai-head-compact{
+    min-height:38px!important;height:38px!important;
+    margin:0 0 6px!important;padding:0 2px 6px!important;
+  }
+  .ai-panel .ai-head-compact strong{font-size:11.5px!important;letter-spacing:.06em!important}
+  .ai-panel .ai-head-compact small{font-size:8px!important;letter-spacing:.06em!important}
+  .ai-panel .chat-thread>.ai-context-runtime{
+    flex:0 0 auto!important;margin:0 0 8px!important;padding:0!important;
+    border:0!important;background:transparent!important;box-shadow:none!important;min-height:0!important;
+  }
+  .ai-panel .chat-thread>.ai-context-runtime:empty{display:none!important}
+  .ai-panel .chat-thread>.ai-context-runtime .entity-context-sync{margin:0!important;padding:7px 0!important}
+  .companion-empty-state{
+    flex:0 0 auto;display:flex;flex-direction:column;justify-content:center;
+    min-height:min(330px,46vh);padding:18px 2px 20px;margin:auto 0;
+    border-top:1px solid rgba(91,76,62,.08);border-bottom:1px solid rgba(91,76,62,.08);
+  }
+  .companion-empty-state.is-hidden{display:none!important}
+  .companion-empty-kicker{
+    font:700 9px/1.2 var(--sm-meta);letter-spacing:.12em;text-transform:uppercase;color:#9b6d50;margin-bottom:9px;
+  }
+  .companion-empty-state>h3{
+    margin:0 0 8px;font:700 15px/1.4 var(--sm-display);letter-spacing:-.025em;color:#342f2a;
+  }
+  .companion-empty-state>p{
+    margin:0 0 12px;font:400 11.5px/1.65 var(--sm-body-ko);color:#71685f;letter-spacing:-.01em;
+  }
+  .companion-empty-context{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+  .companion-empty-context>span{
+    display:inline-flex;align-items:center;min-height:24px;padding:4px 8px;border-radius:999px;
+    border:1px solid rgba(177,112,78,.2);background:rgba(255,250,246,.72);
+    font:600 9.5px/1.3 var(--sm-pill);color:#7e6a5c;
+  }
+  .companion-empty-context .context-rule{border-color:rgba(80,113,89,.18);color:#607466}
+  .companion-empty-state .quick{
+    display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;
+    overflow:visible!important;white-space:normal!important;margin:0 0 10px!important;padding:0!important;
+  }
+  .companion-empty-state .quick button{
+    width:100%!important;min-height:34px!important;padding:7px 9px!important;
+    border-radius:10px!important;white-space:normal!important;text-align:left!important;
+    font:600 10.5px/1.35 var(--sm-body-ko)!important;color:#575049!important;background:rgba(255,255,255,.76)!important;
+  }
+  .companion-empty-state .voice-status{
+    margin:0!important;padding:0!important;font:400 9.5px/1.5 var(--sm-body-ko)!important;color:#9a9188!important;
+  }
+  .ai-panel .chat-thread:has(.msg.user) .companion-empty-state,
+  .ai-panel .chat-thread:has(.msg.ai) .companion-empty-state{display:none!important}
+}
+@media (max-width:768px){
+  .companion-empty-state{display:flex;flex-direction:column;padding:16px 2px 14px;margin:auto 0}
+  .companion-empty-state.is-hidden{display:none!important}
+  .companion-empty-kicker{font:700 9px/1.2 var(--sm-meta);letter-spacing:.1em;color:#9b6d50;margin-bottom:8px}
+  .companion-empty-state>h3{margin:0 0 7px;font:700 15px/1.4 var(--sm-display);color:#342f2a}
+  .companion-empty-state>p{margin:0 0 10px;font:400 11.5px/1.6 var(--sm-body-ko);color:#71685f}
+  .companion-empty-context{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+  .companion-empty-context>span{font:600 9px/1.3 var(--sm-pill);padding:4px 7px;border:1px solid rgba(177,112,78,.18);border-radius:999px}
+  .companion-empty-state .quick{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px!important;margin:0 0 9px!important}
+  .companion-empty-state .quick button{font-size:10px!important;white-space:normal!important;min-height:32px!important}
+  .companion-empty-state .voice-status{font-size:9px!important;margin:0!important}
+}

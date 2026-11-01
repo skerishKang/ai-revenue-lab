@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MIC:chapter:001",
+  "unit_ordinal": 894,
+  "unit_label": "MIC 1",
+  "book_code": "MIC",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MIC:1:1",
+      "sequence": 22581,
+      "chapter_label": "MIC 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word that came to Micah of Morasheth in the days of Jotham, Ahaz, and Hezekiah, kings of Judah, which he saw concerning Samaria and Jerusalem.",
+      "ko": "유다 열왕 요담과 아하스와 히스기야 시대에 모레셋 사람 미가에게 임한 여호와의 말씀 곧 사마리아와 예루살렘에 관한 묵시라",
+      "source_text_hash": "35117e66e1569e01cb9ce1b6b9de51ba34d12e9c37b6795221d8101fa955954e",
+      "translation_text_hash": "883077ec28b276d6a16be61e489c44b72bb343bc389118e8cc7f5aa7c80721bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 열왕 요담과 아하스와 히스기야 시대에 모레셋 사람 미가에게 임한 여호와의 말씀 곧 사마리아와 예루살렘에 관한 묵시라"
+      ],
+      "raw_text_hashes": [
+        "883077ec28b276d6a16be61e489c44b72bb343bc389118e8cc7f5aa7c80721bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:2",
+      "sequence": 22582,
+      "chapter_label": "MIC 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Hear, you peoples, all of you! Listen, O earth, and all that is therein. Let the Lord GOD be witness against you, the Lord from his holy temple.",
+      "ko": "백성들아 너희는 다 들을찌어다 땅과 거기 있는 모든 것들아 자세히 들을찌어다 주 여호와께서 너희에게 대하여 증거하시되 곧 주께서 성전에서 그리하실 것이니라",
+      "source_text_hash": "567451c4791f2c34ae7c7adbed95d679feb2f86f044956f673f65dbeb6312e7b",
+      "translation_text_hash": "4b0c1702ad94ec793b5e9f4b8dd6ac02155e5e1c2e624594a65ef847f1bebfd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성들아 너희는 다 들을찌어다 땅과 거기 있는 모든 것들아 자세히 들을찌어다 주 여호와께서 너희에게 대하여 증거하시되 곧 주께서 성전에서 그리하실 것이니라"
+      ],
+      "raw_text_hashes": [
+        "4b0c1702ad94ec793b5e9f4b8dd6ac02155e5e1c2e624594a65ef847f1bebfd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:3",
+      "sequence": 22583,
+      "chapter_label": "MIC 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "For behold, the LORD comes out of his place, and will come down and tread on the high places of the earth.",
+      "ko": "여호와께서 그 처소에서 나오시고 강림하사 땅의 높은 곳을 밟으실 것이라",
+      "source_text_hash": "22572f3c8177f7b0ee141ed995758155535b9f3f7b6edd3e1c50f4ef70932b7c",
+      "translation_text_hash": "1255b0b42475ffb83b386bc22bd5d1bb780c66b0878f4567a028e011aa25600f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 처소에서 나오시고 강림하사 땅의 높은 곳을 밟으실 것이라"
+      ],
+      "raw_text_hashes": [
+        "1255b0b42475ffb83b386bc22bd5d1bb780c66b0878f4567a028e011aa25600f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:4",
+      "sequence": 22584,
+      "chapter_label": "MIC 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "The mountains melt under him, and the valleys split apart like wax before the fire, like waters that are poured down a steep place.",
+      "ko": "그 아래서 산들이 녹고 골짜기들이 갈라지기를 불 앞의 밀 같고 비탈로 쏟아지는 물 같을 것이니",
+      "source_text_hash": "202ce24b0e8f1ef1b32033e69e34164e32859a5fd95f152fa586c3bc9b2e1e7a",
+      "translation_text_hash": "a094fc6820fd47b6d5002d43fb58e99a7e43107b82b8f04120fa27c9585e1e51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아래서 산들이 녹고 골짜기들이 갈라지기를 불 앞의 밀 같고 비탈로 쏟아지는 물 같을 것이니"
+      ],
+      "raw_text_hashes": [
+        "a094fc6820fd47b6d5002d43fb58e99a7e43107b82b8f04120fa27c9585e1e51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:5",
+      "sequence": 22585,
+      "chapter_label": "MIC 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "“All this is for the disobedience of Jacob, and for the sins of the house of Israel. What is the disobedience of Jacob? Isn’t it Samaria? And what are the high places of Judah? Aren’t they Jerusalem?",
+      "ko": "이는 다 야곱의 허물을 인함이요 이스라엘 족속의 죄를 인함이라 야곱의 허물이 무엇이뇨 사마리아가 아니뇨 유다의 산당이 무엇이뇨 예루살렘이 아니뇨",
+      "source_text_hash": "8dc3cbb3baf094e16a0f310f15bfcbef2b4ce6676fb28b93096b0a0f47e4eac4",
+      "translation_text_hash": "611340f6f7798610747d740d7bd4d0803ebf97371d19d423cf2fa62abbd657c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다 야곱의 허물을 인함이요 이스라엘 족속의 죄를 인함이라 야곱의 허물이 무엇이뇨 사마리아가 아니뇨 유다의 산당이 무엇이뇨 예루살렘이 아니뇨"
+      ],
+      "raw_text_hashes": [
+        "611340f6f7798610747d740d7bd4d0803ebf97371d19d423cf2fa62abbd657c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:6",
+      "sequence": 22586,
+      "chapter_label": "MIC 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore I will make Samaria like a rubble heap of the field, like places for planting vineyards; and I will pour down its stones into the valley, and I will uncover its foundations.",
+      "ko": "이러므로 내가 사마리아로 들의 무더기 같게 하고 포도 심을 동산 같게 하며 또 그 돌들을 골짜기에 쏟아 내리고 그 지대를 드러내며",
+      "source_text_hash": "df4053cb67f61056133cba2e9bf34330cb258dd344090e998ee6d0a2a51372f5",
+      "translation_text_hash": "df94da5f7a0af1db6fff113f67c36e5fc4d2a2426b751c2851ca3d32add23cc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 사마리아로 들의 무더기 같게 하고 포도 심을 동산 같게 하며 또 그 돌들을 골짜기에 쏟아 내리고 그 지대를 드러내며"
+      ],
+      "raw_text_hashes": [
+        "df94da5f7a0af1db6fff113f67c36e5fc4d2a2426b751c2851ca3d32add23cc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:7",
+      "sequence": 22587,
+      "chapter_label": "MIC 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "All her idols will be beaten to pieces, all her temple gifts will be burned with fire, and I will destroy all her images; for of the hire of a prostitute has she gathered them, and to the hire of a prostitute shall they return.”",
+      "ko": "그 새긴 우상을 다 파쇄하고 그 음행의 값을 다 불사르며 그 목상을 다 훼파하리니 그가 기생의 값으로 모았은즉 그것이 기생의 값으로 돌아가리라",
+      "source_text_hash": "808965630f771475ec2dece9654f6cd7797959f01e2a23581749e36ebfd172f0",
+      "translation_text_hash": "6f46c3c3fd1b446eca7835c3b6f143ba8491b5e6419141f096e902ca09fc48c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 새긴 우상을 다 파쇄하고 그 음행의 값을 다 불사르며 그 목상을 다 훼파하리니 그가 기생의 값으로 모았은즉 그것이 기생의 값으로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "6f46c3c3fd1b446eca7835c3b6f143ba8491b5e6419141f096e902ca09fc48c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:8",
+      "sequence": 22588,
+      "chapter_label": "MIC 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "For this I will lament and wail. I will go stripped and naked. I will howl like the jackals and mourn like the ostriches.",
+      "ko": "이러므로 내가 애통하며 애곡하고 벌거벗은 몸으로 행하며 들개 같이 애곡하고 타조 같이 애통하리니",
+      "source_text_hash": "e3829576e308953c9eefff143cf66f2ab53eec0783ba282e9b5fbdec315a0e98",
+      "translation_text_hash": "56e9505ea8a8084797d3601b3997e94ebc8b8917f730cf92ad5eb48985b18179",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 애통하며 애곡하고 벌거벗은 몸으로 행하며 들개 같이 애곡하고 타조 같이 애통하리니"
+      ],
+      "raw_text_hashes": [
+        "56e9505ea8a8084797d3601b3997e94ebc8b8917f730cf92ad5eb48985b18179"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:9",
+      "sequence": 22589,
+      "chapter_label": "MIC 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "For her wounds are incurable; for it has come even to Judah. It reaches to the gate of my people, even to Jerusalem.",
+      "ko": "이는 그 상처는 고칠 수 없고 그것이 유다까지도 이르고 내 백성의 성문 곧 예루살렘에도 미쳤음이니라",
+      "source_text_hash": "5e6e5ab329cc6cf4d0c74bb641a46e917cd33ad6b39d083fb4154713c3eba5bf",
+      "translation_text_hash": "51b5f43c31bc2a9beae301d0fbfd2ecb8dbb32c5d5c0a59c944a63a6fd20193d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 상처는 고칠 수 없고 그것이 유다까지도 이르고 내 백성의 성문 곧 예루살렘에도 미쳤음이니라"
+      ],
+      "raw_text_hashes": [
+        "51b5f43c31bc2a9beae301d0fbfd2ecb8dbb32c5d5c0a59c944a63a6fd20193d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:10",
+      "sequence": 22590,
+      "chapter_label": "MIC 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Don’t tell it in Gath. Don’t weep at all. At Beth Ophrah I have rolled myself in the dust.",
+      "ko": "가드에 고하지 말며 도무지 호곡하지 말찌어다 베들레아브라에서 티끌에 굴찌어다",
+      "source_text_hash": "da872bb8ac6da9bde3079e5bfef5a793998984d2e1553f0a330e3102f58962a4",
+      "translation_text_hash": "77f3066dcc2183362cd206b1774ca51aa06e7d4534570e592ea5cfac557ef239",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가드에 고하지 말며 도무지 호곡하지 말찌어다 베들레아브라에서 티끌에 굴찌어다"
+      ],
+      "raw_text_hashes": [
+        "77f3066dcc2183362cd206b1774ca51aa06e7d4534570e592ea5cfac557ef239"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:11",
+      "sequence": 22591,
+      "chapter_label": "MIC 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Pass on, inhabitant of Shaphir, in nakedness and shame. The inhabitant of Zaanan won’t come out. The wailing of Beth Ezel will take from you his protection.",
+      "ko": "사빌 거민아 너는 벗은 몸에 수치를 무릅쓰고 나갈찌어다 사아난 거민은 나오지 못하고 벧에셀이 애곡하여 너희로 의지할 곳이 없게 하리라",
+      "source_text_hash": "23f5fbb92cfd28d20d18193e7408bc7635a7d96b267857f33cc85e281a14daf8",
+      "translation_text_hash": "ffbe01915dc370771e6c6b1b5ab809ef75c3225993d4902a9b7f45d72d9f4502",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사빌 거민아 너는 벗은 몸에 수치를 무릅쓰고 나갈찌어다 사아난 거민은 나오지 못하고 벧에셀이 애곡하여 너희로 의지할 곳이 없게 하리라"
+      ],
+      "raw_text_hashes": [
+        "ffbe01915dc370771e6c6b1b5ab809ef75c3225993d4902a9b7f45d72d9f4502"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:12",
+      "sequence": 22592,
+      "chapter_label": "MIC 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "For the inhabitant of Maroth waits anxiously for good, because evil has come down from the LORD to the gate of Jerusalem.",
+      "ko": "마롯 거민이 근심 중에 복을 바라니 이는 재앙이 여호와께로 말미암아 예루살렘 성문에 임함이니라",
+      "source_text_hash": "9a947c0af6f7bb7a5329276a58d8cba28d2f73acf61aa187e195c66e31b658b6",
+      "translation_text_hash": "51d74e8aca53b4bd9b513925c0ec6660e44973632a9520490819cfe7c19132c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마롯 거민이 근심 중에 복을 바라니 이는 재앙이 여호와께로 말미암아 예루살렘 성문에 임함이니라"
+      ],
+      "raw_text_hashes": [
+        "51d74e8aca53b4bd9b513925c0ec6660e44973632a9520490819cfe7c19132c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:13",
+      "sequence": 22593,
+      "chapter_label": "MIC 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Harness the chariot to the swift steed, inhabitant of Lachish. She was the beginning of sin to the daughter of Zion; for the transgressions of Israel were found in you.",
+      "ko": "라기스 거민아 너는 준마에 병거를 메울찌어다 라기스는 딸 시온의 죄의 근본이니 이는 이스라엘의 허물이 네게서 보였음이니라",
+      "source_text_hash": "6992d4aca984045a137a4e0e543e8463df3a9e556a217000b35bdc9dd79a0f9a",
+      "translation_text_hash": "fb7261de0f09abea55414ef674f6692d7a3145b31ff77a7ff37e7d5fe34cbcd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라기스 거민아 너는 준마에 병거를 메울찌어다 라기스는 딸 시온의 죄의 근본이니 이는 이스라엘의 허물이 네게서 보였음이니라"
+      ],
+      "raw_text_hashes": [
+        "fb7261de0f09abea55414ef674f6692d7a3145b31ff77a7ff37e7d5fe34cbcd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:14",
+      "sequence": 22594,
+      "chapter_label": "MIC 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore you will give a parting gift to Moresheth Gath. The houses of Achzib will be a deceitful thing to the kings of Israel.",
+      "ko": "이러므로 너는 가드모레셋에 작별하는 예물을 줄찌어다 악십의 집들이 이스라엘 열왕을 속이리라",
+      "source_text_hash": "935e7883ad1130fbf3291f2bd8cd49ef1f1cd76eeb539a633b4cc7fe83d47119",
+      "translation_text_hash": "dbcce052cd34f62ad348d2eb185c17f2899c1e47d89678077ddcf82fcbde647e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너는 가드모레셋에 작별하는 예물을 줄찌어다 악십의 집들이 이스라엘 열왕을 속이리라"
+      ],
+      "raw_text_hashes": [
+        "dbcce052cd34f62ad348d2eb185c17f2899c1e47d89678077ddcf82fcbde647e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:15",
+      "sequence": 22595,
+      "chapter_label": "MIC 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "I will yet bring a conqueror to you, inhabitants of Mareshah. The glory of Israel will come to Adullam.",
+      "ko": "마레사 거민아 내가 장차 너를 얻을 자로 네게 임하게 하리니 이스라엘의 영광이 아둘람까지 이를 것이라",
+      "source_text_hash": "872a0797ce9750730c7ee48f36c6073594f9aa8ff4672299c65bc7ef2c129633",
+      "translation_text_hash": "49444071c88990783f94c2959ac261a2dbb46ec0b0f02cbf0d9e744a640c4fbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마레사 거민아 내가 장차 너를 얻을 자로 네게 임하게 하리니 이스라엘의 영광이 아둘람까지 이를 것이라"
+      ],
+      "raw_text_hashes": [
+        "49444071c88990783f94c2959ac261a2dbb46ec0b0f02cbf0d9e744a640c4fbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:1:16",
+      "sequence": 22596,
+      "chapter_label": "MIC 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "MIC",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Shave your heads, and cut off your hair for the children of your delight. Enlarge your baldness like the vulture, for they have gone into captivity from you!",
+      "ko": "너는 네 기뻐하는 자식으로 인하여 네 머리털을 깎아 대머리 같게 할찌어다 네 머리로 크게 무여지게 하기를 독수리 같게 할찌어다 이는 그들이 사로잡혀 너를 떠났음이니라",
+      "source_text_hash": "91eef80a6d1abe08440337026524377a2d167ee502b277d73f83cba25562a227",
+      "translation_text_hash": "18b674356b863d72ffdcdad74890eaf7160fb3dfcf30cbb587cd65995199742b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 기뻐하는 자식으로 인하여 네 머리털을 깎아 대머리 같게 할찌어다 네 머리로 크게 무여지게 하기를 독수리 같게 할찌어다 이는 그들이 사로잡혀 너를 떠났음이니라"
+      ],
+      "raw_text_hashes": [
+        "18b674356b863d72ffdcdad74890eaf7160fb3dfcf30cbb587cd65995199742b"
+      ]
+    }
+  ]
+}

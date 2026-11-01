@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GAL:chapter:004",
+  "unit_ordinal": 1095,
+  "unit_label": "GAL 4",
+  "book_code": "GAL",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GAL:4:1",
+      "sequence": 29129,
+      "chapter_label": "GAL 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "But I say that so long as the heir is a child, he is no different from a bondservant, though he is lord of all,",
+      "ko": "내가 또 말하노니 유업을 이을 자가 모든 것의 주인이나 어렸을 동안에는 종과 다름이 없어서",
+      "source_text_hash": "10f004220c7b95f552636138dbed581e139f6f68bd90f7546b4cc11f042b8608",
+      "translation_text_hash": "4a30a8b2c76d6468391d1702f9f58811e72b101769284dadd665ff3bc0f29b2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 말하노니 유업을 이을 자가 모든 것의 주인이나 어렸을 동안에는 종과 다름이 없어서"
+      ],
+      "raw_text_hashes": [
+        "4a30a8b2c76d6468391d1702f9f58811e72b101769284dadd665ff3bc0f29b2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:2",
+      "sequence": 29130,
+      "chapter_label": "GAL 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "but is under guardians and stewards until the day appointed by the father.",
+      "ko": "그 아버지의 정한 때까지 후견인과 청지기 아래 있나니",
+      "source_text_hash": "88eb7f79d8106d1708b42222ad9bce64e9b732959d8dfadd2e8242ffd42c689e",
+      "translation_text_hash": "b11f01338c7ff73122cdba728e0507d00c57afc10d99d7edeebb623edb53482f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아버지의 정한 때까지 후견인과 청지기 아래 있나니"
+      ],
+      "raw_text_hashes": [
+        "b11f01338c7ff73122cdba728e0507d00c57afc10d99d7edeebb623edb53482f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:3",
+      "sequence": 29131,
+      "chapter_label": "GAL 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "So we also, when we were children, were held in bondage under the elemental principles of the world.",
+      "ko": "이와 같이 우리도 어렸을 때에 이 세상 초등 학문 아래 있어서 종노릇 하였더니",
+      "source_text_hash": "01918478b9602026ed950994a2dd2a683940e1f44550fae8d23b504588aaab3b",
+      "translation_text_hash": "7a95a5de70a3ec5a5a99fd07b7e65812caaf09854cdfcb4b50730f7b45ae608d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 우리도 어렸을 때에 이 세상 초등 학문 아래 있어서 종노릇 하였더니"
+      ],
+      "raw_text_hashes": [
+        "7a95a5de70a3ec5a5a99fd07b7e65812caaf09854cdfcb4b50730f7b45ae608d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:4",
+      "sequence": 29132,
+      "chapter_label": "GAL 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "But when the fullness of the time came, God sent out his Son, born to a woman, born under the law,",
+      "ko": "때가 차매 하나님이 그 아들을 보내사 여자에게서 나게 하시고 율법 아래 나게 하신 것은",
+      "source_text_hash": "06ba10c22a67fb8bf93b515a1ac258688dafd85c302340b4efdd70f1e5fe37e2",
+      "translation_text_hash": "00e9a719e1dbbdf2725a25680dd918339313c6ddee5d90b513b4547d5ffc14b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 차매 하나님이 그 아들을 보내사 여자에게서 나게 하시고 율법 아래 나게 하신 것은"
+      ],
+      "raw_text_hashes": [
+        "00e9a719e1dbbdf2725a25680dd918339313c6ddee5d90b513b4547d5ffc14b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:5",
+      "sequence": 29133,
+      "chapter_label": "GAL 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "that he might redeem those who were under the law, that we might receive the adoption as children.",
+      "ko": "율법 아래 있는 자들을 속량하시고 우리로 아들의 명분을 얻게 하려 하심이라",
+      "source_text_hash": "571860999d8f5ae21431cebd6037793f028438af2dd3671d46df5d7802bbf156",
+      "translation_text_hash": "dcb2bf79ea46e2ea0b76b99f494c1e35740a1f156d8f76d1ccb18ba4980e0ebe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법 아래 있는 자들을 속량하시고 우리로 아들의 명분을 얻게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "dcb2bf79ea46e2ea0b76b99f494c1e35740a1f156d8f76d1ccb18ba4980e0ebe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:6",
+      "sequence": 29134,
+      "chapter_label": "GAL 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "And because you are children, God sent out the Spirit of his Son into your hearts, crying, “Abba, Father!”",
+      "ko": "너희가 아들인고로 하나님이 그 아들의 영을 우리 마음 가운데 보내사 아바 아버지라 부르게 하셨느니라",
+      "source_text_hash": "02c5c34fb51088e6c14c48410978b103ceb9e49103951c7f777da7931906fd74",
+      "translation_text_hash": "e3a4587ec46a535874a1ae313d89f041402644808e113748ed910ab3c95e1c17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 아들인고로 하나님이 그 아들의 영을 우리 마음 가운데 보내사 아바 아버지라 부르게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "e3a4587ec46a535874a1ae313d89f041402644808e113748ed910ab3c95e1c17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:7",
+      "sequence": 29135,
+      "chapter_label": "GAL 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "So you are no longer a bondservant, but a son; and if a son, then an heir of God through Christ.",
+      "ko": "그러므로 네가 이 후로는 종이 아니요 아들이니 아들이면 하나님으로 말미암아 유업을 이을 자니라",
+      "source_text_hash": "e5c7deec6078762dcd09149344b228463671b1929706b0b5aea45861ffb9c16f",
+      "translation_text_hash": "9034dba22146e9111d85cc5a106623ab6f0c0a37b2d2adb979090483701e6abb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 네가 이 후로는 종이 아니요 아들이니 아들이면 하나님으로 말미암아 유업을 이을 자니라"
+      ],
+      "raw_text_hashes": [
+        "9034dba22146e9111d85cc5a106623ab6f0c0a37b2d2adb979090483701e6abb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:8",
+      "sequence": 29136,
+      "chapter_label": "GAL 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "However at that time, not knowing God, you were in bondage to those who by nature are not gods.",
+      "ko": "그러나 너희가 그 때에는 하나님을 알지 못하여 본질상 하나님이 아닌 자들에게 종노릇 하였더니",
+      "source_text_hash": "8eda0d75d6ea8d3af609a580e9a42b39ad11dfa3355be20d939c4d43b5f18ef8",
+      "translation_text_hash": "23f5f1d5aaf3390ff35c325a1118a57470c55cf79ae85d485fdc11d1bef312ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희가 그 때에는 하나님을 알지 못하여 본질상 하나님이 아닌 자들에게 종노릇 하였더니"
+      ],
+      "raw_text_hashes": [
+        "23f5f1d5aaf3390ff35c325a1118a57470c55cf79ae85d485fdc11d1bef312ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:9",
+      "sequence": 29137,
+      "chapter_label": "GAL 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "But now that you have come to know God, or rather to be known by God, why do you turn back again to the weak and miserable elemental principles, to which you desire to be in bondage all over again?",
+      "ko": "이제는 너희가 하나님을 알뿐더러 하나님의 아신바 되었거늘 어찌하여 다시 약하고 천한 초등 학문으로 돌아가서 다시 저희에게 종노릇 하려 하느냐",
+      "source_text_hash": "8be4a969dfb3e4d61f77fb5f60f2f926798c82dedd8f4bcdf534d4aff6022b48",
+      "translation_text_hash": "b920d2d1e1b3e16d8dc34cca883f4826ef236eed89e8d06a7dfe06ea7ac4d5be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 너희가 하나님을 알뿐더러 하나님의 아신바 되었거늘 어찌하여 다시 약하고 천한 초등 학문으로 돌아가서 다시 저희에게 종노릇 하려 하느냐"
+      ],
+      "raw_text_hashes": [
+        "b920d2d1e1b3e16d8dc34cca883f4826ef236eed89e8d06a7dfe06ea7ac4d5be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:10",
+      "sequence": 29138,
+      "chapter_label": "GAL 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "You observe days, months, seasons, and years.",
+      "ko": "너희가 날과 달과 절기와 해를 삼가 지키니",
+      "source_text_hash": "50fb2ba457e0db11a9c5704c0e5d38c0c9b9370c3784f493ab0c6e227964c8a1",
+      "translation_text_hash": "4a44db953f591031013b16b66f06c63f292243d45217a8be74c4089b26d1a781",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 날과 달과 절기와 해를 삼가 지키니"
+      ],
+      "raw_text_hashes": [
+        "4a44db953f591031013b16b66f06c63f292243d45217a8be74c4089b26d1a781"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:11",
+      "sequence": 29139,
+      "chapter_label": "GAL 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "I am afraid for you, that I might have wasted my labor for you.",
+      "ko": "내가 너희를 위하여 수고한 것이 헛될까 두려워 하노라",
+      "source_text_hash": "70eb1d6992a9a81dcb9c7a017ea4202c21c2676d28d5151b632edd6383c95bde",
+      "translation_text_hash": "b254957cb188127e9fda357d0640dfc7da25f95a9d383304e3cbd4d955f799fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 위하여 수고한 것이 헛될까 두려워 하노라"
+      ],
+      "raw_text_hashes": [
+        "b254957cb188127e9fda357d0640dfc7da25f95a9d383304e3cbd4d955f799fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:12",
+      "sequence": 29140,
+      "chapter_label": "GAL 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "I beg you, brothers, become as I am, for I also have become as you are. You did me no wrong,",
+      "ko": "형제들아 내가 너희와 같이 되었은즉 너희도 나와 같이 되기를 구하노라 너희가 내게 해롭게 하지 아니하였느니라",
+      "source_text_hash": "58c9aba0f0c1c4438e5b016a5e44b1a4dc0d4d6e4d8fe4fbf45b81d41db3d096",
+      "translation_text_hash": "b92bd386a1d2242cc6a7cb2a756dcafafdf28a5ae765967e58b2b485a9cd46f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 너희와 같이 되었은즉 너희도 나와 같이 되기를 구하노라 너희가 내게 해롭게 하지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b92bd386a1d2242cc6a7cb2a756dcafafdf28a5ae765967e58b2b485a9cd46f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:13",
+      "sequence": 29141,
+      "chapter_label": "GAL 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "but you know that because of weakness in the flesh I preached the Good News to you the first time.",
+      "ko": "내가 처음에 육체의 약함을 인하여 너희에게 복음을 전한 것을 너희가 아는 바라",
+      "source_text_hash": "20f04c883611592cbe2b5df45cd9fe8803a49d131eeb234c9363e286042f4ae0",
+      "translation_text_hash": "11f1d5975dd10b8e306e84606ee3ada9b5360f1afeac671855eb7e4e4c93cfd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 처음에 육체의 약함을 인하여 너희에게 복음을 전한 것을 너희가 아는 바라"
+      ],
+      "raw_text_hashes": [
+        "11f1d5975dd10b8e306e84606ee3ada9b5360f1afeac671855eb7e4e4c93cfd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:14",
+      "sequence": 29142,
+      "chapter_label": "GAL 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "That which was a temptation to you in my flesh, you didn’t despise nor reject; but you received me as an angel of God, even as Christ Jesus.",
+      "ko": "너희를 시험하는 것이 내 육체에 있으되 이것을 너희가 업신여기지도 아니하며 버리지도 아니하고 오직 나를 하나님의 천사와 같이 또는 그리스도 예수와 같이 영접하였도다",
+      "source_text_hash": "6d5906f898260bd5ae984004c42b469b61756b1774269b18ded23bb1d3a6c8c8",
+      "translation_text_hash": "81d6c33e806f9afdd1af54937b46f23f380a47afab9d853b2b1799ef66d9893a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 시험하는 것이 내 육체에 있으되 이것을 너희가 업신여기지도 아니하며 버리지도 아니하고 오직 나를 하나님의 천사와 같이 또는 그리스도 예수와 같이 영접하였도다"
+      ],
+      "raw_text_hashes": [
+        "81d6c33e806f9afdd1af54937b46f23f380a47afab9d853b2b1799ef66d9893a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:15",
+      "sequence": 29143,
+      "chapter_label": "GAL 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "What was the blessing you enjoyed? For I testify to you that, if possible, you would have plucked out your eyes and given them to me.",
+      "ko": "너희의 복이 지금 어디 있느냐 내가 너희에게 증거하노니 너희가 할 수만 있었더면 너희의 눈이라도 빼어 나를 주었으리라",
+      "source_text_hash": "da42afe5e0a5f51c522476e8a3c36ff8aaa6789f3e0426c313a59e29984355fe",
+      "translation_text_hash": "64cf4bc8903d592d521933b98532f2fd3425fa715a8c7aa55f4340fe347a8170",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 복이 지금 어디 있느냐 내가 너희에게 증거하노니 너희가 할 수만 있었더면 너희의 눈이라도 빼어 나를 주었으리라"
+      ],
+      "raw_text_hashes": [
+        "64cf4bc8903d592d521933b98532f2fd3425fa715a8c7aa55f4340fe347a8170"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:16",
+      "sequence": 29144,
+      "chapter_label": "GAL 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "So then, have I become your enemy by telling you the truth?",
+      "ko": "그런즉 내가 너희에게 참된 말을 하므로 원수가 되었느냐",
+      "source_text_hash": "e13af37be62459a455fda52debe4d526a79e1b8244290b6d89b0645348397aee",
+      "translation_text_hash": "623389cdd4c16319dfba339fdfb3a0afdcba066f7bb61cbe80f054a99fca33c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내가 너희에게 참된 말을 하므로 원수가 되었느냐"
+      ],
+      "raw_text_hashes": [
+        "623389cdd4c16319dfba339fdfb3a0afdcba066f7bb61cbe80f054a99fca33c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:17",
+      "sequence": 29145,
+      "chapter_label": "GAL 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "They zealously seek you in no good way. No, they desire to alienate you, that you may seek them.",
+      "ko": "저희가 너희를 대하여 열심 내는 것이 좋은 뜻이 아니요 오직 너희를 이간 붙여 너희로 저희를 대하여 열심 내게 하려 함이라",
+      "source_text_hash": "db4c5173e31ec14ba1967daeab84f814ba49bc9c87a2456204f9202e9480ba5e",
+      "translation_text_hash": "d392be71abbf7b65966f58b29e649867069dbe02c44612a0af82cd800eb3da35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 너희를 대하여 열심 내는 것이 좋은 뜻이 아니요 오직 너희를 이간 붙여 너희로 저희를 대하여 열심 내게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "d392be71abbf7b65966f58b29e649867069dbe02c44612a0af82cd800eb3da35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:18",
+      "sequence": 29146,
+      "chapter_label": "GAL 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "But it is always good to be zealous in a good cause, and not only when I am present with you.",
+      "ko": "좋은 일에 대하여 열심으로 사모함을 받음은 내가 너희를 대하였을 때뿐 아니라 언제든지 좋으니라",
+      "source_text_hash": "98e2f4812163eef540c6967624f065558fe8e9af873273fc672365eb1d4529a0",
+      "translation_text_hash": "772327983986baff86ce5b3aeefa3c6b6a759fe7e18a099669a4f542871fa772",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좋은 일에 대하여 열심으로 사모함을 받음은 내가 너희를 대하였을 때뿐 아니라 언제든지 좋으니라"
+      ],
+      "raw_text_hashes": [
+        "772327983986baff86ce5b3aeefa3c6b6a759fe7e18a099669a4f542871fa772"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:19",
+      "sequence": 29147,
+      "chapter_label": "GAL 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "My little children, of whom I am again in travail until Christ is formed in you—",
+      "ko": "나의 자녀들아 너희 속에 그리스도의 형상이 이루기까지 다시 너희를 위하여 해산하는 수고를 하노니",
+      "source_text_hash": "79f448e822689991e98714bf9ca50c99b7a3cbe4a67af7ee8bbb979015992bde",
+      "translation_text_hash": "d2844175484c57406bdb7e1aa3b4335f5987d5686ea5a175d8cbf7911857820b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 자녀들아 너희 속에 그리스도의 형상이 이루기까지 다시 너희를 위하여 해산하는 수고를 하노니"
+      ],
+      "raw_text_hashes": [
+        "d2844175484c57406bdb7e1aa3b4335f5987d5686ea5a175d8cbf7911857820b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:20",
+      "sequence": 29148,
+      "chapter_label": "GAL 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "but I could wish to be present with you now, and to change my tone, for I am perplexed about you.",
+      "ko": "내가 이제라도 너희와 함께 있어 내 음성을 변하려 함은 너희를 대하여 의심이 있음이라",
+      "source_text_hash": "c7ee103338d870bf36b0ff277b19d80e49638784bc4c16f0c70c9e5f2d5cca95",
+      "translation_text_hash": "accb390113a045fdb308d9b94374180801bc4d448b7287bb46a5eb3a6d21deee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이제라도 너희와 함께 있어 내 음성을 변하려 함은 너희를 대하여 의심이 있음이라"
+      ],
+      "raw_text_hashes": [
+        "accb390113a045fdb308d9b94374180801bc4d448b7287bb46a5eb3a6d21deee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:21",
+      "sequence": 29149,
+      "chapter_label": "GAL 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Tell me, you that desire to be under the law, don’t you listen to the law?",
+      "ko": "내게 말하라 율법 아래 있고자 하는 자들아 율법을 듣지 못하였느냐",
+      "source_text_hash": "d27488a8be23fcff224d5e6f684c52c4f94bf0ce9f8c40931524dbd2e9510639",
+      "translation_text_hash": "a607c5fab141425d5158ec93ef1ed140c7f449191642e3b6fac4d0e0e7872f71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 말하라 율법 아래 있고자 하는 자들아 율법을 듣지 못하였느냐"
+      ],
+      "raw_text_hashes": [
+        "a607c5fab141425d5158ec93ef1ed140c7f449191642e3b6fac4d0e0e7872f71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:22",
+      "sequence": 29150,
+      "chapter_label": "GAL 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "For it is written that Abraham had two sons, one by the servant, and one by the free woman.",
+      "ko": "기록된바 아브라함이 두 아들이 있으니 하나는 계집 종에게서, 하나는 자유하는 여자에게서 났다 하였으나",
+      "source_text_hash": "a811a59d440d7ad2e1a1163a6730c93fbec85da3bd64cc37297b1c18b6b9bbb2",
+      "translation_text_hash": "06f038d681598132af898d6ce7894547f19b0df872f52c7f3ec16822a6475851",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 아브라함이 두 아들이 있으니 하나는 계집 종에게서, 하나는 자유하는 여자에게서 났다 하였으나"
+      ],
+      "raw_text_hashes": [
+        "06f038d681598132af898d6ce7894547f19b0df872f52c7f3ec16822a6475851"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:23",
+      "sequence": 29151,
+      "chapter_label": "GAL 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "However, the son by the servant was born according to the flesh, but the son by the free woman was born through promise.",
+      "ko": "계집 종에게서는 육체를 따라 났고 자유하는 여자에게서는 약속으로 말미암았느니라",
+      "source_text_hash": "2754bb9a22b42ec9d2525e30dd9a586b8e80a92f35c3fbd0c47f7dbfc47bc5c1",
+      "translation_text_hash": "f01f4561f76507f97c5bbe484612a7b101f3e656c2a8927de6cfb305ceb928ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계집 종에게서는 육체를 따라 났고 자유하는 여자에게서는 약속으로 말미암았느니라"
+      ],
+      "raw_text_hashes": [
+        "f01f4561f76507f97c5bbe484612a7b101f3e656c2a8927de6cfb305ceb928ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:24",
+      "sequence": 29152,
+      "chapter_label": "GAL 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "These things contain an allegory, for these are two covenants. One is from Mount Sinai, bearing children to bondage, which is Hagar.",
+      "ko": "이것은 비유니 이 여자들은 두 언약이라 하나는 시내산으로부터 종을 낳은 자니 곧 하가라",
+      "source_text_hash": "9fc5988ba3702d6df70800bdaed0be9be01ae97e94c527b27422b23c72b3ac0e",
+      "translation_text_hash": "3adb5a3c3aa94a726d9447aab8a2a5581243336b66c040c156db343febd72edb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 비유니 이 여자들은 두 언약이라 하나는 시내산으로부터 종을 낳은 자니 곧 하가라"
+      ],
+      "raw_text_hashes": [
+        "3adb5a3c3aa94a726d9447aab8a2a5581243336b66c040c156db343febd72edb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:25",
+      "sequence": 29153,
+      "chapter_label": "GAL 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "For this Hagar is Mount Sinai in Arabia, and answers to the Jerusalem that exists now, for she is in bondage with her children.",
+      "ko": "이 하가는 아라비아에 있는 시내산으로 지금 있는 예루살렘과 같은 데니 저가 그 자녀들로 더불어 종노릇하고",
+      "source_text_hash": "91ab4bf0a0f6485699a0f6c49718425cf78d9a667f9040f743a1085f04052241",
+      "translation_text_hash": "f4855702386266b91cc2b1636f6be6cb7bb804a7808fd2cd3a1b590db6cbb3db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 하가는 아라비아에 있는 시내산으로 지금 있는 예루살렘과 같은 데니 저가 그 자녀들로 더불어 종노릇하고"
+      ],
+      "raw_text_hashes": [
+        "f4855702386266b91cc2b1636f6be6cb7bb804a7808fd2cd3a1b590db6cbb3db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:26",
+      "sequence": 29154,
+      "chapter_label": "GAL 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "But the Jerusalem that is above is free, which is the mother of us all.",
+      "ko": "오직 위에 있는 예루살렘은 자유자니 곧 우리 어머니라",
+      "source_text_hash": "f29d97751b4115bc8fd10ca49a627f02af7708f3f0a75d4899a5416495ffe3e7",
+      "translation_text_hash": "a914e0af7dd9e8e467b44354138e6f9b28c361a51ca39c0550006d8109d8c872",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 위에 있는 예루살렘은 자유자니 곧 우리 어머니라"
+      ],
+      "raw_text_hashes": [
+        "a914e0af7dd9e8e467b44354138e6f9b28c361a51ca39c0550006d8109d8c872"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:27",
+      "sequence": 29155,
+      "chapter_label": "GAL 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "For it is written, “Rejoice, you barren who don’t bear. Break out and shout, you who don’t travail. For the desolate women have more children than her who has a husband.”",
+      "ko": "기록된바 잉태치 못한 자여 즐거워하라 구로치 못한 자여 소리질러 외치라 이는 홀로 사는 자의 자녀가 남편 있는 자의 자녀보다 많음이라 하였으니",
+      "source_text_hash": "126c4e3f88d1f7b0af1c90f0f88bd8651db7ee38bbd1ef03759287d74a1724d4",
+      "translation_text_hash": "d3f10440b4282cb7e03b6d54c732f650d489c2ae3d9ae100cc0fb7c2f531b7a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 잉태치 못한 자여 즐거워하라 구로치 못한 자여 소리질러 외치라 이는 홀로 사는 자의 자녀가 남편 있는 자의 자녀보다 많음이라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "d3f10440b4282cb7e03b6d54c732f650d489c2ae3d9ae100cc0fb7c2f531b7a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:28",
+      "sequence": 29156,
+      "chapter_label": "GAL 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "Now we, brothers, as Isaac was, are children of promise.",
+      "ko": "형제들아 너희는 이삭과 같이 약속의 자녀라",
+      "source_text_hash": "1c25a23a1e384309bcc2981eb5808de8912c22f8e3ae4c930c429f68d77d22dd",
+      "translation_text_hash": "253785a5863eb8264a4436fd855e93e5d916694c0f1cb53bcab9bc30c09077d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희는 이삭과 같이 약속의 자녀라"
+      ],
+      "raw_text_hashes": [
+        "253785a5863eb8264a4436fd855e93e5d916694c0f1cb53bcab9bc30c09077d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:29",
+      "sequence": 29157,
+      "chapter_label": "GAL 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "But as then, he who was born according to the flesh persecuted him who was born according to the Spirit, so also it is now.",
+      "ko": "그러나 그 때에 육체를 따라 난 자가 성령을 따라 난 자를 핍박한 것 같이 이제도 그러하도다",
+      "source_text_hash": "adb6ef6cb770aec684ce6f228a52a33b23c9007027b32148c7f47095df4c0dfe",
+      "translation_text_hash": "54c7559179f0076ddcca628a55a0bc09325036425c1707895b86c3925021955c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 때에 육체를 따라 난 자가 성령을 따라 난 자를 핍박한 것 같이 이제도 그러하도다"
+      ],
+      "raw_text_hashes": [
+        "54c7559179f0076ddcca628a55a0bc09325036425c1707895b86c3925021955c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:30",
+      "sequence": 29158,
+      "chapter_label": "GAL 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "However, what does the Scripture say? “Throw out the servant and her son, for the son of the servant will not inherit with the son of the free woman.”",
+      "ko": "그러나 성경이 무엇을 말하느뇨 계집 종과 그 아들을 내어 쫓으라 계집 종의 아들이 자유하는 여자의 아들로 더불어 유업을 얻지 못하리라 하였느니라",
+      "source_text_hash": "9055f65f6b156ac34f9515debd688668ac029ae7468fcb545a26a0530f97e46d",
+      "translation_text_hash": "0ee3ccfb1efd690df94edcca0c840a5670eae6ece7960b4b55d05e795a40363c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 성경이 무엇을 말하느뇨 계집 종과 그 아들을 내어 쫓으라 계집 종의 아들이 자유하는 여자의 아들로 더불어 유업을 얻지 못하리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "0ee3ccfb1efd690df94edcca0c840a5670eae6ece7960b4b55d05e795a40363c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:4:31",
+      "sequence": 29159,
+      "chapter_label": "GAL 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "GAL",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "So then, brothers, we are not children of a servant, but of the free woman.",
+      "ko": "그런즉 형제들아 우리는 계집 종의 자녀가 아니요 자유하는 여자의 자녀니라",
+      "source_text_hash": "1e9a3219998ad085bef0de0b016c11a022f1576d8d1029540386757325a208db",
+      "translation_text_hash": "1265dcde35e04374e9a4a412e5c78fd0cf188ef3fd6baa630abfed09e2734a44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 형제들아 우리는 계집 종의 자녀가 아니요 자유하는 여자의 자녀니라"
+      ],
+      "raw_text_hashes": [
+        "1265dcde35e04374e9a4a412e5c78fd0cf188ef3fd6baa630abfed09e2734a44"
+      ]
+    }
+  ]
+}

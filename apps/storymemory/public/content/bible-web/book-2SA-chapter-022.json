@@ -1,0 +1,1645 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:022",
+  "unit_ordinal": 289,
+  "unit_label": "2SA 22",
+  "book_code": "2SA",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:22:1",
+      "sequence": 8604,
+      "chapter_label": "2SA 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "David spoke to the LORD the words of this song in the day that the LORD delivered him out of the hand of all his enemies, and out of the hand of Saul,",
+      "ko": "여호와께서 다윗을 모든 대적의 손과 사울의 손에서 구원하신 그 날에 다윗이 이 노래의 말씀으로 여호와께 아뢰어",
+      "source_text_hash": "1c050d50bd006e4a4defc5a56bce26fd316e5208ad78e3a68060563eedcc1d22",
+      "translation_text_hash": "cd283fe159c72f1bc54daeb2ac95d0250067dddb2c1ced3de644112294e6d396",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 다윗을 모든 대적의 손과 사울의 손에서 구원하신 그 날에 다윗이 이 노래의 말씀으로 여호와께 아뢰어"
+      ],
+      "raw_text_hashes": [
+        "cd283fe159c72f1bc54daeb2ac95d0250067dddb2c1ced3de644112294e6d396"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:2",
+      "sequence": 8605,
+      "chapter_label": "2SA 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "and he said: “The LORD is my rock, my fortress, and my deliverer, even mine;",
+      "ko": "가로되 여호와는 나의 반석이시요 나의 요새시요 나를 건지시는 자시요",
+      "source_text_hash": "02a65c0a159cae170a5836b1660e8caab1b06aa1b87a2e106e95c6cca124b0c3",
+      "translation_text_hash": "9a6aec5888917371033ae5987da4088bc44163372bad003796f2c9107084c887",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 여호와는 나의 반석이시요 나의 요새시요 나를 건지시는 자시요"
+      ],
+      "raw_text_hashes": [
+        "9a6aec5888917371033ae5987da4088bc44163372bad003796f2c9107084c887"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:3",
+      "sequence": 8606,
+      "chapter_label": "2SA 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "God is my rock in whom I take refuge; my shield, and the horn of my salvation, my high tower, and my refuge. My savior, you save me from violence.",
+      "ko": "나의 하나님이시요 나의 피할 바위시요 나의 방패시요 나의 구원의 뿔이시요 나의 높은 망대시요 나의 피란처시요 나의 구원자시라 나를 흉악에서 구원하셨도다",
+      "source_text_hash": "549b82657195cfb955ace4f4380e1f8d2e635523b422fbc5141c3631ddf7593c",
+      "translation_text_hash": "2a1c0749c65b3a178add7317acc2db51d67f5983b7889c6c2cc3270ca628f3df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이시요 나의 피할 바위시요 나의 방패시요 나의 구원의 뿔이시요 나의 높은 망대시요 나의 피란처시요 나의 구원자시라 나를 흉악에서 구원하셨도다"
+      ],
+      "raw_text_hashes": [
+        "2a1c0749c65b3a178add7317acc2db51d67f5983b7889c6c2cc3270ca628f3df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:4",
+      "sequence": 8607,
+      "chapter_label": "2SA 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "I call on the LORD, who is worthy to be praised; So shall I be saved from my enemies.",
+      "ko": "내가 찬송 받으실 여호와께 아뢰리니 내 원수들에게서 구원을 얻으리로다",
+      "source_text_hash": "abb7fbd26e20f2c23542bcc66a4ae337d6bd7aecb46608617931957d6e470903",
+      "translation_text_hash": "974173e4412df9d7b824e3f1161eaf497ca9caf2f489c76aa9981c91b868b200",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 찬송 받으실 여호와께 아뢰리니 내 원수들에게서 구원을 얻으리로다"
+      ],
+      "raw_text_hashes": [
+        "974173e4412df9d7b824e3f1161eaf497ca9caf2f489c76aa9981c91b868b200"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:5",
+      "sequence": 8608,
+      "chapter_label": "2SA 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "For the waves of death surrounded me. The floods of ungodliness made me afraid.",
+      "ko": "사망의 물결이 나를 에우고 불의의 창수가 나를 두렵게 하였으며",
+      "source_text_hash": "b03779064fb1b105921d2a4949c355b59a8cfcfe8c0d03d5c693379bfc907ab5",
+      "translation_text_hash": "39d4e0179d6c09c4478003396a1a3270302d7bbce1c8e1bf3f19180b629924da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망의 물결이 나를 에우고 불의의 창수가 나를 두렵게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "39d4e0179d6c09c4478003396a1a3270302d7bbce1c8e1bf3f19180b629924da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:6",
+      "sequence": 8609,
+      "chapter_label": "2SA 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "The cords of Sheol were around me. The snares of death caught me.",
+      "ko": "음부의 줄이 나를 두르고 사망의 올무가 내게 이르렀도다",
+      "source_text_hash": "cad7f70e78e3cdea08086494b3a963c7f2898f580f6da45a84f9d379c6379971",
+      "translation_text_hash": "437f816d8f35cc0e24dcda3624714c52e7fa09699e7feac4d970b488c3b453f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음부의 줄이 나를 두르고 사망의 올무가 내게 이르렀도다"
+      ],
+      "raw_text_hashes": [
+        "437f816d8f35cc0e24dcda3624714c52e7fa09699e7feac4d970b488c3b453f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:7",
+      "sequence": 8610,
+      "chapter_label": "2SA 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "In my distress, I called on the LORD. Yes, I called to my God. He heard my voice out of his temple. My cry came into his ears.",
+      "ko": "내가 환난 중에서 여호와께 아뢰며 나의 하나님께 아뢰었더니 저가 그 전에서 내 소리를 들으심이여 나의 부르짖음이 그 귀에 들렸도다",
+      "source_text_hash": "6613f639a3f957584c7155e307b7c7e1a8bb217e90498ccf38da0c9e079c4274",
+      "translation_text_hash": "c066acc06bcf59ae468c5e93cb813261a7091ce2fa4c0958d0ae9457571e6c2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 환난 중에서 여호와께 아뢰며 나의 하나님께 아뢰었더니 저가 그 전에서 내 소리를 들으심이여 나의 부르짖음이 그 귀에 들렸도다"
+      ],
+      "raw_text_hashes": [
+        "c066acc06bcf59ae468c5e93cb813261a7091ce2fa4c0958d0ae9457571e6c2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:8",
+      "sequence": 8611,
+      "chapter_label": "2SA 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "Then the earth shook and trembled. The foundations of heaven quaked and were shaken, because he was angry.",
+      "ko": "이에 땅이 진동하고 떨며 하늘 기초가 요동하고 흔들렸으니 그의 진노를 인함이로다",
+      "source_text_hash": "b6e15b031e2afb2f8841ae4d8279638d4cf910012773e5e7a6a5a491b5f5d6a2",
+      "translation_text_hash": "7fa363a103775ac4aa5183859fc96767af87cf53b467c811ec975c75f4659e3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 땅이 진동하고 떨며 하늘 기초가 요동하고 흔들렸으니 그의 진노를 인함이로다"
+      ],
+      "raw_text_hashes": [
+        "7fa363a103775ac4aa5183859fc96767af87cf53b467c811ec975c75f4659e3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:9",
+      "sequence": 8612,
+      "chapter_label": "2SA 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "Smoke went up out of his nostrils. Consuming fire came out of his mouth. Coals were kindled by it.",
+      "ko": "그 코에서 연기가 오르고 입에서 불이 나와 사름이여 그 불에 숯이 피었도다",
+      "source_text_hash": "4d41241ed0fdcfb5a1ce0bf59628930862d566b1ef641b4e60fd99568e790eae",
+      "translation_text_hash": "68fe7c7eecae60db2a3cea6e792612487b989df5a65bf1239a825613a71ed961",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 코에서 연기가 오르고 입에서 불이 나와 사름이여 그 불에 숯이 피었도다"
+      ],
+      "raw_text_hashes": [
+        "68fe7c7eecae60db2a3cea6e792612487b989df5a65bf1239a825613a71ed961"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:10",
+      "sequence": 8613,
+      "chapter_label": "2SA 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "He bowed the heavens also, and came down. Thick darkness was under his feet.",
+      "ko": "저가 또 하늘을 드리우고 강림하시니 그 발 아래는 어둑캄캄하도다",
+      "source_text_hash": "59f7321884c38b5d6ebf3a4ee6c5b32dc62bb18df469d83e25cc8b185a6631ce",
+      "translation_text_hash": "2e324dc3c78719cf19e36c0794a79493f2c3a029fd3fbfd0b15354db51d216ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 하늘을 드리우고 강림하시니 그 발 아래는 어둑캄캄하도다"
+      ],
+      "raw_text_hashes": [
+        "2e324dc3c78719cf19e36c0794a79493f2c3a029fd3fbfd0b15354db51d216ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:11",
+      "sequence": 8614,
+      "chapter_label": "2SA 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "He rode on a cherub, and flew. Yes, he was seen on the wings of the wind.",
+      "ko": "그룹을 타고 날으심이여 바람 날개 위에 나타나셨도다",
+      "source_text_hash": "ad6ce0a744ca5018e09153a316d8eb769d5f9fa0c7c291115454a89e8d77f9cc",
+      "translation_text_hash": "547bc1ee7d7d67899f493b9d1ac0776d2ff44e56dfe2c808f01358dc74a27d77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그룹을 타고 날으심이여 바람 날개 위에 나타나셨도다"
+      ],
+      "raw_text_hashes": [
+        "547bc1ee7d7d67899f493b9d1ac0776d2ff44e56dfe2c808f01358dc74a27d77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:12",
+      "sequence": 8615,
+      "chapter_label": "2SA 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "He made darkness a shelter around himself, gathering of waters, and thick clouds of the skies.",
+      "ko": "저가 흑암 곧 모인 물과 공중의 빽빽한 구름으로 둘린 장막을 삼으심이여",
+      "source_text_hash": "22bc7ffc825b87dcd8902629cdec5cbba428803f3cbd297a7d7592d4dc67be36",
+      "translation_text_hash": "73fbee4d7e3bc7c0283ef5cc29c10b70a52162817c31447b47603c892ae1b8ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 흑암 곧 모인 물과 공중의 빽빽한 구름으로 둘린 장막을 삼으심이여"
+      ],
+      "raw_text_hashes": [
+        "73fbee4d7e3bc7c0283ef5cc29c10b70a52162817c31447b47603c892ae1b8ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:13",
+      "sequence": 8616,
+      "chapter_label": "2SA 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "At the brightness before him, coals of fire were kindled.",
+      "ko": "그 앞에 있는 광채로 인하여 숯불이 피었도다",
+      "source_text_hash": "38d574788da5584792cd7195ab6d0223dae1d5fdfc323af0ae953aa0dc22aec3",
+      "translation_text_hash": "8b620a37cd284c6273dd7775fc77b1c80bbf9af02b2c9446276fe28aa4b7a516",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앞에 있는 광채로 인하여 숯불이 피었도다"
+      ],
+      "raw_text_hashes": [
+        "8b620a37cd284c6273dd7775fc77b1c80bbf9af02b2c9446276fe28aa4b7a516"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:14",
+      "sequence": 8617,
+      "chapter_label": "2SA 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD thundered from heaven. The Most High uttered his voice.",
+      "ko": "여호와께서 하늘에서 뇌성을 발하시며 지존하신 자가 음성을 내심이여",
+      "source_text_hash": "ea968fdcdebdd1636301cb77de85a409ad69c14e2b44b64889fec5e579c1da79",
+      "translation_text_hash": "68eee35368e374ef0ab6ea7d6a4800298b823a142e84770c7ad6cf02bbbc0ce1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 하늘에서 뇌성을 발하시며 지존하신 자가 음성을 내심이여"
+      ],
+      "raw_text_hashes": [
+        "68eee35368e374ef0ab6ea7d6a4800298b823a142e84770c7ad6cf02bbbc0ce1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:15",
+      "sequence": 8618,
+      "chapter_label": "2SA 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "He sent out arrows and scattered them, lightning and confused them.",
+      "ko": "살을 날려 저희를 흩으시며 번개로 파하셨도다",
+      "source_text_hash": "a3f194cae4e1698b0424fad34b197d252a9aae6ffc0bf8c39902871abf760aaa",
+      "translation_text_hash": "b500bb09c1f93fc30119eff6e43b531608fd2d42ba297602d462791e8b4306e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살을 날려 저희를 흩으시며 번개로 파하셨도다"
+      ],
+      "raw_text_hashes": [
+        "b500bb09c1f93fc30119eff6e43b531608fd2d42ba297602d462791e8b4306e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:16",
+      "sequence": 8619,
+      "chapter_label": "2SA 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "Then the channels of the sea appeared. The foundations of the world were laid bare by the LORD’s rebuke, at the blast of the breath of his nostrils.",
+      "ko": "이럴 때에 여호와의 꾸지람과 콧김을 인하여 물 밑이 드러나고 땅의 기초가 나타났도다",
+      "source_text_hash": "3e7b735f18b68104fb791843119b5bdcae7d04a5be3f2635bc092394a866d414",
+      "translation_text_hash": "e3aa201d68b92fbda36e30dbe920d24e7dbeee47df1b1c7ccdc8004fdf624b79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이럴 때에 여호와의 꾸지람과 콧김을 인하여 물 밑이 드러나고 땅의 기초가 나타났도다"
+      ],
+      "raw_text_hashes": [
+        "e3aa201d68b92fbda36e30dbe920d24e7dbeee47df1b1c7ccdc8004fdf624b79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:17",
+      "sequence": 8620,
+      "chapter_label": "2SA 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "He sent from on high and he took me. He drew me out of many waters.",
+      "ko": "저가 위에서 보내사 나를 취하심이여 많은 물에서 나를 건져내셨도다",
+      "source_text_hash": "82c781706301022a0cb72a9d6622b12ec57b834ca5caece070eb9ebb822baa21",
+      "translation_text_hash": "12bc3cef53de5ed0b0bc395e25877e7ff945d001eaecf868684e71e82ac2329b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 위에서 보내사 나를 취하심이여 많은 물에서 나를 건져내셨도다"
+      ],
+      "raw_text_hashes": [
+        "12bc3cef53de5ed0b0bc395e25877e7ff945d001eaecf868684e71e82ac2329b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:18",
+      "sequence": 8621,
+      "chapter_label": "2SA 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "He delivered me from my strong enemy, from those who hated me, for they were too mighty for me.",
+      "ko": "나를 강한 원수와 미워하는 자에게서 건지셨음이여 저희는 나보다 힘센 연고로다",
+      "source_text_hash": "d09e669ae8d37a024bc462fc36ba5f8b5e83dd8ce3fbaece11600b281d5f3260",
+      "translation_text_hash": "318f4bd637e30c5014c63ddc9dac676ad463b37548a605e791cf9c2566b7817f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 강한 원수와 미워하는 자에게서 건지셨음이여 저희는 나보다 힘센 연고로다"
+      ],
+      "raw_text_hashes": [
+        "318f4bd637e30c5014c63ddc9dac676ad463b37548a605e791cf9c2566b7817f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:19",
+      "sequence": 8622,
+      "chapter_label": "2SA 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "They came on me in the day of my calamity, but the LORD was my support.",
+      "ko": "저희가 나의 재앙의 날에 내게 이르렀으나 여호와께서 나의 의지가 되셨도다",
+      "source_text_hash": "836be204127daf774b164cb91ebea8bf79d3593a39e618735a3112a1c59b402f",
+      "translation_text_hash": "c8649ab736673d2d54aeca92e95b5f7edcbd1929fcebce650772ef85425bc3bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나의 재앙의 날에 내게 이르렀으나 여호와께서 나의 의지가 되셨도다"
+      ],
+      "raw_text_hashes": [
+        "c8649ab736673d2d54aeca92e95b5f7edcbd1929fcebce650772ef85425bc3bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:20",
+      "sequence": 8623,
+      "chapter_label": "2SA 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "He also brought me out into a large place. He delivered me, because he delighted in me.",
+      "ko": "나를 또 넓은 곳으로 인도하시고 나를 기뻐하시므로 구원하셨도다",
+      "source_text_hash": "84bbbcf4eeaf6b6f6154508b5067ad8208553ff3e325e6cee52b96640af729a7",
+      "translation_text_hash": "ec2f16c62870b0f6e6c7976752e5ecbe62f3195302b701ed92a56ff8e80abca2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 또 넓은 곳으로 인도하시고 나를 기뻐하시므로 구원하셨도다"
+      ],
+      "raw_text_hashes": [
+        "ec2f16c62870b0f6e6c7976752e5ecbe62f3195302b701ed92a56ff8e80abca2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:21",
+      "sequence": 8624,
+      "chapter_label": "2SA 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD rewarded me according to my righteousness. He rewarded me according to the cleanness of my hands.",
+      "ko": "여호와께서 내 의를 따라 상 주시며 내 손의 깨끗함을 좇아 갚으셨으니",
+      "source_text_hash": "d5d6e1ae71e59106f3b9b5330745a40dc2ace6614775e25e21a7b85cf87dbc26",
+      "translation_text_hash": "b07383d7a91ae4bfe561b3a190715db4177dce06c35bebbe661399134b1cb911",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내 의를 따라 상 주시며 내 손의 깨끗함을 좇아 갚으셨으니"
+      ],
+      "raw_text_hashes": [
+        "b07383d7a91ae4bfe561b3a190715db4177dce06c35bebbe661399134b1cb911"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:22",
+      "sequence": 8625,
+      "chapter_label": "2SA 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "For I have kept the LORD’s ways, and have not wickedly departed from my God.",
+      "ko": "이는 내가 여호와의 도를 지키고 악을 행하여 내 하나님을 떠나지 아니하였으며",
+      "source_text_hash": "aa4088b67410fd55f1165c5623bca1b66fc9c52676f7564e18b55edd2304a40d",
+      "translation_text_hash": "6e6052627e536b21f347433d8afee356b5996e75c9f65b2912ab290d347eff6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 여호와의 도를 지키고 악을 행하여 내 하나님을 떠나지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "6e6052627e536b21f347433d8afee356b5996e75c9f65b2912ab290d347eff6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:23",
+      "sequence": 8626,
+      "chapter_label": "2SA 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "For all his ordinances were before me. As for his statutes, I didn’t depart from them.",
+      "ko": "그 모든 규례를 내 앞에 두고 그 율례를 버리지 아니하였음이로다",
+      "source_text_hash": "4dbe96451ae999f5e41f387f54d7f47871d0670388cfe69182801a1521e30ec5",
+      "translation_text_hash": "779c2995e7f53232a5ddb70bd98aaa654fe18033e56201ad20cd7f0c04be1755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 규례를 내 앞에 두고 그 율례를 버리지 아니하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "779c2995e7f53232a5ddb70bd98aaa654fe18033e56201ad20cd7f0c04be1755"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:24",
+      "sequence": 8627,
+      "chapter_label": "2SA 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "I was also perfect toward him. I kept myself from my iniquity.",
+      "ko": "내가 또 그 앞에 완전하여 스스로 지켜 죄악을 피하였나니",
+      "source_text_hash": "40a7f83393e0e69b9829543230c868d244ae65c9265babc8db74d9fa205f90dd",
+      "translation_text_hash": "475d559cf1b3027a871418f2219eacca6f64bdefc489d0515a533983430dd921",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 그 앞에 완전하여 스스로 지켜 죄악을 피하였나니"
+      ],
+      "raw_text_hashes": [
+        "475d559cf1b3027a871418f2219eacca6f64bdefc489d0515a533983430dd921"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:25",
+      "sequence": 8628,
+      "chapter_label": "2SA 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore the LORD has rewarded me according to my righteousness, According to my cleanness in his eyesight.",
+      "ko": "그러므로 여호와께서 내 의대로, 그 목전에 내 깨끗한대로 내게 갚으셨도다",
+      "source_text_hash": "8fa11d6554fbf2fcfc331fb8865220391515c5e122774e7a7a1c0efa3914c35a",
+      "translation_text_hash": "ba33d1ad35b8ea23b56b8506e52b12c7140d2d9cc0d71e1556f5c56aab2b6fe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 내 의대로, 그 목전에 내 깨끗한대로 내게 갚으셨도다"
+      ],
+      "raw_text_hashes": [
+        "ba33d1ad35b8ea23b56b8506e52b12c7140d2d9cc0d71e1556f5c56aab2b6fe5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:26",
+      "sequence": 8629,
+      "chapter_label": "2SA 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "With the merciful you will show yourself merciful. With the perfect man you will show yourself perfect.",
+      "ko": "자비한 자에게는 주의 자비하심을 나타내시며 완전한 자에게는 주의 완전하심을 보이시며",
+      "source_text_hash": "63ea734846925da8a6e9477379fafd4086349a8c4c9bf086a2220e8e3112cccc",
+      "translation_text_hash": "afbfceee38e4b5c516b1052938a7bf5572ba21b406208981d6ddb608ff3b1f36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자비한 자에게는 주의 자비하심을 나타내시며 완전한 자에게는 주의 완전하심을 보이시며"
+      ],
+      "raw_text_hashes": [
+        "afbfceee38e4b5c516b1052938a7bf5572ba21b406208981d6ddb608ff3b1f36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:27",
+      "sequence": 8630,
+      "chapter_label": "2SA 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "With the pure you will show yourself pure. With the crooked you will show yourself shrewd.",
+      "ko": "깨끗한 자에게는 주의 깨끗하심을 보이시며 사특한 자에게는 주의 거스리심을 보이시리이다",
+      "source_text_hash": "b7a1a9827753d19af0780c83fa08cb606e0b68259d883aebf22b776fc2def134",
+      "translation_text_hash": "89934027765505270e8fb5e792e09f832b326e722829fa8e339edb0afe7e9f32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨끗한 자에게는 주의 깨끗하심을 보이시며 사특한 자에게는 주의 거스리심을 보이시리이다"
+      ],
+      "raw_text_hashes": [
+        "89934027765505270e8fb5e792e09f832b326e722829fa8e339edb0afe7e9f32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:28",
+      "sequence": 8631,
+      "chapter_label": "2SA 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "You will save the afflicted people, but your eyes are on the arrogant, that you may bring them down.",
+      "ko": "주께서 곤고한 백성은 구원하시고 교만한 자를 살피사 낮추시리이다",
+      "source_text_hash": "2c58d6df6f3868aeaf116067d717aa9cedb278846ebc70d57197bca32aa95831",
+      "translation_text_hash": "e69841cc22f386575f9da069532c5a318b32a860ff0b697d6c2141bbb92bbcc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 곤고한 백성은 구원하시고 교만한 자를 살피사 낮추시리이다"
+      ],
+      "raw_text_hashes": [
+        "e69841cc22f386575f9da069532c5a318b32a860ff0b697d6c2141bbb92bbcc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:29",
+      "sequence": 8632,
+      "chapter_label": "2SA 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "For you are my lamp, LORD. The LORD will light up my darkness.",
+      "ko": "여호와여 주는 나의 등불이시니 여호와께서 나의 흑암을 밝히시리이다",
+      "source_text_hash": "5049a959c08d55df30725b633f4f82f5e3a8d2184ca7ec8dbd4cd0943422673f",
+      "translation_text_hash": "607936a40641993a9bc8ba88f635ef40521920995f9dd272233039b634b4744f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주는 나의 등불이시니 여호와께서 나의 흑암을 밝히시리이다"
+      ],
+      "raw_text_hashes": [
+        "607936a40641993a9bc8ba88f635ef40521920995f9dd272233039b634b4744f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:30",
+      "sequence": 8633,
+      "chapter_label": "2SA 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "For by you, I run against a troop. By my God, I leap over a wall.",
+      "ko": "내가 주를 의뢰하고 적군에 달리며 내 하나님을 의지하고 성벽을 뛰어 넘나이다",
+      "source_text_hash": "0222feed7500069a36e93a3745b6a18d17ada4a31b0f9af66510520f2faaee1a",
+      "translation_text_hash": "6fdd43bdbb182a851ed6dfb2a4eeac78aac7aa6ce45f936e032ec01a8f86829f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주를 의뢰하고 적군에 달리며 내 하나님을 의지하고 성벽을 뛰어 넘나이다"
+      ],
+      "raw_text_hashes": [
+        "6fdd43bdbb182a851ed6dfb2a4eeac78aac7aa6ce45f936e032ec01a8f86829f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:31",
+      "sequence": 8634,
+      "chapter_label": "2SA 22",
+      "verse_label": "31",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 31
+        }
+      ],
+      "en": "As for God, his way is perfect. The LORD’s word is tested. He is a shield to all those who take refuge in him.",
+      "ko": "하나님의 도는 완전하고 여호와의 말씀은 정미하니 저는 자기에게 피하는 모든 자에게 방패시로다",
+      "source_text_hash": "b3bca548a37262fff1920d72dd9ef31cde7169ee6d88a0e3e8c564b2daecb1d5",
+      "translation_text_hash": "55e6abfc7532122220be55fd67462ba893ac6e0bca83595d7c1b3d1800d9a8dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 도는 완전하고 여호와의 말씀은 정미하니 저는 자기에게 피하는 모든 자에게 방패시로다"
+      ],
+      "raw_text_hashes": [
+        "55e6abfc7532122220be55fd67462ba893ac6e0bca83595d7c1b3d1800d9a8dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:32",
+      "sequence": 8635,
+      "chapter_label": "2SA 22",
+      "verse_label": "32",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 32
+        }
+      ],
+      "en": "For who is God, besides the LORD? Who is a rock, besides our God?",
+      "ko": "여호와 외에 누가 하나님이며 우리 하나님 외에 누가 바위뇨",
+      "source_text_hash": "6c459881507a9a5c4d84fdc9facc223de503c9547c3a1739f7a580ada75216ad",
+      "translation_text_hash": "7528ec98d7633fe91836f15033064ca7561314252d640b26f73ab846d3532c9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 외에 누가 하나님이며 우리 하나님 외에 누가 바위뇨"
+      ],
+      "raw_text_hashes": [
+        "7528ec98d7633fe91836f15033064ca7561314252d640b26f73ab846d3532c9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:33",
+      "sequence": 8636,
+      "chapter_label": "2SA 22",
+      "verse_label": "33",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 33
+        }
+      ],
+      "en": "God is my strong fortress. He makes my way perfect.",
+      "ko": "하나님은 나의 견고한 요새시며 나를 온전한 곳으로 인도하시며",
+      "source_text_hash": "fad836355b664ae6a73c4bd09f5bf72f9d04ed9236e216a72d7086a82310dc7c",
+      "translation_text_hash": "6ea7a91525b373b5544466243c2f1b83339917749b855ab6f93afd661f753616",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 나의 견고한 요새시며 나를 온전한 곳으로 인도하시며"
+      ],
+      "raw_text_hashes": [
+        "6ea7a91525b373b5544466243c2f1b83339917749b855ab6f93afd661f753616"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:34",
+      "sequence": 8637,
+      "chapter_label": "2SA 22",
+      "verse_label": "34",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 34
+        }
+      ],
+      "en": "He makes his feet like hinds’ feet, and sets me on my high places.",
+      "ko": "나의 발로 암사슴 발 같게 하시며 나를 나의 높은 곳에 세우시며",
+      "source_text_hash": "3a631e024d2d8fab5d3b09e0fc65a64eb12b1ae5a884d370121a1c112eba2abc",
+      "translation_text_hash": "3e598c685dd63559bcf352b716f20520bd75a7444df4b2f5b58a86e03099dca4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 발로 암사슴 발 같게 하시며 나를 나의 높은 곳에 세우시며"
+      ],
+      "raw_text_hashes": [
+        "3e598c685dd63559bcf352b716f20520bd75a7444df4b2f5b58a86e03099dca4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:35",
+      "sequence": 8638,
+      "chapter_label": "2SA 22",
+      "verse_label": "35",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 35
+        }
+      ],
+      "en": "He teaches my hands to war, so that my arms bend a bow of bronze.",
+      "ko": "내 손을 가르쳐 싸우게 하시니 내 팔이 놋활을 당기도다",
+      "source_text_hash": "d3bdea9803bee0aec7e800fea4e91ddd7d8a1bb5afa1717c155f8982a9fa61a8",
+      "translation_text_hash": "00db57c728cccfd018acac4c28bd873dd28dfb146386c56588223d209f16e4e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 손을 가르쳐 싸우게 하시니 내 팔이 놋활을 당기도다"
+      ],
+      "raw_text_hashes": [
+        "00db57c728cccfd018acac4c28bd873dd28dfb146386c56588223d209f16e4e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:36",
+      "sequence": 8639,
+      "chapter_label": "2SA 22",
+      "verse_label": "36",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 36
+        }
+      ],
+      "en": "You have also given me the shield of your salvation. Your gentleness has made me great.",
+      "ko": "주께서 또 주의 구원의 방패를 내게 주시며 주의 온유함이 나를 크게 하셨나이다",
+      "source_text_hash": "8fc5270bf97b0d6775e21a70c4adf89c05d291113282adc098c9ab388d75fa0e",
+      "translation_text_hash": "b5b8b11abfd2ed9fadb3143874bcac6473aad235eee947d28574bfb766208b74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 또 주의 구원의 방패를 내게 주시며 주의 온유함이 나를 크게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "b5b8b11abfd2ed9fadb3143874bcac6473aad235eee947d28574bfb766208b74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:37",
+      "sequence": 8640,
+      "chapter_label": "2SA 22",
+      "verse_label": "37",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 37
+        }
+      ],
+      "en": "You have enlarged my steps under me. My feet have not slipped.",
+      "ko": "내 걸음을 넓게 하셨고 나로 실족지 않게 하셨나이다",
+      "source_text_hash": "81000d4efada9d2717e46d115c287a1c44df584eba0cee0db41e840cf689d166",
+      "translation_text_hash": "c0bf26d7ef1d2dbc5dab3ea4c9e226a5c48e3542cce026a6f4fd7bbb9bfcd210",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 걸음을 넓게 하셨고 나로 실족지 않게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "c0bf26d7ef1d2dbc5dab3ea4c9e226a5c48e3542cce026a6f4fd7bbb9bfcd210"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:38",
+      "sequence": 8641,
+      "chapter_label": "2SA 22",
+      "verse_label": "38",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 38
+        }
+      ],
+      "en": "I have pursued my enemies and destroyed them. I didn’t turn again until they were consumed.",
+      "ko": "내가 내 원수를 따라 멸하였사오며 저희를 무찌르기 전에는 돌이키지 아니하였나이다",
+      "source_text_hash": "524dd6ecfc1499820b681195154698d7ab29b934e76f34270ab0714bcda87634",
+      "translation_text_hash": "f2a46682f7b972cc14ff39770ea961e9b5b4348e9e4c1fdbed4e40cfce55ffc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 원수를 따라 멸하였사오며 저희를 무찌르기 전에는 돌이키지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "f2a46682f7b972cc14ff39770ea961e9b5b4348e9e4c1fdbed4e40cfce55ffc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:39",
+      "sequence": 8642,
+      "chapter_label": "2SA 22",
+      "verse_label": "39",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 39
+        }
+      ],
+      "en": "I have consumed them, and struck them through, so that they can’t arise. Yes, they have fallen under my feet.",
+      "ko": "내가 저희를 무찔러 파하였더니 저희가 내 발 아래 엎드러지고 능히 일어나지 못하였나이다",
+      "source_text_hash": "7d50f844669288b8a08eb7bc3ac418ea81982af70889a42fbb34f9d74d2bc81b",
+      "translation_text_hash": "aeea89ca83dc382b5e8187f517d2e2254cfefb67b5c5383f930a62f46045afc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희를 무찔러 파하였더니 저희가 내 발 아래 엎드러지고 능히 일어나지 못하였나이다"
+      ],
+      "raw_text_hashes": [
+        "aeea89ca83dc382b5e8187f517d2e2254cfefb67b5c5383f930a62f46045afc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:40",
+      "sequence": 8643,
+      "chapter_label": "2SA 22",
+      "verse_label": "40",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 40
+        }
+      ],
+      "en": "For you have armed me with strength for the battle. You have subdued under me those who rose up against me.",
+      "ko": "이는 주께서 나로 전쟁케 하려고 능력으로 내게 띠 띠우사 일어나 나를 치는 자로 내게 굴복케 하셨사오며",
+      "source_text_hash": "433a1a5c03be10922d57f25c63503cffec0348dc0a7aac1ee2e57c6adbdcbcf1",
+      "translation_text_hash": "3185245f16add6568709a73789936a676be17b7b49280e10fd99e1a0432017a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 주께서 나로 전쟁케 하려고 능력으로 내게 띠 띠우사 일어나 나를 치는 자로 내게 굴복케 하셨사오며"
+      ],
+      "raw_text_hashes": [
+        "3185245f16add6568709a73789936a676be17b7b49280e10fd99e1a0432017a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:41",
+      "sequence": 8644,
+      "chapter_label": "2SA 22",
+      "verse_label": "41",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 41
+        }
+      ],
+      "en": "You have also made my enemies turn their backs to me, that I might cut off those who hate me.",
+      "ko": "주께서 또 내 원수들로 등을 내게로 향하게 하시고 나로 나를 미워하는 자를 끊어버리게 하셨음이니이다",
+      "source_text_hash": "4e16a6efc75d344577532a61025ddcb9a8dfc9cb0e834e44866cc50f0d1a3d23",
+      "translation_text_hash": "972956ec8a47437504e110e104c26fd1679eda0c0dd87e6365aa0a82bae93ebf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 또 내 원수들로 등을 내게로 향하게 하시고 나로 나를 미워하는 자를 끊어버리게 하셨음이니이다"
+      ],
+      "raw_text_hashes": [
+        "972956ec8a47437504e110e104c26fd1679eda0c0dd87e6365aa0a82bae93ebf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:42",
+      "sequence": 8645,
+      "chapter_label": "2SA 22",
+      "verse_label": "42",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 42
+        }
+      ],
+      "en": "They looked, but there was no one to save; even to the LORD, but he didn’t answer them.",
+      "ko": "저희가 둘러보아도 구원할 자가 없었고 여호와께 부르짖어도 대답지 아니하셨나이다",
+      "source_text_hash": "d01bf9654746bc175704003639c84f5eaf235ecd1ebfadf5783d057fbe3f8b4e",
+      "translation_text_hash": "2f8c6c57df80878de4bdaa0674bea4a5686f8b363e1a589e937372281249b693",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 둘러보아도 구원할 자가 없었고 여호와께 부르짖어도 대답지 아니하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "2f8c6c57df80878de4bdaa0674bea4a5686f8b363e1a589e937372281249b693"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:43",
+      "sequence": 8646,
+      "chapter_label": "2SA 22",
+      "verse_label": "43",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 43
+        }
+      ],
+      "en": "Then I beat them as small as the dust of the earth. I crushed them as the mire of the streets, and spread them abroad.",
+      "ko": "내가 저희를 땅의 티끌 같이 부스러뜨리고 거리의 진흙 같이 밟아 헤쳤나이다",
+      "source_text_hash": "895fd583b2754d6c16e76332f326ba1c20af3b6bc879478ce782c5646a24f299",
+      "translation_text_hash": "600dce56c9b24c7ca24cbd18be658795c8e0d5b7fc5b86a5004c379538cee4ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희를 땅의 티끌 같이 부스러뜨리고 거리의 진흙 같이 밟아 헤쳤나이다"
+      ],
+      "raw_text_hashes": [
+        "600dce56c9b24c7ca24cbd18be658795c8e0d5b7fc5b86a5004c379538cee4ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:44",
+      "sequence": 8647,
+      "chapter_label": "2SA 22",
+      "verse_label": "44",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 44
+        }
+      ],
+      "en": "You also have delivered me from the strivings of my people. You have kept me to be the head of the nations. A people whom I have not known will serve me.",
+      "ko": "주께서 또 나를 내 백성의 다툼에서 건지시고 나를 보존하사 열방의 으뜸을 삼으셨으니 내가 알지 못하는 백성이 나를 섬기리이다",
+      "source_text_hash": "caeae3cc5bb6380be033efea18d8fd83452ee782ebdb0def2815ef8a0ce29d90",
+      "translation_text_hash": "914ff334eb162e119f835a871a1c73e250dcc7586bf9a9bc332195fc8426f7a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 또 나를 내 백성의 다툼에서 건지시고 나를 보존하사 열방의 으뜸을 삼으셨으니 내가 알지 못하는 백성이 나를 섬기리이다"
+      ],
+      "raw_text_hashes": [
+        "914ff334eb162e119f835a871a1c73e250dcc7586bf9a9bc332195fc8426f7a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:45",
+      "sequence": 8648,
+      "chapter_label": "2SA 22",
+      "verse_label": "45",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 45
+        }
+      ],
+      "en": "The foreigners will submit themselves to me. As soon as they hear of me, they will obey me.",
+      "ko": "이방인들이 내게 굴복함이여 저희가 내 풍성을 듣고 곧 순복하리로다",
+      "source_text_hash": "96409903ff0c8f4396fd2047e49ab771c73d3c974584b71b85da53b02f787116",
+      "translation_text_hash": "c588e609389b93a5ecb6ae921265b3f1e821b132a3fc07e97cf91c7e16947c36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인들이 내게 굴복함이여 저희가 내 풍성을 듣고 곧 순복하리로다"
+      ],
+      "raw_text_hashes": [
+        "c588e609389b93a5ecb6ae921265b3f1e821b132a3fc07e97cf91c7e16947c36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:46",
+      "sequence": 8649,
+      "chapter_label": "2SA 22",
+      "verse_label": "46",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 46
+        }
+      ],
+      "en": "The foreigners will fade away, and will come trembling out of their close places.",
+      "ko": "이방인들이 쇠미하여 그 견고한 곳에서 떨며 나오리로다",
+      "source_text_hash": "f5bf36a79b91b0377eb6fa98d9fbe5c56b70830db8af05e58ab6696dfc9adaa6",
+      "translation_text_hash": "41b245852e76cb1fd4dede4066465f18758ae3f85ef598daf552b5f940556e4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인들이 쇠미하여 그 견고한 곳에서 떨며 나오리로다"
+      ],
+      "raw_text_hashes": [
+        "41b245852e76cb1fd4dede4066465f18758ae3f85ef598daf552b5f940556e4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:47",
+      "sequence": 8650,
+      "chapter_label": "2SA 22",
+      "verse_label": "47",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 47
+        }
+      ],
+      "en": "The LORD lives! Blessed be my rock! Exalted be God, the rock of my salvation,",
+      "ko": "여호와는 생존하시니 나의 바위를 찬송하며 내 구원의 바위이신 하나님을 높일찌로다",
+      "source_text_hash": "b463bacbd69fd9c903f46eb04e5c171481351b490e99e2a9c9759d2f61c8c67c",
+      "translation_text_hash": "e312e494feefc775cd14329f17cbc1d2aadaae3bff745be18c95c284bdb4adc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 생존하시니 나의 바위를 찬송하며 내 구원의 바위이신 하나님을 높일찌로다"
+      ],
+      "raw_text_hashes": [
+        "e312e494feefc775cd14329f17cbc1d2aadaae3bff745be18c95c284bdb4adc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:48",
+      "sequence": 8651,
+      "chapter_label": "2SA 22",
+      "verse_label": "48",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 48
+        }
+      ],
+      "en": "even the God who executes vengeance for me, who brings down peoples under me,",
+      "ko": "이 하나님이 나를 위하여 보수하시고 민족들로 내게 복종케 하시며",
+      "source_text_hash": "ad41c15c0e4765a7a29b321119adb1c3cd2741b129241fa17170bf4b838adb5c",
+      "translation_text_hash": "6d6d5e252d94a94851de86871ca104fb517a8ebf55483274a4a51f2261b69e4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 하나님이 나를 위하여 보수하시고 민족들로 내게 복종케 하시며"
+      ],
+      "raw_text_hashes": [
+        "6d6d5e252d94a94851de86871ca104fb517a8ebf55483274a4a51f2261b69e4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:49",
+      "sequence": 8652,
+      "chapter_label": "2SA 22",
+      "verse_label": "49",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 49
+        }
+      ],
+      "en": "who brings me away from my enemies. Yes, you lift me up above those who rise up against me. You deliver me from the violent man.",
+      "ko": "나를 원수들에게서 나오게 하시며 나를 대적하는 자 위에 나를 드시고 나를 강포한 자에게서 건지시는도다",
+      "source_text_hash": "09e7908e5a56d0640b7f26e329d23e80c77e311754306d34ad49fd44d5478764",
+      "translation_text_hash": "8f32a7939d3aa78c301c7ba0a2c062c89ccc4c414d86978a3226ee508871dbb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 원수들에게서 나오게 하시며 나를 대적하는 자 위에 나를 드시고 나를 강포한 자에게서 건지시는도다"
+      ],
+      "raw_text_hashes": [
+        "8f32a7939d3aa78c301c7ba0a2c062c89ccc4c414d86978a3226ee508871dbb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:50",
+      "sequence": 8653,
+      "chapter_label": "2SA 22",
+      "verse_label": "50",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 50
+        }
+      ],
+      "en": "Therefore I will give thanks to you, LORD, among the nations, and will sing praises to your name.",
+      "ko": "이러므로 여호와여 내가 열방 중에서 주께 감사하며 주의 이름을 찬양하리이다",
+      "source_text_hash": "9e84fb743fa230349146f2f839e6f983c5ca4d43786754c7bf3b8e0a6c11c844",
+      "translation_text_hash": "3cdf5ca79ed7be454523d9fc4aa48e4f1d97353f8a777917111841b168e42571",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 여호와여 내가 열방 중에서 주께 감사하며 주의 이름을 찬양하리이다"
+      ],
+      "raw_text_hashes": [
+        "3cdf5ca79ed7be454523d9fc4aa48e4f1d97353f8a777917111841b168e42571"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:22:51",
+      "sequence": 8654,
+      "chapter_label": "2SA 22",
+      "verse_label": "51",
+      "locator": {
+        "book": "2SA",
+        "chapter": 22,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 22,
+          "verse": 51
+        }
+      ],
+      "en": "He gives great deliverance to his king, and shows loving kindness to his anointed, to David and to his offspring, forever more.”",
+      "ko": "여호와께서 그 왕에게 큰 구원을 주시며 기름 부음 받은 자에게 인자를 베푸심이여 영원토록 다윗과 그 후손에게로다 하였더라",
+      "source_text_hash": "a9122a8068c1c43bea3d159c90c57a0e6466377764118c079f4ecb20a01f3282",
+      "translation_text_hash": "e180254281b28e44d3c63d354d7d10b173766ff77c7fae645bf4cc2a35bb9177",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 왕에게 큰 구원을 주시며 기름 부음 받은 자에게 인자를 베푸심이여 영원토록 다윗과 그 후손에게로다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "e180254281b28e44d3c63d354d7d10b173766ff77c7fae645bf4cc2a35bb9177"
+      ]
+    }
+  ]
+}

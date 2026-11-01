@@ -1,0 +1,173 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:003",
+  "unit_ordinal": 865,
+  "unit_label": "HOS 3",
+  "book_code": "HOS",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:3:1",
+      "sequence": 22130,
+      "chapter_label": "HOS 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to me, “Go again, love a woman loved by another, and an adulteress, even as the LORD loves the children of Israel, though they turn to other gods, and love cakes of raisins.”",
+      "ko": "여호와께서 내게 이르시되 이스라엘 자손이 다른 신을 섬기고 건포도 떡을 즐길찌라도 여호와가 저희를 사랑하나니 너는 또 가서 타인에게 연애를 받아 음부 된 그 여인을 사랑하라 하시기로",
+      "source_text_hash": "787def8d166035942d42aef58b55155687256235588762f4bc26e925cc5c59e7",
+      "translation_text_hash": "bc437213c51db680604d6a083c91c8348e8615521442206d7ac7c1c00bcf7114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 이스라엘 자손이 다른 신을 섬기고 건포도 떡을 즐길찌라도 여호와가 저희를 사랑하나니 너는 또 가서 타인에게 연애를 받아 음부 된 그 여인을 사랑하라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "bc437213c51db680604d6a083c91c8348e8615521442206d7ac7c1c00bcf7114"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:3:2",
+      "sequence": 22131,
+      "chapter_label": "HOS 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "So I bought her for myself for fifteen pieces of silver and a homer and a half of barley.",
+      "ko": "내가 은 열 다섯개와 보리 한 호멜 반으로 나를 위하여 저를 사고",
+      "source_text_hash": "f6a40af93ac3efc9511625cc50c11079abda81e9afe12a4873084213b77dd561",
+      "translation_text_hash": "ea76f1856979f1cbe9b19d6dd1fc7467f366f1c94a7b2e2019c04b51c3dd7c16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 은 열 다섯개와 보리 한 호멜 반으로 나를 위하여 저를 사고"
+      ],
+      "raw_text_hashes": [
+        "ea76f1856979f1cbe9b19d6dd1fc7467f366f1c94a7b2e2019c04b51c3dd7c16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:3:3",
+      "sequence": 22132,
+      "chapter_label": "HOS 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "I said to her, “You shall stay with me many days. You shall not play the prostitute, and you shall not be with any other man. I will also be so toward you.”",
+      "ko": "저에게 이르기를 너는 많은 날 동안 나와 함께 지내고 행음하지 말며 다른 남자를 좇지 말라 나도 네게 그리하리라 하였노라",
+      "source_text_hash": "9cbe8834ac5c82fc8773144ed67fb818b807d54132e7989457583c3435cefd95",
+      "translation_text_hash": "cfc3a493fa71f6cf0ef00811b28628c2c1ab36fbb658b55956b3e1ef486e2531",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저에게 이르기를 너는 많은 날 동안 나와 함께 지내고 행음하지 말며 다른 남자를 좇지 말라 나도 네게 그리하리라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "cfc3a493fa71f6cf0ef00811b28628c2c1ab36fbb658b55956b3e1ef486e2531"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:3:4",
+      "sequence": 22133,
+      "chapter_label": "HOS 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "For the children of Israel shall live many days without king, without prince, without sacrifice, without sacred stone, and without ephod or idols.",
+      "ko": "이스라엘 자손들이 많은 날 동안 왕도 없고 군도 없고 제사도 없고 주상도 없고 에봇도 없고 드라빔도 없이 지내다가",
+      "source_text_hash": "15aa7ae27b6857983e33075aaf3777be42f922fa0c9fff380d944e3fce6ce85c",
+      "translation_text_hash": "a3b6a8affc0b627a773633d90d600e763f97049340aeb6b8c0ac2c12f65bb4b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들이 많은 날 동안 왕도 없고 군도 없고 제사도 없고 주상도 없고 에봇도 없고 드라빔도 없이 지내다가"
+      ],
+      "raw_text_hashes": [
+        "a3b6a8affc0b627a773633d90d600e763f97049340aeb6b8c0ac2c12f65bb4b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:3:5",
+      "sequence": 22134,
+      "chapter_label": "HOS 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Afterward the children of Israel shall return and seek the LORD their God, and David their king, and shall come with trembling to the LORD and to his blessings in the last days.",
+      "ko": "그 후에 저희가 돌아와서 그 하나님 여호와와 그 왕 다윗을 구하고 말일에는 경외하므로 여호와께로 와 그 은총으로 나아가리라",
+      "source_text_hash": "9df63a750fded50da4b2a32a27f7265ea6ea16dcf7c0a1a12a4d9a7952b7b688",
+      "translation_text_hash": "a4972d08bd2b11eeca92616aed93de87cd1c49566ceea0068b763c895e3c0e8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 저희가 돌아와서 그 하나님 여호와와 그 왕 다윗을 구하고 말일에는 경외하므로 여호와께로 와 그 은총으로 나아가리라"
+      ],
+      "raw_text_hashes": [
+        "a4972d08bd2b11eeca92616aed93de87cd1c49566ceea0068b763c895e3c0e8b"
+      ]
+    }
+  ]
+}

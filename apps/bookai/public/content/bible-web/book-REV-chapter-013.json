@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:013",
+  "unit_ordinal": 1180,
+  "unit_label": "REV 13",
+  "book_code": "REV",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:13:1",
+      "sequence": 30906,
+      "chapter_label": "REV 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "Then I stood on the sand of the sea. I saw a beast coming up out of the sea, having ten horns and seven heads. On his horns were ten crowns, and on his heads, blasphemous names.",
+      "ko": "내가 보니 바다에서 한 짐승이 나오는데 뿔이 열이요 머리가 일곱이라 그 뿔에는 열 면류관이 있고 그 머리들에는 참람된 이름들이 있더라",
+      "source_text_hash": "367577bb1383a6dd2c65763e01cb85bbf87881fc7f13370c800f258277d2f6b5",
+      "translation_text_hash": "58b40862a5060c9eb0f0ad22c94b2e43707492c208184e35b564165c88690bff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보니 바다에서 한 짐승이 나오는데 뿔이 열이요 머리가 일곱이라 그 뿔에는 열 면류관이 있고 그 머리들에는 참람된 이름들이 있더라"
+      ],
+      "raw_text_hashes": [
+        "58b40862a5060c9eb0f0ad22c94b2e43707492c208184e35b564165c88690bff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:2",
+      "sequence": 30907,
+      "chapter_label": "REV 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "The beast which I saw was like a leopard, and his feet were like those of a bear, and his mouth like the mouth of a lion. The dragon gave him his power, his throne, and great authority.",
+      "ko": "내가 본 짐승은 표범과 비슷하고 그 발은 곰의 발 같고 그 입은 사자의 입 같은데 용이 자기의 능력과 보좌와 큰 권세를 그에게 주었더라",
+      "source_text_hash": "29c9abb343641e54699fc08daf993a7d587648774ba5eb07915c10f16000438c",
+      "translation_text_hash": "75e3dfc6a728c5162e87656badd81c21a0c98cb8bd72b00d22011627b25a82ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본 짐승은 표범과 비슷하고 그 발은 곰의 발 같고 그 입은 사자의 입 같은데 용이 자기의 능력과 보좌와 큰 권세를 그에게 주었더라"
+      ],
+      "raw_text_hashes": [
+        "75e3dfc6a728c5162e87656badd81c21a0c98cb8bd72b00d22011627b25a82ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:3",
+      "sequence": 30908,
+      "chapter_label": "REV 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "One of his heads looked like it had been wounded fatally. His fatal wound was healed, and the whole earth marveled at the beast.",
+      "ko": "그의 머리 하나가 상하여 죽게 된 것 같더니 그 죽게 되었던 상처가 나으매 온 땅이 이상히 여겨 짐승을 따르고",
+      "source_text_hash": "42a7bf2ee1b0a008fe1ddf44d9ea38334a184ce3448dbc1725515ac482523ddc",
+      "translation_text_hash": "f78c6baca8375941904b28e0cc1280290d04f98c713430b5fd199b7965173eca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 머리 하나가 상하여 죽게 된 것 같더니 그 죽게 되었던 상처가 나으매 온 땅이 이상히 여겨 짐승을 따르고"
+      ],
+      "raw_text_hashes": [
+        "f78c6baca8375941904b28e0cc1280290d04f98c713430b5fd199b7965173eca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:4",
+      "sequence": 30909,
+      "chapter_label": "REV 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "They worshiped the dragon because he gave his authority to the beast; and they worshiped the beast, saying, “Who is like the beast? Who is able to make war with him?”",
+      "ko": "용이 짐승에게 권세를 주므로 용에게 경배하며 짐승에게 경배하여 가로되 누가 이 짐승과 같으뇨 누가 능히 이로 더불어 싸우리요 하더라",
+      "source_text_hash": "f662d885f26a70558fd0568210d3f0e6108f1bf36da560ede5ffd0ec5a380c5a",
+      "translation_text_hash": "dbe3e8988406e660c1de4fd0a6e8b55ff3c596a2e1ea6177ebb47a4e51ba617c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용이 짐승에게 권세를 주므로 용에게 경배하며 짐승에게 경배하여 가로되 누가 이 짐승과 같으뇨 누가 능히 이로 더불어 싸우리요 하더라"
+      ],
+      "raw_text_hashes": [
+        "dbe3e8988406e660c1de4fd0a6e8b55ff3c596a2e1ea6177ebb47a4e51ba617c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:5",
+      "sequence": 30910,
+      "chapter_label": "REV 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "A mouth speaking great things and blasphemy was given to him. Authority to make war for forty-two months was given to him.",
+      "ko": "또 짐승이 큰 말과 참람된 말 하는 입을 받고 또 마흔 두달 일할 권세를 받으니라",
+      "source_text_hash": "65df1e6a74317e954ddc6ecfdbf04cc59b7f1f5e9d252d9c74f462bcd1be4568",
+      "translation_text_hash": "b4113a0684f72d98d89fe707ba39ac28d6c01dc4c6490bf80c763567feb7de37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 짐승이 큰 말과 참람된 말 하는 입을 받고 또 마흔 두달 일할 권세를 받으니라"
+      ],
+      "raw_text_hashes": [
+        "b4113a0684f72d98d89fe707ba39ac28d6c01dc4c6490bf80c763567feb7de37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:6",
+      "sequence": 30911,
+      "chapter_label": "REV 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "He opened his mouth for blasphemy against God, to blaspheme his name, his dwelling, and those who dwell in heaven.",
+      "ko": "짐승이 입을 벌려 하나님을 향하여 훼방하되 그의 이름과 그의 장막 곧 하늘에 거하는 자들을 훼방하더라",
+      "source_text_hash": "4246017304517c0cf4b7399d47ad7209cab486b5227f1d353733e79b1f2218d0",
+      "translation_text_hash": "b250423290a2fd838b3b5ff4c24f3176438323f0d8440e758a44e46322e567e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "짐승이 입을 벌려 하나님을 향하여 훼방하되 그의 이름과 그의 장막 곧 하늘에 거하는 자들을 훼방하더라"
+      ],
+      "raw_text_hashes": [
+        "b250423290a2fd838b3b5ff4c24f3176438323f0d8440e758a44e46322e567e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:7",
+      "sequence": 30912,
+      "chapter_label": "REV 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "It was given to him to make war with the saints and to overcome them. Authority over every tribe, people, language, and nation was given to him.",
+      "ko": "또 권세를 받아 성도들과 싸워 이기게 되고 각 족속과 백성과 방언과 나라를 다스리는 권세를 받으니",
+      "source_text_hash": "e8cd9568169a08adf284798fbc68827047b4c59dbdb80a0c6186011b714289a8",
+      "translation_text_hash": "1c6a613611762bd33486d49a306b063934c31ffcf854644a4e3ef2bdc76b7499",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 권세를 받아 성도들과 싸워 이기게 되고 각 족속과 백성과 방언과 나라를 다스리는 권세를 받으니"
+      ],
+      "raw_text_hashes": [
+        "1c6a613611762bd33486d49a306b063934c31ffcf854644a4e3ef2bdc76b7499"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:8",
+      "sequence": 30913,
+      "chapter_label": "REV 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "All who dwell on the earth will worship him, everyone whose name has not been written from the foundation of the world in the book of life of the Lamb who has been killed.",
+      "ko": "죽임을 당한 어린 양의 생명책에 창세 이후로 녹명되지 못하고 이 땅에 사는 자들은 다 짐승에게 경배하리라",
+      "source_text_hash": "a0b3f771ee739b4c348c1f99a8f7097553a93197f635fd61f8ab61e9cbc25229",
+      "translation_text_hash": "12e182f3a4ba922410477b696762ed9d7d0bfabe367c86f45f9a8cad8459fc07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽임을 당한 어린 양의 생명책에 창세 이후로 녹명되지 못하고 이 땅에 사는 자들은 다 짐승에게 경배하리라"
+      ],
+      "raw_text_hashes": [
+        "12e182f3a4ba922410477b696762ed9d7d0bfabe367c86f45f9a8cad8459fc07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:9",
+      "sequence": 30914,
+      "chapter_label": "REV 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "If anyone has an ear, let him hear.",
+      "ko": "누구든지 귀가 있거든 들을찌어다",
+      "source_text_hash": "adcce8705df7f5afc148244ef93ab78fd4111e08438afa5fb50ffbd7a440fe51",
+      "translation_text_hash": "c26a1537278729ba6a9e55fa3208959b906fb93b4028ce467d2c1acc1df61887",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 귀가 있거든 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "c26a1537278729ba6a9e55fa3208959b906fb93b4028ce467d2c1acc1df61887"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:10",
+      "sequence": 30915,
+      "chapter_label": "REV 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "If anyone is to go into captivity, he will go into captivity. If anyone is to be killed with the sword, he must be killed. Here is the endurance and the faith of the saints.",
+      "ko": "사로잡는 자는 사로잡힐 것이요 칼로 죽이는 자는 자기도 마땅히 칼에 죽으리니 성도들의 인내와 믿음이 여기 있느니라",
+      "source_text_hash": "044deb3e4523387d1a14ed82eddf26400b8fde5b23b62a55879d935e3583f22f",
+      "translation_text_hash": "6f0b8565520b099310a59b487c233b91e4de77ef5c3ae47f17bc136ff290fe76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사로잡는 자는 사로잡힐 것이요 칼로 죽이는 자는 자기도 마땅히 칼에 죽으리니 성도들의 인내와 믿음이 여기 있느니라"
+      ],
+      "raw_text_hashes": [
+        "6f0b8565520b099310a59b487c233b91e4de77ef5c3ae47f17bc136ff290fe76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:11",
+      "sequence": 30916,
+      "chapter_label": "REV 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "I saw another beast coming up out of the earth. He had two horns like a lamb and it spoke like a dragon.",
+      "ko": "내가 보매 또 다른 짐승이 땅에서 올라오니 새끼양 같이 두 뿔이 있고 용처럼 말하더라",
+      "source_text_hash": "2c08e756e5c0ee78cf3c17165fae2183e8a5c0a27c3b302a4c9cf96672e96208",
+      "translation_text_hash": "03e2d74bb6b7788b1b448095e40dcb66fd0fba3dcf2be5f141ac2f1a160d334e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보매 또 다른 짐승이 땅에서 올라오니 새끼양 같이 두 뿔이 있고 용처럼 말하더라"
+      ],
+      "raw_text_hashes": [
+        "03e2d74bb6b7788b1b448095e40dcb66fd0fba3dcf2be5f141ac2f1a160d334e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:12",
+      "sequence": 30917,
+      "chapter_label": "REV 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "He exercises all the authority of the first beast in his presence. He makes the earth and those who dwell in it to worship the first beast, whose fatal wound was healed.",
+      "ko": "저가 먼저 나온 짐승의 모든 권세를 그 앞에서 행하고 땅과 땅에 거하는 자들로 처음 짐승에게 경배하게 하니 곧 죽게 되었던 상처가 나은 자니라",
+      "source_text_hash": "c8bc54ec1e93f520bf9b8cefaf511248c2879b3a9e4268f39948276aeaca198d",
+      "translation_text_hash": "aee2fea71dee73da0a13b10df6edbb0f86d24520fbaaef0ac81a2bd385d53337",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 먼저 나온 짐승의 모든 권세를 그 앞에서 행하고 땅과 땅에 거하는 자들로 처음 짐승에게 경배하게 하니 곧 죽게 되었던 상처가 나은 자니라"
+      ],
+      "raw_text_hashes": [
+        "aee2fea71dee73da0a13b10df6edbb0f86d24520fbaaef0ac81a2bd385d53337"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:13",
+      "sequence": 30918,
+      "chapter_label": "REV 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "He performs great signs, even making fire come down out of the sky to the earth in the sight of people.",
+      "ko": "큰 이적을 행하되 심지어 사람들 앞에서 불이 하늘로부터 땅에 내려 오게 하고",
+      "source_text_hash": "f95535f56cee20a0556b8281a1e63ef4ca8bc953e766fb6f05d4ae1d3a468f34",
+      "translation_text_hash": "0d12d1d6955ba4ffae0b6b2cb99e20da6f0515e7cf1bd5fdc3ef848496e171e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 이적을 행하되 심지어 사람들 앞에서 불이 하늘로부터 땅에 내려 오게 하고"
+      ],
+      "raw_text_hashes": [
+        "0d12d1d6955ba4ffae0b6b2cb99e20da6f0515e7cf1bd5fdc3ef848496e171e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:14",
+      "sequence": 30919,
+      "chapter_label": "REV 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "He deceives my own people who dwell on the earth because of the signs he was granted to do in front of the beast, saying to those who dwell on the earth that they should make an image to the beast who had the sword wound and lived.",
+      "ko": "짐승 앞에서 받은바 이적을 행함으로 땅에 거하는 자들을 미혹하며 땅에 거하는 자들에게 이르기를 칼에 상하였다가 살아난 짐승을 위하여 우상을 만들라 하더라",
+      "source_text_hash": "f4c7b1c50309c7c89edec0726a0354ed02e3f57d82fe3e55273b340a4b4474e7",
+      "translation_text_hash": "4cc02cf1bf67c79bfec7ddb8932525f780d0da314ec25d9077db6f486797c91e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "짐승 앞에서 받은바 이적을 행함으로 땅에 거하는 자들을 미혹하며 땅에 거하는 자들에게 이르기를 칼에 상하였다가 살아난 짐승을 위하여 우상을 만들라 하더라"
+      ],
+      "raw_text_hashes": [
+        "4cc02cf1bf67c79bfec7ddb8932525f780d0da314ec25d9077db6f486797c91e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:15",
+      "sequence": 30920,
+      "chapter_label": "REV 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "It was given to him to give breath to the image of the beast, that the image of the beast should both speak, and cause as many as wouldn’t worship the image of the beast to be killed.",
+      "ko": "저가 권세를 받아 그 짐승의 우상에게 생기를 주어 그 짐승의 우상으로 말하게 하고 또 짐승의 우상에게 경배하지 아니하는 자는 몇이든지 다 죽이게 하더라",
+      "source_text_hash": "d59ed440c6b4b3726b343ab45803d2151a18c5d24ddbdfa559570364b859efe2",
+      "translation_text_hash": "61ddf44b6c816b886e3209ffb8696d7fd3725cb894646d0a6d8212fa843c1f8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 권세를 받아 그 짐승의 우상에게 생기를 주어 그 짐승의 우상으로 말하게 하고 또 짐승의 우상에게 경배하지 아니하는 자는 몇이든지 다 죽이게 하더라"
+      ],
+      "raw_text_hashes": [
+        "61ddf44b6c816b886e3209ffb8696d7fd3725cb894646d0a6d8212fa843c1f8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:16",
+      "sequence": 30921,
+      "chapter_label": "REV 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "He causes all, the small and the great, the rich and the poor, and the free and the slave, to be given marks on their right hands or on their foreheads;",
+      "ko": "저가 모든 자 곧 작은 자나 큰 자나 부자나 빈궁한 자나 자유한 자나 종들로 그 오른손에나 이마에 표를 받게 하고",
+      "source_text_hash": "103d1dd5b11e683c9a06e01a04712f02637eba67d6abf78f3ab8e46638556492",
+      "translation_text_hash": "62c080e0d487919005fed794e3353ebeac3a0fecc58abd5bfc202a34ad416da1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 모든 자 곧 작은 자나 큰 자나 부자나 빈궁한 자나 자유한 자나 종들로 그 오른손에나 이마에 표를 받게 하고"
+      ],
+      "raw_text_hashes": [
+        "62c080e0d487919005fed794e3353ebeac3a0fecc58abd5bfc202a34ad416da1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:17",
+      "sequence": 30922,
+      "chapter_label": "REV 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "and that no one would be able to buy or to sell unless he has that mark, which is the name of the beast or the number of his name.",
+      "ko": "누구든지 이 표를 가진 자 외에는 매매를 못하게 하니 이 표는 곧 짐승의 이름이나 그 이름의 수라",
+      "source_text_hash": "e4b994282dda85f9c027c602343174055b2ff727b3b555f6a2110da2b9a530cc",
+      "translation_text_hash": "ad6021b942d5ecd0e61f6dc05b1397695331c676481af9b537909525511520fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 이 표를 가진 자 외에는 매매를 못하게 하니 이 표는 곧 짐승의 이름이나 그 이름의 수라"
+      ],
+      "raw_text_hashes": [
+        "ad6021b942d5ecd0e61f6dc05b1397695331c676481af9b537909525511520fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:13:18",
+      "sequence": 30923,
+      "chapter_label": "REV 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "Here is wisdom. He who has understanding, let him calculate the number of the beast, for it is the number of a man. His number is six hundred sixty-six.",
+      "ko": "지혜가 여기 있으니 총명 있는 자는 그 짐승의 수를 세어 보라 그 수는 사람의 수니 육백 육십 륙이니라",
+      "source_text_hash": "fdf5ee734bd799b5691c0d6ed350ccd579535092af5d5c6f934e40a709387603",
+      "translation_text_hash": "6b34386302d705d947915371ffebcc0c5658969545b61d5162e5c7d09c17d4e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜가 여기 있으니 총명 있는 자는 그 짐승의 수를 세어 보라 그 수는 사람의 수니 육백 육십 륙이니라"
+      ],
+      "raw_text_hashes": [
+        "6b34386302d705d947915371ffebcc0c5658969545b61d5162e5c7d09c17d4e5"
+      ]
+    }
+  ]
+}

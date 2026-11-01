@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:002",
+  "unit_ordinal": 864,
+  "unit_label": "HOS 2",
+  "book_code": "HOS",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:2:1",
+      "sequence": 22107,
+      "chapter_label": "HOS 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "“Say to your brothers, ‘My people!’ and to your sisters, ‘My loved one!’",
+      "ko": "너희 형제에게는 암미라 하고 너희 자매에게는 루하마라 하라",
+      "source_text_hash": "5d577dcb5ad2185ec5f394fffb86e20418e6b85b277f3f5979b85bb34ca16296",
+      "translation_text_hash": "46572bb73b0088b03dd6f00cc675aa627a16daa047415a6eac7f7c4aee7a6df7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 형제에게는 암미라 하고 너희 자매에게는 루하마라 하라"
+      ],
+      "raw_text_hashes": [
+        "46572bb73b0088b03dd6f00cc675aa627a16daa047415a6eac7f7c4aee7a6df7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:2",
+      "sequence": 22108,
+      "chapter_label": "HOS 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "Contend with your mother! Contend, for she is not my wife, neither am I her husband; and let her put away her prostitution from her face, and her adulteries from between her breasts;",
+      "ko": "너희 어미와 쟁론하고 쟁론하라 저는 내 아내가 아니요 나는 저의 남편이 아니라 저로 그 얼굴에서 음란을 제하게 하고 그 유방 사이에서 음행을 제하게 하라",
+      "source_text_hash": "afa80b0042865e02fec3c0c75c231ff73516696897afc8d93158632da847c377",
+      "translation_text_hash": "d638c1b26e6ecf62caecf1b43f02f8b0e59ad8347670119f916db2679a76c18a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 어미와 쟁론하고 쟁론하라 저는 내 아내가 아니요 나는 저의 남편이 아니라 저로 그 얼굴에서 음란을 제하게 하고 그 유방 사이에서 음행을 제하게 하라"
+      ],
+      "raw_text_hashes": [
+        "d638c1b26e6ecf62caecf1b43f02f8b0e59ad8347670119f916db2679a76c18a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:3",
+      "sequence": 22109,
+      "chapter_label": "HOS 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "lest I strip her naked, and make her bare as in the day that she was born, and make her like a wilderness, and set her like a dry land, and kill her with thirst.",
+      "ko": "그렇지 아니하면 내가 저를 벌거벗겨서 그 나던 날과 같게 할 것이요 저로 광야 같이 되게 하며 마른 땅 같이 되게 하여 목말라 죽게 할것이며",
+      "source_text_hash": "90555e17160a957aa33caf57bcaceeef0cba8eb343ce3165cd88ae07f962c0d6",
+      "translation_text_hash": "a218253db702cf2cf4d0f7bc66f589534f89316fde0b9684261ad50191359904",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그렇지 아니하면 내가 저를 벌거벗겨서 그 나던 날과 같게 할 것이요 저로 광야 같이 되게 하며 마른 땅 같이 되게 하여 목말라 죽게 할것이며"
+      ],
+      "raw_text_hashes": [
+        "a218253db702cf2cf4d0f7bc66f589534f89316fde0b9684261ad50191359904"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:4",
+      "sequence": 22110,
+      "chapter_label": "HOS 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Indeed, on her children I will have no mercy, for they are children of unfaithfulness.",
+      "ko": "내가 그 자녀를 긍휼히 여기지 아니하리니 이는 저희가 음란한 자식들임이니라",
+      "source_text_hash": "27ebcb27512ffe5bbe15dd3ee5398e28752755091e38f0fa200f00c081cacd7c",
+      "translation_text_hash": "bc036c7a61e4d80914d13981a924014041f6769ec0efa4cc4b2b6c1ffc589f4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 자녀를 긍휼히 여기지 아니하리니 이는 저희가 음란한 자식들임이니라"
+      ],
+      "raw_text_hashes": [
+        "bc036c7a61e4d80914d13981a924014041f6769ec0efa4cc4b2b6c1ffc589f4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:5",
+      "sequence": 22111,
+      "chapter_label": "HOS 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "For their mother has played the prostitute. She who conceived them has done shamefully; for she said, ‘I will go after my lovers, who give me my bread and my water, my wool and my flax, my oil and my drink.’",
+      "ko": "저희의 어미는 행음하였고 저희를 배었던 자가 부끄러운 일을 행하였나니 대저 저가 이르기를 나는 나를 연애하는 자들을 따르리니 저희가 내 떡과 내 물과 내 양털과 내 삼과 내 기름과 내 술들을 내게 준다 하였느니라",
+      "source_text_hash": "b09e117754d3d626cc5571a814f4619cf88b421ed999e310d7c269e3b42ff779",
+      "translation_text_hash": "42287788f0fb7617c407f848cdad86d4c781b38ef9d5c85a0d82ff7477f5ece8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 어미는 행음하였고 저희를 배었던 자가 부끄러운 일을 행하였나니 대저 저가 이르기를 나는 나를 연애하는 자들을 따르리니 저희가 내 떡과 내 물과 내 양털과 내 삼과 내 기름과 내 술들을 내게 준다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "42287788f0fb7617c407f848cdad86d4c781b38ef9d5c85a0d82ff7477f5ece8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:6",
+      "sequence": 22112,
+      "chapter_label": "HOS 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore behold, I will hedge up your way with thorns, and I will build a wall against her, that she can’t find her way.",
+      "ko": "그러므로 내가 가시로 그 길을 막으며 담을 쌓아 저로 그 길을 찾지 못하게 하리니",
+      "source_text_hash": "7aad9bb8ac6a9596fe34ef98fa5c104bb3da0d728a8859f2472b16a3fa340484",
+      "translation_text_hash": "f3cb31d4fa1e61f996e37f2ada581fee5606f41c63abae5c1cb8ff4f54d92678",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 가시로 그 길을 막으며 담을 쌓아 저로 그 길을 찾지 못하게 하리니"
+      ],
+      "raw_text_hashes": [
+        "f3cb31d4fa1e61f996e37f2ada581fee5606f41c63abae5c1cb8ff4f54d92678"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:7",
+      "sequence": 22113,
+      "chapter_label": "HOS 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "She will follow after her lovers, but she won’t overtake them; and she will seek them, but won’t find them. Then she will say, ‘I will go and return to my first husband, for then it was better with me than now.’",
+      "ko": "저가 그 연애하는 자를 따라 갈찌라도 미치지 못하며 저희를 찾을찌라도 만나지 못할 것이라 그제야 저가 이르기를 내가 본 남편에게로 돌아가리니 그 때의 내 형편이 지금보다 나았음이라 하리라",
+      "source_text_hash": "2077dba36953fb31f149db56ed8fd8db91e8fd43141f39097c90407129c74c79",
+      "translation_text_hash": "1c1a6b950934fd646988f76ec5fbe4a7972ecb9db5a9b887d99de470a4f61fcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 그 연애하는 자를 따라 갈찌라도 미치지 못하며 저희를 찾을찌라도 만나지 못할 것이라 그제야 저가 이르기를 내가 본 남편에게로 돌아가리니 그 때의 내 형편이 지금보다 나았음이라 하리라"
+      ],
+      "raw_text_hashes": [
+        "1c1a6b950934fd646988f76ec5fbe4a7972ecb9db5a9b887d99de470a4f61fcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:8",
+      "sequence": 22114,
+      "chapter_label": "HOS 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "For she didn’t know that I gave her the grain, the new wine, and the oil, and multiplied to her silver and gold, which they used for Baal.",
+      "ko": "곡식과 새 포도주와 기름은 내가 저에게 준 것이요 저희가 바알을 위하여 쓴 은과 금도 내가 저에게 더하여 준 것이어늘 저가 알지 못하도다",
+      "source_text_hash": "6f1d3e5d875dfa8792370a0c2d425a219baf38ead5c6e3004f21dd12ef565c94",
+      "translation_text_hash": "f30505a4c611f5884b8e30a2366d23ffc0dc22130880d9abdb2918cf8fd048fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곡식과 새 포도주와 기름은 내가 저에게 준 것이요 저희가 바알을 위하여 쓴 은과 금도 내가 저에게 더하여 준 것이어늘 저가 알지 못하도다"
+      ],
+      "raw_text_hashes": [
+        "f30505a4c611f5884b8e30a2366d23ffc0dc22130880d9abdb2918cf8fd048fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:9",
+      "sequence": 22115,
+      "chapter_label": "HOS 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore I will take back my grain in its time, and my new wine in its season, and will pluck away my wool and my flax which should have covered her nakedness.",
+      "ko": "그러므로 그 시절에 내가 내 곡식을 도로 찾으며 그 시기에 내가 내 새 포도주를 도로 찾으며 또 저희 벌거벗은 몸을 가리울 내 양털과 내 삼을 빼앗으리라",
+      "source_text_hash": "1a619613857bc0dc1e0d8f45da1eee5902b40bd048fe54581b3f6975f180db9b",
+      "translation_text_hash": "c2b5e27f033711a9eeb75af588c0443f07c47d139ec8f4cb6d3a4fb9e1d7c259",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그 시절에 내가 내 곡식을 도로 찾으며 그 시기에 내가 내 새 포도주를 도로 찾으며 또 저희 벌거벗은 몸을 가리울 내 양털과 내 삼을 빼앗으리라"
+      ],
+      "raw_text_hashes": [
+        "c2b5e27f033711a9eeb75af588c0443f07c47d139ec8f4cb6d3a4fb9e1d7c259"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:10",
+      "sequence": 22116,
+      "chapter_label": "HOS 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Now I will uncover her lewdness in the sight of her lovers, and no one will deliver her out of my hand.",
+      "ko": "이제 내가 그 수치를 그 연애하는 자의 눈 앞에 드러내리니 저를 내 손에서 건져낼 사람이 없으리라",
+      "source_text_hash": "174a8de612df44b1ea8f37432f43e65c001389a706456a86db677975729a213c",
+      "translation_text_hash": "9e4d69a04adde7a3fb568a5bda80c955fcc1845b06ebc136a7fca1cff8bf96d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 그 수치를 그 연애하는 자의 눈 앞에 드러내리니 저를 내 손에서 건져낼 사람이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "9e4d69a04adde7a3fb568a5bda80c955fcc1845b06ebc136a7fca1cff8bf96d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:11",
+      "sequence": 22117,
+      "chapter_label": "HOS 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "I will also cause all her celebrations to cease: her feasts, her new moons, her Sabbaths, and all her solemn assemblies.",
+      "ko": "내가 그 모든 희락과 절기와 월삭과 안식일과 모든 명절을 폐하겠고",
+      "source_text_hash": "9a92f56323f7fd317e89056593d9b2186ffc884b551698c660e20d0794a13c37",
+      "translation_text_hash": "6ead1783946979e3f4e9f6361b436cb79f7e98d0b57458dc06551353f956df5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 모든 희락과 절기와 월삭과 안식일과 모든 명절을 폐하겠고"
+      ],
+      "raw_text_hashes": [
+        "6ead1783946979e3f4e9f6361b436cb79f7e98d0b57458dc06551353f956df5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:12",
+      "sequence": 22118,
+      "chapter_label": "HOS 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "I will lay waste her vines and her fig trees, about which she has said, ‘These are my wages that my lovers have given me,’ and I will make them a forest, and the animals of the field shall eat them.",
+      "ko": "저가 전에 이르기를 이것은 나를 연애하는 자들이 내게 준 값이라 하던 그 포도나무와 무화과나무를 거칠게 하여 수풀이 되게 하며 들짐승들로 먹게 하리라",
+      "source_text_hash": "6e1c00bb5929316b155dde1cbfb060577527e757c22479a668f215cfccb5f401",
+      "translation_text_hash": "fde32d1babe203d6bc536aa51cdfa165ae3cee696572e77064632eca3c3aecb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 전에 이르기를 이것은 나를 연애하는 자들이 내게 준 값이라 하던 그 포도나무와 무화과나무를 거칠게 하여 수풀이 되게 하며 들짐승들로 먹게 하리라"
+      ],
+      "raw_text_hashes": [
+        "fde32d1babe203d6bc536aa51cdfa165ae3cee696572e77064632eca3c3aecb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:13",
+      "sequence": 22119,
+      "chapter_label": "HOS 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "I will visit on her the days of the Baals, to which she burned incense when she decked herself with her earrings and her jewels, and went after her lovers and forgot me,” says the LORD.",
+      "ko": "저가 귀고리와 패물로 장식하고 그 연애하는 자를 따라가서 나를 잊어버리고 향을 살라 바알들을 섬긴 시일을 따라 내가 저에게 벌을 주리라 나 여호와의 말이니라",
+      "source_text_hash": "13950e1df2a140d1341e07a084aacf806544c577fa7dfa22c2de3d384c6a05b5",
+      "translation_text_hash": "7596a9de119219d287c7fd2e2aaaf014d186af6b4da0a5ae832b9066a0208922",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 귀고리와 패물로 장식하고 그 연애하는 자를 따라가서 나를 잊어버리고 향을 살라 바알들을 섬긴 시일을 따라 내가 저에게 벌을 주리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "7596a9de119219d287c7fd2e2aaaf014d186af6b4da0a5ae832b9066a0208922"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:14",
+      "sequence": 22120,
+      "chapter_label": "HOS 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "“Therefore behold, I will allure her, and bring her into the wilderness, and speak tenderly to her.",
+      "ko": "그러므로 내가 저를 개유하여 거친 들로 데리고 가서 말로 위로하고",
+      "source_text_hash": "e20b76deada36c48a28863db4a117b7fa5f7ca84fd5a19944bc9b2865795377a",
+      "translation_text_hash": "a39211f5cbf6c69b2e0f343d63fd0154846f528189776499f6003c6ec784bf27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 저를 개유하여 거친 들로 데리고 가서 말로 위로하고"
+      ],
+      "raw_text_hashes": [
+        "a39211f5cbf6c69b2e0f343d63fd0154846f528189776499f6003c6ec784bf27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:15",
+      "sequence": 22121,
+      "chapter_label": "HOS 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "I will give her vineyards from there, and the valley of Achor for a door of hope; and she will respond there as in the days of her youth, and as in the day when she came up out of the land of Egypt.",
+      "ko": "거기서 비로소 저의 포도원을 저에게 주고 아골 골짜기로 소망의 문을 삼아 주리니 저가 거기서 응대하기를 어렸을 때와 애굽 땅에서 올라 오던 날과 같이 하리라",
+      "source_text_hash": "f59f53b1abaf45172a36bb8afa441dab87cd5943a84b9416efbc973675293df9",
+      "translation_text_hash": "cac886d3a190b6b417d6fbba531816c23d418b88f9544b047185cf8757bd778c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 비로소 저의 포도원을 저에게 주고 아골 골짜기로 소망의 문을 삼아 주리니 저가 거기서 응대하기를 어렸을 때와 애굽 땅에서 올라 오던 날과 같이 하리라"
+      ],
+      "raw_text_hashes": [
+        "cac886d3a190b6b417d6fbba531816c23d418b88f9544b047185cf8757bd778c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:16",
+      "sequence": 22122,
+      "chapter_label": "HOS 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "It will be in that day,” says the LORD, “that you will call me ‘my husband,’ and no longer call me ‘my master.’",
+      "ko": "여호와께서 이르시되 그 날에 네가 나를 내 남편이라 일컫고 다시는 내 바알이라 일컫지 아니하리라",
+      "source_text_hash": "c3c97d0164512e62b555b8a1ea1fca0c36ca614071e43eb8e60d85669e30a16a",
+      "translation_text_hash": "6e2cdc5226baef0b9199125e9bee3e85e658ecfe0a7636686181fd8aa86d8923",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이르시되 그 날에 네가 나를 내 남편이라 일컫고 다시는 내 바알이라 일컫지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "6e2cdc5226baef0b9199125e9bee3e85e658ecfe0a7636686181fd8aa86d8923"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:17",
+      "sequence": 22123,
+      "chapter_label": "HOS 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "For I will take away the names of the Baals out of her mouth, and they will no longer be mentioned by name.",
+      "ko": "내가 바알들의 이름을 저의 입에서 제하여 다시는 그 이름을 기억하여 일컬음이 없게 하리라",
+      "source_text_hash": "0884e56f15442684b73ecb0f02c31710294ba93677d83a46225d3eddedd96a34",
+      "translation_text_hash": "d3be2a51393e14d47ffb7aac54057a121664d8ae0dc4d37ac835ac64f41efa47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바알들의 이름을 저의 입에서 제하여 다시는 그 이름을 기억하여 일컬음이 없게 하리라"
+      ],
+      "raw_text_hashes": [
+        "d3be2a51393e14d47ffb7aac54057a121664d8ae0dc4d37ac835ac64f41efa47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:18",
+      "sequence": 22124,
+      "chapter_label": "HOS 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "In that day I will make a covenant for them with the animals of the field, and with the birds of the sky, and with the creeping things of the ground. I will break the bow, the sword, and the battle out of the land, and will make them lie down safely.",
+      "ko": "그 날에는 내가 저희를 위하여 들짐승과 공중의 새와 땅의 곤충으로 더불어 언약을 세우며 또 이 땅에서 활과 칼을 꺾어 전쟁을 없이 하고 저희로 평안히 눕게 하리라",
+      "source_text_hash": "97d566abee2c4410f9f71d93f13cd33b1d54b6831ff1cc973eb21ac3cbebc731",
+      "translation_text_hash": "b3e1789ea7fb3ddf2b36ee53c68e8123a22145ddee92d570d6ccd48f756fff8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 내가 저희를 위하여 들짐승과 공중의 새와 땅의 곤충으로 더불어 언약을 세우며 또 이 땅에서 활과 칼을 꺾어 전쟁을 없이 하고 저희로 평안히 눕게 하리라"
+      ],
+      "raw_text_hashes": [
+        "b3e1789ea7fb3ddf2b36ee53c68e8123a22145ddee92d570d6ccd48f756fff8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:19",
+      "sequence": 22125,
+      "chapter_label": "HOS 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "I will betroth you to me forever. Yes, I will betroth you to me in righteousness, in justice, in loving kindness, and in compassion.",
+      "ko": "내가 네게 장가들어 영원히 살되 의와 공변됨과 은총과 긍휼히 여김으로 네게 장가들며",
+      "source_text_hash": "e156ca0d037a99a9ec4043fdfa2d72c7fa1d6b9202f3e9236d8fffddd22d7af8",
+      "translation_text_hash": "f421dc7dfc4c97276a008cc501f1cda526ebd990af24349226f2080394dda547",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 장가들어 영원히 살되 의와 공변됨과 은총과 긍휼히 여김으로 네게 장가들며"
+      ],
+      "raw_text_hashes": [
+        "f421dc7dfc4c97276a008cc501f1cda526ebd990af24349226f2080394dda547"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:20",
+      "sequence": 22126,
+      "chapter_label": "HOS 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "I will even betroth you to me in faithfulness; and you shall know the LORD.",
+      "ko": "진실함으로 네게 장가들리니 네가 여호와를 알리라",
+      "source_text_hash": "7a0d38722433139aa98eb1b8a7fc05ecf3227152b795a3d23c412b214afd60a6",
+      "translation_text_hash": "dba48cea7602df81da0919a10e57fb5ade09fb679e8e23550f1a7dc2f318bf85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실함으로 네게 장가들리니 네가 여호와를 알리라"
+      ],
+      "raw_text_hashes": [
+        "dba48cea7602df81da0919a10e57fb5ade09fb679e8e23550f1a7dc2f318bf85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:21",
+      "sequence": 22127,
+      "chapter_label": "HOS 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "It will happen in that day, that I will respond,” says the LORD. “I will respond to the heavens, and they will respond to the earth;",
+      "ko": "여호와께서 가라사대 그 날에 내가 응하리라 나는 하늘에 응하고 하늘은 땅에 응하고",
+      "source_text_hash": "83876e3f55d823a962a0a0113420b03bbd31ab08773af5ac093b6a03ab586df3",
+      "translation_text_hash": "ee2a4dc0d8fb0a67f0bff18ebd520ff94edcfcea1314ee07f717faada689e81f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 그 날에 내가 응하리라 나는 하늘에 응하고 하늘은 땅에 응하고"
+      ],
+      "raw_text_hashes": [
+        "ee2a4dc0d8fb0a67f0bff18ebd520ff94edcfcea1314ee07f717faada689e81f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:22",
+      "sequence": 22128,
+      "chapter_label": "HOS 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "and the earth will respond to the grain, and the new wine, and the oil; and they will respond to Jezreel.",
+      "ko": "땅은 곡식과 포도주와 기름에 응하고 또 이것들은 이스르엘에 응하리라",
+      "source_text_hash": "0f7e7a0678dfe7a8f455d76caeaf955ce4439c9364fd0ba3cf3a399c80fc789e",
+      "translation_text_hash": "b650a39ae18c63a8ef09d6d73d03885c18afeb8446b067cb0f28c14262b03976",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅은 곡식과 포도주와 기름에 응하고 또 이것들은 이스르엘에 응하리라"
+      ],
+      "raw_text_hashes": [
+        "b650a39ae18c63a8ef09d6d73d03885c18afeb8446b067cb0f28c14262b03976"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:2:23",
+      "sequence": 22129,
+      "chapter_label": "HOS 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "HOS",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "I will sow her to me in the earth; and I will have mercy on her who had not obtained mercy; and I will tell those who were not my people, ‘You are my people;’ and they will say, ‘You are My God!’”",
+      "ko": "내가 나를 위하여 저를 이 땅에 심고 긍휼히 여김을 받지 못하였던 자를 긍휼히 여기며 내 백성 아니었던 자에게 향하여 이르기를 너는 내 백성이라 하리니 저희는 이르기를 주는 내 하나님이시라 하리라",
+      "source_text_hash": "db2eea6f2f3cab6257996f23f493cac15cf349ac06fba799b39bcdede59021bc",
+      "translation_text_hash": "4737cce8de7085b10a330426d86a9c91e822b688e7429239600740d061462da7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나를 위하여 저를 이 땅에 심고 긍휼히 여김을 받지 못하였던 자를 긍휼히 여기며 내 백성 아니었던 자에게 향하여 이르기를 너는 내 백성이라 하리니 저희는 이르기를 주는 내 하나님이시라 하리라"
+      ],
+      "raw_text_hashes": [
+        "4737cce8de7085b10a330426d86a9c91e822b688e7429239600740d061462da7"
+      ]
+    }
+  ]
+}

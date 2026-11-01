@@ -1,0 +1,1293 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:011",
+  "unit_ordinal": 1144,
+  "unit_label": "HEB 11",
+  "book_code": "HEB",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:11:1",
+      "sequence": 30170,
+      "chapter_label": "HEB 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Now faith is assurance of things hoped for, proof of things not seen.",
+      "ko": "믿음은 바라는 것들의 실상이요 보지 못하는 것들의 증거니",
+      "source_text_hash": "3ccae381aeb93b5263571af0682f6ae917e5b70bf6b93fc3104e3916ee80f9f2",
+      "translation_text_hash": "6a465437444f542abddd6fa0eec29ad2b452cd898914450899789f90013150b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음은 바라는 것들의 실상이요 보지 못하는 것들의 증거니"
+      ],
+      "raw_text_hashes": [
+        "6a465437444f542abddd6fa0eec29ad2b452cd898914450899789f90013150b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:2",
+      "sequence": 30171,
+      "chapter_label": "HEB 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "For by this, the elders obtained approval.",
+      "ko": "선진들이 이로써 증거를 얻었느니라",
+      "source_text_hash": "2970c466bee5eba45226f2be9a5fbaec51f502ae7d6ccb1146887ba42b457172",
+      "translation_text_hash": "f587dd7cd4d499378579fdeeb6207c652fdcd5cf8b6b555af4c798e083fcb7dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선진들이 이로써 증거를 얻었느니라"
+      ],
+      "raw_text_hashes": [
+        "f587dd7cd4d499378579fdeeb6207c652fdcd5cf8b6b555af4c798e083fcb7dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:3",
+      "sequence": 30172,
+      "chapter_label": "HEB 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "By faith we understand that the universe has been framed by the word of God, so that what is seen has not been made out of things which are visible.",
+      "ko": "믿음으로 모든 세계가 하나님의 말씀으로 지어진 줄을 우리가 아나니 보이는 것은 나타난 것으로 말미암아 된것이 아니니라",
+      "source_text_hash": "a7c9d0e516cd7dbf7155719978cb9e327ccf95b3a60a753d86f9116a839232ee",
+      "translation_text_hash": "014d03c11e4913c385495a4f5e1c702d529b74b40309ffcdaeaeb67653406c4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 모든 세계가 하나님의 말씀으로 지어진 줄을 우리가 아나니 보이는 것은 나타난 것으로 말미암아 된것이 아니니라"
+      ],
+      "raw_text_hashes": [
+        "014d03c11e4913c385495a4f5e1c702d529b74b40309ffcdaeaeb67653406c4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:4",
+      "sequence": 30173,
+      "chapter_label": "HEB 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "By faith Abel offered to God a more excellent sacrifice than Cain, through which he had testimony given to him that he was righteous, God testifying with respect to his gifts; and through it he, being dead, still speaks.",
+      "ko": "믿음으로 아벨은 가인보다 더 나은 제사를 하나님께 드림으로 의로운 자라 하시는 증거를 얻었으니 하나님이 그 예물에 대하여 증거하심이라 저가 죽었으나 그 믿음으로써 오히려 말하느니라",
+      "source_text_hash": "e989dc1fec566da3bf2f5e661dbbfd3e0c178b0a789680b8770a81d82020ae80",
+      "translation_text_hash": "25a5a06b14a8bf4ff13442a16d7ff4f8811a48c146d84b31c8fd04d90a932c33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 아벨은 가인보다 더 나은 제사를 하나님께 드림으로 의로운 자라 하시는 증거를 얻었으니 하나님이 그 예물에 대하여 증거하심이라 저가 죽었으나 그 믿음으로써 오히려 말하느니라"
+      ],
+      "raw_text_hashes": [
+        "25a5a06b14a8bf4ff13442a16d7ff4f8811a48c146d84b31c8fd04d90a932c33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:5",
+      "sequence": 30174,
+      "chapter_label": "HEB 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "By faith Enoch was taken away, so that he wouldn’t see death, and he was not found, because God translated him. For he has had testimony given to him that before his translation he had been well pleasing to God.",
+      "ko": "믿음으로 에녹은 죽음을 보지 않고 옮기웠으니 하나님이 저를 옮기심으로 다시 보이지 아니하니라 저는 옮기우기 전에 하나님을 기쁘시게 하는 자라 하는 증거를 받았느니라",
+      "source_text_hash": "7c0eeabc4c0368db6ff9ee2d98ee92305f2c1b24194f9c1e6d7243b178f0c822",
+      "translation_text_hash": "6c0b65a07bc86eae0d35ad84ee34d5334c37cbb918fcf4a67bb0bf7f757fedad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 에녹은 죽음을 보지 않고 옮기웠으니 하나님이 저를 옮기심으로 다시 보이지 아니하니라 저는 옮기우기 전에 하나님을 기쁘시게 하는 자라 하는 증거를 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "6c0b65a07bc86eae0d35ad84ee34d5334c37cbb918fcf4a67bb0bf7f757fedad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:6",
+      "sequence": 30175,
+      "chapter_label": "HEB 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "Without faith it is impossible to be well pleasing to him, for he who comes to God must believe that he exists, and that he is a rewarder of those who seek him.",
+      "ko": "믿음이 없이는 기쁘시게 못하나니 하나님께 나아가는 자는 반드시 그가 계신 것과 또한 그가 자기를 찾는 자들에게 상 주시는 이심을 믿어야 할찌니라",
+      "source_text_hash": "4a4da27e983a9aa92ef6c0080f06a409b4d88ee35ea40287f5e84cd1113e435b",
+      "translation_text_hash": "d1023ab5598f90e2cc0ec57ab870f5eea5c85d5c9316f0464cb3d923c68135d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음이 없이는 기쁘시게 못하나니 하나님께 나아가는 자는 반드시 그가 계신 것과 또한 그가 자기를 찾는 자들에게 상 주시는 이심을 믿어야 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "d1023ab5598f90e2cc0ec57ab870f5eea5c85d5c9316f0464cb3d923c68135d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:7",
+      "sequence": 30176,
+      "chapter_label": "HEB 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "By faith Noah, being warned about things not yet seen, moved with godly fear, prepared a ship for the saving of his house, through which he condemned the world and became heir of the righteousness which is according to faith.",
+      "ko": "믿음으로 노아는 아직 보지 못하는 일에 경고하심을 받아 경외함으로 방주를 예비하여 그 집을 구원하였으니 이로 말미암아 세상을 정죄하고 믿음을 좇는 의의 후사가 되었느니라",
+      "source_text_hash": "adcbcd2bf0e512fa42ce01d0b0452cefd707c112f3d30c61773e835f7addac77",
+      "translation_text_hash": "44f4be254e12f547fd942bf2f5d88efd33bbb402f38e1ced3a1bed8e223d7bb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 노아는 아직 보지 못하는 일에 경고하심을 받아 경외함으로 방주를 예비하여 그 집을 구원하였으니 이로 말미암아 세상을 정죄하고 믿음을 좇는 의의 후사가 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "44f4be254e12f547fd942bf2f5d88efd33bbb402f38e1ced3a1bed8e223d7bb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:8",
+      "sequence": 30177,
+      "chapter_label": "HEB 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "By faith Abraham, when he was called, obeyed to go out to the place which he was to receive for an inheritance. He went out, not knowing where he went.",
+      "ko": "믿음으로 아브라함은 부르심을 받았을 때에 순종하여 장래 기업으로 받을 땅에 나갈쌔 갈 바를 알지 못하고 나갔으며",
+      "source_text_hash": "3ad93d3c327d7b7b138801e3bc31667b0cefd1f529cf15dc4c92d03a71089ba2",
+      "translation_text_hash": "5c2f95fb4b2953bffdd07700f58404fbe69718edd618838364f755f833212ef3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 아브라함은 부르심을 받았을 때에 순종하여 장래 기업으로 받을 땅에 나갈쌔 갈 바를 알지 못하고 나갔으며"
+      ],
+      "raw_text_hashes": [
+        "5c2f95fb4b2953bffdd07700f58404fbe69718edd618838364f755f833212ef3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:9",
+      "sequence": 30178,
+      "chapter_label": "HEB 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "By faith he lived as an alien in the land of promise, as in a land not his own, dwelling in tents with Isaac and Jacob, the heirs with him of the same promise.",
+      "ko": "믿음으로 저가 외방에 있는것 같이 약속하신 땅에 우거하여 동일한 약속을 유업으로 함께 받은 이삭과 야곱으로 더불어 장막에 거하였으니",
+      "source_text_hash": "7a5e9191b0f32f30a343a04dfdbb88400422b9bd24199320e2fc3c248a51dbee",
+      "translation_text_hash": "15bcf69853fc7c9c527428174874f016d1b1015b92700827e2472892ce0b8733",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 저가 외방에 있는것 같이 약속하신 땅에 우거하여 동일한 약속을 유업으로 함께 받은 이삭과 야곱으로 더불어 장막에 거하였으니"
+      ],
+      "raw_text_hashes": [
+        "15bcf69853fc7c9c527428174874f016d1b1015b92700827e2472892ce0b8733"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:10",
+      "sequence": 30179,
+      "chapter_label": "HEB 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "For he was looking for the city which has foundations, whose builder and maker is God.",
+      "ko": "이는 하나님의 경영하시고 지으실 터가 있는 성을 바랐음이니라",
+      "source_text_hash": "265808e33978ae7964f50cf0df67e42c57bcfb587172a857927fc8c48afc1638",
+      "translation_text_hash": "33b9ff7b24d904bf5bd4d34b45dd3a3555fc709fcfa54491c308bd45435fd788",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님의 경영하시고 지으실 터가 있는 성을 바랐음이니라"
+      ],
+      "raw_text_hashes": [
+        "33b9ff7b24d904bf5bd4d34b45dd3a3555fc709fcfa54491c308bd45435fd788"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:11",
+      "sequence": 30180,
+      "chapter_label": "HEB 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "By faith even Sarah herself received power to conceive, and she bore a child when she was past age, since she counted him faithful who had promised.",
+      "ko": "믿음으로 사라 자신도 나이 늙어 단산하였으나 잉태하는 힘을 얻었으니 이는 약속하신 이를 미쁘신줄 앎이라",
+      "source_text_hash": "002d536b5fed24570c4a442a8bc996cca8cc1aac6d258545f9ec66d42e320da1",
+      "translation_text_hash": "25f56d3e0492b228e904b444c33c8950631239c952c15a3d9bcb50cc51b1c6ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 사라 자신도 나이 늙어 단산하였으나 잉태하는 힘을 얻었으니 이는 약속하신 이를 미쁘신줄 앎이라"
+      ],
+      "raw_text_hashes": [
+        "25f56d3e0492b228e904b444c33c8950631239c952c15a3d9bcb50cc51b1c6ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:12",
+      "sequence": 30181,
+      "chapter_label": "HEB 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore as many as the stars of the sky in multitude, and as innumerable as the sand which is by the sea shore, were fathered by one man, and him as good as dead.",
+      "ko": "이러므로 죽은 자와 방불한 한 사람으로 말미암아 하늘에 허다한 별과 또 해변의 무수한 모래와 같이 많이 생육하였느니라",
+      "source_text_hash": "ee43c236b7897637190c95038048be9a5fda32b63d53a7c2857411e8a7dbb187",
+      "translation_text_hash": "f95813ebd70b8bb53e9d32c3cad66502802a7b308fb3354f5c5e3e504360b120",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 죽은 자와 방불한 한 사람으로 말미암아 하늘에 허다한 별과 또 해변의 무수한 모래와 같이 많이 생육하였느니라"
+      ],
+      "raw_text_hashes": [
+        "f95813ebd70b8bb53e9d32c3cad66502802a7b308fb3354f5c5e3e504360b120"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:13",
+      "sequence": 30182,
+      "chapter_label": "HEB 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "These all died in faith, not having received the promises, but having seen them and embraced them from afar, and having confessed that they were strangers and pilgrims on the earth.",
+      "ko": "이 사람들은 다 믿음을 따라 죽었으며 약속을 받지 못하였으되 그것들을 멀리서 보고 환영하며 또 땅에서는 외국인과 나그네로라 증거하였으니",
+      "source_text_hash": "f0fd83d3f5931002fc76cee3a36438926f884cea4779f75faea6a3656e54dafc",
+      "translation_text_hash": "5906b1eb4a83ce72e522dc6f5a92eac9db30abd68b1cd7789637347a03bdb076",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들은 다 믿음을 따라 죽었으며 약속을 받지 못하였으되 그것들을 멀리서 보고 환영하며 또 땅에서는 외국인과 나그네로라 증거하였으니"
+      ],
+      "raw_text_hashes": [
+        "5906b1eb4a83ce72e522dc6f5a92eac9db30abd68b1cd7789637347a03bdb076"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:14",
+      "sequence": 30183,
+      "chapter_label": "HEB 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "For those who say such things make it clear that they are seeking a country of their own.",
+      "ko": "이같이 말하는 자들은 본향 찾는 것을 나타냄이라",
+      "source_text_hash": "82b1bebc7788582001cdb012b5805d6619c67aa7d7c48b8e93da8bf913bd43bc",
+      "translation_text_hash": "14ccb4c2b78ce022bc339325809c8ad1b9533edb4ddfc1af46bce848ad1eaa74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 말하는 자들은 본향 찾는 것을 나타냄이라"
+      ],
+      "raw_text_hashes": [
+        "14ccb4c2b78ce022bc339325809c8ad1b9533edb4ddfc1af46bce848ad1eaa74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:15",
+      "sequence": 30184,
+      "chapter_label": "HEB 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "If indeed they had been thinking of that country from which they went out, they would have had enough time to return.",
+      "ko": "저희가 나온바 본향을 생각하였더면 돌아갈 기회가 있었으려니와",
+      "source_text_hash": "4e61c8f4e28219023bdcb795028fab93bbb10c52e67e0c0995fafb6fa8019c29",
+      "translation_text_hash": "4699e64126f476169657f21008b331f8222ab481c7b7f2da765750d5d158c978",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나온바 본향을 생각하였더면 돌아갈 기회가 있었으려니와"
+      ],
+      "raw_text_hashes": [
+        "4699e64126f476169657f21008b331f8222ab481c7b7f2da765750d5d158c978"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:16",
+      "sequence": 30185,
+      "chapter_label": "HEB 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "But now they desire a better country, that is, a heavenly one. Therefore God is not ashamed of them, to be called their God, for he has prepared a city for them.",
+      "ko": "저희가 이제는 더 나은 본향을 사모하니 곧 하늘에 있는 것이라 그러므로 하나님이 저희 하나님이라 일컬음 받으심을 부끄러워 아니하시고 저희를 위하여 한 성을 예비하셨느니라",
+      "source_text_hash": "09b3d28bb44e24303c7b2769946fd720f311ef7960699907bbb80ee1389f2fae",
+      "translation_text_hash": "feada17cb7a81d84ec0d8161dad220e5376c605257a432e5cbf6714523f21134",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이제는 더 나은 본향을 사모하니 곧 하늘에 있는 것이라 그러므로 하나님이 저희 하나님이라 일컬음 받으심을 부끄러워 아니하시고 저희를 위하여 한 성을 예비하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "feada17cb7a81d84ec0d8161dad220e5376c605257a432e5cbf6714523f21134"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:17",
+      "sequence": 30186,
+      "chapter_label": "HEB 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "By faith, Abraham, being tested, offered up Isaac. Yes, he who had gladly received the promises was offering up his only born son,",
+      "ko": "아브라함은 시험을 받을 때에 믿음으로 이삭을 드렸으니 저는 약속을 받은 자로되 그 독생자를 드렸느니라",
+      "source_text_hash": "885a6a6621736dc9da70634ea4488bbc304a16bbc841cad26038cd1afdcf5f9e",
+      "translation_text_hash": "d58883b0b04e75eef97efc69fa9322334558c7ab875c961436b5d152781d793a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함은 시험을 받을 때에 믿음으로 이삭을 드렸으니 저는 약속을 받은 자로되 그 독생자를 드렸느니라"
+      ],
+      "raw_text_hashes": [
+        "d58883b0b04e75eef97efc69fa9322334558c7ab875c961436b5d152781d793a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:18",
+      "sequence": 30187,
+      "chapter_label": "HEB 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "to whom it was said, “Your offspring will be accounted as from Isaac,”",
+      "ko": "저에게 이미 말씀하시기를 네 자손이라 칭할 자는 이삭으로 말미암으리라 하셨으니",
+      "source_text_hash": "381ca9a6435b59bbecb0bab6079e43433f2e767d5d5b0fff3573f091bd7ae179",
+      "translation_text_hash": "7c0dd2afdcea35621b2014ac54f60196bb788d0a2218b0d36f3611fe65fae995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저에게 이미 말씀하시기를 네 자손이라 칭할 자는 이삭으로 말미암으리라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "7c0dd2afdcea35621b2014ac54f60196bb788d0a2218b0d36f3611fe65fae995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:19",
+      "sequence": 30188,
+      "chapter_label": "HEB 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "concluding that God is able to raise up even from the dead. Figuratively speaking, he also did receive him back from the dead.",
+      "ko": "저가 하나님이 능히 죽은 자 가운데서 다시 살리실 줄로 생각한지라 비유컨대 죽은 자 가운데서 도로 받은 것이니라",
+      "source_text_hash": "1dacf95119fa72d89b540be9ed688e3a32410b9c2d98bdf98540d6f7cb3b5a42",
+      "translation_text_hash": "e60b1719861276f7e33b38a16717bdc00c4ba43a070b7b968b5c0b725fb26e72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 하나님이 능히 죽은 자 가운데서 다시 살리실 줄로 생각한지라 비유컨대 죽은 자 가운데서 도로 받은 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e60b1719861276f7e33b38a16717bdc00c4ba43a070b7b968b5c0b725fb26e72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:20",
+      "sequence": 30189,
+      "chapter_label": "HEB 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "By faith Isaac blessed Jacob and Esau, even concerning things to come.",
+      "ko": "믿음으로 이삭은 장차 오는 일에 대하여 야곱과 에서에게 축복하였으며",
+      "source_text_hash": "54dd8073841a327c5b670e3db87367a2988927df67aa4d9a3b8fbec33234a850",
+      "translation_text_hash": "4d282f82b90d91634e522d08a9ea569afa1fa511b6d5034710567cd43433b939",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 이삭은 장차 오는 일에 대하여 야곱과 에서에게 축복하였으며"
+      ],
+      "raw_text_hashes": [
+        "4d282f82b90d91634e522d08a9ea569afa1fa511b6d5034710567cd43433b939"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:21",
+      "sequence": 30190,
+      "chapter_label": "HEB 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "By faith Jacob, when he was dying, blessed each of the sons of Joseph, and worshiped, leaning on the top of his staff.",
+      "ko": "믿음으로 야곱은 죽을 때에 요셉의 각 아들에게 축복하고 그 지팡이 머리에 의지하여 경배하였으며",
+      "source_text_hash": "7764847a36ba94ac9f24271650fa70826308d9d525b458fdec3d3fb7a78e954a",
+      "translation_text_hash": "12917dd0664d5b5014200e88046ad10a2a87c864e955507e1ae57560c3ceef27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 야곱은 죽을 때에 요셉의 각 아들에게 축복하고 그 지팡이 머리에 의지하여 경배하였으며"
+      ],
+      "raw_text_hashes": [
+        "12917dd0664d5b5014200e88046ad10a2a87c864e955507e1ae57560c3ceef27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:22",
+      "sequence": 30191,
+      "chapter_label": "HEB 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "By faith Joseph, when his end was near, made mention of the departure of the children of Israel, and gave instructions concerning his bones.",
+      "ko": "믿음으로 요셉은 임종시에 이스라엘 자손들의 떠날 것을 말하고 또 자기 해골을 위하여 명하였으며",
+      "source_text_hash": "fd88742436dc074db5424b6b591983325c7efd726d1e0dbf8ff899f5d9c2802c",
+      "translation_text_hash": "51aa1ea94871e3b8d8ed99119fedda2939d961b55ec03fe9af0329d24f4fb3f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 요셉은 임종시에 이스라엘 자손들의 떠날 것을 말하고 또 자기 해골을 위하여 명하였으며"
+      ],
+      "raw_text_hashes": [
+        "51aa1ea94871e3b8d8ed99119fedda2939d961b55ec03fe9af0329d24f4fb3f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:23",
+      "sequence": 30192,
+      "chapter_label": "HEB 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "By faith Moses, when he was born, was hidden for three months by his parents, because they saw that he was a beautiful child; and they were not afraid of the king’s commandment.",
+      "ko": "믿음으로 모세가 났을 때에 그 부모가 아름다운 아이임을 보고 석달 동안 숨겨 임금의 명령을 무서워 아니하였으며",
+      "source_text_hash": "1d2dfbc579a4281b5c03ddd414c75754a3d6163b8927401601a056fdff148f3b",
+      "translation_text_hash": "58503f64beaddd566f0686f85e56067465f333c310f093277de9cea9ce430d50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 모세가 났을 때에 그 부모가 아름다운 아이임을 보고 석달 동안 숨겨 임금의 명령을 무서워 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "58503f64beaddd566f0686f85e56067465f333c310f093277de9cea9ce430d50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:24",
+      "sequence": 30193,
+      "chapter_label": "HEB 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "By faith Moses, when he had grown up, refused to be called the son of Pharaoh’s daughter,",
+      "ko": "믿음으로 모세는 장성하여 바로의 공주의 아들이라 칭함을 거절하고",
+      "source_text_hash": "550d0e651b7934a263dcb7f763118bb08f94f23f9e50ac5983920b5e2afa9d2a",
+      "translation_text_hash": "f052243581d233ab3671b3ab667bd4f6eabce25e2db39429f468dac51674a7c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 모세는 장성하여 바로의 공주의 아들이라 칭함을 거절하고"
+      ],
+      "raw_text_hashes": [
+        "f052243581d233ab3671b3ab667bd4f6eabce25e2db39429f468dac51674a7c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:25",
+      "sequence": 30194,
+      "chapter_label": "HEB 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "choosing rather to share ill treatment with God’s people than to enjoy the pleasures of sin for a time,",
+      "ko": "도리어 하나님의 백성과 함께 고난 받기를 잠시 죄악의 낙을 누리는 것보다 더 좋아하고",
+      "source_text_hash": "5317dc69b25ab6540a956728be8f3107254adb28a42136e28769e6da2f91fcd5",
+      "translation_text_hash": "29d3625bd4d8778737d53991bdf191174dfe1510fef8c4d5ffe6e2616349d9d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도리어 하나님의 백성과 함께 고난 받기를 잠시 죄악의 낙을 누리는 것보다 더 좋아하고"
+      ],
+      "raw_text_hashes": [
+        "29d3625bd4d8778737d53991bdf191174dfe1510fef8c4d5ffe6e2616349d9d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:26",
+      "sequence": 30195,
+      "chapter_label": "HEB 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "considering the reproach of Christ greater riches than the treasures of Egypt; for he looked to the reward.",
+      "ko": "그리스도를 위하여 받는 능욕을 애굽의 모든 보화보다 더 큰 재물로 여겼으니 이는 상주심을 바라봄이라",
+      "source_text_hash": "75da708daa3653f9de8a5123665b6d150a7b87e72a19b45efdbaca7d24b7da58",
+      "translation_text_hash": "638bd64b65f27df8480e81be95a7975f00724fa3ea27846a48ac7dfe0ad78c79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도를 위하여 받는 능욕을 애굽의 모든 보화보다 더 큰 재물로 여겼으니 이는 상주심을 바라봄이라"
+      ],
+      "raw_text_hashes": [
+        "638bd64b65f27df8480e81be95a7975f00724fa3ea27846a48ac7dfe0ad78c79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:27",
+      "sequence": 30196,
+      "chapter_label": "HEB 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "By faith he left Egypt, not fearing the wrath of the king; for he endured, as seeing him who is invisible.",
+      "ko": "믿음으로 애굽을 떠나 임금의 노함을 무서워 아니하고 곧 보이지 아니하는 자를 보는것 같이 하여 참았으며",
+      "source_text_hash": "73dc7cd83f82f1e1a75bb83fd454e461658a3b1740441e011dda9569c2ca292b",
+      "translation_text_hash": "6bbe1ac42041f9ac5cd63a76b08c612e4e9c99b6d1d5d30213715b31d620b679",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 애굽을 떠나 임금의 노함을 무서워 아니하고 곧 보이지 아니하는 자를 보는것 같이 하여 참았으며"
+      ],
+      "raw_text_hashes": [
+        "6bbe1ac42041f9ac5cd63a76b08c612e4e9c99b6d1d5d30213715b31d620b679"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:28",
+      "sequence": 30197,
+      "chapter_label": "HEB 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "By faith he kept the Passover and the sprinkling of the blood, that the destroyer of the firstborn should not touch them.",
+      "ko": "믿음으로 유월절과 피 뿌리는 예를 정하였으니 이는 장자를 멸하는 자로 저희를 건드리지 않게 하려한 것이며",
+      "source_text_hash": "c8fdcd8494ba57ea3067e89f6793404642e437642fcb5ae3a9116f6d24c6f28f",
+      "translation_text_hash": "32061f009aaf00f9f45b158c452ee1e9ba0e6dcc93e8bf4fe9e2e70e0d3b0531",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 유월절과 피 뿌리는 예를 정하였으니 이는 장자를 멸하는 자로 저희를 건드리지 않게 하려한 것이며"
+      ],
+      "raw_text_hashes": [
+        "32061f009aaf00f9f45b158c452ee1e9ba0e6dcc93e8bf4fe9e2e70e0d3b0531"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:29",
+      "sequence": 30198,
+      "chapter_label": "HEB 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "By faith they passed through the Red Sea as on dry land. When the Egyptians tried to do so, they were swallowed up.",
+      "ko": "믿음으로 저희가 홍해를 육지 같이 건넜으나 애굽 사람들은 이것을 시험하다가 빠져 죽었으며",
+      "source_text_hash": "e316816931d5ec10ca7ed37d953883d8d501b2f060fa335b89ebee5133d37a5c",
+      "translation_text_hash": "d1593a194b4b1631dda30dc106690b3a67a79a1f356602e6d56ae4215101d89b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 저희가 홍해를 육지 같이 건넜으나 애굽 사람들은 이것을 시험하다가 빠져 죽었으며"
+      ],
+      "raw_text_hashes": [
+        "d1593a194b4b1631dda30dc106690b3a67a79a1f356602e6d56ae4215101d89b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:30",
+      "sequence": 30199,
+      "chapter_label": "HEB 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "By faith the walls of Jericho fell down after they had been encircled for seven days.",
+      "ko": "믿음으로 칠일 동안 여리고를 두루 다니매 성이 무너졌으며",
+      "source_text_hash": "27faf5746b434b598178056e6234eca1bf7dfcd2209a5f5d38e5c09a2e8af9ba",
+      "translation_text_hash": "6776ba02eede39a9b5cecc50ebdefe64214c34dfe743b8e40613ecf0a8326439",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 칠일 동안 여리고를 두루 다니매 성이 무너졌으며"
+      ],
+      "raw_text_hashes": [
+        "6776ba02eede39a9b5cecc50ebdefe64214c34dfe743b8e40613ecf0a8326439"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:31",
+      "sequence": 30200,
+      "chapter_label": "HEB 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "By faith Rahab the prostitute didn’t perish with those who were disobedient, having received the spies in peace.",
+      "ko": "믿음으로 기생 라합은 정탐군을 평안히 영접하였으므로 순종치 아니한 자와 함께 멸망치 아니하였도다",
+      "source_text_hash": "42bbcedf02a9b7c2f20c33812ea96b8f41c73d7c6f8f86f4eaa83c6427e5308c",
+      "translation_text_hash": "28fdfb3da39b20b4322992c8dd2861748bf2dc15a7910fe974f7c3ce4903430b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음으로 기생 라합은 정탐군을 평안히 영접하였으므로 순종치 아니한 자와 함께 멸망치 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "28fdfb3da39b20b4322992c8dd2861748bf2dc15a7910fe974f7c3ce4903430b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:32",
+      "sequence": 30201,
+      "chapter_label": "HEB 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "What more shall I say? For the time would fail me if I told of Gideon, Barak, Samson, Jephthah, David, Samuel, and the prophets—",
+      "ko": "내가 무슨 말을 더 하리요 기드온, 바락, 삼손, 입다와 다윗과 사무엘과 및 선지자들의 일을 말하려면 내게 시간이 부족하리로다",
+      "source_text_hash": "1bd793341dfb220452c0bcb4929171928fba38ba88a9bcc74f8d619076fa078e",
+      "translation_text_hash": "d7599d545d32e82e3dd23b67db897667d1b4d2ca7e8e8d9a06c7a4ffbb61fe76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 무슨 말을 더 하리요 기드온, 바락, 삼손, 입다와 다윗과 사무엘과 및 선지자들의 일을 말하려면 내게 시간이 부족하리로다"
+      ],
+      "raw_text_hashes": [
+        "d7599d545d32e82e3dd23b67db897667d1b4d2ca7e8e8d9a06c7a4ffbb61fe76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:33",
+      "sequence": 30202,
+      "chapter_label": "HEB 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "who through faith subdued kingdoms, worked out righteousness, obtained promises, stopped the mouths of lions,",
+      "ko": "저희가 믿음으로 나라들을 이기기도 하며 의를 행하기도 하며 약속을 받기도 하며 사자들의 입을 막기도 하며",
+      "source_text_hash": "9111d0fa1701165f33d3748ef2c374a7422e4ba3f8d0048bee01d2397d2dc765",
+      "translation_text_hash": "2084a56847649cc06ddee8be9bc054a5b4a0df1258040b1199ecc06823a50681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 믿음으로 나라들을 이기기도 하며 의를 행하기도 하며 약속을 받기도 하며 사자들의 입을 막기도 하며"
+      ],
+      "raw_text_hashes": [
+        "2084a56847649cc06ddee8be9bc054a5b4a0df1258040b1199ecc06823a50681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:34",
+      "sequence": 30203,
+      "chapter_label": "HEB 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "quenched the power of fire, escaped the edge of the sword, from weakness were made strong, grew mighty in war, and caused foreign armies to flee.",
+      "ko": "불의 세력을 멸하기도 하며 칼날을 피하기도 하며 연약한 가운데서 강하게 되기도 하며 전쟁에 용맹되어 이방 사람들의 진을 물리치기도 하며",
+      "source_text_hash": "73bc1ea8221f59e0e21d7ea7b2e45ff62a4051132ce3e42aae67366f68e2de9b",
+      "translation_text_hash": "0f2aa802f87f04e6cb925251fbc3300d9ce29eeb96027db717d6d5a484e9314d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의 세력을 멸하기도 하며 칼날을 피하기도 하며 연약한 가운데서 강하게 되기도 하며 전쟁에 용맹되어 이방 사람들의 진을 물리치기도 하며"
+      ],
+      "raw_text_hashes": [
+        "0f2aa802f87f04e6cb925251fbc3300d9ce29eeb96027db717d6d5a484e9314d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:35",
+      "sequence": 30204,
+      "chapter_label": "HEB 11",
+      "verse_label": "35",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 35
+        }
+      ],
+      "en": "Women received their dead by resurrection. Others were tortured, not accepting their deliverance, that they might obtain a better resurrection.",
+      "ko": "여자들은 자기의 죽은 자를 부활로 받기도 하며 또 어떤이들은 더 좋은 부활을 얻고자 하여 악형을 받되 구차히 면하지 아니하였으며",
+      "source_text_hash": "029caa708e176b76e2dd61e27df5347d5575c54d37a78d897067d3c0184e78d4",
+      "translation_text_hash": "365162c1b4730cc8cbfe670d2b4e210515032ceeeeb2580c6cbb230ee02fb048",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자들은 자기의 죽은 자를 부활로 받기도 하며 또 어떤이들은 더 좋은 부활을 얻고자 하여 악형을 받되 구차히 면하지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "365162c1b4730cc8cbfe670d2b4e210515032ceeeeb2580c6cbb230ee02fb048"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:36",
+      "sequence": 30205,
+      "chapter_label": "HEB 11",
+      "verse_label": "36",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 36
+        }
+      ],
+      "en": "Others were tried by mocking and scourging, yes, moreover by bonds and imprisonment.",
+      "ko": "또 어떤이들은 희롱과 채찍질 뿐아니라 결박과 옥에 갇히는 시험도 받았으며",
+      "source_text_hash": "97d25bcd1bcf8755798b310d198ceb94fb8c951d78868e9e0ce4a645386e32a7",
+      "translation_text_hash": "a63ed7a088e63852f79cc3b1487718763118903b4ca9f539e3a13dab1e0fb92f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어떤이들은 희롱과 채찍질 뿐아니라 결박과 옥에 갇히는 시험도 받았으며"
+      ],
+      "raw_text_hashes": [
+        "a63ed7a088e63852f79cc3b1487718763118903b4ca9f539e3a13dab1e0fb92f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:37",
+      "sequence": 30206,
+      "chapter_label": "HEB 11",
+      "verse_label": "37",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 37
+        }
+      ],
+      "en": "They were stoned. They were sawn apart. They were tempted. They were slain with the sword. They went around in sheep skins and in goat skins; being destitute, afflicted, ill-treated—",
+      "ko": "돌로 치는 것과 톱으로 켜는 것과 시험과 칼에 죽는 것을 당하고 양과 염소의 가죽을 입고 유리하여 궁핍과 환난과 학대를 받았으니",
+      "source_text_hash": "72418ade63939dd9c18b575b40ae3ab52ef9febc5f0ab07483be7b31a0c17765",
+      "translation_text_hash": "a45526d31b761cb376904c54742fc6abbdd453c42fb32071f6f31b8e56fbda18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌로 치는 것과 톱으로 켜는 것과 시험과 칼에 죽는 것을 당하고 양과 염소의 가죽을 입고 유리하여 궁핍과 환난과 학대를 받았으니"
+      ],
+      "raw_text_hashes": [
+        "a45526d31b761cb376904c54742fc6abbdd453c42fb32071f6f31b8e56fbda18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:38",
+      "sequence": 30207,
+      "chapter_label": "HEB 11",
+      "verse_label": "38",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 38
+        }
+      ],
+      "en": "of whom the world was not worthy—wandering in deserts, mountains, caves, and the holes of the earth.",
+      "ko": "(이런 사람은 세상이 감당치 못하도다) 저희가 광야와 산중과 암혈과 토굴에 유리하였느니라",
+      "source_text_hash": "3e7e5596fc7fc2f61b4479ad93c98283b23d52e963643337d26880f490f930f5",
+      "translation_text_hash": "e04da82a6c873e5fd60b46e6878b59eef5e04294ca2c51a4938626429d7d396f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(이런 사람은 세상이 감당치 못하도다) 저희가 광야와 산중과 암혈과 토굴에 유리하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e04da82a6c873e5fd60b46e6878b59eef5e04294ca2c51a4938626429d7d396f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:39",
+      "sequence": 30208,
+      "chapter_label": "HEB 11",
+      "verse_label": "39",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 39
+        }
+      ],
+      "en": "These all, having been commended for their faith, didn’t receive the promise,",
+      "ko": "이 사람들이 다 믿음으로 말미암아 증거를 받았으나 약속을 받지 못하였으니",
+      "source_text_hash": "293ab3a6556ecf97be13e97b3de656c77a8c95d333af1a9ed6672afc965fcb56",
+      "translation_text_hash": "9dee30be8b6084c46f7a8f1503c0d09a426c435b6d4f530daa41530bacf65214",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들이 다 믿음으로 말미암아 증거를 받았으나 약속을 받지 못하였으니"
+      ],
+      "raw_text_hashes": [
+        "9dee30be8b6084c46f7a8f1503c0d09a426c435b6d4f530daa41530bacf65214"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:11:40",
+      "sequence": 30209,
+      "chapter_label": "HEB 11",
+      "verse_label": "40",
+      "locator": {
+        "book": "HEB",
+        "chapter": 11,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 11,
+          "verse": 40
+        }
+      ],
+      "en": "God having provided some better thing concerning us, so that apart from us they should not be made perfect.",
+      "ko": "이는 하나님이 우리를 위하여 더 좋은 것을 예비하셨은즉 우리가 아니면 저희로 온전함을 이루지 못하게 하려 하심이니라",
+      "source_text_hash": "82e40ee75df958101d0f12994df6164f24003e10589f6db6e5b0d22a1714b3f5",
+      "translation_text_hash": "f3acb6ddb0219fc6b05a3f27afb17e5029c7a1798bab1cd5b6645218c48821e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하나님이 우리를 위하여 더 좋은 것을 예비하셨은즉 우리가 아니면 저희로 온전함을 이루지 못하게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "f3acb6ddb0219fc6b05a3f27afb17e5029c7a1798bab1cd5b6645218c48821e5"
+      ]
+    }
+  ]
+}

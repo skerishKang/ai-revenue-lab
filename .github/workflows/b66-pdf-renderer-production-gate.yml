@@ -83,11 +83,16 @@ jobs:
           assert cfg["compatibility_flags"] == ["python_workers", "disable_python_external_sdk"]
           assert cfg["limits"] == {"cpu_ms": 300000}
           assert cfg["r2_buckets"] == [{"binding":"PADIEM_WORKSPACE_FILES","bucket_name":"padiem-workspace-files"}]
-          chat = Path("apps/padiem-chat/wrangler.toml").read_text()
-          assert "B66_PDF_RENDERER_SERVICE" not in chat
+          # #5898/#5910: repository declarations are the binding authority.
+          # The rollback Chat Worker still needs the private PDF renderer.
+          chat = tomllib.loads(Path("apps/padiem-chat/wrangler.toml").read_text())
+          pdf_bindings = [item for item in chat.get("services", [])
+                          if item.get("binding") == "B66_PDF_RENDERER_SERVICE"]
+          assert pdf_bindings == [{"binding": "B66_PDF_RENDERER_SERVICE",
+                                   "service": "padiem-b66-pdf-renderer"}]
           print("PDF_RENDERER_SOURCE_IDENTITY=PASS")
           print("PDF_RENDERER_PUBLIC_ROUTE_DECLARED=NO")
-          print("CHAT_BINDING_ACTIVATION_SEPARATE=YES")
+          print("CHAT_ROLLBACK_PDF_BINDING=PASS")
           PY
       - name: Build and dry-run dedicated renderer Worker
         working-directory: apps/b66-pdf-renderer

@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:013",
+  "unit_ordinal": 224,
+  "unit_label": "JDG 13",
+  "book_code": "JDG",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:13:1",
+      "sequence": 6886,
+      "chapter_label": "JDG 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "The children of Israel again did that which was evil in the LORD’s sight; and the LORD delivered them into the hand of the Philistines forty years.",
+      "ko": "이스라엘 자손이 다시 여호와의 목전에 악을 행하였으므로 여호와께서 그들을 사십년 동안 블레셋 사람의 손에 붙이시니라",
+      "source_text_hash": "ad5c9cbf234756c77317248fba982f1ba1981bba3237efea80cd8ce1f20c772a",
+      "translation_text_hash": "b15d7212af56befb3aa76e63d121cbee25cd0172fb2f011987a7f632dcefc84d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 다시 여호와의 목전에 악을 행하였으므로 여호와께서 그들을 사십년 동안 블레셋 사람의 손에 붙이시니라"
+      ],
+      "raw_text_hashes": [
+        "b15d7212af56befb3aa76e63d121cbee25cd0172fb2f011987a7f632dcefc84d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:2",
+      "sequence": 6887,
+      "chapter_label": "JDG 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "There was a certain man of Zorah, of the family of the Danites, whose name was Manoah; and his wife was barren, and childless.",
+      "ko": "소라 땅에 단 지파의 가족중 마노아라 이름하는 자가 있더라 그 아내가 잉태하지 못하므로 생산치 못하더니",
+      "source_text_hash": "d0751e63da86604e3e947130356a0b7c0977919876e1b8e15edc81ac7b1a11d8",
+      "translation_text_hash": "8169b3ed763546008e79288594df6c8cd74124c42bf13d5bc9d3aa84cc47cf92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소라 땅에 단 지파의 가족중 마노아라 이름하는 자가 있더라 그 아내가 잉태하지 못하므로 생산치 못하더니"
+      ],
+      "raw_text_hashes": [
+        "8169b3ed763546008e79288594df6c8cd74124c42bf13d5bc9d3aa84cc47cf92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:3",
+      "sequence": 6888,
+      "chapter_label": "JDG 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD’s angel appeared to the woman, and said to her, “See now, you are barren and childless; but you shall conceive and bear a son.",
+      "ko": "여호와의 사자가 그 여인에게 나타나시고 그에게 이르시되 보라 네가 본래 잉태하지 못하므로 생산치 못하였으나 이제 잉태하여 아들을 낳으리니",
+      "source_text_hash": "2cb77fc54fe358b93813fb6723081074af59e2a858a512597f98110258d14a45",
+      "translation_text_hash": "963c6df6f953c2085d31bd32caf1362f3cc54726216c596de92580a7da59bf6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 그 여인에게 나타나시고 그에게 이르시되 보라 네가 본래 잉태하지 못하므로 생산치 못하였으나 이제 잉태하여 아들을 낳으리니"
+      ],
+      "raw_text_hashes": [
+        "963c6df6f953c2085d31bd32caf1362f3cc54726216c596de92580a7da59bf6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:4",
+      "sequence": 6889,
+      "chapter_label": "JDG 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "Now therefore please beware and drink no wine nor strong drink, and don’t eat any unclean thing;",
+      "ko": "그러므로 너는 삼가서 포도주와 독주를 마시지 말찌며 무릇 부정한 것을 먹지 말찌니라",
+      "source_text_hash": "adcc9026c6d9fb8474af107da0a3c5fbc54f87152448f80f93497f6df3b5e10b",
+      "translation_text_hash": "d7a9c4e8004dec6b107faa811a509a5924c9784a60ba2226f8f6f997236e0b13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 삼가서 포도주와 독주를 마시지 말찌며 무릇 부정한 것을 먹지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "d7a9c4e8004dec6b107faa811a509a5924c9784a60ba2226f8f6f997236e0b13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:5",
+      "sequence": 6890,
+      "chapter_label": "JDG 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "for, behold, you shall conceive and give birth to a son. No razor shall come on his head, for the child shall be a Nazirite to God from the womb. He shall begin to save Israel out of the hand of the Philistines.”",
+      "ko": "보라 네가 잉태하여 아들을 낳으리니 그 머리에 삭도를 대지 말라 이 아이는 태에서 나옴으로부터 하나님께 바치운 나실인이 됨이라 그가 블레셋 사람의 손에서 이스라엘을 구원하기 시작하리라",
+      "source_text_hash": "63b9a99947ef1d0fbd8ca2350e08002230b1d74919d5825c228485e220619fda",
+      "translation_text_hash": "2cb42a66f0b1e1a86acd8bdf58d73729ede2568f0437e70341510567bdd4c071",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 네가 잉태하여 아들을 낳으리니 그 머리에 삭도를 대지 말라 이 아이는 태에서 나옴으로부터 하나님께 바치운 나실인이 됨이라 그가 블레셋 사람의 손에서 이스라엘을 구원하기 시작하리라"
+      ],
+      "raw_text_hashes": [
+        "2cb42a66f0b1e1a86acd8bdf58d73729ede2568f0437e70341510567bdd4c071"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:6",
+      "sequence": 6891,
+      "chapter_label": "JDG 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "Then the woman came and told her husband, saying, “A man of God came to me, and his face was like the face of the angel of God, very awesome. I didn’t ask him where he was from, neither did he tell me his name;",
+      "ko": "이에 그 여인이 가서 그 남편에게 고하여 가로되 하나님의 사람이 내게 임하였는데 그 용모가 하나님의 사자의 용모 같아서 심히 두려우므로 어디서부터 온 것을 내가 묻지 못하였고 그도 자기 이름을 내게 이르지 아니하였으며",
+      "source_text_hash": "8635d338bfeeab7498a4973735d44f37469885650358c74dbf47023036032401",
+      "translation_text_hash": "e59ef7ee5fde4acf8791cf31532b711e574fd094809cc584d532398a1ccd3c36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 여인이 가서 그 남편에게 고하여 가로되 하나님의 사람이 내게 임하였는데 그 용모가 하나님의 사자의 용모 같아서 심히 두려우므로 어디서부터 온 것을 내가 묻지 못하였고 그도 자기 이름을 내게 이르지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "e59ef7ee5fde4acf8791cf31532b711e574fd094809cc584d532398a1ccd3c36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:7",
+      "sequence": 6892,
+      "chapter_label": "JDG 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "but he said to me, ‘Behold, you shall conceive and bear a son; and now drink no wine nor strong drink. Don’t eat any unclean thing, for the child shall be a Nazirite to God from the womb to the day of his death.’”",
+      "ko": "그가 내게 이르기를 보라 네가 잉태하여 아들을 낳으리니 포도주와 독주를 마시지 말며 무릇 부정한 것을 먹지 말라 이 아이는 태에서 나옴으로부터 죽을 날까지 하나님께 바치운 나실인이 됨이라 하더이다",
+      "source_text_hash": "954fbf2c79244a88ff6126d2c49fca537d22d83f66ad4ead6a76c34b1a11dfae",
+      "translation_text_hash": "e5120fcc4a41e4b9138dd0f14b692044bb876a3f52bcb21815d43cea39990478",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르기를 보라 네가 잉태하여 아들을 낳으리니 포도주와 독주를 마시지 말며 무릇 부정한 것을 먹지 말라 이 아이는 태에서 나옴으로부터 죽을 날까지 하나님께 바치운 나실인이 됨이라 하더이다"
+      ],
+      "raw_text_hashes": [
+        "e5120fcc4a41e4b9138dd0f14b692044bb876a3f52bcb21815d43cea39990478"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:8",
+      "sequence": 6893,
+      "chapter_label": "JDG 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "Then Manoah entreated the LORD, and said, “Oh, Lord, please let the man of God whom you sent come again to us, and teach us what we should do to the child who shall be born.”",
+      "ko": "마노아가 여호와께 기도하여 가로되 주여 구하옵나니 주의 보내셨던 하나님의 사람을 우리에게 다시 임하게 하사 그로 우리가 그 낳을 아이에게 어떻게 행할 것을 우리에게 가르치게 하소서",
+      "source_text_hash": "0dccee5a5da4bac06cddf25c82b79dd283764a98a0a0ec653697d9e3eaff68e2",
+      "translation_text_hash": "bd7022000cc4dde20d5c80ef04d11e226dfdc43670ffabf391a81f03b01b2fc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마노아가 여호와께 기도하여 가로되 주여 구하옵나니 주의 보내셨던 하나님의 사람을 우리에게 다시 임하게 하사 그로 우리가 그 낳을 아이에게 어떻게 행할 것을 우리에게 가르치게 하소서"
+      ],
+      "raw_text_hashes": [
+        "bd7022000cc4dde20d5c80ef04d11e226dfdc43670ffabf391a81f03b01b2fc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:9",
+      "sequence": 6894,
+      "chapter_label": "JDG 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "God listened to the voice of Manoah, and the angel of God came again to the woman as she sat in the field; but Manoah, her husband, wasn’t with her.",
+      "ko": "하나님이 마노아의 목소리를 들으시니라 여인이 밭에 앉았을 때에 하나님의 사자가 다시 그에게 임하셨으나 그 남편 마노아는 함께 있지 아니한지라",
+      "source_text_hash": "3b6d9a7185320962b2f5c865f7d39239edbf0ee624ad8e5c265afde188fb9761",
+      "translation_text_hash": "f50a1bb86bd0708685e3307f3c8452ff9764da4fbfab352d1557ce61624e43b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 마노아의 목소리를 들으시니라 여인이 밭에 앉았을 때에 하나님의 사자가 다시 그에게 임하셨으나 그 남편 마노아는 함께 있지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "f50a1bb86bd0708685e3307f3c8452ff9764da4fbfab352d1557ce61624e43b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:10",
+      "sequence": 6895,
+      "chapter_label": "JDG 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "The woman hurried and ran, and told her husband, saying to him, “Behold, the man who came to me that day has appeared to me.”",
+      "ko": "여인이 급히 달려가서 그 남편에게 고하여 가로되 보소서 전일에 내게 임하였던 사람이 또 내게 나타났나이다",
+      "source_text_hash": "54b72d3632b49e906ae21bf434d2fd163e2cb23eef03b564ad4e60e509f11e8a",
+      "translation_text_hash": "7b342fb5127cfa8a79bf694c497ad634ce530f2cd5f6b90db726991abe7cc346",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 급히 달려가서 그 남편에게 고하여 가로되 보소서 전일에 내게 임하였던 사람이 또 내게 나타났나이다"
+      ],
+      "raw_text_hashes": [
+        "7b342fb5127cfa8a79bf694c497ad634ce530f2cd5f6b90db726991abe7cc346"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:11",
+      "sequence": 6896,
+      "chapter_label": "JDG 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Manoah arose and followed his wife, and came to the man, and said to him, “Are you the man who spoke to my wife?” He said, “I am.”",
+      "ko": "마노아가 일어나 아내를 따라가서 그 사람에게 이르러 그에게 묻되 당신이 이 여인에게 말씀하신 사람이니이까 가라사대 그로라",
+      "source_text_hash": "7a4eb174a9041d11e9795595db164620a31dcb0dcebeb72d2593f24de176322f",
+      "translation_text_hash": "799357201106fe5a76de13d227839ab3f6d7c2e9f408c56ca12176d9f69ab6c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마노아가 일어나 아내를 따라가서 그 사람에게 이르러 그에게 묻되 당신이 이 여인에게 말씀하신 사람이니이까 가라사대 그로라"
+      ],
+      "raw_text_hashes": [
+        "799357201106fe5a76de13d227839ab3f6d7c2e9f408c56ca12176d9f69ab6c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:12",
+      "sequence": 6897,
+      "chapter_label": "JDG 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "Manoah said, “Now let your words happen. What shall the child’s way of life and mission be?”",
+      "ko": "마노아가 가로되 당신의 말씀대로 되기를 원하나이다 이 아이를 어떻게 기르오며 우리가 그에게 어떻게 행하오리이까",
+      "source_text_hash": "4762d59a826a226dbaa11e61c4539d722b6176fe2253b934d88b1031c9ab12d1",
+      "translation_text_hash": "f1e90f3c51c92c4a28b455dfe8f9f30c4196cffa9781ab2ae64ad227f7e23c2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마노아가 가로되 당신의 말씀대로 되기를 원하나이다 이 아이를 어떻게 기르오며 우리가 그에게 어떻게 행하오리이까"
+      ],
+      "raw_text_hashes": [
+        "f1e90f3c51c92c4a28b455dfe8f9f30c4196cffa9781ab2ae64ad227f7e23c2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:13",
+      "sequence": 6898,
+      "chapter_label": "JDG 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD’s angel said to Manoah, “Of all that I said to the woman let her beware.",
+      "ko": "여호와의 사자가 마노아에게 이르시되 내가 여인에게 말한것들을 그가 다 삼가서",
+      "source_text_hash": "f96044fb2fd33896abcb751450175f67c29af0a70ffa83b4e3344cc4b15f8c34",
+      "translation_text_hash": "e7845723bf2082237f5f8b18205a7355c74e3c462cfab5d71452c09296d60638",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 마노아에게 이르시되 내가 여인에게 말한것들을 그가 다 삼가서"
+      ],
+      "raw_text_hashes": [
+        "e7845723bf2082237f5f8b18205a7355c74e3c462cfab5d71452c09296d60638"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:14",
+      "sequence": 6899,
+      "chapter_label": "JDG 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "She may not eat of anything that comes of the vine, neither let her drink wine or strong drink, nor eat any unclean thing. Let her observe all that I commanded her.”",
+      "ko": "포도나무의 소산을 먹지 말며 포도주와 독주를 마시지 말며 무릇 부정한 것을 먹지 말아서 내가 그에게 명한 것은 다 지킬 것이니라",
+      "source_text_hash": "a7761b566bbb0ae3a9286d6804478ce64263c7ece014f439cb23b27ddd4055d9",
+      "translation_text_hash": "8a85c252cadd7992ef17bcb65a2f29ce4c09c6b96f17429695d4f718dcb60278",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도나무의 소산을 먹지 말며 포도주와 독주를 마시지 말며 무릇 부정한 것을 먹지 말아서 내가 그에게 명한 것은 다 지킬 것이니라"
+      ],
+      "raw_text_hashes": [
+        "8a85c252cadd7992ef17bcb65a2f29ce4c09c6b96f17429695d4f718dcb60278"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:15",
+      "sequence": 6900,
+      "chapter_label": "JDG 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Manoah said to the LORD’s angel, “Please stay with us, that we may make a young goat ready for you.”",
+      "ko": "마노아가 여호와의 사자에게 말씀하되 구하옵나니 당신은 우리에게 머물러서 우리가 당신을 위하여 염소 새끼 하나를 준비하게 하소서",
+      "source_text_hash": "93f87c51ff54fde7e68cc29f64a87ac40f75844d0f6b34882f5543f884a4966f",
+      "translation_text_hash": "a88d4e93bd5cb0d2c85ad186ee9209647cba29bb49b3d044354369678dcf190a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마노아가 여호와의 사자에게 말씀하되 구하옵나니 당신은 우리에게 머물러서 우리가 당신을 위하여 염소 새끼 하나를 준비하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "a88d4e93bd5cb0d2c85ad186ee9209647cba29bb49b3d044354369678dcf190a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:16",
+      "sequence": 6901,
+      "chapter_label": "JDG 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD’s angel said to Manoah, “Though you detain me, I won’t eat your bread. If you will prepare a burnt offering, you must offer it to the LORD.” For Manoah didn’t know that he was the LORD’s angel.",
+      "ko": "여호와의 사자가 마노아에게 이르시되 네가 비록 나를 머물리나 내가 너의 식물을 먹지 아니하리라 번제를 준비하려거든 마땅히 여호와께 드릴찌니라 하니 이는 마노아가 여호와의 사자인줄 알지 못함을 인함이었더라",
+      "source_text_hash": "cce77148aa4dcf7b1761a35b6a189ca95bbe3dd78437a5f3c4ecde7f5cbb7e9b",
+      "translation_text_hash": "6cc20c916dd76d4f7398e86f09202c4c4d269be6cdef5fe99d84c1e5f88af9fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 마노아에게 이르시되 네가 비록 나를 머물리나 내가 너의 식물을 먹지 아니하리라 번제를 준비하려거든 마땅히 여호와께 드릴찌니라 하니 이는 마노아가 여호와의 사자인줄 알지 못함을 인함이었더라"
+      ],
+      "raw_text_hashes": [
+        "6cc20c916dd76d4f7398e86f09202c4c4d269be6cdef5fe99d84c1e5f88af9fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:17",
+      "sequence": 6902,
+      "chapter_label": "JDG 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Manoah said to the LORD’s angel, “What is your name, that when your words happen, we may honor you?”",
+      "ko": "마노아가 또 여호와의 사자에게 말씀하되 당신의 이름이 무엇이니이까 당신의 말씀이 이룰 때에 우리가 당신을 존숭하리이다",
+      "source_text_hash": "8f522f1aa30980b35da518433eda9430e836956ea215fb4df30dbe7c3dbc448c",
+      "translation_text_hash": "cfd904321e9a7e81dc4004ece29cd2c0448fd04c364abb5c3ce1b7e9d4711d92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마노아가 또 여호와의 사자에게 말씀하되 당신의 이름이 무엇이니이까 당신의 말씀이 이룰 때에 우리가 당신을 존숭하리이다"
+      ],
+      "raw_text_hashes": [
+        "cfd904321e9a7e81dc4004ece29cd2c0448fd04c364abb5c3ce1b7e9d4711d92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:18",
+      "sequence": 6903,
+      "chapter_label": "JDG 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD’s angel said to him, “Why do you ask about my name, since it is incomprehensible?”",
+      "ko": "여호와의 사자가 그에게 이르시되 어찌하여 이를 묻느냐 내 이름은 기묘니라",
+      "source_text_hash": "ee3816332b6ad5074c0376f3263f4812a9f9c94140593a942cd62055e9424f89",
+      "translation_text_hash": "15fd54442414242c2be13cc9618670a738e6530564827ff180b976cb249adb58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 그에게 이르시되 어찌하여 이를 묻느냐 내 이름은 기묘니라"
+      ],
+      "raw_text_hashes": [
+        "15fd54442414242c2be13cc9618670a738e6530564827ff180b976cb249adb58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:19",
+      "sequence": 6904,
+      "chapter_label": "JDG 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "So Manoah took the young goat with the meal offering, and offered it on the rock to the LORD. Then the angel did an amazing thing as Manoah and his wife watched.",
+      "ko": "이에 마노아가 염소새끼 하나와 소제물을 취하여 반석 위에서 여호와께 드리매 사자가 이적을 행한지라 마노아와 그 아내가 본즉",
+      "source_text_hash": "0e073990055524f15ebd0781a44123b1030012a815e05d6c5df1c1940a628ad0",
+      "translation_text_hash": "0b55bd2bad1361c881553f6b31e0f36c556994ef57c0305dab6be417cb529c2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 마노아가 염소새끼 하나와 소제물을 취하여 반석 위에서 여호와께 드리매 사자가 이적을 행한지라 마노아와 그 아내가 본즉"
+      ],
+      "raw_text_hashes": [
+        "0b55bd2bad1361c881553f6b31e0f36c556994ef57c0305dab6be417cb529c2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:20",
+      "sequence": 6905,
+      "chapter_label": "JDG 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "For when the flame went up toward the sky from off the altar, the LORD’s angel ascended in the flame of the altar. Manoah and his wife watched; and they fell on their faces to the ground.",
+      "ko": "불꽃이 단에서부터 하늘로 올라가는 동시에 여호와의 사자가 단 불꽃 가운데로 좇아 올라간지라 마노아와 그 아내가 이것을 보고 얼굴을 땅에 대고 엎드리니라",
+      "source_text_hash": "df184f5007e9e0e9e8dc7bbe3027c5fb389d9f6d06c02cc065b69756ec665dab",
+      "translation_text_hash": "88d86b670d2423d575dcc86ffea211f6eb0fbd315a57221e2db98399e7b8868b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불꽃이 단에서부터 하늘로 올라가는 동시에 여호와의 사자가 단 불꽃 가운데로 좇아 올라간지라 마노아와 그 아내가 이것을 보고 얼굴을 땅에 대고 엎드리니라"
+      ],
+      "raw_text_hashes": [
+        "88d86b670d2423d575dcc86ffea211f6eb0fbd315a57221e2db98399e7b8868b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:21",
+      "sequence": 6906,
+      "chapter_label": "JDG 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "But the LORD’s angel didn’t appear to Manoah or to his wife any more. Then Manoah knew that he was the LORD’s angel.",
+      "ko": "여호와의 사자가 마노아와 그 아내에게 다시 나타나지 아니하니 마노아가 이에 그가 여호와의 사자인줄 알고",
+      "source_text_hash": "da2efe47e98b9344eac71ce4bd92f1337c64aa9e08af353b543139895143c021",
+      "translation_text_hash": "13175d20d63212106db830d22ee35d1413641a2aa53870fec22165e46175e2b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 마노아와 그 아내에게 다시 나타나지 아니하니 마노아가 이에 그가 여호와의 사자인줄 알고"
+      ],
+      "raw_text_hashes": [
+        "13175d20d63212106db830d22ee35d1413641a2aa53870fec22165e46175e2b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:22",
+      "sequence": 6907,
+      "chapter_label": "JDG 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "Manoah said to his wife, “We shall surely die, because we have seen God.”",
+      "ko": "그 아내에게 이르되 우리가 하나님을 보았으니 반드시 죽으리로다",
+      "source_text_hash": "53e0ea045dd819db2c7dc1ea39b35cbe3e98fbaff50ac782bae216dcac2c0be1",
+      "translation_text_hash": "30635a05ac4caacc398323c6ba08654f32899c0e03b64483e309dc27a9546cf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아내에게 이르되 우리가 하나님을 보았으니 반드시 죽으리로다"
+      ],
+      "raw_text_hashes": [
+        "30635a05ac4caacc398323c6ba08654f32899c0e03b64483e309dc27a9546cf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:23",
+      "sequence": 6908,
+      "chapter_label": "JDG 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "But his wife said to him, “If the LORD were pleased to kill us, he wouldn’t have received a burnt offering and a meal offering at our hand, and he wouldn’t have shown us all these things, nor would he have told us such things as these at this time.”",
+      "ko": "그 아내가 그에게 이르되 여호와께서 우리를 죽이려 하셨더면 우리 손에서 번제와 소제를 받지 아니하셨을 것이요 이 모든 일을 보이지 아니하셨을 것이며 이제 이런 말씀도 우리에게 이르지 아니하셨으리이다 하였더라",
+      "source_text_hash": "69e9c603e7bf7755027f85829dc2fcbb9a03bd5063a66b629bbaa0df42a9c008",
+      "translation_text_hash": "a0bbc696271d89114b1175ce0712f69743ee600bf405bab30ff9a158611fb3c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아내가 그에게 이르되 여호와께서 우리를 죽이려 하셨더면 우리 손에서 번제와 소제를 받지 아니하셨을 것이요 이 모든 일을 보이지 아니하셨을 것이며 이제 이런 말씀도 우리에게 이르지 아니하셨으리이다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "a0bbc696271d89114b1175ce0712f69743ee600bf405bab30ff9a158611fb3c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:24",
+      "sequence": 6909,
+      "chapter_label": "JDG 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "The woman bore a son and named him Samson. The child grew, and the LORD blessed him.",
+      "ko": "여인이 아들을 낳으매 이름을 삼손이라 하니라 아이가 자라매 여호와께서 그에게 복을 주시더니",
+      "source_text_hash": "dba8a41221bb5cddd0a52f170a0426f03668c5b04d9de4a5ba0cada58f1e6b22",
+      "translation_text_hash": "6f1ca665dff80a42a892ff6d4e27c325f76a63f2e2cee28241c8e8195c075280",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 아들을 낳으매 이름을 삼손이라 하니라 아이가 자라매 여호와께서 그에게 복을 주시더니"
+      ],
+      "raw_text_hashes": [
+        "6f1ca665dff80a42a892ff6d4e27c325f76a63f2e2cee28241c8e8195c075280"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:13:25",
+      "sequence": 6910,
+      "chapter_label": "JDG 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD’s Spirit began to move him in Mahaneh Dan, between Zorah and Eshtaol.",
+      "ko": "소라와 에스다올 사이 마하네단에서 여호와의 신이 비로소 그에게 감동하시니라",
+      "source_text_hash": "e08173692fe2db05a7738880ff1b14d704601294e05ce5305e37d6bc25129bb7",
+      "translation_text_hash": "1cd7d238d8aafa104fe68ad75028c5ff669620e34920228d061c7a20487a3b36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소라와 에스다올 사이 마하네단에서 여호와의 신이 비로소 그에게 감동하시니라"
+      ],
+      "raw_text_hashes": [
+        "1cd7d238d8aafa104fe68ad75028c5ff669620e34920228d061c7a20487a3b36"
+      ]
+    }
+  ]
+}

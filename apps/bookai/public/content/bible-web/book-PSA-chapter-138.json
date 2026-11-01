@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:138",
+  "unit_ordinal": 616,
+  "unit_label": "PSA 138",
+  "book_code": "PSA",
+  "chapter_number": 138,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:138:1",
+      "sequence": 16233,
+      "chapter_label": "PSA 138",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 138,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 138,
+          "verse": 1
+        }
+      ],
+      "en": "I will give you thanks with my whole heart. Before the gods, I will sing praises to you.",
+      "ko": "내가 전심으로 주께 감사하며 신들 앞에서 주께 찬양하리이다",
+      "source_text_hash": "7551154b61c6da611cfc589504e5d9c9de6b89c6037cfef3d048a74028d352c7",
+      "translation_text_hash": "0139c7b4a73425c40594f43fdcd2a7023b4b4d70acfe7a352e7c96ef00ca15ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전심으로 주께 감사하며 신들 앞에서 주께 찬양하리이다"
+      ],
+      "raw_text_hashes": [
+        "0139c7b4a73425c40594f43fdcd2a7023b4b4d70acfe7a352e7c96ef00ca15ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:138:2",
+      "sequence": 16234,
+      "chapter_label": "PSA 138",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 138,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 138,
+          "verse": 2
+        }
+      ],
+      "en": "I will bow down toward your holy temple, and give thanks to your Name for your loving kindness and for your truth; for you have exalted your Name and your Word above all.",
+      "ko": "내가 주의 성전을 향하여 경배하며 주의 인자하심과 성실하심을 인하여 주의 이름에 감사하오리니 이는 주께서 주의 말씀을 주의 모든 이름 위에 높게 하셨음이라",
+      "source_text_hash": "23ad2b4c608714c0b699a9dcb46727d4e7b9ae9824a1c4348e3e2192097a9755",
+      "translation_text_hash": "d0cb4e672095965922e0dd7745e8dbfa8fb656b984308d64d2d1d2e1d9233988",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 성전을 향하여 경배하며 주의 인자하심과 성실하심을 인하여 주의 이름에 감사하오리니 이는 주께서 주의 말씀을 주의 모든 이름 위에 높게 하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "d0cb4e672095965922e0dd7745e8dbfa8fb656b984308d64d2d1d2e1d9233988"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:138:3",
+      "sequence": 16235,
+      "chapter_label": "PSA 138",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 138,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 138,
+          "verse": 3
+        }
+      ],
+      "en": "In the day that I called, you answered me. You encouraged me with strength in my soul.",
+      "ko": "내가 간구하는 날에 주께서 응답하시고 내 영혼을 장려하여 강하게 하셨나이다",
+      "source_text_hash": "ebfc2233cf60217420eb5b3c94f60e320ff7faed63c5bc4308c0e848657336eb",
+      "translation_text_hash": "3cf05d9af56b67828a803e308334541f990a0af2eca0c6707e84af0f8c8c7821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 간구하는 날에 주께서 응답하시고 내 영혼을 장려하여 강하게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "3cf05d9af56b67828a803e308334541f990a0af2eca0c6707e84af0f8c8c7821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:138:4",
+      "sequence": 16236,
+      "chapter_label": "PSA 138",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 138,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 138,
+          "verse": 4
+        }
+      ],
+      "en": "All the kings of the earth will give you thanks, LORD, for they have heard the words of your mouth.",
+      "ko": "여호와여 땅의 열왕이 주께 감사할 것은 저희가 주의 입의 말씀을 들음이오며",
+      "source_text_hash": "bdbbe5fb7d0a5219e8b31f8c4bafa774b7d62f8da8209f7b3f4b3e474aeee66c",
+      "translation_text_hash": "fad7ddb8acf42b85d36155d2d3fb690085aeafb0ab723e538b5fbdbc860158a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 땅의 열왕이 주께 감사할 것은 저희가 주의 입의 말씀을 들음이오며"
+      ],
+      "raw_text_hashes": [
+        "fad7ddb8acf42b85d36155d2d3fb690085aeafb0ab723e538b5fbdbc860158a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:138:5",
+      "sequence": 16237,
+      "chapter_label": "PSA 138",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 138,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 138,
+          "verse": 5
+        }
+      ],
+      "en": "Yes, they will sing of the ways of the LORD, for the LORD’s glory is great!",
+      "ko": "저희가 여호와의 도를 노래할 것은 여호와의 영광이 크심이니이다",
+      "source_text_hash": "38282adf69dccf0fa026e972191341cf66eb04614e569c8e8cc5a57555c382d8",
+      "translation_text_hash": "142928d33b4d911eab92c890c17a1e3304909be30a4556767bd8a07edfaf23cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 여호와의 도를 노래할 것은 여호와의 영광이 크심이니이다"
+      ],
+      "raw_text_hashes": [
+        "142928d33b4d911eab92c890c17a1e3304909be30a4556767bd8a07edfaf23cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:138:6",
+      "sequence": 16238,
+      "chapter_label": "PSA 138",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 138,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 138,
+          "verse": 6
+        }
+      ],
+      "en": "For though the LORD is high, yet he looks after the lowly; but he knows the proud from afar.",
+      "ko": "여호와께서 높이 계셔도 낮은 자를 하감하시며 멀리서도 교만한 자를 아시나이다",
+      "source_text_hash": "baadf6abfd39568abb2755835e55230ca9b52dea4d7a30d6ba5e35aee96adf89",
+      "translation_text_hash": "071d7e19bff75cfa7a81a60f4976ac30eabf2eeb63e2d0814b038569150923be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 높이 계셔도 낮은 자를 하감하시며 멀리서도 교만한 자를 아시나이다"
+      ],
+      "raw_text_hashes": [
+        "071d7e19bff75cfa7a81a60f4976ac30eabf2eeb63e2d0814b038569150923be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:138:7",
+      "sequence": 16239,
+      "chapter_label": "PSA 138",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 138,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 138,
+          "verse": 7
+        }
+      ],
+      "en": "Though I walk in the middle of trouble, you will revive me. You will stretch out your hand against the wrath of my enemies. Your right hand will save me.",
+      "ko": "내가 환난 중에 다닐찌라도 주께서 나를 소성케 하시고 주의 손을 펴사 내 원수들의 노를 막으시며 주의 오른손이 나를 구원하시리이다",
+      "source_text_hash": "0e245e2aff96d8999c7eeae15d099ea2d65ecb4380c32893717b001382c36677",
+      "translation_text_hash": "792215ada00ea638adc43941d0f136124bd60144dd3b0ad3e0a8aaa5e43a43d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 환난 중에 다닐찌라도 주께서 나를 소성케 하시고 주의 손을 펴사 내 원수들의 노를 막으시며 주의 오른손이 나를 구원하시리이다"
+      ],
+      "raw_text_hashes": [
+        "792215ada00ea638adc43941d0f136124bd60144dd3b0ad3e0a8aaa5e43a43d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:138:8",
+      "sequence": 16240,
+      "chapter_label": "PSA 138",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 138,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 138,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD will fulfill that which concerns me. Your loving kindness, LORD, endures forever. Don’t forsake the works of your own hands.",
+      "ko": "여호와께서 내게 관계된 것을 완전케 하실찌라 여호와여 주의 인자하심이 영원하오니 주의 손으로 지으신 것을 버리지 마옵소서",
+      "source_text_hash": "a78b482f12c2b67d79b40e11f85eb42f6aafef5dd6905eb490ad92a622a8df3a",
+      "translation_text_hash": "8826d47da45e3db7cd1e06d388934108417d35bff399d2a07ac72c56c58e6534",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 관계된 것을 완전케 하실찌라 여호와여 주의 인자하심이 영원하오니 주의 손으로 지으신 것을 버리지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "8826d47da45e3db7cd1e06d388934108417d35bff399d2a07ac72c56c58e6534"
+      ]
+    }
+  ]
+}

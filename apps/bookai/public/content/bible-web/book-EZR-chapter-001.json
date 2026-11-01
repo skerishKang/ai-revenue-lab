@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZR:chapter:001",
+  "unit_ordinal": 404,
+  "unit_label": "EZR 1",
+  "book_code": "EZR",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZR:1:1",
+      "sequence": 12018,
+      "chapter_label": "EZR 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Now in the first year of Cyrus king of Persia, that the LORD’s word by Jeremiah’s mouth might be accomplished, the LORD stirred up the spirit of Cyrus king of Persia, so that he made a proclamation throughout all his kingdom, and put it also in writing, saying, i",
+      "ko": "바사 왕 고레스 원년에 여호와께서 예레미야의 입으로 하신 말씀을 응하게 하시려고 바사 왕 고레스의 마음을 감동시키시매 저가 온 나라에 공포도 하고 조서도 내려 가로되",
+      "source_text_hash": "18ef3ad7041a42232f3912536c0d371308431dcba768e9279637fdfd27c733eb",
+      "translation_text_hash": "53d3d8715c442df4353b4a20d9b767aadd9e90d4241ca80687d3913e9ed0f971",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바사 왕 고레스 원년에 여호와께서 예레미야의 입으로 하신 말씀을 응하게 하시려고 바사 왕 고레스의 마음을 감동시키시매 저가 온 나라에 공포도 하고 조서도 내려 가로되"
+      ],
+      "raw_text_hashes": [
+        "53d3d8715c442df4353b4a20d9b767aadd9e90d4241ca80687d3913e9ed0f971"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:1:2",
+      "sequence": 12019,
+      "chapter_label": "EZR 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "“Cyrus king of Persia says, ‘The LORD, the God of heaven, has given me all the kingdoms of the earth; and he has commanded me to build him a house in Jerusalem, which is in Judah.",
+      "ko": "바사 왕 고레스는 말하노니 하늘의 신 여호와께서 세상 만국으로 내게 주셨고 나를 명하사 유다 예루살렘에 전을 건축하라 하셨나니",
+      "source_text_hash": "bc75eb7b43489ac9f725ba38f57d23c9906e19c67d609493faecd0e6d7799df0",
+      "translation_text_hash": "5940e887969c88d9b22229527008d7cf458d9082aa069981dddcae418db5943f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바사 왕 고레스는 말하노니 하늘의 신 여호와께서 세상 만국으로 내게 주셨고 나를 명하사 유다 예루살렘에 전을 건축하라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "5940e887969c88d9b22229527008d7cf458d9082aa069981dddcae418db5943f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:1:3",
+      "sequence": 12020,
+      "chapter_label": "EZR 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Whoever there is among you of all his people, may his God be with him, and let him go up to Jerusalem, which is in Judah, and build the house of the LORD, the God of Israel (he is God), which is in Jerusalem.",
+      "ko": "이스라엘의 하나님은 참 신이시라 너희 중에 무릇 그 백성 된 자는 다 유다 예루살렘으로 올라가서 거기 있는 여호와의 전을 건축하라 너희 하나님이 함께 하시기를 원하노라",
+      "source_text_hash": "fd2561eb4dd6f8014f185715cb33e3c3804b3a4c8a461645248b7c05e63381b4",
+      "translation_text_hash": "9733b58cbc9a3f928bc6c5155fb00cd9a871456cc2280acc518d0ef751ce192f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님은 참 신이시라 너희 중에 무릇 그 백성 된 자는 다 유다 예루살렘으로 올라가서 거기 있는 여호와의 전을 건축하라 너희 하나님이 함께 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "9733b58cbc9a3f928bc6c5155fb00cd9a871456cc2280acc518d0ef751ce192f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:1:4",
+      "sequence": 12021,
+      "chapter_label": "EZR 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Whoever is left, in any place where he lives, let the men of his place help him with silver, with gold, with goods, and with animals, in addition to the free will offering for God’s house which is in Jerusalem.’”",
+      "ko": "무릇 그 남아 있는 백성이 어느 곳에 우거하였든지 그곳 사람들이 마땅히 은과 금과 기타 물건과 짐승으로 도와주고 그 외에도 예루살렘 하나님의 전을 위하여 예물을 즐거이 드릴찌니라 하였더라",
+      "source_text_hash": "9d031bd9c5294afdb30ea39024307b98c8d50790f20965e6fadc12d1849af71c",
+      "translation_text_hash": "bd9bb30a8bd095d3fea4b937d79ffde9455dfcf67a2fdf7d2e213da29e693ff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그 남아 있는 백성이 어느 곳에 우거하였든지 그곳 사람들이 마땅히 은과 금과 기타 물건과 짐승으로 도와주고 그 외에도 예루살렘 하나님의 전을 위하여 예물을 즐거이 드릴찌니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "bd9bb30a8bd095d3fea4b937d79ffde9455dfcf67a2fdf7d2e213da29e693ff3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:1:5",
+      "sequence": 12022,
+      "chapter_label": "EZR 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Then the heads of fathers’ households of Judah and Benjamin, the priests and the Levites, all whose spirit God had stirred to go up, rose up to build the LORD’s house which is in Jerusalem.",
+      "ko": "이에 유다와 베냐민 족장들과 제사장들과 레위 사람들과 무릇 그 마음이 하나님께 감동을 받고 올라가서 예루살렘 여호와의 전을 건축코자 하는 자가 다 일어나니",
+      "source_text_hash": "c1281e2220a59414872cade69755b35c753c7a6e0259dbed25433866bf29f446",
+      "translation_text_hash": "22d2249f040a7cf1ae1c5274abc29f97792cf191b2ada0d723171b15dcaa6dff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 유다와 베냐민 족장들과 제사장들과 레위 사람들과 무릇 그 마음이 하나님께 감동을 받고 올라가서 예루살렘 여호와의 전을 건축코자 하는 자가 다 일어나니"
+      ],
+      "raw_text_hashes": [
+        "22d2249f040a7cf1ae1c5274abc29f97792cf191b2ada0d723171b15dcaa6dff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:1:6",
+      "sequence": 12023,
+      "chapter_label": "EZR 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "All those who were around them strengthened their hands with vessels of silver, with gold, with goods, with animals, and with precious things, in addition to all that was willingly offered.",
+      "ko": "그 사면 사람들이 은그릇과 황금과 기타 물건과 짐승과 보물로 돕고 그 외에도 예물을 즐거이 드렸더라",
+      "source_text_hash": "7633aa13240d3c63d656744eb1c5ed8175b75c96baf57dfbafcacf4758fea007",
+      "translation_text_hash": "e4f8812f64995f8356a8080f330c97c3409dcb5338efd9f114596b401e8e59e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사면 사람들이 은그릇과 황금과 기타 물건과 짐승과 보물로 돕고 그 외에도 예물을 즐거이 드렸더라"
+      ],
+      "raw_text_hashes": [
+        "e4f8812f64995f8356a8080f330c97c3409dcb5338efd9f114596b401e8e59e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:1:7",
+      "sequence": 12024,
+      "chapter_label": "EZR 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Also Cyrus the king brought out the vessels of the LORD’s house, which Nebuchadnezzar had brought out of Jerusalem, and had put in the house of his gods;",
+      "ko": "고레스왕이 또 여호와의 전 기명을 꺼내니 옛적에 느부갓네살이 예루살렘에서 옮겨다가 자기 신들의 당에 두었던 것이라",
+      "source_text_hash": "ec600d50ec004a3a770ecc91599d55ec1b4c377594da615e7bd3812530bb26a7",
+      "translation_text_hash": "dc6d3188df585636af3fb749500619f1d57c90c158643503750fa1dd401844af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고레스왕이 또 여호와의 전 기명을 꺼내니 옛적에 느부갓네살이 예루살렘에서 옮겨다가 자기 신들의 당에 두었던 것이라"
+      ],
+      "raw_text_hashes": [
+        "dc6d3188df585636af3fb749500619f1d57c90c158643503750fa1dd401844af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:1:8",
+      "sequence": 12025,
+      "chapter_label": "EZR 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "even those, Cyrus king of Persia brought out by the hand of Mithredath the treasurer, and counted them out to Sheshbazzar the prince of Judah.",
+      "ko": "바사 왕 고레스가 고지기 미드르닷을 명하여 그 그릇을 꺼내어 계수하여 유다 목백 세스바살에게 붙이니",
+      "source_text_hash": "a552f086bc0248d5b7b20214ac93c88702670392f69237d16a646a140b2b732a",
+      "translation_text_hash": "423e2def143a80ee2783610b02031e0da800f615338fa4c0c2c1ff8767590972",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바사 왕 고레스가 고지기 미드르닷을 명하여 그 그릇을 꺼내어 계수하여 유다 목백 세스바살에게 붙이니"
+      ],
+      "raw_text_hashes": [
+        "423e2def143a80ee2783610b02031e0da800f615338fa4c0c2c1ff8767590972"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:1:9",
+      "sequence": 12026,
+      "chapter_label": "EZR 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "This is the number of them: thirty platters of gold, one thousand platters of silver, twenty-nine knives,",
+      "ko": "그 수효는 금반이 삼십이요 은반이 일천이요 칼이 이십 구요",
+      "source_text_hash": "1a147c3d4ebe2d1ed386c1616ed7a41feb5a8c111892faaf0c29d3415890e7e0",
+      "translation_text_hash": "3b55a3f9fb445c8e807e45edb08fdf80df34867c041fd084c3850b90298c34d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수효는 금반이 삼십이요 은반이 일천이요 칼이 이십 구요"
+      ],
+      "raw_text_hashes": [
+        "3b55a3f9fb445c8e807e45edb08fdf80df34867c041fd084c3850b90298c34d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:1:10",
+      "sequence": 12027,
+      "chapter_label": "EZR 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "thirty bowls of gold, four hundred ten silver bowls of a second kind, and one thousand other vessels.",
+      "ko": "금대접이 삼십이요 그보다 차한 은대접이 사백 열이요 기타 기명이 일천이니",
+      "source_text_hash": "4ea21fb1f2bd6c3b0bdac99f607243859e4f96fca0eb76d268fcc23865077dd8",
+      "translation_text_hash": "8721ad3aa80f229ef2deced67be48cb0cdf191609c995041ff364fbfe47c5b6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금대접이 삼십이요 그보다 차한 은대접이 사백 열이요 기타 기명이 일천이니"
+      ],
+      "raw_text_hashes": [
+        "8721ad3aa80f229ef2deced67be48cb0cdf191609c995041ff364fbfe47c5b6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:1:11",
+      "sequence": 12028,
+      "chapter_label": "EZR 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZR",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "All the vessels of gold and of silver were five thousand four hundred. Sheshbazzar brought all these up when the captives were brought up from Babylon to Jerusalem.",
+      "ko": "금, 은기명의 도합이 오천 사백이라 사로잡힌 자를 바벨론에서 예루살렘으로 데리고 올 때에 세스바살이 그 기명들을 다 가지고 왔더라",
+      "source_text_hash": "840aaae81eaba369259e562dbf58c3f93a7ed4ca96b6b96d63ef3c7fe2bf722e",
+      "translation_text_hash": "5b1528fa8d1f007e9f9dee654519e7ec96693c4754590d63ef0bdf57f3933077",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금, 은기명의 도합이 오천 사백이라 사로잡힌 자를 바벨론에서 예루살렘으로 데리고 올 때에 세스바살이 그 기명들을 다 가지고 왔더라"
+      ],
+      "raw_text_hashes": [
+        "5b1528fa8d1f007e9f9dee654519e7ec96693c4754590d63ef0bdf57f3933077"
+      ]
+    }
+  ]
+}

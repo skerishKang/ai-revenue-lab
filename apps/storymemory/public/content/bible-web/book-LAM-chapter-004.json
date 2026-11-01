@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LAM:chapter:004",
+  "unit_ordinal": 801,
+  "unit_label": "LAM 4",
+  "book_code": "LAM",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LAM:4:1",
+      "sequence": 20422,
+      "chapter_label": "LAM 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "How the gold has become dim! The most pure gold has changed! The stones of the sanctuary are poured out at the head of every street.",
+      "ko": "슬프다 어찌 그리 금이 빛을 잃고 정금이 변하였으며 성소의 돌이 각 거리 머리에 쏟아졌는고",
+      "source_text_hash": "09d25e7b9b5ef318710d066a009a1ea916730087876269b5b1e3bb538d270b68",
+      "translation_text_hash": "4252a90f74bc0798ca0193b8adc574a6a8f1d7baefa091aecbbb849433ece0ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 어찌 그리 금이 빛을 잃고 정금이 변하였으며 성소의 돌이 각 거리 머리에 쏟아졌는고"
+      ],
+      "raw_text_hashes": [
+        "4252a90f74bc0798ca0193b8adc574a6a8f1d7baefa091aecbbb849433ece0ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:2",
+      "sequence": 20423,
+      "chapter_label": "LAM 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "The precious sons of Zion, comparable to fine gold, how they are esteemed as earthen pitchers, the work of the hands of the potter!",
+      "ko": "시온의 아들들이 보배로와 정금에 비할러니 어찌 그리 토기장이의 만든 질항아리 같이 여김이 되었는고",
+      "source_text_hash": "d03c72e6636a6e50adea1d81c9bbe2d1fd17a1c897e0b6d48850db0181a37049",
+      "translation_text_hash": "6d28960ec5deb9409e9c12904060e3047bfd065efbe389aa42464e493b4dc93b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온의 아들들이 보배로와 정금에 비할러니 어찌 그리 토기장이의 만든 질항아리 같이 여김이 되었는고"
+      ],
+      "raw_text_hashes": [
+        "6d28960ec5deb9409e9c12904060e3047bfd065efbe389aa42464e493b4dc93b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:3",
+      "sequence": 20424,
+      "chapter_label": "LAM 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Even the jackals offer their breast. They nurse their young ones. But the daughter of my people has become cruel, like the ostriches in the wilderness.",
+      "ko": "들개는 오히려 젖을 내어 새끼를 먹이나 처녀 내 백성은 잔인하여 광야의 타조 같도다",
+      "source_text_hash": "a486722e7b2c2d5ef4cccd67129449ad12cd922a3d363237d4edee14abe55a4c",
+      "translation_text_hash": "1fdc1dbbab9285bacc9a267586ab19b52ba15575e1fa22f27c3b2d2ce8805635",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들개는 오히려 젖을 내어 새끼를 먹이나 처녀 내 백성은 잔인하여 광야의 타조 같도다"
+      ],
+      "raw_text_hashes": [
+        "1fdc1dbbab9285bacc9a267586ab19b52ba15575e1fa22f27c3b2d2ce8805635"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:4",
+      "sequence": 20425,
+      "chapter_label": "LAM 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "The tongue of the nursing child clings to the roof of his mouth for thirst. The young children ask for bread, and no one breaks it for them.",
+      "ko": "젖먹이가 목말라서 혀가 입천장에 붙음이여 어린 아이가 떡을 구하나 떼어 줄 사람이 없도다",
+      "source_text_hash": "c7a4e7495bd9096ac30a10a4900c45ac264db2be551e23015e5b530d0fd5ac53",
+      "translation_text_hash": "23c3d78808d33629886b9648743d27f21ec6b1a02a4e2751a8bbff8695a65ea3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젖먹이가 목말라서 혀가 입천장에 붙음이여 어린 아이가 떡을 구하나 떼어 줄 사람이 없도다"
+      ],
+      "raw_text_hashes": [
+        "23c3d78808d33629886b9648743d27f21ec6b1a02a4e2751a8bbff8695a65ea3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:5",
+      "sequence": 20426,
+      "chapter_label": "LAM 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Those who ate delicacies are desolate in the streets. Those who were brought up in purple embrace dunghills.",
+      "ko": "진수를 먹던 자가 거리에 외로움이여 전에는 붉은 옷을 입고 길리운 자가 이제는 거름더미를 안았도다",
+      "source_text_hash": "29698c25bbbf00479f9487d031fbce67d578cd41d51df847f2f0c0ce3e73f2c8",
+      "translation_text_hash": "0223ff07890a316f571e569fb9f15334085f6727086efdb465e21e8594ba6da1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진수를 먹던 자가 거리에 외로움이여 전에는 붉은 옷을 입고 길리운 자가 이제는 거름더미를 안았도다"
+      ],
+      "raw_text_hashes": [
+        "0223ff07890a316f571e569fb9f15334085f6727086efdb465e21e8594ba6da1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:6",
+      "sequence": 20427,
+      "chapter_label": "LAM 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "For the iniquity of the daughter of my people is greater than the sin of Sodom, which was overthrown as in a moment. No hands were laid on her.",
+      "ko": "전에 소돔이 사람의 손을 대지 않고 경각간에 무너지더니 이제 처녀 내 백성의 죄가 소돔의 죄악보다 중하도다",
+      "source_text_hash": "b1fd82a9f3d5fb4196329f7b5f80f0a4bd80bdd53842d05283b244a015e94336",
+      "translation_text_hash": "cb5b8c8de713d6eb038c083231c27b9f1ff09fc7dd1c585e4bfc7effee9a4071",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 소돔이 사람의 손을 대지 않고 경각간에 무너지더니 이제 처녀 내 백성의 죄가 소돔의 죄악보다 중하도다"
+      ],
+      "raw_text_hashes": [
+        "cb5b8c8de713d6eb038c083231c27b9f1ff09fc7dd1c585e4bfc7effee9a4071"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:7",
+      "sequence": 20428,
+      "chapter_label": "LAM 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Her nobles were purer than snow. They were whiter than milk. They were more ruddy in body than rubies. Their polishing was like sapphire.",
+      "ko": "전에는 존귀한 자의 몸이 눈보다 깨끗하고 젖보다 희며 산호보다 붉어 그 윤택함이 마광한 청옥 같더니",
+      "source_text_hash": "c6062efce394a97b6a3c74fcd9fa75141b9bdeb2088f389cb6afefdc96088730",
+      "translation_text_hash": "e24fd703e1bcf2244f5552169e5b32ffd9a0819c306d51dadf472c95fba88423",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에는 존귀한 자의 몸이 눈보다 깨끗하고 젖보다 희며 산호보다 붉어 그 윤택함이 마광한 청옥 같더니"
+      ],
+      "raw_text_hashes": [
+        "e24fd703e1bcf2244f5552169e5b32ffd9a0819c306d51dadf472c95fba88423"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:8",
+      "sequence": 20429,
+      "chapter_label": "LAM 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Their appearance is blacker than a coal. They are not known in the streets. Their skin clings to their bones. It is withered. It has become like wood.",
+      "ko": "이제는 그 얼굴이 숯보다 검고 그 가죽이 뼈에 붙어 막대기 같이 말랐으니 거리에서 알 사람이 없도다",
+      "source_text_hash": "d142f83617c00c15851a22ddabd7eeb4d1fd362d6ff7fd812f639e4965f40bd6",
+      "translation_text_hash": "1b359e576e0076ee376f334e7e51717c0ce596b9611810a968b56d57472d4df8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 그 얼굴이 숯보다 검고 그 가죽이 뼈에 붙어 막대기 같이 말랐으니 거리에서 알 사람이 없도다"
+      ],
+      "raw_text_hashes": [
+        "1b359e576e0076ee376f334e7e51717c0ce596b9611810a968b56d57472d4df8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:9",
+      "sequence": 20430,
+      "chapter_label": "LAM 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Those who are killed with the sword are better than those who are killed with hunger; for these pine away, stricken through, for lack of the fruits of the field.",
+      "ko": "칼에 죽은 자가 주려 죽은 자보다 나음은 토지 소산이 끊어지므로 이들이 찔림 같이 점점 쇠약하여 감이로다",
+      "source_text_hash": "7c7827e29908e1ad134ef9cbda2c5149dacca4a3e5dce559254b08c9f3d27cb6",
+      "translation_text_hash": "c03dece8c5dddd4e1049b2abe741daa8803622e3dad91b34c761f3e6ed7dcd21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칼에 죽은 자가 주려 죽은 자보다 나음은 토지 소산이 끊어지므로 이들이 찔림 같이 점점 쇠약하여 감이로다"
+      ],
+      "raw_text_hashes": [
+        "c03dece8c5dddd4e1049b2abe741daa8803622e3dad91b34c761f3e6ed7dcd21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:10",
+      "sequence": 20431,
+      "chapter_label": "LAM 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "The hands of the pitiful women have boiled their own children. They were their food in the destruction of the daughter of my people.",
+      "ko": "처녀 내 백성의 멸망할 때에 자비한 부녀가 손으로 자기 자녀를 삶아 식물을 삼았도다",
+      "source_text_hash": "1751ef03fba2370b403fb0eb30c0d6aa586259a5e71246e4570b7a9d850c0e6d",
+      "translation_text_hash": "aced918fbf6db6bbe5de18b597bcba4fc178f201af3fc699a2d03f210d8d5641",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀 내 백성의 멸망할 때에 자비한 부녀가 손으로 자기 자녀를 삶아 식물을 삼았도다"
+      ],
+      "raw_text_hashes": [
+        "aced918fbf6db6bbe5de18b597bcba4fc178f201af3fc699a2d03f210d8d5641"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:11",
+      "sequence": 20432,
+      "chapter_label": "LAM 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD has accomplished his wrath. He has poured out his fierce anger. He has kindled a fire in Zion, which has devoured its foundations.",
+      "ko": "여호와께서 분을 발하시며 맹렬한 노를 쏟으심이여 시온에 불을 피우사 그 지대를 사르셨도다",
+      "source_text_hash": "f94e86d53182653805343108ae3bee72b342d1ca3a9eb03908fee3c8469f243b",
+      "translation_text_hash": "836f60f35b8f6735100e7554b223222816a7e1133475b7f2a3eb442e53a26d10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 분을 발하시며 맹렬한 노를 쏟으심이여 시온에 불을 피우사 그 지대를 사르셨도다"
+      ],
+      "raw_text_hashes": [
+        "836f60f35b8f6735100e7554b223222816a7e1133475b7f2a3eb442e53a26d10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:12",
+      "sequence": 20433,
+      "chapter_label": "LAM 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "The kings of the earth didn’t believe, neither did all the inhabitants of the world, that the adversary and the enemy would enter into the gates of Jerusalem.",
+      "ko": "대적과 원수가 예루살렘 성문으로 들어갈 줄은 세상 열왕과 천하 모든 백성이 믿지 못하였었도다",
+      "source_text_hash": "13e5cd994446748712eb9ad856eb5c65aa32298a5c0a989a97efa5a3272542fa",
+      "translation_text_hash": "f56b63c08fc2500351debe486db8a56c47aef82fe6617beceb807ed0088ef9fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대적과 원수가 예루살렘 성문으로 들어갈 줄은 세상 열왕과 천하 모든 백성이 믿지 못하였었도다"
+      ],
+      "raw_text_hashes": [
+        "f56b63c08fc2500351debe486db8a56c47aef82fe6617beceb807ed0088ef9fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:13",
+      "sequence": 20434,
+      "chapter_label": "LAM 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "It is because of the sins of her prophets and the iniquities of her priests, that have shed the blood of the just in the middle of her.",
+      "ko": "그 선지자들의 죄와 제사장들의 죄악을 인함이니 저희가 성읍 중에서 의인의 피를 흘렸도다",
+      "source_text_hash": "58ed34a1f3f5b5ec5a60fd1b1cb21669825de3f782068caa7cc70647c04f0b51",
+      "translation_text_hash": "d89784cb97fc4cfc4ed78d1bd8fcfe678239efb1dddec97b23a85e66be5c1f68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 선지자들의 죄와 제사장들의 죄악을 인함이니 저희가 성읍 중에서 의인의 피를 흘렸도다"
+      ],
+      "raw_text_hashes": [
+        "d89784cb97fc4cfc4ed78d1bd8fcfe678239efb1dddec97b23a85e66be5c1f68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:14",
+      "sequence": 20435,
+      "chapter_label": "LAM 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "They wander as blind men in the streets. They are polluted with blood, So that men can’t touch their garments.",
+      "ko": "저희가 거리에서 소경 같이 방황함이여 그 옷이 피에 더러웠으므로 사람이 만질 수 없도다",
+      "source_text_hash": "bd98ac0d721a9bf1f36182d0e8b625b788a712bf0c482aa89d639f2c26b955ab",
+      "translation_text_hash": "80682ff8aaf37bdb15862a8cc2299eb704386b101276e6db5a5a54c9be2c153d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 거리에서 소경 같이 방황함이여 그 옷이 피에 더러웠으므로 사람이 만질 수 없도다"
+      ],
+      "raw_text_hashes": [
+        "80682ff8aaf37bdb15862a8cc2299eb704386b101276e6db5a5a54c9be2c153d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:15",
+      "sequence": 20436,
+      "chapter_label": "LAM 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "“Go away!” they cried to them. “Unclean! Go away! Go away! Don’t touch! When they fled away and wandered, men said among the nations, “They can’t live here any more.”",
+      "ko": "사람이 저희에게 외쳐 이르기를 부정하다 가라 가라, 가라, 만지지 말라 하였음이여 저희가 도망하여 방황할 때에 이방인이 이르기를 저희가 다시는 여기 거하지 못하리라 하였도다",
+      "source_text_hash": "85fd7e3596aa89346a09a407497f75e2f9d52cb52eb0e4d749efa5ab54b779d3",
+      "translation_text_hash": "0a06fc374a3057b6cd8468e981e747c93d0a3c122d7d842069f333998ee56469",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 저희에게 외쳐 이르기를 부정하다 가라 가라, 가라, 만지지 말라 하였음이여 저희가 도망하여 방황할 때에 이방인이 이르기를 저희가 다시는 여기 거하지 못하리라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "0a06fc374a3057b6cd8468e981e747c93d0a3c122d7d842069f333998ee56469"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:16",
+      "sequence": 20437,
+      "chapter_label": "LAM 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD’s anger has scattered them. He will not pay attention to them any more. They didn’t respect the persons of the priests. They didn’t favor the elders.",
+      "ko": "여호와께서 노하여 흩으시고 다시 권고치 아니하시리니 저희가 제사장들을 높이지 아니하였으며 장로들을 대접지 아니하였음이로다",
+      "source_text_hash": "71a04076c5eec79a7c95ba6e1f95495d7a9f0eb814d571a6616a70834f9633d1",
+      "translation_text_hash": "0d2f242f1daf077adfb3335a3ab6a4245a848806ee625844083ead2fc159d90c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 노하여 흩으시고 다시 권고치 아니하시리니 저희가 제사장들을 높이지 아니하였으며 장로들을 대접지 아니하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "0d2f242f1daf077adfb3335a3ab6a4245a848806ee625844083ead2fc159d90c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:17",
+      "sequence": 20438,
+      "chapter_label": "LAM 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "Our eyes still fail, looking in vain for our help. In our watching we have watched for a nation that could not save.",
+      "ko": "우리가 헛되이 도움을 바라므로 우리 눈이 상함이여 우리를 구원치 못할 나라를 바라보고 바라보았도다",
+      "source_text_hash": "2fdeb96a2d385a5954cff2fe1bb00fc1c7500c36b11a14c45144c1ca6afce23d",
+      "translation_text_hash": "bde01d4dd85681c949b8ac8a0f8ef0c1f8c5f8340dd477c75150863cc437aacc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 헛되이 도움을 바라므로 우리 눈이 상함이여 우리를 구원치 못할 나라를 바라보고 바라보았도다"
+      ],
+      "raw_text_hashes": [
+        "bde01d4dd85681c949b8ac8a0f8ef0c1f8c5f8340dd477c75150863cc437aacc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:18",
+      "sequence": 20439,
+      "chapter_label": "LAM 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "They hunt our steps, so that we can’t go in our streets. Our end is near. Our days are fulfilled, for our end has come.",
+      "ko": "저희가 우리 자취를 엿보니 우리가 거리에 행할 수 없음이여 우리의 끝이 가깝고 우리의 날이 다하였고 우리의 마지막이 이르렀도다",
+      "source_text_hash": "16c2b940090b96ad577d60fad8de1ead325a33cf94282fecca10713e869a4fb4",
+      "translation_text_hash": "c1c953cb7726ac730b0a032f3987f48a6a9d3f800f906898fc8c8bcf7bca0a60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 우리 자취를 엿보니 우리가 거리에 행할 수 없음이여 우리의 끝이 가깝고 우리의 날이 다하였고 우리의 마지막이 이르렀도다"
+      ],
+      "raw_text_hashes": [
+        "c1c953cb7726ac730b0a032f3987f48a6a9d3f800f906898fc8c8bcf7bca0a60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:19",
+      "sequence": 20440,
+      "chapter_label": "LAM 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "Our pursuers were swifter than the eagles of the sky. They chased us on the mountains. They set an ambush for us in the wilderness.",
+      "ko": "우리를 쫓는 자가 공중의 독수리보다 빠름이여 산꼭대기에서도 쫓고 광야에도 매복하였도다",
+      "source_text_hash": "9fbf564cc670a34c63c2a49f27e050573272101c2dcc0ed0d3029c4655b85c25",
+      "translation_text_hash": "e299272d2bfbf73dda482dacf0a07d3a33129e12626202721a35672c6fa90ee0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 쫓는 자가 공중의 독수리보다 빠름이여 산꼭대기에서도 쫓고 광야에도 매복하였도다"
+      ],
+      "raw_text_hashes": [
+        "e299272d2bfbf73dda482dacf0a07d3a33129e12626202721a35672c6fa90ee0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:20",
+      "sequence": 20441,
+      "chapter_label": "LAM 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "The breath of our nostrils, the anointed of the LORD, was taken in their pits; of whom we said, under his shadow we will live among the nations.",
+      "ko": "우리의 콧김 곧 여호와의 기름 부으신 자가 저희 함정에 빠졌음이여 우리가 저를 가리키며 전에 이르기를 우리가 저의 그늘 아래서 열국 중에 살겠다 하던 자로다",
+      "source_text_hash": "64315e6e48b4f0c6f036d5509e5faf727795c676efdfcdead9c1021d89467b61",
+      "translation_text_hash": "56f486f926bef59dca7e5f39c58da31a857fd385ab7534b1203915608004021c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 콧김 곧 여호와의 기름 부으신 자가 저희 함정에 빠졌음이여 우리가 저를 가리키며 전에 이르기를 우리가 저의 그늘 아래서 열국 중에 살겠다 하던 자로다"
+      ],
+      "raw_text_hashes": [
+        "56f486f926bef59dca7e5f39c58da31a857fd385ab7534b1203915608004021c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:21",
+      "sequence": 20442,
+      "chapter_label": "LAM 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Rejoice and be glad, daughter of Edom, who dwells in the land of Uz. The cup will pass through to you also. You will be drunken, and will make yourself naked.",
+      "ko": "우스 땅에 거하는 처녀 에돔아 즐거워하며 기뻐하려무나 잔이 네게도 이를찌니 네가 취하여 벌거벗으리라",
+      "source_text_hash": "f72fe24a422755e759694a03cbf96b85052137eb9c67d4657945883fde1a6eee",
+      "translation_text_hash": "9765caa2f7aa0269906ab9ee2394c3979793bbf4bec725e789eca26620a1cf8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우스 땅에 거하는 처녀 에돔아 즐거워하며 기뻐하려무나 잔이 네게도 이를찌니 네가 취하여 벌거벗으리라"
+      ],
+      "raw_text_hashes": [
+        "9765caa2f7aa0269906ab9ee2394c3979793bbf4bec725e789eca26620a1cf8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LAM:4:22",
+      "sequence": 20443,
+      "chapter_label": "LAM 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "LAM",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LAM",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "The punishment of your iniquity is accomplished, daughter of Zion. He will no more carry you away into captivity. He will visit your iniquity, daughter of Edom. He will uncover your sins.",
+      "ko": "처녀 시온아 네 죄악의 형벌이 다하였으니 주께서 다시는 너로 사로잡혀 가지 않게 하시리로다 처녀 에돔아 주께서 네 죄악을 벌하시며 네 허물을 드러내시리로다",
+      "source_text_hash": "c3d01859a04b9ea9b3007e1decfdbf8bfa7d8b3438845eb4bf247bc4e1dbe6bf",
+      "translation_text_hash": "747bbef9707f50bc3f68a3b9c0dafbae50b15a6df9dc48bb30d9d3f4ab595373",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀 시온아 네 죄악의 형벌이 다하였으니 주께서 다시는 너로 사로잡혀 가지 않게 하시리로다 처녀 에돔아 주께서 네 죄악을 벌하시며 네 허물을 드러내시리로다"
+      ],
+      "raw_text_hashes": [
+        "747bbef9707f50bc3f68a3b9c0dafbae50b15a6df9dc48bb30d9d3f4ab595373"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:002",
+  "unit_ordinal": 1135,
+  "unit_label": "HEB 2",
+  "book_code": "HEB",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:2:1",
+      "sequence": 29975,
+      "chapter_label": "HEB 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Therefore we ought to pay greater attention to the things that were heard, lest perhaps we drift away.",
+      "ko": "그러므로 모든 들은 것을 우리가 더욱 간절히 삼갈찌니 혹 흘러 떠내려 갈까 염려하노라",
+      "source_text_hash": "aea754fc81df21ca05f6c3723bf660add410efd8c5a8a872b38016db54c0505d",
+      "translation_text_hash": "a270c7b4e73ef201fffa062c506ec1ba681f478283e264016b0b3de3be11eda3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 모든 들은 것을 우리가 더욱 간절히 삼갈찌니 혹 흘러 떠내려 갈까 염려하노라"
+      ],
+      "raw_text_hashes": [
+        "a270c7b4e73ef201fffa062c506ec1ba681f478283e264016b0b3de3be11eda3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:2",
+      "sequence": 29976,
+      "chapter_label": "HEB 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "For if the word spoken through angels proved steadfast, and every transgression and disobedience received a just penalty,",
+      "ko": "천사들로 하신 말씀이 견고하게 되어 모든 범죄함과 순종치 아니함이 공변된 보응을 받았거든",
+      "source_text_hash": "dafd1c46738ea4b6deee0879723462df3f8eb41c26eb631699dd7634f151e14a",
+      "translation_text_hash": "a67cff3625f2d8c45bdb1ae832ef8b0b05c9fc19210b8856963989827e4e3c81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사들로 하신 말씀이 견고하게 되어 모든 범죄함과 순종치 아니함이 공변된 보응을 받았거든"
+      ],
+      "raw_text_hashes": [
+        "a67cff3625f2d8c45bdb1ae832ef8b0b05c9fc19210b8856963989827e4e3c81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:3",
+      "sequence": 29977,
+      "chapter_label": "HEB 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "how will we escape if we neglect so great a salvation—which at the first having been spoken through the Lord, was confirmed to us by those who heard,",
+      "ko": "우리가 이같이 큰 구원을 등한히 여기면 어찌 피하리요 이 구원은 처음에 주로 말씀하신 바요 들은 자들이 우리에게 확증한 바니",
+      "source_text_hash": "1a2fa9a1d631e3a1ebec44f48450c08a930eafdab5cf44b0aa539d603accbf09",
+      "translation_text_hash": "f75c4c9962aae1edd5dcea5552e8e0ab2b283b0cd622394e14abc2dbcea1ced7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이같이 큰 구원을 등한히 여기면 어찌 피하리요 이 구원은 처음에 주로 말씀하신 바요 들은 자들이 우리에게 확증한 바니"
+      ],
+      "raw_text_hashes": [
+        "f75c4c9962aae1edd5dcea5552e8e0ab2b283b0cd622394e14abc2dbcea1ced7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:4",
+      "sequence": 29978,
+      "chapter_label": "HEB 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "God also testifying with them, both by signs and wonders, by various works of power, and by gifts of the Holy Spirit, according to his own will?",
+      "ko": "하나님도 표적들과 기사들과 여러가지 능력과 및 자기 뜻을 따라 성령의 나눠주신 것으로써 저희와 함께 증거하셨느니라",
+      "source_text_hash": "6891c123ed857bf9457179ce71362d8da04aa996b164af7dcc8aa1e195db30cd",
+      "translation_text_hash": "f5b00bff27b507401084197cb6e9da66a766bbd04eed4b8acfd6a4b51f2d9b96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님도 표적들과 기사들과 여러가지 능력과 및 자기 뜻을 따라 성령의 나눠주신 것으로써 저희와 함께 증거하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f5b00bff27b507401084197cb6e9da66a766bbd04eed4b8acfd6a4b51f2d9b96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:5",
+      "sequence": 29979,
+      "chapter_label": "HEB 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "For he didn’t subject the world to come, of which we speak, to angels.",
+      "ko": "하나님이 우리의 말한바 장차 오는 세상을 천사들에게는 복종케 하심이 아니라",
+      "source_text_hash": "791b7a05d389d1fb71cb1ace895fb536fed2f15f508c3a07714cbe3d4f28438d",
+      "translation_text_hash": "d14b1be88fc24797b7f9de746f54c12694d3ba1c1030a0ffaec923fb4793aa84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 우리의 말한바 장차 오는 세상을 천사들에게는 복종케 하심이 아니라"
+      ],
+      "raw_text_hashes": [
+        "d14b1be88fc24797b7f9de746f54c12694d3ba1c1030a0ffaec923fb4793aa84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:6",
+      "sequence": 29980,
+      "chapter_label": "HEB 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "But one has somewhere testified, saying, “What is man, that you think of him? Or the son of man, that you care for him?",
+      "ko": "오직 누가 어디 증거하여 가로되 사람이 무엇이관대 주께서 저를 생각하시며 인자가 무엇이관대 주께서 저를 권고하시나이까",
+      "source_text_hash": "9cae501631b68897c13e8bc35d25fbe5b0daf1590ab6abe94a617b819fbb7b65",
+      "translation_text_hash": "7e8da8d916ca84a287893199ee6e0f6010b3a0ca8c0084d4eb9e9473da433827",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 누가 어디 증거하여 가로되 사람이 무엇이관대 주께서 저를 생각하시며 인자가 무엇이관대 주께서 저를 권고하시나이까"
+      ],
+      "raw_text_hashes": [
+        "7e8da8d916ca84a287893199ee6e0f6010b3a0ca8c0084d4eb9e9473da433827"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:7",
+      "sequence": 29981,
+      "chapter_label": "HEB 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "You made him a little lower than the angels. You crowned him with glory and honor.",
+      "ko": "저를 잠간 동안 천사보다 못하게 하시며 영광과 존귀로 관 씌우시며",
+      "source_text_hash": "1fdaf1ff4b9ef723f83fb734ffdcea3c89c2a7afcbc9e899ed905c08bdb326df",
+      "translation_text_hash": "b8974960b3646fbcb58a93eb99554696e5d6a40354dcfeeb084d170565fb071c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저를 잠간 동안 천사보다 못하게 하시며 영광과 존귀로 관 씌우시며"
+      ],
+      "raw_text_hashes": [
+        "b8974960b3646fbcb58a93eb99554696e5d6a40354dcfeeb084d170565fb071c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:8",
+      "sequence": 29982,
+      "chapter_label": "HEB 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "You have put all things in subjection under his feet.” For in that he subjected all things to him, he left nothing that is not subject to him. But now we don’t yet see all things subjected to him.",
+      "ko": "만물을 그 발 아래 복종케 하셨느니라 하였으니 만물로 저에게 복종케 하셨은즉 복종치 않은 것이 하나도 없으나 지금 우리가 만물이 아직 저에게 복종한 것을 보지 못하고",
+      "source_text_hash": "e6374bdb194600b48dc3297c2ee86ba36958de1e8bd7c676f88756618284637f",
+      "translation_text_hash": "5295387fa7c9b769b6389ab73f21e63feb51b43595736c5b93e8837a306c6327",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만물을 그 발 아래 복종케 하셨느니라 하였으니 만물로 저에게 복종케 하셨은즉 복종치 않은 것이 하나도 없으나 지금 우리가 만물이 아직 저에게 복종한 것을 보지 못하고"
+      ],
+      "raw_text_hashes": [
+        "5295387fa7c9b769b6389ab73f21e63feb51b43595736c5b93e8837a306c6327"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:9",
+      "sequence": 29983,
+      "chapter_label": "HEB 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "But we see him who has been made a little lower than the angels, Jesus, because of the suffering of death crowned with glory and honor, that by the grace of God he should taste of death for everyone.",
+      "ko": "오직 우리가 천사들보다 잠간 동안 못하게 하심을 입은 자 곧 죽음의 고난 받으심을 인하여 영광과 존귀로 관 쓰신 예수를 보니 이를 행하심은 하나님의 은혜로 말미암아 모든 사람을 위하여 죽음을 맛보려 하심이라",
+      "source_text_hash": "0296653c881c202a49e270479011f1e7105b94e7f69a29fa086bf8a87c65b692",
+      "translation_text_hash": "cdd3622f4ccb123f79f9e1f2a033dfc6d58fb5dd44c453e8e50373d73fe0fc84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 우리가 천사들보다 잠간 동안 못하게 하심을 입은 자 곧 죽음의 고난 받으심을 인하여 영광과 존귀로 관 쓰신 예수를 보니 이를 행하심은 하나님의 은혜로 말미암아 모든 사람을 위하여 죽음을 맛보려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "cdd3622f4ccb123f79f9e1f2a033dfc6d58fb5dd44c453e8e50373d73fe0fc84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:10",
+      "sequence": 29984,
+      "chapter_label": "HEB 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "For it became him, for whom are all things and through whom are all things, in bringing many children to glory, to make the author of their salvation perfect through sufferings.",
+      "ko": "만물이 인하고 만물이 말미암은 자에게는 많은 아들을 이끌어 영광에 들어가게 하시는 일에 저희 구원의 주를 고난으로 말미암아 온전케 하심이 합당하도다",
+      "source_text_hash": "f19098724d1560eae2740f738ec1bbda3cd503c90f6dabc9f188a9bdff69e9ef",
+      "translation_text_hash": "b2ef8209b6e3c8517dc4ab536aec3434d310619e8b7a6c56e065adfdc1dd020a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만물이 인하고 만물이 말미암은 자에게는 많은 아들을 이끌어 영광에 들어가게 하시는 일에 저희 구원의 주를 고난으로 말미암아 온전케 하심이 합당하도다"
+      ],
+      "raw_text_hashes": [
+        "b2ef8209b6e3c8517dc4ab536aec3434d310619e8b7a6c56e065adfdc1dd020a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:11",
+      "sequence": 29985,
+      "chapter_label": "HEB 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "For both he who sanctifies and those who are sanctified are all from one, for which cause he is not ashamed to call them brothers,",
+      "ko": "거룩하게 하시는 자와 거룩하게 함을 입은 자들이 다 하나에서 난지라 그러므로 형제라 부르시기를 부끄러워 아니하시고",
+      "source_text_hash": "3c4f5d964168f933c231f024f826a56706b3371a701efb11a47d70f4827ccd6f",
+      "translation_text_hash": "ab835bc6574816a8599f4684541f97bfd0a9ea92c4c72ebdbbd53bc27b1b328b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거룩하게 하시는 자와 거룩하게 함을 입은 자들이 다 하나에서 난지라 그러므로 형제라 부르시기를 부끄러워 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "ab835bc6574816a8599f4684541f97bfd0a9ea92c4c72ebdbbd53bc27b1b328b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:12",
+      "sequence": 29986,
+      "chapter_label": "HEB 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "saying, “I will declare your name to my brothers. Among the congregation I will sing your praise.”",
+      "ko": "이르시되 내가 주의 이름을 내 형제들에게 선포하고 내가 주를 교회 중에서 찬송하리라 하셨으며",
+      "source_text_hash": "1ede06dded21c59a2e0d772f781346b40188d30561aa1b732740bd000b6f5691",
+      "translation_text_hash": "b2f4f9401b80fb0f08217f693f7e14bee904dd938ba921b53251c4da1a48a309",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 내가 주의 이름을 내 형제들에게 선포하고 내가 주를 교회 중에서 찬송하리라 하셨으며"
+      ],
+      "raw_text_hashes": [
+        "b2f4f9401b80fb0f08217f693f7e14bee904dd938ba921b53251c4da1a48a309"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:13",
+      "sequence": 29987,
+      "chapter_label": "HEB 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Again, “I will put my trust in him.” Again, “Behold, here I am with the children whom God has given me.”",
+      "ko": "또 다시 내가 그를 의지하리라 하시고 또 다시 볼찌어다 나와 및 하나님께서 내게 주신 자녀라 하셨으니",
+      "source_text_hash": "243e150250eb5bed6af1fd7f0a85d473632df39bc48ad9f6e18b80e93f34d714",
+      "translation_text_hash": "f25c1a964face4f7983b4c872a2de093a798e7f6a94adec3a9f5e931058c66aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다시 내가 그를 의지하리라 하시고 또 다시 볼찌어다 나와 및 하나님께서 내게 주신 자녀라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "f25c1a964face4f7983b4c872a2de093a798e7f6a94adec3a9f5e931058c66aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:14",
+      "sequence": 29988,
+      "chapter_label": "HEB 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Since then the children have shared in flesh and blood, he also himself in the same way partook of the same, that through death he might bring to nothing him who had the power of death, that is, the devil,",
+      "ko": "자녀들은 혈육에 함께 속하였으매 그도 또한 한 모양으로 혈육에 함께 속하심은 사망으로 말미암아 사망의 세력을 잡은 자 곧 마귀를 없이 하시며",
+      "source_text_hash": "91a6a9628ed84102181f639e6cca8a13aebe36e5eaa80b11553a9bcb1982e385",
+      "translation_text_hash": "2938a335e871be8c91db071c4c2f51ae13ecb6da02227229dc7f78e9dd721f65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀들은 혈육에 함께 속하였으매 그도 또한 한 모양으로 혈육에 함께 속하심은 사망으로 말미암아 사망의 세력을 잡은 자 곧 마귀를 없이 하시며"
+      ],
+      "raw_text_hashes": [
+        "2938a335e871be8c91db071c4c2f51ae13ecb6da02227229dc7f78e9dd721f65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:15",
+      "sequence": 29989,
+      "chapter_label": "HEB 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "and might deliver all of them who through fear of death were all their lifetime subject to bondage.",
+      "ko": "또 죽기를 무서워하므로 일생에 매여 종노릇하는 모든 자들을 놓아 주려 하심이니",
+      "source_text_hash": "abb0890d476eae31e59bc2ce1d737eebd1476ee63072d8925f730388a18e0119",
+      "translation_text_hash": "ff5542d05ed050037b26a5f961845d7128f8dfca71e6ae2763129d0655b2339b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 죽기를 무서워하므로 일생에 매여 종노릇하는 모든 자들을 놓아 주려 하심이니"
+      ],
+      "raw_text_hashes": [
+        "ff5542d05ed050037b26a5f961845d7128f8dfca71e6ae2763129d0655b2339b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:16",
+      "sequence": 29990,
+      "chapter_label": "HEB 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "For most certainly, he doesn’t give help to angels, but he gives help to the offspring of Abraham.",
+      "ko": "이는 실로 천사들을 붙들어 주려 하심이 아니요 오직 아브라함의 자손을 붙들어 주려 하심이라",
+      "source_text_hash": "eae6c18af4921a25dcc1ec8b47bfb3c60bad69a90c3e0b91f37463918b1766ff",
+      "translation_text_hash": "3fe78001c040f6015e6bf644dd1b7b2b8fd809cb18f4e0041a5e65a71bae02a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 실로 천사들을 붙들어 주려 하심이 아니요 오직 아브라함의 자손을 붙들어 주려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "3fe78001c040f6015e6bf644dd1b7b2b8fd809cb18f4e0041a5e65a71bae02a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:17",
+      "sequence": 29991,
+      "chapter_label": "HEB 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "Therefore he was obligated in all things to be made like his brothers, that he might become a merciful and faithful high priest in things pertaining to God, to make atonement for the sins of the people.",
+      "ko": "그러므로 저가 범사에 형제들과 같이 되심이 마땅하도다 이는 하나님의 일에 자비하고 충성된 대제사장이 되어 백성의 죄를 구속하려 하심이라",
+      "source_text_hash": "dd6cda465ea3110feff9e38d813713c1195c9a6231587fc52a6472d0412b168b",
+      "translation_text_hash": "6a73cb69e85b9793d81ff356bf99d54b5b6502ec3c16742fc93b53fd1a843668",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 저가 범사에 형제들과 같이 되심이 마땅하도다 이는 하나님의 일에 자비하고 충성된 대제사장이 되어 백성의 죄를 구속하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "6a73cb69e85b9793d81ff356bf99d54b5b6502ec3c16742fc93b53fd1a843668"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:2:18",
+      "sequence": 29992,
+      "chapter_label": "HEB 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "HEB",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "For in that he himself has suffered being tempted, he is able to help those who are tempted.",
+      "ko": "자기가 시험을 받아 고난을 당하셨은즉 시험 받는 자들을 능히 도우시느니라",
+      "source_text_hash": "a1fc86c12a1591ef3bc4ed39a82919718d34195839035e764c53095fc3bf0e42",
+      "translation_text_hash": "b3178a3fb5fb5d341f6f4463a619aad049cf6c6e50af4dfc3e38ebb060c9b19b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기가 시험을 받아 고난을 당하셨은즉 시험 받는 자들을 능히 도우시느니라"
+      ],
+      "raw_text_hashes": [
+        "b3178a3fb5fb5d341f6f4463a619aad049cf6c6e50af4dfc3e38ebb060c9b19b"
+      ]
+    }
+  ]
+}

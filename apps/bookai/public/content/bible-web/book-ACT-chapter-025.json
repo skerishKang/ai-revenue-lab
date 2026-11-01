@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:025",
+  "unit_ordinal": 1043,
+  "unit_label": "ACT 25",
+  "book_code": "ACT",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:25:1",
+      "sequence": 27794,
+      "chapter_label": "ACT 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "Festus therefore, having come into the province, after three days went up to Jerusalem from Caesarea.",
+      "ko": "베스도가 도임한지 삼일 후에 가이사랴에서 예루살렘으로 올라가니",
+      "source_text_hash": "b7380132a4ac2fd771098182a1916535b9a0eaa10c9a4eefc1ba32c0a2ebd898",
+      "translation_text_hash": "41fa71b79e0267060c6ec1c01f0397c6f84a487c1286284f5e38d4b7aadff813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베스도가 도임한지 삼일 후에 가이사랴에서 예루살렘으로 올라가니"
+      ],
+      "raw_text_hashes": [
+        "41fa71b79e0267060c6ec1c01f0397c6f84a487c1286284f5e38d4b7aadff813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:2",
+      "sequence": 27795,
+      "chapter_label": "ACT 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "Then the high priest and the principal men of the Jews informed him against Paul, and they begged him,",
+      "ko": "대제사장들과 유대인 중 높은 사람들이 바울을 고소할쌔",
+      "source_text_hash": "10549f8b2cb85058dff282d19a0a1123b8efe96ad65c78acc53ca824f3689090",
+      "translation_text_hash": "ac813e39ecd66912223569f02ae92cb847c001316829e1f949ee00143d84f9e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 유대인 중 높은 사람들이 바울을 고소할쌔"
+      ],
+      "raw_text_hashes": [
+        "ac813e39ecd66912223569f02ae92cb847c001316829e1f949ee00143d84f9e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:3",
+      "sequence": 27796,
+      "chapter_label": "ACT 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "asking a favor against him, that he would summon him to Jerusalem, plotting to kill him on the way.",
+      "ko": "베스도의 호의로 바울을 예루살렘으로 옮겨 보내기를 청하니 이는 길에 매복하였다가 그를 죽이고자 함이러라",
+      "source_text_hash": "dfb0659cff745ffbf90280989d4131f4ca4ed097f89639674df68c846ed22023",
+      "translation_text_hash": "4846cd57e029771c0eadb873ef30a31aa5ed1607bdf8959a2ada002334ad4d82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베스도의 호의로 바울을 예루살렘으로 옮겨 보내기를 청하니 이는 길에 매복하였다가 그를 죽이고자 함이러라"
+      ],
+      "raw_text_hashes": [
+        "4846cd57e029771c0eadb873ef30a31aa5ed1607bdf8959a2ada002334ad4d82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:4",
+      "sequence": 27797,
+      "chapter_label": "ACT 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "However Festus answered that Paul should be kept in custody at Caesarea, and that he himself was about to depart shortly.",
+      "ko": "베스도가 대답하여 바울이 가이사랴에 구류된 것과 자기도 미구에 떠나갈 것을 말하고",
+      "source_text_hash": "715ad3cd0581908dd5199765f09c995b08b819ef50b6ad4e3e584c641cf6839d",
+      "translation_text_hash": "8904220999c404904d35bc3f9eb9c7aaa84f2bdb6ed48ad74c2fa7b8d2ac0f2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베스도가 대답하여 바울이 가이사랴에 구류된 것과 자기도 미구에 떠나갈 것을 말하고"
+      ],
+      "raw_text_hashes": [
+        "8904220999c404904d35bc3f9eb9c7aaa84f2bdb6ed48ad74c2fa7b8d2ac0f2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:5",
+      "sequence": 27798,
+      "chapter_label": "ACT 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "“Let them therefore”, he said, “that are in power among you go down with me, and if there is anything wrong in the man, let them accuse him.”",
+      "ko": "또 가로되 너희 중 유력한 자들은 나와 함께 내려가서 그 사람에게 만일 옳지 아니한 일이 있거든 송사하라 하니라",
+      "source_text_hash": "e0297d95cbdc39807215fe8f080b163a2684335da72e29cfe3214284df33da09",
+      "translation_text_hash": "1e696b7e444f292da7d92cce789fdf754f5b6604bb9127d2b68c93ff29289153",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 너희 중 유력한 자들은 나와 함께 내려가서 그 사람에게 만일 옳지 아니한 일이 있거든 송사하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "1e696b7e444f292da7d92cce789fdf754f5b6604bb9127d2b68c93ff29289153"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:6",
+      "sequence": 27799,
+      "chapter_label": "ACT 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "When he had stayed among them more than ten days, he went down to Caesarea, and on the next day he sat on the judgment seat, and commanded Paul to be brought.",
+      "ko": "베스도가 그들 가운데서 팔일 혹 십일을 지낸 후 가이사랴로 내려가서 이튿날 재판 자리에 앉고 바울을 데려 오라 명하니",
+      "source_text_hash": "efcfeb5b7695032a2cb9847933d51a2351941afeb5ab19b3e08379791e96243c",
+      "translation_text_hash": "0e1b19bfbdef39d89638b8198325f255023a4bdfe527e2d393005c0ddef824a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베스도가 그들 가운데서 팔일 혹 십일을 지낸 후 가이사랴로 내려가서 이튿날 재판 자리에 앉고 바울을 데려 오라 명하니"
+      ],
+      "raw_text_hashes": [
+        "0e1b19bfbdef39d89638b8198325f255023a4bdfe527e2d393005c0ddef824a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:7",
+      "sequence": 27800,
+      "chapter_label": "ACT 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "When he had come, the Jews who had come down from Jerusalem stood around him, bringing against him many and grievous charges which they could not prove,",
+      "ko": "그가 나오매 예루살렘에서 내려온 유대인들이 둘러서서 여러가지 중대한 사건으로 송사하되 능히 증명하지 못한지라",
+      "source_text_hash": "694658942a22466e2f75247f419b6af8f6c9470f096b4731958cea950be2775a",
+      "translation_text_hash": "ab68314cf1b1f7aec14056b350fb97bc3f37869e3bbbe44882ed40f719deb4eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나오매 예루살렘에서 내려온 유대인들이 둘러서서 여러가지 중대한 사건으로 송사하되 능히 증명하지 못한지라"
+      ],
+      "raw_text_hashes": [
+        "ab68314cf1b1f7aec14056b350fb97bc3f37869e3bbbe44882ed40f719deb4eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:8",
+      "sequence": 27801,
+      "chapter_label": "ACT 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "while he said in his defense, “Neither against the law of the Jews, nor against the temple, nor against Caesar, have I sinned at all.”",
+      "ko": "바울이 변명하여 가로되 유대인의 율법이나 성전이나 가이사에게나 내가 도무지 죄를 범하지 아니하였노라 하니",
+      "source_text_hash": "8a2f76bda567c70f76c8ffa3b0c5ba762bd988235d4d470868b65e14fc45ae3f",
+      "translation_text_hash": "7c39c88993d498699df89fff084450d8cb0ff2a747db697038e0090efe3ae754",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 변명하여 가로되 유대인의 율법이나 성전이나 가이사에게나 내가 도무지 죄를 범하지 아니하였노라 하니"
+      ],
+      "raw_text_hashes": [
+        "7c39c88993d498699df89fff084450d8cb0ff2a747db697038e0090efe3ae754"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:9",
+      "sequence": 27802,
+      "chapter_label": "ACT 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "But Festus, desiring to gain favor with the Jews, answered Paul and said, “Are you willing to go up to Jerusalem and be judged by me there concerning these things?”",
+      "ko": "베스도가 유대인의 마음을 얻고자하여 바울더러 묻되 네가 예루살렘에 올라가서 이 사건에 대하여 내 앞에서 심문을 받으려느냐",
+      "source_text_hash": "d92c6ffb1ebf7c89e8b10c491378a2ee0e1e604285885e06414db7ca6c490ccb",
+      "translation_text_hash": "35c36ff5f6fdd53db21a7b4b64616510326dbca70049593d104847b518ac906f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베스도가 유대인의 마음을 얻고자하여 바울더러 묻되 네가 예루살렘에 올라가서 이 사건에 대하여 내 앞에서 심문을 받으려느냐"
+      ],
+      "raw_text_hashes": [
+        "35c36ff5f6fdd53db21a7b4b64616510326dbca70049593d104847b518ac906f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:10",
+      "sequence": 27803,
+      "chapter_label": "ACT 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "But Paul said, “I am standing before Caesar’s judgment seat, where I ought to be tried. I have done no wrong to the Jews, as you also know very well.",
+      "ko": "바울이 가로되 내가 가이사의 재판 자리 앞에 섰으니 마땅히 거기서 심문을 받을 것이라 당신도 잘 아시는 바에 내가 유대인들에게 불의를 행한 일이 없나이다",
+      "source_text_hash": "ad036b8da81c6fcb67f0d0cda96ad2d6cc08777a9956206e29563276131578e6",
+      "translation_text_hash": "011e2654ecdabb27f6d91b8af30c1004ff7942b09052db2b01f41cef22d51b77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 가로되 내가 가이사의 재판 자리 앞에 섰으니 마땅히 거기서 심문을 받을 것이라 당신도 잘 아시는 바에 내가 유대인들에게 불의를 행한 일이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "011e2654ecdabb27f6d91b8af30c1004ff7942b09052db2b01f41cef22d51b77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:11",
+      "sequence": 27804,
+      "chapter_label": "ACT 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "For if I have done wrong and have committed anything worthy of death, I don’t refuse to die; but if none of those things is true that they accuse me of, no one can give me up to them. I appeal to Caesar!”",
+      "ko": "만일 내가 불의를 행하여 무슨 사죄를 범하였으면 죽기를 사양치 아니할 것이나 만일 이 사람들의 나를 송사하는 것이 다 사실이 아니면 누구든지 나를 그들에게 내어 줄 수 없삽나이다 내가 가이사께 호소하노라 한대",
+      "source_text_hash": "008ad53195dfecb6d78d7370c4b125c51cb4cc10402ee8f20ebe35142b68ddbf",
+      "translation_text_hash": "b6cd8087e17165e09f7762ee470485cdc7bc591319cf789149f591a289daf99c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 내가 불의를 행하여 무슨 사죄를 범하였으면 죽기를 사양치 아니할 것이나 만일 이 사람들의 나를 송사하는 것이 다 사실이 아니면 누구든지 나를 그들에게 내어 줄 수 없삽나이다 내가 가이사께 호소하노라 한대"
+      ],
+      "raw_text_hashes": [
+        "b6cd8087e17165e09f7762ee470485cdc7bc591319cf789149f591a289daf99c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:12",
+      "sequence": 27805,
+      "chapter_label": "ACT 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "Then Festus, when he had conferred with the council, answered, “You have appealed to Caesar. To Caesar you shall go.”",
+      "ko": "베스도가 배석자들과 상의하고 가로되 네가 가이사에게 호소하였으니 가이사에게 갈 것이라 하니라",
+      "source_text_hash": "4e5f2c70a7bfe12080819a107762d38966e252a5f95c249bdbf47062f0f6b2c5",
+      "translation_text_hash": "5f6db91e5b0dac8fecf8b60871b85a7dee4dc568713db5302614d2c0223007c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베스도가 배석자들과 상의하고 가로되 네가 가이사에게 호소하였으니 가이사에게 갈 것이라 하니라"
+      ],
+      "raw_text_hashes": [
+        "5f6db91e5b0dac8fecf8b60871b85a7dee4dc568713db5302614d2c0223007c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:13",
+      "sequence": 27806,
+      "chapter_label": "ACT 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "Now when some days had passed, King Agrippa and Bernice arrived at Caesarea and greeted Festus.",
+      "ko": "수일 후에 아그립바왕과 버니게가 베스도에게 문안하러 가이사랴에 와서",
+      "source_text_hash": "7c8d9d17aabcc0773d513df9edf198996b053a290a68ab4f584247e149a547cb",
+      "translation_text_hash": "81a8d00743c72bd0b8f3a21d4426e77a020ef61779c1ffab31f7665a80f27ecf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수일 후에 아그립바왕과 버니게가 베스도에게 문안하러 가이사랴에 와서"
+      ],
+      "raw_text_hashes": [
+        "81a8d00743c72bd0b8f3a21d4426e77a020ef61779c1ffab31f7665a80f27ecf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:14",
+      "sequence": 27807,
+      "chapter_label": "ACT 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "As he stayed there many days, Festus laid Paul’s case before the king, saying, “There is a certain man left a prisoner by Felix;",
+      "ko": "여러 날을 있더니 베스도가 바울의 일로 왕에게 고하여 가로되 벨릭스가 한 사람을 구류하여 두었는데",
+      "source_text_hash": "bc274a11c4f97810b3e0312e3fd6a48006f72e885d9e144f09517e1ac57c7cf1",
+      "translation_text_hash": "073ec880dd795ffce1afaa1cc5415eb078b5b2a733e9d75ddde41b1a6d78f57a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 날을 있더니 베스도가 바울의 일로 왕에게 고하여 가로되 벨릭스가 한 사람을 구류하여 두었는데"
+      ],
+      "raw_text_hashes": [
+        "073ec880dd795ffce1afaa1cc5415eb078b5b2a733e9d75ddde41b1a6d78f57a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:15",
+      "sequence": 27808,
+      "chapter_label": "ACT 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "about whom, when I was at Jerusalem, the chief priests and the elders of the Jews informed me, asking for a sentence against him.",
+      "ko": "내가 예루살렘에 있을 때에 유대인의 대제사장들과 장로들이 그를 고소하여 정죄하기를 청하기에",
+      "source_text_hash": "5432c4b0a7e32b862344b0eb54ed68a2565c412716019fa143d1764cc7c12d9f",
+      "translation_text_hash": "cfb0f995070ddcabad8d86f405175ab06f3c25e7442aab3708fe2ba3cc0dd8b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 예루살렘에 있을 때에 유대인의 대제사장들과 장로들이 그를 고소하여 정죄하기를 청하기에"
+      ],
+      "raw_text_hashes": [
+        "cfb0f995070ddcabad8d86f405175ab06f3c25e7442aab3708fe2ba3cc0dd8b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:16",
+      "sequence": 27809,
+      "chapter_label": "ACT 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "I answered them that it is not the custom of the Romans to give up any man to destruction before the accused has met the accusers face to face and has had opportunity to make his defense concerning the matter laid against him.",
+      "ko": "내가 대답하되 무릇 피고가 원고들 앞에서 고소 사건에 대하여 변명할 기회가 있기 전에 내어주는 것이 로마 사람의 법이 아니라 하였노라",
+      "source_text_hash": "2486cc42c7bce97964d07817e778b36673a6d09a12cb076655d99e8c4e7db3cb",
+      "translation_text_hash": "6cfda23d1a80380566a5698b77b6dc49c73d9189ae31851521b710cca951c71b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 대답하되 무릇 피고가 원고들 앞에서 고소 사건에 대하여 변명할 기회가 있기 전에 내어주는 것이 로마 사람의 법이 아니라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "6cfda23d1a80380566a5698b77b6dc49c73d9189ae31851521b710cca951c71b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:17",
+      "sequence": 27810,
+      "chapter_label": "ACT 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "When therefore they had come together here, I didn’t delay, but on the next day sat on the judgment seat and commanded the man to be brought.",
+      "ko": "그러므로 저희가 나와 함께 여기 오매 내가 지체하지 아니하고 이튿날 재판 자리에 앉아 명하여 그 사람을 데려 왔으나",
+      "source_text_hash": "20cd9dfc607bda349de11bc648d34c0173e7a78df536133222c77867298978a0",
+      "translation_text_hash": "8077e7e952ff786ee64b39a40a6accea2b4cc904762fed84a9ae7f98ccbbe256",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 저희가 나와 함께 여기 오매 내가 지체하지 아니하고 이튿날 재판 자리에 앉아 명하여 그 사람을 데려 왔으나"
+      ],
+      "raw_text_hashes": [
+        "8077e7e952ff786ee64b39a40a6accea2b4cc904762fed84a9ae7f98ccbbe256"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:18",
+      "sequence": 27811,
+      "chapter_label": "ACT 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "When the accusers stood up, they brought no charges against him of such things as I supposed;",
+      "ko": "원고들이 서서 나의 짐작하던 것 같은 악행의 사건은 하나도 제출치 아니하고",
+      "source_text_hash": "487a13c22252ce65682ecc4736aee8bb36c5a77edb957084b13f3908d5be7faa",
+      "translation_text_hash": "19ca6412dc2b07f6d921ea5ff67fbb567c6a2fd4458000cd4b4f210e0ac081e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원고들이 서서 나의 짐작하던 것 같은 악행의 사건은 하나도 제출치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "19ca6412dc2b07f6d921ea5ff67fbb567c6a2fd4458000cd4b4f210e0ac081e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:19",
+      "sequence": 27812,
+      "chapter_label": "ACT 25",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 19
+        }
+      ],
+      "en": "but had certain questions against him about their own religion and about one Jesus, who was dead, whom Paul affirmed to be alive.",
+      "ko": "오직 자기들의 종교와 또는 예수라 하는 이의 죽은 것을 살았다고 바울이 주장하는 그 일에 관한 문제로 송사하는 것 뿐이라",
+      "source_text_hash": "bf54a94ed935c5599daeacb452b00d8a18d3182e306b09b4f4e80297d6c53583",
+      "translation_text_hash": "f0fb017f31dc9db6bd633bbeba0c5f92bd6ebbe50095b533328d6bb966a5ae73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 자기들의 종교와 또는 예수라 하는 이의 죽은 것을 살았다고 바울이 주장하는 그 일에 관한 문제로 송사하는 것 뿐이라"
+      ],
+      "raw_text_hashes": [
+        "f0fb017f31dc9db6bd633bbeba0c5f92bd6ebbe50095b533328d6bb966a5ae73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:20",
+      "sequence": 27813,
+      "chapter_label": "ACT 25",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 20
+        }
+      ],
+      "en": "Being perplexed how to inquire concerning these things, I asked whether he was willing to go to Jerusalem and there be judged concerning these matters.",
+      "ko": "내가 이 일을 어떻게 사실할는지 의심이 있어서 바울에게 묻되 예루살렘에 올라가서 이 일에 심문을 받으려느냐 한즉",
+      "source_text_hash": "6ba27505cb3c19780cf47da201ee1f132af7d24dbf4db096fe09f0c420db7c9d",
+      "translation_text_hash": "4fc874ff6432a9811889878bbb55bc5d7f8b0bbbafab85a91085e5d8749fee84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 일을 어떻게 사실할는지 의심이 있어서 바울에게 묻되 예루살렘에 올라가서 이 일에 심문을 받으려느냐 한즉"
+      ],
+      "raw_text_hashes": [
+        "4fc874ff6432a9811889878bbb55bc5d7f8b0bbbafab85a91085e5d8749fee84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:21",
+      "sequence": 27814,
+      "chapter_label": "ACT 25",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 21
+        }
+      ],
+      "en": "But when Paul had appealed to be kept for the decision of the emperor, I commanded him to be kept until I could send him to Caesar.”",
+      "ko": "바울은 황제의 판결을 받도록 자기를 지켜 주기를 호소하므로 내가 그를 가이사에게 보내기까지 지켜두라 명하였노라 하니",
+      "source_text_hash": "681201d1e5cb936b1aa23b53e0369e8aa8b731f78d9b8f58e3798d1bcfd6754b",
+      "translation_text_hash": "f9590fb4f0ce8081f437af7fa29ea3f185f99ad1faf4ac709630908308e61404",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울은 황제의 판결을 받도록 자기를 지켜 주기를 호소하므로 내가 그를 가이사에게 보내기까지 지켜두라 명하였노라 하니"
+      ],
+      "raw_text_hashes": [
+        "f9590fb4f0ce8081f437af7fa29ea3f185f99ad1faf4ac709630908308e61404"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:22",
+      "sequence": 27815,
+      "chapter_label": "ACT 25",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 22
+        }
+      ],
+      "en": "Agrippa said to Festus, “I also would like to hear the man myself.” “Tomorrow,” he said, “you shall hear him.”",
+      "ko": "아그립바가 베스도더러 이르되 나도 이 사람의 말을 듣고자 하노라 베스도가 가로되 내일 들으시리이다 하더라",
+      "source_text_hash": "d31fc78e548b121eee04079c5138e4a1d48916096daf57ad8cdbd15169d88bfa",
+      "translation_text_hash": "34e3b35d18c9c742e1c16072fd3e1f29a172f9067c9cea4a4750cd3a6948b3ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아그립바가 베스도더러 이르되 나도 이 사람의 말을 듣고자 하노라 베스도가 가로되 내일 들으시리이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "34e3b35d18c9c742e1c16072fd3e1f29a172f9067c9cea4a4750cd3a6948b3ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:23",
+      "sequence": 27816,
+      "chapter_label": "ACT 25",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 23
+        }
+      ],
+      "en": "So on the next day, when Agrippa and Bernice had come with great pomp, and they had entered into the place of hearing with the commanding officers and the principal men of the city, at the command of Festus, Paul was brought in.",
+      "ko": "이튿날 아그립바와 버니게가 크게 위의를 베풀고 와서 천부장들과 성중의 높은 사람들과 함께 신문소에 들어오고 베스도의 명으로 바울을 데려오니",
+      "source_text_hash": "aa91f096305e4411ed9fb57c11f58db48ee5e76ff14ece049da1ab34fa8a70e0",
+      "translation_text_hash": "5f0b04c9989e5243c1b8b2240d432ef26c8448de1009b970dc0f424721d19369",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 아그립바와 버니게가 크게 위의를 베풀고 와서 천부장들과 성중의 높은 사람들과 함께 신문소에 들어오고 베스도의 명으로 바울을 데려오니"
+      ],
+      "raw_text_hashes": [
+        "5f0b04c9989e5243c1b8b2240d432ef26c8448de1009b970dc0f424721d19369"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:24",
+      "sequence": 27817,
+      "chapter_label": "ACT 25",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 24
+        }
+      ],
+      "en": "Festus said, “King Agrippa, and all men who are here present with us, you see this man about whom all the multitude of the Jews petitioned me, both at Jerusalem and here, crying that he ought not to live any longer.",
+      "ko": "베스도가 말하되 아그립바왕과 여기 같이 있는 여러분이여 당신들이 보는 이 사람은 유대의 모든 무리가 크게 외치되 살려 두지 못할 사람이라고 하여 예루살렘에서와 여기서도 내게 청원하였으나",
+      "source_text_hash": "b1caf63ed5f5ed42d93d45a850e7c5f19230f108902bd8079b1540af7d92f19e",
+      "translation_text_hash": "75091187ebb1943e7c7bc757583a806c98d1be5bf3e1d5fec0dac8fd2ca68f94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베스도가 말하되 아그립바왕과 여기 같이 있는 여러분이여 당신들이 보는 이 사람은 유대의 모든 무리가 크게 외치되 살려 두지 못할 사람이라고 하여 예루살렘에서와 여기서도 내게 청원하였으나"
+      ],
+      "raw_text_hashes": [
+        "75091187ebb1943e7c7bc757583a806c98d1be5bf3e1d5fec0dac8fd2ca68f94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:25",
+      "sequence": 27818,
+      "chapter_label": "ACT 25",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 25
+        }
+      ],
+      "en": "But when I found that he had committed nothing worthy of death, and as he himself appealed to the emperor, I determined to send him,",
+      "ko": "나는 살피건대 죽일 죄를 범한 일이 없더이다 그러나 저가 황제에게 호소한고로 보내기를 작정하였나이다",
+      "source_text_hash": "11b94c3ce16eb9a35252bdfffa299bcc3a8d964def4ea6c0059bdd41bf2ae7f9",
+      "translation_text_hash": "85cc740731e54a34c384ad289b4bdcaae7d26d7ef9bf2b38268417adacf741f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 살피건대 죽일 죄를 범한 일이 없더이다 그러나 저가 황제에게 호소한고로 보내기를 작정하였나이다"
+      ],
+      "raw_text_hashes": [
+        "85cc740731e54a34c384ad289b4bdcaae7d26d7ef9bf2b38268417adacf741f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:26",
+      "sequence": 27819,
+      "chapter_label": "ACT 25",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 26
+        }
+      ],
+      "en": "of whom I have no certain thing to write to my lord. Therefore I have brought him out before you, and especially before you, King Agrippa, that, after examination I may have something to write.",
+      "ko": "그에게 대하여 황제께 확실한 사실을 아뢸 것이 없으므로 심문한 후 상소할 재료가 있을까 하여 당신들 앞 특히 아그립바왕 당신 앞에 그를 내어 세웠나이다",
+      "source_text_hash": "e8df9b4938e90862b24f00d4a6ffa3fbc9bc7628565e3824d0f026bdf5d52ac2",
+      "translation_text_hash": "2de52eeea2ac404f11e5dcf8911bca2eeff7c1230b8b9697d841f6d4235bc26f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 대하여 황제께 확실한 사실을 아뢸 것이 없으므로 심문한 후 상소할 재료가 있을까 하여 당신들 앞 특히 아그립바왕 당신 앞에 그를 내어 세웠나이다"
+      ],
+      "raw_text_hashes": [
+        "2de52eeea2ac404f11e5dcf8911bca2eeff7c1230b8b9697d841f6d4235bc26f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:25:27",
+      "sequence": 27820,
+      "chapter_label": "ACT 25",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 25,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 25,
+          "verse": 27
+        }
+      ],
+      "en": "For it seems to me unreasonable, in sending a prisoner, not to also specify the charges against him.”",
+      "ko": "그 죄목을 베풀지 아니하고 죄수를 보내는 것이 무리한 일인줄 아나이다 하였더라",
+      "source_text_hash": "dd10e015923f12505bb3d66b1a278a293f905415e0b6cdf38ea5f36285af3116",
+      "translation_text_hash": "48aa06637cb1ce181135639b537aa2b353eb4c8ac100d12c71fb5970a82c9a2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 죄목을 베풀지 아니하고 죄수를 보내는 것이 무리한 일인줄 아나이다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "48aa06637cb1ce181135639b537aa2b353eb4c8ac100d12c71fb5970a82c9a2c"
+      ]
+    }
+  ]
+}

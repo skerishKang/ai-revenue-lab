@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:009",
+  "unit_ordinal": 1055,
+  "unit_label": "ROM 9",
+  "book_code": "ROM",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:9:1",
+      "sequence": 28153,
+      "chapter_label": "ROM 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "I tell the truth in Christ. I am not lying, my conscience testifying with me in the Holy Spirit",
+      "ko": "내가 그리스도 안에서 참말을 하고 거짓말을 아니하노라 내게 큰 근심이 있는 것과 마음에 그치지 않는 고통이 있는 것을 내 양심이 성령 안에서 나로 더불어 증거하노니",
+      "source_text_hash": "acbdc0c318d7e6a1150b43b2046c75825804975072a15b06bdfd11215cfe5e6c",
+      "translation_text_hash": "abbf34ed92524d3bd216e0a8adc33350d2f7ea93492e3b0ab8056379edd63116",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그리스도 안에서 참말을 하고 거짓말을 아니하노라 내게 큰 근심이 있는 것과 마음에 그치지 않는 고통이 있는 것을 내 양심이 성령 안에서 나로 더불어 증거하노니"
+      ],
+      "raw_text_hashes": [
+        "abbf34ed92524d3bd216e0a8adc33350d2f7ea93492e3b0ab8056379edd63116"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:2",
+      "sequence": 28154,
+      "chapter_label": "ROM 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "that I have great sorrow and unceasing pain in my heart.",
+      "ko": "(1절에 포함되어 있음)",
+      "source_text_hash": "594d860929d0cdc9914010ae675ce328beec3a0050b9a0f9665caaabaa609b6a",
+      "translation_text_hash": "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(1절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "253b718e6a12d2bbd3630b6fd63da0bb9fdae2f1058f047b1053efe936f06e24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:3",
+      "sequence": 28155,
+      "chapter_label": "ROM 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "For I could wish that I myself were accursed from Christ for my brothers’ sake, my relatives according to the flesh",
+      "ko": "나의 형제 곧 골육의 친척을 위하여 내 자신이 저주를 받아 그리스도에게서 끊어질찌라도 원하는 바로라",
+      "source_text_hash": "ab34e8a2e2e4df5429b6faa4a17e404c17a3489e749974f9fedd0521965f398b",
+      "translation_text_hash": "05e866dc85ece3971f25e243c9c6c1f8b1469c86c9a1deba221f4866bb13fd6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 형제 곧 골육의 친척을 위하여 내 자신이 저주를 받아 그리스도에게서 끊어질찌라도 원하는 바로라"
+      ],
+      "raw_text_hashes": [
+        "05e866dc85ece3971f25e243c9c6c1f8b1469c86c9a1deba221f4866bb13fd6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:4",
+      "sequence": 28156,
+      "chapter_label": "ROM 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "who are Israelites; whose is the adoption, the glory, the covenants, the giving of the law, the service, and the promises;",
+      "ko": "저희는 이스라엘 사람이라 저희에게는 양자 됨과 영광과 언약들과 율법을 세우신 것과 예배와 약속들이 있고",
+      "source_text_hash": "e3bf22f0cbb0fc04da9ebe4c3627f9246a0ad9f9b9a83ab150673512775de217",
+      "translation_text_hash": "1356e984ef00e53455984b1011a380ea97160082178c043da665969600e30f6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 이스라엘 사람이라 저희에게는 양자 됨과 영광과 언약들과 율법을 세우신 것과 예배와 약속들이 있고"
+      ],
+      "raw_text_hashes": [
+        "1356e984ef00e53455984b1011a380ea97160082178c043da665969600e30f6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:5",
+      "sequence": 28157,
+      "chapter_label": "ROM 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "of whom are the fathers, and from whom is Christ as concerning the flesh, who is over all, God, blessed forever. Amen.",
+      "ko": "조상들도 저희 것이요 육신으로 하면 그리스도가 저희에게서 나셨으니 저는 만물 위에 계셔 세세에 찬양을 받으실 하나님이시니라 아멘",
+      "source_text_hash": "1dabf93d6b40525b56724d754087893a7deba39d65ad191506e4c10fac025646",
+      "translation_text_hash": "b9b75108655f188dd4223291675ae3d4aefe1f5260d481959f9af76af21a8c1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조상들도 저희 것이요 육신으로 하면 그리스도가 저희에게서 나셨으니 저는 만물 위에 계셔 세세에 찬양을 받으실 하나님이시니라 아멘"
+      ],
+      "raw_text_hashes": [
+        "b9b75108655f188dd4223291675ae3d4aefe1f5260d481959f9af76af21a8c1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:6",
+      "sequence": 28158,
+      "chapter_label": "ROM 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "But it is not as though the word of God has come to nothing. For they are not all Israel that are of Israel.",
+      "ko": "또한 하나님의 말씀이 폐하여진 것 같지 않도다 이스라엘에게서 난 그들이 다 이스라엘이 아니요",
+      "source_text_hash": "4ba262a0c9a55125164a9655f4d4a8a991d2a1777e1756d55b66e963057c4dde",
+      "translation_text_hash": "e7abd669f38779a553403e437547de0fcefce09fa496a6e19d8f6315e405969f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 하나님의 말씀이 폐하여진 것 같지 않도다 이스라엘에게서 난 그들이 다 이스라엘이 아니요"
+      ],
+      "raw_text_hashes": [
+        "e7abd669f38779a553403e437547de0fcefce09fa496a6e19d8f6315e405969f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:7",
+      "sequence": 28159,
+      "chapter_label": "ROM 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Neither, because they are Abraham’s offspring, are they all children. But, “your offspring will be accounted as from Isaac.”",
+      "ko": "또한 아브라함의 씨가 다 그 자녀가 아니라 오직 이삭으로부터 난 자라야 네 씨라 칭하리라 하셨으니",
+      "source_text_hash": "5b2efa519cbc05240dd88269c8da9b0ca7d562f79b0ce18dda35bd13573f95bd",
+      "translation_text_hash": "ce1527626fd5fb26ac1f4bacac0e2aa1cabdd29a3da582ac455c223bb5d4f1ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 아브라함의 씨가 다 그 자녀가 아니라 오직 이삭으로부터 난 자라야 네 씨라 칭하리라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "ce1527626fd5fb26ac1f4bacac0e2aa1cabdd29a3da582ac455c223bb5d4f1ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:8",
+      "sequence": 28160,
+      "chapter_label": "ROM 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "That is, it is not the children of the flesh who are children of God, but the children of the promise are counted as heirs.",
+      "ko": "곧 육신의 자녀가 하나님의 자녀가 아니라 오직 약속의 자녀가 씨로 여기심을 받느니라",
+      "source_text_hash": "2da0450390957ba02a692b902e7ece0ae986b443476d69e81df2aff4c5a0a354",
+      "translation_text_hash": "7015537b1353912017836f57e3f2facaf801be4dccab6a805f368219d7a52a8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 육신의 자녀가 하나님의 자녀가 아니라 오직 약속의 자녀가 씨로 여기심을 받느니라"
+      ],
+      "raw_text_hashes": [
+        "7015537b1353912017836f57e3f2facaf801be4dccab6a805f368219d7a52a8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:9",
+      "sequence": 28161,
+      "chapter_label": "ROM 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "For this is a word of promise: “At the appointed time I will come, and Sarah will have a son.”",
+      "ko": "약속의 말씀은 이것이라 명년 이 때에 내가 이르리니 사라에게 아들이 있으리라 하시니라",
+      "source_text_hash": "82d6a90908b82ddbf7c5fb230b363fba3ec737d5a854fa88810fd9deb6f34b2c",
+      "translation_text_hash": "e04d1c6ab283ac2750a5b897fee93b3e4e56551d06d8ad107b93542304761f63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "약속의 말씀은 이것이라 명년 이 때에 내가 이르리니 사라에게 아들이 있으리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "e04d1c6ab283ac2750a5b897fee93b3e4e56551d06d8ad107b93542304761f63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:10",
+      "sequence": 28162,
+      "chapter_label": "ROM 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "Not only so, but Rebekah also conceived by one, by our father Isaac.",
+      "ko": "이뿐 아니라 또한 리브가가 우리 조상 이삭 한 사람으로 말미암아 잉태하였는데",
+      "source_text_hash": "855620bc01b6b992568496c7fb19fad04b2b63d115296b733ea8f629e751072a",
+      "translation_text_hash": "40beb4808bc6f040c01cf7b17e4fe977c43496fde1282bc26048853ec440d9db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이뿐 아니라 또한 리브가가 우리 조상 이삭 한 사람으로 말미암아 잉태하였는데"
+      ],
+      "raw_text_hashes": [
+        "40beb4808bc6f040c01cf7b17e4fe977c43496fde1282bc26048853ec440d9db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:11",
+      "sequence": 28163,
+      "chapter_label": "ROM 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "For being not yet born, neither having done anything good or bad, that the purpose of God according to election might stand, not of works, but of him who calls,",
+      "ko": "그 자식들이 아직 나지도 아니하고 무슨 선이나 악을 행하지 아니한 때에 택하심을 따라 되는 하나님의 뜻이 행위로 말미암지 않고 오직 부르시는 이에게로 말미암아 서게 하려 하사",
+      "source_text_hash": "1910114858cc3076d2b36db069848acdb5121107deb7413d5deb2dff701336c0",
+      "translation_text_hash": "24c95a661a91cccf50804b8f9b5472fc550af2a71fb328e3176f58b158bf5182",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자식들이 아직 나지도 아니하고 무슨 선이나 악을 행하지 아니한 때에 택하심을 따라 되는 하나님의 뜻이 행위로 말미암지 않고 오직 부르시는 이에게로 말미암아 서게 하려 하사"
+      ],
+      "raw_text_hashes": [
+        "24c95a661a91cccf50804b8f9b5472fc550af2a71fb328e3176f58b158bf5182"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:12",
+      "sequence": 28164,
+      "chapter_label": "ROM 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "it was said to her, “The elder will serve the younger.”",
+      "ko": "리브가에게 이르시되 큰 자가 어린 자를 섬기리라 하셨나니",
+      "source_text_hash": "33f189ebfd67b810dc55bc56b05d0b4287f75180cc8ec0f9436f927477bf8638",
+      "translation_text_hash": "df7ea9ac24c4e2f3af72c5fce33212a72f88d29c13d92db0677c345d875ec0b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가에게 이르시되 큰 자가 어린 자를 섬기리라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "df7ea9ac24c4e2f3af72c5fce33212a72f88d29c13d92db0677c345d875ec0b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:13",
+      "sequence": 28165,
+      "chapter_label": "ROM 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "Even as it is written, “Jacob I loved, but Esau I hated.”",
+      "ko": "기록된바 내가 야곱은 사랑하고 에서는 미워하였다 하심과 같으니라",
+      "source_text_hash": "ad05000e247de6110d7a7443027a700d4bf03167e9a315cb20a5383a011a5794",
+      "translation_text_hash": "992770bf1407fc43d0bb1d2e6d45b0f25bd327c264c2438a29770c903feb09e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 내가 야곱은 사랑하고 에서는 미워하였다 하심과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "992770bf1407fc43d0bb1d2e6d45b0f25bd327c264c2438a29770c903feb09e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:14",
+      "sequence": 28166,
+      "chapter_label": "ROM 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "What shall we say then? Is there unrighteousness with God? May it never be!",
+      "ko": "그런즉 우리가 무슨 말 하리요 하나님께 불의가 있느뇨 그럴수 없느니라",
+      "source_text_hash": "7cf1772d9c4af1743dff3293262ded1f3c75ea66a46fabda4e2bb65efc92460c",
+      "translation_text_hash": "b038aba840ef09149060911106b512d7b9494fa1f39e7095114794423091ae25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 우리가 무슨 말 하리요 하나님께 불의가 있느뇨 그럴수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "b038aba840ef09149060911106b512d7b9494fa1f39e7095114794423091ae25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:15",
+      "sequence": 28167,
+      "chapter_label": "ROM 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "For he said to Moses, “I will have mercy on whom I have mercy, and I will have compassion on whom I have compassion.”",
+      "ko": "모세에게 이르시되 내가 긍휼히 여길 자를 긍휼히 여기고 불쌍히 여길 자를 불쌍히 여기리라 하셨으니",
+      "source_text_hash": "00c0b382d01753fe041ba1b289a9431e263b0c08760fd09c53c4feacd7d5358b",
+      "translation_text_hash": "51538c0839a36ed1b084ca0dac12b4439cf1e4896a43663097ec7e712f23748f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세에게 이르시되 내가 긍휼히 여길 자를 긍휼히 여기고 불쌍히 여길 자를 불쌍히 여기리라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "51538c0839a36ed1b084ca0dac12b4439cf1e4896a43663097ec7e712f23748f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:16",
+      "sequence": 28168,
+      "chapter_label": "ROM 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "So then it is not of him who wills, nor of him who runs, but of God who has mercy.",
+      "ko": "그런즉 원하는 자로 말미암음도 아니요 달음박질하는 자로 말미암음도 아니요 오직 긍휼히 여기시는 하나님으로 말미암음이니라",
+      "source_text_hash": "56d1237d98ba8042c17b662e873440beeec2ec77963a492b721f5754b4b30044",
+      "translation_text_hash": "5b79310083bface50b3a550343f9c4c5004cdc67b34c66d1e9d5146257ac1c3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 원하는 자로 말미암음도 아니요 달음박질하는 자로 말미암음도 아니요 오직 긍휼히 여기시는 하나님으로 말미암음이니라"
+      ],
+      "raw_text_hashes": [
+        "5b79310083bface50b3a550343f9c4c5004cdc67b34c66d1e9d5146257ac1c3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:17",
+      "sequence": 28169,
+      "chapter_label": "ROM 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "For the Scripture says to Pharaoh, “For this very purpose I caused you to be raised up, that I might show in you my power, and that my name might be proclaimed in all the earth.”",
+      "ko": "성경이 바로에게 이르시되 내가 이 일을 위하여 너를 세웠으니 곧 너로 말미암아 내 능력을 보이고 내 이름이 온 땅에 전파되게 하려 함이로라 하셨으니",
+      "source_text_hash": "babc74a7567b6c75ee71a135960b4f85ce71734624e9606b3df40e9c9c22d1b9",
+      "translation_text_hash": "6aacc1e1c325d2129e18888f3d24a155b935c65fef8ba8628ff337346945902f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성경이 바로에게 이르시되 내가 이 일을 위하여 너를 세웠으니 곧 너로 말미암아 내 능력을 보이고 내 이름이 온 땅에 전파되게 하려 함이로라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "6aacc1e1c325d2129e18888f3d24a155b935c65fef8ba8628ff337346945902f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:18",
+      "sequence": 28170,
+      "chapter_label": "ROM 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "So then, he has mercy on whom he desires, and he hardens whom he desires.",
+      "ko": "그런즉 하나님께서 하고자 하시는 자를 긍휼히 여기시고 하고자 하시는 자를 강퍅케 하시느니라",
+      "source_text_hash": "93df8a6d31395775e9a907107b8645834cc56a2c7d82d3ad7f9ebb040bc063d4",
+      "translation_text_hash": "0e24a47fc9242f285f89769e6caad932293311db2b62442ac3a0e418c43e165f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 하나님께서 하고자 하시는 자를 긍휼히 여기시고 하고자 하시는 자를 강퍅케 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "0e24a47fc9242f285f89769e6caad932293311db2b62442ac3a0e418c43e165f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:19",
+      "sequence": 28171,
+      "chapter_label": "ROM 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "You will say then to me, “Why does he still find fault? For who withstands his will?”",
+      "ko": "혹 네가 내게 말하기를 그러면 하나님이 어찌하여 허물하시느뇨 누가 그 뜻을 대적하느뇨 하리니",
+      "source_text_hash": "b8ee117225ef46b44fd2d6acf88d11a89c19837ec32089f358cb7102643a0693",
+      "translation_text_hash": "2c058bca1189364f689001cb92f1475fb7d566cecf7ee931f833a898d8eda75a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 네가 내게 말하기를 그러면 하나님이 어찌하여 허물하시느뇨 누가 그 뜻을 대적하느뇨 하리니"
+      ],
+      "raw_text_hashes": [
+        "2c058bca1189364f689001cb92f1475fb7d566cecf7ee931f833a898d8eda75a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:20",
+      "sequence": 28172,
+      "chapter_label": "ROM 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "But indeed, O man, who are you to reply against God? Will the thing formed ask him who formed it, “Why did you make me like this?”",
+      "ko": "이 사람아 네가 뉘기에 감히 하나님을 힐문하느뇨 지음을 받은 물건이 지은 자에게 어찌 나를 이같이 만들었느냐 말하겠느뇨",
+      "source_text_hash": "46df90022a6c75083b970cc4d9b9a69055fade0e66dc15f72aa162add3c4ac52",
+      "translation_text_hash": "786bf0e2fe12ca7c97ed7b9e5858dec710eb2fb70835f95be189d4b1a784db73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람아 네가 뉘기에 감히 하나님을 힐문하느뇨 지음을 받은 물건이 지은 자에게 어찌 나를 이같이 만들었느냐 말하겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "786bf0e2fe12ca7c97ed7b9e5858dec710eb2fb70835f95be189d4b1a784db73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:21",
+      "sequence": 28173,
+      "chapter_label": "ROM 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "Or hasn’t the potter a right over the clay, from the same lump to make one part a vessel for honor, and another for dishonor?",
+      "ko": "토기장이가 진흙 한 덩이로 하나는 귀히 쓸 그릇을, 하나는 천히 쓸 그릇을 만드는 권이 없느냐",
+      "source_text_hash": "c95a04b3c12b40c53156c1964798277dc55acb4eec1dff0ba5242ed07a9884b5",
+      "translation_text_hash": "f4f97dd53fe2ceb1234a685f204bcb83612faa634f41a47ba9829b49044a241d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "토기장이가 진흙 한 덩이로 하나는 귀히 쓸 그릇을, 하나는 천히 쓸 그릇을 만드는 권이 없느냐"
+      ],
+      "raw_text_hashes": [
+        "f4f97dd53fe2ceb1234a685f204bcb83612faa634f41a47ba9829b49044a241d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:22",
+      "sequence": 28174,
+      "chapter_label": "ROM 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "What if God, willing to show his wrath and to make his power known, endured with much patience vessels of wrath prepared for destruction,",
+      "ko": "만일 하나님이 그 진노를 보이시고 그 능력을 알게 하고자 하사 멸하기로 준비된 진노의 그릇을 오래 참으심으로 관용하시고",
+      "source_text_hash": "8f97e7af5277bb11624ea0815ecdda7589cbad3d2f96cd91fa4d9d10451bcab9",
+      "translation_text_hash": "9bdaabb6dffc77e6c36e81f6230dc3c1260edd5eb5db03e311accba65af66a87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 하나님이 그 진노를 보이시고 그 능력을 알게 하고자 하사 멸하기로 준비된 진노의 그릇을 오래 참으심으로 관용하시고"
+      ],
+      "raw_text_hashes": [
+        "9bdaabb6dffc77e6c36e81f6230dc3c1260edd5eb5db03e311accba65af66a87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:23",
+      "sequence": 28175,
+      "chapter_label": "ROM 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "and that he might make known the riches of his glory on vessels of mercy, which he prepared beforehand for glory—",
+      "ko": "또한 영광 받기로 예비하신바 긍휼의 그릇에 대하여 그 영광의 부요함을 알게 하고자 하셨을찌라도 무슨 말 하리요",
+      "source_text_hash": "d63ca148cd10cc74b1282d88f80609e9e6cf62184107f5599c8b8d331dd39693",
+      "translation_text_hash": "98136c61f864fa66ad5f193aa1b9cb26a13dfdb51ccba28f7eb5c50c46744d46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 영광 받기로 예비하신바 긍휼의 그릇에 대하여 그 영광의 부요함을 알게 하고자 하셨을찌라도 무슨 말 하리요"
+      ],
+      "raw_text_hashes": [
+        "98136c61f864fa66ad5f193aa1b9cb26a13dfdb51ccba28f7eb5c50c46744d46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:24",
+      "sequence": 28176,
+      "chapter_label": "ROM 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "us, whom he also called, not from the Jews only, but also from the Gentiles?",
+      "ko": "이 그릇은 우리니 곧 유대인 중에서 뿐아니라 이방인 중에서도 부르신 자니라",
+      "source_text_hash": "af236bae580228bac24adf5b9f8139b63a0271be4b4054fc4ec5c9d6b39ba4c2",
+      "translation_text_hash": "c1d90f68486904e54e7f25a7cfa468b7b84e3d65fd89ecae508a8150bfa520c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 그릇은 우리니 곧 유대인 중에서 뿐아니라 이방인 중에서도 부르신 자니라"
+      ],
+      "raw_text_hashes": [
+        "c1d90f68486904e54e7f25a7cfa468b7b84e3d65fd89ecae508a8150bfa520c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:25",
+      "sequence": 28177,
+      "chapter_label": "ROM 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "As he says also in Hosea, “I will call them ‘my people,’ which were not my people; and her ‘beloved,’ who was not beloved.”",
+      "ko": "호세아 글에도 이르기를 내가 내 백성 아닌 자를 내 백성이라, 사랑치 아니한 자를 사랑한 자라 부르리라",
+      "source_text_hash": "c790e980381ce9bfdfceecade99b34caec2fda62b8e6ff9e99a1cb9aba48f763",
+      "translation_text_hash": "5d8eef8cc7112d6dc1b6bcd506fc30f0629a5105b1761db441deb388396bdaa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호세아 글에도 이르기를 내가 내 백성 아닌 자를 내 백성이라, 사랑치 아니한 자를 사랑한 자라 부르리라"
+      ],
+      "raw_text_hashes": [
+        "5d8eef8cc7112d6dc1b6bcd506fc30f0629a5105b1761db441deb388396bdaa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:26",
+      "sequence": 28178,
+      "chapter_label": "ROM 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "“It will be that in the place where it was said to them, ‘You are not my people,’ there they will be called ‘children of the living God.’”",
+      "ko": "너희는 내 백성이 아니라 한 그 곳에서 저희가 살아 계신 하나님의 아들이라 부름을 얻으리라 함과 같으니라",
+      "source_text_hash": "1c6d57048a47ab8c12625a9bac056e36a811d27b7e923137629ae0e4e81cd4b9",
+      "translation_text_hash": "7b2b0246332df2195b6213118337278dbfca9f3a46e5eb9eb24549f56e513f14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내 백성이 아니라 한 그 곳에서 저희가 살아 계신 하나님의 아들이라 부름을 얻으리라 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "7b2b0246332df2195b6213118337278dbfca9f3a46e5eb9eb24549f56e513f14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:27",
+      "sequence": 28179,
+      "chapter_label": "ROM 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "Isaiah cries concerning Israel, “If the number of the children of Israel are as the sand of the sea, it is the remnant who will be saved;",
+      "ko": "또 이사야가 이스라엘에 관하여 외치되 이스라엘 뭇자손의 수가 비록 바다의 모래 같을찌라도 남은 자만 구원을 얻으리니",
+      "source_text_hash": "1fe02102090b597cb3adad06cffd44c02eca67e8305a4b66565d6214d2540337",
+      "translation_text_hash": "1ac7a658e7d4c48124d70fbc4682451c33c4893115964e1c8c9880d6283c706b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이사야가 이스라엘에 관하여 외치되 이스라엘 뭇자손의 수가 비록 바다의 모래 같을찌라도 남은 자만 구원을 얻으리니"
+      ],
+      "raw_text_hashes": [
+        "1ac7a658e7d4c48124d70fbc4682451c33c4893115964e1c8c9880d6283c706b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:28",
+      "sequence": 28180,
+      "chapter_label": "ROM 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "for he will finish the work and cut it short in righteousness, because the Lord will make a short work upon the earth.”",
+      "ko": "주께서 땅 위에서 그 말씀을 이루사 필하시고 끝내시리라 하셨느니라",
+      "source_text_hash": "61ec2e7c8616fc6a15052a1517b2c5fff78ff7597325c4f2e7fdd58226309e0e",
+      "translation_text_hash": "d2188043a3e668bc8d51c700d03bc4b2f8475ffcb5b28d25df05a50f59765a22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 땅 위에서 그 말씀을 이루사 필하시고 끝내시리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "d2188043a3e668bc8d51c700d03bc4b2f8475ffcb5b28d25df05a50f59765a22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:29",
+      "sequence": 28181,
+      "chapter_label": "ROM 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "As Isaiah has said before, “Unless the Lord of Armies had left us a seed, we would have become like Sodom, and would have been made like Gomorrah.”",
+      "ko": "또한 이사야가 미리 말한바 만일 만군의 주께서 우리에게 씨를 남겨 두시지 아니하셨더면 우리가 소돔과 같이 되고 고모라와 같았으리로다 함과 같으니라",
+      "source_text_hash": "f791acebd714f6ba2f2f52519bddbfd2d52445e4652f25f8f2368cd2b7980dcc",
+      "translation_text_hash": "758a3b5981d9ca26465a79a0dfc06c7b18b8438610faa8c2af1074d1f58f8158",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 이사야가 미리 말한바 만일 만군의 주께서 우리에게 씨를 남겨 두시지 아니하셨더면 우리가 소돔과 같이 되고 고모라와 같았으리로다 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "758a3b5981d9ca26465a79a0dfc06c7b18b8438610faa8c2af1074d1f58f8158"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:30",
+      "sequence": 28182,
+      "chapter_label": "ROM 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "What shall we say then? That the Gentiles, who didn’t follow after righteousness, attained to righteousness, even the righteousness which is of faith;",
+      "ko": "그런즉 우리가 무슨 말 하리요 의를 좇지 아니한 이방인들이 의를 얻었으니 곧 믿음에서 난 의요",
+      "source_text_hash": "e72c83b7b8cde64504c24557e36d7363c69c6cef058dcc7a6bdb1e045a076ca8",
+      "translation_text_hash": "c842f12c75d6e10b206a65d23a94a6694948aac8f09bd208fd7a32125050d4e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 우리가 무슨 말 하리요 의를 좇지 아니한 이방인들이 의를 얻었으니 곧 믿음에서 난 의요"
+      ],
+      "raw_text_hashes": [
+        "c842f12c75d6e10b206a65d23a94a6694948aac8f09bd208fd7a32125050d4e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:31",
+      "sequence": 28183,
+      "chapter_label": "ROM 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "but Israel, following after a law of righteousness, didn’t arrive at the law of righteousness.",
+      "ko": "의의 법을 좇아간 이스라엘은 법에 이르지 못하였으니",
+      "source_text_hash": "a7c3196ccf0af01ca9722f0c575fe1a3d8f776d802a0af7c29973f07e7b87041",
+      "translation_text_hash": "3df76f10a29b96a8b5408f3b34d52cc9b60efd74468bd34d1369c792b6918c37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의의 법을 좇아간 이스라엘은 법에 이르지 못하였으니"
+      ],
+      "raw_text_hashes": [
+        "3df76f10a29b96a8b5408f3b34d52cc9b60efd74468bd34d1369c792b6918c37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:32",
+      "sequence": 28184,
+      "chapter_label": "ROM 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "Why? Because they didn’t seek it by faith, but as it were by works of the law. They stumbled over the stumbling stone,",
+      "ko": "어찌 그러하뇨 이는 저희가 믿음에 의지하지 않고 행위에 의지함이라 부딪힐 돌에 부딪혔느니라",
+      "source_text_hash": "159b388e8a53a57d45b94b476845cd75c0f6acb1b36f09e04025c2b0e9c1c5af",
+      "translation_text_hash": "b00d09c6578839fb6249211d3f1150ee13b1bc06c7f2273b4f16a2f1a7119d76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌 그러하뇨 이는 저희가 믿음에 의지하지 않고 행위에 의지함이라 부딪힐 돌에 부딪혔느니라"
+      ],
+      "raw_text_hashes": [
+        "b00d09c6578839fb6249211d3f1150ee13b1bc06c7f2273b4f16a2f1a7119d76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:9:33",
+      "sequence": 28185,
+      "chapter_label": "ROM 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "ROM",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "even as it is written, “Behold, I lay in Zion a stumbling stone and a rock of offense; and no one who believes in him will be disappointed.”",
+      "ko": "기록된바 보라 내가 부딪히는 돌과 거치는 반석을 시온에 두노니 저를 믿는 자는 부끄러움을 당치 아니하리라 함과 같으니라",
+      "source_text_hash": "3a28200d0cc71c4c10a5d8b00f1344d5b8b0ee9fdada00d5ad1f73f19f8fc4bb",
+      "translation_text_hash": "a2eebcc7fcca2c519d51b7a53bceaed913a607a6e08c9ccef0c251f89f4a4ceb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 보라 내가 부딪히는 돌과 거치는 반석을 시온에 두노니 저를 믿는 자는 부끄러움을 당치 아니하리라 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "a2eebcc7fcca2c519d51b7a53bceaed913a607a6e08c9ccef0c251f89f4a4ceb"
+      ]
+    }
+  ]
+}
