@@ -34,6 +34,20 @@ DRIVE_REVOKE_NAVIGATION_HOSTS = {
 }
 
 
+# Explicit user-initiated source/license navigation only on the OSS notice.
+# The full URLs, not their hosts, are permitted: no new network dependencies.
+LICENSE_NOTICE_PATH = "apps/padiem-chat/static/third-party-licenses.html"
+LICENSE_NOTICE_URLS = frozenset({
+    "https://github.com/pymupdf/PyMuPDF",
+    "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer",
+    "https://www.gnu.org/licenses/agpl-3.0.html",
+})
+
+
+def license_notice_url_allowed(relative: str, url: str) -> bool:
+    return relative == LICENSE_NOTICE_PATH and url in LICENSE_NOTICE_URLS
+
+
 URL_RE = re.compile(r"https?://[^\s\"'<>)}]+", re.IGNORECASE)
 
 
@@ -76,7 +90,8 @@ def main() -> None:
             feature_hosts = MEETING_DIRECT_DRIVE_HOSTS.get(relative.as_posix(), frozenset())
             feature_hosts |= ADMIN_HUB_NAVIGATION_HOSTS.get(relative.as_posix(), frozenset())
             feature_hosts |= DRIVE_REVOKE_NAVIGATION_HOSTS.get(relative.as_posix(), frozenset())
-            if host not in ALLOWED_LITERAL_HTTP_HOSTS and host not in feature_hosts:
+            if (host not in ALLOWED_LITERAL_HTTP_HOSTS and host not in feature_hosts
+                    and not license_notice_url_allowed(relative.as_posix(), url)):
                 violations.append(f"{relative}: unapproved external host {host}: {url}")
 
     if violations:

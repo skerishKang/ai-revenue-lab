@@ -129,3 +129,29 @@ def test_b66_navigation_origin_is_single_sourced_and_passes_the_origin_audit():
         text=True,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
+
+
+
+def test_license_navigation_is_exact_url_and_file_scoped():
+    import importlib.util
+
+    path = REPO / ".github" / "scripts" / "b62_static_origin_audit.py"
+    spec = importlib.util.spec_from_file_location("static_origin_audit", path)
+    audit = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(audit)
+    notice = "apps/padiem-chat/static/third-party-licenses.html"
+    allowed = {
+        "https://github.com/pymupdf/PyMuPDF",
+        "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer",
+        "https://www.gnu.org/licenses/agpl-3.0.html",
+    }
+    assert audit.LICENSE_NOTICE_URLS == allowed
+    for url in allowed:
+        assert audit.license_notice_url_allowed(notice, url)
+        assert not audit.license_notice_url_allowed("apps/padiem-chat/static/index.html", url)
+    for url in ("https://github.com/unreviewed/repo",
+                "https://github.com/pymupdf/PyMuPDF?tracking=1",
+                "https://www.gnu.org/other"):
+        assert not audit.license_notice_url_allowed(notice, url)
+    assert "github.com" not in audit.ALLOWED_LITERAL_HTTP_HOSTS
+    assert "www.gnu.org" not in audit.ALLOWED_LITERAL_HTTP_HOSTS

@@ -9,6 +9,7 @@
   const labels = {
     ko: {
       "error-code-reference": "참고 코드",
+      "hwp-save-hwpx": "한글에서 HWPX로 저장해 올리면 읽을 수 있어요.",
       "file-lane-unavailable": "파일 서버에 연결하지 못했습니다. 로그인과 연결을 확인해 주세요.",
       "web-grounding-unavailable-notice": "웹 검색을 사용할 수 없어 근거 없이 답변합니다",
       "web-grounding-no-evidence-notice": "웹 근거를 찾지 못해 근거 없이 답변합니다",
@@ -262,6 +263,7 @@
     },
     en: {
       "error-code-reference": "Reference code",
+      "hwp-save-hwpx": "Save the file as HWPX in Hangul, then upload it so it can be read.",
       "file-lane-unavailable": "Unable to connect to the file server. Check your sign-in and connection.",
       "web-grounding-unavailable-notice": "Web search is unavailable; this answer has no web evidence",
       "web-grounding-no-evidence-notice": "No web evidence was found; this answer is ungrounded",

@@ -853,7 +853,7 @@
   }
   async function readDocumentFile(file) {
     if (extensionOf(file.name) === ".hwp") {
-      const error = new Error("한글에서 HWPX로 저장한 뒤 올려 주세요.");
+      const error = new Error(uiT("hwp-save-hwpx"));
       error.uiMessageSafe = true;
       throw error;
     }
