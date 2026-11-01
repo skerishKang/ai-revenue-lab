@@ -4,7 +4,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-theme", saved);
+        }
+      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }
+    })();
+  </script>
   <title>미디어 — 임미란 의원</title>
+  <meta name="description" content="전남광주통합특별시의회와 광주광역시의회가 공개한 임미란 의원 사진·영상 자료입니다." />
+  <link rel="canonical" href="https://councillor-prototype-v2.pages.dev/media.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta property="og:site_name" content="임미란 의원" />
+  <meta property="og:title" content="미디어 — 임미란 의원" />
+  <meta property="og:description" content="전남광주통합특별시의회와 광주광역시의회가 공개한 임미란 의원 사진·영상 자료입니다." />
+  <meta property="og:url" content="https://councillor-prototype-v2.pages.dev/media.html" />
+  <meta property="og:image" content="https://councillor-prototype-v2.pages.dev/static/images/og-card.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="임미란 의원 프로필 사진과 이름" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="./favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="preload" href="./static/fonts/maruburi/MaruBuri-Bold.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="./static/fonts/maruburi.css" />
   <link rel="stylesheet" href="./static/fonts/pretendard/pretendard-variable-dynamic-subset.css" />
   <link rel="stylesheet" href="./static/styles.css" />
@@ -12,28 +40,34 @@
 <body>
   <a class="skip-link" href="#main">본문으로 건너뛰기</a>
   <header class="topbar">
-    <div class="brand"><span class="brand-mark" aria-hidden="true">임</span><span class="brand-name">임미란 의원</span></div>
+    <a class="brand" href="./index.html">
+      <span class="brand-mark" aria-hidden="true">임</span>
+      <span class="brand-text">
+        <span class="brand-name">임미란 의원</span>
+        <span class="brand-tagline">전남광주통합특별시의회 · 남구 제1선거구</span>
+      </span>
+    </a>
     <nav class="top-nav" aria-label="주요 메뉴">
       <a href="./index.html">홈</a>
+      <a href="./about.html">의원 소개</a>
       <a href="./activity.html">의정활동</a>
       <a href="./policy.html">정책자료</a>
       <a href="./media.html" class="active">미디어</a>
-      <a href="./about.html">의원 소개</a>
     </nav>
     <div class="top-actions"><button class="ghost" id="themeToggle" type="button" aria-pressed="false">다크</button></div>
   </header>
   <main id="main" class="section">
     <div class="section-inner">
-      <p class="section-eyebrow">Media</p>
+      <p class="section-eyebrow">사진 · 영상</p>
       <h1 class="section-title">미디어</h1>
       <p class="section-lead">의회가 공개한 사진·영상 자료입니다.</p>
       <div class="media-grid" id="mediaGrid"></div>
       <p class="source-note">본회의 발언과 사진은 의회가 공개한 공식 페이지에서 보실 수 있습니다.</p>
-      <div style="margin-top:32px;">
-        <video controls preload="metadata" style="width:100%;border-radius:14px;" poster="https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg">
+      <div class="media-video">
+        <video controls preload="metadata" poster="https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg">
           <source src="https://media.padiem.net/councillor/miraen/hero/hero-2025-v1.mp4" type="video/mp4" />
         </video>
-        <p class="source-note">첫 화면 영상·포스터: 의원실 제공 자료</p>
+        <p class="source-note">영상: 의원실 제공 자료</p>
       </div>
     </div>
   </main>
@@ -45,15 +79,23 @@
       </div>
       <nav class="footer-nav" aria-label="바닥글 메뉴">
         <a href="./index.html">홈</a>
+        <a href="./about.html">의원 소개</a>
         <a href="./activity.html">의정활동</a>
         <a href="./policy.html">정책자료</a>
         <a href="./media.html">미디어</a>
-        <a href="./about.html">의원 소개</a>
         <a href="https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList" target="_blank" rel="noopener">의회 공식 페이지</a>
+        <a class="footer-login" href="https://chat.padiem.net/apps/council/" target="_blank" rel="noopener">의원실 로그인 · 의원3종</a>
       </nav>
-      <p class="footer-note">이 페이지는 시제품이며 의원실 공식 웹사이트가 아닙니다.<br />자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)</p>
+      <p class="footer-note">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)</p>
     </div>
   </footer>
+  <nav class="mobile-tabbar" aria-label="모바일 메뉴">
+    <a href="./index.html">홈</a>
+    <a href="./about.html">의원 소개</a>
+    <a href="./activity.html">의정활동</a>
+    <a href="./policy.html">정책자료</a>
+    <a href="./media.html" class="active">미디어</a>
+  </nav>
   <script src="./static/app.js"></script>
 </body>
 </html>

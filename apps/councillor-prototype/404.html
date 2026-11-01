@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-theme", saved);
+        }
+      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }
+    })();
+  </script>
+  <title>페이지를 찾을 수 없습니다 — 임미란 의원</title>
+  <meta name="description" content="요청하신 페이지를 찾을 수 없습니다. 임미란 의원 홈페이지의 주요 메뉴로 이동해 주세요." />
+  <meta name="robots" content="noindex" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta property="og:site_name" content="임미란 의원" />
+  <meta property="og:title" content="페이지를 찾을 수 없습니다 — 임미란 의원" />
+  <meta property="og:description" content="요청하신 페이지를 찾을 수 없습니다. 임미란 의원 홈페이지의 주요 메뉴로 이동해 주세요." />
+  <meta property="og:image" content="https://councillor-prototype-v2.pages.dev/static/images/og-card.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="임미란 의원 프로필 사진과 이름" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="./favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="stylesheet" href="./static/fonts/maruburi.css" />
+  <link rel="stylesheet" href="./static/fonts/pretendard/pretendard-variable-dynamic-subset.css" />
+  <link rel="stylesheet" href="./static/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <header class="topbar">
+    <a class="brand" href="./index.html">
+      <span class="brand-mark" aria-hidden="true">임</span>
+      <span class="brand-text">
+        <span class="brand-name">임미란 의원</span>
+        <span class="brand-tagline">전남광주통합특별시의회 · 남구 제1선거구</span>
+      </span>
+    </a>
+    <nav class="top-nav" aria-label="주요 메뉴">
+      <a href="./index.html">홈</a>
+      <a href="./about.html">의원 소개</a>
+      <a href="./activity.html">의정활동</a>
+      <a href="./policy.html">정책자료</a>
+      <a href="./media.html">미디어</a>
+    </nav>
+    <div class="top-actions"><button class="ghost" id="themeToggle" type="button" aria-pressed="false">다크</button></div>
+  </header>
+  <main id="main" class="section">
+    <div class="section-inner not-found">
+      <p class="section-eyebrow">페이지 안내</p>
+      <h1 class="section-title">페이지를 찾을 수 없습니다</h1>
+      <p class="section-lead">주소가 바뀌었거나 삭제된 페이지입니다. 아래 메뉴에서 원하시는 내용을 찾아보세요.</p>
+      <div class="not-found-actions">
+        <a class="btn primary" href="./index.html">홈으로 가기</a>
+        <a class="btn secondary" href="./activity.html">의정활동 보기</a>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <strong>임미란 의원</strong>
+        <span>전남광주통합특별시의회 · 남구 제1선거구</span>
+      </div>
+      <nav class="footer-nav" aria-label="바닥글 메뉴">
+        <a href="./index.html">홈</a>
+        <a href="./about.html">의원 소개</a>
+        <a href="./activity.html">의정활동</a>
+        <a href="./policy.html">정책자료</a>
+        <a href="./media.html">미디어</a>
+        <a href="https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList" target="_blank" rel="noopener">의회 공식 페이지</a>
+        <a class="footer-login" href="https://chat.padiem.net/apps/council/" target="_blank" rel="noopener">의원실 로그인 · 의원3종</a>
+      </nav>
+      <p class="footer-note">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)</p>
+    </div>
+  </footer>
+  <nav class="mobile-tabbar" aria-label="모바일 메뉴">
+    <a href="./index.html">홈</a>
+    <a href="./about.html">의원 소개</a>
+    <a href="./activity.html">의정활동</a>
+    <a href="./policy.html">정책자료</a>
+    <a href="./media.html">미디어</a>
+  </nav>
+  <script src="./static/app.js"></script>
+</body>
+</html>

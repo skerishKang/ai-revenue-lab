@@ -6,8 +6,11 @@
  * Version 1.1 — full text in LICENSE-MaruBuri.txt beside this file.
  *
  * Upstream (official distribution): https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Bold.woff2
- * File is unmodified; only the weight mapping below is ours (upstream serves
- * "MaruBuriBold" as its own family, we register it as weight 700 of "MaruBuri").
+ * The shipped file is a subset of that build: the 317 glyphs the pages render,
+ * 36 KB instead of 452 KB. It is still the MaruBuri family, unrenamed; see
+ * README.md in this folder for the exact re-subset command.
+ * Only the weight mapping below is ours (upstream serves "MaruBuriBold" as its
+ * own family, we register it as weight 700 of "MaruBuri").
  *
  * Headings only — see --font-serif in styles.css. Body / menu / buttons / cards
  * use Pretendard (pretendard/pretendard-variable-dynamic-subset.css).

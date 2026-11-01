@@ -5,12 +5,15 @@ third-party font host or on a font installed on the visitor's machine.
 
 | Use | Family | Files | Bytes |
 |---|---|---|---|
-| Headings (`--font-serif`) | **MaruBuri** Bold | `maruburi/MaruBuri-Bold.woff2` | 451,596 |
+| Headings (`--font-serif`) | **MaruBuri** Bold (glyph subset) | `maruburi/MaruBuri-Bold.woff2` | 36,432 |
 | Body, menu, buttons, cards (`--font`) | **Pretendard** Variable (all weights) | `pretendard/woff2-dynamic-subset/*.woff2` × 92 | 2,957,724 |
 
-Total vendored: 3,409,320 bytes. Only the subsets a page actually needs are
-downloaded — the 92 Pretendard files are sliced by `unicode-range`, so a load is
-one CSS file plus a handful of ≤43 KB font files.
+Pretendard: 2,957,724 bytes of dynamic subsets; only the slices a page needs are
+downloaded (the 92 files are cut by `unicode-range`, so a load is one CSS file
+plus a handful of ≤43 KB files).
+
+MaruBuri is subset to the glyphs the pages actually render (317 glyphs,
+36 KB instead of the 452 KB full face) — see below.
 
 ## Provenance
 
@@ -19,8 +22,45 @@ one CSS file plus a handful of ≤43 KB font files.
 | Pretendard | `https://cdn.jsdelivr.net/npm/pretendard@1.3.9/` (repo: https://github.com/orioncactus/pretendard) | 1.3.9 (pinned) |
 | MaruBuri | `https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/` (NAVER 한글한글 아름답게) | current |
 
-Files are unmodified upstream builds. No subsetting, renaming or repacking was
-done locally.
+Pretendard is an unmodified upstream build.
+
+MaruBuri is the upstream Bold build **subset locally** to the glyphs these pages
+use. Licence-clean: the OFL permits modification, the file is still called
+MaruBuri (no renamed derivative), and the full licence text ships beside it.
+First re-download the upstream file with the URL below, then re-cut it from the
+text the pages actually render. The glyph list is written to the system temp
+directory on purpose — it must not ship:
+
+```bash
+python -m pip install fonttools brotli
+python - <<'EOF'
+import json, pathlib, re, tempfile
+from fontTools.subset import main as subset
+
+root = pathlib.Path(".")
+def rendered(p):
+    s = p.read_text(encoding="utf-8")
+    if p.suffix == ".html":
+        s = re.sub(r"<script.*?</script>", " ", s, flags=re.S)
+        return re.sub(r"<[^>]+>", " ", s)
+    s = re.sub(r"/\*.*?\*/", " ", s, flags=re.S)
+    return re.sub(r"(?m)^\s*//.*$", " ", s)
+
+text = "".join(rendered(p) for p in root.glob("*.html"))
+text += rendered(root / "static" / "app.js") + rendered(root / "static" / "home.js")
+text += json.dumps(json.loads((root / "static" / "miraen.json").read_text(encoding="utf-8")), ensure_ascii=False)
+
+glyphs = pathlib.Path(tempfile.gettempdir()) / "maruburi-glyphs.txt"
+glyphs.write_text("".join(sorted({c for c in text if not c.isspace()})), encoding="utf-8")
+subset(["maruburi/MaruBuri-Bold.woff2", f"--text-file={glyphs}",
+        "--flavor=woff2", "--layout-features=*", "--no-hinting",
+        "--output-file=maruburi/MaruBuri-Bold.woff2"])
+EOF
+```
+
+After re-cutting, load the site once and check every heading still renders in
+MaruBuri (a missing glyph silently falls back to Noto Serif KR). The pytest lane
+`test_the_serif_face_ships_only_the_glyphs_in_use` pins the size ceiling.
 
 Re-vendor (from this directory):
 
