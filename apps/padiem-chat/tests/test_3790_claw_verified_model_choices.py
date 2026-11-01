@@ -57,7 +57,15 @@ def test_free_member_sees_only_registered_free_choices(monkeypatch):
     assert all(x["product_name_prefix"] == "파디엠프리" for x in second.json()["model_choices"])
     assert refused.status_code == 403
     assert refused.json()["error"]["code"] == "tier_not_available"
-    assert catalog.calls == 2
+    # #6460 4-1 second round: the read-only roster is shared for a short window,
+    # so a second screen read does not pay another B14 round trip. The appended
+    # row is therefore not seen until that window ends (or the switch is off).
+    assert catalog.calls == 1
+    monkeypatch.setenv("PADIEM_CHAT_MODEL_ROSTER_CACHE_SECONDS", "0")
+    with client_with(monkeypatch, catalog=catalog) as client:
+        fresh = client.get("/choices?tier=free")
+    assert fresh.status_code == 200
+    assert catalog.calls == 2, "switching the window off restores a live read"
 
 
 def test_pro_member_gets_tier_ceiling_but_no_browser_escalation(monkeypatch):
