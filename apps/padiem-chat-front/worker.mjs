@@ -8,10 +8,10 @@
  * is what keeps Set-Cookie (multiple) and 101 upgrades intact.
  *
  * Fallback (stage 4, request-scoped with a SHORT health cache):
- *   read (GET/HEAD/OPTIONS)  com2 health failure/unreachable/timeout → FALLBACK_MODE:
+ *   read (GET/HEAD/OPTIONS)  com2 health failure/connection refusal → FALLBACK_MODE:
  *                              service → env.CHAT_WORKER.fetch(request)
  *                              static  → 503 maintenance page
- *   write                    com2 health failure/unreachable/timeout →
+ *   write                    com2 health failure/connection refusal →
  *                              COM2_CANONICAL != "writes": same fallback rules
  *                              COM2_CANONICAL  == "writes": 503 maintenance,
  *                              NEVER the Python Worker (data must not split).
@@ -25,6 +25,10 @@ import { signedRequestHeaders } from "./edge-proof.mjs";
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
 const DEFAULT_TIMEOUT_MS = 8000;
+const DEFAULT_API_READ_TIMEOUT_MS = 30000;
+const TIMED_OUT = Symbol("timed_out");
+const CONNECTION_REFUSED = Symbol("connection_refused");
+const TRANSPORT_FAILED = Symbol("transport_failed");
 const SIGNING_FAILED = Symbol("signing_failed");
 
 export const MAINTENANCE_HTML = `<!doctype html>
@@ -50,6 +54,19 @@ function maintenanceResponse(reason) {
 function numeric(value, fallback) {
   const parsed = Number.parseInt(String(value ?? ""), 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function connectionRefused(error) {
+  const cause = error?.cause;
+  return error?.code === "ECONNREFUSED" || cause?.code === "ECONNREFUSED" ||
+    /\b(?:ECONNREFUSED|connect(?:ion)? (?:failed|refused))\b/i.test(String(error?.message || ""));
+}
+
+function requestFailure(status, code) {
+  return new Response(JSON.stringify({ error: { code, message: "요청을 처리하지 못했습니다. 다시 시도해 주세요." } }), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
+  });
 }
 
 function originEnv(env) {
@@ -103,9 +120,10 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       // Headers are in: the stream may outlive any deadline (SSE); never abort it.
       clearTimeout(timer);
       return response;
-    } catch {
+    } catch (error) {
       clearTimeout(timer);
-      return null;
+      if (controller.signal.aborted) return TIMED_OUT;
+      return connectionRefused(error) ? CONNECTION_REFUSED : TRANSPORT_FAILED;
     }
   }
 
@@ -133,12 +151,21 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const target = new URL(url.pathname + url.search, origin);
     const isWrite = !READ_METHODS.has(request.method);
     const canonicalWrites = String(env.COM2_CANONICAL || "off").trim().toLowerCase() === "writes";
-    const timeoutMs = numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
+    const upstreamTimeout = numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
+    const healthProbe = url.pathname === "/health" && (request.method === "GET" || request.method === "HEAD");
+    const streaming = /text\/event-stream/i.test(request.headers.get("accept") || "") ||
+      (request.headers.get("upgrade") || "").toLowerCase() === "websocket";
+    const apiRead = !isWrite && url.pathname.startsWith("/api/") && !streaming;
+    const timeoutMs = apiRead
+      ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
+      : upstreamTimeout;
 
     if (isWrite) {
       const response = await forward(request, target, env, timeoutMs);
       if (response === SIGNING_FAILED) return maintenanceResponse("write_refused");
-      if (response) return response;
+      if (response === TIMED_OUT) return requestFailure(504, "upstream_timeout");
+      if (response === TRANSPORT_FAILED) return requestFailure(502, "upstream_transport_failed");
+      if (response !== CONNECTION_REFUSED) return response;
       markFailure(origin.toString());
       if (canonicalWrites) return maintenanceResponse("write_com2_canonical_refused");
       return fallback(request, env, true);
@@ -148,11 +175,16 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     if (healthy(origin.toString(), healthTtlMs)) {
       const response = await forward(request, target, env, timeoutMs);
       if (response === SIGNING_FAILED) return maintenanceResponse("read_fallback_static");
-      // A component API's status does not describe the whole host's health.
-      // Only a failed health probe or a transport failure trips the cache.
-      const healthProbe = url.pathname === "/health" && (request.method === "GET" || request.method === "HEAD");
-      if (response && (!healthProbe || (response.status >= 200 && response.status < 300))) return response;
-      markFailure(origin.toString());
+      if (healthProbe) {
+        if (response !== TIMED_OUT && response !== CONNECTION_REFUSED &&
+            response !== TRANSPORT_FAILED && response.status >= 200 && response.status < 300) return response;
+        markFailure(origin.toString());
+      } else {
+        if (response === TIMED_OUT) return requestFailure(504, "upstream_timeout");
+        if (response === TRANSPORT_FAILED) return requestFailure(502, "upstream_transport_failed");
+        if (response !== CONNECTION_REFUSED) return response;
+        markFailure(origin.toString());
+      }
     }
     return fallback(request, env, false);
   };

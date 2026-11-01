@@ -24,6 +24,8 @@ FALLBACK_MODE = "static"
 COM2_CANONICAL = "writes"
 HEALTH_TTL_MS = "10000"
 UPSTREAM_TIMEOUT_MS = "8000"
+# Normal API reads can wait through COM2 load without affecting host health.
+API_READ_TIMEOUT_MS = "30000"
 
 # Read-path fallback target. Declared here so the binding exists in both modes;
 # static mode simply never calls it.
