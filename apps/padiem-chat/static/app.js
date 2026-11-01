@@ -3137,7 +3137,13 @@
       resolvedPcRuns.add(runId);
       return renderStoredPcAnswer(article, first, outboundMessages, contextSnapshot);
     }
-    if (first.kind !== "pending") return false;
+    if (first.kind !== "pending") {
+      // A 404 means the server has no such result. Forget this run here and
+      // now, so a retry over the same handle skips the check and renders its
+      // own failure instead of reading a gone run again.
+      if (first.gone === true) resolvedPcRuns.add(runId);
+      return false;
+    }
     if (first.conversationId) {
       conversationState.setConversationId(first.conversationId, contextSnapshot.product);
     }
@@ -3162,6 +3168,7 @@
         window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("pc-processing-note"), "status");
         return;
       }
+      if (result.gone === true) resolvedPcRuns.add(runId);
       if (article.isConnected && !signal.aborted) {
         renderStreamError(article, uiT("stream-incomplete"), outboundMessages, skill, contextSnapshot, false);
       }
@@ -3563,7 +3570,8 @@
       }
       if (requestEpoch !== conversationEpoch) return false;
       handleCustomRequestFailure(error);
-      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord) {
+      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord
+          && !error?.submissionRejected) {
         try {
           const recovered = await recoverStoredPcResult(
             article, contextSnapshot, outboundMessages, skill, controller.signal,
