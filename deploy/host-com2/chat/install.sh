@@ -65,7 +65,7 @@ for pair in \
 done
 install -m 0644 "$here/check_config.py" "$app/check_config.py"
 install -m 0755 "$here/health.py" "$app/health.py"
-install -m 0700 "$here/backup.py" "$app/backup.py"
+install -m 0755 "$here/backup.py" "$app/backup.py"
 if [[ ! -e "$app/.env" ]]; then install -m 0600 "$here/.env.example" "$app/.env"; fi
 chown root:root "$app/.env"
 chmod 0600 "$app/.env"
@@ -85,6 +85,7 @@ then
   data="$app/data"
   install -d -m 0700 -o padiem-chat -g padiem-chat "$data"
 fi
+install -d -m 0700 -o padiem-chat -g padiem-chat "$data/backups"
 if ! runuser -u padiem-chat -- env "PADIEM_CHAT_LOCAL_DATA_DIR=$data" "$app/venv/bin/python" -c \
   "import os, pathlib, tempfile, uvicorn; fd, name=tempfile.mkstemp(dir=os.environ['PADIEM_CHAT_LOCAL_DATA_DIR']); os.close(fd); pathlib.Path(name).unlink()" >/dev/null 2>&1; then
   fail RUNTIME_OR_HDD_PERMISSION_FAILED
