@@ -260,6 +260,36 @@ async def test_provenance_ids_are_server_verified_before_save():
 
 
 @pytest.mark.asyncio
+async def test_saved_output_body_boundary_is_the_route_limit_one_byte_over_is_refused():
+    """2026-11-02 한도 감사 1번 — 본문 입력이 행 한도(2MB)와 정렬됐다는 경계 계약.
+
+    정확히 본문 상한 = 201 통과, +1바이트 = 96KB 시절과 같은 422/invalid_saved_output.
+    """
+    from app.saved_output_routes import MAX_OUTPUT_BODY_BYTES
+
+    history = MemoryHistory()
+    store = MemorySavedOutputStore()
+    settings = google_settings()
+    app = create_app(settings, history_store=history, saved_output_store=store)
+    prefix = b'{"title":"t","content":"'
+    suffix = b'"}'
+    content_len = MAX_OUTPUT_BODY_BYTES - len(prefix) - len(suffix)
+    body = prefix + b"a" * content_len + suffix
+    assert len(body) == MAX_OUTPUT_BODY_BYTES
+    assert content_len <= MAX_OUTPUT_ROW_BYTES  # 행 한도도 통과해야 201이 나온다
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
+        client.cookies.set(SESSION_COOKIE, create_session_token(settings, OWNER_ID), domain="chat.example.test", path="/")
+        ok = await client.post("/api/outputs", content=body, headers={"Content-Type": "application/json"})
+        assert ok.status_code == 201, ok.text
+        assert len(ok.json()["output"]["content"]) == content_len
+        over = prefix + b"a" * (content_len + 1) + suffix
+        assert len(over) == MAX_OUTPUT_BODY_BYTES + 1
+        refused = await client.post("/api/outputs", content=over, headers={"Content-Type": "application/json"})
+    assert refused.status_code == 422
+    assert refused.json()["error"]["code"] == "invalid_saved_output"
+
+
+@pytest.mark.asyncio
 async def test_saved_output_is_not_automatic_chat_context():
     secret = "SAVED-OUTPUT-SECRET-MUST-NOT-ENTER-MODEL-CONTEXT"
     store = MemorySavedOutputStore()

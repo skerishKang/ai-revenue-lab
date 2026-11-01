@@ -15,6 +15,7 @@ usage fields; vendor bodies never reach the browser.
 from __future__ import annotations
 
 import json
+import os
 import uuid
 from dataclasses import dataclass
 from typing import Any, AsyncIterator, Callable
@@ -42,6 +43,29 @@ MAX_CUSTOM_ANSWER_CHARS = 200_000
 CUSTOM_SESSION_HEADER = "padiem-chat-custom/1.0"
 ANTHROPIC_VERSION = "2023-06-01"
 ANTHROPIC_MAX_TOKENS = 4096
+# One operator override for the BYOK output budget. An unset or invalid value
+# changes nothing: the documented model-family limit or the conservative
+# default above applies, never an error.
+MAX_OUTPUT_TOKENS_ENV = "PADIEM_BYOK_MAX_OUTPUT_TOKENS"
+# Appended once when a provider ends the answer because of its own length
+# limit (finish_reason=length / stop_reason=max_tokens / finishReason=MAX_TOKENS).
+TRUNCATION_NOTICE = "\n\n(답변이 길어 중간에 끊겼습니다.)"
+# Documented Anthropic max output tokens per model family. Values are quoted
+# from the official comparison tables (docs.claude.com/en/docs/about-claude/
+# models/overview and /all-models, checked 2026-11-02): sonnet-4-5 and
+# haiku-4-5 64K, opus-4-1 32K, fable-5/mythos-5/opus-5/sonnet-5 128k. Families
+# the current tables no longer publish (legacy 3.x/4.x rows) stay unverified,
+# so they keep the conservative ANTHROPIC_MAX_TOKENS default above. Longest
+# family prefix wins; an unmatched model never gets an invented budget.
+ANTHROPIC_MODEL_OUTPUT_LIMITS: tuple[tuple[str, int], ...] = (
+    ("claude-fable-5", 128_000),
+    ("claude-mythos-5", 128_000),
+    ("claude-opus-5", 128_000),
+    ("claude-sonnet-5", 128_000),
+    ("claude-sonnet-4-5", 64_000),
+    ("claude-haiku-4-5", 64_000),
+    ("claude-opus-4-1", 32_000),
+)
 
 
 @dataclass
@@ -176,6 +200,33 @@ def _headers(spec: CustomProvider, api_key: str) -> dict[str, str]:
     return headers
 
 
+def _env_max_output_tokens() -> int | None:
+    """The one operator override; unset or invalid values change nothing."""
+    raw = os.environ.get(MAX_OUTPUT_TOKENS_ENV, "").strip()
+    if not raw:
+        return None
+    try:
+        value = int(raw)
+    except ValueError:
+        return None
+    return value if value > 0 else None
+
+
+def _anthropic_max_tokens(upstream_model: str) -> int:
+    """Output budget for one Anthropic BYOK request.
+
+    The operator env override wins, then the documented model-family limit,
+    then the conservative historical default.
+    """
+    override = _env_max_output_tokens()
+    if override is not None:
+        return override
+    for family, limit in ANTHROPIC_MODEL_OUTPUT_LIMITS:
+        if upstream_model.startswith(family):
+            return limit
+    return ANTHROPIC_MAX_TOKENS
+
+
 def _request_url(
     spec: CustomProvider, endpoint: str, upstream_model: str, stream: bool
 ) -> str:
@@ -198,7 +249,7 @@ def _request_body(
     if spec.wire == "anthropic-messages":
         body: dict[str, Any] = {
             "model": upstream_model,
-            "max_tokens": ANTHROPIC_MAX_TOKENS,
+            "max_tokens": _anthropic_max_tokens(upstream_model),
             "messages": _anthropic_messages(messages),
             "stream": stream,
         }
@@ -313,7 +364,11 @@ def _normalize_openai_json(
     text = _text_part(message.get("content"))
     if not text.strip():
         raise _empty_answer()
-    return {"answer": text, "usage": _openai_usage(payload)}
+    return {
+        "answer": text,
+        "usage": _openai_usage(payload),
+        "truncated": item.get("finish_reason") == "length",
+    }
 
 
 def _normalize_anthropic_json(payload: dict[str, Any]) -> dict[str, Any]:
@@ -329,7 +384,11 @@ def _normalize_anthropic_json(payload: dict[str, Any]) -> dict[str, Any]:
     )
     if not text.strip():
         raise _empty_answer()
-    return {"answer": text, "usage": _anthropic_usage(payload)}
+    return {
+        "answer": text,
+        "usage": _anthropic_usage(payload),
+        "truncated": payload.get("stop_reason") == "max_tokens",
+    }
 
 
 def _normalize_google_json(payload: dict[str, Any]) -> dict[str, Any]:
@@ -339,8 +398,12 @@ def _normalize_google_json(payload: dict[str, Any]) -> dict[str, Any]:
             raise _empty_answer()
         raise _malformed()
     text = ""
+    truncated = False
     if candidates:
         first = candidates[0]
+        truncated = (
+            isinstance(first, dict) and first.get("finishReason") == "MAX_TOKENS"
+        )
         content = first.get("content") if isinstance(first, dict) else None
         parts = content.get("parts") if isinstance(content, dict) else None
         if isinstance(parts, list):
@@ -351,7 +414,11 @@ def _normalize_google_json(payload: dict[str, Any]) -> dict[str, Any]:
             )
     if not text.strip():
         raise _empty_answer()
-    return {"answer": text, "usage": _google_usage(payload)}
+    return {
+        "answer": text,
+        "usage": _google_usage(payload),
+        "truncated": truncated,
+    }
 
 
 class _SseEventStream:
@@ -422,6 +489,7 @@ async def _openai_stream(
     text: list[str] = []
     usage: dict[str, Any] | None = None
     finished = False
+    length_stop = False
     done = False
     async for _event, data in _SseEventStream(response).events():
         if data.strip() == "[DONE]":
@@ -442,8 +510,10 @@ async def _openai_stream(
                     delta = item.get("delta")
                     if isinstance(delta, dict):
                         text.append(_text_part(delta.get("content")))
-                    if item.get("finish_reason"):
+                    reason = item.get("finish_reason")
+                    if reason:
                         finished = True
+                        length_stop = length_stop or reason == "length"
             usage = _openai_usage(payload) or usage
         if done:
             break
@@ -452,7 +522,7 @@ async def _openai_stream(
     answer = "".join(text)
     if not answer.strip():
         raise _empty_answer()
-    return {"answer": answer, "usage": usage}
+    return {"answer": answer, "usage": usage, "truncated": length_stop}
 
 
 async def _anthropic_stream(response: Any) -> dict[str, Any]:
@@ -460,6 +530,7 @@ async def _anthropic_stream(response: Any) -> dict[str, Any]:
     input_tokens: Any = None
     output_tokens: Any = None
     stopped = False
+    length_stop = False
     async for _event, data in _SseEventStream(response).events():
         payload = _stream_payload(data)
         if payload is None:
@@ -492,6 +563,8 @@ async def _anthropic_stream(response: Any) -> dict[str, Any]:
                 usage = payload.get("usage")
                 if isinstance(usage, dict):
                     output_tokens = usage.get("output_tokens", output_tokens)
+                if delta.get("stop_reason") == "max_tokens":
+                    length_stop = True
         elif kind == "message_stop":
             stopped = True
             break
@@ -503,12 +576,14 @@ async def _anthropic_stream(response: Any) -> dict[str, Any]:
     return {
         "answer": answer,
         "usage": _usage(input_tokens, output_tokens),
+        "truncated": length_stop,
     }
 
 
 async def _google_stream(response: Any) -> dict[str, Any]:
     text: list[str] = []
     usage: dict[str, Any] | None = None
+    length_stop = False
     async for _event, data in _SseEventStream(response).events():
         payload = _stream_payload(data)
         if payload is None:
@@ -516,6 +591,8 @@ async def _google_stream(response: Any) -> dict[str, Any]:
         candidates = payload.get("candidates")
         if isinstance(candidates, list) and candidates:
             first = candidates[0]
+            if isinstance(first, dict) and first.get("finishReason") == "MAX_TOKENS":
+                length_stop = True
             content = first.get("content") if isinstance(first, dict) else None
             parts = content.get("parts") if isinstance(content, dict) else None
             if isinstance(parts, list):
@@ -529,7 +606,7 @@ async def _google_stream(response: Any) -> dict[str, Any]:
     answer = "".join(text)
     if not answer.strip():
         raise _empty_answer()
-    return {"answer": answer, "usage": usage}
+    return {"answer": answer, "usage": usage, "truncated": length_stop}
 
 
 async def _read_bounded(response: Any) -> bytes:
@@ -678,6 +755,8 @@ class CustomProviderClient:
         answer = payload["answer"]
         if len(answer) > MAX_CUSTOM_ANSWER_CHARS:
             raise _response_too_large()
+        if payload.get("truncated"):
+            answer = answer + TRUNCATION_NOTICE
         return {
             "answer": answer,
             "usage": payload.get("usage"),

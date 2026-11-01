@@ -15,7 +15,10 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/b62-claw-live-config-activation-gate.yml"
 HELPER = ROOT / ".github/scripts/b62_claw_live_config_activation.py"
 CHAT_WRANGLER = ROOT / "apps/padiem-chat/wrangler.toml"
-CHAT_BRIDGE = ROOT / "apps/padiem-chat/app/worker_orchestration.py"
+# #6392 composed the Engine orchestration bridge on the CPython host: the
+# live-settings constant moved from worker_orchestration.py into the bridge
+# composition module this constant pins.
+CHAT_BRIDGE = ROOT / "apps/padiem-chat/app/orchestration_composition.py"
 
 
 def _load_helper():

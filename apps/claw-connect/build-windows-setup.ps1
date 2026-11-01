@@ -3,11 +3,17 @@
 param([string]$BundleRoot, [string]$OutputExe)
 $ErrorActionPreference = 'Stop'
 $Here = $PSScriptRoot
+# One version home: CONNECT_VERSION in claw_connect/__init__.py drives the
+# setup name and the expected bundle folder, so a published setup can never
+# carry a different version than the connector inside it reports.
+$VersionLine = Select-String -LiteralPath (Join-Path $Here 'claw_connect\__init__.py') -Pattern '^CONNECT_VERSION = "([^"]+)"' | Select-Object -First 1
+if (-not $VersionLine) { throw 'CONNECT_VERSION not found in claw_connect\__init__.py' }
+$ConnectVersion = $VersionLine.Matches[0].Groups[1].Value
 if (-not $BundleRoot) {
-    $BundleRoot = Join-Path (Split-Path (Split-Path $Here)) 'padiem-connector-standalone-0.1.0\dist\padiem-connector'
+    $BundleRoot = Join-Path (Split-Path (Split-Path $Here)) ('padiem-connector-standalone-' + $ConnectVersion + '\dist\padiem-connector')
 }
 if (-not $OutputExe) {
-    $OutputExe = Join-Path (Split-Path $Here) 'PADIEM-Connector-Setup-0.1.0.exe'
+    $OutputExe = Join-Path $Here ('PADIEM-Connector-Setup-' + $ConnectVersion + '.exe')
 }
 if (-not (Test-Path -LiteralPath (Join-Path $BundleRoot 'padiem-connector.exe') -PathType Leaf) -or
     -not (Test-Path -LiteralPath (Join-Path $BundleRoot '_internal\kagent\local_agent_resident_process.py') -PathType Leaf)) {

@@ -647,6 +647,36 @@ class B14ExecutionClient:
             raise ValueError("config must be B14ExecutionConfig")
         self._config = config
         self._transport = transport
+        # #6615: one pooled client instead of one per call. A completion is
+        # fully read below, so the connection can be reused; only the handshake
+        # per call disappears. Streaming (SSE) keeps its own per-call client —
+        # see b14_streaming — because there the connection *is* the stream.
+        self._client: httpx.AsyncClient | None = None
+
+    def _timeout(self) -> httpx.Timeout:
+        return httpx.Timeout(
+            connect=self._config.timeout_seconds,
+            read=self._config.timeout_seconds,
+            write=min(self._config.timeout_seconds, 20.0),
+            pool=min(self._config.timeout_seconds, 10.0),
+        )
+
+    def _shared_client(self) -> httpx.AsyncClient:
+        client = self._client
+        if client is None:
+            client = httpx.AsyncClient(
+                transport=self._transport,
+                timeout=self._timeout(),
+                follow_redirects=False,
+            )
+            self._client = client
+        return client
+
+    async def aclose(self) -> None:
+        """Release the pooled client (host shutdown)."""
+        client, self._client = self._client, None
+        if client is not None:
+            await client.aclose()
 
     @property
     def config(self) -> B14ExecutionConfig:
@@ -656,34 +686,22 @@ class B14ExecutionClient:
         if not isinstance(request, B14ChatRequest):
             raise ValueError("request must be B14ChatRequest")
 
-        timeout = httpx.Timeout(
-            connect=self._config.timeout_seconds,
-            read=self._config.timeout_seconds,
-            write=min(self._config.timeout_seconds, 20.0),
-            pool=min(self._config.timeout_seconds, 10.0),
-        )
-
         try:
-            async with httpx.AsyncClient(
-                transport=self._transport,
-                timeout=timeout,
-                follow_redirects=False,
-            ) as client:
-                async with client.stream(
-                    "POST",
-                    self._config.chat_completions_url,
-                    json=request.to_payload(),
-                ) as response:
-                    status_code = response.status_code
-                    raw = bytearray()
-                    async for chunk in response.aiter_bytes():
-                        if len(raw) + len(chunk) > self._config.max_response_bytes:
-                            raise B14ExecutionError(
-                                "upstream_response_too_large",
-                                "Business 14 response exceeded the configured safety limit.",
-                                upstream_status_code=status_code,
-                            )
-                        raw.extend(chunk)
+            async with self._shared_client().stream(
+                "POST",
+                self._config.chat_completions_url,
+                json=request.to_payload(),
+            ) as response:
+                status_code = response.status_code
+                raw = bytearray()
+                async for chunk in response.aiter_bytes():
+                    if len(raw) + len(chunk) > self._config.max_response_bytes:
+                        raise B14ExecutionError(
+                            "upstream_response_too_large",
+                            "Business 14 response exceeded the configured safety limit.",
+                            upstream_status_code=status_code,
+                        )
+                    raw.extend(chunk)
         except B14ExecutionError:
             raise
         except httpx.TimeoutException as exc:

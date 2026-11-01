@@ -19,7 +19,9 @@ MAX_WEB_XLSX_BYTES = 1024 * 1024 * 1024
 #: Above this size the original is uploaded straight to the COM2 file lane and
 #: this store keeps only a reference; at or below it the bytes stay here. The
 #: file-lane attachment lane splits at the same point.
-WEB_XLSX_INLINE_MAX_BYTES = 10_000_000
+# 2026-11-02 한도 감사 "바로 바꿔도 되는 것" 3번: 50MB 실측(바이트 게이트 피크 66MB) 통과.
+# 초과분은 스트리밍 판정 경로(put_web_xlsx_from_path)로 자동 폴백 — 실패 모드 없음.
+WEB_XLSX_INLINE_MAX_BYTES = 50_000_000
 _WEB_XLSX_FILE_LANE_MARKER = "filelane:"
 _FILE_LANE_ID_RE = re.compile(r"^file_[0-9a-f]{32}$")
 WEB_XLSX_RETENTION = timedelta(days=1)

@@ -288,6 +288,10 @@ def build_app():
         b66_pdf_renderer_client=pdf_renderer,
     )
     app.router.on_shutdown.append(db.close_readers)
+    if identity_binding is not None:
+        # #6613: the identity RPC client is pooled for the life of the host, so
+        # the same shutdown hook that stops the SQLite readers closes it.
+        app.router.on_shutdown.append(identity_binding.aclose)
     # Optional short-lived validation results; roles/entitlements stay live.
     from .auth_validation_cache import SqliteAuthValidationCache
     cache_seconds = _nonnegative_env('PADIEM_CHAT_AUTH_CACHE_SECONDS', 30)
@@ -372,6 +376,8 @@ def build_app():
 
     queue_client = build_queue_client(_queue_env())
     if queue_client is not None:
+        # #6617: the queue client is pooled for the life of the host.
+        app.router.on_shutdown.append(queue_client.aclose)
         # The same three replacements worker.py performs when its env selects
         # the queue. Production still defaults to D1; only a deployment that
         # explicitly sets PC_QUEUE_BACKEND=com2 takes this path.
