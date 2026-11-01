@@ -508,6 +508,7 @@ class WorkspaceDocumentStore:
             filename=filename, media_type=XLSX_MEDIA_TYPE,
             byte_length=size_bytes, created_at=current,
             expires_at=current + WEB_XLSX_RETENTION,
+            user_id=_safe_identifier("owner_id", owner_id),
         )
         try:
             await self.metadata_store.insert(metadata)

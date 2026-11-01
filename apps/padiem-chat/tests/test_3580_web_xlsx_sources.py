@@ -392,6 +392,7 @@ async def test_large_original_ticket_register_list_and_streamed_owner_download()
     assert r2.objects == {}
     assert len(meta.rows) == 1
     assert meta.rows[file["document_id"]].object_key.endswith("/filelane:" + LANE_FILE_ID)
+    assert meta.rows[file["document_id"]].user_id == OWNER
 
     listing = await request(app, settings)
     assert listing.status_code == 200
