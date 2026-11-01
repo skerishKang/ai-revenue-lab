@@ -21,6 +21,7 @@
  */
 
 import { signedRequestHeaders } from "./edge-proof.mjs";
+import { errorPageHtml, wantsHtml } from "./error-copy.mjs";
 
 const READ_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const DEFAULT_HEALTH_TTL_MS = 10000;
@@ -67,7 +68,20 @@ function connectionRefused(error) {
     /\b(?:ECONNREFUSED|connect(?:ion)? (?:failed|refused))\b/i.test(String(error?.message || ""));
 }
 
-function requestFailure(status, code) {
+function requestFailure(request, status, code) {
+  // A browser that navigated here must not be shown the JSON body it cannot
+  // read as a page; a machine call keeps the JSON it parses.
+  if (wantsHtml(request)) {
+    return new Response(errorPageHtml(code, new URL(request.url).pathname), {
+      status,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "no-store, max-age=0",
+        "retry-after": "30",
+        "x-padiem-front": code,
+      },
+    });
+  }
   return new Response(JSON.stringify({ error: { code, message: "요청을 처리하지 못했습니다. 다시 시도해 주세요." } }), {
     status,
     headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
@@ -174,8 +188,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     if (isWrite) {
       const response = await forward(request, target, env, timeoutMs);
       if (response === SIGNING_FAILED) return maintenanceResponse("write_refused");
-      if (response === TIMED_OUT) return requestFailure(504, "upstream_timeout");
-      if (response === TRANSPORT_FAILED) return requestFailure(502, "upstream_transport_failed");
+      if (response === TIMED_OUT) return requestFailure(request, 504, "upstream_timeout");
+      if (response === TRANSPORT_FAILED) return requestFailure(request, 502, "upstream_transport_failed");
       if (response !== CONNECTION_REFUSED) return response;
       markFailure(origin.toString());
       if (canonicalWrites || appsAI || bookAIRecords) return maintenanceResponse("write_com2_canonical_refused");
@@ -191,8 +205,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
             response !== TRANSPORT_FAILED && response.status >= 200 && response.status < 300) return response;
         markFailure(origin.toString());
       } else {
-        if (response === TIMED_OUT) return requestFailure(504, "upstream_timeout");
-        if (response === TRANSPORT_FAILED) return requestFailure(502, "upstream_transport_failed");
+        if (response === TIMED_OUT) return requestFailure(request, 504, "upstream_timeout");
+        if (response === TRANSPORT_FAILED) return requestFailure(request, 502, "upstream_transport_failed");
         if (response !== CONNECTION_REFUSED) return response;
         markFailure(origin.toString());
       }

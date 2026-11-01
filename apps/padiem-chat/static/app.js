@@ -4704,8 +4704,11 @@
       const title = document.createElement("strong");
       title.textContent = item.title;
       const meta = document.createElement("span");
-      const statusText = uiT(`claw-inbox-status-${String(item.status || "")}`);
-      meta.textContent = statusText === `claw-inbox-status-${String(item.status || "")}` ? String(item.status || "") : statusText;
+      const statusKey = `claw-inbox-status-${String(item.status || "")}`;
+      const statusText = uiT(statusKey);
+      // An unrecognised server token is not screen copy; the raw value used to
+      // be echoed here.
+      meta.textContent = statusText === statusKey ? uiT("status-unknown") : statusText;
       copy.append(title, meta);
 
       const action = document.createElement("button");
@@ -6670,7 +6673,7 @@
     title.textContent = memory.name || "";
     const badge = document.createElement("span");
     badge.className = "claw-approved-card-badge";
-    badge.textContent = memory.status === "approved" ? clawT("claw-memory-status-approved") : (memory.status || "");
+    badge.textContent = memory.status === "approved" ? clawT("claw-memory-status-approved") : uiT("status-unknown");
     head.append(title, badge);
 
     const meta = document.createElement("div");
@@ -6708,7 +6711,7 @@
       { label: clawT("claw-memory-name"), value: memory.name || "" },
       { label: clawT("claw-memory-note"), value: memory.note || "" },
       { label: clawT("claw-memory-channel"), value: memory.source_channel || "" },
-      { label: clawT("claw-memory-status"), value: memory.status === "approved" ? clawT("claw-memory-status-approved") : (memory.status || "") },
+      { label: clawT("claw-memory-status"), value: memory.status === "approved" ? clawT("claw-memory-status-approved") : uiT("status-unknown") },
       { label: clawT("claw-memory-created"), value: memory.created_at || "" },
       { label: clawT("claw-memory-updated"), value: memory.updated_at || "" },
     ];
@@ -6874,6 +6877,9 @@
     const raw = String(status || "");
     const key = `claw-runs-status-${raw}`;
     const text = uiT(key);
+    // Deliberately raw for an unknown run token: #3933 and the run-history UI
+    // contract forbid the client deriving a run status, so an invented Korean
+    // label here would be a second kind of untruth.
     return text === key ? raw : text;
   }
 

@@ -243,8 +243,14 @@
       signal,
     });
     const data = await response.json().catch(() => null);
+    // An empty answer is not an answer. The streaming path already refuses a
+    // blank completion; without this the completed path committed an empty turn
+    // and left the user staring at a bubble with nothing in it.
     if (!response.ok || !data || typeof data.answer !== "string") {
       throw errorFor(data, "AI 연결이 잠시 불안정합니다. 다시 시도해 주세요.", response.status);
+    }
+    if (!data.answer.trim()) {
+      throw errorFor(data, "답변이 비어 왔습니다. 다시 시도해 주세요.", response.status);
     }
     return data;
   }
