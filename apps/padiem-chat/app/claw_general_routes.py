@@ -2040,6 +2040,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             pc_action_context.append({
                 "role": "tool_result", "content": content, "source": source,
             })
+    pc_delegation = None
+    if initial_pc_drive_query or pc_files_requested:
+        from .pc_delegation_routes import load_pc_delegation
+
+        # stage_uid is the authenticated owner whose PC run was just staged.
+        # No browser delegation field participates in this decision snapshot.
+        pc_delegation = await load_pc_delegation(request, stage_uid)
 
     if live_requested:
         from .claw_live_events import live_claw_sse
@@ -2061,6 +2068,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             live_args["pc_files_device_id"] = pc_files_device_id
         if initial_pc_drive_query or pc_files_requested:
             live_args["pc_action_context"] = pc_action_context
+            live_args["pc_delegation"] = pc_delegation
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:
@@ -2116,6 +2124,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             dispatch_args["pc_files_device_id"] = pc_files_device_id
         if initial_pc_drive_query or pc_files_requested:
             dispatch_args["pc_action_context"] = pc_action_context
+            dispatch_args["pc_delegation"] = pc_delegation
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:

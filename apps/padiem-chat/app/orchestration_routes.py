@@ -353,6 +353,10 @@ async def api_orchestration(request: Request) -> JSONResponse:
             trusted_history=conversation_id is not None,
             tool_results=(("web", grounding_context),),
         ) if pc_context["pc_tools"] is not None else None
+        from .pc_delegation_routes import load_pc_delegation
+
+        pc_delegation = (await load_pc_delegation(request, uid)
+                         if pc_context["pc_tools"] is not None else None)
         stream = bridge.start_stream(
             user_id=uid, messages=stream_messages, skill=skill, model_id=policy.model_id,
             user_text=user_text, conversation_id=saved_id,
@@ -360,6 +364,7 @@ async def api_orchestration(request: Request) -> JSONResponse:
             session_id=pc_run_id, additional_system_context=grounding_context,
             product_identity=product_identity,
             **({"pc_action_context": action_context} if action_context is not None else {}),
+            **({"pc_delegation": pc_delegation} if pc_delegation is not None else {}),
             **({"user_credential_ref": user_credential_ref,
                 "byok_selection": {"provider": custom.provider, "model": custom.model}}
                if user_credential_ref is not None else {}),

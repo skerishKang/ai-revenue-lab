@@ -196,6 +196,13 @@ class PcActionHarness:
             re.escape(_VERBS[op]) + r"\s*\?", assistant["content"].splitlines()[0]))
         if _YES.fullmatch(speech) and len(choices) == 1 and question_intent:
             selected = choices[0]
+        from app.pc_action_delegation import confirmed_delegation_action
+
+        delegation_confirmation = confirmed_delegation_action(tool_id, arguments, self.records)
+        if delegation_confirmation:
+            # A new user reply can confirm the exact two-path move question.
+            # Current-turn tool material is still checked below before acting.
+            selected, question_intent = path, True
         intent = _intent(op, speech) or (selected is not None and question_intent)
         if not intent:
             return self._ask(op, candidates, path if _mentions(speech, path) else None)
@@ -227,6 +234,8 @@ class PcActionHarness:
         if (len(relevant) > 1 and selected is None and op != "move") or (len(matching) > 1 and not named_exactly):
             return self._ask(op, relevant if len(relevant) > 1 else matching)
         if op == "move":
+            if delegation_confirmation:
+                return None
             destination = arguments.get("destination")
             destination_match = _mention(speech, destination) if isinstance(destination, str) else None
             if destination_match is None:

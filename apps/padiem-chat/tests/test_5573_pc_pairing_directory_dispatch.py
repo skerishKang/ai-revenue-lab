@@ -83,13 +83,38 @@ def test_a_paired_account_lists_its_own_folder_on_its_own_node(monkeypatch):
     assert lane.NODE != LINK_NODE
 
 
-def test_context_names_the_owner_folders_and_no_real_path(monkeypatch):
+def test_context_names_the_owner_folders_and_separates_guard_paths(monkeypatch):
     state = _state(monkeypatch)
 
     status, body = lane._dispatch(state, lane._context_payload())
     assert status == 200, body
     assert body["roots"] == [{"label": "견적"}]
-    assert QUOTATION not in json.dumps(body, ensure_ascii=False)
+    assert body["delegation_roots"] == [{"label": "견적", "path": QUOTATION}]
+    assert QUOTATION not in json.dumps({key: body[key] for key in ("roots", "device", "tools")}, ensure_ascii=False)
+
+
+def test_guard_context_contains_only_the_selected_owners_pc_roots(monkeypatch):
+    store, _ = _pair()
+
+    async def add_link(user_id, node, folder):
+        issued = await store.issue_code(user_id=user_id, issued_at=pairing._now())
+        link = await store.redeem_code(code=issued["code"], mesh_node_id=node, label="another PC",
+                                      now=pairing._now(), verified=True)
+        await store.approve_root(user_id=user_id, link_id=link["link_id"], path=folder, now=pairing._now())
+
+    pairing.run(add_link(lane.OWNER, "node/meshdomain/second-owned-pc", "D:/SecondPC"))
+    pairing.run(add_link("usr_" + "f" * 32, "node/meshdomain/foreign-pc", "E:/ForeignPrivate"))
+    state = _state(monkeypatch, pairing_store=store)
+    status, body = lane._dispatch(state, lane._context_payload(device_id=LINK_NODE))
+    assert status == 200, body
+    assert body["device"]["device_id"] == LINK_NODE
+    assert body["delegation_roots"] == [{"label": "견적", "path": QUOTATION}]
+    assert "D:/SecondPC" not in json.dumps(body) and "E:/ForeignPrivate" not in json.dumps(body)
+    status, denied = lane._dispatch(state, lane._context_payload(device_id="node/meshdomain/foreign-pc"))
+    # Discovery's existing no-PC answer is 200/not_connected, not a grant.
+    assert status == 200 and denied["device"]["status"] == "not_connected"
+    assert denied["roots"] == [] and denied["tools"] == [] and "delegation_roots" not in denied
+    assert "E:/ForeignPrivate" not in json.dumps(denied)
 
 
 # -- no link is a refusal, never a fallthrough ------------------------------
@@ -252,7 +277,8 @@ def test_two_roots_are_offered_as_labels_for_the_model(monkeypatch):
     status, body = lane._dispatch(state, lane._context_payload())
     assert status == 200, body
     assert [root["label"] for root in body["roots"]] == ["견적", "경리"]
-    assert ACCOUNTING not in json.dumps(body, ensure_ascii=False)
+    assert body["delegation_roots"] == [{"label": "견적", "path": QUOTATION}, {"label": "경리", "path": ACCOUNTING}]
+    assert ACCOUNTING not in json.dumps({key: body[key] for key in ("roots", "device", "tools")}, ensure_ascii=False)
 
 
 def test_one_folder_accepts_the_label_or_a_bare_relative_path_alike(monkeypatch):

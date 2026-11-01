@@ -975,6 +975,11 @@ async def _execute_chat_pc_files_lane(
             "대화 기록을 현재 사용할 수 없습니다.",
         ) from exc
     tool_arguments = _tool_arguments_for_plan(agent_plan, device_id)
+    from .pc_delegation_routes import load_pc_delegation
+
+    # This owner was authenticated before staging the PC run. Browser-supplied
+    # settings never travel on the Engine wire; load the stored snapshot here.
+    pc_delegation = await load_pc_delegation(request, uid)
     engine_text = (
         execution_user_text
         if isinstance(execution_user_text, str) and execution_user_text.strip()
@@ -995,6 +1000,7 @@ async def _execute_chat_pc_files_lane(
             tool_arguments=tool_arguments,
             pc_action_context=(pc_action_context if pc_action_context is not None else
                                [{"role": "user", "content": user_text}]),
+            pc_delegation=pc_delegation,
         )
     except B62OrchestrationError as exc:
         await _append_lane_notice(

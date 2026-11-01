@@ -287,6 +287,7 @@ class PcToolsTurnRuntime:
             app_id=app_id, orch_req=orch, exec_req=execution,
             declared_plan=scope, initial_decision=initial,
             pc_action_context=self.payload.get("pc_action_context"),
+            pc_delegation=self.payload.get("pc_delegation"),
         )
         if isinstance(attached, ServiceResponse):
             raise OrchestrationError("pc_tool_admission_failed", "PC driver admission failed.")

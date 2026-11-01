@@ -959,11 +959,35 @@ class ActionGuardedPCQueryStepDriver(StructuredPCQueryStepDriver):
 
         self._action_harness = PcActionHarness(records)
 
+    def configure_delegation(self, policy) -> None:
+        from app.pc_action_delegation import PcActionDelegation
+
+        self._action_delegation = PcActionDelegation(policy)
+
+    def configure_gateway(self, value) -> None:
+        from app.pc_gateway_action import PcGatewayAction
+
+        self._pc_gateway = PcGatewayAction(value) if value is not None else None
+
     def _decision(self, decision, observations):
         from app.pc_action_result_answer import append_pc_action_facts
 
         selected = super()._decision(decision, observations)
         invocation = selected.invocation
+        gateway = getattr(self, "_pc_gateway", None)
+        if gateway is not None:
+            if invocation is None:
+                return selected
+            owner = _PC_QUERY_OWNER.get()
+            delegation = getattr(self, "_action_delegation", None)
+            question = gateway.question(invocation.tool_id, invocation.arguments,
+                policy=delegation.policy if delegation is not None else None,
+                device_id=owner[3] if isinstance(owner, tuple) and len(owner) == 4 else None,
+                context=getattr(self, "_delegation_context", None))
+            if question:
+                from app.pc_gateway_action import gateway_answer
+                return AgentStepDecision.complete(gateway_answer("confirmation_required", question))
+            return selected
         if invocation is None:
             return AgentStepDecision.complete(append_pc_action_facts(selected.answer, observations))
         harness = getattr(self, "_action_harness", None)
@@ -975,6 +999,17 @@ class ActionGuardedPCQueryStepDriver(StructuredPCQueryStepDriver):
         question = harness.question(
             invocation.tool_id, invocation.arguments, observations=observations,
         )
+        # Evidence always runs first: delegation cannot authorize instructions
+        # embedded in a file/web/tool result or choose an unsupported target.
+        if question is None:
+            delegation = getattr(self, "_action_delegation", None)
+            if delegation is not None:
+                owner = _PC_QUERY_OWNER.get()
+                question = delegation.question(
+                    invocation.tool_id, invocation.arguments, records=harness.records,
+                    device_id=owner[3] if isinstance(owner, tuple) and len(owner) == 4 else None,
+                    context=getattr(self, "_delegation_context", None),
+                )
         return AgentStepDecision.complete(append_pc_action_facts(question, observations)) if question else selected
 
 
@@ -1013,6 +1048,7 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
                     service=service, request_factory=request_factory,
                     secret=secret, owner=owner, mode="context", payload={},
                 )
+                driver._delegation_context = ctx
                 text = json.dumps(
                     {"device": ctx.get("device"), "tools": ctx.get("tools")},
                     ensure_ascii=False,
@@ -1023,6 +1059,13 @@ def build_live_pc_query_driver(*, b14_client, model_id, model_policy=None, task_
         return text
 
     async def select_step(*, context, compiled_profile, observations):
+        gateway = getattr(driver, "_pc_gateway", None)
+        if gateway is not None:
+            # The exact external tool is a server-authored request, not a B14
+            # selection. Fetch the same signed root context before checking
+            # delegation, then let Core authorize and run the existing tool.
+            await _pc_context_text()
+            return gateway.decision(observations)
         refusal = context_cache.pop("refusal", None)
         if refusal is not None:
             first_decisions.clear()

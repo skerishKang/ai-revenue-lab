@@ -82,6 +82,8 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         pc_tools: Mapping[str, Any] | None = None,
         byok_selection: Mapping[str, str] | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
+        pc_delegation: Mapping[str, Any] | None = None,
+        pc_gateway: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         resolved_subject_id = self._current_engine_subject.get()
         if resolved_subject_id is None:
@@ -110,6 +112,8 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
             product_identity=product_identity,
             pc_tools=pc_tools,
             pc_action_context=pc_action_context,
+            pc_delegation=pc_delegation,
+            pc_gateway=pc_gateway,
             **({"byok_selection": byok_selection} if byok_selection is not None else {}),
         )
 
@@ -129,6 +133,8 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         session_id: str | None = None,
         product_identity: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
+        pc_delegation: Mapping[str, Any] | None = None,
+        pc_gateway: Mapping[str, Any] | None = None,
     ):
         resolved_subject_id = await self._resolve_engine_subject(user_id)
         if subject_id is not None and subject_id != resolved_subject_id:
@@ -153,6 +159,8 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
                 session_id=session_id,
                 product_identity=product_identity,
                 pc_action_context=pc_action_context,
+                pc_delegation=pc_delegation,
+                pc_gateway=pc_gateway,
             )
         finally:
             self._current_engine_subject.reset(token)
@@ -174,6 +182,8 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
         additional_system_context: str | None = None,
         product_identity: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
+        pc_delegation: Mapping[str, Any] | None = None,
+        pc_gateway: Mapping[str, Any] | None = None,
     ):
         # Async generators do not pass through start(): resolve the same
         # canonical identity before the inherited stream builds its request.
@@ -194,6 +204,8 @@ class CanonicalSubjectB62EngineOrchestrationBridge(B62EngineOrchestrationBridge)
             conversation_id=conversation_id,
             pc_tools=pc_tools,
             pc_action_context=pc_action_context,
+            pc_delegation=pc_delegation,
+            pc_gateway=pc_gateway,
             subject_id=resolved_subject_id,
             session_id=session_id,
             additional_system_context=additional_system_context,
