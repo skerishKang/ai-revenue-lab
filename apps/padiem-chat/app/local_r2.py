@@ -80,6 +80,11 @@ class LocalDiskR2:
             raise ValueError("R2 key must not traverse outside the bucket root")
         if any(any(ord(ch) < 32 for ch in segment) for segment in segments):
             raise ValueError("R2 key must not contain control characters")
+        # A bare drive segment ("C:") is never a workspace id; keep the original
+        # fence for that shape while workspace ids like "owner:usr_..." pass.
+        if any(len(segment) == 2 and segment[1] == ":" and segment[0].isascii()
+               and segment[0].isalpha() for segment in segments):
+            raise ValueError("R2 key must not name a drive")
         # Object keys legitimately carry workspace ids like "owner:usr_...".
         # Windows cannot name a file with ':' and reads a bare "C:" segment as a
         # drive, so each segment is percent-encoded for the filesystem while the
