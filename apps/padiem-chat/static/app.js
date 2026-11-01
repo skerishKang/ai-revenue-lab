@@ -3470,7 +3470,14 @@
       // keeps /api/chat/stream unchanged, and the explicit manual form submits
       // through clawManualForm below, never here.
       if (attachment?.fileLane && !attachment.fileId) {
-        const reference = await window.PadiemFileLane.upload(attachment.file, controller.signal);
+        // #6579 3단계 — 조각 업로드 진행률은 같은 상태 줄에 보여 준다. 끊기면
+        // 공용 모듈이 이어 올리고, 실패하면 그 모듈의 한국어 안내가 올라온다.
+        const reference = await window.PadiemFileLane.upload(attachment.file, controller.signal, (state) => {
+          if (!projectFileStatus) return;
+          setNote(state.phase === "finalizing"
+            ? uiT("document-saving")
+            : `${uiT("document-saving")} ${state.percent}%`, "normal");
+        });
         attachment = { ...attachment, ...reference };
       }
       const attachments = attachmentPayload(attachment);

@@ -17,7 +17,6 @@
   // Same split point as the file-lane attachment lane: above it the browser
   // uploads to COM2 directly and this page registers only the resulting id.
   const INLINE_MAX_BYTES = 10_000_000;
-  const UPLOAD_TICKET = ENDPOINT + "/upload-ticket";
   const FILE_ID = /^file_[a-f0-9]{32}$/;
   const SELECTIONS = "/api/claw/office/web-selections";
   const SELECTION_ID = /^sel_[a-f0-9]{32}$/;
@@ -1132,33 +1131,27 @@
       }
     }
 
-    // Large originals go browser -> COM2 file lane with a ticket; only the
-    // resulting file id reaches this deployment, so no 1 GiB body is proxied.
-    async function saveOriginal(file) {
-      const ticket = await jsonRequest(UPLOAD_TICKET, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ size_bytes: file.size }),
-      });
-      const target = new URL(ticket.upload_url);
-      if (target.protocol !== "https:" || target.username || target.password
-          || target.search || target.hash || target.pathname !== "/files") {
-        throw new Error("파일 서버 주소를 확인하지 못했습니다.");
+    // 1GB 통일 3단계 — 10MB 초과 원본은 공용 조각 업로드(tus 1.0.0)로 이 서버에
+    // 바로 보관한다. 100MB 요청 한도에 걸리지 않고, 진행률·이어 올리기·한국어
+    // 안내는 공용 화면 모듈(static/tus-upload.js)이 맡는다. 완료본 응답 모양은
+    // 기존 웹 XLSX 201 과 같다.
+    async function saveResumable(file) {
+      if (!window.PadiemTusUpload) {
+        throw safeUiError("업로드 준비를 마치지 못했어요. 페이지를 새로 고친 뒤 다시 시도해 주세요.");
       }
-      target.searchParams.set("filename", file.name);
-      const response = await fetch(target.href, {
-        method: "POST", credentials: "include", cache: "no-store",
-        headers: ticket.headers, body: file,
+      const body = await window.PadiemTusUpload.upload({
+        file,
+        endpoint: ENDPOINT + "/tus",
+        mediaType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        onState: (state) => {
+          if (state.phase === "finalizing") report("원본 저장을 마무리하고 있습니다.");
+          else if (state.phase !== "discovering") {
+            report((state.phase === "resuming" ? "이어서 올리는 중입니다 — " : "원본을 올리는 중입니다 — ") + state.percent + "%");
+          }
+        },
       });
-      const stored = await response.json().catch(() => null);
-      if (!response.ok || !stored || stored.ok !== true
-          || typeof stored.file_id !== "string" || !FILE_ID.test(stored.file_id)
-          || stored.size_bytes !== file.size) {
-        throw new Error("파일 서버에 원본을 저장하지 못했습니다. 다시 시도해 주세요.");
-      }
-      return jsonRequest(ENDPOINT + "/" + stored.file_id + "/register", {
-        method: "POST", headers: { "Accept": "application/json" },
-      });
+      if (!body || body.ok !== true) throw safeUiError("웹 원본 저장 결과를 확인할 수 없습니다.");
+      return body;
     }
 
     async function save() {
@@ -1176,7 +1169,7 @@
       report("웹 저장소에 선택한 원본을 보관하고 있습니다.");
       try {
         const body = shouldUseFileLane(file.size)
-          ? await saveOriginal(file)
+          ? await saveResumable(file)
           : await jsonRequest(ENDPOINT, {
             method: "POST",
             headers: {

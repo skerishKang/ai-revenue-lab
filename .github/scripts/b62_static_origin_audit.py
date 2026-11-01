@@ -43,6 +43,8 @@ LICENSE_NOTICE_URLS = frozenset({
     "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer",
     "https://www.gnu.org/licenses/agpl-3.0.html",
     "https://github.com/anomalyco/opencode",
+    # #6579 3단계: the resumable upload client the notice page credits.
+    "https://github.com/tus/tus-js-client",
 })
 
 

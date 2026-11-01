@@ -179,7 +179,9 @@ const assert = require("node:assert/strict");
     assert result.returncode == 0, result.stderr
     app = (static / "app.js").read_text()
     assert 'if (attachment.fileId) return [{ type: "file", file_id: attachment.fileId }];' in app
-    assert 'await window.PadiemFileLane.upload(attachment.file, controller.signal)' in app
+    # #6579 3단계 adds a progress callback after the signal; the guarded
+    # contract (the same lane upload, same abort signal) is unchanged.
+    assert 'await window.PadiemFileLane.upload(attachment.file, controller.signal,' in app
 
 
 def test_worker_config_never_borrows_a_process_secret(monkeypatch):
