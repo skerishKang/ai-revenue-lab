@@ -72,6 +72,11 @@ class Packaging(unittest.TestCase):
             if not line or line.startswith("#"):
                 continue
             name, _, value = line.partition("=")
+            speed_defaults = {"PADIEM_CHAT_AUTH_CACHE_SECONDS": "30",
+                              "PADIEM_CHAT_SQLITE_READERS": "2"}
+            if name in speed_defaults:
+                self.assertEqual(value, speed_defaults[name])
+                continue
             self.assertIn(
                 value, ("", "1", "true", "false", "mock", "off", "600",
                         "https://chat-com2.padiem.net", "/mnt/d/padiem/chat-com2",
@@ -83,6 +88,15 @@ class Packaging(unittest.TestCase):
         source = (HERE / "install.sh").read_text(encoding="utf-8")
         self.assertIn("chmod 0600", source)
         self.assertIn("chown root:root", source)
+
+    def test_worker_launcher_and_backup_follow_the_configured_data_directory(self):
+        unit = (HERE / "padiem-chat-com2.service").read_text(encoding="utf-8")
+        self.assertIn("-m app.local_server --host 127.0.0.1 --port 8798", unit)
+        self.assertIn("ReadWritePaths=-/opt/padiem/chat-com2/data", unit)
+        backup = (HERE / "padiem-chat-com2-backup.service").read_text(encoding="utf-8")
+        self.assertIn("EnvironmentFile=/opt/padiem/chat-com2/.env", backup)
+        self.assertIn("--db ${PADIEM_CHAT_LOCAL_DATA_DIR}/chat.sqlite3", backup)
+        self.assertIn("--dest ${PADIEM_CHAT_LOCAL_DATA_DIR}/backups", backup)
 
 
 class CheckConfig(unittest.TestCase):
@@ -116,6 +130,35 @@ class CheckConfig(unittest.TestCase):
                 environment.update(broken)
                 with unittest.mock.patch.dict(os.environ, environment, clear=True):
                     self.assertFalse(module.ready(), broken)
+
+    def test_linux_data_location_is_allowed_and_other_locations_are_refused(self):
+        module = load("check_config")
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp)
+            module.LINUX_DATA = data
+            with unittest.mock.patch.dict(os.environ, self._full_env(data), clear=True):
+                self.assertTrue(module.ready())
+            module.LINUX_DATA = data / "different"
+            with unittest.mock.patch.dict(os.environ, self._full_env(data), clear=True):
+                self.assertFalse(module.ready())
+
+    def test_multiple_workers_must_pass_the_same_storage_guard_as_launcher(self):
+        module = load("check_config")
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp)
+            module.DATA = data
+            environment = {**self._full_env(data), "PADIEM_CHAT_WORKERS": "2"}
+            with unittest.mock.patch.dict(os.environ, environment, clear=True), \
+                 unittest.mock.patch.object(sys, "path", [str(ROOT / "apps/padiem-chat"), *sys.path]):
+                from app import local_server
+                with unittest.mock.patch.object(local_server, "validate_worker_configuration", return_value=2) as guard:
+                    self.assertTrue(module.ready())
+                    guard.assert_called_once_with()
+                with unittest.mock.patch.object(local_server, "validate_worker_configuration",
+                        side_effect=RuntimeError("multiworker_local_filesystem_required")):
+                    self.assertFalse(module.ready())
+            with unittest.mock.patch.dict(os.environ, {**environment, "PADIEM_CHAT_WORKERS": "0"}, clear=True):
+                self.assertFalse(module.ready())
 
 
 class Health(unittest.TestCase):

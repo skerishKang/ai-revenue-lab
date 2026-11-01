@@ -91,7 +91,10 @@ sudo env PADIEM_COM2_OPS_CHECKOUT=/mnt/d/work/ai-revenue-lab-ops \
 | `PADIEM_COM2_CHAT_HEALTH_TIMEOUT` | `60` | Chat health 전체 대기 상한(초) |
 | `PADIEM_COM2_CHAT_DB` | `/mnt/d/padiem/chat-com2/chat.sqlite3` | 마이그레이션 원장을 읽는 운영 DB |
 | `PADIEM_COM2_P01_APP` | `/opt/padiem/p01` | P01 설치 루트 (`app`, `rollback/`) |
-| `PADIEM_COM2_B14_APP` | `/opt/padiem/b14/app` | B14 앱 체크아웃 |
+| `PADIEM_COM2_B14_APP` | `/opt/padiem/b14/app` | B14 앱 트리(미러를 가리키는 심링크) |
+| `PADIEM_COM2_MESH_QUEUE_APP` | `/opt/padiem/mesh-queue` | PC 큐 설치 루트(코드만 미러에서) |
+| `PADIEM_COM2_MESH_QUEUE_USER` | `padiem-mesh` | 큐 루트 소유 계정 |
+| `PADIEM_COM2_HEALTH_TIMEOUT` / `PADIEM_COM2_HEALTH_INTERVAL` | `30` / `2` | P01·B14·큐가 포트 바인딩을 마칠 때까지 기다리는 시간 |
 | `PADIEM_COM2_SYSTEMCTL` / `_PYTHON` / `_GIT` | `systemctl` / `python3` / `git` | 래퍼 경로 |
 | `PADIEM_COM2_CHAT_HEALTH_URL` 등 | 루프백 URL | 헬스 프로브 주소 |
 

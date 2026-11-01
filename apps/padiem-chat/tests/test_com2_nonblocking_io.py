@@ -14,7 +14,8 @@ from app.local_r2 import LocalDiskR2, ThreadedLocalDiskR2
 def test_slow_local_read_does_not_block_twenty_http_requests(tmp_path, monkeypatch):
     entered, release = threading.Event(), threading.Event()
     bucket = ThreadedLocalDiskR2(tmp_path)
-    bucket.put("file.txt", b"payload")
+    # Fixture setup is synchronous; the host write port itself is awaitable.
+    LocalDiskR2.put(bucket, "file.txt", b"payload")
     real_get = LocalDiskR2.get
     def slow_get(self, key):
         entered.set()

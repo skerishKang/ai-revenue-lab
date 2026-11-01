@@ -21,6 +21,8 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from urllib.parse import urlparse
+from time import perf_counter
+from .request_timing import timed_async, record_duration
 
 import httpx
 
@@ -143,6 +145,7 @@ class LocalEngineHttpTransport:
     def origin(self) -> str:
         return self._origin
 
+    @timed_async('p01')
     async def request(
         self,
         *,
@@ -192,6 +195,7 @@ class LocalEngineHttpTransport:
             )
         target = self._origin + path
         client = self._client
+        started = perf_counter()
         owns_client = client is None
         if client is None:
             client = httpx.AsyncClient(
@@ -203,6 +207,7 @@ class LocalEngineHttpTransport:
             )
             response = await client.send(request, stream=True)
         except httpx.HTTPError:
+            record_duration('p01', (perf_counter() - started) * 1000)
             if owns_client:
                 await client.aclose()
             raise LocalEngineTransportError(
@@ -226,6 +231,7 @@ class LocalEngineHttpTransport:
                 await response.aclose()
                 if owns_client:
                     await client.aclose()
+                record_duration('p01', (perf_counter() - started) * 1000)
             return EngineStreamTransportResponse(
                 status=status,
                 chunks=_once(bytes(buffered)),
@@ -249,6 +255,7 @@ class LocalEngineHttpTransport:
                 await response.aclose()
                 if owns_client:
                     await client.aclose()
+                record_duration('p01', (perf_counter() - started) * 1000)
 
         return EngineStreamTransportResponse(
             status=status,

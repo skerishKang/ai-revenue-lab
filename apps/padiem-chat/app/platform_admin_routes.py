@@ -144,6 +144,8 @@ async def platform_admin_role_assign(request: Request) -> JSONResponse:
         assignment = await store.assign(
             actor_user_id=actor, target_user_id=target, role=role
         )
+        from .auth_validation_cache import invalidate_auth_cache
+        await invalidate_auth_cache(request, user_id=target)
     except AdminRoleTargetMissing:
         return _error(404, "canonical_user_not_found")
     except AdminRoleActorMissing:
@@ -167,6 +169,8 @@ async def platform_admin_role_revoke(request: Request) -> JSONResponse:
         revocation = await store.revoke(
             actor_user_id=actor, target_user_id=target
         )
+        from .auth_validation_cache import invalidate_auth_cache
+        await invalidate_auth_cache(request, user_id=target)
     except AdminRoleActorMissing:
         return _error(403, "role_management_forbidden")
     except Exception:

@@ -21,6 +21,7 @@ from padiem_control_plane.contracts import (
 )
 
 from .control_plane_identity import IdentityBridgeError
+from .request_timing import timed_async
 
 
 _MAX_RPC_TICKET_CHARS = 24_576
@@ -187,6 +188,7 @@ class CloudflareControlPlaneIdentityAuthority:
             raise ValueError("Control Plane identity Service Binding is required")
         self._binding = binding
 
+    @timed_async('identity')
     async def _rpc_envelope(self, method_name: str, payload: dict[str, Any]) -> dict[str, Any]:
         """Validated ``{"ok": true, ...}`` envelope from one identity RPC.
 

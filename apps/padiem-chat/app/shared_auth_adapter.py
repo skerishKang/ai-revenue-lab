@@ -11,6 +11,8 @@ import hmac
 import time
 from typing import Any, Callable
 
+from .auth_validation_cache import cache_for_request, cache_configured_for_request
+
 
 class SharedAuthUnavailable(Exception):
     """Shared credentials were present but could not be verified or mapped."""
@@ -55,6 +57,23 @@ class SharedChatAuth:
             account_id, expires = verified['accountId'], verified['expiresAt']
             if not isinstance(account_id, str) or not account_id.startswith('sub_') or type(expires) is not int or expires <= self._clock():
                 raise ValueError('invalid_verified_claims')
+            cache = cache_for_request(request)
+            if cache_configured_for_request(request):
+                # COM2's explicit None is cache-off, not permission to fall
+                # back to the old process-local mapping on a different worker.
+                self._mapping.clear()
+                async def load_mapping():
+                    user_id = await self._authority.resolve_product_user_for_subject(
+                        product_id='b62', canonical_subject_id=account_id)
+                    if not isinstance(user_id, str) or not user_id:
+                        raise ValueError('missing_product_link')
+                    return user_id, expires
+                session_id = verified.get('sessionId')
+                if cache is not None and isinstance(session_id, str) and session_id:
+                    return await cache.get_or_load('shared', account_id, session_id, load_mapping)
+                # Disabled caching and verifier contracts without a signed
+                # session ID must perform a fresh authority lookup every time.
+                return (await load_mapping())[0]
             cached = self._mapping.get(account_id)
             if cached and cached[1] > self._clock():
                 return cached[0]
@@ -65,6 +84,30 @@ class SharedChatAuth:
             return user_id
         except Exception as exc:
             raise SharedAuthUnavailable('shared_auth_failed') from exc
+
+    async def invalidate_session(self, request, shared_token):
+        """Called only after the authority confirmed a shared logout."""
+        self._mapping.clear()
+        cache = cache_for_request(request)
+        if cache is None:
+            return
+        verified = None
+        if isinstance(shared_token, str) and shared_token:
+            try:
+                verified = self._verifier.verify(shared_token)
+                if inspect.isawaitable(verified):
+                    verified = await verified
+            except Exception:
+                pass
+        if isinstance(verified, dict):
+            account_id, session_id = verified.get('accountId'), verified.get('sessionId')
+            if (isinstance(account_id, str) and account_id.startswith('sub_')
+                    and isinstance(session_id, str) and session_id):
+                await cache.invalidate_session('shared', account_id, session_id)
+                return
+        # Refresh-only/expired-access logout cannot prove a local cache key.
+        # Drop this disposable cache rather than retaining unverifiable state.
+        await cache.invalidate_all()
 
     async def compare_existing_account(self, request: Any, shared_token: str | None) -> str:
         """Compare two authenticated sessions; return only MATCH/MISMATCH/UNKNOWN.
