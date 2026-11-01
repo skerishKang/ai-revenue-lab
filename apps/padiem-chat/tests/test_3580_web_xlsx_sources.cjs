@@ -51,3 +51,16 @@ assert.equal(office.validateSelection({
 assert.equal(office.validateSelection({
   ...approvalPendingOnly, selection: {...approvalPendingOnly.selection, status: "approved"},
 }, row), false);
+
+// 1 GiB originals: above the shared 10 MB split the browser uses the lane.
+const laneRow = { ...row, size_bytes: office.INLINE_MAX_BYTES + 1, file_id: "file_" + "d".repeat(32) };
+assert.equal(office.validFile(laneRow), true);
+assert.equal(office.validFile({ ...laneRow, file_id: "file_foreign" }), false);
+assert.equal(office.validFile({ ...row, file_id: 7 }), false);
+assert.equal(office.shouldUseFileLane(office.INLINE_MAX_BYTES), false);
+assert.equal(office.shouldUseFileLane(office.INLINE_MAX_BYTES + 1), true);
+assert.equal(office.shouldUseFileLane(1024 * 1024 * 1024), true);
+assert.equal(office.shouldUseFileLane(1024 * 1024 * 1024 + 1), false);
+assert.equal(office.shouldUseFileLane(0), false);
+assert.equal(office.shouldUseFileLane(1.5), false);
+console.log("web XLSX 1 GiB lane contract: PASS");

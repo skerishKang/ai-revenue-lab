@@ -11,7 +11,10 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent))
 from test_3580_web_xlsx_p01_owner_decision import ready
 from test_3580_web_xlsx_p01_request import prepare
-from test_3580_web_xlsx_sources import request, OWNER, FOREIGN
+from test_3580_web_xlsx_selection_routes import selected
+from test_3580_web_xlsx_sources import (
+    LANE_FILE_ID, FakeFileLane, request, workbook, OWNER, FOREIGN,
+)
 
 PATH = "/api/claw/office/web-selections/{}/start-p01"
 STATUS = "/api/claw/office/web-selections/{}/p01-status"
@@ -170,3 +173,35 @@ async def test_actual_history_store_mints_owner_conversation_and_run_without_fak
     assert await history.get_claw_run(FOREIGN, run_id) is None
     assert await history.get_conversation(FOREIGN, row["conversation_id"], product_scope=PRODUCT_SCOPE_CHAT) is None
     conn.close()
+
+
+@pytest.mark.asyncio
+async def test_large_lane_original_starts_p01_from_metadata_only():
+    """A lane-backed original reaches approval without Chat holding its bytes."""
+    app, settings, meta, r2, db, history, decision = ready()
+    install_owner_run(history)
+    lane = FakeFileLane()
+    row = lane.add(workbook(), name="big-source.xlsx")
+    app.state.file_lane_client = lane.client()
+    registered = await request(
+        app, settings, method="POST",
+        path="/api/claw/office/web-sources/" + LANE_FILE_ID + "/register", payload={},
+    )
+    assert registered.status_code == 201, registered.text
+    original = registered.json()["file"]
+
+    async def no_byte_read(**_kwargs):
+        raise AssertionError("P01 start reads approval metadata, not worksheet bytes")
+    app.state.workspace_document_store.get_web_xlsx = no_byte_read
+
+    selection = await selected(app, settings, original["document_id"])
+    assert selection.status_code == 201, selection.text
+    ref = selection.json()["selection"]["selection_ref"]
+    started = await start(app, settings, ref)
+    assert started.status_code == 202, started.text
+    assert started.json()["status"] == "waiting_p01"
+    assert started.json()["workcopy_created"] is False
+    assert history.started == [(OWNER, "owner:" + OWNER, original["filename"])]
+    assert (await status(app, settings, ref)).json()["status"] == "waiting_p01"
+    assert meta.rows[original["document_id"]].object_key.endswith("/filelane:" + row["file_id"])
+    db.close()

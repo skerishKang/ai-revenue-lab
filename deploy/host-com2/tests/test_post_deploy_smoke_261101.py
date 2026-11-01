@@ -52,7 +52,6 @@ def test_verdicts_report_unimplemented_checks_as_skipped(tmp_path, monkeypatch):
     assert all(request.method == "GET" for request in opener.requests)
 
 
-
 def test_bookai_unsigned_status_and_absent_route(tmp_path, monkeypatch):
     monkeypatch.setattr(module.shutil, "which", lambda _: None)
     class BookOpener:
