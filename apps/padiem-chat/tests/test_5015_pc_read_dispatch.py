@@ -334,9 +334,48 @@ def test_poll_sends_twenty_mb_for_the_chat_read_and_six_mb_for_other_reads(
 def test_the_server_root_decides_the_bound_not_the_caller_reference():
     row = _pending_read_row(tool_request_ref="opaque-call-ref")
     assert routes._oracle_mesh_poll_max_bytes(row) == 20_000_000
-
     row.pop("root_ref")
     assert routes._oracle_mesh_poll_max_bytes(row) is None
+
+
+def test_poll_names_the_granted_root_for_the_pc_files_read_only(monkeypatch):
+    """#5994 D3 후속: the executor's reparse walk needs the real granted root.
+
+    The staged row already holds it — ``file_path`` is staged as
+    ``root + "/" + path_relative`` — so the poll derives the root from the
+    row, never from a caller, and every other lane keeps a dispatch without
+    the field.
+    """
+    history = _History()
+    state = _state(monkeypatch, history=history)
+
+    history.rows["dsp-read"] = _pending_read_row()
+    status, body = _poll(state)
+    assert status == 200, body
+    assert body["dispatch"]["granted_root"] == ROOT
+
+    # A file below one folder of the root still names the root itself.
+    nested = _pending_read_row()
+    nested["dispatch_id"] = "dsp-nested"
+    nested["path_relative"] = "docs/notes.txt"
+    nested["file_path"] = ROOT + "/docs/notes.txt"
+    history.rows["dsp-nested"] = nested
+    status, body = _poll(state)
+    assert status == 200, body
+    assert body["dispatch"]["dispatch_id"] == "dsp-nested"
+    assert body["dispatch"]["granted_root"] == ROOT
+
+    # The trial lane keeps the pre-#5994 shape: no granted root on the wire.
+    other = _pending_read_row(tool_request_ref="oracle_mesh_tool_" + "e" * 24)
+    other["dispatch_id"] = "dsp-other"
+    other["root_ref"] = "meshcentral_private_trial"
+    other["path_relative"] = "meshcentral-padiem-trial.txt"
+    other["file_path"] = ROOT + "/meshcentral-padiem-trial.txt"
+    history.rows["dsp-other"] = other
+    status, body = _poll(state)
+    assert status == 200, body
+    assert body["dispatch"]["dispatch_id"] == "dsp-other"
+    assert "granted_root" not in body["dispatch"]
 
 
 def test_poll_still_rejects_a_wrong_channel_secret(monkeypatch):
