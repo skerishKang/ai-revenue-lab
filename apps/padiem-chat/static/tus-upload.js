@@ -87,6 +87,8 @@
   function messageFor(status, limits) {
     return status === 413
         ? "파일이 너무 커요 — 최대 " + humanBytes((limits && limits.maxUploadBytes) || 0) + "까지 올릴 수 있어요."
+      : status === 429 ? "지금은 올릴 수 없어요 — 잠시 뒤 다시 시도해 주세요."
+      : status === 400 ? "업로드 요청을 확인할 수 없어요. 파일을 다시 선택해 주세요."
       : status === 401 ? "로그인이 필요해요. 로그인 후 다시 시도해 주세요."
       : (status === 403 || status === 404) ? "올릴 권한을 확인할 수 없어요. 로그인 상태를 확인한 뒤 다시 시도해 주세요."
       : status === 409 ? "올리던 위치가 맞지 않아요. 처음부터 다시 올려 주세요."

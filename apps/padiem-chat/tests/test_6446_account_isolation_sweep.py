@@ -29,6 +29,20 @@ from pathlib import Path
 import pytest
 from starlette.testclient import TestClient
 
+
+@pytest.fixture(autouse=True)
+def _isolated_tus_uploads(tmp_path, monkeypatch):
+    """조각 업로드는 이 시험만의 폴더에만 쌓는다.
+
+    이 파일은 계정 격리를 보는 곳이고, 업로드 개수·바이트 상한(D3)은
+    test_tus_hardening_d1_d3_261102.py가 자기 환경에서 고정한다. 여기서 상한을
+    끄지 않으면 앞선 장면이 남긴 같은 계정의 미완료 업로드가 다음 장면의 생성
+    자체를 429로 막아, 격리 결과가 상한 결과와 섬인다.
+    """
+    monkeypatch.setenv("PADIEM_TUS_UPLOAD_DIR", str(tmp_path / "tus-uploads"))
+    monkeypatch.setenv("PADIEM_TUS_MAX_ACTIVE_UPLOADS_PER_USER", "0")
+    monkeypatch.setenv("PADIEM_TUS_MAX_ACTIVE_BYTES_PER_USER", "0")
+
 import test_5222_account_model_selection as account_harness
 from app.auth import SESSION_COOKIE, create_session_token
 from app.history import D1HistoryStore
