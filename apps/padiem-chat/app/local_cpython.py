@@ -184,6 +184,18 @@ def compose_host_orchestration(
     return bridge
 
 
+def _mesh_command_output_limit() -> int | None:
+    # Unset means no product ceiling on the local host. An operator may set a
+    # positive byte limit; Cloudflare retains the existing default.
+    name = "PADIEM_CHAT_PC_COMMAND_OUTPUT_MAX_BYTES"
+    raw = os.getenv(name, "").strip()
+    if not raw:
+        return None
+    if not raw.isascii() or not raw.isdecimal() or int(raw) < 1:
+        raise ConfigError(name + " must be a positive integer")
+    return int(raw)
+
+
 def build_app():
     """Compose the Chat ASGI app over the local SQLite + disk-R2 bindings."""
 
@@ -259,7 +271,10 @@ def build_app():
     app = create_app(
         shared_login_flow=shared_login_flow,
         settings=settings,
-        history_store=D1HistoryStore(db, full_context_bucket=r2),
+        history_store=D1HistoryStore(
+            db, full_context_bucket=r2,
+            mesh_command_output_max_bytes=_mesh_command_output_limit(),
+        ),
         d1_binding=db,
         custom_credential_cipher=CPythonAesGcmPort(),
         r2_binding=r2,

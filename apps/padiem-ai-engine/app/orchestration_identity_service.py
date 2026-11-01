@@ -36,6 +36,7 @@ from app.orchestration_service import (
     _parse_recovery_policy,
     _pc_tool_arguments_gate,
     _validated_pc_declared_plan,
+    _validated_pc_action_context,
     _canonical_pc_plan,
 )
 from app.service import ServiceContractError, ServiceResponse, _service_error, build_execution_request
@@ -77,6 +78,8 @@ def _wire_allowed_fields(payload: Any) -> frozenset[str]:
         allowed |= {"tool_arguments"}
     if _validated_pc_declared_plan(payload) is not None:
         allowed |= {"declared_plan"}
+    if _validated_pc_action_context(payload) is not None:
+        allowed |= {"pc_action_context"}
     return allowed
 
 
@@ -239,6 +242,7 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             attached = self._attach_pc_query_step_driver(
                 app_id=app_id, orch_req=orch_req, exec_req=exec_req,
                 declared_plan=payload.get("declared_plan"),
+                pc_action_context=_validated_pc_action_context(payload),
             )
             if isinstance(attached, ServiceResponse):
                 return attached

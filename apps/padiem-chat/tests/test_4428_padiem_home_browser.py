@@ -442,9 +442,24 @@ def test_keyboard_and_language_accessibility(browser, server):
     # English rendering is available and keeps the same honesty.
     page.evaluate("() => { document.documentElement.lang = 'en'; }")
     page.wait_for_function(
-        "() => document.querySelector('#padiemHomeNotice').textContent.includes('not a permission result')"
+        "() => document.querySelector('#padiemHomeNotice').textContent.includes('Tool and file permissions remain separately enforced')"
     )
-    assert "Unverified" in page.locator("body").inner_text()
+    assert page.locator('#padiemHomeGrid [data-access="available"]').count() == 2
+    assert page.locator('#padiemHomeGrid [data-access="available"]').first.inner_text() == "Available"
+    assert page.locator('#padiemHomeGrid li[data-service="claw"] a').inner_text() == "Select Claw in Chat"
+    assert not errors, errors
+    page.close()
+
+    # An unverified bundle remains unverified after changing language, and
+    # must not gain a link merely because the locale changed.
+    page, errors, _ = open_home(browser, server, dict(SIGNED_IN), access_status=503)
+    wait_services(page)
+    page.evaluate("() => { document.documentElement.lang = 'en'; }")
+    page.wait_for_function(
+        "() => [...document.querySelectorAll('#padiemHomeGrid [data-access=unverified]')].every(e => e.textContent === 'Unverified')"
+    )
+    assert page.locator('#padiemHomeGrid [data-access="unverified"]').count() == 2
+    assert page.locator("#padiemHomeGrid a").count() == 0
     assert "Entry not linked" in page.locator("body").inner_text()
     assert not errors, errors
     page.close()
