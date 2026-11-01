@@ -35,6 +35,17 @@ class ConnectionsCenterSiteTests(unittest.TestCase):
         self.assertIn("Revoke", self.html)
         self.assertIn("Delete", self.html)
 
+    def test_device_compatibility_update_notices_are_visible_and_non_blocking(self):
+        # The connector-version compatibility display: both update notices on
+        # synthetic cards, non-blocking by contract, judged server-side only.
+        self.assertIn('data-compatibility="update_available"', self.html)
+        self.assertIn('data-compatibility="update_required"', self.html)
+        self.assertIn("새 버전이 있어요", self.html)
+        self.assertIn("업데이트가 필요합니다", self.html)
+        self.assertIn('data-update-notice="update_available"', self.html)
+        self.assertIn('data-update-notice="update_required"', self.html)
+        self.assertIn("차단 아님", self.html)
+
     def test_escalation_shows_current_requested_delta_and_cannot_apply_silently(self):
         self.assertIn("data-escalation-review", self.html)
         self.assertIn("data-widens-capability=\"true\"", self.html)

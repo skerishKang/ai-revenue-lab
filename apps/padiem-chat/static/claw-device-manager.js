@@ -40,6 +40,8 @@
       expired: "인증이 만료되었습니다 · 다시 연결해 주세요",
       required: "연결 확인 필요",
       executable: "실행 대상 준비 · 온라인 상태 미확인",
+      updateAvailable: "새 버전이 있어요",
+      updateRequired: "업데이트가 필요합니다",
       choose: "작업 대상 후보로 선택",
       drivesTitle: "드라이브",
       drivesPending: "드라이브 목록을 기다리고 있어요.",
@@ -77,6 +79,8 @@
       expired: "Credential expired · reconnect",
       required: "Connection needs verification",
       executable: "Execution target ready · online status unverified",
+      updateAvailable: "A new version is available",
+      updateRequired: "An update is needed",
       choose: "Select as candidate device",
       drivesTitle: "Drives",
       drivesPending: "Waiting for the drive list.",
@@ -348,6 +352,15 @@
         const chip = element("span", "claw-device-manager-state", deviceLabel(device));
         chip.dataset.state = device.state;
         detail.append(chip);
+        if (device.compatibility === "update_available" || device.compatibility === "update_required") {
+          // Server-judged connector-version compatibility. Presentation only:
+          // it never changes the state chip, usability or the pick button, so
+          // an update notice can never make a device look unusable (or usable).
+          const notice = element("small", "claw-device-manager-version",
+            device.compatibility === "update_available" ? t.updateAvailable : t.updateRequired);
+          notice.dataset.compatibility = device.compatibility;
+          detail.append(notice);
+        }
         const drives = element("div", "claw-device-manager-drives");
         drives.setAttribute("aria-label", t.drivesTitle);
         if (device.drivesStatus === "ready") {
