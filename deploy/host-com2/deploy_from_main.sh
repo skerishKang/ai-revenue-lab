@@ -279,7 +279,19 @@ rollback_p01() {
   snapshot=$(ls -1dt "$p01_root"/rollback/p01.* 2>/dev/null | head -1 || true)
   [[ -n $snapshot ]] || { say 'P01_ROLLBACK=NO_SNAPSHOT'; return 1; }
   with_service_stopped "$P01_UNIT" || return 1
-  ln -sfnT "$snapshot" "$p01_root/app" || return 1
+  local next="$p01_root/.app-rollback-$$" displaced=""
+  ln -s "$snapshot" "$next" || return 1
+  if [[ -d $p01_root/app && ! -L $p01_root/app ]]; then
+    install -d -m 0755 "$p01_root/releases" || { rm -f "$next"; return 1; }
+    displaced=$(mktemp -d "$p01_root/releases/p01.displaced.XXXXXXXX") || { rm -f "$next"; return 1; }
+    rmdir "$displaced" || { rm -f "$next"; return 1; }
+    mv -T "$p01_root/app" "$displaced" || { rm -f "$next"; return 1; }
+  fi
+  if ! mv -Tf "$next" "$p01_root/app"; then
+    [[ -z $displaced ]] || mv -T "$displaced" "$p01_root/app"
+    rm -f "$next"
+    return 1
+  fi
   "$systemctl_bin" start "$P01_UNIT" || return 1
   "$python_bin" "$ops_checkout/deploy/host-com2/p01/health.py" --url "$p01_health_url"
 }
@@ -392,8 +404,35 @@ run_deploy() {
   find "$previous_dir/$old" -type f -exec chmod a+r,go-w {} + || fail PREVIOUS_CHECKOUT_FAILED
   say "PREVIOUS_CHECKOUT=$previous_dir/$old"
 
-  "$git_bin" -C "$ops_checkout" checkout --detach --quiet "$resolved" \
+  (umask 022; "$git_bin" -C "$ops_checkout" checkout --detach --quiet "$resolved") \
     || fail CHECKOUT_MOVE_FAILED
+  # Older deploys may already have left tracked files at 0600. Restrict the
+  # repair to tracked files and their directories; never expose untracked envs.
+  "$python_bin" - "$ops_checkout" "$git_bin" <<'PY' || fail CHECKOUT_PERMISSIONS_FAILED
+import os, stat, subprocess, sys
+root = os.path.abspath(sys.argv[1])
+files = subprocess.check_output([sys.argv[2], "-C", root, "ls-files", "-z"]).split(b"\0")
+dirs = {root}
+for name in files:
+    if not name:
+        continue
+    path = os.path.join(root, os.fsdecode(name))
+    try:
+        mode = os.lstat(path).st_mode
+    except FileNotFoundError:
+        continue
+    if stat.S_ISREG(mode):
+        os.chmod(path, stat.S_IMODE(mode) | 0o444)
+    parent = os.path.dirname(path)
+    while parent.startswith(root + os.sep) and parent not in dirs:
+        if os.path.islink(parent):
+            raise RuntimeError("tracked directory is a symlink")
+        dirs.add(parent)
+        parent = os.path.dirname(parent)
+for path in dirs:
+    mode = os.stat(path).st_mode
+    os.chmod(path, stat.S_IMODE(mode) | 0o555)
+PY
   say "CHECKOUT=$ops_checkout"
 
   local failed=0 ai_status=SKIP ai_code=none ai_output

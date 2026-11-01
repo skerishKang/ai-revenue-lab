@@ -315,3 +315,27 @@ class P01CodeStage(unittest.TestCase):
             snapshots = list((target / "rollback").glob("*/asgi.py"))
             self.assertEqual(len(snapshots), 1)
             self.assertEqual(snapshots[0].read_text(encoding="utf-8"), "original\n")
+
+
+    def test_real_app_with_cycle_is_snapshotted_and_switched(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "checkout" / "apps" / "padiem-ai-engine"
+            target = root / "p01"
+            for name in ("app", "clients", "ingress", "migrations"):
+                (source / name).mkdir(parents=True)
+            for name in ("asgi.py", "worker.py", "worker_identity.py"):
+                (source / name).write_text("new", encoding="utf-8")
+            old = target / "app"
+            old.mkdir(parents=True)
+            (old / "asgi.py").write_text("old", encoding="utf-8")
+            (old / "cycle").symlink_to(".", target_is_directory=True)
+            subprocess.run(["bash", str(HERE / "stage_code.sh"),
+                            str(root / "checkout"), str(target)],
+                           check=True, capture_output=True, timeout=15)
+            self.assertTrue((target / "app").is_symlink())
+            self.assertEqual((target / "app" / "asgi.py").read_text(), "new")
+            snapshot = next((target / "rollback").glob("p01.*"))
+            self.assertEqual((snapshot / "asgi.py").read_text(), "old")
+            self.assertFalse((snapshot / "cycle").exists())

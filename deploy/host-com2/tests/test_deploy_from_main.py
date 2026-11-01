@@ -284,6 +284,38 @@ class ChatScenarioTest(DeployHarness):
         previous = self.previous / self.first
         self.assertTrue((previous / "apps/padiem-chat/app/chat_marker.py").is_file())
 
+    def test_checkout_repairs_restricted_tracked_files_without_exposing_secrets(self) -> None:
+        import stat
+        unchanged = self.ops / "apps/padiem-chat/app/__init__.py"
+        unchanged.chmod(0o600)
+        secret = self.ops / "private.env"
+        secret.write_text("test-only", encoding="utf-8")
+        secret.chmod(0o600)
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source = self.ops / "apps/padiem-chat/app/chat_marker.py"
+        self.assertEqual(stat.S_IMODE(unchanged.stat().st_mode), 0o644)
+        self.assertTrue(source.stat().st_mode & stat.S_IROTH)
+        self.assertEqual(stat.S_IMODE(secret.stat().st_mode), 0o600)
+        if os.name == "posix" and os.geteuid() == 0:
+            import pwd
+            self.tmp.chmod(0o755)
+            try:
+                user = pwd.getpwnam("padiem-chat")
+            except KeyError:
+                user = pwd.getpwnam("nobody")
+            def drop():
+                os.setgroups([])
+                os.setgid(user.pw_gid)
+                os.setuid(user.pw_uid)
+            probe = subprocess.run(
+                [sys.executable, "-I", "-c",
+                 "import sys; sys.path.insert(0, sys.argv[1]); import app.chat_marker",
+                 str(self.ops / "apps/padiem-chat")],
+                preexec_fn=drop, capture_output=True, text=True,
+            )
+            self.assertEqual(probe.returncode, 0, probe.stderr)
+
     def test_ai_503_warn_leaves_deploy_in_place(self) -> None:
         self.env["FAKE_AI_CODE"] = "entitlement_unavailable"
         result = self._run_apply()
@@ -418,6 +450,21 @@ class P01ScenarioTest(DeployHarness):
         marker = (self.p01 / "app" / "SNAPSHOT_ID").read_text(encoding="utf-8").strip()
         self.assertEqual(marker, snapshots[0].name)
 
+
+    def test_rollback_replaces_real_app_directory(self) -> None:
+        (self.p01 / "app").unlink()
+        (self.p01 / "app").mkdir()
+        (self.p01 / "app" / "marker").write_text("current", encoding="utf-8")
+        (self.p01 / "app" / "cycle").symlink_to(".", target_is_directory=True)
+        self._fail_health_once("p01")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("p01:ROLLBACK", result.stdout)
+        self.assertTrue((self.p01 / "app").is_symlink())
+        self.assertTrue((self.p01 / "app" / "SNAPSHOT_ID").is_file())
+        moved = list((self.p01 / "releases").glob("p01.displaced.*/marker"))
+        self.assertEqual(len(moved), 1)
+        self.assertEqual(moved[0].read_text(encoding="utf-8"), "current")
 
     def test_p01_running_link_mismatch_is_not_skipped(self) -> None:
         release = (self.p01 / "app").resolve()

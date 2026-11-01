@@ -23,7 +23,38 @@ if [[ -e "$root/app" || -L "$root/app" ]]; then
   [[ -d "$root/app" ]] || fail PREVIOUS_APP_INVALID
   backup=$(mktemp -d "$root/rollback/p01.XXXXXXXX")
   chmod 0755 "$backup"
-  cp -aL "$root/app/." "$backup/"
+  # Follow ordinary links as before, but omit links back to an ancestor.
+  # cp -aL aborts on cycles, including links in older real app directories.
+  python3 - "$root/app" "$backup" <<'PY'
+import errno, os, shutil, sys
+
+def ignore_cycles(directory, names):
+    ancestors = set()
+    path = os.path.abspath(directory)
+    while True:
+        ancestors.add(os.path.realpath(path))
+        parent = os.path.dirname(path)
+        if parent == path:
+            break
+        path = parent
+    ignored = []
+    for name in names:
+        candidate = os.path.join(directory, name)
+        if not os.path.islink(candidate):
+            continue
+        try:
+            target = os.path.realpath(candidate, strict=True)
+            if target in ancestors:
+                ignored.append(name)
+        except OSError as error:
+            if error.errno == errno.ELOOP:
+                ignored.append(name)
+            else:
+                raise
+    return ignored
+
+shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True, ignore=ignore_cycles)
+PY
 fi
 next="$root/.app-next-$$"
 ln -s "$release" "$next"
