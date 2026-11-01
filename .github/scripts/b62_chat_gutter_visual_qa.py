@@ -515,8 +515,19 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         raise AssertionError(
             f"{name} Claw general-view portrait diverged from Chat Home: {portrait!r}/{portrait_image!r} vs {home_portrait!r}/{home_portrait_image!r}"
         )
+    # Phones drop the decorative portrait on purpose: the first screen belongs
+    # to the composer (#chat-mobile-pass). Above the phone width both shared art
+    # layers must still paint — that is the accidental CSS-scoping loss this
+    # suite was written to catch. The phone case is asserted, not skipped.
+    on_phone = width <= 620
     for art in (".glass-shell-portrait", ".glass-shell-field"):
-        if await page.locator(art).count() and not await page.locator(art).is_visible():
+        located = page.locator(art)
+        if not await located.count():
+            continue
+        visible = await located.is_visible()
+        if on_phone and visible:
+            raise AssertionError(f"{name} decorative glass art still painted on a phone: {art}")
+        if not on_phone and not visible:
             raise AssertionError(f"{name} shared glass art layer disappeared: {art}")
     metrics = await page.evaluate(
         "() => ({scrollWidth: document.documentElement.scrollWidth, width: innerWidth})"

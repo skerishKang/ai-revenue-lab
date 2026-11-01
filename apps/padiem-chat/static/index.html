@@ -89,6 +89,9 @@
        (CTO decision on PR #6274). Sits after interaction-polish.css so the
        collapse rules override the glass-menu block below 920px. -->
   <link rel="stylesheet" href="./mobile-header-collapse.css" data-mobile-header-collapse="true" />
+  <!-- Phone floor (44px press target, 14px text, no decorative art on the first
+       screen). Last, because it corrects sizes the theme sheets pin. -->
+  <link rel="stylesheet" href="./mobile-target-legibility.css" data-mobile-target-legibility="true" />
 </head>
 <body>
   <div class="app-shell" data-state="home" data-page-id="home" data-layout-variant="conversation">
@@ -254,7 +257,7 @@
             <button class="settings-close" id="settingsCloseButton" type="submit" value="cancel" data-locale-aria-label="settings-close" aria-label="설정 닫기">×</button>
           </div>
           <section class="settings-section" aria-labelledby="appearanceTitle">
-            <p class="settings-label" data-locale-key="appearance">APPEARANCE</p>
+            <p class="settings-label" data-locale-key="appearance">화면</p>
             <h3 id="appearanceTitle" data-locale-key="theme">테마</h3>
             <div class="theme-picker" role="group" data-locale-aria-label="theme-picker" aria-label="테마 선택" id="themePicker">
               <button type="button" class="theme-option" data-theme-value="padiem-home" data-locale-key="home-theme" aria-pressed="false">Padiem Home</button>
@@ -264,7 +267,7 @@
             </div>
           </section>
           <section class="settings-section" aria-labelledby="languageTitle">
-            <p class="settings-label" data-locale-key="language">LANGUAGE</p>
+            <p class="settings-label" data-locale-key="language">언어</p>
             <h3 id="languageTitle" data-locale-key="language-choice">언어</h3>
             <div class="language-picker" role="group" data-locale-aria-label="language-picker" aria-label="언어 선택" id="languagePicker">
               <button type="button" class="language-option" data-locale-value="ko" aria-pressed="true">KR</button>
@@ -331,17 +334,17 @@
             <ul class="mcp-settings-list" id="mcpGatewayApprovals" data-locale-aria-label="mcp-settings-approvals" aria-label="확인이 필요한 작업"></ul>
           </section>
           <section class="settings-section" aria-labelledby="adminSettingsTitle" id="adminSettingsSection" hidden>
-            <p class="settings-label">ADMIN</p>
+            <p class="settings-label" data-locale-key="admin-section">관리자</p>
             <h3 id="adminSettingsTitle" data-locale-key="admin-settings-title">관리자</h3>
             <a class="settings-action settings-link" id="adminHubLink" href="./admin" data-locale-aria-label="admin-hub-aria" data-locale-title="admin-hub-aria" aria-label="총관리자 페이지" title="총관리자 페이지" hidden><span aria-hidden="true">◈</span><span data-locale-key="admin-hub">총관리자</span></a>
           </section>
           <section class="settings-section" aria-labelledby="dataSettingsTitle" id="dataSettingsSection">
-            <p class="settings-label">DATA</p>
+            <p class="settings-label" data-locale-key="data-section">데이터</p>
             <h3 id="dataSettingsTitle" data-locale-key="data-settings-title">데이터 관리</h3>
             <div class="settings-actions" id="dataSettingsActions"></div>
           </section>
           <section class="settings-section" aria-labelledby="accountTitle" id="accountSettingsSection" hidden>
-            <p class="settings-label">ACCOUNT</p>
+            <p class="settings-label" data-locale-key="account-section">계정</p>
             <h3 id="accountTitle" data-locale-key="account-title">계정</h3>
             <div class="settings-actions" id="accountPasswordActions" hidden>
               <button class="settings-action" id="passwordChangeOpen" type="button" data-locale-key="password-change-open">비밀번호 변경</button>
@@ -351,7 +354,7 @@
             </div>
           </section>
           <section class="settings-section settings-help" aria-labelledby="settingsHelpTitle">
-            <p class="settings-label">HELP &amp; GUIDE</p>
+            <p class="settings-label" data-locale-key="help-guide-section">도움말·안내</p>
             <h3 id="settingsHelpTitle" data-locale-key="settings-help-title">문서·사용 안내</h3>
             <details class="settings-guide" id="settingsExcelGuide">
               <summary data-locale-key="settings-help-excel">Excel 원본 보관 방법</summary>
@@ -1209,7 +1212,7 @@
   <dialog class="project-dialog" id="projectDialog" aria-labelledby="projectDialogTitle">
     <form class="project-form" id="projectForm">
       <div class="project-dialog-header">
-        <div><p>PROJECT</p><h2 id="projectDialogTitle" data-locale-key="project-new">새 프로젝트</h2></div>
+        <div><p data-locale-key="project-section">프로젝트</p><h2 id="projectDialogTitle" data-locale-key="project-new">새 프로젝트</h2></div>
         <button id="projectDialogClose" class="project-dialog-close" type="button" data-locale-aria-label="project-close" aria-label="프로젝트 창 닫기">×</button>
       </div>
       <label for="projectNameInput" data-locale-key="project-name">프로젝트 이름</label>

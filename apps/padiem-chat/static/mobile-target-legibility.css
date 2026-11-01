@@ -1,0 +1,358 @@
+/* Phone floor for the Chat and Claw screens.
+ *
+ * Two numbers, measured on a signed-in account at 390x844 and 360x780: a press
+ * target is at least 44px on both axes, and text a person reads is at least
+ * 14px. Decorative art is dropped on the first screen so the composer is
+ * reachable without scrolling.
+ *
+ * Every rule sits inside the phone media query, so the desktop surfaces keep
+ * their own metrics. An icon-only control keeps its drawn size and grows only
+ * its hit area (padding plus a content-box clip) instead of becoming a huge
+ * glyph. A text declared at 0 is a screen-reader label behind an icon, not
+ * readable text, so it is left alone.
+ *
+ * The !important pair below is deliberate: the theme sheets pin the same
+ * numbers with !important, and among !important declarations the more specific
+ * selector wins, so those selectors are mirrored here rather than fought.
+ */
+
+@media (max-width: 920px) {
+  /* ---- press floor: 44px on both axes ---- */
+  .side-item,
+  .new-chat,
+  .settings-button,
+  #filesNavButton,
+  #calendarNavButton,
+  #automationNavButton,
+  #clawNavButton,
+  #meetingNavButton,
+  #connectorsNavButton,
+  #utilNavButton,
+  #sidebarSearchButton {
+    min-height: 44px;
+  }
+
+  .sidebar .sidebar-section-toggle,
+  .sidebar .section-add-button,
+  .sidebar-collapse-button,
+  .sidebar-restore-button,
+  .sidebar .history-more,
+  .sidebar .project-manage {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .history-actions-menu button,
+  .project-row-menu button {
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+
+  html[data-theme="padiem-glass"] body .assistant-message .answer-actions .answer-action,
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"], [data-state="claw"]) #messageList .user-message .user-action {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+  }
+
+  #documentFormatsToggle,
+  #documentStarterButton,
+  #clawPushToggle,
+  #clawDeviceGuidanceToggle,
+  #clawPcConsentToggle,
+  #clawManualEntryButton,
+  #clawAutomationCreateOpen,
+  #clawAutomationRetry,
+  #automationAlertsButton,
+  #meetingSaveTitle,
+  #meetingTitleInput,
+  #calendarRetry,
+  #calendarRangeToday,
+  #calendarPreviousRange,
+  #calendarNextRange,
+  #connectorsRetry,
+  #mcpGatewayIssue,
+  #mcpGatewayRefresh,
+  #mcpGatewayDevice,
+  #pcDelegationAdd,
+  #pcDelegationRefresh,
+  #pcDelegationDevice,
+  #pcDelegationMode,
+  #projectDialogCancel,
+  #projectSaveButton,
+  #settingsLogoutButton,
+  #languagePicker button,
+  #themePicker button,
+  .retry-button,
+  .claw-inbox-retry,
+  .standalone-view button,
+  .standalone-view summary,
+  .settings-dialog details > summary {
+    min-height: 44px !important;
+  }
+
+  select,
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="range"],
+  textarea {
+    min-height: 44px;
+  }
+
+  /* A checkbox keeps its drawn box and gains a 44px hit area around it. */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    padding: 12px;
+    box-sizing: content-box;
+    background-clip: content-box;
+  }
+
+  .model-pill,
+  .composer-tier-trigger,
+  .claw-connection-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* ---- reading floor: 14px ---- */
+  .eyebrow,
+  .chat-hero-eyebrow,
+  .claw-hero-eyebrow,
+  .standalone-view-kicker,
+  .calendar-view-kicker,
+  .claw-workspace-kicker,
+  .library-kicker,
+  .settings-header p,
+  .settings-label,
+  .glass-variant-label,
+  .glass-speed-label,
+  .glass-speed-value,
+  .util-tool-desc,
+  .util-tool-note,
+  .util-tool-open,
+  .util-submenu-item,
+  .composer-pc-status-label,
+  .connector-tile-status,
+  .claw-card-status,
+  .claw-connection-label,
+  .claw-connection-toggle span,
+  .capability-terminal,
+  .capability-elapsed,
+  .capability-stage-list span,
+  .answer-action-time,
+  .user-action-time,
+  .user-profile-chip,
+  .user-avatar,
+  .demo-label,
+  .claw-disclosure-caret,
+  .document-formats-toggle,
+  .document-formats-panel,
+  .language-option,
+  .theme-option,
+  .rich-code-copy,
+  .rich-table-download,
+  .history-actions-menu button,
+  .project-files-heading small,
+  .project-form-note,
+  .standalone-view small,
+  .standalone-view label,
+  .standalone-view li,
+  .standalone-view p,
+  #messageList .model-pill span,
+  #messageList code,
+  #messageList pre,
+  #messageList th,
+  #messageList td,
+  #messageList small,
+  #projectForm :is(label, p, small),
+  #settingsExcelGuide :is(li, p),
+  #accountName,
+  #loginButton,
+  #historyTitle,
+  #projectsTitle,
+  #historyEmpty,
+  #projectsEmpty,
+  #libraryKicker,
+  #libraryNote,
+  #utilKicker,
+  #attachmentKind,
+  #attachmentName,
+  #attachmentSize,
+  #calendarError,
+  #calendarRetry,
+  #calendarRangeLabel,
+  #calendarRangeToday,
+  #calendarPreviousRange,
+  #calendarNextRange,
+  #connectorsError,
+  #connectorsRetry,
+  #clawAutomationError,
+  #clawAutomationRetry,
+  #clawAutomationCreateOpen,
+  #clawDeviceGuidanceToggle,
+  #clawPcConsentToggle,
+  #clawManualEntryButton,
+  #clawPcCardStatus,
+  #automationAlertsButton,
+  #mcpGatewayIssue,
+  #mcpGatewayRefresh,
+  #pcDelegationAdd,
+  #pcDelegationRefresh,
+  #pcDelegationFolderHelp,
+  #settingsLogoutButton,
+  #projectDialogCancel,
+  #projectSaveButton,
+  #padiem-shared-tooltip {
+    font-size: 14px !important;
+  }
+
+  /* The theme draws the turn actions as bare icons and pins their size. */
+  html[data-theme="padiem-glass"] body .answer-actions .answer-action,
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"], [data-state="claw"]) #messageList .user-message .user-action,
+  html[data-theme="padiem-glass"] body .answer-action-glyph {
+    font-size: 14px !important;
+  }
+
+  /* The month grid is seven columns wide, so it reaches the floor by dropping
+     its cell padding rather than keeping unreadable text. */
+  .calendar-visual-weekday,
+  .calendar-visual-date,
+  .calendar-visual-event {
+    font-size: 14px !important;
+    padding-left: 1px;
+    padding-right: 1px;
+  }
+}
+
+/* Second pass: the values above that a theme pins with !important at a higher
+   specificity, mirrored so the phone floor actually lands. Measured on the
+   390x844 and 360x780 audit, not guessed. */
+@media (max-width: 920px) {
+  #projectCreateButton {
+    width: 44px !important;
+  }
+
+  .model-pill,
+  .composer-tier-trigger {
+    min-width: 44px !important;
+    font-size: 14px !important;
+  }
+
+  .model-pill span {
+    font-size: 14px !important;
+  }
+
+  #pcDelegationWrite,
+  #pcDelegationMove,
+  #pcDelegationDelete,
+  .meeting-modes input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px !important;
+    padding: 12px !important;
+    box-sizing: content-box !important;
+    background-clip: content-box !important;
+  }
+
+  #historyList .history-actions-menu button,
+  .history-delete,
+  .history-menu-delete,
+  .starter :is(strong, small),
+  #projectForm label span,
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"], [data-state="claw"]) #messageList .user-message :is(.user-avatar, .user-profile-chip, .user-action-time, .user-action),
+  html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"], [data-state="claw"]) .assistant-message :is(.assistant-meta span, .answer-action-time, .answer-action, .answer-action-glyph) {
+    font-size: 14px !important;
+  }
+}
+
+/* Third pass. The project (+) button is pinned by an id-chain selector with
+   !important, so the chain is mirrored rather than out-guessed. A checkbox is
+   drawn 20px on purpose and its whole label row is the press target, so the
+   row gets the floor instead of an oversized box. */
+@media (max-width: 920px) {
+  html body .app-shell .sidebar #projectsSection #projectCreateButton {
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+
+  .pc-delegation-editor fieldset label,
+  .meeting-modes label,
+  .standalone-view fieldset label {
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .rich-table-actions :is(span, button),
+  .rich-code-header span,
+  summary.capability-kit-header :is(strong, span) {
+    font-size: 14px !important;
+  }
+}
+
+/* Fourth pass: the Claw connector cards shrink their own title with an
+   important rule inside its own media query, so the chain is mirrored. */
+@media (max-width: 920px) {
+  .app-shell[data-state="claw"] .claw-workspace[data-view="general"] ~ .conversation .claw-home-card .starter :is(strong, small) {
+    font-size: 14px !important;
+  }
+}
+
+/* Fifth pass: the tier pill is a fixed-width box that a 14px label no longer
+   fits inside. */
+@media (max-width: 920px) {
+  /* The pill keeps its own cap; at 14px the tier name needs the room. */
+  #composerForm .composer-tools .model-pill {
+    width: auto !important;
+    min-width: 44px !important;
+    max-width: 148px !important;
+    flex: 0 0 auto !important;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+/* Sixth pass: the composer row. With the 44px floor the tool buttons need more
+   width than the voice and send controls leave them, so the row wrapped its own
+   children onto the neighbouring buttons and the deep-research control ended up
+   underneath the waveform. Both rows now wrap instead of colliding. */
+@media (max-width: 920px) {
+  .composer-actions {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .composer-tools {
+    flex-wrap: wrap;
+    flex: 1 0 auto;
+    min-width: 0;
+    row-gap: 6px;
+  }
+}
+
+/* Phone-only: the decorative portrait is dropped below the phone width, where
+   it competes with the first screen. It stays on a tablet — the Chat gutter
+   visual suite certifies the shared art layers are visible at 768 and above,
+   and absent at 390 by this decision, not by an accident of CSS scoping. */
+@media (max-width: 620px) {
+  html[data-theme="padiem-glass"] .main-panel::before,
+  html[data-theme="padiem-glass"] .glass-shell-portrait,
+  html[data-theme="padiem-glass"] .glass-shell-field {
+    content: none;
+    display: none !important;
+  }
+}

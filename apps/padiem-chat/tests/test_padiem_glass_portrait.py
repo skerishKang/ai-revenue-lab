@@ -266,12 +266,15 @@ def test_glass_shell_mode_and_speed_are_url_authoritative() -> None:
 
 def test_glass_shell_controls_live_in_appearance_settings() -> None:
     assert 'data-glass-mask-value' in THEME_JS
-    assert '"auto","Auto"' in THEME_JS
-    assert '"on","On"' in THEME_JS
-    assert '"off","Off"' in THEME_JS
+    # The three mask modes and the speed control live in the appearance section.
+    # Their copy is locale-owned since the phone pass, so what this pins is the
+    # control and its key, not a hard-coded language.
+    assert '"auto","glass-mask-auto"' in THEME_JS
+    assert '"on","glass-mask-on"' in THEME_JS
+    assert '"off","glass-mask-off"' in THEME_JS
     assert 'glass-speed-range' in THEME_JS
-    assert 'Motion speed' in THEME_JS
-    assert 'Shell mask' in THEME_JS
+    assert '"glass-motion-speed"' in THEME_JS
+    assert '"glass-mask-mode"' in THEME_JS
     assert '.glass-mask-picker' in PORTRAIT_CSS
     assert '.glass-speed-range' in PORTRAIT_CSS
 
