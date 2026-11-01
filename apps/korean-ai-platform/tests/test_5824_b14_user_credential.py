@@ -641,3 +641,36 @@ def test_the_credential_object_does_not_render_its_own_key():
     assert SENTINEL not in repr(credential)
     assert SENTINEL not in str(credential)
     assert SENTINEL not in str({"body": {"user_credential": credential}})
+
+
+@pytest.mark.asyncio
+async def test_opencode_go_user_key_uses_fixed_origin_and_user_ledger(live_lane, captured):
+    from starlette.testclient import TestClient
+    calls, written = captured
+    app = _app_with(_transport(calls, lambda _request: _completed()))
+    credential = {"provider": "opencode-go",
+                  "endpoint": "https://opencode.ai/inference/go/v1",
+                  "model": "beam-free", "key": SENTINEL}
+    body = _reference(credential)
+    body["model"] = "opencode-go/beam-free"
+    with TestClient(app) as client:
+        response = client.post(CHAT_COMPLETIONS, json=body)
+    await drain()
+    assert response.status_code == 200, response.text
+    assert len(calls) == 1
+    assert str(calls[0].url) == "https://opencode.ai/inference/go/v1/chat/completions"
+    assert json.loads(calls[0].content)["model"] == "beam-free"
+    assert calls[0].headers["authorization"] == "Bearer " + SENTINEL
+    assert len(written) == 1 and written[0].credential_source == "user"
+    assert SENTINEL not in response.text
+    assert SENTINEL not in json.dumps(written[0].to_row(), default=str)
+
+
+def test_opencode_go_user_key_rejects_noncanonical_endpoint():
+    from app.pilot.errors import PilotError
+    with pytest.raises(PilotError) as error:
+        credential_from_body({"user_credential": {
+            "provider": "opencode-go", "endpoint": "https://example.invalid/v1",
+            "model": "beam-free", "key": SENTINEL,
+        }})
+    assert error.value.code == "user_credential_endpoint_unsupported"

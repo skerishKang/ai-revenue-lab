@@ -78,6 +78,11 @@ class _FixedTarget:
 
 _TARGETS = (
     _FixedTarget(
+        provider_id="opencode-go", wire=_OPENAI_CHAT_WIRE,
+        accepted_endpoints=("https://opencode.ai/inference/go/v1",),
+        origin="https://opencode.ai/inference/go/v1",
+    ),
+    _FixedTarget(
         provider_id="openai", wire=_OPENAI_CHAT_WIRE,
         accepted_endpoints=("https://api.openai.com/v1",),
         origin="https://api.openai.com/v1",

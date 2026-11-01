@@ -5,7 +5,7 @@ from .byok_credentials import CUSTOM_PROVIDERS
 
 # Anthropic's existing Go messages adapter is pinned to the Go supplier; it
 # cannot send an Anthropic customer key. Keep that provider on the direct wire.
-SUPPORTED_PROVIDERS = frozenset({"openai", "gemini", "deepseek", "groq", "xai",
+SUPPORTED_PROVIDERS = frozenset({"opencode-go", "openai", "gemini", "deepseek", "groq", "xai",
                                  "perplexity", "openrouter", "huggingface"})
 
 
@@ -27,8 +27,10 @@ async def resolve_reference(state, uid, selection):
     if credential.endpoint.rstrip("/") != spec.base_origin.rstrip("/"):
         return None
     provider = "google" if selection.provider == "gemini" else selection.provider
-    model = selection.model
-    model_id = model if model.startswith(provider + "/") else provider + "/" + model
+    model = spec.upstream_model(selection.model)
+    if model.startswith(provider + "/"):
+        model = model[len(provider) + 1:]
+    model_id = provider + "/" + model
     ref = UserCredentialReference(json.dumps({
         "provider": provider, "endpoint": credential.endpoint,
         "model": model, "key": credential.api_key,

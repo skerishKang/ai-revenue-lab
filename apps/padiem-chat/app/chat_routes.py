@@ -258,7 +258,38 @@ async def _complete_custom_chat(
     messages: list[dict[str, str]],
     reference_context: str | None,
 ) -> dict[str, Any]:
-    """B14-independent path: owner key -> explicit provider model -> answer."""
+    """Route an owner's key through B14 when enabled, otherwise directly."""
+    from .byok_bridge import enabled, resolve_reference
+    if enabled(request.app.state):
+        from .orchestration_bridge import B62OrchestrationError
+        import uuid
+
+        resolved = await resolve_reference(request.app.state, uid, selection)
+        if resolved is None:
+            raise CustomProviderError(
+                422, "user_credential_unsupported_via_b14",
+                "이 공급자 또는 주소는 B14 경유를 지원하지 않습니다.",
+            )
+        bridge = getattr(request.app.state, "orchestration_bridge", None)
+        if bridge is None:
+            raise CustomProviderError(503, "orchestration_unavailable", "AI 연결을 사용할 수 없습니다.")
+        model_id, credential_ref = resolved
+        try:
+            result = await bridge.start(
+                user_id=uid, messages=messages, skill=None, model_id=model_id,
+                user_text=next((m["content"] for m in reversed(messages) if m["role"] == "user"), ""),
+                conversation_id=None, subject_id=None,
+                session_id="byok_" + uuid.uuid4().hex,
+                user_credential_ref=credential_ref,
+                byok_selection={"provider": selection.provider, "model": selection.model},
+                additional_system_context=reference_context,
+            )
+            answer = result.answer
+            if not isinstance(answer, str) or not answer.strip():
+                raise CustomProviderError(502, "malformed_upstream", "AI 답변을 확인할 수 없습니다.")
+            return {"answer": answer}
+        except B62OrchestrationError as exc:
+            raise CustomProviderError(exc.status_code, exc.code, exc.user_message) from None
     return await complete_owner_custom(
         request.app.state,
         uid=uid,

@@ -543,6 +543,8 @@ class B62EngineOrchestrationBridge:
         session_id: str | None = None,
         product_identity: str | None = None,
         pc_action_context: Sequence[Mapping[str, Any]] | None = None,
+        user_credential_ref: str | None = None,
+        byok_selection: Mapping[str, str] | None = None,
     ) -> B62OrchestrationResult:
         engine_request = self.build_engine_request(
             user_id=user_id,
@@ -557,9 +559,13 @@ class B62EngineOrchestrationBridge:
             session_id=session_id,
             product_identity=product_identity,
             pc_action_context=pc_action_context,
+            **({"byok_selection": byok_selection} if byok_selection is not None else {}),
         )
+        wire = engine_request if user_credential_ref is None else {
+            **engine_request, "user_credential_ref": user_credential_ref
+        }
         try:
-            raw = await self._client.orchestrate(engine_request)
+            raw = await self._client.orchestrate(wire)
         except PadiemAiEngineClientError as exc:
             raise _engine_error(exc) from exc
         public = project_public_orchestration(raw)

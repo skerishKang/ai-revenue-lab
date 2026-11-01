@@ -580,3 +580,62 @@ async def test_expired_session_cannot_use_custom_path():
     assert response.status_code == 401
     assert recorder.requests == []
     assert B14Bomb.touches == 0
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("path", ["/api/chat", "/api/chat/stream"])
+async def test_custom_chat_flag_on_uses_engine_byok_without_direct_provider(path):
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    app, _history, store, recorder, _db = build_app()
+    await store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY, now=100)
+    app.state.settings = replace(app.state.settings, byok_via_b14=True)
+    calls = []
+    class FakeBridge:
+        async def start(self, **kwargs):
+            calls.append(kwargs)
+            return SimpleNamespace(answer="B14 response")
+    app.state.orchestration_bridge = FakeBridge()
+
+    response = await request(app, "POST", path, uid=OWNER, json_body=chat_payload())
+    assert response.status_code == 200
+    assert "B14 response" in response.text
+    assert CUSTOM_KEY not in response.text
+    assert len(recorder.requests) == 0
+    assert len(calls) == 1
+    assert calls[0]["model_id"] == "opencode-go/beam-free"
+    ref = json.loads(calls[0]["user_credential_ref"])
+    assert ref["provider"] == "opencode-go"
+    assert ref["model"] == "beam-free"
+    assert ref["key"] == CUSTOM_KEY
+    assert calls[0]["byok_selection"] == {"provider": PROVIDER_ID, "model": MODEL_ID}
+
+
+@pytest.mark.asyncio
+async def test_custom_chat_flag_off_still_uses_direct_provider():
+    app, _history, store, recorder, _db = build_app()
+    await store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY, now=100)
+    response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=chat_payload())
+    assert response.status_code == 200
+    assert len(recorder.requests) == 1
+    assert B14Bomb.touches == 0
+
+
+@pytest.mark.asyncio
+async def test_custom_chat_flag_on_failure_does_not_fall_back_to_direct():
+    from dataclasses import replace
+    from app.orchestration_bridge import B62OrchestrationError
+
+    app, _history, store, recorder, _db = build_app()
+    await store.save(user_id=OWNER, provider_id=PROVIDER_ID, api_key=CUSTOM_KEY, now=100)
+    app.state.settings = replace(app.state.settings, byok_via_b14=True)
+    class FailingBridge:
+        async def start(self, **kwargs):
+            raise B62OrchestrationError("upstream_auth_error", "authorization failed", status_code=403)
+    app.state.orchestration_bridge = FailingBridge()
+    response = await request(app, "POST", "/api/chat", uid=OWNER, json_body=chat_payload())
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "upstream_auth_error"
+    assert len(recorder.requests) == 0
+    assert CUSTOM_KEY not in response.text

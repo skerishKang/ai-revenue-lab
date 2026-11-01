@@ -840,3 +840,21 @@ def test_byok_switch_off_does_not_read_credentials_and_supported_on_uses_owner(m
     assert 'unit-secret-no-real-key' not in repr(ref)
     assert asyncio.run(byok.resolve_reference(state, 'usr_owner', SimpleNamespace(provider='anthropic',model='claude-unit'))) is None
     assert calls == ['usr_owner']
+
+
+@pytest.mark.asyncio
+async def test_completed_byok_bridge_passes_key_only_on_wire_and_not_into_pause_store():
+    client, store = FakeClient(), FakeStore()
+    bridge = B62EngineOrchestrationBridge(client=client, store=store)
+    ref = "test-only-reference-do-not-log"
+    await bridge.start(user_id="usr_owner", messages=[{"role": "user", "content": "hi"}],
+                       skill=None, model_id="opencode-go/beam-free", user_text="hi",
+                       conversation_id=None, session_id="byok_test",
+                       user_credential_ref=ref,
+                       byok_selection={"provider": "opencode-go", "model": "opencode-go/beam-free"})
+    assert client.orchestrate_request["user_credential_ref"] == ref
+    policy = client.orchestrate_request["agent"]["model_policy"]
+    assert policy["user_credential_required"] is True
+    assert client.orchestrate_request["max_retries"] == 0
+    assert len(store.saved) == 1
+    assert ref not in repr(store.saved)
