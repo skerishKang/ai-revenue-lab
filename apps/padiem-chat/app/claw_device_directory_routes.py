@@ -134,7 +134,7 @@ class BrokerDeviceDirectorySource:
             row_facts = facts
             if self._presence_store is not None:
                 try:
-                    presence_row = self._presence_store.load(device_id)
+                    presence_row = self._presence_store.load(device_id=device_id)
                     if inspect.isawaitable(presence_row):
                         presence_row = await presence_row
                 except Exception:
@@ -359,7 +359,7 @@ async def _read_device_directory(
         store = getattr(request.app.state, "mesh_device_presence_store", None)
         if callable(getattr(store, "load", None)):
             try:
-                receipt = store.load(mesh_id)
+                receipt = store.load(device_id=mesh_id)
                 if inspect.isawaitable(receipt):
                     receipt = await receipt
             except Exception:
@@ -409,7 +409,7 @@ async def _read_device_directory(
                 )
                 if callable(getattr(presence_store, "load", None)):
                     try:
-                        receipt = presence_store.load(node_ref)
+                        receipt = presence_store.load(device_id=node_ref)
                         if inspect.isawaitable(receipt):
                             receipt = await receipt
                     except Exception:
