@@ -50,3 +50,19 @@ def test_verdicts_report_unimplemented_checks_as_skipped(tmp_path, monkeypatch):
     assert results["마이그레이션"][0] == "FAIL"
     assert results["견적 XLSX→PDF"][0] == "SKIP"
     assert all(request.method == "GET" for request in opener.requests)
+
+
+
+def test_bookai_unsigned_status_and_absent_route(tmp_path, monkeypatch):
+    monkeypatch.setattr(module.shutil, "which", lambda _: None)
+    class BookOpener:
+        def __init__(self, status):
+            self.status = status
+        def open(self, request, timeout):
+            if request.full_url.endswith("/api/bookai/records"):
+                return Response(self.status)
+            return Response(200)
+    for status, expected in [(401, "PASS"), (404, "SKIP"), (200, "FAIL"), (503, "FAIL")]:
+        rows = module.checks("https://example.test", tmp_path / "missing.sqlite3",
+                             ai_status="PASS", opener=BookOpener(status))
+        assert next(row[1] for row in rows if row[0] == "북AI 기록 API") == expected
