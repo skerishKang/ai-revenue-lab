@@ -13,7 +13,18 @@ REMOTE_CANONICAL_IDS = {PREFIX + name: "tool:padiem:claw-pc-" + name.replace("_"
 OP_TO_TOOL = {name: PREFIX + tool for name, tool in {
     "list": "list_files", "read": "read_file", "write": "write_file",
     "move": "move_file", "delete": "delete_file",
+    # #6460-5: the rest of the read family. A person who searches, lists, opens
+    # and then opens the next page of a file is running four reads in a row; the
+    # batch now carries them as one call. Each step still travels as the same
+    # operation the standalone tool sends, so the PC agent needs no new command.
+    "search_name": "search_files", "search_content": "search_contents",
+    "read_chunk": "read_file_chunk",
 }.items()}
+TOOL_TO_OP = {value: key for key, value in OP_TO_TOOL.items()}
+# The steps that only ever read: find, list, open and open the next range. A
+# batch is offered for this family; write, move and delete keep one action per
+# call so the backup and verification of a single change stay visible.
+READ_OPS = frozenset({"list", "read", "search_name", "search_content", "read_chunk"})
 _HANDLE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -99,9 +110,11 @@ def remote_requested_scope(tool_id, arguments):
     except (TypeError, ValueError, AttributeError):
         return None
     operations = {tool for tool, _ in actions}
-    if operations <= {OP_TO_TOOL["list"]}:
+    listing = {OP_TO_TOOL["list"], OP_TO_TOOL["search_name"]}
+    reading = frozenset(OP_TO_TOOL[op] for op in READ_OPS)
+    if operations <= listing:
         return "files_list"
-    if operations <= {OP_TO_TOOL["list"], OP_TO_TOOL["read"]}:
+    if operations <= reading:
         return "files"
     if operations <= {OP_TO_TOOL["write"], OP_TO_TOOL["move"], OP_TO_TOOL["delete"]}:
         return "files_write"
@@ -111,9 +124,12 @@ def remote_requested_scope(tool_id, arguments):
 def remote_tool_specs():
     text = {"type": "string", "minLength": 1}
     number = {"type": "integer", "minimum": 0}
+    # Every step still carries only the argument keys its own tool accepts; the
+    # read family adds a query and a byte range, never a new kind of action.
     operation = {"type": "object", "properties": {
         "op": {"type": "string", "enum": list(OP_TO_TOOL)}, "path": text,
-        "content": {"type": "string"}, "destination": text,
+        "content": {"type": "string"}, "destination": text, "query": text,
+        "offset": number, "length": {**number, "maximum": 65536},
     }, "required": ["op", "path"], "additionalProperties": False}
     shapes = {
         "read_output": ({"handle": text, "offset": number, "length": {**number, "maximum": 65536}}, ["handle", "offset", "length"]),
@@ -131,7 +147,7 @@ def remote_tool_specs():
         "start_job": "Start one existing authorized file operation in the background; use its job receipt.",
         "job_status": "Check the existing owner/device/run-bound background dispatch.",
         "job_output": "Read a byte range of the verified background result.",
-        "batch": "Run existing file operations after every action passes evidence and delegation checks.",
+        "batch": "Run several existing PC steps in one call. Each step passes the same evidence and delegation checks; reads are the intended use, and a write, move or delete still keeps its own backup and verification.",
         "recall_context": "Read original role-preserved conversation evidence by archived handle and source.",
     }
     specs = []
