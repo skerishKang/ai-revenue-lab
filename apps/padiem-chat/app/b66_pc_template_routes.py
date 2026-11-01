@@ -167,6 +167,49 @@ def _model_mapping(answer: Any) -> dict[str, Any] | None:
     }
 
 
+def _confirmed_value_mapping(answer: Any, confirmed: dict, structure: dict) -> dict | None:
+    """Apply values by confirmed roles only; ignore any model-supplied cell addresses."""
+    if not isinstance(answer, str):
+        return None
+    try:
+        start, end = answer.find("{"), answer.rfind("}")
+        result = json.loads(answer[start:end + 1]) if start >= 0 and end > start else None
+    except ValueError:
+        return None
+    if not isinstance(result, dict) or not isinstance(result.get("values"), dict):
+        return None
+    values = result["values"]
+    if set(values) - set(confirmed):
+        return None
+    formulas = {(sheet.get("name"), cell.get("cell")) for sheet in structure.get("sheets", [])
+                for cell in sheet.get("cells", []) if cell.get("formula")}
+    occupied = {(sheet.get("name"), cell.get("cell")) for sheet in structure.get("sheets", [])
+                for cell in sheet.get("cells", []) if str(cell.get("text", "")).strip()}
+    mapping = {}
+    item_roles = {"item", "quantity", "unit_price", "amount"}
+    for role, value in values.items():
+        slot = confirmed[role]
+        sequence = value if isinstance(value, list) and role in item_roles else [value]
+        match = re.fullmatch(r"([A-Z]{1,3})([1-9][0-9]*)", slot["cell"])
+        if not match or not sequence:
+            return None
+        for offset, entry in enumerate(sequence):
+            if isinstance(entry, (dict, list)) or entry is None or isinstance(entry, bool):
+                return None
+            address = match.group(1) + str(int(match.group(2)) + offset)
+            if (slot["sheet"], address) in formulas or (slot["sheet"], address) in occupied:
+                return None
+            sheet = mapping.setdefault(slot["sheet"], {})
+            if address in sheet:
+                return None
+            sheet[address] = entry
+    if not mapping:
+        return None
+    client = result.get("client", "")
+    return {"client": client.strip() if isinstance(client, str) else "",
+            "mapping": mapping, "extend": []}
+
+
 def _filled_name(client_name: str, day: str) -> str:
     safe = _NAME_SAFE.sub(" ", client_name).strip() or "거래처"
     return "견적서_" + safe + "_" + day + ".xlsx"
@@ -325,16 +368,26 @@ async def pc_quote_fill(request: Request) -> JSONResponse:
         if saved_form is not None and saved_form.get("item_rows"):
             pattern += ("\n\n이 양식에서 지난번 품목 행을 늘린 방식:\n"
                        + json.dumps(saved_form["item_rows"], ensure_ascii=False)[:2000])
+        confirmed = saved_form.get("mapping") if saved_form else None
+        system = _MAPPING_SYSTEM
+        if confirmed:
+            system = ("사용자 요청에서 견적 값만 추출하세요. 위치나 셀 주소는 정하지 마세요. "
+                      "확정된 항목만 사용하고 설명 없이 JSON을 반환하세요: "
+                      '{\"client\": \"거래처\", \"values\": {\"recipient\": \"거래처\"}}. '
+                      "값을 알 수 없는 항목과 수식 항목은 생략하세요. "
+                       "품목이 여러 개면 item, quantity, unit_price, amount 값은 순서가 같은 배열로 반환하세요.")
         result = await completer(
             [{"role": "user", "content": asked.strip()}],
-            additional_system_context=_MAPPING_SYSTEM + pattern + "\n\n양식 구조:\n"
+            additional_system_context=system + pattern + "\n\n양식 구조:\n"
             + json.dumps(structure, ensure_ascii=False)[:_MAX_REQUEST_CHARS * 8],
             attachments=(),
         )
     except Exception:
         return _error(502, "quote_template_mapping_failed")
     answer = result.get("answer") if isinstance(result, dict) else None
-    decided = _model_mapping(answer)
+    confirmed = saved_form.get("mapping") if saved_form else None
+    decided = (_confirmed_value_mapping(answer, confirmed, structure)
+               if confirmed else _model_mapping(answer))
     if decided is None:
         return _error(502, "quote_template_mapping_failed")
 

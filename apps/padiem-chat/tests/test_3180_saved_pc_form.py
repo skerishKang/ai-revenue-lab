@@ -310,7 +310,8 @@ def test_the_quote_screen_lists_and_reuses_the_saved_form():
 
 def test_confirmed_cell_mapping_is_persisted_and_used_on_repeat(monkeypatch):
     lane = Lane()
-    state, history, _, _ = _state(monkeypatch, lane)
+    answer = json.dumps({"client": "가상 거래처", "values": {"recipient": "가상 거래처"}, "mapping": {"견적서": {"Z99": "가상 거래처"}}}, ensure_ascii=False)
+    state, history, _, _ = _state(monkeypatch, lane, answer=answer)
     dispatch = "dsp_" + "b" * 32
     _finished(history, dispatch)
     mapping = {"recipient": {"sheet": "견적서", "cell": "B3"}}
@@ -326,6 +327,7 @@ def test_confirmed_cell_mapping_is_persisted_and_used_on_repeat(monkeypatch):
     assert stored["skill"]["form"]["mapping"] == mapping
     status, _ = _fill(state, dispatch, form_id=form_id, request="가상 거래처")
     assert status == 200
+    assert lane.fill_body["mapping"] == {"견적서": {"B3": "가상 거래처"}}
     assert '"recipient"' in state.b66_quote_interpreter._client.complete.seen["system"]
 
 
@@ -356,3 +358,22 @@ def test_analyzing_form_returns_candidates_without_saving(monkeypatch):
     assert base.pairing.run(state.b66_saved_quote_skill_store.list_skills(
         user_id=OWNER, workspace_id=WORKSPACE,
     )) == []
+
+
+def test_confirmed_items_never_overwrite_template_or_formulas():
+    confirmed = {
+        "item": {"sheet": "가상", "cell": "B5"},
+        "unit_price": {"sheet": "가상", "cell": "D5"},
+    }
+    structure = {"sheets": [{"name": "가상", "cells": [
+        {"cell": "B7", "text": "소계", "formula": False},
+        {"cell": "D7", "text": "=SUM(D5:D6)", "formula": True},
+    ]}]}
+    answer = json.dumps({"values": {"item": ["가상 품목1", "가상 품목2"],
+                                      "unit_price": [100, 200]},
+                         "mapping": {"가상": {"Z99": "잘못된 위치"}}})
+    result = quote_pc._confirmed_value_mapping(answer, confirmed, structure)
+    assert result["mapping"] == {"가상": {"B5": "가상 품목1", "B6": "가상 품목2",
+                                         "D5": 100, "D6": 200}}
+    overflow = json.dumps({"values": {"item": ["가상1", "가상2", "가상3"]}})
+    assert quote_pc._confirmed_value_mapping(overflow, confirmed, structure) is None
