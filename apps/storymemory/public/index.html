@@ -8388,7 +8388,9 @@ window.__smV1823EvidenceUXV1={
     try {
       if (typeof persistUnifiedStore === 'function') persistUnifiedStore();
       const data = JSON.stringify(window.StoryMemoryBackup.snapshot(localStorage), null, 2);
-      const url = URL.createObjectURL(new Blob([data], {type:'application/json'}));
+      const blob = new Blob([data], {type:'application/json'});
+      if (blob.size > 5 * 1024 * 1024) { alert('\uBC31\uC5C5 \uD30C\uC77C\uC774 \uBCF5\uC6D0 \uAC00\uB2A5\uD55C \uD06C\uAE30\uBCF4\uB2E4 \uD07D\uB2C8\uB2E4.'); return; }
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url; a.download = 'storymemory-backup-' + new Date().toISOString().slice(0,10) + '.json';
       document.body.appendChild(a); a.click(); a.remove();
