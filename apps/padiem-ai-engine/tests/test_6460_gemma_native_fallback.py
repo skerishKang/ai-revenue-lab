@@ -26,6 +26,8 @@ class _Request:
     messages: tuple = ()
     tools: tuple = ()
     tool_choice: object = None
+    tool_results: tuple = ()
+    additional_system_context: object = None
     trace_id: str = "tr_gemma"
 
 
@@ -214,8 +216,10 @@ async def test_gemma_reaches_the_pc_harness_through_the_same_native_path(monkeyp
 
     assert seen_models == [GEMMA]
     assert pc.ops == ["list"]
+    # The admitted files_list scope reports its local capabilities on this
+    # integration branch (listing plus the file-name search from #6541).
     assert pc.claims and all(
-        claim["ops"] == ["list"] and claim["source"] == "declared"
+        claim["ops"] == ["list", "search_name"] and claim["source"] == "declared"
         for claim in pc.claims
     )
     assert chunks
