@@ -18,6 +18,11 @@ _DOC = re.compile(r"^doc_[a-f0-9]{32}$")
 _HASH = re.compile(r"^[a-f0-9]{64}$")
 _STATUS = "source_selected_p01_not_started"
 _TTL = timedelta(minutes=30)
+#: Protective bound, kept at 20 (#5573): a selection is a 30-minute pending
+#: intent, not durable storage, and list_owner already shows at most 20, so a
+#: higher number would only let an owner queue work no panel can present.
+#: The count below filters on expires_at, so expired rows never consume the
+#: cap — the window can only fill with genuinely pending selections.
 _MAX_PENDING = 20
 
 
