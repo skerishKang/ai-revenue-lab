@@ -190,7 +190,16 @@ class HttpRpcBinding:
         """
         client = self._client
         if client is None:
-            client = httpx.AsyncClient(timeout=self._timeout, follow_redirects=False)
+            # #6460 4-1: httpx drops an idle pooled connection after 5s by
+            # default, so the first RPC after the 30s scope-cache window paid a
+            # fresh TCP+TLS handshake (the measured ~2s call). 75s keeps the
+            # connection across that reuse window with margin, stays bounded —
+            # never unlimited — and must not exceed the identity service's own
+            # keep-alive timeout (the identity unit templates carry the same 75).
+            client = httpx.AsyncClient(
+                timeout=self._timeout, follow_redirects=False,
+                limits=httpx.Limits(keepalive_expiry=75.0),
+            )
             self._client = client
         return client
 
