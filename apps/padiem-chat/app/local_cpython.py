@@ -225,7 +225,7 @@ def build_app():
     if applied:
         print(f"[local] migrations applied: {applied}")
 
-    db = SqliteD1(connection)
+    db = SqliteD1(connection, threaded=True)
     r2 = ThreadedLocalDiskR2(data_dir / "objects")
 
     # HTTPS stand-ins for the Worker Service bindings. Only an explicitly
