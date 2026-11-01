@@ -97,7 +97,10 @@ def test_parse_keys_case_insensitive():
     assert parse_desktop_op("desktop:keys\nCTRL+S") == ("keys", "ctrl+s")
 
 
-@pytest.mark.parametrize("spec", ["ctrl+alt+del", "f5", "shift", "", "enter " * 1 + "x"])
+# #6460 step 2: the combo list is open, so f5 is a valid key name now;
+# what stays refused is an unknown name, a bare modifier and the SAS chord.
+@pytest.mark.parametrize("spec", ["ctrl+alt+del", "shift", "", "enter " * 1 + "x",
+                                  "hyper+a", "ctrl+ctrl+a"])
 def test_parse_unknown_key_combos_refused(spec):
     with pytest.raises(MeshCentralDesktopRefused):
         parse_desktop_op("desktop:keys\n" + spec)

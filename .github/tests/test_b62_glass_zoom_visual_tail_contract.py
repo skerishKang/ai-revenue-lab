@@ -54,26 +54,24 @@ CONTRACT_TEST = ".github/tests/test_b62_glass_zoom_visual_tail_contract.py"
 # answers with.
 PREVIEW_MARKER = "지금은 미리보기 환경입니다"
 
-if "playwright.async_api" not in sys.modules:
-    _playwright = types.ModuleType("playwright")
-    _async_api = types.ModuleType("playwright.async_api")
-    _async_api.Page = object
-    _playwright.async_api = _async_api
-    sys.modules["playwright"] = _playwright
-    sys.modules["playwright.async_api"] = _async_api
-
-# Sibling CI contract tests install their own partial `playwright.async_api`
-# stub and whichever is collected first owns sys.modules, so the names this
-# suite imports are added to whatever module object is already registered.
-_api = sys.modules.get("playwright.async_api")
-if _api is None:
-    _api = types.ModuleType("playwright.async_api")
-    _playwright = sys.modules.setdefault("playwright", types.ModuleType("playwright"))
-    _playwright.async_api = _api
-    sys.modules["playwright.async_api"] = _api
-for _name in ("Browser", "BrowserContext", "Locator", "Page", "Route", "async_playwright"):
-    if not hasattr(_api, _name):
-        setattr(_api, _name, object)
+# The real Playwright package wins when it is installed: a fake registered
+# first would break later collectors (e.g. the post-cutover smoke imports
+# playwright.sync_api) with "playwright is not a package".
+try:
+    import playwright.async_api  # noqa: F401
+except ImportError:
+    # Sibling CI contract tests install their own partial `playwright.async_api`
+    # stub and whichever is collected first owns sys.modules, so the names this
+    # suite imports are added to whatever module object is already registered.
+    _api = sys.modules.get("playwright.async_api")
+    if _api is None:
+        _api = types.ModuleType("playwright.async_api")
+        _playwright = sys.modules.setdefault("playwright", types.ModuleType("playwright"))
+        _playwright.async_api = _api
+        sys.modules["playwright.async_api"] = _api
+    for _name in ("Browser", "BrowserContext", "Locator", "Page", "Route", "async_playwright"):
+        if not hasattr(_api, _name):
+            setattr(_api, _name, object)
 
 # Importing the suite would otherwise create its evidence directory under
 # the read-only checkout of the plan job.

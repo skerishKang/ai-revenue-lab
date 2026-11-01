@@ -41,9 +41,14 @@ AUTOMATION_PROJECTION = "READ_ONLY_DURABLE_STORE"
 MAX_TITLE_CHARS = 200
 MAX_CONTENT_CHARS = 4_000
 MAX_DESCRIPTION_CHARS = 4_000
-# Provider bound, not a PADIEM ceiling (#5895-C): a calendar reminder
-# override accepts 0..40320 minutes (4 weeks) upstream, so a larger value
-# could not be delivered anyway.
+# Kept, with a verified reason (#5882 A-12). The same 0..40320 is a CHECK on the
+# applied durable table (migrations/013_padiem_calendar.sql), the release schema
+# guard calls a different DDL drift
+# (.github/scripts/b62_d1_migration_013_schema.py), and the import projection
+# carries the provider's own bound (kagent/calendar_contracts.py, #5895-C).
+# Raising only this bound would swap a clean 400 for a storage failure: the
+# CHECK rejects the row and the route answers 500. Nothing here does date
+# arithmetic with the value, so no datetime overflow is involved.
 MAX_REMINDER_MINUTES = 40_320
 MAX_CALENDAR_LIST_LIMIT = 256
 MAX_CALENDAR_LINK_BACKS = 4
@@ -342,14 +347,17 @@ class CalendarAppointment:
                 ) from exc
 
         if reminder_minutes is not None:
-            if not isinstance(reminder_minutes, int) or reminder_minutes < 0:
+            if (isinstance(reminder_minutes, bool)
+                    or not isinstance(reminder_minutes, int)
+                    or reminder_minutes < 0):
                 raise CalendarContractError(
-                    "invalid_reminder_minutes", "reminder_minutes must be a non-negative integer"
+                    "invalid_reminder_minutes",
+                    "알림은 몇 분 전에 울릴지 나타내는 0 이상의 정수여야 합니다.",
                 )
             if reminder_minutes > MAX_REMINDER_MINUTES:
                 raise CalendarContractError(
                     "invalid_reminder_minutes",
-                    f"reminder_minutes exceeds maximum bound of {MAX_REMINDER_MINUTES}",
+                    f"알림은 최대 {MAX_REMINDER_MINUTES // 1_440}일 전까지 설정할 수 있어요.",
                 )
 
         parsed_date: date

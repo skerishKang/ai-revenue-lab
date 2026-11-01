@@ -11,6 +11,13 @@
     const error = new Error(message);
     if (data && data.error && typeof data.error.code === "string") error.code = data.error.code;
     if (status === 422 || (data && data.ok === false && data.error)) error.terminalRecord = true;
+    // A refused submit POST is not a cut stream: the PC run handle is minted
+    // before the request goes out, so when the HTTP response itself says no
+    // (status >= 400 is passed only by the submit call sites), that run was
+    // never created and reading its pending-result can only return 404. The
+    // recovery guard in app.js uses this to skip the check entirely; a stream
+    // that stopped after acceptance throws without a status and still recovers.
+    if (Number.isInteger(status) && status >= 400) error.submissionRejected = true;
     return error;
   }
 

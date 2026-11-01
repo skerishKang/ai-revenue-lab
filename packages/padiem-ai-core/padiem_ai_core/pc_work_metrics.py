@@ -13,6 +13,7 @@ from typing import Any
 PC_METRIC_TOOL_IDS = frozenset({
     "claw.pc.query_drives", "claw.pc.list_files", "claw.pc.read_file",
     "claw.pc.write_file", "claw.pc.move_file", "claw.pc.delete_file",
+    "claw.pc.search_files", "claw.pc.search_contents", "claw.pc.read_file_chunk",
     "claw.pc.read_output", "claw.pc.search_output", "claw.pc.start_job",
     "claw.pc.job_status", "claw.pc.job_output", "claw.pc.batch", "claw.pc.recall_context",
     "claw.pc.browser_open", "claw.pc.browser_read", "claw.pc.browser_screenshot", "claw.pc.browser_act",
@@ -47,6 +48,11 @@ PC_METRIC_COMPACTION_TOKEN_KEYS = (
     "compaction_tokens_saved",
 )
 PC_METRIC_KEYS_V3 = PC_METRIC_KEYS | frozenset(PC_METRIC_COMPACTION_TOKEN_KEYS)
+# Version 4 measures the read-family batch (#6460-5): how many steps one batch
+# carried and how many separate model turns it replaced. A batch still travels to
+# the PC as one command per step, so no PC round trip is claimed as saved here.
+PC_METRIC_BATCH_COUNTERS = ("batch_count", "batch_steps", "batch_model_turns_saved")
+PC_METRIC_KEYS_V4 = PC_METRIC_KEYS_V3 | frozenset(PC_METRIC_BATCH_COUNTERS)
 
 
 class PcWorkMetricsError(ValueError):
@@ -74,10 +80,11 @@ def validate_pc_work_metrics(value: Any) -> dict[str, Any]:
     if not isinstance(value, Mapping):
         raise PcWorkMetricsError("invalid PC metric fields")
     version = value.get("schema_version")
-    if type(version) is not int or version not in {1, 2, 3}:
+    if type(version) is not int or version not in {1, 2, 3, 4}:
         raise PcWorkMetricsError("invalid PC metric version")
     expected_keys = (PC_METRIC_KEYS_V1 if version == 1
-                     else PC_METRIC_KEYS if version == 2 else PC_METRIC_KEYS_V3)
+                     else PC_METRIC_KEYS if version == 2
+                     else PC_METRIC_KEYS_V3 if version == 3 else PC_METRIC_KEYS_V4)
     if set(value) != expected_keys:
         raise PcWorkMetricsError("invalid PC metric fields")
     turn_id = value["turn_id"]
@@ -100,7 +107,14 @@ def validate_pc_work_metrics(value: Any) -> dict[str, Any]:
     if version >= 2:
         for key in PC_METRIC_LIFECYCLE_COUNTERS:
             result[key] = _count(value[key])
-    if version == 3:
+    if version >= 4:
+        for key in PC_METRIC_BATCH_COUNTERS:
+            result[key] = _count(value[key])
+        if result["batch_steps"] < result["batch_count"]:
+            raise PcWorkMetricsError("inconsistent PC batch evidence")
+        if result["batch_model_turns_saved"] != result["batch_steps"] - result["batch_count"]:
+            raise PcWorkMetricsError("inconsistent PC batch evidence")
+    if version >= 3:
         for key in PC_METRIC_COMPACTION_TOKEN_KEYS:
             result[key] = _number(value[key])
         before = result["compaction_input_tokens_before"]

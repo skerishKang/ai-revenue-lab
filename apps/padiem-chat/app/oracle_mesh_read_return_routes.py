@@ -190,7 +190,9 @@ _PRESENCE_ENTRY_KEYS = frozenset({"device_id", "connected"})
 # into that name is what lets the server finish the claim it was given a code
 # for. The name is read, never stored.
 _PRESENCE_ENTRY_OPTIONAL_KEYS = frozenset({"agent_name"})
-_MAX_PRESENCE_ENTRIES = 8
+# The requested device-id list has no arbitrary count cap (#5882 2차): the
+# caller is the trusted executor naming its own devices, and the 8KiB
+# request-body ceiling below is the real bound on how many can arrive.
 _MAX_PRESENCE_BODY_BYTES = 8192
 #: #4139 read lane envelope, shared with the command lane and the executor.
 #: No PADIEM text ceiling on a verified result (Owner decision 2026-10-28).
@@ -1907,6 +1909,18 @@ async def _record_mesh_presence(
             logging.getLogger(__name__).warning("oracle_mesh_presence=store_failed")
 
 
+#: #6460 step 2 — the audit row names a typed value only by length, digest
+#: prefix and an unguessable reference; the value itself is taken once here.
+_DESKTOP_TYPE_MARKER = re.compile(r"\Adesktop:type\n#\d{1,6}:[0-9a-f]{8}:([0-9a-f]{32})\Z")
+
+
+def _desktop_text_ref(command_text: Any) -> str | None:
+    if not isinstance(command_text, str):
+        return None
+    match = _DESKTOP_TYPE_MARKER.fullmatch(command_text)
+    return match.group(1) if match else None
+
+
 async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
     """Executor poll: channel-secret proof, one claimed dispatch, one nonce."""
     mesh_source = _channel_source(request)
@@ -1960,6 +1974,18 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
         return _error(503, "oracle_mesh_dispatch_unavailable")
     if claimed is not True:
         return _response({"ok": True, "dispatch": None})
+    # #6460 step 2: a typed value is taken exactly once, for this claim only.
+    # A missing value is not an error here - the executor refuses the op itself.
+    desktop_text = None
+    text_ref = _desktop_text_ref(pending.get("command_text"))
+    if text_ref is not None:
+        text_store = getattr(request.app.state, "desktop_text_store", None)
+        taker = getattr(text_store, "take_desktop_text", None)
+        if callable(taker):
+            try:
+                desktop_text = await taker(ref=text_ref)
+            except Exception:
+                desktop_text = None
     return _response({
         "ok": True,
         "dispatch": {
@@ -1982,6 +2008,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "request_fingerprint": pending["request_fingerprint"],
             "kind": pending.get("kind") or "read",
             "command_text": pending.get("command_text"),
+            **({"desktop_text": desktop_text} if desktop_text is not None else {}),
             "max_bytes": _oracle_mesh_poll_max_bytes(pending),
             **({"background": True, "owner_ref": pending["user_id"]}
                if pending.get("background") is True else {}),
@@ -2113,7 +2140,7 @@ async def oracle_mesh_read_lane_status(request: Request) -> JSONResponse:
         wanted = body.get("device_ids")
         if wanted is None:
             wanted = []
-        if not isinstance(wanted, list) or len(wanted) > _MAX_PRESENCE_ENTRIES:
+        if not isinstance(wanted, list):
             return _error(400, "oracle_mesh_invalid_body")
         for wanted_id in wanted:
             bounded = _ref(wanted_id, 128)
@@ -3696,17 +3723,22 @@ def _pc_ps_literal(value: str) -> str:
 
 
 def _pc_write_command(
-    *, op: str, target: str, backup_dir: str, relative: str,
+    *, op: str, root: str, target: str, backup_dir: str, relative: str,
     destination: str | None = None, content_b64: str | None = None,
 ) -> str:
     """Build one write, move or delete step for the paired PC.
 
-    Three rules hold across all three operations. The original is copied to the
+    Four rules hold across all three operations. The original is copied to the
     hidden backup folder on the same drive *before* anything changes, and a
     backup that fails stops the step there, so no change is made that cannot be
     undone. The step prints exactly one account line saying what happened and
-    where the original landed - including when it refused. And there is no
-    confirmation anywhere in it: the change happens when the account says it did.
+    where the original landed - including when it refused. There is no
+    confirmation anywhere in it: the change happens when the account says it
+    did. And the step refuses a path that crosses a reparse point (#5994 D3):
+    every folder from the granted root down to the target - and the target
+    itself - is checked for the ReparsePoint attribute (junctions, symbolic
+    links, mounts), the final normalized path must still sit inside the granted
+    root, and a refusal happens before the backup, so nothing changes.
 
     The command is cmdlet and .NET calls only, like the listing command: no
     native program runs, so the PC reports no exit code and the existing result
@@ -3766,6 +3798,40 @@ def _pc_write_command(
         "$verifySource = $target",
         "$verifyTarget = " + ("$destination" if op == "move" else "$target"),
     ])
+    # #5994 D3: the guard walks every folder from the granted root down to the
+    # target (and, for a move, down to the destination) and refuses the step
+    # before any backup or change when one of them is a reparse point — a
+    # shortcut folder must never carry a write, a move or a deletion outside
+    # the grant. The final normalized path is checked against the root as a
+    # second layer. The granted root itself is not checked: a root that is a
+    # link was the owner's own grant decision. A guard malfunction fails
+    # closed, and the refusal names no internal component.
+    link_refusal = "이 위치는 바로가기 폴더를 거쳐서 바꿀 수 없습니다."
+    statements.append(
+        "$guardRoot = " + _pc_ps_literal(root.rstrip("\\/") + "\\") + ";"
+        "$guardHit = $null;"
+        "try {"
+        " foreach ($rel in (@($target) + $(if ($destination) { @($destination) } else { @() }))) {"
+        "  if (-not $rel) { continue };"
+        "  $walk = $guardRoot;"
+        "  $rest = $rel.Substring($guardRoot.Length).TrimStart('/').Replace('/', '\\');"
+        "  foreach ($seg in ($rest -split '\\\\')) {"
+        "   $walk = Join-Path $walk $seg;"
+        "   if (-not (Test-Path -LiteralPath $walk)) { break };"
+        "   $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;"
+        "   if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))"
+        "   { $guardHit = $walk; break } };"
+        " if ($guardHit) { break } }"
+        "} catch { $guardHit = $guardRoot };"
+        "if (-not $guardHit) {"
+        " $full = [IO.Path]::GetFullPath($target);"
+        " if (-not $full.StartsWith($guardRoot, [System.StringComparison]::OrdinalIgnoreCase))"
+        " { $guardHit = $guardRoot } };"
+        "if ($destination -and -not $guardHit) {"
+        " $fullDestination = [IO.Path]::GetFullPath($destination);"
+        " if (-not $fullDestination.StartsWith($guardRoot, [System.StringComparison]::OrdinalIgnoreCase))"
+        " { $guardHit = $guardRoot } };"
+    )
 
     if op == "write":
         body = (
@@ -3803,7 +3869,13 @@ def _pc_write_command(
             " catch { if ($reason -eq 'failed') { $reason = 'path_invalid' } }"
         )
 
-    statements.append(body)
+    # A refused step changes nothing and still answers with one account line:
+    # the refusal names the Korean sentence the owner sees, never an internal
+    # component.
+    statements.append(
+        "if ($guardHit) { $reason = " + _pc_ps_literal(link_refusal) + " }"
+        " else { " + body + " }"
+    )
     # A command's $ok and its expected payload length are not filesystem
     # evidence. Inspect the result after the mutation's catch, even when the
     # mutation reported failure. Inspection failures have their own state and
@@ -3899,6 +3971,27 @@ def _pc_files_command(*, op: str, root: str, relative: str,
     # matching 500-row page as 53,979 bytes in 1,454 ms. `-First` alone silently cut
     # the folder at 200; `-Skip`/`-First` over a fixed sort is a page of the whole
     # list, and total/has_more make the cut visible.
+    # #5994 D3: a listing must not open a shortcut folder either — the same
+    # reparse walk the write lane uses refuses a folder that is reached through
+    # a junction or a symbolic link below the granted root.
+    guard = (
+        "$guardRoot = " + _pc_files_powershell_literal(root.rstrip("\\/") + "\\") + ";"
+        "$guardHit = $null;"
+        "try {"
+        " $walk = $guardRoot;"
+        " foreach ($seg in (" + _pc_files_powershell_literal(relative)
+        + ".Replace('/', '\\') -split '\\\\')) {"
+        "  if (-not $seg) { continue };"
+        "  $walk = Join-Path $walk $seg;"
+        "  if (-not (Test-Path -LiteralPath $walk)) { break };"
+        "  $item = Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue;"
+        "  if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0))"
+        "  { $guardHit = $walk; break } };"
+        "} catch { $guardHit = $guardRoot };"
+        "if ($guardHit) {"
+        " @{error='이 위치는 바로가기 폴더를 거쳐서 볼 수 없습니다.'} | ConvertTo-Json -Compress"
+        " } else {"
+    )
     if filter_term is None:
         scan = ("$p=@(Get-ChildItem -LiteralPath " + folder_literal
                 + " -Force -ErrorAction Stop);")
@@ -3913,7 +4006,8 @@ def _pc_files_command(*, op: str, root: str, relative: str,
             " | Where-Object { $_.Name -like ('*'+$pat+'*') });"
         )
     return (
-        scan
+        guard
+        + scan
         + "$s=@($p | Sort-Object -Property @{Expression={-not $_.PSIsContainer}}, Name);"
         "$n=$s.Count;"
         "$pg=@($s | Select-Object -Skip " + str(offset) + " -First " + str(page_size)
@@ -3921,6 +4015,7 @@ def _pc_files_command(*, op: str, root: str, relative: str,
         "@{offset=" + str(offset) + "; total=$n;"
         " has_more=(($pg.Count + " + str(offset) + ") -lt $n); items=@($pg)}"
         " | ConvertTo-Json -Compress -Depth 3"
+        + " }"
     )
 
 
@@ -4528,6 +4623,7 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                     job_operation["destination"] = payload["destination"]
             command = _pc_write_command(
                 op=op,
+                root=root,
                 target=resolved,
                 backup_dir=_pc_backup_dir(
                     root, datetime.now(timezone.utc).strftime("%Y-%m-%d"),

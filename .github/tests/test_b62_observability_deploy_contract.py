@@ -1,9 +1,19 @@
 """#5700: pure B62 deploy metadata/read-only contracts; no app conftest or live API."""
 from pathlib import Path
 import json
+import os
 import runpy
+import shutil
 
 import pytest
+
+
+def _git_bash() -> str:
+    """Git Bash, not the System32 WSL bash: a bare `bash` resolves to WSL on a
+    Windows host, whose PATH cannot see the Windows-installed jq."""
+    bash = shutil.which("bash")
+    assert bash and "system32" not in bash.lower(), "Git Bash is required"
+    return bash
 
 # Reuse the existing pure generator regression fixtures without collecting
 # the Chat application test tree and its HTTP/runtime conftest dependencies.
@@ -81,8 +91,9 @@ def test_observability_readonly_reports_live_state_without_mutation_or_secret_va
     snapshot = tmp_path / "settings.json"
     snapshot.write_text(json.dumps(settings))
     before = snapshot.read_bytes()
-    result = subprocess.run(["bash", "-eu", "-o", "pipefail", "-c", 'settings="$1"; ' + command, "audit", str(snapshot)],
-                            capture_output=True, text=True, check=True)
+    result = subprocess.run([_git_bash(), "-eu", "-o", "pipefail", "-c", 'settings="$1"; ' + command, "audit", str(snapshot)],
+                            capture_output=True, text=True, check=True,
+                            env={**os.environ, "PATH": os.environ["PATH"]})
     label, value = result.stdout.strip().split("=", 1)
     assert label == "B62_LIVE_OBSERVABILITY"
     reported = json.loads(value)

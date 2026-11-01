@@ -136,3 +136,39 @@ def test_pairing_store_is_reachable_through_the_same_object_the_executor_lane_us
     links = asyncio.run(app.state.pc_device_pairing_store.list_links(
         user_id="usr_" + "a" * 32))
     assert links == []
+
+
+def test_the_body_gate_admits_exactly_the_limit_and_refuses_one_byte_more():
+    """2026-11-02 한도 감사 2번 — RPC 본문 상한 8MB의 경계 계약.
+
+    JSON 공백으로 본문을 정확히 상한에 맞춘다(파싱 결과는 같은 호출): 정확히 상한은
+    200 통과, +1바이트는 기존과 같은 413/queue_body_too_large.
+    """
+    from internal_store import MAX_INTERNAL_BODY_BYTES
+
+    app = _app()
+
+    def raw_body(total):
+        wire = {"method": "list_links", "arguments": {"user_id": "usr_" + "a" * 32}}
+        body = json.dumps(wire).encode("utf-8")
+        pad = total - len(body)
+        assert pad >= 0
+        return b"{" + b" " * pad + body[1:]
+
+    at_limit = raw_body(MAX_INTERNAL_BODY_BYTES)
+    assert len(at_limit) == MAX_INTERNAL_BODY_BYTES
+    admitted = _Request(app.state, None)
+    admitted._body = at_limit
+    admitted.headers["content-length"] = str(len(at_limit))
+    ok = asyncio.run(_handler(app)(admitted))
+    assert ok.status_code == 200, ok.body
+    assert _body(ok)["ok"] is True
+
+    over = raw_body(MAX_INTERNAL_BODY_BYTES + 1)
+    assert len(over) == MAX_INTERNAL_BODY_BYTES + 1
+    refused_request = _Request(app.state, None)
+    refused_request._body = over
+    refused_request.headers["content-length"] = str(len(over))
+    refused = asyncio.run(_handler(app)(refused_request))
+    assert refused.status_code == 413
+    assert _body(refused)["error"]["code"] == "queue_body_too_large"

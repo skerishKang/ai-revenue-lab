@@ -126,11 +126,54 @@ def output_dir() -> Path:
     return Path(root) / "PadiemClaw" / "browser-output"
 
 
+def _backend_browser_found(backend: str) -> bool:
+    """Whether the chosen backend browser is really installed on this PC.
+
+    The pinned Playwright MCP server launches the system Chrome or Edge
+    channel; it never downloads a browser on the representative's machine.
+    Detecting the missing browser here keeps the lane off with guidance
+    instead of an opaque failure from the child process.
+    """
+    executable = {"chrome": "chrome.exe", "msedge": "msedge.exe"}.get(backend)
+    if executable is None:
+        return False
+    if shutil.which(executable):
+        return True
+    roots = (
+        os.environ.get("ProgramFiles"),
+        os.environ.get("ProgramFiles(x86)"),
+        os.environ.get("LOCALAPPDATA"),
+    )
+    folders = {"chrome": ("Google", "Chrome", "Application"),
+               "msedge": ("Microsoft", "Edge", "Application")}[backend]
+    for root in roots:
+        if root and Path(root).joinpath(*folders, executable).is_file():
+            return True
+    return False
+
+
 def _mcp_command() -> list[str]:
     npx = shutil.which("npx.cmd") or shutil.which("npx")
     if npx is None:
-        raise PcBrowserError("browser_unavailable", "PC browser use needs Node.js (npx) on this PC")
+        raise PcBrowserError(
+            "browser_unavailable",
+            "이 PC에 Node.js(npx)가 없어 브라우저 기능만 꺼져 있습니다. "
+            "Node.js 18 이상을 설치하면 다시 켜집니다.",
+        )
     backend = os.environ.get("PADIEM_PC_BROWSER_BACKEND", "chrome").strip() or "chrome"
+    if backend not in {"chrome", "msedge"}:
+        raise PcBrowserError(
+            "browser_unavailable",
+            "브라우저 백엔드 설정(PADIEM_PC_BROWSER_BACKEND)이 지원하지 않는 값입니다. "
+            "chrome 또는 msedge로 설정해 주세요.",
+        )
+    if not _backend_browser_found(backend):
+        wanted = "Edge" if backend == "msedge" else "Chrome"
+        raise PcBrowserError(
+            "browser_unavailable",
+            f"이 PC에서 {wanted}를 찾지 못해 브라우저 기능만 꺼져 있습니다. "
+            f"{wanted}를 설치하면 다시 켜집니다.",
+        )
     command = [
         npx, "-y", MCP_PACKAGE,
         "--headless",

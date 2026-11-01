@@ -29,6 +29,20 @@ from local_agent_broker_android_profile import ANDROID_PROFILE_DEVICE_ROUTE
 #: challenge, never from the request.
 PAIRING_REDEEM_DEVICE_ROUTE = "/v1/broker/pairings/redeem"
 _PAIRING_REDEEM_REQUEST_KEYS = frozenset({"challenge_id", "device_id", "proof_ref", "now"})
+_CLIENT_VERSION_RE = re.compile(r"^\d{1,9}\.\d{1,9}\.\d{1,9}(?:-rc\d{1,9})?$")
+_CLIENT_VERSION_MAX_CHARS = 32
+
+
+def _client_version(value):
+    """One bounded, shape-checked version, or ``None`` (drop, not fail)."""
+    if not isinstance(value, str):
+        return None
+    trimmed = value.strip()
+    if not trimmed or len(trimmed) > _CLIENT_VERSION_MAX_CHARS:
+        return None
+    if _CLIENT_VERSION_RE.fullmatch(trimmed) is None:
+        return None
+    return trimmed
 _PAIRING_PROOF_REF = re.compile(r"^pairing-proof:[0-9a-f]{64}$")
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 
@@ -198,9 +212,15 @@ class LocalAgentBrokerDeviceHttpService:
                 "Local Agent broker pairing is not configured",
             )
         try:
-            payload = _closed_mapping(
-                decoded, _PAIRING_REDEEM_REQUEST_KEYS, "pairing redeem request",
-            )
+            # Four mandatory keys are today's exact contract; client_version is
+            # the one additive optional key an old Connector omits. Both shapes
+            # are accepted: the legacy body and the version-reporting body.
+            if type(decoded) is not dict or frozenset(decoded) not in (
+                _PAIRING_REDEEM_REQUEST_KEYS,
+                _PAIRING_REDEEM_REQUEST_KEYS | frozenset({"client_version"}),
+            ):
+                raise ValueError("pairing redeem request schema mismatch")
+            payload = decoded
             challenge_id = payload["challenge_id"]
             device_id = payload["device_id"]
             proof_ref = payload["proof_ref"]
@@ -223,6 +243,7 @@ class LocalAgentBrokerDeviceHttpService:
                     device_id=device_id,
                     proof_ref=proof_ref,
                     server_now=server_now,
+                    client_version=_client_version(payload.get("client_version")),
                 )
             )
         except ControlPlaneContractError:
@@ -261,7 +282,8 @@ class LocalAgentBrokerDeviceHttpService:
         )
 
     def _redeem_enrollment_once(
-        self, *, challenge_id: str, device_id: str, proof_ref: str, server_now: datetime,
+        self, *, challenge_id: str, device_id: str, proof_ref: str,
+        server_now: datetime, client_version: str | None = None,
     ) -> tuple[Any, bytes]:
         """Read the stored binding and redeem under exactly that binding.
 
@@ -280,6 +302,7 @@ class LocalAgentBrokerDeviceHttpService:
             account_ref=binding.account_ref,
             workspace_ref=binding.workspace_ref,
             now=server_now,
+            client_version=client_version,
         )
 
     def handle(self, envelope: dict[str, Any]) -> dict[str, Any]:

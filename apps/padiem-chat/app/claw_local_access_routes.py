@@ -50,6 +50,10 @@ from typing import Any, Mapping, Protocol
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from kagent.connector_version_compat import (
+    connector_version_thresholds,
+    derive_device_compatibility,
+)
 from .auth_routes import auth_ready, current_user_id
 from .claw_local_projection import (
     WEB_HANDOFF_CONTRACT_VERSION,
@@ -246,6 +250,22 @@ def _failure(reason: str, conversation_id: str | None) -> JSONResponse:
     )
 
 
+def _device_compatibility(value: Any) -> Any:
+    """Judge connector-version compatibility for one projected device.
+
+    Pure display judgment (``kagent.connector_version_compat``): an
+    unreported/unknown version — every device today, since no wire carries
+    ``client_version`` yet — returns ``UNKNOWN`` and therefore produces no
+    variant, exactly the pre-compatibility behaviour. The thresholds come from
+    the deployment env: ``PADIEM_CONNECTOR_LATEST_VERSION`` (default the
+    prepared release 0.3.0-rc1) and ``PADIEM_CONNECTOR_MIN_VERSION`` (default
+    off, so nobody is ever labelled update-required until the owner decides).
+    """
+
+    latest, minimum = connector_version_thresholds()
+    return derive_device_compatibility(value, latest_version=latest, minimum_version=minimum)
+
+
 async def claw_local_access(request: Request) -> JSONResponse:
     """Project canonical server device state into Web lifecycle vocabulary.
 
@@ -317,6 +337,7 @@ async def claw_local_access(request: Request) -> JSONResponse:
                     _read(projected, "canonical_state"),
                     device_name=_read(projected, "device_name"),
                     platform=_read(projected, "platform"),
+                    compatibility=_device_compatibility(_read(projected, "client_version")),
                 ),
                 "handoff": handoff_projection(
                     value=_read(projected, "handoff_value"),

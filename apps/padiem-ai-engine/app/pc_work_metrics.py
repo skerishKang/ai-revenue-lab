@@ -47,6 +47,8 @@ class PcWorkMetricsCollector:
         self._dispatches: set[str] = set()
         self._stored_outputs: set[str] = set()
         self._background_jobs: set[str] = set()
+        self._batches = 0
+        self._batch_steps = 0
         self._compactions = 0
         self._compaction_tokens_before = 0.0
         self._compaction_tokens_after = 0.0
@@ -120,6 +122,17 @@ class PcWorkMetricsCollector:
         if self._outcome == "running" and isinstance(job_id, str) and job_id:
             self._background_jobs.add(job_id)
 
+    def mark_batch(self, steps):
+        """Count one accepted read batch and the steps it carried.
+
+        The saving is a model turn, not a PC round trip: each step still travels
+        to the PC as its own command until the agent understands batches.
+        """
+        if self._outcome != "running" or type(steps) is not int or steps < 1:
+            return
+        self._batches += 1
+        self._batch_steps += steps
+
     def mark_confirmation_required(self):
         if self._outcome == "running":
             self._confirmation = True
@@ -156,7 +169,9 @@ class PcWorkMetricsCollector:
         result_estimate = sum(model["results"] for model in self._models)
         saved = self._compaction_tokens_before - self._compaction_tokens_after
         return validate_pc_work_metrics({
-            "schema_version": 3, "turn_id": self.turn_id, "tool_calls": tools, **totals,
+            "schema_version": 4, "turn_id": self.turn_id, "tool_calls": tools, **totals,
+            "batch_count": self._batches, "batch_steps": self._batch_steps,
+            "batch_model_turns_saved": self._batch_steps - self._batches,
             "stored_output_count": len(self._stored_outputs),
             "compaction_count": self._compactions,
             "compaction_input_tokens_before": self._compaction_tokens_before,

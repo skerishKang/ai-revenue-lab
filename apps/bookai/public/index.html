@@ -176,12 +176,12 @@
     <button type="button" class="auth-gate-close" id="authGateClose" aria-label="클라우드 설정 닫기">×</button>
     <span class="auth-gate-kicker">CLOUD MEMORY</span>
     <h2 id="authGateTitle">기억을 기기 밖에도<br>이어두시겠어요?</h2>
-    <p id="authGateCopy">읽기 기록과 Memory는 현재 기기에 저장됩니다. 로그인과 기기 간 동기화는 준비 중입니다.</p>
+    <p id="authGateCopy">읽기 기록과 Memory는 로그인하지 않아도 이 기기에 저장됩니다. 파디엠 계정으로 로그인하면 계정에도 저장되어 다른 기기에서도 이어집니다.</p>
     <div class="auth-gate-state" id="authGateState">
       <i></i>
       <div><b>LOCAL FIRST</b><span>지금은 이 기기에만 저장 중</span></div>
     </div>
-    <button type="button" class="auth-gate-primary" id="authGatePrimary">로그인 안내</button>
+    <button type="button" class="auth-gate-primary" id="authGatePrimary">파디엠으로 로그인</button>
     <button type="button" class="auth-gate-secondary" id="authGateSecondary">지금은 로컬로 계속</button>
     <div class="auth-gate-backup" aria-label="기기 기록 백업">
       <button type="button" id="smBackupExport" class="auth-gate-secondary">기록 백업하기</button>
@@ -3016,8 +3016,8 @@ function updateAuthGateUI({syncing=false,error=false}={}){
     state.querySelector('b').textContent='LOCAL FIRST';
     state.querySelector('span').textContent='지금은 이 기기에만 저장 중';
     title.innerHTML=__smAuthBridge.installed?'기억을 기기 밖에도<br>이어두시겠어요?':'기억은 지금<br>이 기기에 저장됩니다.';
-    copy.textContent=__smAuthBridge.installed?'로그인 전에도 읽기 기록과 Memory는 이 기기에 저장됩니다. 로그인하면 다른 기기에서도 이어갈 수 있습니다.':'읽기 기록과 Memory는 현재 기기에 저장됩니다. 로그인과 기기 간 동기화는 준비 중입니다.';
-    primary.textContent=__smAuthBridge.installed?'로그인하고 동기화':'로그인 안내';
+    copy.textContent='읽기 기록과 Memory는 로그인하지 않아도 이 기기에 저장됩니다. 파디엠 계정으로 로그인하면 계정에도 저장되어 다른 기기에서도 이어집니다.';
+    primary.textContent=__smAuthBridge.installed?'로그인하고 동기화':'파디엠으로 로그인';
     secondary.textContent='지금은 로컬로 계속';
   }
 }
@@ -3025,7 +3025,7 @@ async function authGatePrimaryAction(){
   if(!__smAuthBridge.authenticated){
     if(!__smAuthBridge.installed){
       const copy=document.getElementById('authGateCopy');
-      if(copy)copy.textContent='로그인과 기기 간 동기화는 아직 준비 중입니다. 읽기 기록과 Memory는 현재 기기에 저장됩니다.';
+      if(copy)copy.textContent='파디엠 계정으로 로그인하면 읽기 기록과 Memory가 계정에도 저장되어 다른 기기에서도 이어집니다. 지금까지의 기록은 이 기기에 남아 있습니다.';
       return;
     }
     try{
@@ -4570,7 +4570,7 @@ function setReaderContext(ctx={}){
        <div class="reader-page-note"><b>CURRENT READING</b>${escapeHtml(note)}</div>`,
       `<p class="verse">읽다가 남긴 밑줄·메모·인물·장소 정보는 왼쪽 Memory에 누적되고, 오른쪽 AI Companion은 현재까지 읽은 범위와 그 기록을 함께 사용합니다.</p>`,
       `<p class="verse">본문을 이용할 수 있게 되면 이곳에서 읽을 수 있습니다.</p>
-       <div class="reader-page-note"><b>NO FALSE TEXT</b>본문을 확인할 수 없는 경우 내용을 임의로 표시하지 않습니다.</div>`
+       <div class="reader-page-note"><b>본문 확인 불가</b>본문을 확인할 수 없는 경우 내용을 임의로 표시하지 않습니다.</div>`
     ];
 
     const generic=[['현재 책',book],['마지막 표시','최근 밑줄과 메모'],['읽기 맥락',note],['질문 기록','현재 책의 AI 대화']];
@@ -4733,7 +4733,13 @@ document.getElementById('pageTurnNext').onclick=()=>animateReaderPageTurn(1);
 function animateReaderPageTurn(step){return window.StoryMemoryReaderViewRuntimeV1.animateReaderPageTurn.apply(this,arguments);}
 __smInitialReaderSetup=true;
 try{setReaderContext({kind:'bible',book:'성경',volume:'고린도전서',chapter:3,chapterCount:16});}finally{__smInitialReaderSetup=false;}
-requestAnimationFrame(()=>{try{renderTodayHome()}catch(_){}});
+/* First run has no session to restore, so nothing ever recorded the bundled entities of this
+   recommended passage: the home counted 0 while the second load counted 3. Record the context
+   now that the initial setup guard is down, so the first paint already carries the same number.
+   It runs inside this frame (before the store-existence check below in the next callback): a
+   scheduleUnifiedPersist timer queued earlier could otherwise create the store first frame and
+   send boot down the session-restore path on a fresh install. */
+requestAnimationFrame(()=>{try{recordCurrentContextEntityLedger();renderTodayHome()}catch(_){}});
 
 requestAnimationFrame(()=>{
   try{

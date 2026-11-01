@@ -135,6 +135,7 @@
       </nav>
       <nav class="side-nav" aria-label="도구 및 연결">
         <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">연결</span></button>
+        <a class="side-item" id="helpNavLink" href="./help.html"><span class="side-icon" aria-hidden="true">?</span><span data-locale-key="nav-help">사용 안내</span></a>
       </nav>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
@@ -143,6 +144,7 @@
           <button class="section-add-button" id="projectCreateButton" type="button" data-locale-aria-label="create-project-aria" aria-label="새 프로젝트 만들기">＋</button>
         </div>
         <div id="projectsList"></div>
+        <p class="project-list-note" id="projectsListNote" role="status" aria-live="polite" hidden></p>
         <p class="history-empty" id="projectsEmpty" data-locale-key="projects-empty" hidden>아직 프로젝트가 없습니다.</p>
       </section>
       <section class="recent-section" id="historySection" aria-labelledby="historyTitle" hidden>
@@ -1251,7 +1253,7 @@
         <div class="project-files-heading">
           <div><strong id="projectFilesTitle" data-locale-key="project-files">프로젝트 파일</strong><small data-locale-key="project-files-limit">TXT·Markdown·CSV·JSON·PDF·DOCX·HWPX</small><small>HWPX는 글자만 읽으며 표와 이미지는 일부 읽지 못할 수 있습니다.</small><small class="project-files-usage" id="projectFilesUsage" hidden></small></div>
           <label class="project-file-add" for="projectFileInput" data-locale-key="project-file-add">＋ 파일 추가</label>
-          <input id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/hwp+zip,.hwpx" hidden />
+          <input id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/hwp+zip,.hwpx,.hwp" hidden />
         </div>
         <div class="project-files-list" id="projectFilesList"></div>
         <p class="project-files-empty" id="projectFilesEmpty" data-locale-key="project-files-empty" hidden>저장된 프로젝트 파일이 없습니다.</p>

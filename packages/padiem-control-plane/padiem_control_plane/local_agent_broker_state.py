@@ -541,6 +541,7 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
         credential: bytes,
         now: datetime,
         credential_ttl_seconds: int = 2_592_000,
+        client_version: str | None = None,
     ) -> BrokerDeviceBinding:
         return self._mutate(
             lambda authority: authority.register_binding(
@@ -551,6 +552,7 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 credential=credential,
                 now=now,
                 credential_ttl_seconds=credential_ttl_seconds,
+                client_version=client_version,
             ),
         now=now,
         )

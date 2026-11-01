@@ -28,7 +28,12 @@ SOURCE = ROOT / ".github/scripts/b62_visual_timing.py"
 
 # The helper only needs playwright for type annotations, and the browser QA
 # contract jobs run without the browser package installed.
-if "playwright.async_api" not in sys.modules:
+# The real Playwright package wins when it is installed: a fake registered
+# first would break later collectors (e.g. the post-cutover smoke imports
+# playwright.sync_api) with "playwright is not a package".
+try:
+    import playwright.async_api  # noqa: F401
+except ImportError:
     _playwright = types.ModuleType("playwright")
     _async_api = types.ModuleType("playwright.async_api")
     _async_api.Page = object

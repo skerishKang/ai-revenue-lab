@@ -131,6 +131,9 @@
 
 .project-files-status {
   margin: 8px 0 0;
+  /* #6126: the legacy-HWP save-as guidance is an ordinary two-line status
+     note here, never the red error row. */
+  white-space: pre-line;
 }
 
 @media (max-width: 680px) {

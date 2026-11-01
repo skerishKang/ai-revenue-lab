@@ -39,6 +39,9 @@
     // "남은 N개" and never present a part of a folder as the whole of it.
     total: null, hasMore: false, nextCursor: null, loadingMore: false, partial: false,
     filter: "", query: "", seen: null,
+    // An import may name the file formats it can use (`accept`); anything else on
+    // the PC stays out of the list it sees. Null lists everything, as before.
+    accept: null,
   };
   // Every stop raises this, so a wait that is still in flight notices it and returns
   // instead of polling on for an operation the owner has left behind.
@@ -253,10 +256,34 @@
     pageInto(body, false);
   }
 
+  // A file's own extension, lowercase and with the dot — the only part of a name
+  // the accept list reads.
+  function fileExtension(name) {
+    const value = String(name || "");
+    const dot = value.lastIndexOf(".");
+    return dot < 0 ? "" : value.slice(dot).toLowerCase();
+  }
+
+  // The host's formats, cleaned: lowercase dotted suffixes only, and an empty or
+  // malformed list means "no filter", never "show nothing".
+  function acceptList(value) {
+    if (!Array.isArray(value)) return null;
+    const list = value.map((ext) => String(ext || "").trim().toLowerCase())
+      .filter((ext) => /^\.[a-z0-9]{1,10}$/.test(ext));
+    return list.length ? list : null;
+  }
+
   function visibleItems() {
+    let items = state.items;
+    if (state.accept) {
+      // Folders always stay: stepping into them is how the owner reaches the
+      // files the list is for. Files outside the accepted formats do not show.
+      items = items.filter((item) => item.kind === "folder"
+        || state.accept.indexOf(fileExtension(item.name)) >= 0);
+    }
     const needle = state.filter.trim().toLowerCase();
-    if (!needle) return state.items;
-    return state.items.filter(
+    if (!needle) return items;
+    return items.filter(
       (item) => String(item.name || "").toLowerCase().includes(needle));
   }
 
@@ -741,7 +768,12 @@
             return;
           }
           close();
-          onSave(saved);
+          // 2026-11-02: the caller's success line names the folder the owner
+          // picked ("." is the granted root — no folder name to add there).
+          const folder = state.path && state.path !== "."
+            ? String(state.path).split("/").pop()
+            : "";
+          onSave(saved, folder);
         });
         return;
       }
@@ -867,6 +899,7 @@
     state.filter = "";
     state.query = "";
     state.seen = null;
+    state.accept = acceptList(settings.accept);
     state.selection = null;
     state.chosenPath = null;
     state.error = null;

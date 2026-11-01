@@ -27,10 +27,24 @@ test("package manifest exposes the claw-connect bin", () => {
   assert.ok(manifest.files.includes("claw_connect/"));
 });
 
+/**
+ * The product version has one home: CONNECT_VERSION in claw_connect/__init__.py.
+ * The build scripts parse that same line (see build-windows-standalone.ps1), so a
+ * release bump must not require editing this test — pinning a literal here made
+ * the wrapper-vs-test disagreement look like a wrapper bug.
+ */
+function connectVersion() {
+  const source = readFileSync(path.join(pkgRoot, "claw_connect", "__init__.py"), "utf8");
+  const match = /^CONNECT_VERSION = "([^"]+)"/m.exec(source);
+  assert.ok(match, "CONNECT_VERSION not found in claw_connect/__init__.py");
+  return match[1];
+}
+
 test("the wrapper prints the product version", () => {
   const result = runWrapper(["--version"]);
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /PADIEM Connector 0\.1\.1-rc2/);
+  const version = connectVersion().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  assert.match(result.stdout, new RegExp(`PADIEM Connector ${version}(?=\\s|$)`));
 });
 
 test("the wrapper forwards to the same module the installer runs", () => {

@@ -70,5 +70,9 @@ jobs:
       - name: Check the browser module parses
         run: node --check apps/padiem-council-apps/static/council-app.js
 
+      - name: Install the pinned phone-measurement browser
+        run: |
+          python -m playwright install --with-deps --only-shell chromium
+
       - name: Test the council apps contracts
         run: python -m pytest apps/padiem-council-apps/tests -q

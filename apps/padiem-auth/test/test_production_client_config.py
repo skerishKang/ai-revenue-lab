@@ -67,6 +67,6 @@ class BookAiClientConfigTest(unittest.TestCase):
         client = json.loads(config['vars']['PADIEM_AUTH_CLIENTS'])['b61']
         self.assertEqual(client['redirect_uris'], ['https://bookai.padiem.net/auth/callback'])
         keys = client['jwks']['keys']
-        self.assertEqual([key['kid'] for key in keys], ['b61-bookai-6affe050'])
+        self.assertEqual([key['kid'] for key in keys], ['b61-bookai-6affe050', 'b61-bookai-9b409057'])
         self.assertTrue(all(key.get('kty') == 'EC' and key.get('crv') == 'P-256' and 'd' not in key for key in keys))
 

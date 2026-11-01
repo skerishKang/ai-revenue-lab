@@ -2114,6 +2114,84 @@ html.council-in-workspace .council-card.active .council-card-select::after { con
   .council-strip li { border-left: 0; padding-left: 0; }
   .council-works { margin-top: 0; }
 }
+/* 보관함 행 단추는 44px 하한 블록이 inline-flex 로 잡아 둔다. 이름·글자 수를
+   인라인 span 으로 나눴으므로(모바일 한 줄 말줄임) 데스크톱에서는 두 span 이
+   글자처럼 이어지도록 블록 맥락으로 되돌린다 — 모바일 블록만 flex 로 바꾼다. */
+.council-archive-item button:not(.council-record-move) { display: inline-block; }
+
+/* ── 휴대폰 가독성 (#6591 · 2026-11-02, Chat #6592와 같은 기준) ──────────────
+   컴2 실측(390×844·360×780, 로그인 전): 14px 미만 글씨, 44px 미만 누르기,
+   사진 층의 오른쪽 +6px. 이 블록은 휴대폰 너비에서만 적용되고 데스크톱 값은
+   그대로 둔다 — 1440 실측(eyebrow 11.5px, 카드 버튼 13.5px, 제목 44px)은
+   test_mobile_legibility_261102 가 고정한다. */
+@media (max-width: 620px) {
+  /* 읽는 글씨 하한 14px. 장식 라벨(배지·번호)도 화면에 보이는 글자다. */
+  .council-eyebrow,
+  .council-works-side,
+  .council-card-select,
+  .council-card-badge,
+  .council-card-index,
+  .council-strip li,
+  .council-strip-body small,
+  .council-footer,
+  .council-footer-note,
+  .council-badge,
+  .council-badge-action,
+  .council-back,
+  .council-workspace-title,
+  .council-theme-value,
+  .council-theme-legend,
+  .council-theme-note,
+  .council-theme-group button,
+  .council-country,
+  .council-country select {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  /* 14px 에서 .3em 자간은 한 줄을 넘긴다. */
+  .council-eyebrow { letter-spacing: .16em; }
+  /* 사진 층의 확대(transform)가 오른쪽으로 6px 넘쳤다. 휴대폰은 cover 그대로. */
+  .council-photo-layer { transform: none; }
+  /* 건너뛰기 링크: 초점 전에도 44px 높이를 유지한다. */
+  .council-skip { min-height: 44px; }
+  /* 국가·스타일 패널은 상단 띠가 두 줄로 접히면 트리거(작은 원) 기준
+     right:0 으로 화면 왼쪽을 넘었다. 휴대폰에서는 상단 띠 기준 한 장으로 편다. */
+  .council-theme { position: static; }
+  .council-theme-panel {
+    left: 20px;
+    right: 20px;
+    width: auto;
+  }
+
+  /* 보관함 행: 좁은 폭에서 이름이 글자 중간에서 끊겼다("E2E 회 / 의.txt (71자)").
+     이름은 한 줄 말줄임, 글자 수와 ↑↓ 는 오른쪽에 고정해 이름과 겹치지 않는다. */
+  .council-archive ul { grid-template-columns: minmax(0, 1fr); }
+  .council-archive-item { gap: 6px; min-width: 0; }
+  .council-archive-item > button:not(.council-record-move) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+  /* `.council-archive-item button`(0,2,1) 이 `.council-record-move`(0,1,0) 의
+     flex 를 이겨 ↑↓ 가 이름과 공간을 3등분했다. 이동 단추는 제 크기로 고정. */
+  .council-archive-item > .council-record-move { flex: 0 0 auto; }
+  .council-archive-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .council-archive-count {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 390px) {
   .council-body { font-size: 16px; }
   .council-hero { padding-top: 158px; }

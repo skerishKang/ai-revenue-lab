@@ -1136,7 +1136,7 @@ def test_a_pinned_output_that_no_longer_matches_its_digest_is_not_served(monkeyp
     assert status == 503 and body["error"]["code"] == "oracle_mesh_original_unavailable"
 
 
-# ── the legacy .hwp reference: the lane reads it, the Worker only ferries ───
+# ── the legacy .hwp reference: #6126 — never converted, one guidance code ───
 
 LANE_SECRET = "fixture-file-lane-secret-" + "0" * 16
 
@@ -1152,20 +1152,18 @@ def _lane_client(transport):
     return FileLaneClient("https://lane.example.test", LANE_SECRET, transport=transport)
 
 
-def test_a_legacy_hwp_reference_is_read_by_the_lane_and_handed_back(monkeypatch):
-    import base64
+def test_a_picked_legacy_hwp_is_refused_locally_with_the_guidance_code(monkeypatch):
     import httpx
 
-    # The chat CI env ships no parser on purpose (#6034: the Worker never imports
-    # olefile), so the lane's reader itself is pinned by the lane's own suite.
-    # What this side owns is the ferrying: the real client's signed upload
-    # ticket, the lane's own reader path, and the words coming back whole.
-    words = "HWP test file\n자동 추출된 본문 미리보기"
+    # #6126: the older binary Hangul format is never converted anywhere. The
+    # OLE2 signature in the file's own first bytes is the whole decision, so
+    # the bytes never travel to the COM2 lane's reader — even a lane that
+    # would happily read this exact file.
     seen = []
 
     def lane(request):
         seen.append(request)
-        return httpx.Response(200, json={"ok": True, "text": words, "chars": len(words)})
+        return httpx.Response(200, json={"ok": True, "text": "변환 금지", "chars": 4})
 
     payload = _hwp_fixture()
     dispatch = "dsp_" + "a" * 32
@@ -1178,68 +1176,51 @@ def test_a_legacy_hwp_reference_is_read_by_the_lane_and_handed_back(monkeypatch)
         _Request(state, body={"file_id": dispatch})
     )))
 
-    assert status == 200 and body["ok"] is True, body
-    assert body["name"] == "작년 축사.hwp"
-    assert body["text"] == words and body["chars"] == len(words)
-    # One trip, to the lane's own reader, under the same signed upload ticket
-    # every write uses — budgeted for exactly these bytes.
-    assert len(seen) == 1, seen
-    assert seen[0].url.path == exchange.LANE_HWP_TEXT_PATH
-    encoded = seen[0].headers["x-padiem-file-ticket"]
-    claims = json.loads(base64.urlsafe_b64decode(encoded + "=" * (-len(encoded) % 4)))
-    assert claims["user_id"] == OWNER and claims["max_bytes"] == len(payload)
-    assert seen[0].headers["x-padiem-file-proof"]
-    assert seen[0].read() == payload
+    assert status == 422 and body["error"]["code"] == "legacy_hwp_unsupported", body
+    # The refusal is local: zero lane requests, no conversion, no guessing.
+    assert seen == []
 
 
-def test_a_sealed_or_distributed_hwp_refusal_keeps_the_lane_s_code(monkeypatch):
-    import httpx
+def test_a_mislabeled_hwpx_named_hwp_keeps_being_read_as_hwpx(monkeypatch):
+    import zipfile
+    from io import BytesIO
 
-    payload = b"the fetched bytes of the owner's sealed document"
-    for code in ("hwp_encrypted", "hwp_distributable"):
-        seen = []
+    # A .hwp name whose bytes are a real HWPX (ZIP) package is HWPX: the same
+    # pure-Python reader a .hwpx upload takes, no lane, no conversion.
+    output = BytesIO()
+    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("mimetype", b"application/hwp+zip")
+        archive.writestr("Contents/section1.xml", (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<hs:sec xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" '
+            'xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph">'
+            "<hp:p><hp:runs><hp:t>이름과 다른 HWPX 본문</hp:t></hp:runs></hp:p></hs:sec>"
+        ).encode("utf-8"))
+    payload = output.getvalue()
 
-        def lane(request, _code=code, _seen=seen):
-            _seen.append(request)
-            return httpx.Response(422, json={"ok": False, "error": {"code": _code}})
-
-        dispatch = "dsp_" + ("b" if code == "hwp_encrypted" else "c") * 32
-        state, _captured, _link, _ = _state(monkeypatch)
-        state.file_lane_client = _lane_client(httpx.MockTransport(lane))
-        _finished(state, dispatch_id=dispatch, kind="read", text=payload)
-        state.history_store.dispatches[dispatch]["file_path"] = "C:/Users/qa/계약서.hwp"
-
-        status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
-            _Request(state, body={"file_id": dispatch})
-        )))
-
-        # The lane's refusal is the answer — same code, same status — so the
-        # menu can say exactly why instead of claiming the file is broken.
-        assert status == 422 and body["error"]["code"] == code, (code, body)
-        # The bytes travelled once, under the client's own signed upload ticket.
-        assert len(seen) == 1, seen
-        assert seen[0].url.path == "/files/hwp-text"
-        assert seen[0].headers["x-padiem-file-ticket"]
-        assert seen[0].read() == payload
-
-
-def test_a_reference_read_names_a_lane_that_is_not_running(monkeypatch):
-    dispatch = "dsp_" + "d" * 32
+    dispatch = "dsp_" + "b" * 32
     state, _captured, _link, _ = _state(monkeypatch)
-    _finished(state, dispatch_id=dispatch, kind="read", text="본문")
-    state.history_store.dispatches[dispatch]["file_path"] = "C:/Users/qa/작년 축사.hwp"
+    _finished(state, dispatch_id=dispatch, kind="read", text=payload)
+    state.history_store.dispatches[dispatch]["file_path"] = "C:/Users/qa/보고서.hwp"
 
-    # No lane client configured at all: the answer names the service, not the file.
     status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
         _Request(state, body={"file_id": dispatch})
     )))
-    assert status == 503 and body["error"]["code"] == "file_lane_unavailable", body
+    assert status == 200 and body["ok"] is True, body
+    assert body["name"] == "보고서.hwp"
+    assert "이름과 다른 HWPX 본문" in body["text"]
 
-    # A configured-but-not-ready client is the same answer, not a network guess.
-    from app.file_lane import FileLaneClient
 
-    state.file_lane_client = FileLaneClient(None, "")
+def test_a_hwp_that_is_neither_ole_nor_zip_stays_unreadable(monkeypatch):
+    # Neither signature (and not decodable text): the same plain unreadable
+    # answer as before #6126, never a guessed conversion.
+    dispatch = "dsp_" + "c" * 32
+    state, _captured, _link, _ = _state(monkeypatch)
+    _finished(state, dispatch_id=dispatch, kind="read",
+              text=b"\xff\x00\xfe the owner's undecodable document")
+    state.history_store.dispatches[dispatch]["file_path"] = "C:/Users/qa/계약서.hwp"
+
     status, body = _answer(pairing.run(exchange.pc_file_exchange_reference(
         _Request(state, body={"file_id": dispatch})
     )))
-    assert status == 503 and body["error"]["code"] == "file_lane_unavailable", body
+    assert status == 422 and body["error"]["code"] == "pc_reference_unreadable", body

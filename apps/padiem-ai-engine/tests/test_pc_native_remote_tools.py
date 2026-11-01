@@ -134,7 +134,10 @@ def test_native_definitions_reuse_canonical_schemas_and_remove_unoffered_mutatio
     for name in ("start_job", "batch"):
         schema = values[name].to_provider_schema()["function"]["parameters"]
         operation = schema["properties"]["operation"] if name == "start_job" else schema["properties"]["operations"]["items"]
-        assert list(operation["properties"]["op"]["enum"]) == ["list", "read"]
+        # The files scope offers the whole read family and no mutation: a batch
+        # proposal cannot name write, move or delete here.
+        assert list(operation["properties"]["op"]["enum"]) == [
+            "list", "read", "search_name", "search_content", "read_chunk"]
     drive_names = {tool.name for tool in definitions({"allowed_scopes": ["query_drives"]})}
     assert "start_job" not in drive_names and "batch" not in drive_names
 

@@ -157,9 +157,9 @@ def _allowed_remote_operations(context):
     scopes = set(_base_tool_names(context))
     operations = set()
     if "files_list" in scopes:
-        operations.add("list")
+        operations.update(("list", "search_name"))
     if "files" in scopes:
-        operations.add("read")
+        operations.update(("read", "search_content", "read_chunk"))
     if "files_write" in scopes:
         operations.update(("write", "move", "delete"))
     return operations

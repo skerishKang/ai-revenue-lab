@@ -441,6 +441,11 @@ class CanonicalClawLocalAccessTruthSource:
             "canonical_state": canonical_state,
             "device_name": None,
             "platform": None,
+            # Connector self-reported version, when the broker facts ever carry
+            # one. No wire in the repo sends ``client_version`` today, so this
+            # is ``None`` for every device and the compatibility judgment
+            # downstream keeps today's exact behaviour (no variant, no notice).
+            "client_version": _text(facts.get("client_version")),
             "run_id": None,
             "task_id": None,
             "requires_local_access": True,

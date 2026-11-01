@@ -839,6 +839,7 @@ def test_redemption_request_carries_no_authority_fields():
         "challenge_id",
         "device_id",
         "proof_ref",
+        "client_version",
     }
     safe = request.safe_dict()
     assert safe["client_asserted_owner"] is False
@@ -1157,7 +1158,10 @@ def test_the_connector_carries_no_product_scoped_authority_dimension():
         assert forbidden not in source, forbidden
 
     request_keys = {field.name for field in dataclasses.fields(EnrollmentRedemptionRequest)}
-    assert request_keys == {"challenge_id", "device_id", "proof_ref"}
+    # client_version (#6011 follow-up) is the one additive self-reported field:
+    # the tray's own product version, dropped by the server when unrecognizable.
+    # It is still not an authority dimension — no owner/consent/product key.
+    assert request_keys == {"challenge_id", "device_id", "proof_ref", "client_version"}
     assert not request_keys & {
         "product", "product_id", "brand", "owner", "workspace", "consent", "session",
     }
