@@ -239,6 +239,32 @@ def test_the_read_family_is_the_only_family_a_batch_proposal_needs_no_new_grant_
         "claw.pc.search_files", "claw.pc.read_file_chunk"]
 
 
+def test_the_same_three_reads_cost_three_more_model_calls_one_at_a_time():
+    """What a batch actually saves here, measured against the same three reads.
+
+    The PC still receives one command per step either way; what the batch takes
+    away is a model turn per extra step, and with it the whole accumulated
+    observation context that each of those turns would have re-sent.
+    """
+    steps = [{"op": "search_name", "query": "notes", "path": "."},
+             {"op": "list", "path": "."},
+             {"op": "read_chunk", "path": "notes.txt", "offset": 0, "length": 2048}]
+    _, batched = run(ReadFamilyEndpoint(), [tool("batch", operations=steps, stop_on_error=True)])
+    _, serial = run(ReadFamilyEndpoint(), [
+        tool("search_files", query="notes", path="."),
+        tool("list_files", path="."),
+        tool("read_file_chunk", path="notes.txt", offset=0, length=2048),
+    ])
+    batch_metrics, serial_metrics = batched.metrics.snapshot(), serial.metrics.snapshot()
+
+    assert batch_metrics["pc_round_trips"] == serial_metrics["pc_round_trips"] == 3
+    assert batch_metrics["model_calls"] == 2 and serial_metrics["model_calls"] == 4
+    assert batch_metrics["batch_model_turns_saved"] == 2
+    # The estimate is serialized prompt bytes / 4, so it counts every observation
+    # a re-asked turn would have carried again.
+    assert 0 < batch_metrics["model_input_tokens_estimated"] < serial_metrics["model_input_tokens_estimated"]
+
+
 def test_a_read_batch_asks_for_the_lowest_ceiling_its_steps_actually_need():
     """Naming the read family must not turn a listing turn into a reading turn."""
     def batch(*steps):
