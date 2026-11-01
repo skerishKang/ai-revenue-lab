@@ -15,13 +15,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import pytest
-
 # The junction/symlink fixtures are real Windows reparse points: cmd /c mklink
 # does not exist on the Linux runner, so the machine-level tests run on Windows
-# only. The source-contract tests below stay on every platform.
-WIN_REAL = pytest.mark.skipif(sys.platform != "win32",
-                              reason="real Windows junction fixtures")
+# only. The source-contract tests below stay on every platform. A unittest
+# marker is used because pytest marks are not applied to TestCase subclasses
+# on every runner, and an attempted Linux junction fixture must not ERROR.
+WIN_REAL = unittest.skipUnless(
+    sys.platform == "win32", "real Windows junction fixtures")
 
 import importlib.util as _ilu
 
