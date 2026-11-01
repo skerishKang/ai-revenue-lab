@@ -12,8 +12,11 @@
 
 이 파일이 다루지 못하는 표면(이유는 각 시험의 주석)과 이미 고정된 표면:
 
-- PC 연결(pairings·reference·drives): PC 페어링 포트 구성이 필요한 표면 —
-  구성 없이는 fail-closed(503)임을 확인하고 미확인으로 남긴다.
+- PC 연결·저장(pairings·reference·drives·save): PC 페어링 포트 구성이 필요한 표면 —
+  구성 없이는 fail-closed(503)임을 확인하고 미확인으로 남긴다. 2026-11-02 의원 앱
+  문서가 쓰는 pc/save의 project_file_id 소스도 같은 문을 지나며, 소스의
+  소유자·프로젝트 범위 404는 test_council_pc_save_binary_261102.py가 라인 수준에서
+  고정한다.
 - 북AI 기록(082): 사용자 세션이 아니라 x-bookai-* 서명 헤더의 서비스 간 레인.
 - 자동화 규칙: 실행 대상 권한(external authority) 구성이 필요 — fail-closed 확인.
 - MCP 게이트웨이: test_mcp_gateway_account.py가 소유자 범위·타계정 PC·승인
@@ -215,6 +218,40 @@ def test_project_files_and_original_stay_in_their_account():
     # 텍스트 문서는 바이너리 원본이 없다 — /original은 소유자에게도 404가 계약이다.
     # 격리 관점: B도 같은 404를 받아 존재를 구분할 수 없다.
     assert a_client.get(f"/api/projects/{project_id}/files/{file_id}/original").status_code == 404
+
+
+# ── PC 저장(의원 앱 문서): pc/save의 project_file_id 소스 ─────────────────────
+
+
+def test_pc_save_with_a_borrowed_project_file_stays_fail_closed():
+    """A의 프로젝트 파일을 PC 저장 소스로 지목해도 B는 문 앞에서 멈춘다.
+
+    pc/save의 새 소스(project_file_id)는 소유자+프로젝트 범위로 행을 읽는다.
+    이 스윕 환경엔 PC 신원 확인(chat PC identity)부터 막혀 문 자체가 503으로 닫힌다
+    (fail-closed) — 소유자·타인·추측 id 어느 쪽이든 아무 것도 준비되지 않고 A의
+    행은 그대로다. 문 안쪽의 범위 404는 test_council_pc_save_binary_261102.py가
+    기록 스텁으로 고정한다.
+    """
+    app, a_client, b_client, a, _b = clients()
+    project_id = new_project(a_client)
+    created = asyncio.run(
+        app.state.project_file_store.create_file(
+            a, project_id, "축사.hwpx", "extracted/hwpx", "축사 본문 자리",
+            doc_kind="speech",
+        )
+    )
+    for body in (
+        # B가 A의 실제 파일 id를 소스로 지목한다.
+        {"path": "축사.hwpx", "project_id": project_id, "project_file_id": created.id},
+        # B가 모양만 그럴듯한 id를 추측한다.
+        {"path": "축사.hwpx", "project_id": "proj_" + "f" * 32,
+         "project_file_id": "file_" + "9" * 32},
+    ):
+        answer = b_client.post("/api/pc/save", json=body)
+        assert answer.status_code == 503, (body, answer.status_code, answer.text)
+        assert answer.json()["error"]["code"] == "chat_pc_identity_unavailable"
+    rows = asyncio.run(app.state.project_file_store.list_files(a, project_id))
+    assert [row.id for row in rows] == [created.id]
 
 
 # ── 대화: 목록·검색·읽기·삭제 ────────────────────────────────────────────────
