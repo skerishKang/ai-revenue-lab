@@ -9,7 +9,11 @@ from starlette.responses import JSONResponse, Response, StreamingResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body, open_bounded_spooled_request
-from padiem_ai_core.document_normalization import DocumentNormalizationError, MAX_BINARY_DOCUMENT_BYTES
+from padiem_ai_core.document_normalization import (
+    DocumentNormalizationError,
+    MAX_BINARY_DOCUMENT_BYTES,
+    normalize_document_name,
+)
 from padiem_ai_core.document_parser_boundary import (
     parse_binary_document_via_authority_async,
     production_worker_runtime,
@@ -87,11 +91,23 @@ async def save_binary_project_file(
         # Local Core PDF parsing can use the seekable file directly.
         # The Worker isolated-parser wire contract still requires bytes.
         source = data if media_type == "application/pdf" and not production_worker_runtime() else data.read()
+        # #6126: a .hwp name is judged by the file's own first bytes. The OLE2
+        # compound signature is the older binary Hangul format — refused with
+        # the one save-as-HWPX code before any parse (both entry points map it
+        # through guidance_for_reason_code). A ZIP local header is a mislabeled
+        # real HWPX package: it parses under its real HWPX identity (the Core
+        # identity rules are frozen) while the record keeps the owner's
+        # normalized original name.
+        from .binary_documents import legacy_hwp_parse_name
+
+        parse_name = legacy_hwp_parse_name(name, media_type, source)
+        hwp_mislabeled = parse_name != name
         parsed = await parse_binary_document_via_authority_async(
-            name=name, media_type=media_type, payload=source,
+            name=parse_name, media_type=media_type, payload=source,
         )
+        record_name = normalize_document_name(name) if hwp_mislabeled else parsed.name
         created = await store.create_file(
-            uid, pid, parsed.name, _extracted_media_type(parsed.media_type), parsed.text,
+            uid, pid, record_name, _extracted_media_type(parsed.media_type), parsed.text,
             **({"doc_kind": doc_kind} if doc_kind else {}),
         )
     workspace_store = getattr(request.app.state, "workspace_document_store", None)

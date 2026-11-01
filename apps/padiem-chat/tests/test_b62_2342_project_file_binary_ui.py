@@ -60,7 +60,10 @@ def test_html_has_accessible_project_file_status_surface() -> None:
 
 def test_project_file_picker_accepts_text_pdf_docx_hwpx() -> None:
     html = INDEX_HTML.read_text(encoding="utf-8")
-    accept = 'accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/hwp+zip,.hwpx"'
+    # #6126: .hwp joined the accept list so the picker can hand the file to
+    # the byte-sniffing judgment — OLE2 gets the save-as-HWPX guidance, a
+    # mislabeled HWPX (ZIP) keeps working as HWPX.
+    accept = 'accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/hwp+zip,.hwpx,.hwp"'
     assert accept in html
     assert "presentationml" not in html
     assert "spreadsheetml" not in html
