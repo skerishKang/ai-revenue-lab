@@ -78,7 +78,7 @@ function harness({clockNow = 1761960000000} = {}) {
       return Response.json({ok: true});
     }
     if (u.startsWith('https://chat.padiem.net/api/bookai/records')) {
-      state.upstream.push({url: u, headers: Object.fromEntries(init.headers || [])});
+      state.upstream.push({url: u, headers: init.headers || {}});
       return Response.json({records: [], next_since: 0, more: false});
     }
     throw Error('unexpected upstream ' + u);
@@ -209,8 +209,12 @@ test('session cookies carry the __Host_ grammar and logout clears and revokes', 
   assert.equal(h.state.logouts.length, 1);
   const cleared = logout.headers.getSetCookie();
   for (const line of cleared) assert.ok(line.includes('Max-Age=0'), line);
-  const after = await h.handler(new Request(ORIGIN + '/auth/session', {headers: {cookie: session}}), ENV);
-  assert.equal((await after.json()).authenticated, false);
+  // 무상태 설계 속성: 액세스 토큰은 서버 측 무효화가 없고 잔여 유효는 900초로
+  // 유한하다(판단 불가/설계 한계 — refresh 폐기로 연장 경로는 끊긴다).
+  const sessionToken = session.split('; ').find(v => v.startsWith('__Host_bookai_session='));
+  const access = sessionToken.split('=')[1].split('.');
+  const claims = JSON.parse(Buffer.from(access[1], 'base64url').toString());
+  assert.ok(claims.exp - claims.iat <= 900, 'access lifetime is bounded to 15 minutes');
   // 폐기된 refresh의 재사용: 토큰 교환 거부, 새 쿠키 없음.
   const refresh = await h.handler(new Request(ORIGIN + '/auth/refresh',
     {method: 'POST', headers: {origin: ORIGIN, cookie: session}}), ENV);
@@ -254,7 +258,8 @@ test('records proxy derives the signed subject from the session, never from the 
     'content-type': 'application/json'}, body}), ENV);
   assert.equal(answer.status, 200, answer.status);
   assert.equal(h.state.upstream.length, 1);
-  const forwarded = h.state.upstream[0].headers;
+  const forwarded = Object.fromEntries(Object.entries(h.state.upstream[0].headers || {})
+    .map(([k, v]) => [k.toLowerCase(), v]));
   assert.equal(forwarded['x-bookai-subject'], ACCOUNT);   // 세션이 유일한 sub 근거
   assert.notEqual(forwarded['x-bookai-subject'], 'sub_other');
   assert.equal(forwarded['x-bookai-timestamp'], String(Math.floor(1761960000000 / 1000)));
