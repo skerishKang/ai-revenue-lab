@@ -145,6 +145,9 @@ def test_license_navigation_is_exact_url_and_file_scoped():
         "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer",
         "https://www.gnu.org/licenses/agpl-3.0.html",
         "https://github.com/anomalyco/opencode",
+        "https://github.com/microsoft/playwright-mcp",
+        "https://github.com/microsoft/playwright",
+        "https://www.apache.org/licenses/LICENSE-2.0",
     }
     assert audit.LICENSE_NOTICE_URLS == allowed
     for url in allowed:

@@ -21,6 +21,7 @@ _OPS = {"claw.pc.delete_file": "delete", "claw.pc.move_file": "move", "claw.pc.w
 _EXTERNAL_MATERIAL_TOOLS = frozenset({
     "claw.pc.read_file", "claw.pc.read_output", "claw.pc.search_output",
     "claw.pc.job_output", "claw.pc.recall_context",
+    "claw.pc.browser_open", "claw.pc.browser_read", "claw.pc.browser_screenshot", "claw.pc.browser_act",
 })
 
 
