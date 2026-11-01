@@ -88,9 +88,73 @@ def test_worker_configuration_checks_edge_replay_database_too(tmp_path):
         "PADIEM_CHAT_WORKERS": "2", "PADIEM_CHAT_LOCAL_DATA_DIR": str(tmp_path / "local"),
         "PADIEM_CHAT_SESSION_SECRET": "synthetic-shared-session-material-1234",
         "PADIEM_COM2_EDGE_REPLAY_DB": str(remote / "replay.sqlite3"),
+        # The storage contract is the owner's escape-hatch path now: the default
+        # answer to any count above one is the single-process refusal.
+        "PADIEM_CHAT_ALLOW_MULTI_WORKERS": "1",
     }
     with pytest.raises(RuntimeError, match="multiworker_local_filesystem_required"):
         validate_worker_configuration(environment, mountinfo_path=mountinfo)
+
+
+def test_more_than_one_worker_is_blocked_by_default(tmp_path):
+    """11-02: two real workers ran on COM2 and the single-process contracts
+    (#6563 edge, #6604 tus, #6610 replay) turned healthy requests into 403s.
+    The launcher refuses any count above one without the owner's switch."""
+    from app.local_server import validate_worker_configuration
+    mountinfo = tmp_path / "mountinfo"
+    mountinfo.write_text("1 0 0:1 / / rw - ext4 local rw\n")
+    for workers in ("2", "3"):
+        environment = {
+            "PADIEM_CHAT_WORKERS": workers,
+            "PADIEM_CHAT_LOCAL_DATA_DIR": str(tmp_path),
+            "PADIEM_CHAT_SESSION_SECRET": "synthetic-shared-session-material-1234",
+        }
+        with pytest.raises(RuntimeError, match="multiworker_single_process_contract"):
+            validate_worker_configuration(environment, mountinfo_path=mountinfo)
+    # The owner's switch is the only way past it, and the switch alone is not
+    # enough: with no data directory configured the storage contract still
+    # refuses, on every platform.
+    environment["PADIEM_CHAT_ALLOW_MULTI_WORKERS"] = "1"
+    environment["PADIEM_CHAT_LOCAL_DATA_DIR"] = ""
+    with pytest.raises(RuntimeError, match="multiworker_local_filesystem_required"):
+        validate_worker_configuration(environment, mountinfo_path=mountinfo)
+
+
+@pytest.mark.skipif(not sys.platform.startswith("linux"),
+                    reason="the multi-worker storage contract is a Linux check")
+def test_the_owner_switch_reaches_the_storage_contract(tmp_path):
+    from app.local_server import validate_worker_configuration
+    mountinfo = tmp_path / "mountinfo"
+    mountinfo.write_text("1 0 0:1 / / rw - ext4 local rw\n")
+    environment = {
+        "PADIEM_CHAT_WORKERS": "3",
+        "PADIEM_CHAT_LOCAL_DATA_DIR": str(tmp_path),
+        "PADIEM_CHAT_SESSION_SECRET": "synthetic-shared-session-material-1234",
+        "PADIEM_CHAT_ALLOW_MULTI_WORKERS": "1",
+    }
+    assert validate_worker_configuration(environment, mountinfo_path=mountinfo) == 3
+
+
+def test_single_worker_never_needs_the_escape_hatch():
+    from app.local_server import validate_worker_configuration
+    assert validate_worker_configuration({"PADIEM_CHAT_WORKERS": "1"}) == 1
+    assert validate_worker_configuration({}) == 1
+
+
+def test_launcher_prints_the_single_process_reason_and_exits_two(tmp_path, monkeypatch, capsys):
+    from app import local_server
+    import uvicorn
+    monkeypatch.setenv("PADIEM_CHAT_WORKERS", "2")
+    monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("PADIEM_CHAT_SESSION_SECRET", "synthetic-shared-session-material-1234")
+    monkeypatch.setattr(local_server, "validate_multiworker_storage",
+                        lambda *args, **kwargs: pytest.fail("blocked before storage"))
+    monkeypatch.setattr(uvicorn, "run", lambda *args, **kwargs: pytest.fail("must not start"))
+    assert local_server.main([]) == 2
+    err = capsys.readouterr().err.strip()
+    assert err == ("CHAT_WORKERS=REFUSED code=multiworker_single_process_contract"
+                   " reason=프로세스 1개 전제 잠금: edge·tus·replay"
+                   " — 교차 프로세스화 전에는 1만 허용")
 
 
 @pytest.mark.parametrize("filesystem", ["ext4", "xfs", "btrfs", "tmpfs", "overlay"])
@@ -106,6 +170,7 @@ def test_launcher_passes_configured_workers_to_import_string_factory(tmp_path, m
     monkeypatch.setenv("PADIEM_CHAT_WORKERS", "3")
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path))
     monkeypatch.setenv("PADIEM_CHAT_SESSION_SECRET", "synthetic-shared-session-material-1234")
+    monkeypatch.setenv("PADIEM_CHAT_ALLOW_MULTI_WORKERS", "1")
     monkeypatch.setattr(local_server, "validate_multiworker_storage", lambda *args, **kwargs: None)
     monkeypatch.setattr(uvicorn, "run", lambda *args, **kwargs: called.append((args, kwargs)))
     local_server.main(["--host", "127.0.0.1", "--port", "8798", "--no-server-header"])
@@ -122,6 +187,7 @@ def test_multiworker_launcher_requires_one_preconfigured_session_secret(tmp_path
     monkeypatch.setenv("PADIEM_CHAT_WORKERS", "2")
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path))
     monkeypatch.delenv("PADIEM_CHAT_SESSION_SECRET", raising=False)
+    monkeypatch.setenv("PADIEM_CHAT_ALLOW_MULTI_WORKERS", "1")
     monkeypatch.setattr(local_server, "validate_multiworker_storage", lambda *args, **kwargs: None)
     monkeypatch.setattr(uvicorn, "run", lambda *args, **kwargs: pytest.fail("must not start"))
     assert local_server.main([]) == 2

@@ -63,10 +63,79 @@ sys.exit(0)
 
 FAKE_SYSTEMCTL = """#!/usr/bin/env bash
 echo "systemctl $*" >> "$FAKE_LOG"
-if [[ $1 == is-active ]]; then
-  exit "$(cat "$FAKE_ROOT/active_${3}" 2>/dev/null || echo 0)"
-fi
+# Shared unit state: missing file means active (the harness default), stop
+# writes 0, start writes 1. The fake ss reads the same files, so a stopped
+# unit's port really disappears from `ss -ltn`.
+state_file() { printf '%s/%s' "$FAKE_ROOT" "state_${1}"; }
+case "$1" in
+  is-active)
+    state=$(cat "$(state_file "$3")" 2>/dev/null || echo 1)
+    [[ -f "$FAKE_ROOT/active_${3}" ]] && state=$(cat "$FAKE_ROOT/active_${3}")
+    [[ $state == 1 ]]; exit $?
+    ;;
+  show)
+    # `show -p MainPID --value <unit>`: the unit name is argument 5. MainPID 0
+    # means the previous process is gone; a marker pins a wedged PID.
+    unit="${5}"
+    if [[ -f "$FAKE_ROOT/mainpid_${unit}" ]]; then
+      cat "$FAKE_ROOT/mainpid_${unit}"
+    elif [[ $(cat "$(state_file "${unit}")" 2>/dev/null || echo 0) == 1 ]]; then
+      echo 4242
+    else
+      echo 0
+    fi
+    exit 0
+    ;;
+  stop)
+    echo 0 > "$(state_file "$2")"
+    ;;
+  start)
+    echo 1 > "$(state_file "$2")"
+    key="$FAKE_ROOT/starts_${2}"
+    n=$(cat "$key" 2>/dev/null || echo 0)
+    echo $((n + 1)) > "$key"
+    # The second start of one unit in a single run is the rollback start. The
+    # broken-release knobs model the failure of the NEW release only, so the
+    # rollback start clears them: the old release is healthy by construction.
+    if (( n + 1 >= 2 )); then
+      case "$2" in
+        padiem-chat-com2.service) rm -f "$FAKE_ROOT/fail_chat" "$FAKE_ROOT/ss_hide_8798" ;;
+        padiem-p01.service)       rm -f "$FAKE_ROOT/fail_p01"  "$FAKE_ROOT/ss_hide_8811" ;;
+        padiem-b14.service)       rm -f "$FAKE_ROOT/fail_b14"  "$FAKE_ROOT/ss_hide_8789" ;;
+      esac
+    fi
+    ;;
+esac
 exit 0
+"""
+
+FAKE_SS = """#!/usr/bin/env bash
+# Stand-in for `ss -ltn`: one local-address line per listening loopback port.
+# A port shows up only while its unit is running (the shared state_ files the
+# fake systemctl maintains), and additionally:
+# ss_hide_<port>    the port does not listen while the marker exists (a release
+#                   that never binds the watched port).
+# ss_delay_<port>   the port starts listening on invocation N+1 only — a slow
+#                   bind, one poll per second in production.
+root=${FAKE_ROOT:-}
+shown=""
+for entry in 8798:padiem-chat-com2.service 8811:padiem-p01.service 8789:padiem-b14.service; do
+  port=${entry%%:*}
+  unit=${entry#*:}
+  state=$(cat "$root/state_${unit}" 2>/dev/null || echo 1)
+  [[ $state == 1 ]] || continue
+  [[ -f "$root/ss_hide_$port" ]] && continue
+  if [[ -f "$root/ss_delay_$port" ]]; then
+    threshold=$(cat "$root/ss_delay_$port")
+    counter="$root/calls_ss_delay_$port"
+    n=0
+    [[ -f $counter ]] && n=$(cat "$counter")
+    echo $((n + 1)) > "$counter"
+    (( n >= threshold )) || continue
+  fi
+  shown+="127.0.0.1:$port"$'\\n'
+done
+printf '%s' "$shown"
 """
 
 APPLY_WRAPPER = """set -euo pipefail
@@ -196,6 +265,9 @@ class DeployHarness(unittest.TestCase):
         self.systemctl = self.tmp / "fake-systemctl"
         self.systemctl.write_text(FAKE_SYSTEMCTL, encoding="utf-8")
         self.systemctl.chmod(0o755)
+        self.fake_ss = self.tmp / "fake-ss"
+        self.fake_ss.write_text(FAKE_SS, encoding="utf-8")
+        self.fake_ss.chmod(0o755)
         self.env = {
             **os.environ,
             "FAKE_LOG": str(self.log),
@@ -205,11 +277,14 @@ class DeployHarness(unittest.TestCase):
             "PADIEM_COM2_PYTHON": Path(sys.executable).as_posix(),
             "PADIEM_COM2_PREVIOUS_DIR": self.previous.as_posix(),
             "PADIEM_COM2_P01_APP": self.p01.as_posix(),
-            "PADIEM_COM2_CHAT_HEALTH_ATTEMPTS": "1",
-            "PADIEM_COM2_CHAT_HEALTH_INTERVAL": "0",
+            "PADIEM_COM2_SS": self.fake_ss.as_posix(),
             # Bounded so a retry test finishes in seconds, not in the 30s default.
             "PADIEM_COM2_HEALTH_TIMEOUT": "4",
             "PADIEM_COM2_HEALTH_INTERVAL": "1",
+            "PADIEM_COM2_UNIT_WAIT_TIMEOUT": "2",
+            "PADIEM_COM2_PORT_WAIT_TIMEOUT": "2",
+            "PADIEM_COM2_STOP_WAIT_TIMEOUT": "2",
+            "PADIEM_COM2_WAIT_POLL_INTERVAL": "0",
         }
 
     # --- harness -----------------------------------------------------------
@@ -488,7 +563,10 @@ class ChatScenarioTest(DeployHarness):
         self.assertIn("ai:PASS", result.stdout)
 
     def test_a_failed_health_check_rolls_the_service_back(self) -> None:
-        self._fail_health_once("chat")
+        # The new release never becomes healthy inside the deadline, so the
+        # run rolls back; the rollback start is the second start of the unit,
+        # which clears the broken-release marker in the fake.
+        self._fail_service("chat", 999)
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn(
@@ -500,21 +578,17 @@ class ChatScenarioTest(DeployHarness):
         self.assertIn("systemctl start padiem-chat-com2.service", self._calls())
 
     def test_slow_chat_start_is_retried_without_rollback(self) -> None:
-        import time
-        (self.fakes / "fail_once_chat").write_text("5", encoding="utf-8")
-        self.env["PADIEM_COM2_CHAT_HEALTH_ATTEMPTS"] = "6"
-        self.env["PADIEM_COM2_CHAT_HEALTH_INTERVAL"] = "2"
-        started = time.monotonic()
+        (self.fakes / "fail_once_chat").write_text("2", encoding="utf-8")
         result = self._run_apply()
-        self.assertGreaterEqual(time.monotonic() - started, 10)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.count("HEALTH=FAIL STATUS=0"), 5)
+        self.assertEqual(result.stdout.count("HEALTH=FAIL STATUS=0"), 2)
+        self.assertEqual(result.stdout.count("COM2_DEPLOY_HEALTH_CHAT_ATTEMPTS="), 1)
         self.assertIn("COM2_DEPLOY_SUMMARY=chat:PASS", result.stdout)
         self.assertEqual(len([c for c in self._calls() if c.startswith("install chat")]), 1)
 
     def test_previous_checkout_is_readable_not_writable_by_service_user(self) -> None:
         import stat
-        self._fail_health_once("chat")
+        self._fail_service("chat", 999)
         result = self._run_apply()
         self.assertEqual(result.returncode, 1, result.stderr)
         previous = self.previous / self.first
@@ -638,7 +712,10 @@ class P01ScenarioTest(DeployHarness):
         self.assertEqual(result.returncode, 1, result.stderr)
         attempts = int(result.stdout.split("COM2_DEPLOY_HEALTH_P01_ATTEMPTS=")[1].split()[0])
         self.assertGreaterEqual(attempts, 3, result.stdout)
-        self.assertIn("p01:ROLLBACK_FAILED", result.stdout)
+        # The old release is healthy by construction, so the rollback start
+        # (the second start of the unit) passes the same contract.
+        self.assertIn("p01:ROLLBACK", result.stdout)
+        self.assertIn("COM2_DEPLOY_HEALTH_P01_ROLLBACK_ATTEMPTS=", result.stdout)
         installs = [line for line in self._calls() if line.startswith("install p01")]
         self.assertEqual(len(installs), 1, installs)
         snapshots = sorted((self.p01 / "rollback").glob("p01.fake*"))
@@ -740,6 +817,86 @@ class B14ScenarioTest(DeployHarness):
         self.assertEqual(self._started("padiem-b14.service"), 1, self._calls())
 
 
+class StartupLadderTest(DeployHarness):
+    """#6460 후속 — 11-02 B14 롤백의 재발 방지 계약.
+
+    배포 전환 때 B14는 "unreachable:URLError 2회 → 30초 만료 → 자동 롤백"이었고,
+    같은 트리를 단독 기동하면 1.0초 만에 200이었다. 수동 기록: attempt 1
+    listen=0 → attempt 2 listen=1 health=200. 즉 앱이 아니라 순서의 문제였다:
+    재시작 직후 포트가 열리기 전에 프로브가 돌았다. 이 클래스는 그 순서를
+    고정한다 — 유닛 active → 포트 리슨 → 헬스 계약, 그리고 재시작 전
+    이전 프로세스의 완전한 종료 확인.
+    """
+
+    scenario = "b14"
+
+    def test_a_slow_bind_reads_as_a_slow_start_then_passes(self) -> None:
+        # The manual 11-02 record: attempt 1 listen=0, attempt 2 listen=1,
+        # health=200. Seven polls of not-listening still end in a PASS: the
+        # port stage waits, the health contract is only probed after the bind.
+        (self.fakes / "ss_delay_8789").write_text("7", encoding="utf-8")
+        self.env["PADIEM_COM2_WAIT_POLL_INTERVAL"] = "0.5"
+        self.env["PADIEM_COM2_PORT_WAIT_TIMEOUT"] = "10"
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_UNIT_B14_ACTIVE", result.stdout)
+        self.assertIn("COM2_DEPLOY_PORT_B14_LISTENING", result.stdout)
+        self.assertIn("b14:PASS", result.stdout)
+        polls = int((self.fakes / "calls_ss_delay_8789").read_text().strip())
+        self.assertGreaterEqual(polls, 7)
+        # The ladder order is the whole fix: active, then listening, then health.
+        self.assertLess(
+            result.stdout.index("COM2_DEPLOY_UNIT_B14_ACTIVE"),
+            result.stdout.index("COM2_DEPLOY_PORT_B14_LISTENING"),
+        )
+        self.assertLess(
+            result.stdout.index("COM2_DEPLOY_PORT_B14_LISTENING"),
+            result.stdout.index("COM2_DEPLOY_HEALTH_B14_ATTEMPTS="),
+        )
+
+    def test_a_port_that_never_opens_rolls_back(self) -> None:
+        (self.fakes / "ss_hide_8789").write_text("1", encoding="utf-8")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("COM2_DEPLOY_PORT_B14_LISTENING_TIMEOUT", result.stdout)
+        self.assertIn("b14:ROLLBACK", result.stdout)
+        # The rollback start (the second start of the unit) clears the broken
+        # release, and the previous release binds the watched port again — the
+        # rollback itself is verified healthy. A b14 rollback re-points the
+        # link, so there is exactly one install.
+        self.assertIn("COM2_DEPLOY_HEALTH_B14_ROLLBACK_ATTEMPTS=", result.stdout)
+        self.assertIn("COM2_DEPLOY_UNIT_B14_ROLLBACK_ACTIVE", result.stdout)
+        self.assertIn("COM2_DEPLOY_PORT_B14_ROLLBACK_LISTENING", result.stdout)
+        installs = [line for line in self._calls() if line.startswith("install b14")]
+        self.assertEqual(len(installs), 1, installs)
+
+    def test_health_that_never_passes_rolls_back(self) -> None:
+        self._fail_service("b14", 999)
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("COM2_DEPLOY_HEALTH_B14_ATTEMPTS=", result.stdout)
+        self.assertIn("b14:ROLLBACK", result.stdout)
+        self.assertIn("COM2_DEPLOY_HEALTH_B14_ROLLBACK_ATTEMPTS=", result.stdout)
+
+    def test_start_waits_for_the_previous_mainpid_to_release(self) -> None:
+        # A wedged MainPID (Restart=always churn) must be caught before the new
+        # process is started: the ladder refuses and says which stage failed.
+        (self.fakes / "mainpid_padiem-b14.service").write_text("12345\n", encoding="utf-8")
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("COM2_DEPLOY_MAINPID_B14_GONE_TIMEOUT", result.stdout)
+        self.assertIn("b14:ROLLBACK_FAILED", result.stdout)
+        # The start that never happened is not in the log at all.
+        self.assertEqual(self._started("padiem-b14.service"), 0, self._calls())
+
+    def test_the_down_check_passes_when_the_previous_process_is_already_gone(self) -> None:
+        result = self._run_apply()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("COM2_DEPLOY_MAINPID_B14_GONE", result.stdout)
+        self.assertIn("COM2_DEPLOY_PORT_B14_RELEASED", result.stdout)
+        self.assertIn("b14:PASS", result.stdout)
+
+
 class MeshQueueScenarioTest(DeployHarness):
     scenario = "queue"
 
@@ -790,16 +947,26 @@ class MeshQueueScenarioTest(DeployHarness):
 
 
 class ScriptBoundaryTest(unittest.TestCase):
-    def test_start_probes_are_given_thirty_seconds_by_default(self) -> None:
+    def test_start_probes_are_given_ninety_seconds_by_default(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
-        self.assertIn("health_timeout=${PADIEM_COM2_HEALTH_TIMEOUT:-30}", text)
-        for label in ("P01", "B14", "QUEUE", "P01_ROLLBACK", "B14_ROLLBACK", "QUEUE_ROLLBACK"):
+        self.assertIn("health_timeout=${PADIEM_COM2_HEALTH_TIMEOUT:-90}", text)
+        # chat, p01 and b14 walk the shared readiness ladder (unit active ->
+        # port listening -> health contract); the queue keeps its own probe.
+        for label in ("CHAT", "P01", "B14", "CHAT_ROLLBACK", "P01_ROLLBACK", "B14_ROLLBACK"):
+            self.assertIn(f'wait_service_ready {label} ', text)
+            self.assertIn(f'wait_service_down {label} ', text)
+        self.assertIn('wait_service_ready P01_ROLLBACK "$P01_UNIT" "$p01_port"', text)
+        for label in ("QUEUE", "QUEUE_ROLLBACK"):
             self.assertIn(f"wait_for_health {label} ", text)
+        self.assertNotIn("wait_chat_health", text)
         # No single-shot probe is left behind a start or a rollback.
         self.assertNotIn(
             chr(10) + '    "$python_bin" "$staged/deploy/host-com2/p01/health.py"', text
         )
         self.assertNotIn('"$python_bin" "$ops_checkout/deploy/host-com2/b14/health.py"', text)
+        # Process cleanup is unit- and PID-based, never name-pattern kills.
+        self.assertNotIn("pkill", text)
+        self.assertNotIn("killall", text)
 
     def test_the_script_only_mutates_behind_apply(self) -> None:
         text = SCRIPT.read_text(encoding="utf-8")

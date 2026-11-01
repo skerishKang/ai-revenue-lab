@@ -10,8 +10,9 @@ spec.loader.exec_module(module)
 
 
 class Response:
-    def __init__(self, status):
+    def __init__(self, status, headers=None):
         self.status = status
+        self.headers = headers or {}
     def __enter__(self):
         return self
     def __exit__(self, *_):
@@ -23,6 +24,8 @@ class FakeOpener:
         self.requests = []
     def open(self, request, timeout):
         self.requests.append(request)
+        if request.method == "OPTIONS" and request.full_url.endswith("/api/chat/attachments/tus"):
+            return Response(204, headers={"Tus-Max-Size": "104857600"})
         return Response(200 if request.full_url.endswith("/apps/council/") else 503)
 
 
@@ -42,14 +45,58 @@ def test_verdicts_report_unimplemented_checks_as_skipped(tmp_path, monkeypatch):
     opener = FakeOpener()
     monkeypatch.setattr(module.shutil, "which", lambda _: None)
     rows = module.checks("https://example.test", tmp_path / "missing.sqlite3",
-                         ai_status="FAIL", ai_code="upstream_unavailable", opener=opener)
+                         ai_status="FAIL", ai_code="upstream_unavailable",
+                         opener=opener,
+                         chat_cgroup_procs=tmp_path / "missing-cgroup" / "cgroup.procs")
     results = {name: (status, reason) for name, status, reason in rows}
+    # The alias row was renamed on 2026-11-01: /councillor/ is a deliberate
+    # alias check now, and the opener answers 503 for it in this fixture.
+    assert results["의원 화면 별칭(→ /apps/council/)"] == ("FAIL", "http_503")
     assert results["AI 답변"] == ("FAIL", "upstream_unavailable")
     assert results["의원 화면"][0] == "PASS"
-    assert results["의원 활동 화면"] == ("FAIL", "http_503")
     assert results["마이그레이션"][0] == "FAIL"
     assert results["견적 XLSX→PDF"][0] == "SKIP"
-    assert all(request.method == "GET" for request in opener.requests)
+    assert all(request.method in {"GET", "OPTIONS"} for request in opener.requests)
+
+
+def test_new_single_process_and_tus_rows(tmp_path, monkeypatch):
+    opener = FakeOpener()
+    monkeypatch.setattr(module.shutil, "which", lambda _: None)
+    cgroup = tmp_path / "cgroup.procs"
+    cgroup.write_text("101\n202\n")
+    rows = module.checks("https://example.test", tmp_path / "missing.sqlite3",
+                         ai_status="PASS", opener=opener, chat_cgroup_procs=cgroup)
+    results = {name: (status, reason) for name, status, reason in rows}
+    # (a) the single-process contract is verified against the cgroup itself.
+    assert results["Chat 앱 프로세스 수"] == ("FAIL", "프로세스 2개")
+    cgroup.write_text("101\n")
+    rows = module.checks("https://example.test", tmp_path / "missing.sqlite3",
+                         ai_status="PASS", opener=opener, chat_cgroup_procs=cgroup)
+    results = {name: (status, reason) for name, status, reason in rows}
+    assert results["Chat 앱 프로세스 수"] == ("PASS", "-")
+    # (b) the public tus capability answers OPTIONS 204 with its byte ceiling.
+    assert results["tus 이어올리기"] == ("PASS", "Tus-Max-Size=104857600")
+    # (c) the mail channels have no read-only status surface yet: honest SKIP.
+    assert results["메일 알림 채널"] == ("SKIP", "상태 경로 없음 — 수동 확인")
+    missing = tmp_path / "nope" / "cgroup.procs"
+    rows = module.checks("https://example.test", tmp_path / "missing.sqlite3",
+                         ai_status="PASS", opener=opener, chat_cgroup_procs=missing)
+    results = {name: (status, reason) for name, status, reason in rows}
+    assert results["Chat 앱 프로세스 수"] == ("SKIP", "cgroup 경로 없음")
+
+
+def test_tus_capability_reports_refusals_and_missing_ceiling():
+    class OptionsOpener:
+        def __init__(self, status, headers):
+            self.status, self.headers = status, headers
+        def open(self, request, timeout):
+            assert request.method == "OPTIONS"
+            assert request.full_url.endswith("/api/chat/attachments/tus")
+            return Response(self.status, headers=self.headers)
+    assert module.tus_capability(OptionsOpener(405, {}), "https://example.test") == (405, "")
+    assert module.tus_capability(
+        OptionsOpener(204, {}), "https://example.test") == (204, "")
+    assert module.tus_capability(OptionsOpener(0, {}), "https://example.test") == (0, "")
 
 
 def test_bookai_unsigned_status_and_absent_route(tmp_path, monkeypatch):

@@ -108,7 +108,12 @@ DOCX_SIGNATURE_MISSING_NOTE = f"{GATE_REJECTION_NOTE_PREFIX}document_signature_m
 # a timeout or an isolation failure can never echo a payload, a host path, child
 # stderr or a traceback. A timeout keeps its own note because it is not a
 # failure and not a cancellation.
-PARSER_TIMEOUT_NOTE = f"문서 변환 시간 초과 — {PARSER_TIMEOUT_REASON_CODE}"
+# #2824: the reason code stays (it is the bounded vocabulary), and the wording now
+# says what the owner can do instead of asking them to read a code.
+PARSER_TIMEOUT_NOTE = (
+    "문서를 처리하는 데 시간이 너무 오래 걸려 멈췄습니다. 문서를 나누어 다시 올려 주세요 "
+    f"— {PARSER_TIMEOUT_REASON_CODE}"
+)
 PARSER_ISOLATION_FAILURE_NOTE = (
     f"문서 변환 실패 — {PARSER_ISOLATION_FAILURE_REASON_CODE}"
 )

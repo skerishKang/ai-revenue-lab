@@ -48,9 +48,12 @@ _BINARY_ERROR_MESSAGES = {
     "document_dependency_unavailable": "문서 처리 기능을 사용할 수 없습니다.",
     DOCUMENT_PARSER_ISOLATION_UNAVAILABLE: "현재 실행 환경에서는 격리된 문서 파서를 사용할 수 없어 문서를 처리할 수 없습니다.",
     "isolated_parser_transport_failed": "문서 파서 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
-    "isolated_parser_request_unbounded": "문서 파서 요청이 허용 크기를 초과했습니다.",
+    # Over-cap answers never name the internal component and never ask for a
+    # retry: the same file fails the same way every time, so the owner needs the
+    # one action that works (#2824 transfer ceiling).
+    "isolated_parser_request_unbounded": "문서가 너무 커서 한 번에 처리할 수 없습니다. 1GB보다 작은 크기로 나누어 올려 주세요.",
     "isolated_parser_response_invalid": "문서 파서 응답을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.",
-    "isolated_parser_response_unbounded": "문서 파서 응답을 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "isolated_parser_response_unbounded": "문서에서 뽑아낸 내용이 너무 많아 한 번에 처리할 수 없습니다. 문서를 나누어 올려 주세요.",
     "isolated_parser_internal_error": "문서 파서가 문서를 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
 }
 _OOXML_CODES = {
