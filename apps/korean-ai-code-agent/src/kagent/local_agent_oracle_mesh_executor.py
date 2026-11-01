@@ -28,6 +28,7 @@ from typing import Any, Callable, Optional
 
 from .contracts import ContractError
 from .local_agent_meshcentral_private_reader import MeshCentralReadTooLarge
+from .reparse_guard import walk_hits_reparse_point
 
 #: Same path the Chat worker mounts. Executor and server must agree exactly.
 POLL_PATH = "/api/claw/connector/mesh-reads/poll"
@@ -241,6 +242,10 @@ class OracleMeshDispatch:
     #: #6460 step 2: the typed value, delivered once by the poll that
     #: claimed this dispatch. Kept off every persisted record here.
     desktop_text: str | None = None
+    #: #5994 D3 후속: the granted root the poll response names for this read,
+    #: used only by the pre-download reparse walk. A missing value keeps the
+    #: read exactly as before — the guard runs only when the server named it.
+    granted_root: str | None = None
     # Only the authenticated queue projection may set these fields.
     background: bool = False
     owner_ref: str | None = None
@@ -732,6 +737,9 @@ class OracleMeshExecutor:
         request_id = dispatch.get("request_id")
         if request_id is not None:
             request_id = _require_text(request_id, "request_id")
+        granted_root = dispatch.get("granted_root")
+        if granted_root is not None:
+            granted_root = _require_text(granted_root, "granted_root")
         return OracleMeshDispatch(
             dispatch_id=_require_text(dispatch.get("dispatch_id"), "dispatch_id"),
             nonce=_require_text(dispatch.get("nonce"), "nonce"),
@@ -744,6 +752,7 @@ class OracleMeshExecutor:
             command_text=command_text,
             desktop_text=desktop_text,
             max_bytes=max_bytes,
+            granted_root=granted_root,
             background=background,
             owner_ref=owner_ref,
         )
@@ -769,24 +778,36 @@ class OracleMeshExecutor:
         so that body cannot cross it. A failed read is never collapsed into an
         empty success.
         """
-        # #5994 D3 후속: before the download, the same MeshCentral command channel
-        # runs a ReparsePoint walk on the PC — granted root → file. If any folder
-        # or the file itself is a junction/symlink, the read is refused with the
-        # ``link_refused`` marker so not one byte of an outside file crosses the
-        # relay. A guard malfunction also refuses (fail closed).
-        if dispatch.granted_root and self._command_port is not None:
-            hit = self._pc_reparse_check(
-                granted_root=dispatch.granted_root,
-                file_path=dispatch.file_path,
-                node_ref=dispatch.node_ref,
-            )
-            if hit:
+        # #5994 D3 후속: before the download, every folder from the granted
+        # root down to the file — and the file itself — is checked for a
+        # ReparsePoint crossing. The executor's own filesystem answers first
+        # (the connector executor runs on the user's PC); where that cannot
+        # see — the COM2 relay executor — the same walk runs ON THE PC through
+        # the MeshCentral command channel. A hit (or a PC check that cannot
+        # complete) refuses the read with the ``link_refused`` marker so not
+        # one byte of an outside file crosses the relay. A server that names
+        # no root keeps the read exactly as it was before this guard.
+        if dispatch.granted_root:
+            if walk_hits_reparse_point(dispatch.granted_root, dispatch.file_path):
                 self._trace_read(dispatch, "link_refused", time.monotonic(),
                                  error="reparse point below the granted root")
                 return OracleMeshExecutionOutcome(
                     termination="exited", exit_code=1,
                     body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
                 )
+            if self._command_port is not None:
+                hit = self._pc_reparse_check(
+                    granted_root=dispatch.granted_root,
+                    file_path=dispatch.file_path,
+                    node_ref=dispatch.node_ref,
+                )
+                if hit:
+                    self._trace_read(dispatch, "link_refused", time.monotonic(),
+                                     error="reparse point below the granted root")
+                    return OracleMeshExecutionOutcome(
+                        termination="exited", exit_code=1,
+                        body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
+                    )
         read_bound = dispatch.max_bytes
         if read_bound is None:
             read_bound = MAX_READ_BYTES
@@ -935,7 +956,12 @@ class OracleMeshExecutor:
                 if line.startswith("PADIEM_PC_REPARSE="):
                     parsed = json.loads(
                         base64.b64decode(line[len("PADIEM_PC_REPARSE="):]))
-                    return bool(parsed.get("hit"))
+                    hit = parsed.get("hit") if isinstance(parsed, dict) else None
+                    # A marker that does not carry an explicit boolean verdict
+                    # is a check that cannot report — refuse closed.
+                    if type(hit) is not bool:
+                        return True
+                    return hit
             return True  # account line 없음 — 검사 실패 → fail closed
         except Exception:
             return True  # 검사 실패 → fail closed

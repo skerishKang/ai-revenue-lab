@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+import json
 import os
 import stat
 import subprocess
@@ -171,8 +172,9 @@ class PcReparseCheckUnitTests(unittest.TestCase):
     def _dispatch(self):
         from kagent.local_agent_oracle_mesh_executor import OracleMeshDispatch
         return OracleMeshDispatch(
-            dispatch_id="dsp-junction", kind="read", node_ref="node-pc",
-            root_ref="root-pc-files", file_path="C:/granted/보고서.docx",
+            dispatch_id="dsp-junction", nonce="n" * 32, kind="read",
+            node_ref="node-pc", file_path="C:/granted/보고서.docx",
+            command_id="cmd-junction", run_id="run-junction",
             granted_root="C:/granted", max_bytes=20_000_000,
         )
 

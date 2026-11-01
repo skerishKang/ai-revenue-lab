@@ -1752,6 +1752,38 @@ def _oracle_mesh_poll_max_bytes(dispatch: dict[str, Any]) -> int | None:
     return _MAX_FILE_TEXT_BYTES
 
 
+def _oracle_mesh_poll_granted_root(dispatch: dict[str, Any]) -> str | None:
+    """The granted root for one PC-files read dispatch, named once on poll.
+
+    #5994 D3 후속: the executor's pre-download reparse walk needs the real
+    root the read grant admitted, and the staged row already holds it —
+    ``file_path`` is staged as ``root + "/" + path_relative`` for this lane,
+    so the root is what survives stripping the staged relative path. The
+    decision is made here from the row the server staged, never from the
+    model, the executor or any request value. A row that does not
+    reconstruct cleanly names no root, which keeps older executors and
+    every other lane byte-for-byte unchanged.
+    """
+    if (dispatch.get("kind") or "read") != "read":
+        return None
+    if dispatch.get("root_ref") != _PC_FILES_READ_ROOT_REF:
+        return None
+    file_path = dispatch.get("file_path")
+    relative = dispatch.get("path_relative")
+    if (
+        not isinstance(file_path, str) or not file_path
+        or not isinstance(relative, str)
+    ):
+        return None
+    rel = relative.strip("/")
+    if not rel:
+        return file_path.rstrip("/") or None
+    marker = "/" + rel
+    if not file_path.lower().endswith(marker.lower()):
+        return None
+    return file_path[:-len(marker)] or None
+
+
 async def _read_presence(request: Request) -> list[dict[str, Any]] | None:
     """The optional presence beat, or ``None`` when absent or malformed.
 
@@ -1986,6 +2018,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
                 desktop_text = await taker(ref=text_ref)
             except Exception:
                 desktop_text = None
+    granted_root = _oracle_mesh_poll_granted_root(pending)
     return _response({
         "ok": True,
         "dispatch": {
@@ -2010,6 +2043,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "command_text": pending.get("command_text"),
             **({"desktop_text": desktop_text} if desktop_text is not None else {}),
             "max_bytes": _oracle_mesh_poll_max_bytes(pending),
+            **({"granted_root": granted_root} if granted_root else {}),
             **({"background": True, "owner_ref": pending["user_id"]}
                if pending.get("background") is True else {}),
         },
