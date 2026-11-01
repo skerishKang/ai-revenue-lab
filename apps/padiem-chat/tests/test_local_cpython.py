@@ -545,3 +545,25 @@ def test_com2_pdfmd_missing_dependency_keeps_writes_closed(staging_host_env, mon
     app = build_app()
     assert app.state.pdfmd_com2_ready is False
     assert document_convert_routes.PDFMD_NEW_WORK_DISABLED is True
+
+
+
+def test_com2_council_and_councillor_entries_and_assets(staging_host_env):
+    # Exercise actual CPython composition, not a standalone static test app.
+    app = build_app()
+    origin = "https://chat-com2-staging.padiem.net"
+    with TestClient(app, base_url=origin) as client:
+        council = client.get("/apps/council/")
+        assert council.status_code == 200
+        assert "./static/council-app.css" in council.text
+        for url in ("/apps/council/static/council-app.css",
+                    "/apps/council/static/council-app.js",
+                    "/apps/council/static/assets/parliament-hero.jpg"):
+            assert client.get(url).status_code == 200, url
+        councillor = client.get("/councillor/")
+        assert councillor.status_code == 200
+        assert "./councillor.css" in councillor.text
+        assert client.get("/councillor/councillor.css").status_code == 200
+        assert client.get("/councillor/councillor.js").status_code == 200
+        assert client.get("/api/auth/status").status_code == 200
+        assert client.get("/apps/council/static/missing.js").status_code == 404
