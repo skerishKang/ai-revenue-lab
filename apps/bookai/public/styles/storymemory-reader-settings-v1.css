@@ -118,3 +118,21 @@ body.ai-open .smal-overflow-menu{right:272px}
 
 /* Keep reading settings above the AI panel while open. */
 body.smr-open #reader.active .reader-stage{z-index:100!important}
+
+/* ===== bookAI pass · phone floor for the reading settings controls
+   Measured at 390x844: the panel's controls already reach 44px (review-261031.css),
+   but their labels stayed at 11px (reset 10px) and the overflow menu rows that open
+   the panel were 37px tall with 13px labels. Below 769px the labels reach 14px and
+   the menu rows the same 44px floor; 768 and 1440 keep their panel layout, and the
+   1440 rendering is measured unchanged. */
+@media(max-width:768px){
+  .srsg-panel .srsg-head b{font-size:14px}
+  .srsg-panel .srsg-label{font-size:12px}
+  .srsg-panel .srsg-seg button{min-height:44px;min-width:44px;font-size:14px;padding:10px 12px}
+  .srsg-panel .srsg-sw button{width:52px;height:44px;font-size:14px}
+  .srsg-panel .srsg-reset{min-height:44px;font-size:14px}
+  /* The overflow menu is the way into that panel: give its rows the same floor. */
+  #reader.active .smal-overflow-menu .smal-ov-item,
+  #reader.active .smal-overflow-menu .srsg-btn{min-height:44px;font-size:14px;padding:11px 10px}
+  #reader.active .smal-overflow-menu .smal-ov-ic{font-size:16px}
+}
