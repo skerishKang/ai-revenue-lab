@@ -455,6 +455,12 @@ async def test_oversized_route_level_is_not_refused_for_its_size():
             oversized = b64encode(b"x" * 1025).decode()
             response = await post_binary(client, f"/api/projects/{project.id}/files", name="big.pdf", media_type=PDF_MEDIA, base64=oversized)
         assert response.status_code == 413, f"expected 413 got {response.status_code}: {response.json()}"
+        # #2824: the spool refusal is answered with the plain Korean line — the
+        # bound and the way out, never the reason code or an internal name.
+        message = response.json()["error"]["message"]
+        assert "1GB보다 작은 크기로 나누어 올려 주세요" in message
+        for leaked in ("invalid_document", "MAX_BINARY_DOCUMENT_BYTES", "isolated_", "Traceback"):
+            assert leaked not in message, (leaked, message)
     finally:
         await client.aclose()
 
