@@ -467,3 +467,42 @@ def test_extracted_media_type_helper():
 def test_binary_project_file_media_contains_pdf_docx():
     assert PDF_MEDIA in BINARY_PROJECT_FILE_MEDIA
     assert DOCX_MEDIA in BINARY_PROJECT_FILE_MEDIA
+
+
+class _StreamingR2(_MemoryR2):
+    """A store that offers the streaming write the 1 GiB path needs."""
+
+    def __init__(self):
+        super().__init__()
+        self.streamed = []
+
+    async def put_stream(self, key, file_or_path, httpMetadata=None):
+        self.streamed.append((key, httpMetadata))
+        self.objects[key] = bytes(file_or_path.read())
+
+
+@pytest.mark.asyncio
+async def test_binary_project_file_uses_streaming_write_when_store_offers_it():
+    # The original is handed to the store as an open file instead of becoming
+    # one `bytes` object first, so a 1 GiB PDF never lands in memory whole.
+    store = MemoryProjectFileStore()
+    history = MemoryProjectStore()
+    owner = await history.add_user("owner-stream")
+    project = await history.create_project(owner.id, "스트리밍 프로젝트", "")
+    app = create_app(settings(), history_store=history, project_file_store=store)
+    client = await client_with_session(app, owner)
+    bucket = _StreamingR2()
+    app.state.workspace_document_store = SimpleNamespace(r2_bucket=bucket)
+    try:
+        response = await post_binary(
+            client, f"/api/projects/{project.id}/files",
+            name="보고서.pdf", media_type="application/pdf",
+            base64=_make_pdf_base64(),
+        )
+        assert response.status_code == 201, response.text
+        assert len(bucket.streamed) == 1
+        key, metadata = bucket.streamed[0]
+        assert metadata == {"contentType": "application/pdf"}
+        assert bucket.objects[key].startswith(b"%PDF")
+    finally:
+        await client.aclose()
