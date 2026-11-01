@@ -333,7 +333,17 @@ async def project_files_collection(request: Request) -> JSONResponse:
                 )
                 return JSONResponse({"file": created.public_dict()}, status_code=201)
         except RequestBodyTooLarge:
-            return JSONResponse({"error": {"code": "invalid_document"}}, status_code=413)
+            # #2824: the receive spool refuses before any byte reaches a parser.
+            # The owner gets the same plain Korean line as the parser ceiling
+            # (binary_documents.guidance_for_reason_code): the bound, and the one
+            # action that changes the outcome. No code is shown and no retry is
+            # advised — the same file fails the same way every time.
+            return JSONResponse({
+                "error": {
+                    "code": "invalid_document",
+                    "message": "파일이 너무 커요 — 1GB보다 작은 크기로 나누어 올려 주세요.",
+                }
+            }, status_code=413)
         except (ValueError, DocumentNormalizationError, DocumentValidationError, ProjectFileLimitError) as exc:
             if media_type == "application/hwp+zip":
                 from .binary_documents import guidance_for_reason_code
