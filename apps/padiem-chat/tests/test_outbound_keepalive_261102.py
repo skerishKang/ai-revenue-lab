@@ -18,7 +18,7 @@ import pytest
 import app.local_engine_transport as transport_module
 from app.local_engine_transport import LocalEngineHttpTransport
 
-ORIGIN = "https://engine.example.test"
+ORIGIN = "http://127.0.0.1:8798"
 
 
 class _Recorder:
@@ -91,9 +91,10 @@ async def _use(transport):
 
 def test_an_injected_client_is_used_and_never_closed(monkeypatch):
     recorder = _Recorder()
-    monkeypatch.setattr(transport_module.httpx, "AsyncClient", recorder.factory())
+    # Built before the factory is installed: this client belongs to the caller.
     injected = httpx.AsyncClient(
         transport=httpx.MockTransport(lambda request: httpx.Response(200)))
+    monkeypatch.setattr(transport_module.httpx, "AsyncClient", recorder.factory())
     transport = LocalEngineHttpTransport(ORIGIN, client=injected)
 
     async def call():
