@@ -761,7 +761,11 @@
     unreadable: "이 파일은 참고 글로 읽지 못했어요. 글자가 들어 있는 문서를 골라 주세요.",
     hwpEncrypted: "암호가 걸린 한글 파일은 읽을 수 없어요.",
     hwpDistributable: "배포용으로 저장된 한글 파일은 읽을 수 없어요.",
+    // #6598과 같은 사유 코드(legacy_hwp_unsupported)의 문장 — 구형 .hwp는
+    // 어느 경로로도 읽지 않고 곧바로 이 안내로 거절한다.
+    hwpLegacy: "기존 HWP 파일은 아직 지원하지 않습니다.",
     laneDown: "파일 읽기 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    docReading: "가져온 문서를 읽는 중…",
     noPc: "컴퓨터를 연결하면 예전 글을 가져올 수 있습니다.",
     connect: "컴퓨터 연결하기",
     save: "내 PC에 저장",
@@ -857,6 +861,36 @@
     return pcExchangeLoading;
   }
 
+  // 문서 참고 글의 tus 업로더(#6584): 공용 화면 모듈(tus-upload.js)과 프로젝트
+  // 파일 레인 어댑터(project-file-upload.js) — 둘 다 이 앱의 사본이고, 내 PC에
+  // 저장이 문서를 프로젝트에 올릴 때 쓰는 것과 같은 경로다. 진행률·끊김 이어
+  // 올리기·1차 한국어 안내는 공용 모듈이 한 곳에서 맡는다.
+  let projectUploadLoading = null;
+  function loadProjectUpload() {
+    if (window.PadiemProjectFileUpload) return Promise.resolve(window.PadiemProjectFileUpload);
+    if (projectUploadLoading) return projectUploadLoading;
+    projectUploadLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      const load = (src) => new Promise((done, fail) => {
+        const script = document.createElement("script");
+        script.src = src;
+        // ?v=<content hash> from the served map; the bare URL stays the fallback.
+        script.src = versionedAsset(script.src);
+        script.addEventListener("load", done, { once: true });
+        script.addEventListener("error", () => fail(new Error("project-upload-unavailable")), { once: true });
+        head.appendChild(script);
+      });
+      load("./static/tus-upload.js")
+        .then(() => load("./static/project-file-upload.js"))
+        .then(() => {
+          if (window.PadiemProjectFileUpload) resolve(window.PadiemProjectFileUpload);
+          else reject(new Error("project-upload-unavailable"));
+        })
+        .catch(() => reject(new Error("project-upload-unavailable")));
+    });
+    return projectUploadLoading;
+  }
+
   async function pcLinked() {
     try {
       const res = await fetch("/api/pc/pairings", { credentials: "include", cache: "no-store" });
@@ -871,6 +905,12 @@
 
   function openComputerConnect() {
     try { window.location.assign(COMPUTER_CONNECT_HREF); } catch (_) {}
+  }
+
+  function pcRefExtension(name) {
+    const value = String(name || "");
+    const dot = value.lastIndexOf(".");
+    return dot < 0 ? "" : value.slice(dot).toLowerCase();
   }
 
   async function pcReferenceEntry(picked) {
@@ -893,6 +933,8 @@
           ? refused.error.code : "";
         if (code === "hwp_encrypted") return { error: PC_REF_COPY.hwpEncrypted };
         if (code === "hwp_distributable") return { error: PC_REF_COPY.hwpDistributable };
+        // #6598이 이 경로에 같은 사유 코드를 싣는 순간에도 같은 문장이 나온다.
+        if (code === "legacy_hwp_unsupported") return { error: PC_REF_COPY.hwpLegacy };
         if (code === "file_lane_unavailable") return { error: PC_REF_COPY.laneDown };
         return null;
       }
@@ -905,6 +947,70 @@
     } catch (_) {
       return null;
     }
+  }
+
+  // 참고 글로 가져올 수 있는 문서 형식과 그 형식이 다니는 길. 텍스트(.txt·.md)는
+  // #5895의 /api/pc/reference 읽기를 그대로 쓰고, 문서(.hwpx·.docx·.pdf)는 PC에서
+  // 읽은 원본 바이트를 #6584의 tus 프로젝트 파일 경로로 올린다 — 완료 때 Chat의
+  // 문서 해석 권위가 추출한 본문이 곧 참고 글이 된다. 새 업로드·추출 경로는
+  // 만들지 않는다. 구형 .hwp는 지원 목록이 아니라 #6598의 안내 대상이다 —
+  // 목록에서 숨기지 않고, 골랐을 때 같은 사유 코드의 문장으로 거절한다.
+  const PC_REF_DOC_MEDIA = Object.freeze({
+    ".hwpx": "application/hwp+zip",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".pdf": "application/pdf",
+  });
+  const PC_REF_ACCEPT = Object.freeze([".hwpx", ".docx", ".txt", ".md", ".pdf", ".hwp"]);
+
+  // 문서 한 편을 참고 글로: 원본 바이트는 기존 소유자 검증 경로(/api/pc/file)로
+  // 읽고, 올리는 곳은 이 앱이 초안을 저장하는 같은 프로젝트의 tus 레인이다.
+  // 어떤 실패든 참고 글 하나가 오류 화면이 되지 않게 안내 문장으로 끝난다.
+  async function pcReferenceDocumentEntry(picked, mediaType) {
+    if (!picked || !picked.fileId) return null;
+    const name = picked.name || "가져온 문서";
+    let bytes;
+    try {
+      const res = await fetch(
+        "/api/pc/file?dispatch_id=" + encodeURIComponent(picked.fileId),
+        { credentials: "include", cache: "no-store" },
+      );
+      if (!res.ok) return { error: PC_REF_COPY.unreadable };
+      bytes = new Uint8Array(await (await res.blob()).arrayBuffer());
+    } catch (_) {
+      return { error: PC_REF_COPY.laneDown };
+    }
+    const pid = await councilProject.ensure();
+    if (!pid) return { error: PC_REF_COPY.uploadFailed };
+    let uploader;
+    try { uploader = await loadProjectUpload(); } catch (_) { uploader = null; }
+    if (!uploader || typeof uploader.upload !== "function") {
+      return { error: PC_REF_COPY.uploadFailed };
+    }
+    let stored = null;
+    try {
+      const data = await uploader.upload({
+        file: new File([bytes], name, { type: mediaType }),
+        projectId: pid,
+        mediaType,
+      });
+      stored = data && data.file ? data.file : null;
+    } catch (_) { stored = null; }
+    if (!stored || !stored.id) return { error: PC_REF_COPY.uploadFailed };
+    // tus 완료분은 저장 때 Chat의 해석 권위가 추출한 본문을 이미 품고 있다 —
+    // 프로젝트 파일 읽기 계약(GET …/files/{id} → file.content)으로 그대로 꺼낸다.
+    let text = "";
+    try {
+      const res = await fetch(
+        "/api/projects/" + pid + "/files/" + encodeURIComponent(stored.id),
+        { credentials: "include", cache: "no-store" },
+      );
+      if (res.ok) {
+        const body = await res.json().catch(() => null);
+        text = body && body.file && typeof body.file.content === "string" ? body.file.content : "";
+      }
+    } catch (_) { text = ""; }
+    if (!String(text).trim()) return { error: PC_REF_COPY.unreadable };
+    return { name, text };
   }
 
   // One section per tool: the pick button, the files the owner chose with their
@@ -958,7 +1064,17 @@
 
     async function addPicked(picked) {
       say("");
-      const entry = await pcReferenceEntry(picked);
+      const ext = pcRefExtension(picked && picked.name);
+      // 구형 .hwp: 어떤 읽기도 부르지 않고 형식에 대한 안내로 거절한다 —
+      // 서비스 상태가 아니라 형식이 거절 이유다.
+      if (ext === ".hwp") { say(PC_REF_COPY.hwpLegacy); return; }
+      let entry;
+      if (PC_REF_DOC_MEDIA[ext]) {
+        say(PC_REF_COPY.docReading);
+        entry = await pcReferenceDocumentEntry(picked, PC_REF_DOC_MEDIA[ext]);
+      } else {
+        entry = await pcReferenceEntry(picked);
+      }
       if (entry && typeof entry.error === "string") { say(entry.error); return; }
       if (!entry) { say(PC_REF_COPY.unreadable); return; }
       files.push(entry);
@@ -973,7 +1089,10 @@
         say(PC_REF_COPY.unavailable);
         return;
       }
-      component.open({ onSelect: (picked) => { void addPicked(picked); } });
+      component.open({
+        accept: PC_REF_ACCEPT,
+        onSelect: (picked) => { void addPicked(picked); },
+      });
     });
 
     let checked = false;
