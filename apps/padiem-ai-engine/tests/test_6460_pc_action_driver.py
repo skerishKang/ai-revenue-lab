@@ -72,6 +72,16 @@ class _WritePcEndpoint(_FakePcEndpoint):
         self.legs.append(body)
         account = {"ok": True, "op": body["op"], "target": body["path"],
                    "backup": "backup/notes.txt", "bytes": 0}
+        content = body.get("content", "").encode("utf-8")
+        account["verification"] = {
+            "version": 1, "status": "observed",
+            "source_exists": body["op"] == "write",
+            "target_exists": body["op"] != "delete",
+            "target_is_file": body["op"] != "delete",
+            "target_bytes": len(content) if body["op"] == "write" else None,
+            "target_sha256": hashlib.sha256(content).hexdigest() if body["op"] == "write" else None,
+            "backup_exists": True, "backup_is_file": True,
+        }
         output = PC_WRITE_ACCOUNT_PREFIX + base64.b64encode(json.dumps(account).encode()).decode()
         dispatch_id = f"dsp_6460_{len(self.rows) + 1}"
         self.rows[dispatch_id] = {
