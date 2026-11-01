@@ -10,6 +10,7 @@ import hmac
 import json
 import logging
 import secrets
+import time
 from urllib.parse import urlencode
 
 from starlette.responses import JSONResponse, RedirectResponse
@@ -127,6 +128,18 @@ class SharedLoginFlow(ComparisonFlow):
     async def finish_login(self, request):
         headers = {'cache-control': 'no-store', 'referrer-policy': 'no-referrer'}
         stage = 'validate_flow'
+        # A callback can hold three outbound calls before a session exists. Which
+        # stage is slow decides whether this is a host problem or an authority
+        # problem, so each one is measured; only names and milliseconds are logged.
+        started = last_mark = time.monotonic()
+        marks = []
+
+        def mark(name):
+            nonlocal last_mark
+            now = time.monotonic()
+            marks.append(f'{name}={int((now - last_mark) * 1000)}')
+            last_mark = now
+
         try:
             states, codes = request.query_params.getlist('state'), request.query_params.getlist('code')
             parts = request.cookies.get(STATE_COOKIE, '').split('.')
@@ -141,8 +154,10 @@ class SharedLoginFlow(ComparisonFlow):
                     or not hmac.compare_digest(state['state'], states[0])
                     or not isinstance(state.get('verifier'), str)):
                 raise ValueError('invalid_state')
+            mark('validate_flow')
             stage = 'client_assertion'
             assertion = await self._assertion(int(self.clock()))
+            mark('client_assertion')
             stage = 'exchange'
             tokens = await _await(self.exchange(TOKEN_URL, {
                 'client_id': self.client_id,
@@ -156,21 +171,31 @@ class SharedLoginFlow(ComparisonFlow):
             access, refresh = tokens.get('access_token'), tokens.get('refresh_token')
             if not isinstance(access, str) or not access or not isinstance(refresh, str) or not refresh:
                 raise ValueError('invalid_exchange')
+            mark('exchange')
             stage = 'resolve_account'
             user = await _await(self.resolve_account(request, access))
             if not isinstance(user, str) or not user:
                 raise ValueError('unknown_account')
+            mark('resolve_account')
             if self.provision_profile is not None:
                 stage = 'provision_profile'
                 await _await(self.provision_profile(request, user, access, tokens))
+                mark('provision_profile')
             stage = 'issue_session'
             response = await _await(self.issue_session(request, user, access, refresh))
             if not isinstance(response, RedirectResponse):
                 raise ValueError('invalid_session_response')
             response.headers.update(headers)
+            mark('issue_session')
+            logger.info('shared_login_timing outcome=ok total_ms=%d%s',
+                        int((time.monotonic() - started) * 1000),
+                        ' ' + ' '.join(marks) if marks else '')
         except Exception as exc:
             logger.warning('shared_login_finish_failed stage=%s code=%s',
                            stage, _finish_failure_code(exc, stage))
+            logger.warning('shared_login_timing outcome=failed stage=%s total_ms=%d%s',
+                           stage, int((time.monotonic() - started) * 1000),
+                           ' ' + ' '.join(marks) if marks else '')
             response = JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
         response.delete_cookie(STATE_COOKIE, path='/', secure=True, httponly=True, samesite='lax')
         return response

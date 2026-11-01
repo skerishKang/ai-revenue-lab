@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlencode, urlparse
 
@@ -75,10 +76,21 @@ async def callback_request(flow):
                    start.headers["set-cookie"].split(";", 1)[0])
 
 
+# The stage measurement is part of the same promise: names and milliseconds, never
+# an identifier, a token, or the exception's own text.
+TIMING = re.compile(
+    r"^shared_login_timing outcome=failed stage=[a-z_]+ total_ms=\d+"
+    r"(?: (?:validate_flow|client_assertion|exchange|resolve_account|provision_profile"
+    r"|issue_session)=\d+)*$"
+)
+
+
 def assert_reason_only(caplog, stage, code):
     records = [record for record in caplog.records if record.name == "app.shared_login_flow"]
-    assert [record.getMessage() for record in records] == [
-        f"shared_login_finish_failed stage={stage} code={code}"]
+    messages = [record.getMessage() for record in records]
+    assert messages[0] == f"shared_login_finish_failed stage={stage} code={code}", messages
+    assert any(TIMING.match(message) for message in messages), messages
+    assert all(message == messages[0] or TIMING.match(message) for message in messages), messages
     assert all(record.exc_info is None for record in records)
     for private in (ACCOUNT, GOOGLE_SUBJECT, _user_id(GOOGLE_SUBJECT), ACCESS, REFRESH,
                     CODE, PRIVATE, PROFILE["email"], PROFILE["name"]):
@@ -216,7 +228,10 @@ async def test_missing_or_inactive_canonical_link_never_creates_an_account(histo
     assert len(calls) == 2 and notified == issued == []
     assert history[1].execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0
     messages = [record.getMessage() for record in caplog.records if record.name == "app.shared_login_flow"]
-    assert messages == [f"shared_login_finish_failed stage=resolve_account code={code}"] * 2
+    reason = f"shared_login_finish_failed stage=resolve_account code={code}"
+    reasons = [message for message in messages if not TIMING.match(message)]
+    assert reasons == [reason, reason], messages
+    assert len(messages) == 4, messages          # one timing line per round trip
     assert PRIVATE not in caplog.text and ACCOUNT not in caplog.text and ACCESS not in caplog.text
 
 

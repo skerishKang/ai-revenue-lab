@@ -44,6 +44,8 @@ class AuthClientConfigTest(unittest.TestCase):
                 },
             ]},
         }
+        # 11-01: production Chat receives the same profile claims as staging (shared login provisioning).
+        expected['profile_claims'] = ['email', 'email_verified', 'name', 'picture']
         self.assertEqual(clients['b62'], expected)
         self.assertEqual(len({key['kid'] for key in clients['b62']['jwks']['keys']}), 2)
         for key in clients['b62']['jwks']['keys']:
