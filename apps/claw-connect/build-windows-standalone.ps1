@@ -14,12 +14,21 @@
 [CmdletBinding()]
 param(
     [string]$Python = (Get-Command python -ErrorAction SilentlyContinue).Source,
-    [string]$OutRoot = (Join-Path (Split-Path $PSScriptRoot) ".." "padiem-connector-standalone-0.1.0"),
+    [string]$OutRoot = "",
     [string]$WssPin = "websockets==17.2"
 )
 
 $ErrorActionPreference = "Stop"
 $Here = $PSScriptRoot
+# One version home: CONNECT_VERSION in claw_connect/__init__.py drives the
+# bundle folder name, so the built artifact cannot drift from the version the
+# connector's --version reports.
+$VersionLine = Select-String -LiteralPath (Join-Path $Here "claw_connect\__init__.py") -Pattern '^CONNECT_VERSION = "([^"]+)"' | Select-Object -First 1
+if (-not $VersionLine) { throw "CONNECT_VERSION not found in claw_connect\__init__.py" }
+$ConnectVersion = $VersionLine.Matches[0].Groups[1].Value
+if (-not $OutRoot) {
+    $OutRoot = Join-Path (Split-Path (Split-Path $Here)) ("padiem-connector-standalone-" + $ConnectVersion)
+}
 $AgentSrc = Join-Path $Here "..\korean-ai-code-agent\src" -Resolve
 $CoreSrc = Join-Path $Here "..\..\packages\padiem-ai-core" -Resolve
 $VenvDir = Join-Path ([System.IO.Path]::GetTempPath()) "padiem-standalone-buildvenv"
