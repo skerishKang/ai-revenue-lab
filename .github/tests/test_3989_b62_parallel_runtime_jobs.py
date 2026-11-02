@@ -34,13 +34,17 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn("name: b62-test", self.aggregate)
         self.assertIn("if: always()", self.aggregate)
         self.assertIn(
-            "needs: [registry-ci-plan, b62-static-ui, b62-ui-mixed-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
+            "needs: [registry-ci-plan, b62-static-ui, b62-ui-mixed-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, b62-worker-suite, b14-multimodal-test, b62-registry-contract, ci-scope-contract]",
             self.aggregate,
         )
         self.assertIn("WORKER_RESULT: ${{ needs.b62-worker-suite.result }}", self.aggregate)
         self.assertIn('test "$WORKER_RESULT" = success', self.aggregate)
         self.assertIn('test "$WORKER_RESULT" = skipped', self.aggregate)
         self.assertIn('test "$PLAN_RESULT" = success', self.aggregate)
+        # CTO 2026-11-02 (컴1로컬1): the CI-contract lane runs the pinned
+        # CI-scope contract tests on every run and its result is enforced.
+        self.assertIn("CI_CONTRACT_RESULT: ${{ needs.ci-scope-contract.result }}", self.aggregate)
+        self.assertIn('test "$CI_CONTRACT_RESULT" = success', self.aggregate)
 
     def test_parallel_jobs_preserve_pr_plan_with_nightly_host_override(self):
         condition = "if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}"
@@ -246,7 +250,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         # #4318 instead of being repeated per product.
         self.assertIn(
             "needs: [registry-ci-plan, b62-static-ui, b62-ui-mixed-tests, b62-core-parser-focused, b62-b14-attempt-focused, b62-full-suite, "
-            "b62-worker-suite, b14-multimodal-test, b62-registry-contract]",
+            "b62-worker-suite, b14-multimodal-test, b62-registry-contract, ci-scope-contract]",
             self.aggregate,
         )
         self.assertIn('case "$MM_RESULT" in', self.aggregate)

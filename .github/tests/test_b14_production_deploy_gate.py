@@ -132,17 +132,28 @@ def test_real_model_call_step_runs_after_the_deploy_and_is_not_rolled_back() -> 
     assert text.count("b14_real_model_call_smoke.py") == 1
 
 
-def test_real_model_call_script_names_no_model_and_carries_no_credential() -> None:
+def test_real_model_call_script_names_the_declared_tier_model_with_the_service_proof() -> None:
     source = (ROOT / ".github/scripts/b14_real_model_call_smoke.py").read_text(encoding="utf-8")
-    assert 'REQUESTED_ROUTE = "b14/auto"' in source
-    # The gate itself carries no grade choice: the default is the declared
-    # free tier, and the nightly smoke may only pass one of PRODUCT_TIERS.
+    # CTO 2026-11-02 (컴1로컬1): the retired b14/auto id answers 422, so the
+    # smoke reads the executable route from the shared product-tier
+    # declaration and names that exact model id instead.
+    assert "declared_tier_model" in source
+    # The retired id may only appear in the explanatory docstring; it must not
+    # be sent as a request value anywhere.
+    assert '"model": "b14/auto"' not in source
+    assert 'REQUESTED_ROUTE' not in source
+    assert "active_route_for" in source
     assert '"product_tier": product_tier' in source
     assert "product_tier: str = PRODUCT_TIER" in source
     assert 'parser.add_argument("--tier", choices=PRODUCT_TIERS, default=PRODUCT_TIER,' in source
     assert "PROVIDER_LIMIT_STATUSES = frozenset({429, 503})" in source
     assert 'print(f"REAL_MODEL_CALL={verdict} model={model}")' in source
-    for forbidden in ("Authorization", "api_key", "API_KEY", "secrets.", "X-Padiem-B14-Proof"):
+    # The authentication is the existing B14 service proof: the binding NAME
+    # only, HMAC-signed, never a provider credential and never a value output.
+    assert 'PROOF_SECRET_ENV = "PADIEM_B14_SERVICE_PROOF_SECRET"' in source
+    assert 'PROOF_HEADER = "x-padiem-b14-proof"' in source
+    assert "hmac.new" in source
+    for forbidden in ("Authorization", "api_key", "API_KEY"):
         assert forbidden not in source, forbidden
     assert "if __name__" in source
 

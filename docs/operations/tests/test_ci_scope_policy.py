@@ -83,6 +83,11 @@ B62_CHAT_EXPECTED_PATHS = (
     ".github/workflows/b62-claw-production-smoke-gate.yml",
     ".github/workflows/b62-production-code-deploy-gate.yml",
     ".github/workflows/b62-browser-qa-unified.yml",
+    # CTO 2026-11-02 (컴1로컬1): a PR that edits any .github workflow or script
+    # changes the CI contracts themselves, so the whole surfaces trigger this
+    # workflow and the ci-scope-contract job runs the pinned contract tests on it.
+    ".github/workflows/**",
+    ".github/scripts/**",
 )
 B62_CHAT_EXPECTED_JOBS = {
     "registry-ci-plan",
@@ -98,6 +103,7 @@ B62_CHAT_EXPECTED_JOBS = {
     "engine-full-regression",  # #5678 Engine whole suite on every main push
     "b14-full-regression",  # #5678 B14 whole suite on every main push
     "grade-live-smoke",  # CTO 2026-11-02 one real call per declared tier, nightly
+    "ci-scope-contract",  # CTO 2026-11-02 pinned CI-contract + policy tests on every run
 }
 
 
@@ -318,6 +324,11 @@ def test_b62_chat_ci_main_runs_all_paths_while_pr_keeps_intended_scope(event: st
         ".github/workflows/b62-claw-production-smoke-gate.yml",
         ".github/workflows/b62-production-code-deploy-gate.yml",
         ".github/workflows/b62-browser-qa-unified.yml",
+        # CTO 2026-11-02 (컴1로컬1): any workflow/scripts change now triggers
+        # this CI so the ci-scope-contract job runs the pinned contracts.
+        ".github/scripts/b62_preview_smoke.py",
+        ".github/scripts/nested/b62_cloudflare_guard.py",
+        ".github/workflows/b62-browser-persistence-audit.yml",
     )
     excluded = (
         "README.md",
@@ -328,9 +339,7 @@ def test_b62_chat_ci_main_runs_all_paths_while_pr_keeps_intended_scope(event: st
         "packages/padiem-ai-core-extra/padiem_ai_core/a.py",
         "packages/padiem-control-plane/padiem_control_plane/product_tier_routes_v2.py",
         "reference/business-62-padiem-chat-v1-old/template.json",
-        ".github/scripts/b62_preview_smoke.py",
-        ".github/scripts/nested/b62_cloudflare_guard.py",
-        ".github/workflows/b62-browser-persistence-audit.yml",
+        ".github/scripts_extra/b62_outside.py",
     )
     for path in included:
         assert _b62_chat_ci_path_triggers(path, event), path
