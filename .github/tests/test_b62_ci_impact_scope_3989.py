@@ -276,7 +276,15 @@ class B62ScopeTests(unittest.TestCase):
         self.assertIn('elif [ "$SCOPE" = b14_tests_only ]; then', workflow)
         self.assertIn('test "$MM_RESULT" = success', workflow)
         self.assertIn("B62_CI_MODE=B14_TESTS_ONLY", workflow)
-        self.assertEqual(workflow.count("outputs.scope != 'b14_tests_only'"), 2)
+        # CTO 2026-11-02: only the Worker lane still needs the scope exclusion;
+        # the host suite now runs on the nightly/manual events instead, which a
+        # b14_tests_only PR can never trigger.
+        self.assertEqual(workflow.count("outputs.scope != 'b14_tests_only'"), 1)
+        self.assertIn(
+            "if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') "
+            "&& needs.registry-ci-plan.result == 'success' }}",
+            workflow,
+        )
         self.assertIn("run: uv run pytest -q", independent)
         self.assertIn("apps/korean-ai-platform/**", independent)
 

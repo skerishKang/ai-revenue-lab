@@ -97,6 +97,7 @@ B62_CHAT_EXPECTED_JOBS = {
     "b14-multimodal-test",
     "engine-full-regression",  # #5678 Engine whole suite on every main push
     "b14-full-regression",  # #5678 B14 whole suite on every main push
+    "grade-live-smoke",  # CTO 2026-11-02 one real call per declared tier, nightly
 }
 
 
@@ -120,8 +121,12 @@ def _assert_b62_chat_ci_scope(document: dict) -> None:
     may silently change the Owner-approved post-merge/review contract.
     """
     events = _b62_chat_ci_events(document)
-    assert set(events) == {"push", "pull_request", "workflow_dispatch"}
+    # CTO 2026-11-02: the complete Chat regression moved to one nightly main
+    # run, so the schedule trigger is now part of the gate contract. The push
+    # and pull_request scopes below are unchanged.
+    assert set(events) == {"push", "pull_request", "schedule", "workflow_dispatch"}
     assert events["workflow_dispatch"] is None
+    assert events["schedule"] == [{"cron": "0 18 * * *"}]
 
     push, review = events["push"], events["pull_request"]
     assert isinstance(push, dict) and isinstance(review, dict)
@@ -145,6 +150,15 @@ def _assert_b62_chat_ci_scope(document: dict) -> None:
     assert "b62-core-parser-focused" in aggregate["needs"]
     assert "b62-b14-attempt-focused" in aggregate["needs"]
     assert "MIXED_RESULT" in aggregate["steps"][0]["env"]
+    # CTO 2026-11-02: the full regression is nightly/manual only. A PR or a
+    # main push must leave it skipped, and the aggregate must ask for success
+    # exactly on those nightly events instead of always.
+    full = document["jobs"]["b62-full-suite"]
+    assert "github.event_name == 'schedule'" in full["if"]
+    assert "github.event_name == 'workflow_dispatch'" in full["if"]
+    assert "needs.registry-ci-plan.result == 'success'" in full["if"]
+    assert "NIGHTLY" in aggregate["steps"][0]["env"]
+    assert 'EXPECTED_FOCUSED_FULL=success' in aggregate["steps"][0]["run"]
 
 
 

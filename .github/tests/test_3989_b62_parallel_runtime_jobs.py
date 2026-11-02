@@ -42,18 +42,20 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('test "$WORKER_RESULT" = skipped', self.aggregate)
         self.assertIn('test "$PLAN_RESULT" = success', self.aggregate)
 
-    def test_parallel_jobs_preserve_pr_plan_with_main_host_override(self):
+    def test_parallel_jobs_preserve_pr_plan_with_nightly_host_override(self):
         condition = "if: ${{ needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only' }}"
         for block in [self.host, self.worker]:
             self.assertIn("needs: registry-ci-plan", block)
             self.assertIn("runs-on: ubuntu-latest", block)
             self.assertIn("timeout-minutes: 12", block)
         self.assertIn(condition, self.worker)
-        original = condition.removeprefix("if: ${{ ").removesuffix(" }}")
-        self.assertIn(original, self.host)
-        self.assertIn("!cancelled()", self.host)
-        self.assertIn("github.event_name == 'push' && github.ref == 'refs/heads/main'", self.host)
-        self.assertIn("needs.registry-ci-plan.result == 'success'", self.host)
+        # CTO 2026-11-02: the full regression is the nightly/manual run only;
+        # neither a PR nor a main push may pay its cost.
+        self.assertIn(
+            "if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') "
+            "&& needs.registry-ci-plan.result == 'success' }}",
+            self.host,
+        )
         self.assertNotIn("needs: b62-full-suite", self.worker)
         self.assertNotIn("needs: b62-worker-suite", self.host)
 
@@ -61,7 +63,9 @@ class ParallelB62JobsContract(unittest.TestCase):
         # Source/lock changes cannot enter b14_tests_only; only exact B14 unit
         # test modules. B14 pilot still runs and the independent B14 workflow
         # covers all tests, while required b62-test reports success/failure.
-        self.assertIn("scope != 'b14_tests_only'", self.host)
+        # The full suite is nightly-only, so a b14_tests_only PR can never
+        # reach it; the Worker lane keeps its explicit exclusion.
+        self.assertIn("github.event_name == 'schedule'", self.host)
         self.assertIn("scope != 'b14_tests_only'", self.worker)
         pilot = job("b14-multimodal-test", self.source)
         self.assertNotIn("b14_tests_only", pilot)
@@ -145,7 +149,7 @@ class ParallelB62JobsContract(unittest.TestCase):
             self.assertIn(marker, self.worker)
         # Required aggregator waits for this worker job even on tests_only.
         self.assertIn('test "$WORKER_RESULT" = success', self.aggregate)
-        self.assertIn('test "$FULL_RESULT" = success', self.aggregate)
+        self.assertIn('test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"', self.aggregate)
         # B14 pilot source contracts remain selected; only static-only skips.
         self.assertNotIn("scope != 'tests_only'", job("b14-multimodal-test", self.source))
 
@@ -161,8 +165,10 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertNotIn("uv sync", self.ui)
         self.assertNotIn("pywrangler", self.ui)
         self.assertNotIn("secrets.", self.ui)
-        for block in (self.host,self.worker):
-            self.assertIn("scope != 'static_only'",block)
+        # The host suite is nightly-only now, so only the Worker lane still
+        # needs the static-only exclusion; the host cannot run on a PR at all.
+        self.assertIn("scope != 'static_only'", self.worker)
+        self.assertIn("github.event_name == 'schedule'", self.host)
         self.assertIn("UI_RESULT:",self.aggregate)
         self.assertIn('elif [ "$SCOPE" = static_only ]; then',self.aggregate)
         self.assertIn('test "$UI_RESULT" = success',self.aggregate)
@@ -174,14 +180,21 @@ class ParallelB62JobsContract(unittest.TestCase):
     def test_b14_only_keeps_full_b62_chat_b14_and_worker_bundle_gates(self):
         # The b14_only shortcut is allowed only at the live Workerd step.
         # All other gates and the registry-only branch are unchanged.
+        # CTO 2026-11-02: the host suite itself is the nightly/manual run, so
+        # its lane exclusion became an event gate instead.
+        self.assertIn(
+            "if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') "
+            "&& needs.registry-ci-plan.result == 'success' }}",
+            self.host,
+        )
         self.assertIn("needs.registry-ci-plan.outputs.lane != 'model_registration_only'",
-                      self.host)
+                      self.worker)
         self.assertIn("B62 Chat and eligible Core tests", self.host)
         self.assertIn("b62_worker_prewarm_overlap.sh", self.worker)
         self.assertIn("Verify vendored Worker dependency versions", self.worker)
         self.assertIn("pywrangler deploy --dry-run", self.worker)
         self.assertNotIn("b14_only", job("b14-multimodal-test", self.source))
-        self.assertIn('test "$FULL_RESULT" = success', self.aggregate)
+        self.assertIn('test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"', self.aggregate)
         self.assertIn('test "$WORKER_RESULT" = success', self.aggregate)
         # B14 test/source scopes keep the B14 contract gate; B14 source-only
         # changes stay fail-closed.
@@ -222,7 +235,7 @@ class ParallelB62JobsContract(unittest.TestCase):
         self.assertIn('elif [ "$SCOPE" = static_only ]; then', self.aggregate)
         self.assertIn('test "$MM_RESULT" = skipped', self.aggregate)
         self.assertIn('test "$MM_RESULT" = success', self.aggregate)
-        self.assertIn('test "$FULL_RESULT" = success', self.aggregate)
+        self.assertIn('test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"', self.aggregate)
         self.assertIn('test "$WORKER_RESULT" = success', self.aggregate)
         self.assertIn('test "$QUICK_RESULT" = skipped', self.aggregate)
 
@@ -272,58 +285,46 @@ class ParallelB62JobsContract(unittest.TestCase):
 
 
 
-    def test_main_full_suite_ignores_classifier_but_pr_and_manual_keep_it(self):
+    def test_full_regression_runs_only_on_the_nightly_or_manual_events(self):
+        # CTO 2026-11-02: the 03:00 KST main run (and an explicit dispatch) is
+        # the only place the complete Chat regression executes. Every PR and
+        # every main push must leave it for the night.
         expression = re.search(r"^    if: \$\{\{ (.+) \}\}$", self.host, re.M).group(1)
-        reduced = ("static_only", "ui_mixed", "core_focused_only",
-                   "b14_tests_only", "b14_attempt_only")
-        for event, ref in (("push", "refs/heads/main"),
-                           ("push", "refs/heads/feature"),
-                           ("pull_request", "refs/pull/1/merge"),
-                           ("workflow_dispatch", "refs/heads/main")):
-            for scope in (*reduced, "full", "chat_only", "tests_only", "b14_only", ""):
-                for lane in ("model_registration_only", "full", ""):
-                    for result in ("success", "failure", "skipped"):
-                        for cancelled in (False, True):
-                            with self.subTest(event=event, ref=ref, scope=scope,
-                                              lane=lane, result=result, cancelled=cancelled):
-                                replacements = {
-                                    "github.event_name": repr(event),
-                                    "github.ref": repr(ref),
-                                    "needs.registry-ci-plan.outputs.scope": repr(scope),
-                                    "needs.registry-ci-plan.outputs.lane": repr(lane),
-                                    "needs.registry-ci-plan.result": repr(result),
-                                    "!cancelled()": repr(not cancelled),
-                                }
-                                evaluated = expression
-                                for key, value in replacements.items():
-                                    evaluated = evaluated.replace(key, value)
-                                evaluated = evaluated.replace("&&", "and").replace("||", "or")
-                                expected = not cancelled and (
-                                    (event == "push" and ref == "refs/heads/main")
-                                    or (result == "success" and lane != "model_registration_only"
-                                        and scope not in reduced)
-                                )
-                                self.assertEqual(eval(evaluated, {"__builtins__": {}}), expected)
+        for event in ("push", "pull_request", "schedule", "workflow_dispatch"):
+            for ref in ("refs/heads/main", "refs/heads/feature", "refs/pull/1/merge"):
+                for result in ("success", "failure", "skipped"):
+                    with self.subTest(event=event, ref=ref, result=result):
+                        replacements = {
+                            "github.event_name": repr(event),
+                            "github.ref": repr(ref),
+                            "needs.registry-ci-plan.result": repr(result),
+                        }
+                        evaluated = expression
+                        for key, value in replacements.items():
+                            evaluated = evaluated.replace(key, value)
+                        evaluated = evaluated.replace("&&", "and").replace("||", "or")
+                        expected = result == "success" and event in (
+                            "schedule", "workflow_dispatch")
+                        self.assertEqual(eval(evaluated, {"__builtins__": {}}), expected)
 
-    def test_main_push_has_no_path_filter_and_e2e_keeps_the_pr_contract(self):
+    def test_main_push_has_no_path_filter_and_e2e_is_nightly_only(self):
         push = self.source.split("  push:\n", 1)[1].split("  pull_request:", 1)[0]
         self.assertEqual(push.strip(), "branches: [main]")
         e2e = (WORKFLOW.parent / "web-desktop-nonmodel-e2e.yml").read_text(encoding="utf-8")
-        push = e2e.split("  push:\n", 1)[1].split("  pull_request:", 1)[0]
-        self.assertEqual(push.strip(), "branches: [main]")
-        pr = e2e.split("  pull_request:\n", 1)[1].split("  workflow_dispatch:", 1)[0]
-        self.assertEqual(pr.strip(), 'paths:\n      - "tests/e2e/**"\n'
-                                    '      - ".github/workflows/web-desktop-nonmodel-e2e.yml"')
+        self.assertNotIn("  push:\n", e2e)
+        self.assertNotIn("  pull_request:\n", e2e)
+        self.assertIn('  schedule:\n    - cron: "0 18 * * *"\n', e2e)
+        self.assertIn("  workflow_dispatch:\n", e2e)
         block = job("e2e", e2e)
         self.assertIsNone(re.search(r"^    if:", block, re.M))
         self.assertIn("os: [ubuntu-latest, windows-latest]", block)
         self.assertIn("uv run --locked python -m pytest ../../tests/e2e -q", block)
 
     @unittest.skipUnless(os.name == "posix", "the probe runner contracts exercise POSIX process groups (setsid)")
-    def test_main_aggregate_requires_full_success_without_changing_pr_lane_results(self):
+    def test_nightly_aggregate_requires_full_success_without_changing_pr_lane_results(self):
         script = self.aggregate.split("        run: |\n", 1)[1].split("\n      - name:", 1)[0]
         script = textwrap.dedent(script)
-        self.assertIn("MAIN_PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}",
+        self.assertIn("NIGHTLY: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}",
                       self.aggregate)
         cases = (
             ("model_registration_only", "full", ("QUICK_RESULT",)),
@@ -337,18 +338,20 @@ class ParallelB62JobsContract(unittest.TestCase):
         )
         result_keys = ("UI_RESULT", "MIXED_RESULT", "PARSER_RESULT", "ATTEMPT_RESULT",
                        "WORKER_RESULT", "MM_RESULT", "QUICK_RESULT")
-        for main_push in (False, True):
+        for nightly in (False, True):
             for lane, scope, selected in cases:
                 env = dict(os.environ, LANE=lane, SCOPE=scope, PLAN_RESULT="success",
-                           MAIN_PUSH=str(main_push).lower(),
+                           NIGHTLY=str(nightly).lower(),
                            **{key: "success" if key in selected else "skipped" for key in result_keys})
-                expected_full = "success" if main_push or (lane == "full" and scope in ("full", "b14_only")) else "skipped"
+                # Only the nightly/manual run executes the full suite; every PR
+                # and main push must prove it was skipped.
+                expected_full = "success" if nightly else "skipped"
                 for result in ("success", "failure", "skipped", "cancelled"):
-                    with self.subTest(main_push=main_push, lane=lane, scope=scope, result=result):
+                    with self.subTest(nightly=nightly, lane=lane, scope=scope, result=result):
                         proc = subprocess.run(["bash", "-c", script], env=dict(env, FULL_RESULT=result),
                                               capture_output=True, text=True, timeout=10)
                         self.assertEqual(proc.returncode == 0, result == expected_full, proc.stderr)
-                # The main exception cannot waive an unrelated required lane failure.
+                # The nightly exception cannot waive an unrelated required lane failure.
                 required_results = ("PLAN_RESULT", *selected)
                 if scope == "full" and lane == "full":
                     # #5002: the independent B14 failure is not a product gate.

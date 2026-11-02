@@ -1,8 +1,8 @@
 name: B62 Padiem Chat CI
 
 on:
-  # #5678: every main push runs the full Chat regression, including changes
-  # the PR classifier can safely route to a focused lane.
+  # Main pushes keep the classifier and the Worker/B14 lanes; the complete
+  # Chat regression itself moved to the nightly schedule below.
   push:
     branches: [main]
   pull_request:
@@ -37,6 +37,12 @@ on:
       - ".github/workflows/b62-claw-production-smoke-gate.yml"
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/workflows/b62-browser-qa-unified.yml"
+  # CTO 2026-11-02: the complete Chat/Core regression moved off every PR and
+  # every main push. It runs once a night on main (03:00 KST = 18:00 UTC) and
+  # on explicit dispatch; PRs keep only the classifier, the static/unit lanes
+  # and the path-selected QA. The grade smoke rides the same nightly run.
+  schedule:
+    - cron: "0 18 * * *"
   workflow_dispatch:
 
 permissions:
@@ -184,7 +190,7 @@ jobs:
     steps:
       - name: Enforce selected lane and both relevant checks
         env:
-          MAIN_PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          NIGHTLY: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
           LANE: ${{ needs.registry-ci-plan.outputs.lane }}
           SCOPE: ${{ needs.registry-ci-plan.outputs.scope }}
           PLAN_RESULT: ${{ needs.registry-ci-plan.result }}
@@ -199,10 +205,10 @@ jobs:
         run: |
           set -euo pipefail
           test "$PLAN_RESULT" = success
-          # Focused PR lanes still require a skipped full suite; main requires
-          # an executed, successful full suite without changing other jobs.
+          # The full suite runs only on the nightly/manual events; every PR and
+          # main push must leave it skipped, and a nightly run must prove it.
           EXPECTED_FOCUSED_FULL=skipped
-          if [ "$MAIN_PUSH" = true ]; then
+          if [ "$NIGHTLY" = true ]; then
             EXPECTED_FOCUSED_FULL=success
           fi
           if [ "$LANE" = model_registration_only ]; then
@@ -261,7 +267,7 @@ jobs:
           else
             test "$UI_RESULT" = skipped
             test "$MIXED_RESULT" = skipped
-            test "$FULL_RESULT" = success
+            test "$FULL_RESULT" = "$EXPECTED_FOCUSED_FULL"
             test "$WORKER_RESULT" = success
             # #5002: a product regression must not chain-fail on the
             # independent B14 contract lane. B14 source changes stay gated:
@@ -384,7 +390,9 @@ jobs:
   b62-full-suite:
     name: B62 full regression
     needs: registry-ci-plan
-    if: ${{ !cancelled() && ((github.event_name == 'push' && github.ref == 'refs/heads/main') || (needs.registry-ci-plan.result == 'success' && needs.registry-ci-plan.outputs.lane != 'model_registration_only' && needs.registry-ci-plan.outputs.scope != 'static_only' && needs.registry-ci-plan.outputs.scope != 'b14_tests_only' && needs.registry-ci-plan.outputs.scope != 'ui_mixed' && needs.registry-ci-plan.outputs.scope != 'core_focused_only' && needs.registry-ci-plan.outputs.scope != 'b14_attempt_only')) }}
+    # Nightly/manual only: the full Chat/Core regression is the 03:00 KST
+    # main run, not a PR gate and not another main-push cost.
+    if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && needs.registry-ci-plan.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -629,3 +637,25 @@ jobs:
             exit "${B14_FULL_REGRESSION_STATUS}"
           fi
           echo "B14_FULL_REGRESSION=PASS"
+
+  # CTO 2026-11-02: one real provider call per declared grade, once a night in
+  # the same run as the full regression. The script carries no credential
+  # (B14 spends its own keys), names no model and never prints provider text.
+  grade-live-smoke:
+    name: Grade live smoke (${{ matrix.tier }})
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        tier: [free, plus, pro, max]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: One real call through the declared grade route
+        run: python .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}"

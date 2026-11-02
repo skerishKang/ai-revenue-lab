@@ -1,0 +1,54 @@
+name: Nightly QA failure issue
+
+# CTO 2026-11-02: a failed nightly QA run must leave a tracked issue instead of
+# only a red run. This reacts to the scheduled runs of the moved checks and
+# opens one issue per failing workflow, commenting on the existing open one.
+on:
+  workflow_run:
+    workflows:
+      - "B62 Padiem Chat CI"
+      - "B62 Browser QA Nightly"
+      - "Web Desktop Non-Model E2E (3098)"
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+
+concurrency:
+  group: nightly-qa-failure-issue
+  cancel-in-progress: false
+
+jobs:
+  file:
+    if: ${{ github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Open or update the nightly failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          WF: ${{ github.event.workflow_run.name }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          title="nightly QA 실패: ${WF}"
+          body=$(printf '%s\n' \
+            "야간 검사가 실패했습니다." \
+            "" \
+            "- 워크플로: ${WF}" \
+            "- 실행: ${RUN_URL}" \
+            "- 커밋: ${SHA}" \
+            "" \
+            "원인을 고친 뒤 이 이슈를 닫아 주세요.")
+          number=$(TITLE="$title" gh issue list --state open --limit 200 \
+            --json number,title --jq '.[] | select(.title == env.TITLE) | .number' | head -1)
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi
+          echo "NIGHTLY_QA_FAILURE_ISSUE=RECORDED"

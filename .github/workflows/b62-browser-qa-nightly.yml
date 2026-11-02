@@ -1,0 +1,52 @@
+name: B62 Browser QA Nightly
+
+# CTO 2026-11-02: the full B62 browser QA lane set moved off every PR to one
+# nightly main run (03:00 KST = 18:00 UTC). The unified QA workflow keeps its
+# per-PR path-selected lane plan and its existing manual lane input; this
+# workflow dispatches it with lane=all on the default branch and waits for
+# that exact run, so a failing lane fails the night.
+on:
+  schedule:
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-browser-qa-nightly
+  cancel-in-progress: false
+
+jobs:
+  dispatch-full-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Dispatch and watch the full browser QA lane set
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          previous=$(gh run list -w b62-browser-qa-unified.yml -L 1 \
+            --json databaseId -q '.[0].databaseId // 0')
+          gh workflow run b62-browser-qa-unified.yml
+          run_id=0
+          for _ in $(seq 1 60); do
+            latest=$(gh run list -w b62-browser-qa-unified.yml -L 1 \
+              --json databaseId -q '.[0].databaseId // 0')
+            if [ "$latest" != "0" ] && [ "$latest" != "$previous" ]; then
+              run_id=$latest
+              break
+            fi
+            sleep 10
+          done
+          if [ "$run_id" = "0" ]; then
+            echo "B62_NIGHTLY_BROWSER_QA_RUN=NOT_DISPATCHED" >&2
+            exit 1
+          fi
+          echo "B62_NIGHTLY_BROWSER_QA_RUN=$run_id"
+          gh run watch "$run_id" --exit-status

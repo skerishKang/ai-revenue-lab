@@ -184,7 +184,10 @@ class UiMixedFastLane(unittest.TestCase):
         self.assertIn("outputs.ui_tests", source)
         self.assertIn("scope != 'ui_mixed'", source)
         self.assertIn("scope == 'ui_mixed'", source)
-        self.assertEqual(source.count("scope != 'b14_tests_only'"), 2)
+        # CTO 2026-11-02: only the Worker lane keeps the scope exclusion; the
+        # host suite is gated on the nightly/manual events instead.
+        self.assertEqual(source.count("scope != 'b14_tests_only'"), 1)
+        self.assertIn("github.event_name == 'schedule'", source)
 
 
 if __name__ == "__main__":
