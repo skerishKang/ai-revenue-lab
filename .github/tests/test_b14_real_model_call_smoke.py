@@ -188,7 +188,10 @@ def test_the_grade_job_references_the_existing_proof_secret_name() -> None:
         "PADIEM_B14_SERVICE_PROOF_SECRET: "
         "${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}" in workflow
     )
-    assert 'b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --report' in workflow
+    assert (
+        'b14_real_model_call_smoke.py --tier "${{ matrix.tier }}"'
+        " --base-url http://127.0.0.1:8789 --report" in workflow
+    )
 
 
 def test_the_cli_passes_the_requested_tier_through(monkeypatch) -> None:
