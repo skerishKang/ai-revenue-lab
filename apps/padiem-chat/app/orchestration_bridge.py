@@ -456,7 +456,10 @@ class B62EngineOrchestrationBridge:
                 "task_type": str(getattr(skill, "task_type", "general")),
                 "optimize_for": str(getattr(skill, "optimize_for", "balanced")),
                 "max_tokens": getattr(skill, "max_tokens", None),
-                "model_policy": {"model": model_id},
+                # One same-route retry keeps a transient provider 5xx from
+                # spending the turn on a slower fallback model. BYOK spends the
+                # caller's key, so it keeps its existing no-retry contract.
+                "model_policy": {"model": model_id, "max_retries": 0 if byok_selection is not None else 1},
             },
             "messages": [dict(item) for item in messages],
             "trace_id": trace_id,

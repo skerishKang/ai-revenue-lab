@@ -101,6 +101,23 @@ async def test_the_exact_validated_model_and_grade_reach_the_b14_request_verbati
 
 
 @pytest.mark.asyncio
+async def test_an_explicit_caller_retry_budget_reaches_b14_verbatim() -> None:
+    b14 = _FakeB14()
+    service = EngineService(
+        runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
+        b14_service_bound=True,
+    )
+    payload = _payload(_MEMBER_MODEL_ID, product_tier="free")
+    payload["agent"]["model_policy"]["max_retries"] = 1
+
+    response = await service.execute_payload(payload)
+
+    assert response.status_code == 200
+    assert len(b14.calls) == 1
+    assert b14.calls[0].to_payload()["business14"]["max_retries"] == 1
+
+
+@pytest.mark.asyncio
 async def test_a_missing_model_still_fails_closed_before_any_b14_call() -> None:
     runtime = _NoExecutionRuntime()
     b14 = _FakeB14()

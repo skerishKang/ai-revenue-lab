@@ -301,6 +301,9 @@ def build_app():
         control_plane_identity_authority=identity_authority,
         identity_shadow_store=identity_shadow_store,
         b66_pdf_renderer_client=pdf_renderer,
+        central_model_admin_google_email=os.getenv(
+            "PADIEM_CENTRAL_MODEL_ADMIN_GOOGLE_EMAIL", ""
+        ).strip(),
         oracle_mesh_return_source=None,
         oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ),
     )
