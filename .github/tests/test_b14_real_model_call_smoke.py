@@ -1,16 +1,24 @@
-"""Contract tests for the #5895 ④ post-deploy real model call (#5895).
+"""Contract tests for the #5895 ④ real model call and the nightly grade smoke.
 
-The verdict table is the whole contract: a real answer passes, a provider-side
-limit passes with a marker, and everything else - other status, malformed body,
-empty text, transport failure, oversized body - fails. The request must carry no
-model choice of its own, because the declared grade routing is what is being
-proven, and no provider text or credential may ever reach the log.
+Two invocations share the verdict table but not the wire:
+
+* the deploy gate calls the script with no arguments: the declared ``b14/auto``
+  route, no credential, one ``REAL_MODEL_CALL=`` line;
+* the nightly grade smoke passes ``--tier``: the tier's exact model id from the
+  shared product-tier declaration, signed with the existing B14 service proof,
+  and never ``b14/auto``.
+
+The verdict table is the whole failure contract: a real answer passes, a
+provider-side limit passes with a marker, and everything else - other status,
+malformed body, empty text, transport failure, oversized body, entitlement
+refusal - fails. No provider text or secret may ever reach the log.
 """
 
 from __future__ import annotations
 
 import importlib.util
 import json
+import sys
 import urllib.error
 from pathlib import Path
 
@@ -18,10 +26,18 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / ".github/scripts/b14_real_model_call_smoke.py"
+ROUTES_DIR = ROOT / "packages/padiem-control-plane"
+WORKFLOW = ROOT / ".github/workflows/b62-padiem-chat-ci.yml"
 
 spec = importlib.util.spec_from_file_location("b14_real_model_call_smoke", SCRIPT)
 smoke = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(smoke)
+
+sys.path.insert(0, str(ROUTES_DIR))
+from padiem_control_plane.product_tier_routes import (  # noqa: E402
+    FREE_PRIMARY_B14_MODEL_ID,
+    TEST_PHASE_PRIMARY_B14_MODEL_ID,
+)
 
 
 def _ok(model="google/gemini-3.1-flash-lite", text="pong"):
@@ -35,8 +51,8 @@ def _ok(model="google/gemini-3.1-flash-lite", text="pong"):
 
 
 def _transport(status, raw):
-    def call(url, body, timeout):
-        call.calls.append((url, body, timeout))
+    def call(url, body, headers, timeout):
+        call.calls.append((url, body, headers, timeout))
         return status, raw
     call.calls = []
     return call
@@ -56,7 +72,7 @@ def test_provider_limit_statuses_pass_with_a_marker(limit) -> None:
         transport=_transport(limit, json.dumps({"error": {"code": "rate_limited"}}).encode()),
     )
     assert verdict == "PASS_PROVIDER_LIMIT"
-    assert model == "b14/auto" or model.startswith("google/")
+    assert model == "b14/auto"
 
 
 def test_any_other_status_fails() -> None:
@@ -81,7 +97,7 @@ def test_a_200_without_an_answer_text_fails() -> None:
 
 
 def test_a_transport_failure_is_a_fail_not_a_provider_limit() -> None:
-    def call(url, body, timeout):
+    def call(url, body, headers, timeout):
         raise urllib.error.URLError("connection reset")
     assert smoke.run(base_url="https://b14.example.test", transport=call)[0] == "FAIL"
 
@@ -93,7 +109,7 @@ def test_an_oversized_response_fails() -> None:
     )[0] == "FAIL"
 
 
-def test_the_request_declares_a_tier_and_names_no_model_of_its_own() -> None:
+def test_the_default_request_names_the_auto_route_and_no_model_of_its_own() -> None:
     body = json.loads(smoke.request_body())
     assert body["model"] == smoke.REQUESTED_ROUTE == "b14/auto"
     assert body["business14"]["product_tier"] == smoke.PRODUCT_TIER
@@ -102,24 +118,93 @@ def test_the_request_declares_a_tier_and_names_no_model_of_its_own() -> None:
     assert set(body) == {"model", "messages", "max_tokens", "business14"}
 
 
+def test_each_grade_resolves_the_declared_executable_model() -> None:
+    # The smoke reads the shared declaration; it never keeps a second list.
+    assert smoke.declared_tier_model("free") == FREE_PRIMARY_B14_MODEL_ID
+    for tier in ("plus", "pro", "max"):
+        assert smoke.declared_tier_model(tier) == TEST_PHASE_PRIMARY_B14_MODEL_ID
+    assert smoke.declared_tier_model("gold") == ""
+
+
 @pytest.mark.parametrize("tier", smoke.PRODUCT_TIERS)
-def test_each_grade_uses_its_own_declared_tier_without_naming_a_model(tier) -> None:
-    body = json.loads(smoke.request_body(product_tier=tier))
+def test_the_tier_request_names_the_exact_model_and_never_the_auto_route(tier) -> None:
+    transport = _transport(*_ok())
+    smoke.run(base_url="https://b14.example.test", transport=transport, tier=tier,
+              service_proof_secret="k" * 40)
+    url, raw, headers, _timeout = transport.calls[0]
+    body = json.loads(raw)
+    assert body["model"] == smoke.declared_tier_model(tier)
+    assert body["model"] != smoke.REQUESTED_ROUTE
     assert body["business14"]["product_tier"] == tier
-    assert body["model"] == "b14/auto"
-    assert set(body) == {"model", "messages", "max_tokens", "business14"}
+    assert url == "https://b14.example.test/api/pilot/v1/chat/completions"
+    assert smoke.PROOF_HEADER in headers and smoke.PROOF_TIME_HEADER in headers
+
+
+def test_the_tier_request_is_signed_with_the_existing_service_proof() -> None:
+    body = b'{"model":"x"}'
+    headers = smoke.proof_headers(
+        "0123456789abcdef0123456789abcdef", body, now_seconds=1700000000
+    )
+    assert headers == {
+        "x-padiem-b14-proof": (
+            "56f8630d39d82b7ec3445b91348abf381034a6a40c2cbd83e1837b5c383a3da4"
+        ),
+        "x-padiem-b14-time": "1700000000",
+    }
+
+
+@pytest.mark.parametrize("secret", ["", "short", None])
+def test_an_unconfigured_proof_secret_sends_no_header(secret) -> None:
+    # No header means B14 refuses the dispatch; the check fails closed.
+    assert smoke.proof_headers(secret, b"{}") == {}
+
+
+def test_a_refused_proof_fails_closed_with_the_b14_code() -> None:
+    raw = json.dumps({"error": {"code": "b14_service_proof_required"}}).encode()
+    detail = {}
+    verdict, model = smoke.run(
+        base_url="https://b14.example.test",
+        transport=_transport(401, raw),
+        tier="free",
+        service_proof_secret="",
+        report=detail,
+    )
+    assert verdict == "FAIL"
+    assert model == smoke.declared_tier_model("free")
+    assert detail == {"status": 401, "error_code": "b14_service_proof_required"}
+
+
+def test_the_default_deploy_gate_call_stays_unsigned() -> None:
+    # The deploy gate runs on the platform lane it always had; only --tier signs.
+    transport = _transport(*_ok())
+    smoke.run(base_url="https://b14.example.test", transport=transport,
+              service_proof_secret="k" * 40)
+    _url, raw, headers, _timeout = transport.calls[0]
+    assert json.loads(raw)["model"] == "b14/auto"
+    assert headers == {}
+
+
+def test_the_grade_job_references_the_existing_proof_secret_name() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert (
+        "PADIEM_B14_SERVICE_PROOF_SECRET: "
+        "${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}" in workflow
+    )
+    assert 'b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --report' in workflow
 
 
 def test_the_cli_passes_the_requested_tier_through(monkeypatch) -> None:
     captured = {}
 
-    def call(url, body, timeout):
+    def call(url, body, headers, timeout):
         captured.update(json.loads(body))
         return _ok()
 
     monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: call)
+    monkeypatch.setenv(smoke.PROOF_SECRET_ENV, "k" * 40)
     assert smoke.main(["--base-url", "https://b14.example.test", "--tier", "max"]) == 0
     assert captured["business14"]["product_tier"] == "max"
+    assert captured["model"] == smoke.declared_tier_model("max")
 
 
 def test_an_unknown_tier_is_refused_before_any_request(monkeypatch) -> None:
@@ -160,7 +245,6 @@ def test_main_reports_and_exits_zero_on_a_pass(monkeypatch, capsys) -> None:
     assert smoke.main(["--base-url", "https://b14.example.test"]) == 0
     out = capsys.readouterr().out
     assert out.strip() == "REAL_MODEL_CALL=PASS model=google/gemini-3.1-flash-lite"
-    assert "PROVIDER-TEXT-MUST-NOT-APPEAR" not in out
 
 
 def test_main_reports_and_exits_one_on_a_fail(monkeypatch, capsys) -> None:
@@ -209,16 +293,19 @@ def test_report_prints_one_bounded_grade_line_with_status_and_error_code(
 ) -> None:
     raw = json.dumps({"error": {"code": "entitlement_unavailable"}}).encode()
     monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: _transport(503, raw))
+    monkeypatch.setenv(smoke.PROOF_SECRET_ENV, "k" * 40)
     assert smoke.main(["--base-url", "https://b14.example.test",
                        "--tier", "pro", "--report"]) == 1
     lines = capsys.readouterr().out.strip().splitlines()
-    assert lines[0].startswith("REAL_MODEL_CALL=FAIL model=")
+    assert lines[0] == (
+        "REAL_MODEL_CALL=FAIL model=google/gemini-3.5-flash-lite"
+    )
     assert lines[1] == (
         "GRADE_SMOKE tier=pro status=503 error_code=entitlement_unavailable verdict=FAIL")
 
 
 def test_report_names_a_transport_failure_without_inventing_a_status() -> None:
-    def call(url, body, timeout):
+    def call(url, body, headers, timeout):
         raise urllib.error.URLError("connection reset")
 
     detail = {}

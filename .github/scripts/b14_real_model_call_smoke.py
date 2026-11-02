@@ -1,14 +1,21 @@
-"""#5895 ④: one real model call against the B14 version that was just promoted.
+"""#5895 ④ / CTO 2026-11-02: one real model call through a declared grade route.
 
-The deploy gate already proves the promoted version is the single version serving
-100 percent, that /health answers and that the catalog matches the owner registry
-byte for byte. What it did not prove was that the promoted version can finish one
-request end to end, which is the check a person used to do by hand afterwards.
+Two invocations share the verdict table but not the wire.
 
-The grade routing decides the model: this script sends ``b14/auto`` with one
-declared product tier and names no model of its own, so it exercises exactly the
-route the product serves. It carries no credential - B14 spends its own provider
-keys - and it never prints provider text, response bytes or any secret.
+* The deploy gate runs this script with no arguments. That call keeps its
+  original contract: it names the declared ``b14/auto`` route, carries no
+  credential of its own, and prints one ``REAL_MODEL_CALL=`` line.
+* The nightly grade smoke runs it with ``--tier``. That call reads the tier's
+  executable model id from the shared declaration contract
+  (``packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py``),
+  names that exact id, and never asks ``b14/auto``. It signs the request with
+  the existing B14 service proof, ``HMAC-SHA256(secret, "<unix time>.<body>")``.
+  The secret is referenced by its existing deployment binding name
+  (``PADIEM_B14_SERVICE_PROOF_SECRET``); when it is absent no proof header is
+  sent, B14 refuses the dispatch, and the check fails closed.
+
+The script never prints provider text, response bytes, the secret, or any
+fragment of them.
 
 Verdict contract (CTO 2026-10-27):
   200 plus at least one character of assistant text -> REAL_MODEL_CALL=PASS
@@ -24,39 +31,107 @@ the default output line is unchanged.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import hmac
 import json
+import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
+from pathlib import Path
 from typing import Any, Callable
 
 SERVED_ORIGIN = "https://ai-revenue-korean-ai-platform.charliekant.workers.dev"
 COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 USER_AGENT = "b14-gate/1.0"
+# The deploy gate's single call owns this route. The nightly grade smoke never
+# uses it: ``--tier`` resolves the tier's exact declared model instead.
 REQUESTED_ROUTE = "b14/auto"
 PRODUCT_TIER = "free"
 PRODUCT_TIERS = ("free", "plus", "pro", "max")
-PROMPT = "Synthetic release check: reply with one word."
-MAX_TOKENS = 48
+# CLI token -> the label the shared product-tier declaration defines.
+TIER_LABELS = {
+    "free": "Padiem Free",
+    "plus": "Padiem Plus",
+    "pro": "Padiem Pro",
+    "max": "Padiem Max",
+}
+ROUTE_CONTRACT_DIR = (
+    Path(__file__).resolve().parents[2] / "packages" / "padiem-control-plane"
+)
+PROMPT = "안녕하세요. 한 문장으로 짧게 인사해 주세요."
+MAX_TOKENS = 32
 REQUEST_TIMEOUT_SECONDS = 40
 MAX_RESPONSE_BYTES = 65_536
 PROVIDER_LIMIT_STATUSES = frozenset({429, 503})
 # A refusal code that means "the product will not spend on this request", which
 # no amount of provider recovery fixes. It must never read as a provider limit.
 ENTITLEMENT_DENIAL_CODES = frozenset({"entitlement_unavailable", "entitlement_denied"})
+# The same server-to-server proof the Chat and Engine callers already sign.
+PROOF_HEADER = "x-padiem-b14-proof"
+PROOF_TIME_HEADER = "x-padiem-b14-time"
+PROOF_SECRET_ENV = "PADIEM_B14_SERVICE_PROOF_SECRET"
+MIN_PROOF_SECRET_LENGTH = 32
 _SAFE_MODEL_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,127}$")
 _SAFE_ERROR_CODE = re.compile(r"^[a-z0-9][a-z0-9_.-]{0,63}$")
 
-Transport = Callable[[str, bytes, float], tuple[int, bytes]]
+Transport = Callable[[str, bytes, dict[str, str], float], tuple[int, bytes]]
 
 
-def request_body(*, max_tokens: int = MAX_TOKENS,
+def declared_tier_model(tier: str) -> str:
+    """The executable model id the shared declaration assigns to this tier.
+
+    The declaration contract is the only source; this script names no model of
+    its own. An unknown tier, a tier without an executable route, or a missing
+    contract package yields ``""`` so the caller fails closed.
+    """
+    directory = str(ROUTE_CONTRACT_DIR)
+    if directory not in sys.path:
+        sys.path.insert(0, directory)
+    try:
+        from padiem_control_plane.product_tier_routes import (
+            ProductTierLabel,
+            active_route_for,
+        )
+    except ImportError:
+        return ""
+    label = TIER_LABELS.get(tier)
+    if label is None:
+        return ""
+    try:
+        route = active_route_for(ProductTierLabel(label))
+    except ValueError:
+        return ""
+    model = route.model_id if route is not None else None
+    return model if isinstance(model, str) and _SAFE_MODEL_ID.match(model) else ""
+
+
+def proof_headers(
+    secret: str | None, body: bytes, *, now_seconds: int | None = None
+) -> dict[str, str]:
+    """The existing B14 service-proof headers, or none when unconfigured.
+
+    B14 verifies ``HMAC-SHA256(secret, "<unix timestamp>.<raw body>")``. A
+    missing or short secret yields no headers, so the dispatch is refused
+    instead of silently passing as an unproven caller. The secret is only
+    hashed; it is never returned or printed.
+    """
+    if not isinstance(secret, str) or len(secret) < MIN_PROOF_SECRET_LENGTH:
+        return {}
+    timestamp = str(int(time.time()) if now_seconds is None else int(now_seconds))
+    message = timestamp.encode("ascii") + b"." + bytes(body)
+    proof = hmac.new(secret.encode("utf-8"), message, hashlib.sha256).hexdigest()
+    return {PROOF_HEADER: proof, PROOF_TIME_HEADER: timestamp}
+
+
+def request_body(*, model: str = REQUESTED_ROUTE, max_tokens: int = MAX_TOKENS,
                  product_tier: str = PRODUCT_TIER) -> bytes:
-    """The one bounded completion request. No model is selected here."""
+    """The one bounded completion request."""
     return json.dumps(
         {
-            "model": REQUESTED_ROUTE,
+            "model": model,
             "messages": [{"role": "user", "content": PROMPT}],
             "max_tokens": max_tokens,
             "business14": {"product_tier": product_tier, "max_retries": 0},
@@ -69,7 +144,8 @@ def request_body(*, max_tokens: int = MAX_TOKENS,
 def urlopen_transport(user_agent: str = USER_AGENT) -> Transport:
     """The real transport, built only when a caller actually asks for it."""
 
-    def call(url: str, body: bytes, timeout: float) -> tuple[int, bytes]:
+    def call(url: str, body: bytes, headers: dict[str, str],
+             timeout: float) -> tuple[int, bytes]:
         request = urllib.request.Request(
             url,
             data=body,
@@ -78,6 +154,7 @@ def urlopen_transport(user_agent: str = USER_AGENT) -> Transport:
                 "Accept": "application/json",
                 "Content-Type": "application/json",
                 "User-Agent": user_agent,
+                **headers,
             },
         )
         try:
@@ -89,8 +166,8 @@ def urlopen_transport(user_agent: str = USER_AGENT) -> Transport:
     return call
 
 
-def resolved_model(payload: Any) -> str:
-    """The model the route answered with, or the declared route when unnamed.
+def resolved_model(payload: Any, fallback: str = REQUESTED_ROUTE) -> str:
+    """The model the route answered with, or the requested model when unnamed.
 
     Only a safe identifier is returned, so the verdict line can never carry a
     fragment of a provider response.
@@ -104,7 +181,7 @@ def resolved_model(payload: Any) -> str:
     for candidate in candidates:
         if isinstance(candidate, str) and _SAFE_MODEL_ID.match(candidate):
             return candidate
-    return REQUESTED_ROUTE
+    return fallback
 
 
 def assistant_text(payload: Any) -> str | None:
@@ -141,66 +218,93 @@ def error_code(payload: Any) -> str:
     return "-"
 
 
-def decide(status: int, raw: bytes) -> tuple[str, str]:
+def decide(status: int, raw: bytes,
+           fallback: str = REQUESTED_ROUTE) -> tuple[str, str]:
     """Return ``(verdict, model)``. A non-pass verdict is a gate failure."""
     payload = _payload(raw)
     if error_code(payload) in ENTITLEMENT_DENIAL_CODES:
-        return "FAIL", resolved_model(payload)
+        return "FAIL", resolved_model(payload, fallback)
     if status in PROVIDER_LIMIT_STATUSES:
-        return "PASS_PROVIDER_LIMIT", resolved_model(payload)
+        return "PASS_PROVIDER_LIMIT", resolved_model(payload, fallback)
     if status != 200:
-        return "FAIL", resolved_model(payload)
+        return "FAIL", resolved_model(payload, fallback)
     text = assistant_text(payload)
     if text is None or not text.strip():
-        return "FAIL", resolved_model(payload)
-    return "PASS", resolved_model(payload)
+        return "FAIL", resolved_model(payload, fallback)
+    return "PASS", resolved_model(payload, fallback)
 
 
-def run(*, base_url: str, transport: Transport, timeout: float = REQUEST_TIMEOUT_SECONDS,
-        max_tokens: int = MAX_TOKENS, product_tier: str = PRODUCT_TIER,
+def run(*, base_url: str, transport: Transport, tier: str | None = None,
+        service_proof_secret: str = "", timeout: float = REQUEST_TIMEOUT_SECONDS,
+        max_tokens: int = MAX_TOKENS, product_tier: str | None = None,
         report: dict[str, Any] | None = None) -> tuple[str, str]:
-    body = request_body(max_tokens=max_tokens, product_tier=product_tier)
+    """Make one call. ``tier`` selects the exact declared grade route."""
+    if tier is None:
+        model = REQUESTED_ROUTE
+        body = request_body(max_tokens=max_tokens,
+                            product_tier=product_tier or PRODUCT_TIER)
+        headers: dict[str, str] = {}
+    else:
+        model = declared_tier_model(tier)
+        if not model:
+            if report is not None:
+                report.update(status=0, error_code="tier_route_unavailable")
+            return "FAIL", tier
+        body = request_body(model=model, max_tokens=max_tokens,
+                            product_tier=product_tier or tier)
+        headers = proof_headers(service_proof_secret, body)
     try:
-        status, raw = transport(base_url.rstrip("/") + COMPLETIONS_PATH, body, timeout)
+        status, raw = transport(
+            base_url.rstrip("/") + COMPLETIONS_PATH, body, headers, timeout
+        )
     except (urllib.error.URLError, TimeoutError, OSError, ValueError):
         # An unreachable or unanswered Worker is a failed release check, never a
         # provider limit and never a silent pass.
         if report is not None:
             report.update(status=0, error_code="transport_error")
-        return "FAIL", REQUESTED_ROUTE
+        return "FAIL", model
     if len(raw) > MAX_RESPONSE_BYTES:
         if report is not None:
             report.update(status=status, error_code="response_too_large")
-        return "FAIL", REQUESTED_ROUTE
+        return "FAIL", model
     if report is not None:
         report.update(status=status, error_code=error_code(_payload(raw)))
-    return decide(status, raw)
+    return decide(status, raw, model)
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default=SERVED_ORIGIN)
-    parser.add_argument("--tier", choices=PRODUCT_TIERS, default=PRODUCT_TIER,
-                        help="declared product grade whose route is proven")
+    parser.add_argument("--tier", choices=PRODUCT_TIERS, default=None,
+                        help="declared product grade whose exact model route is proven")
     parser.add_argument("--max-tokens", type=int, default=MAX_TOKENS)
     parser.add_argument("--timeout", type=float, default=REQUEST_TIMEOUT_SECONDS)
     parser.add_argument("--report", action="store_true",
                         help="also print one bounded grade/status/error_code line")
     args = parser.parse_args(argv)
+    tier = args.tier
+    effective_tier = tier or PRODUCT_TIER
+    requested = declared_tier_model(tier) if tier else REQUESTED_ROUTE
     detail: dict[str, Any] = {"status": 0, "error_code": "origin_not_https"}
     if not args.base_url.startswith("https://"):
-        print("REAL_MODEL_CALL=FAIL model=" + REQUESTED_ROUTE)
+        print(f"REAL_MODEL_CALL=FAIL model={requested or effective_tier}")
         if args.report:
-            print(f"GRADE_SMOKE tier={args.tier} status=0 "
+            print(f"GRADE_SMOKE tier={effective_tier} status=0 "
                   "error_code=origin_not_https verdict=FAIL")
         print("B14_REAL_MODEL_CALL_ORIGIN_NOT_HTTPS", file=sys.stderr)
         return 1
-    verdict, model = run(base_url=args.base_url, transport=urlopen_transport(),
-                         timeout=args.timeout, max_tokens=args.max_tokens,
-                         product_tier=args.tier, report=detail)
+    verdict, model = run(
+        base_url=args.base_url,
+        transport=urlopen_transport(),
+        tier=tier,
+        service_proof_secret=os.environ.get(PROOF_SECRET_ENV, ""),
+        timeout=args.timeout,
+        max_tokens=args.max_tokens,
+        report=detail,
+    )
     print(f"REAL_MODEL_CALL={verdict} model={model}")
     if args.report:
-        print(f"GRADE_SMOKE tier={args.tier} status={detail['status']} "
+        print(f"GRADE_SMOKE tier={effective_tier} status={detail['status']} "
               f"error_code={detail['error_code']} verdict={verdict}")
     if verdict == "FAIL":
         print("B14_REAL_MODEL_CALL_FAILED=1", file=sys.stderr)

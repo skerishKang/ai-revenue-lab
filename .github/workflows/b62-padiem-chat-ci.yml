@@ -639,8 +639,10 @@ jobs:
           echo "B14_FULL_REGRESSION=PASS"
 
   # CTO 2026-11-02: one real provider call per declared grade, once a night in
-  # the same run as the full regression. The script carries no credential
-  # (B14 spends its own keys), names no model and never prints provider text.
+  # the same run as the full regression. The tier's exact model id is read from
+  # the shared product-tier declaration, never b14/auto. The call is signed with
+  # the existing B14 service proof; the secret value is only referenced here and
+  # is never printed. B14 still spends its own provider keys.
   grade-live-smoke:
     name: Grade live smoke (${{ matrix.tier }})
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
@@ -658,4 +660,6 @@ jobs:
         with:
           python-version: "3.12"
       - name: One real call through the declared grade route
+        env:
+          PADIEM_B14_SERVICE_PROOF_SECRET: ${{ secrets.PADIEM_B14_SERVICE_PROOF_SECRET }}
         run: python .github/scripts/b14_real_model_call_smoke.py --tier "${{ matrix.tier }}" --report
