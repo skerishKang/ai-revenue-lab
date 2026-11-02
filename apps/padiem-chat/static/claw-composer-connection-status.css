@@ -105,6 +105,12 @@
   background: var(--accent-strong, #2f6f99);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-strong, #2f6f99) 22%, transparent);
 }
+/* #6694 (A): a linked PC whose agent is offline is a state, not a failure -
+   the same neutral grey as disconnected, a different word and mark. */
+.composer-pc-status[data-state="offline"] .composer-pc-status-dot {
+  background: var(--muted, #53606c);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--muted, #53606c) 22%, transparent);
+}
 .composer-pc-status[data-state="check"] .composer-pc-status-dot {
   background: var(--danger, #b3261e);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger, #b3261e) 22%, transparent);

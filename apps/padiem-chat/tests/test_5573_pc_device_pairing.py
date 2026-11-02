@@ -45,8 +45,10 @@ MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "072_pc_device_
 MIGRATIONS = MIGRATION.parent
 #: Both pairing migrations are one unapplied set: 073 ALTERs the table 072
 #: creates, so "before the pairing migration" has to leave 073 out too or the
-#: replay itself, not the code under test, is what fails.
-PAIRING_MIGRATION_NUMBERS = {MIGRATION.name[:3], "073"}
+#: replay itself, not the code under test, is what fails. 089 ALTERs the same
+#: table for #6694's supersede columns and belongs to that set for the same
+#: reason.
+PAIRING_MIGRATION_NUMBERS = {MIGRATION.name[:3], "073", "089"}
 OWNER = "usr_" + "a" * 32
 OTHER = "usr_" + "b" * 32
 NODE = "node//mesh-pc-01"

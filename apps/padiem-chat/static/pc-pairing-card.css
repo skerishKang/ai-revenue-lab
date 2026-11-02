@@ -163,6 +163,13 @@
   background: rgba(17, 104, 95, .08);
 }
 
+/* An active link whose MeshCentral node is offline: a state, not a failure. */
+.pc-pairing-state[data-state="offline"] {
+  color: var(--muted, #6f7079);
+  border-color: rgba(111, 112, 121, .35);
+  background: rgba(111, 112, 121, .08);
+}
+
 .pc-pairing-state[data-state="paused"] {
   color: #8a6d1a;
   border-color: rgba(138, 109, 26, .35);

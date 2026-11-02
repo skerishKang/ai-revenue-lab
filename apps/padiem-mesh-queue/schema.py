@@ -81,6 +81,12 @@ QUEUE_MIGRATIONS = (
     "073_pc_device_link_pause.sql",
     "074_oracle_mesh_dispatch_claim_lease.sql",
     "086_mesh_device_drives.sql",
+    # #6694: the supersede columns the pairing store writes when a fresh claim
+    # replaces an older row of the same computer, and the last-connected stamp
+    # the presence store keeps for the owner's offline rows. Both additive;
+    # the stores SELECT them, so a queue database without them cannot serve.
+    "089_pc_device_link_supersede.sql",
+    "090_mesh_device_presence_last_connected.sql",
 )
 
 QUEUE_TABLES = (
@@ -104,9 +110,13 @@ REQUIRED_COLUMNS = {
         "tool_call_ref",
         "claimed_until",
     ),
-    "mesh_device_presence": ("device_id", "connected", "received_at", "source"),
+    "mesh_device_presence": (
+        "device_id", "connected", "received_at", "source", "last_connected_at",
+    ),
     "pc_pairing_codes": ("code_id", "state", "mesh_node_id", "expires_at"),
-    "pc_device_links": ("link_id", "state", "roots_json", "paused_at"),
+    "pc_device_links": (
+        "link_id", "state", "roots_json", "paused_at", "superseded_at", "superseded_by",
+    ),
     "mesh_device_drives": ("device_id", "drives_json", "received_at"),
 }
 

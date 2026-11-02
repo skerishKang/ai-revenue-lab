@@ -24,7 +24,11 @@ class D1:
     def __init__(self):
         self.db = sqlite3.connect(":memory:")
         self.db.row_factory = sqlite3.Row
-        for name in ("067_mesh_device_presence.sql", "070_mesh_device_presence_source.sql"):
+        for name in (
+            "067_mesh_device_presence.sql",
+            "070_mesh_device_presence_source.sql",
+            "090_mesh_device_presence_last_connected.sql",
+        ):
             self.db.executescript((ROOT / "apps/padiem-chat/migrations" / name).read_text())
 
     def prepare(self, sql):

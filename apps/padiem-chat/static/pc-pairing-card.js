@@ -68,6 +68,8 @@
       issuing: "코드를 발급하고 있습니다.",
       empty: "연결된 PC가 없습니다.",
       unnamed: "이름 없는 PC",
+      offline: "오프라인",
+      offlineLastSeen: "마지막 접속",
       loading: "서버에서 연결 목록을 확인하고 있습니다.",
       failed: "연결 목록을 확인하지 못했습니다. 다시 시도해 주세요.",
       login: "로그인한 뒤 PC를 연결할 수 있습니다.",
@@ -90,6 +92,7 @@
       refused: "서버가 이 요청을 받아들이지 않았습니다.",
       linkState: {
         active: "연결됨",
+        offline: "오프라인",
         pending_verification: "확인 대기 중",
         revoked: "연결 해제",
         paused: "멈춤",
@@ -117,6 +120,8 @@
       issuing: "Issuing a code.",
       empty: "No connected PC yet.",
       unnamed: "Unnamed PC",
+      offline: "Offline",
+      offlineLastSeen: "Last seen",
       loading: "Checking your links with the server.",
       failed: "Could not read your links. Please retry.",
       login: "Sign in to connect a PC.",
@@ -139,6 +144,7 @@
       refused: "The server refused this request.",
       linkState: {
         active: "Connected",
+        offline: "Offline",
         pending_verification: "Waiting for confirmation",
         revoked: "Revoked",
         paused: "Paused",
@@ -322,11 +328,27 @@
     // the name is what a chat request addresses.
     const name = element("span", "pc-pairing-name", link.label || t.unnamed);
     name.title = name.textContent;
-    const state = element("span", "pc-pairing-state",
-      t.linkState[link.state] || link.state || "");
+    // #6694 (A): an active link whose MeshCentral agent is not connected is a
+    // PC that is offline right now - the pairing record is not the connection.
+    // The badge says so, with the moment the node was last actually connected.
+    const stateKey = link.state === "active" && link.online !== true ? "offline" : link.state;
+    let stateText = t.linkState[stateKey] || link.state || "";
+    if (stateKey === "offline") {
+      const at = new Date(link.last_seen_at || "");
+      if (!Number.isNaN(at.getTime())) {
+        const pad = (n) => String(n).padStart(2, "0");
+        const stamp = at.getFullYear() + "-" + String(at.getMonth() + 1).padStart(2, "0")
+          + "-" + String(at.getDate()).padStart(2, "0") + " "
+          + pad(at.getHours()) + ":" + pad(at.getMinutes());
+        stateText += " · " + t.offlineLastSeen + " " + stamp;
+      }
+    }
+    const state = element("span", "pc-pairing-state", stateText);
     // A paused link arrives with state "paused": it is still connected, and the
-    // server's own word is the only source of what the row says.
-    state.dataset.state = String(link.state || "");
+    // server's own word is the only source of what the row says. An active link
+    // with no proven online state is drawn in its own offline colour, never in
+    // the connected green.
+    state.dataset.state = String(stateKey);
     const menu = element("div", "pc-pairing-menu");
     const toggle = element("button", "pc-pairing-menu-toggle", "⋯");
     toggle.type = "button";
@@ -452,7 +474,8 @@
         handle.rounds += 1;
         await load(true);
         const fresh = lastLinks.find((link) =>
-          !baseline.has(link.link_id) && link.state !== "revoked");
+          !baseline.has(link.link_id) && link.state !== "revoked"
+          && link.state !== "replaced");
         if (fresh) {
           stopPoll();
           const label = fresh.label || "";
@@ -484,7 +507,10 @@
 
     function draw() {
       view.list.replaceChildren();
-      const shown = lastLinks.filter((link) => link.state !== "revoked");
+      // A replaced row is the older record of a computer whose newer link took
+      // over (#6694 C): it stays in the server's list, the card shows one line.
+      const shown = lastLinks.filter(
+        (link) => link.state !== "revoked" && link.state !== "replaced");
       view.section.dataset.empty = shown.length ? "false" : "true";
       view.help.hidden = shown.length > 0;
       if (!shown.length) {

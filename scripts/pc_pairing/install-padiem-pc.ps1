@@ -298,8 +298,11 @@ function Format-PadiemAgentName {
     Where-Object { $_ -match '^[A-Z]$' } | Sort-Object -Unique)
   # The trailing word is the name Windows gave this machine. The server reads
   # the tag to decide the account, the letters to grant whole drives, and that
-  # name to call the PC by until its owner renames it.
-  $machine = $env:COMPUTERNAME
+  # name to call the PC by until its owner renames it. Dns.GetHostName() is
+  # the whole DNS name; $env:COMPUTERNAME is the 15-character NetBIOS form and
+  # would store a truncated name as the link's first label.
+  $machine = try { [System.Net.Dns]::GetHostName() } catch { $env:COMPUTERNAME }
+  if (-not $machine) { $machine = $env:COMPUTERNAME }
   if ($letters.Count -eq 0) {
     if (-not $machine) { return $Tag }
     return $Tag + ' ' + $machine

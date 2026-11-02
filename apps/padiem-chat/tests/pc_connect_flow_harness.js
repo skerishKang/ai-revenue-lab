@@ -182,6 +182,8 @@ const LINK = {
   mesh_node_id: "node/meshdomain/mesh-pc-09",
   label: "집 PC",
   state: "active",
+  online: true,
+  last_seen_at: "2026-11-02T10:30:00Z",
   roots: [{ root_ref: "pcroot_0123456789abcdef", label: "견적", path: "C:/Users/me/견적",
             state: "active", approved_at: "2026-10-27T01:00:00Z" }],
 };
@@ -190,6 +192,18 @@ const PAUSED_LINK = {
   mesh_node_id: "node/meshdomain/mesh-pc-10",
   label: "회사 노트북",
   state: "paused",
+  online: false,
+  last_seen_at: "2026-11-02T09:45:00Z",
+  roots: [],
+};
+
+const OFFLINE_LINK = {
+  link_id: "pclink_cccccccccccccccccccccccccccccccc",
+  mesh_node_id: "node/meshdomain/mesh-pc-11",
+  label: "사무실 PC",
+  state: "active",
+  online: false,
+  last_seen_at: "2026-11-02T09:00:00Z",
   roots: [],
 };
 
@@ -405,18 +419,27 @@ async function main() {
     chipState(emptyRead).hidden === false && chipState(emptyRead).text.includes("연결하기")
     && chipState(emptyRead).display === "disconnected",
     JSON.stringify(chipState(emptyRead)));
+  const offlineRead = makeDom({ "GET *": { status: 200, body: {
+    ok: true, links: [OFFLINE_LINK], codes: [] } } });
+  await settle();
+  check("an agent that is not connected does not offer 연결하기 on the chip",
+    chipState(offlineRead).hidden === true && chipState(offlineRead).display === "offline",
+    JSON.stringify(chipState(offlineRead)));
 
   // -- the popover: names and states, nothing else -----------------------------
   const listed = makeDom({
-    "GET *": { status: 200, body: { ok: true, links: [LINK, PAUSED_LINK], codes: [] } },
+    "GET *": { status: 200, body: { ok: true, links: [LINK, PAUSED_LINK, OFFLINE_LINK], codes: [] } },
   });
   await settle();
   listed.window.PadiemPcConnectFlow.togglePopover(listed.chip);
   const popover = listed.body.querySelectorAll(".pc-connect-popover")[0];
-  check("the popover lists the PCs with their states and nothing else",
+  check("the popover lists the PCs with their states, offline and last seen",
     popover && popover.hidden === false
     && popover.allText().includes("집 PC") && popover.allText().includes("연결됨")
-    && popover.allText().includes("회사 노트북") && popover.allText().includes("멈춤"),
+    && popover.allText().includes("회사 노트북") && popover.allText().includes("멈춤")
+    && popover.allText().includes("사무실 PC")
+    && popover.allText().includes("오프라인")
+    && popover.allText().includes("마지막 접속"),
     popover ? popover.allText() : "no popover");
   const driveEntry = popover.querySelector(".pc-connect-popover-drives");
   check("the popover carries the one action into the drive list",
