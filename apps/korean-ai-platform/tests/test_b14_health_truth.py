@@ -242,4 +242,3 @@ def test_catalog_contains_exact_owner_models_not_a_synthetic_auto_choice(client)
     reg = read_registry()
     assert {m["id"] for m in data["catalog"]} == {m["id"] for m in reg["models"] if m["enabled"] and reg["providers"][m["provider_id"]]["enabled"]}
     assert all(m["provider_id"] != "b14" for m in data["catalog"])
-    assert "b14/auto" not in {m["id"] for m in data["catalog"]}

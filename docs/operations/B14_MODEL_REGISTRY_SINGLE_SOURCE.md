@@ -75,7 +75,7 @@ B14 고정 auto 및 구버전 제품 HOLD는 사용자 지정 모델이 아닙�
 ## 2026-10-09 browser/B62 integration regression contract
 
 - B14 app/pilot/workspace.py Start-screen manual model dropdown and its JavaScript b14CatalogModels used nine CATALOG_BY_ID entries at the 2026-10-09 test baseline, installed from canonical b14_models.json, NOT historical empty CATALOG_MODELS.
-- The standalone Alpha UI still has a legacy b14/auto option. This task does not authorize that option as a new Plus/Pro/Max group, nor does it implement a B66 manual selector. Group membership remains Owner-only.
+- The standalone Alpha UI's former legacy b14/auto option was deleted on 2026-11-02; only explicit model IDs are offered. This task does not authorize an automatic option as a new Plus/Pro/Max group, nor does it implement a B66 manual selector. Group membership remains Owner-only.
 - The Alpha browser smoke test selects approved agnes-ai/agnes-3.0-flash and supplies a dummy credential ONLY to the mock child process; no real API calls.
 - B62 source authority verified nine registered model IDs at the 2026-10-09 baseline and five completely unregistered Owner-deleted IDs; no public/free/auto route is authorized for B66.
 - B62 retry-budget fixture copies the schema of a surviving Agnes model in an isolated child with mocked provider dispatch and test-only key; the max_retries=0 execution guard still ensures exactly one provider attempt.

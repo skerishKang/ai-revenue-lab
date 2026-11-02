@@ -37,7 +37,7 @@ def agent(**overrides) -> AgentProfile:
         "optimize_for": "korean",
         "max_tokens": 700,
         "required_capabilities": ("free",),
-        "model_policy": {"model": "b14/auto"},
+        "model_policy": {"model": "google/gemini-3.1-flash-lite"},
     }
     values.update(overrides)
     return AgentProfile(**values)
@@ -114,11 +114,10 @@ def test_stream_dispatches_once_and_surfaces_progress_before_completion() -> Non
 
     assert len(client.dispatches) == 1
     kind, b14_request = client.dispatches[0]
-    # B7: there is a single stream lane now — the runtime dispatches the
-    # fixture's retired auto id through the same manual surface, and the B14
-    # gateway refuses the id before any routing (pinned platform-side).
+    # There is a single stream lane: the runtime dispatches the fixture's exact
+    # model through the manual surface, and B14 owns availability.
     assert kind == "manual"
-    assert b14_request.model == "b14/auto"
+    assert b14_request.model == "google/gemini-3.1-flash-lite"
     assert [event.delta_content for event in events[:-1]] == ["안녕", "하세요"]
     assert all(event.done is False for event in events[:-1])
     assert all(event.metadata.status is RunStatus.MODEL_RUNNING for event in events[:-1])
@@ -494,7 +493,7 @@ def test_stream_event_public_contract_separates_delta_and_terminal_answer() -> N
 
 
 
-@pytest.mark.parametrize("model", ["b14/auto", "google/gemini-3.1-flash-lite"])
+@pytest.mark.parametrize("model", ["google/gemini-3.1-flash-lite", "google/gemini-3.5-flash-lite"])
 def test_stream_runtime_forwards_native_tools_and_surfaces_tool_only_completion(model):
     call = B14StreamToolCall(id="call_1", name="pc_files", arguments={"plan": "files_list"}, index=0)
     client = FakeStreamClient((

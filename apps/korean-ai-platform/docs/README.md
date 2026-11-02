@@ -41,7 +41,7 @@ B14_GENERIC_AUTOROUTER = VALID_FUTURE_CAPABILITY
 
 The shared Padiem profile declaration and B14 execution authority are separate. Google exact-ID registration is source-merged via PR #3788, while the Plus product declaration remains HOLD. Source registration does not prove credential-backed execution, a customer-visible route or Production readiness. Historical Space Bunny is retired.
 
-`poolside/laguna-s-2.1` is `HOLD_AS_DATA_ONLY` in that declaration — product data and `b14/auto` fixed-chain second-position evidence, not a Padiem tier route — and the historical `kilo/poolside-laguna-s-2.1-free` / `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` mapping is superseded, so no index in this folder may be read as reinstating it.
+`poolside/laguna-s-2.1` is `HOLD_AS_DATA_ONLY` in that declaration — product data only, not a Padiem tier route — and the historical `kilo/poolside-laguna-s-2.1-free` / `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` mapping is superseded, so no index in this folder may be read as reinstating it.
 
 ## Historical phase evidence
 
@@ -70,7 +70,7 @@ The following documents remain intentionally preserved. They describe earlier pi
 When reading any historical file:
 
 - old model IDs do not become executable by documentation reference;
-- old `b14/auto` or fixed-chain descriptions do not authorize Padiem v1 auto-routing;
+- old automatic-route or fixed-chain descriptions do not authorize Padiem v1 auto-routing; `b14/auto` was deleted on 2026-11-02;
 - retired routes do not regain authority;
 - old BYOK/header/credential patterns do not override current secret boundaries;
 - old deployment instructions do not authorize Production mutation;
@@ -84,7 +84,7 @@ Do not erase historical decisions simply because the runtime evolved. Add a curr
 #2085 current B14/Padiem product objective
 #2099 Padiem routing-profile source of truth — completed
 #2100 Chat/Claw shared Padiem profile consumption
-#2101 implicit b14/auto removal from Padiem-facing contracts
+#2101 implicit automatic-route removal from Padiem-facing contracts (completed; old id deleted 2026-11-02)
 #2102 Padiem Max route evidence/selection
 #2103 generic B14 BYOK/credential policy
 #2104 Padiem Pro Nemotron evidence (closed; Pro is HOLD since #2601)

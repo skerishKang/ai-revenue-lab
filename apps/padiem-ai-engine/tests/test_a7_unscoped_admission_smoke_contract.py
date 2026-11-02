@@ -97,7 +97,7 @@ def test_probe_is_contract_valid_for_ordinary_orchestration_validation() -> None
     assert app_id == "b54-padiem-claw"
     assert exec_req.agent.id == payload["agent"]["id"]
     # An explicit, non-empty model route is required by the wire contract; the
-    # probe keeps one so no implicit b14/auto fallback can ever be exercised.
+    # probe keeps one so no implicit fallback can ever be exercised.
     model = payload["agent"]["model_policy"]["model"]
     assert isinstance(model, str) and model.strip()
 

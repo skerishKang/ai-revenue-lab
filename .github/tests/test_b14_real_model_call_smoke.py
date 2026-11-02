@@ -2,11 +2,10 @@
 
 Two invocations share the verdict table but not the wire:
 
-* the deploy gate calls the script with no arguments: the declared ``b14/auto``
-  route, no credential, one ``REAL_MODEL_CALL=`` line;
+* the deploy gate calls the script with no arguments: the Free grade's exact
+  declared model, no credential, one ``REAL_MODEL_CALL=`` line;
 * the nightly grade smoke passes ``--tier``: the tier's exact model id from the
-  shared product-tier declaration, signed with the existing B14 service proof,
-  and never ``b14/auto``.
+  shared product-tier declaration, signed with the existing B14 service proof.
 
 The verdict table is the whole failure contract: a real answer passes, a
 provider-side limit passes with a marker, and everything else - other status,
@@ -45,7 +44,6 @@ def _ok(model="google/gemini-3.1-flash-lite", text="pong"):
         "id": "chatcmpl-synthetic",
         "model": model,
         "choices": [{"index": 0, "message": {"role": "assistant", "content": text}}],
-        "business14": {"model_route": "b14/auto"},
     }
     return 200, json.dumps(body).encode("utf-8")
 
@@ -72,7 +70,7 @@ def test_provider_limit_statuses_pass_with_a_marker(limit) -> None:
         transport=_transport(limit, json.dumps({"error": {"code": "rate_limited"}}).encode()),
     )
     assert verdict == "PASS_PROVIDER_LIMIT"
-    assert model == "b14/auto"
+    assert model == FREE_PRIMARY_B14_MODEL_ID
 
 
 def test_any_other_status_fails() -> None:
@@ -109,9 +107,10 @@ def test_an_oversized_response_fails() -> None:
     )[0] == "FAIL"
 
 
-def test_the_default_request_names_the_auto_route_and_no_model_of_its_own() -> None:
-    body = json.loads(smoke.request_body())
-    assert body["model"] == smoke.REQUESTED_ROUTE == "b14/auto"
+def test_the_default_request_names_the_free_grade_model_of_its_own() -> None:
+    body = json.loads(smoke.request_body(model=smoke.declared_tier_model(smoke.PRODUCT_TIER)))
+    assert body["model"] == smoke.declared_tier_model("free") == FREE_PRIMARY_B14_MODEL_ID
+    assert not hasattr(smoke, "REQUESTED_ROUTE")
     assert body["business14"]["product_tier"] == smoke.PRODUCT_TIER
     assert body["business14"]["max_retries"] == 0
     assert 0 < body["max_tokens"] <= 64
@@ -127,14 +126,13 @@ def test_each_grade_resolves_the_declared_executable_model() -> None:
 
 
 @pytest.mark.parametrize("tier", smoke.PRODUCT_TIERS)
-def test_the_tier_request_names_the_exact_model_and_never_the_auto_route(tier) -> None:
+def test_the_tier_request_names_the_exact_model(tier) -> None:
     transport = _transport(*_ok())
     smoke.run(base_url="https://b14.example.test", transport=transport, tier=tier,
               service_proof_secret="k" * 40)
     url, raw, headers, _timeout = transport.calls[0]
     body = json.loads(raw)
     assert body["model"] == smoke.declared_tier_model(tier)
-    assert body["model"] != smoke.REQUESTED_ROUTE
     assert body["business14"]["product_tier"] == tier
     assert url == "https://b14.example.test/api/pilot/v1/chat/completions"
     assert smoke.PROOF_HEADER in headers and smoke.PROOF_TIME_HEADER in headers
@@ -180,7 +178,7 @@ def test_the_default_deploy_gate_call_stays_unsigned() -> None:
     smoke.run(base_url="https://b14.example.test", transport=transport,
               service_proof_secret="k" * 40)
     _url, raw, headers, _timeout = transport.calls[0]
-    assert json.loads(raw)["model"] == "b14/auto"
+    assert json.loads(raw)["model"] == smoke.declared_tier_model("free")
     assert headers == {}
 
 
@@ -222,7 +220,7 @@ def test_the_unsafe_model_name_never_reaches_the_verdict_line() -> None:
     payload = {"model": "leak" + chr(10) + "x" * 200,
                "choices": [{"message": {"content": "ok"}}]}
     status, raw = 200, json.dumps(payload).encode()
-    assert smoke.decide(status, raw) == ("PASS", "b14/auto")
+    assert smoke.decide(status, raw) == ("PASS", "")
 
 
 def test_a_provider_text_never_appears_in_the_verdict_output() -> None:

@@ -134,7 +134,8 @@ def test_real_model_call_step_runs_after_the_deploy_and_is_not_rolled_back() -> 
 
 def test_real_model_call_script_names_no_model_and_carries_no_credential() -> None:
     source = (ROOT / ".github/scripts/b14_real_model_call_smoke.py").read_text(encoding="utf-8")
-    assert 'REQUESTED_ROUTE = "b14/auto"' in source
+    assert 'PRODUCT_TIER = "free"' in source
+    assert "REQUESTED_ROUTE" not in source
     # The deploy gate's no-argument call names no model and carries no
     # credential. The nightly grade smoke (``--tier``) is the only invocation
     # that signs: it reads the tier's exact model from the shared declaration

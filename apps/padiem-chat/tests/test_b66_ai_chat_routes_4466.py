@@ -129,9 +129,9 @@ def test_forbidden_owner_scope_and_fake_auto_model_are_rejected():
     # A foreign owner scope is a request-contract refusal (400).
     res = client.post("/api/b66/ai/chat", json=payload(owner=USER_A))
     assert res.status_code == 400
-    # B7: the retired id is not a registered model — the model authority
-    # refuses it fail-closed (503) and nothing reaches a provider call.
-    res = client.post("/api/b66/ai/chat", json=payload(model_id="b14/auto"))
+    # An unregistered id is refused fail-closed (503) and nothing reaches a
+    # provider call.
+    res = client.post("/api/b66/ai/chat", json=payload(model_id="unknown/model"))
     assert res.status_code == 503
     # The resolver is consulted to resolve the requested id, and the boundary
     # refuses it before any provider dispatch.

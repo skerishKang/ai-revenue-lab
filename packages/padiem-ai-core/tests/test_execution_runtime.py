@@ -163,12 +163,12 @@ def test_omitted_model_policy_fails_closed_before_b14(policy) -> None:
     assert executor.calls == []
 
 
-def test_explicit_generic_auto_route_is_still_accepted() -> None:
+def test_explicit_exact_model_route_is_still_accepted() -> None:
     executor = FakeExecutor()
     runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
-    profile = agent(model_policy={"model": "b14/auto"})
+    profile = agent(model_policy={"model": "google/gemini-3.1-flash-lite"})
     run(runtime.run(request(profile)))
-    assert executor.calls[0].model == "b14/auto"
+    assert executor.calls[0].model == "google/gemini-3.1-flash-lite"
 
 
 def test_unknown_model_policy_field_fails_closed_before_b14() -> None:

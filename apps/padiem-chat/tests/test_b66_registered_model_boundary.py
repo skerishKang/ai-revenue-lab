@@ -146,9 +146,9 @@ def test_one_authorized_exact_model_through_b14_stub_preserves_b66_payload():
     ({"route_count": 2}, "selection_ambiguous"),
     ({"route_count": True}, "selection_ambiguous"),
     ({"capabilities": frozenset(("coding",))}, "model_capability_unavailable"),
-    # B7: no forbidden-id set exists — a retired-id selection simply is not
+    # No forbidden-id set exists — an unregistered selection simply is not
     # the authorized model.
-    ({"model_id": "b14/auto"}, "model_not_authorized"),
+    ({"model_id": "unknown/model"}, "model_not_authorized"),
     ({"model_id": "padiem-profile/plus-hold"}, "model_identity_invalid"),
     ({"model_id": "padiem-profile/pro-hold"}, "model_identity_invalid"),
     ({"model_id": "padiem-profile/max-hold"}, "model_identity_invalid"),
@@ -168,7 +168,7 @@ def test_b14_unregistered_disabled_disallowed_missing_credential_never_dispatche
     assert executor.calls == []
 
 
-@pytest.mark.parametrize("selection", [None, {"model_id": "pretend"}, "b14/auto"])
+@pytest.mark.parametrize("selection", [None, {"model_id": "pretend"}, "unknown/model"])
 def test_missing_or_untrusted_resolver_shape_fails_closed(selection):
     resolver = FakeTrustedResolver(selection)
     executor = FakeB14Executor()
@@ -316,9 +316,8 @@ def test_module_has_no_worker_or_automatic_policy_runtime_imports():
     import inspect
     from app import b66_registered_model_boundary as source
     code = inspect.getsource(source)
-    # B7: the module never names or dispatches the retired automatic route —
-    # it only ever pins one exact registered model.
-    assert "b14/auto" not in code
+    # The module never names or dispatches an automatic route — it only ever
+    # pins one exact registered model.
     for forbidden in (
         "from app.model_policy import",
         "from app.pilot.routing_policy import",

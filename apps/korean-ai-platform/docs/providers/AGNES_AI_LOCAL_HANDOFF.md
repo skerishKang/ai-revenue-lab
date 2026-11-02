@@ -35,9 +35,11 @@ agnes-ai/agnes-2.5-flash
 Preserve:
 
 ```text
-model=b14/auto
 model=agnes-ai/agnes-2.5-flash
 ```
+
+`b14/auto` was deleted on 2026-11-02. Only explicit exact model selection is
+supported; the old automatic id is refused as an unknown model.
 
 ## Constraints
 

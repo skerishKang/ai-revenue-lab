@@ -149,7 +149,7 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
         class ForbiddenPage:
             def locator(self, *_):
                 raise AssertionError("no browser calls before selecting exact ID")
-        for identifier in ("", "b14/auto", "padiem-profile/plus", "bad id"):
+        for identifier in ("", "unknown-model-id", "padiem-profile/plus", "bad id"):
             with self.subTest(identifier=identifier):
                 with self.assertRaises(module.SmokeFailure):
                     module._select_customer_quote_model(ForbiddenPage(), identifier)

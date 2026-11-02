@@ -11,7 +11,7 @@ function storyMemoryModel(env) {
   if (configured === undefined || configured === null || configured === "") return DEFAULT_STORYMEMORY_MODEL;
   if (typeof configured !== "string") return null;
   const model = configured.trim();
-  if (!model || model.length > 256 || model.toLowerCase().startsWith("b14/auto")) return null;
+  if (!model || model.length > 256) return null;
   return model;
 }
 const MAX_REFERENCE_CHARS = 12000;

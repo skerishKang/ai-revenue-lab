@@ -128,7 +128,7 @@ def test_the_retired_auto_id_streams_as_an_opaque_caller_model():
 
     async def scenario():
         with pytest.raises(ChatRuntimeError):
-            async for _ in client.stream_text_preview(MESSAGES, model="b14/auto"):
+            async for _ in client.stream_text_preview(MESSAGES, model="google/gemini-3.1-flash-lite"):
                 pass
 
     asyncio.run(scenario())

@@ -50,14 +50,14 @@ Authenticated browser inspection of the `[OWNER Cloudflare 계정]` Cloudflare a
 
 - Agnes remains the sole executable user-visible Plus route.
 - Poolside remains `CANDIDATE_DATA_ONLY` in the user-visible Plus tier.
-- The separate internal `b14/auto` fixed-chain still keeps Poolside as its second/spare position.
+- The separate internal `b14/auto` fixed-chain was deleted on 2026-11-02, so Poolside has no second/spare position.
 - `USER_VISIBLE_AUTO=OFF`.
 - `SILENT_FALLBACK=NO`.
 - This work order changes none of those authorities.
 
 ## Non-goals
 
-- No candidate becomes `b14/auto` eligible.
+- No candidate becomes eligible for an automatic route (`b14/auto` was deleted 2026-11-02).
 - No candidate is added to the user-facing catalog.
 - No Plus/Pro route activation or tier change; no new executable Plus route and no change to the existing Poolside `CANDIDATE_DATA_ONLY` status.
 - No Production deployment, direct Wrangler mutation, Preview/staging bypass, or Docker.
@@ -71,7 +71,7 @@ Authenticated browser inspection of the `[OWNER Cloudflare 계정]` Cloudflare a
 3. Mock mode performs zero upstream calls.
 4. Provider credentials cannot be borrowed across candidates.
 5. Direct and streaming requests preserve exact upstream model and actual response model evidence.
-6. Candidates remain explicit-only/private and cannot enter `b14/auto`.
+6. Candidates remain explicit-only/private and cannot enter any automatic route (`b14/auto` was deleted 2026-11-02).
 7. B14 full tests, compile checks, and diff scope checks pass.
 
 ## Evidence boundary

@@ -41,7 +41,6 @@ def test_exact_registry_append_preserves_ten_predecessors():
     ids=[m["id"] for m in data["models"]]
     assert ids[10]==MODEL
     assert "experiential/qwen3.8-flash-next-uncensored" in ids
-    assert "b14/auto" not in ids
     assert len(set(ids))==len(ids)
     assert data["groups"]=={"plus":[],"pro":[],"max":[]}
     row=next(row for row in data["models"] if row["id"]==MODEL)

@@ -30,7 +30,7 @@ RESULT = ExecutionResult(
 
 REQUEST_PAYLOAD = {
     "app_id": "b62",
-    "agent": {"id": "agent", "model": "b14/auto"},
+    "agent": {"id": "agent", "model": "google/gemini-3.1-flash-lite"},
     "messages": [{"role": "user", "content": "hello"}],
 }
 
@@ -107,7 +107,7 @@ def test_prepare_execution_is_deterministic_and_excludes_auth_material() -> None
     }
     payload_b = {
         "messages": [{"content": "hello", "role": "user"}],
-        "agent": {"model": "b14/auto", "id": "agent"},
+        "agent": {"model": "google/gemini-3.1-flash-lite", "id": "agent"},
         "app_id": "b62",
         "authorization": "secret-b",
         "execution_context": {"idempotency_key": "other"},

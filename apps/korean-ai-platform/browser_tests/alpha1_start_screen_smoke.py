@@ -219,15 +219,14 @@ def run_desktop(p: Any) -> dict:
         assert page.locator("#start_prompt").count() > 0
     _step("8. return to start screen", s8, results)
 
-    # ── 9. Auto model selection ──
+    # ── 9. Explicit model selection ──
     def s9():
-        assert page.locator('#start_model option[value="b14/auto"]').count() == 0
         page.locator("#start_model").select_option("agnes-ai/agnes-3.0-flash")
         page.wait_for_timeout(200)
         assert page.locator("#start_model").input_value() == "agnes-ai/agnes-3.0-flash"
         assert page.locator('input[name="start_route_mode"][value="manual"]').is_checked()
         assert page.locator("#start_route_preview").count() > 0
-    _step("9. deferred generic auto absent; explicit model selected", s9, results)
+    _step("9. explicit model selected", s9, results)
 
     # ── 10. optimize_for change ──
     def s10():
@@ -337,9 +336,8 @@ def run_desktop(p: Any) -> dict:
     # ── 22. Fallback explicitly ON ──
     def s22():
         _expand_advanced(page)
-        assert page.locator('#start_model option[value="b14/auto"]').count() == 0
         assert page.locator("#start_external_fallback").count() == 0
-    _step("22. deferred auto and generic fallback cannot be selected", s22, results)
+    _step("22. generic fallback cannot be selected", s22, results)
 
     # ── 23. Request again ──
     def s23():

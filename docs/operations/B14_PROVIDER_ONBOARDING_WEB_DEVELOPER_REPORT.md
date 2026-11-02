@@ -26,14 +26,14 @@ commit.
 - Registered Infron / Motif 3, Inception / Mercury 2.5, Atria / Dawn Preview, and Experiential Labs / GPT-5.6 Luna.
 - Added confirmed metadata-only Secrets Store bindings using store `f0b09ca04a7b43248154c773704a5616`.
 - Added Worker environment allow-list names.
-- Kept all four candidates out of public `CATALOG_MODELS` and `b14/auto`; they are exact-ID manual-pin routes only.
+- Kept all four candidates out of public `CATALOG_MODELS` and the automatic route; they are exact-ID manual-pin routes only. (`b14/auto` was deleted on 2026-11-02.)
 - Added tests for route identity, readiness redaction, missing-key fail-closed behavior, cross-provider key isolation, mock zero-call behavior, fixed-origin requests, streaming, and actual response model evidence.
 
 ## Route authority (unchanged by this PR)
 
 - Agnes remains the sole executable user-visible Plus route.
 - Poolside remains `CANDIDATE_DATA_ONLY` in the user-visible Plus tier.
-- The separate internal `b14/auto` fixed-chain still keeps Poolside as its second/spare position.
+- The separate internal `b14/auto` fixed-chain kept Poolside as its second/spare position at the time; the chain was deleted on 2026-11-02.
 - `USER_VISIBLE_AUTO=OFF`.
 - `SILENT_FALLBACK=NO`.
 - This PR changes none of those authorities.

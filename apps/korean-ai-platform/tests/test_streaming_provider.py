@@ -335,12 +335,11 @@ def test_public_gateway_still_rejects_stream_true():
     response = client.post(
         "/api/pilot/v1/chat/completions",
         json={
-            "model": "b14/auto",
+            "model": "unknown/model",
             "messages": [{"role": "user", "content": "안녕하세요"}],
             "stream": True,
         },
     )
-    # B7: the retired id is an unknown model — the canonical validator still
-    # refuses stream=true as always.
+    # The canonical validator refuses stream=true as always.
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "stream_not_supported"

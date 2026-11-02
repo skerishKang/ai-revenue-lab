@@ -515,7 +515,7 @@ async def test_the_core_stream_runtime_has_a_single_lane_without_the_auto_branch
             task_type="general",
             optimize_for="balanced",
             max_tokens=None,
-            model_policy={"model": "b14/auto"},
+            model_policy={"model": "google/gemini-3.1-flash-lite"},
             max_steps=1,
         ),
         messages=({"role": "user", "content": "hi"},),

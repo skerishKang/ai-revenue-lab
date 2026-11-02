@@ -269,7 +269,6 @@ async def test_explicit_model_id_reaches_the_b14_request_without_rewrite(
     assert body["model"] == model_id
     # The P01 single-dispatch pin survives the Core request translation.
     assert body["business14"]["max_retries"] == 0
-    assert "b14/auto" not in json.dumps(body, ensure_ascii=False)
 
 
 @pytest.mark.asyncio

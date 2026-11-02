@@ -228,7 +228,7 @@ async def _run_view(page: Page, *, name: str, width: int, height: int) -> dict[s
     if '<img src=x onerror="window.__PADIEM_HTML_EXECUTED = true">' not in body_text:
         raise AssertionError("HTML-like payload must remain visible as literal text")
 
-    forbidden = ("Gemini", "Agnes", "Poolside", "OpenRouter", "b14/auto", "selected_provider", "selected_model")
+    forbidden = ("Gemini", "Agnes", "Poolside", "OpenRouter", "selected_provider", "selected_model")
     leaked = [value for value in forbidden if value in body_text]
     if leaked:
         raise AssertionError(f"provider/model jargon leaked into answer UI: {leaked!r}")

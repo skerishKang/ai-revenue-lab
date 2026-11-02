@@ -39,7 +39,7 @@ def test_authority_current_owner_registry_only():
     with pytest.raises(ValueError):
         m.select_exact_model("kilo/poolside/laguna-s-2.1:free")
     with pytest.raises(ValueError):
-        m.select_exact_model("b14/auto")
+        m.select_exact_model("unknown/model")
 
 
 def test_same_synthetic_corpus_has_ten_cases_and_multipage_pressure():
@@ -193,7 +193,7 @@ def test_cli_inert_list_and_exact_prompt_without_real_calls(capsys):
     prompt=json.loads(capsys.readouterr().out)
     assert "미래설비" in prompt["prompt"]
     assert prompt["live_post_count"]==0
-    assert m.main(["--model","b14/auto","--prompt","QKR-001"])==2
+    assert m.main(["--model","unknown/model","--prompt","QKR-001"])==2
     assert "BLOCKED" in capsys.readouterr().out
 
 

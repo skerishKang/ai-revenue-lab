@@ -640,9 +640,9 @@ jobs:
 
   # CTO 2026-11-02: one real provider call per declared grade, once a night in
   # the same run as the full regression. The tier's exact model id is read from
-  # the shared product-tier declaration, never b14/auto. The call is signed with
-  # the existing B14 service proof; the secret value is only referenced here and
-  # is never printed. B14 still spends its own provider keys.
+  # the shared product-tier declaration; there is no automatic selector route.
+  # The call is signed with the existing B14 service proof; the secret value is
+  # only referenced here and is never printed. B14 still spends its own provider keys.
   grade-live-smoke:
     name: Grade live smoke (${{ matrix.tier }})
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}

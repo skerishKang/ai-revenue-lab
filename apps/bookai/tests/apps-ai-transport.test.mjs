@@ -126,8 +126,6 @@ try {
   const noKey=await bookai.fetch(req(),{PADIEM_INGRESS_CLIENT_SECRET:env.PADIEM_INGRESS_CLIENT_SECRET});
   assert.equal(noKey.status,503);assert.equal((await noKey.json()).error,'com2_ai_credential_unavailable');
   for(const worker of [bookai,storymemory]){
-    const wrongModel=await worker.fetch(req(),{...env,STORYMEMORY_MODEL:'b14/auto'});
-    assert.equal(wrongModel.status,503);
     assert.equal((await worker.fetch(req({target_url:'https://other.invalid'}),env)).status,400);
     globalThis.fetch=async()=>Response.json({ok:true,answer:'Answer',context_permission:{...cp,context_filtered_count:1}});
     const invalid=await worker.fetch(req(),env);assert.equal(invalid.status,502);

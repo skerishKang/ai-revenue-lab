@@ -79,7 +79,6 @@ def test_remaining_models_visible_in_exact_catalog(client):
     ids={m["id"] for m in data["catalog"]}
     assert ids=={m.model_id for m in CATALOG_BY_ID.values() if m.enabled}
     assert POOLSIDE_MODEL_ID in ids and SENSENOVA_MODEL_ID not in ids
-    assert "b14/auto" not in ids
 
 def test_sensenova_route_is_explicit_only_and_not_free(client):
     entry = next(

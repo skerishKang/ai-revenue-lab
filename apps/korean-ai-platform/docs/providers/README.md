@@ -6,7 +6,7 @@ Rules:
 
 - Provider credentials are never committed.
 - Each provider intake must declare fixed upstream origin, model IDs, credential binding name, capabilities, free/paid evidence state, and public/shared-use disposition.
-- `b14/auto` and explicit model selection remain separate supported client behaviors.
+- Explicit exact model selection is the only supported client behavior; `b14/auto` was deleted on 2026-11-02.
 - A provider may be code-integrated for owner/local smoke while remaining excluded from the public shared-free pool.
 
 Current entries:

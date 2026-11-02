@@ -30,8 +30,8 @@ def test_readme_documents_locked_b62_core_b14_boundary():
     assert "Provider/model selection remains deferred" in readme
 
     stale_claims = (
-        "Browser → Padiem Chat /api/chat → Business 14 b14/auto → provider/model",
-        "B62 calls the fixed Business 14 endpoint using `model=b14/auto`",
+        "Browser → Padiem Chat /api/chat → Business 14",
+        "B62 calls the fixed Business 14 endpoint using",
     )
     for stale in stale_claims:
         assert stale not in readme
@@ -45,7 +45,6 @@ def test_readme_records_core_multimodal_boundary_and_auto_name_truth():
     assert "MultimodalExecutionRequest" in readme
     assert "MultimodalExecutionRuntime" in readme
     assert "live image completion still fails closed before Business 14/provider dispatch" in readme
-    assert "does **not** currently use Business 14 `b14/auto` as an active routing decision" in readme
     assert "historical `stream_text_auto` method name is a compatibility entrypoint" in readme
 
     # Keep documentation tied to the current #1008/#1009/#1068 runtime shape.
