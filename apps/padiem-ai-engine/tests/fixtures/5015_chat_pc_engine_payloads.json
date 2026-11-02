@@ -27,6 +27,7 @@
       "id": "b62_auto",
       "max_tokens": null,
       "model_policy": {
+        "max_retries": 1,
         "model": "google/gemini-3.1-flash-lite"
       },
       "optimize_for": "korean",
@@ -46,7 +47,8 @@
     },
     "app_id": "padiem-chat",
     "execution_context": {
-      "trace_id": "b62_orch_da0da5467c6248bdbf2a4031"
+      "timeout_seconds": null,
+      "trace_id": "b62_orch_8689b5d0b5554e8ba7c34f77"
     },
     "max_retries": 3,
     "messages": [
@@ -64,7 +66,7 @@
         "device_id": "dev_cccccccccccccccccccccccccccccccc"
       }
     },
-    "trace_id": "b62_orch_da0da5467c6248bdbf2a4031"
+    "trace_id": "b62_orch_8689b5d0b5554e8ba7c34f77"
   },
   "files": {
     "additional_system_context": "PC 작업 지침",
@@ -73,6 +75,7 @@
       "id": "b62_auto",
       "max_tokens": null,
       "model_policy": {
+        "max_retries": 1,
         "model": "google/gemini-3.1-flash-lite"
       },
       "optimize_for": "korean",
@@ -97,7 +100,8 @@
     },
     "app_id": "padiem-chat",
     "execution_context": {
-      "trace_id": "b62_orch_5b2e0ad975ab4433813a5f66"
+      "timeout_seconds": null,
+      "trace_id": "b62_orch_fd63faba1ab543998553a867"
     },
     "max_retries": 3,
     "messages": [
@@ -115,6 +119,6 @@
         "device_id": "dev_cccccccccccccccccccccccccccccccc"
       }
     },
-    "trace_id": "b62_orch_5b2e0ad975ab4433813a5f66"
+    "trace_id": "b62_orch_fd63faba1ab543998553a867"
   }
 }
