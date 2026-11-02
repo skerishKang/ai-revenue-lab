@@ -135,7 +135,11 @@ def test_real_model_call_step_runs_after_the_deploy_and_is_not_rolled_back() -> 
 def test_real_model_call_script_names_no_model_and_carries_no_credential() -> None:
     source = (ROOT / ".github/scripts/b14_real_model_call_smoke.py").read_text(encoding="utf-8")
     assert 'REQUESTED_ROUTE = "b14/auto"' in source
-    assert '"product_tier": PRODUCT_TIER' in source
+    # The gate itself carries no grade choice: the default is the declared
+    # free tier, and the nightly smoke may only pass one of PRODUCT_TIERS.
+    assert '"product_tier": product_tier' in source
+    assert "product_tier: str = PRODUCT_TIER" in source
+    assert 'parser.add_argument("--tier", choices=PRODUCT_TIERS, default=PRODUCT_TIER,' in source
     assert "PROVIDER_LIMIT_STATUSES = frozenset({429, 503})" in source
     assert 'print(f"REAL_MODEL_CALL={verdict} model={model}")' in source
     for forbidden in ("Authorization", "api_key", "API_KEY", "secrets.", "X-Padiem-B14-Proof"):

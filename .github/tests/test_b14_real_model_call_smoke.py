@@ -102,6 +102,37 @@ def test_the_request_declares_a_tier_and_names_no_model_of_its_own() -> None:
     assert set(body) == {"model", "messages", "max_tokens", "business14"}
 
 
+@pytest.mark.parametrize("tier", smoke.PRODUCT_TIERS)
+def test_each_grade_uses_its_own_declared_tier_without_naming_a_model(tier) -> None:
+    body = json.loads(smoke.request_body(product_tier=tier))
+    assert body["business14"]["product_tier"] == tier
+    assert body["model"] == "b14/auto"
+    assert set(body) == {"model", "messages", "max_tokens", "business14"}
+
+
+def test_the_cli_passes_the_requested_tier_through(monkeypatch) -> None:
+    captured = {}
+
+    def call(url, body, timeout):
+        captured.update(json.loads(body))
+        return _ok()
+
+    monkeypatch.setattr(smoke, "urlopen_transport", lambda *a, **k: call)
+    assert smoke.main(["--base-url", "https://b14.example.test", "--tier", "max"]) == 0
+    assert captured["business14"]["product_tier"] == "max"
+
+
+def test_an_unknown_tier_is_refused_before_any_request(monkeypatch) -> None:
+    def forbidden(*a, **k):
+        raise AssertionError("no request may leave the runner for an unknown tier")
+
+    monkeypatch.setattr(smoke, "urlopen_transport", forbidden)
+    with pytest.raises(SystemExit) as excinfo:
+        smoke.main(["--base-url", "https://b14.example.test", "--tier", "gold"])
+    assert excinfo.value.code != 0
+    assert smoke.PRODUCT_TIERS == ("free", "plus", "pro", "max")
+
+
 def test_the_unsafe_model_name_never_reaches_the_verdict_line() -> None:
     payload = {"model": "leak" + chr(10) + "x" * 200,
                "choices": [{"message": {"content": "ok"}}]}

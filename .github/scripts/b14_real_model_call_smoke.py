@@ -31,6 +31,7 @@ COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 USER_AGENT = "b14-gate/1.0"
 REQUESTED_ROUTE = "b14/auto"
 PRODUCT_TIER = "free"
+PRODUCT_TIERS = ("free", "plus", "pro", "max")
 PROMPT = "Synthetic release check: reply with one word."
 MAX_TOKENS = 48
 REQUEST_TIMEOUT_SECONDS = 40
@@ -41,14 +42,15 @@ _SAFE_MODEL_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,127}$")
 Transport = Callable[[str, bytes, float], tuple[int, bytes]]
 
 
-def request_body(*, max_tokens: int = MAX_TOKENS) -> bytes:
+def request_body(*, max_tokens: int = MAX_TOKENS,
+                 product_tier: str = PRODUCT_TIER) -> bytes:
     """The one bounded completion request. No model is selected here."""
     return json.dumps(
         {
             "model": REQUESTED_ROUTE,
             "messages": [{"role": "user", "content": PROMPT}],
             "max_tokens": max_tokens,
-            "business14": {"product_tier": PRODUCT_TIER, "max_retries": 0},
+            "business14": {"product_tier": product_tier, "max_retries": 0},
         },
         separators=(",", ":"),
         ensure_ascii=True,
@@ -126,8 +128,8 @@ def decide(status: int, raw: bytes) -> tuple[str, str]:
 
 
 def run(*, base_url: str, transport: Transport, timeout: float = REQUEST_TIMEOUT_SECONDS,
-        max_tokens: int = MAX_TOKENS) -> tuple[str, str]:
-    body = request_body(max_tokens=max_tokens)
+        max_tokens: int = MAX_TOKENS, product_tier: str = PRODUCT_TIER) -> tuple[str, str]:
+    body = request_body(max_tokens=max_tokens, product_tier=product_tier)
     try:
         status, raw = transport(base_url.rstrip("/") + COMPLETIONS_PATH, body, timeout)
     except (urllib.error.URLError, TimeoutError, OSError, ValueError):
@@ -142,6 +144,8 @@ def run(*, base_url: str, transport: Transport, timeout: float = REQUEST_TIMEOUT
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default=SERVED_ORIGIN)
+    parser.add_argument("--tier", choices=PRODUCT_TIERS, default=PRODUCT_TIER,
+                        help="declared product grade whose route is proven")
     parser.add_argument("--max-tokens", type=int, default=MAX_TOKENS)
     parser.add_argument("--timeout", type=float, default=REQUEST_TIMEOUT_SECONDS)
     args = parser.parse_args(argv)
@@ -150,7 +154,8 @@ def main(argv: list[str] | None = None) -> int:
         print("B14_REAL_MODEL_CALL_ORIGIN_NOT_HTTPS", file=sys.stderr)
         return 1
     verdict, model = run(base_url=args.base_url, transport=urlopen_transport(),
-                         timeout=args.timeout, max_tokens=args.max_tokens)
+                         timeout=args.timeout, max_tokens=args.max_tokens,
+                         product_tier=args.tier)
     print(f"REAL_MODEL_CALL={verdict} model={model}")
     if verdict == "FAIL":
         print("B14_REAL_MODEL_CALL_FAILED=1", file=sys.stderr)

@@ -1,13 +1,10 @@
 name: Web Desktop Non-Model E2E (3098)
 
 on:
-  # #5678: post-merge coverage is unconditional; PR paths stay scoped.
-  push:
-    branches: [main]
-  pull_request:
-    paths:
-      - "tests/e2e/**"
-      - ".github/workflows/web-desktop-nonmodel-e2e.yml"
+  # CTO 2026-11-02: the cross-surface E2E is a nightly main check, not a PR or
+  # main-push gate. It runs at 03:00 KST (18:00 UTC) and on explicit dispatch.
+  schedule:
+    - cron: "0 18 * * *"
   workflow_dispatch:
 
 permissions:
