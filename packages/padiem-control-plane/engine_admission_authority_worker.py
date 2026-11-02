@@ -71,7 +71,12 @@ def _closed(
 
 def _safe_error(
     exc: ControlPlaneContractError,
+    method: str | None = None,
 ) -> dict[str, Any]:
+    # #6679: the ingress wraps this as a 200 ok:false body, so tail logs never
+    # saw WHY a turn was refused. One closed line — method name and the
+    # contract error code only; no message body, key or token ever lands here.
+    print("pc_admission_rpc_error", method or "unknown_method", exc.code)
     return {
         "ok": False,
         "error": {
@@ -212,7 +217,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 "snapshot": snapshot.to_policy_dict(),
             }
         except ControlPlaneContractError as exc:
-            return _safe_error(exc)
+            return _safe_error(exc, method="fetch_entitlement_snapshot")
 
     async def reserve_usage(
         self,
@@ -245,7 +250,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 "reservation": reservation,
             }
         except ControlPlaneContractError as exc:
-            return _safe_error(exc)
+            return _safe_error(exc, method="reserve_usage")
 
     async def record_usage(
         self,
@@ -266,7 +271,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 "receipt": receipt,
             }
         except ControlPlaneContractError as exc:
-            return _safe_error(exc)
+            return _safe_error(exc, method="record_usage")
 
     async def install_entitlement_snapshot(
         self,
@@ -292,7 +297,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 "snapshot": stored.to_policy_dict(),
             }
         except ControlPlaneContractError as exc:
-            return _safe_error(exc)
+            return _safe_error(exc, method="install_entitlement_snapshot")
 
     async def claim_service_id(self, payload: dict) -> dict:
         """Consume one signed request id; the ingress refuses a second use."""
@@ -309,7 +314,7 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
             claimed = await self._service_ids.claim(service_id, expires_at=expires_at)
             return {"ok": True, "claimed": claimed}
         except ControlPlaneContractError as exc:
-            return _safe_error(exc)
+            return _safe_error(exc, method="claim_service_id")
 
     async def fetch(self, request):
         del request
