@@ -25,6 +25,7 @@ def test_the_host_entry_uses_the_worker_env_builder():
     # awaited from startup, never asyncio.run() at factory time.
     assert "await build_oracle_mesh_return_source_from_env(os.environ)" in source
     assert "app.router.on_startup.append(_compose_oracle_mesh_return_source_on_startup)" in source
+    assert "async def _compose_oracle_mesh_return_source_on_startup(app=app):" in source
     assert "oracle_mesh_return_source=None" in source
     assert "oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ)" in source
     assert "asyncio.run(build_oracle_mesh_return_source_from_env" not in source
