@@ -1,0 +1,19 @@
+const {chromium}=require('playwright');
+(async()=>{let b=await chromium.launch({headless:true,...(process.env.B61_CHROME_PATH?{executablePath:process.env.B61_CHROME_PATH}:{})}); let p=await b.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});p.setDefaultTimeout(8000);
+let failures=0;
+async function step(name,fn){try{await fn();console.log('PASS '+name)}catch(e){failures++;console.log('FAIL '+name+' '+e.message)}}
+async function overflow(){let x=await p.evaluate(()=>({width:innerWidth,doc:document.documentElement.scrollWidth,body:document.body.scrollWidth}));if(x.doc>x.width||x.body>x.width)throw Error(JSON.stringify(x));}
+try{
+ await step('library',async()=>{await p.goto((process.env.B61_BASE_URL||'http://127.0.0.1:18764/'));await p.locator('#library.active').waitFor();await overflow()});
+ await step('choose Bible',async()=>{await p.locator('#openBook').click();await p.locator('#index.active').waitFor();await overflow()});
+ await step('open reader',async()=>{await p.locator('#resume').click();await p.locator('#reader.active').waitFor();await p.locator('#readerPageBody .sm-source-passage').first().waitFor({timeout:20000});await overflow()});
+ await step('next page',async()=>{let m=await p.evaluate(()=>({mode:readerViewMode,disabled:document.querySelector('#pageTurnNext').disabled}));console.log('READER_MODE '+JSON.stringify(m));if(m.mode==='flow'){await p.locator('#readerPageBody').evaluate(e=>e.scrollTop+=200)}else{let size=await p.locator('#pageTurnNext').boundingBox();if(!size||size.width<44||size.height<44)throw Error('page button touch target too small '+JSON.stringify(size));let before=await p.evaluate(()=>readerPageIndex);await p.locator('#pageTurnNext').click();await p.waitForFunction(n=>readerPageIndex!==n,before,{timeout:5000})}await overflow()});
+ await step('reader settings',async()=>{await p.locator('#smalOverflowBtn').click();await p.getByRole('button',{name:'읽기 설정',exact:true}).click();await p.locator('.srsg-panel button[data-value="lg"]').click();await overflow()});
+ await step('dark mode',async()=>{await p.locator('.srsg-panel button[data-value="dark"]').click();await overflow();await p.locator('.srsg-x').click();let prev=await p.locator('#pageTurnPrev').boundingBox();if(!prev||prev.width<44||prev.height<44)throw Error('previous button touch target too small');let page=await p.evaluate(()=>readerPageIndex);await p.locator('#pageTurnPrev').click();await p.waitForFunction(n=>readerPageIndex!==n,page,{timeout:5000})});
+ await step('open Memory',async()=>{await p.locator('[data-mobile=memory]').click();await p.locator('.memory-rail').waitFor({state:'visible'});await p.waitForTimeout(500);await overflow()});
+ await step('note UI',async()=>{await p.locator('#newFreeNote').click();await p.locator('#cancelMemoryNote').click();await p.locator('#scrim').click();await overflow()});
+ await step('AI input',async()=>{await p.locator('[data-mobile=ai]').click();await p.waitForTimeout(500);await p.locator('#askInput').fill('여기서 무슨 일이 있었나요?');await p.locator('#askInput').focus();let r=await p.locator('#askInput').boundingBox();if(!r||r.x<0||r.x+r.width>390||r.y+r.height>844)throw Error('input outside viewport '+JSON.stringify(r));await overflow()});
+ await step('AI mocked response',async()=>{await p.route('**/api/storymemory-ai',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,answer:'화면 검증 답변입니다.',context_permission:{boundary_disposition:'permitted',context_allowed_count:1,context_filtered_count:0}})}));await p.locator('#askInput').fill('현재 본문 내용을 알려주세요');await p.locator('#sendBtn').click();await p.getByText('화면 검증 답변입니다.',{exact:false}).waitFor({timeout:12000});await overflow()});
+ console.log('FAILURES '+failures)
+}finally{await b.close()} if(failures)process.exitCode=1;
+})().catch(e=>{console.error('FATAL '+e.message);process.exitCode=1});
