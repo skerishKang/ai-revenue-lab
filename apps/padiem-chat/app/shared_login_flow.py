@@ -53,6 +53,36 @@ _FINISH_FAILURE_CODES = frozenset({
 })
 
 
+# Authority rejection codes that mean the presented credential is dead. When
+# a refresh carries one of these, the shared cookie is cleared and the client
+# falls back to a plain guest; anything else is this host's failure and stays
+# 503 so the browser keeps its retry semantics.
+_REFRESH_REJECTION_CODES = frozenset({
+    'invalid_grant', 'invalid_token', 'invalid_client', 'unauthorized_client',
+    'invalid_exchange', 'unknown_account', 'invalid_shared_credential',
+    'invalid_verified_claims', 'invalid_token_endpoint',
+})
+
+
+def _refresh_failure_code(error):
+    """The authority's closed rejection code for this refresh, or None.
+
+    Follows explicit causes like ``_finish_failure_code``; only allow-listed
+    literal codes ever surface, so no token or body text can leak into the
+    log line or drive the 401 decision.
+    """
+    seen = set()
+    while isinstance(error, Exception) and id(error) not in seen:
+        seen.add(id(error))
+        candidate = getattr(error, 'code', None)
+        if not isinstance(candidate, str) and len(error.args) == 1:
+            candidate = error.args[0]
+        if isinstance(candidate, str) and candidate in _REFRESH_REJECTION_CODES:
+            return candidate
+        error = error.__cause__
+    return None
+
+
 def _finish_failure_code(error, stage):
     from .history import HistoryConflict
     code = stage + '_failed'
@@ -206,6 +236,7 @@ class SharedLoginFlow(ComparisonFlow):
     async def refresh(self, request):
         """The authority owns rotation and the 30-second concurrent-use grace."""
         headers = {'cache-control': 'no-store', 'referrer-policy': 'no-referrer'}
+        stage = 'refresh_exchange'
         try:
             if request.headers.get('origin') != self.public_base_url:
                 return JSONResponse({'error': 'invalid_origin'}, status_code=403, headers=headers)
@@ -225,7 +256,23 @@ class SharedLoginFlow(ComparisonFlow):
             if not isinstance(user, str) or not user:
                 raise ValueError('unknown_account')
             return issue_shared_cookies(JSONResponse({'ok': True}, headers=headers), access, refresh)
-        except Exception:
+        except Exception as exc:
+            # #6679: a stale shared-session cookie must not wedge the browser.
+            # When the authority itself rejects the refresh token (invalid_grant
+            # and other closed authority rejections), the cookie is dead: clear
+            # it so the next status read reports a plain guest and the login
+            # entry opens. Only failures that are NOT an authority rejection
+            # (this host cannot reach the authority, etc.) stay 503 so the
+            # client keeps its retry semantics. The logged line is closed:
+            # stage and code only, never a token or body.
+            stage = 'refresh_exchange'
+            code = _refresh_failure_code(exc)
+            print('shared_refresh_result outcome=%s stage=%s code=%s' % (
+                'rejected' if code is not None else 'unavailable',
+                stage, code or 'exchange_unavailable'), flush=True)
+            if code is not None:
+                response = JSONResponse({'error': 'authentication_expired'}, status_code=401, headers=headers)
+                return clear_shared_cookies(response)
             return JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
 
     async def logout(self, request):
@@ -243,8 +290,14 @@ class SharedLoginFlow(ComparisonFlow):
                     'client_assertion': await self._assertion(int(self.clock())),
                     'refresh_token': old,
                 }))
-            except Exception:
-                return JSONResponse({'error': 'authentication_unavailable'}, status_code=503, headers=headers)
+            except Exception as exc:
+                # #6679: a failed revoke still owns the local sign-out. The
+                # session must end on this device even when the authority
+                # cannot revoke the remote token; the cookies are cleared and
+                # the sign-out answers ok. The logged line is closed.
+                print('shared_logout_result outcome=revoke_failed stage=logout code=%s' % (
+                    _finish_failure_code(exc, 'logout'),), flush=True)
+                return clear_shared_cookies(JSONResponse({'ok': True}, headers=headers))
         auth = getattr(self, 'auth', None)
         try:
             invalidate = getattr(auth, 'invalidate_session', None)

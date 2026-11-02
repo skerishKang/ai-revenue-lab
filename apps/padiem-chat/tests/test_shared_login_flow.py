@@ -95,7 +95,42 @@ async def test_refresh_uses_authority_rotation_and_verifies_before_setting_cooki
 
 
 @pytest.mark.asyncio
-async def test_logout_fails_closed_when_revoke_fails_and_rejects_cross_origin():
+async def test_refresh_with_a_dead_token_answers_401_and_clears_the_shared_cookie():
+    # #6679: when the authority rejects the refresh token itself (invalid_grant
+    # through the closed code path), the cookie is dead. The answer is 401 and
+    # the shared cookies clear so the next status read reports a plain guest
+    # and the login entry opens — the browser never wedges on a stale cookie.
+    async def exchange(url, data):
+        error = ValueError('authority_rejected')
+        error.code = 'invalid_grant'
+        raise error
+    flow = make_flow(exchange, lambda *args: None, lambda *args: None)
+    response = await flow.refresh(request(cookie=REFRESH_COOKIE + '=stale-refresh', origin='https://chat.padiem.net'))
+    assert response.status_code == 401
+    cleared = response.headers.getlist('set-cookie')
+    assert any(c.startswith(ACCESS_COOKIE + '=') and 'Max-Age=0' in c for c in cleared)
+    assert any(c.startswith(REFRESH_COOKIE + '=') and 'Max-Age=0' in c for c in cleared)
+
+
+@pytest.mark.asyncio
+async def test_refresh_with_an_unreachable_authority_stays_503_and_keeps_the_cookie():
+    # A failure that is NOT an authority rejection (this host cannot reach the
+    # token endpoint, malformed own response) stays 503: it is not evidence
+    # the credential is dead, so nothing is cleared and the client keeps its
+    # retry semantics.
+    async def exchange(url, data):
+        raise ValueError('control_plane_identity_unavailable')
+    flow = make_flow(exchange, lambda *args: None, lambda *args: None)
+    response = await flow.refresh(request(cookie=REFRESH_COOKIE + '=old-refresh', origin='https://chat.padiem.net'))
+    assert response.status_code == 503
+    assert not response.headers.getlist('set-cookie')
+
+
+@pytest.mark.asyncio
+async def test_logout_clears_cookies_even_when_revoke_fails_and_rejects_cross_origin():
+    # #6679: a failed authority revoke still owns the local sign-out — the
+    # session must end on this device, so the cookies clear and the answer is
+    # ok. Cross-origin is still refused before anything runs.
     calls = []
     flow = make_flow(lambda *args: None, lambda *args: None, lambda *args: None)
     async def revoke(data):
@@ -105,8 +140,10 @@ async def test_logout_fails_closed_when_revoke_fails_and_rejects_cross_origin():
     assert (await flow.logout(request(cookie=REFRESH_COOKIE + '=x', origin='https://evil.example'))).status_code == 403
     assert not calls
     result = await flow.logout(request(cookie=REFRESH_COOKIE + '=x', origin='https://chat.padiem.net'))
-    assert result.status_code == 503 and calls
-    assert not result.headers.getlist('set-cookie')
+    assert result.status_code == 200 and calls
+    cleared = result.headers.getlist('set-cookie')
+    assert any(c.startswith(ACCESS_COOKIE + '=') and 'Max-Age=0' in c for c in cleared)
+    assert any(c.startswith(REFRESH_COOKIE + '=') and 'Max-Age=0' in c for c in cleared)
 
 
 @pytest.mark.asyncio
