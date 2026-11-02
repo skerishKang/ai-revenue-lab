@@ -1,0 +1,216 @@
+:root {
+  --review-target: 44px;
+  --review-light-ink: #36302b;
+  --review-muted-ink: #5b544c;
+  --review-rail-bg: #f7f3ec;
+  --review-accent: #a34d29;
+  --review-outline: #a59b8d;
+  --review-radius: 999px;
+}
+#library .lib-actions .round,
+#library .lib-actions .open-btn,
+.chapter-nav button,
+.page-turn-btn,
+#libOverflow,
+#library .source-mode-switch button {
+  min-width: var(--review-target);
+  min-height: var(--review-target);
+}
+#library .lib-actions .round {
+  width: var(--review-target);
+  height: var(--review-target);
+  color: var(--review-rail-bg);
+  border-color: var(--review-outline);
+}
+.chapter-nav button:not(.chapter-open),
+.page-turn-btn { width: var(--review-target); height: var(--review-target); }
+#reader .memory-rail, #reader .ai-panel { color: var(--review-light-ink); }
+#reader .memory-rail :is(p, small, label),
+#reader .ai-panel :is(p, small, label) { color: var(--review-muted-ink); }
+#reader .side-head strong { font-size: 15px; }
+#reader .companion-empty-state p { font-size: 13px; line-height: 1.6; }
+#reader .quick button { min-height: var(--review-target); font-size: 12px; }
+#reader .chat-compose input, #reader .chat-compose button { min-height: var(--review-target); }
+#reader .page-turn-btn { color: var(--review-light-ink); border-color: var(--review-outline); }
+@media (max-width: 900px) {
+  #library .library-shelf-toolbar { top: 168px; right: 16px; }
+  #library .library-shelf-toolbar::before { display: none; }
+  #library .source-mode-switch button { font-size: 11px; letter-spacing: .04em; }
+  #library .sel-note { font-size: 12px; line-height: 1.5; }
+  #library .lib-actions { gap: 7px; }
+  #libOverflow { width: var(--review-target); height: var(--review-target); top: 20px; right: 20px; }
+  #library .today-entry { min-height: var(--review-target); }
+  #reader .page-turn-prev { left: 0; }
+  #reader .page-turn-next { right: 0; }
+  #reader .page-turn-btn { opacity: .96; }
+  #mobileDock button { min-height: var(--review-target); font-size: 13px; }
+  .volume-focus p { color: var(--review-muted-ink); font-size: 13px; line-height: 1.5; }
+}
+
+@media (max-width: 900px) {
+  #reader .page-turn-btn { top: auto; bottom: 78px; transform: none; }
+}
+@media (max-width: 900px) {
+  #library .library-shelf-toolbar { top: auto; bottom: 174px; }
+}
+
+/* Reading and source screens: prevent controls from covering their content. */
+:root {
+  --review-control-gap: 8px;
+  --review-dialog-text: #514a42;
+  --review-panel-border: #d8cec1;
+  --review-paper: #fffdf8;
+  --review-reader-nav-clearance: 58px;
+}
+@media (max-width: 900px) {
+  body:not(.source-native-active) #reader:has(#readerUnitNav:not([hidden])) .paper-head {
+    margin-top: var(--review-reader-nav-clearance);
+  }
+  body.memory-open #reader .memory-rail > * { flex-shrink: 0; }
+  body.memory-open #reader .memory-filter-nav {
+    display: flex !important; flex-wrap: wrap !important; overflow: visible !important;
+    height: auto !important; max-height: none !important; gap: var(--review-control-gap) !important;
+  }
+  body.memory-open #reader .memory-filter-nav .pill {
+    min-height: var(--review-target) !important; padding-inline: 12px !important; font-size: 12px !important;
+  }
+  body.memory-open #reader .memory-rail { overflow-y: auto !important; }
+  #reader .native-source-head { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  #reader .native-source-head h1 { overflow-wrap: anywhere; word-break: keep-all; line-height: 1.25; }
+  #reader .native-source-head p { overflow-wrap: anywhere; }
+  #reader .native-source-badges { justify-content: flex-start; }
+  #library[data-library-mode="sources"] .sel-title {
+    font-size: clamp(20px, 6vw, 28px); overflow-wrap: anywhere; word-break: keep-all;
+  }
+  .source-import-sheet { max-height: calc(100dvh - 32px); overflow-y: auto; }
+  .source-import-sheet p { font-size: 13px; line-height: 1.6; color: var(--review-dialog-text); }
+  .source-import-sheet label { font-size: 12px; letter-spacing: 0; }
+  .source-import-sheet :is(input,select,textarea) { font-size: 16px; }
+  .source-import-actions button, .source-import-close { min-height: var(--review-target); min-width: var(--review-target); font-size: 13px; }
+}
+
+@media (max-width: 900px) {
+  body:not(.source-native-active) #reader:has(#readerUnitNav:not([hidden])) .paper-head h1 {
+    font-size: clamp(22px, 6.5vw, 27px) !important; line-height: 1.3; word-break: keep-all;
+  }
+  #reader .ai-panel .companion-empty-state { margin: 0 !important; padding-top: 12px !important; }
+  #reader .ai-panel .chat-thread > .ai-context-runtime:empty { display: none !important; }
+}
+
+/* Keep page controls above the page-edge gesture zones. */
+#reader .page-turn-btn { z-index: 32; }
+
+@media (max-width: 900px) {
+  #library .markers { grid-column: 1 / -1; justify-self: stretch; width: 100%; min-width: 0; gap: 0; }
+  #library .markers .marker { flex: 1 1 0; width: auto; min-width: 0; height: var(--review-target); }
+}
+
+@media (max-width: 900px) {
+  #library .markers { overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; }
+  #library .markers .marker { flex: 0 0 var(--review-target); min-width: var(--review-target); }
+}
+
+/* Preserve the centering transform while the desktop page button is pressed. */
+#reader .page-turn-btn:active { transform: translateY(-50%); }
+@media (max-width: 900px) {
+  #reader .page-turn-btn:active { transform: none; }
+}
+
+/* Reader controls: keep settings above side panels and honor text size choices. */
+:root {
+  --review-reading-sm: clamp(15.64px, 1.288vw, 19.32px);
+  --review-reading-lg: clamp(18.7px, 1.54vw, 23.1px);
+  --review-reading-xl: clamp(20.74px, 1.708vw, 25.62px);
+  --review-reading-en-sm: clamp(11.96px, 1.012vw, 13.8px);
+  --review-reading-en-lg: clamp(14.3px, 1.21vw, 16.5px);
+  --review-reading-en-xl: clamp(15.86px, 1.342vw, 18.3px);
+}
+body.smr-fs-sm #reader #readerPageBody .verse:not(.verse-en) { font-size: var(--review-reading-sm) !important; }
+body.smr-fs-lg #reader #readerPageBody .verse:not(.verse-en) { font-size: var(--review-reading-lg) !important; }
+body.smr-fs-xl #reader #readerPageBody .verse:not(.verse-en) { font-size: var(--review-reading-xl) !important; }
+body.smr-fs-sm #reader #readerPageBody .verse-en { font-size: var(--review-reading-en-sm) !important; }
+body.smr-fs-lg #reader #readerPageBody .verse-en { font-size: var(--review-reading-en-lg) !important; }
+body.smr-fs-xl #reader #readerPageBody .verse-en { font-size: var(--review-reading-en-xl) !important; }
+@media (min-width: 901px) {
+  body.smr-open #reader .reader-stage { position: relative; z-index: 200; }
+}
+
+/* Settings controls remain easy to press on touch screens. */
+#reader .srsg-panel button { min-width: var(--review-target); min-height: var(--review-target); }
+
+/* Leave the reading text selectable while keeping the page edge draggable. */
+#reader .turn-zone { width: var(--review-target); }
+
+/* Source reading: legible context and compact information hierarchy. */
+:root {
+  --review-source-label: 11px;
+  --review-source-meta: 12px;
+  --review-source-line: 1.5;
+  --review-source-dark-surface: #26211c;
+  --review-source-dark-card: #332d27;
+  --review-source-dark-text: #eee8df;
+  --review-source-dark-muted: #d1c4b4;
+  --review-source-dark-border: #665748;
+}
+#reader .native-source-kicker, #reader .source-rail-kicker { font-size: var(--review-source-label); line-height: var(--review-source-line); letter-spacing: .03em; }
+#reader .native-source-head p, #reader .source-context-locator, #reader .source-pack-state { font-size: var(--review-source-meta); line-height: var(--review-source-line); letter-spacing: normal; }
+#reader .native-source-badge { font-size: var(--review-source-label); letter-spacing: normal; }
+#reader .native-source-block small, #reader .native-transcript-player small { font-size: var(--review-source-label); letter-spacing: normal; }
+#reader .source-trust-control label, #reader .source-trust-control select, #reader .source-context-list button { font-size: var(--review-source-meta); letter-spacing: normal; }
+#reader .source-trust-control select, #reader .source-context-actions button { min-height: var(--review-target); }
+#reader .source-context-actions button { font-size: var(--review-source-label); letter-spacing: normal; }
+#reader .native-source-head h1 { overflow-wrap: anywhere; }
+body.smr-theme-dark #reader .native-source-shell { background: var(--review-source-dark-surface); color: var(--review-source-dark-text); border-color: var(--review-source-dark-border); }
+body.smr-theme-dark #reader .native-source-head { background: var(--review-source-dark-card); border-color: var(--review-source-dark-border); }
+body.smr-theme-dark #reader .native-source-head h1, body.smr-theme-dark #reader .native-source-block h2, body.smr-theme-dark #reader .native-source-block p { color: var(--review-source-dark-text); }
+body.smr-theme-dark #reader .native-source-kicker, body.smr-theme-dark #reader .native-source-head p, body.smr-theme-dark #reader .native-source-block small { color: var(--review-source-dark-muted); }
+body.smr-theme-dark #reader .native-source-block:hover, body.smr-theme-dark #reader .native-source-block.active, body.smr-theme-dark #reader .native-source-badge { background: var(--review-source-dark-card); color: var(--review-source-dark-text); border-color: var(--review-source-dark-border); }
+
+/* Keep the answer-mode control readable in the narrow companion rail. */
+#reader .source-trust-control .trust-row { flex-direction: column; align-items: stretch; gap: 2px; }
+#reader .source-trust-control select { width: 100%; min-width: 0; }
+body.source-native-active #reader .chat-hint::after { content: none; }
+
+body.source-native-active.smr-theme-dark #reader .reader-stage { background: var(--review-source-dark-surface); }
+
+/* Source rails in dark reading mode retain readable text and controls. */
+body.source-native-active.smr-theme-dark #reader .memory-rail :is(.source-context-current,.source-context-locator,.source-rail-kicker,.side-head,.side-head b,.side-head small) { color: var(--review-source-dark-text) !important; }
+body.source-native-active.smr-theme-dark #reader .source-context-list button { color: var(--review-source-dark-text); background: transparent; }
+body.source-native-active.smr-theme-dark #reader .source-context-list button.on { background: var(--review-source-dark-card); color: var(--review-source-dark-text); }
+body.source-native-active.smr-theme-dark #reader .source-context-actions button { color: var(--review-source-dark-text); border-color: var(--review-source-dark-border); }
+body.source-native-active.smr-theme-dark #reader .ai-panel { background: var(--review-source-dark-card) !important; background-image: none !important; color: var(--review-source-dark-text) !important; border-color: var(--review-source-dark-border) !important; }
+body.source-native-active.smr-theme-dark #reader .ai-panel :is(.side-head,.side-head b,.side-head small,.companion-empty-state,.companion-empty-state p,.companion-empty-state h3,.chat-hint,.source-pack-state,.source-trust-control label) { color: var(--review-source-dark-text) !important; }
+body.source-native-active.smr-theme-dark #reader .ai-panel :is(.source-trust-control,.context-card,.quick button,.chat-compose input,#askInput) { background: var(--review-source-dark-surface) !important; color: var(--review-source-dark-text) !important; border-color: var(--review-source-dark-border) !important; }
+body.source-native-active.smr-theme-dark #reader .source-trust-control :is(select,button) { color: var(--review-source-dark-text) !important; border-color: var(--review-source-dark-border) !important; }
+body.source-native-active.smr-theme-dark #reader .source-trust-control select { background: var(--review-source-dark-surface); }
+
+body.source-native-active.smr-theme-dark #reader .source-trust-control button { background: var(--review-source-dark-card) !important; color: var(--review-source-dark-text) !important; }
+body.source-native-active.smr-theme-dark #reader .source-trust-control select option { background: var(--review-source-dark-surface); color: var(--review-source-dark-text); }
+
+/* Detail controls remain legible in the narrow reading companion. */
+body.source-native-active #reader :is(.auto-pack-head,.pack-marketplace-head,.pack-entitlement-head,.pack-verification-head){display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+body.source-native-active #reader :is(.auto-pack-head small,.pack-marketplace-head small,.pack-entitlement-head small,.pack-verification-head small){font-size:12px;line-height:1.45}
+body.source-native-active #reader .auto-pack-mode{gap:8px;flex-wrap:wrap}
+body.source-native-active #reader .auto-pack-mode label{white-space:nowrap}
+body.source-native-active #reader .pack-marketplace-tools{display:flex;flex-direction:column;align-items:stretch}
+body.source-native-active #reader .pack-marketplace-tools label{white-space:normal;min-height:44px}
+body.source-native-active #reader :is(.auto-pack-panel,.pack-marketplace-panel,.pack-entitlement-panel,.pack-verification-panel){font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+body.source-native-active #reader :is(.auto-pack-panel button,.pack-marketplace-actions button,.pack-entitlement-actions button){min-height:44px}
+body.source-native-active.smr-theme-dark #reader :is(.auto-pack-panel,.pack-marketplace-card,.pack-entitlement-row,.pack-verification-card){background:var(--review-source-dark-surface);color:var(--review-source-dark-text);border-color:var(--review-source-dark-border)}
+body.source-native-active.smr-theme-dark #reader :is(.auto-pack-panel label,.auto-pack-status,.auto-pack-head small,.pack-marketplace-head small,.pack-entitlement-head small,.pack-verification-head small,.pack-entitlement-warning,.pack-verification-note){color:var(--review-source-dark-text);opacity:1}
+body.source-native-active.smr-theme-dark #reader :is(.auto-pack-panel input[type=text],.pack-marketplace-tools input[type=search]){background:var(--review-source-dark-card);color:var(--review-source-dark-text);border-color:var(--review-source-dark-border)}
+
+body.source-native-active.smr-theme-dark #reader :is(.auto-pack-panel input[type=text],.pack-marketplace-tools input[type=search])::placeholder { color: var(--review-source-dark-muted); opacity: 1; }
+
+.mobile-source-settings-trigger{display:none}
+@media (max-width:767px){
+ body.source-native-active #reader .mobile-source-settings-trigger{display:block;width:100%;min-height:44px;margin-top:8px;padding:9px 12px;border:1px solid var(--review-source-dark-border, #665748);border-radius:8px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+ body.source-native-active #reader .mobile-source-settings{box-sizing:border-box;position:fixed;inset:0;width:min(92vw,460px);max-width:none;max-height:min(80dvh,720px);margin:auto;padding:0;border:1px solid var(--review-source-dark-border, #665748);border-radius:16px;background:var(--review-mobile-settings-bg,#f4efe7);color:var(--review-mobile-settings-text,#3a342e)}
+ body.source-native-active #reader .mobile-source-settings::backdrop{background:rgba(0,0,0,.55)}
+ body.source-native-active #reader .mobile-source-settings-header{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:inherit;border-bottom:1px solid var(--review-source-dark-border,#665748)}
+ body.source-native-active #reader .mobile-source-settings-header h2{margin:0;font-size:17px;line-height:1.4}
+ body.source-native-active #reader .mobile-source-settings-header button{min-height:44px;min-width:50px;border:1px solid var(--review-source-dark-border,#665748);border-radius:8px;background:transparent;color:inherit;font:inherit}
+ body.source-native-active #reader .mobile-source-settings-body{padding:14px 16px 20px}
+ body.source-native-active #reader .mobile-source-settings-body > button{display:block;width:100%;min-height:44px;margin:6px 0;padding:10px 12px;text-align:left;font:inherit;border:1px solid var(--review-source-dark-border,#665748);border-radius:8px;background:transparent;color:inherit}
+ body.source-native-active.smr-theme-dark #reader .mobile-source-settings{--review-mobile-settings-bg:var(--review-source-dark-surface);--review-mobile-settings-text:var(--review-source-dark-text)}
+}
