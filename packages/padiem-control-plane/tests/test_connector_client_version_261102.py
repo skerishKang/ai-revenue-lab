@@ -73,6 +73,14 @@ def _boot():
         credential_factory=lambda: CREDENTIAL,
     )
     durable_object._device_http._pairing_authority = pairing
+    # The device HTTP service reads the wall clock by default, and the pairing
+    # challenge carries a 300-second TTL counted from the fixed BASE fixture —
+    # already long past by the time CI or any later session runs this file. Pin
+    # the service clock inside the challenge window (the same seam the #5080
+    # redeem-route tests compose) so the redemption is judged at a
+    # deterministic instant, like the seeded session windows the device-truth
+    # tests already pin. The real product keeps its live clock.
+    durable_object._device_http._clock = lambda: BASE + timedelta(seconds=30)
     return durable_object, pairing
 
 
