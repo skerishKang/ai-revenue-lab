@@ -5,6 +5,9 @@
   const outputsBadge = document.getElementById("outputsBadge");
   const outputsSection = document.getElementById("outputsSection");
   const outputsList = document.getElementById("outputsList");
+  // #5882: 목록은 페이지로 이어진다. 서버가 준 다음 위치가 있으면 끝에 "더 보기".
+  let outputsNextCursor = null;
+  let outputsLoadingMore = false;
   const outputsEmpty = document.getElementById("outputsEmpty");
   const outputDialog = document.getElementById("savedOutputDialog");
   const outputDialogClose = document.getElementById("savedOutputClose");
@@ -134,6 +137,16 @@
       button.addEventListener("click", () => openOutput(item.id));
       outputsList.appendChild(button);
     });
+    if (outputsNextCursor) {
+      const more = document.createElement("button");
+      more.type = "button";
+      more.className = "recent-item output-more";
+      more.id = "outputsMore";
+      more.textContent = "더 보기";
+      more.disabled = outputsLoadingMore;
+      more.addEventListener("click", () => { void loadMoreOutputs(); });
+      outputsList.appendChild(more);
+    }
     if (outputsBadge) outputsBadge.textContent = outputs.length ? String(outputs.length) : "비어 있음";
   }
 
@@ -145,6 +158,7 @@
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !Array.isArray(data.outputs)) throw new Error("saved outputs unavailable");
       outputs = data.outputs.filter((item) => item && typeof item.id === "string" && typeof item.title === "string");
+      outputsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
       outputsReady = true;
       if (outputsNavButton) {
         outputsNavButton.hidden = false;
@@ -159,6 +173,37 @@
       return false;
     } finally {
       loadInFlight = false;
+    }
+  }
+
+  async function loadMoreOutputs() {
+    if (!outputsNextCursor || outputsLoadingMore) return false;
+    const cursor = outputsNextCursor;
+    outputsLoadingMore = true;
+    renderOutputs();
+    try {
+      const response = await fetch(
+        `/api/outputs?cursor=${encodeURIComponent(cursor)}`,
+        { headers: { "Accept": "application/json" }, cache: "no-store" },
+      );
+      const data = await response.json().catch(() => null);
+      if (response.status === 400) {
+        // 만료·위조 커서: 다시 시도하지 않고 멈춘다.
+        outputsNextCursor = null;
+        setStatus("목록을 이어 볼 수 없어요. 목록을 다시 열어 주세요.", "error");
+        return false;
+      }
+      if (!response.ok || !data || !Array.isArray(data.outputs)) return false;
+      const seen = new Set(outputs.map((item) => item.id));
+      outputs = outputs.concat(data.outputs.filter((item) => item && typeof item.id === "string"
+        && typeof item.title === "string" && !seen.has(item.id)));
+      outputsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      outputsLoadingMore = false;
+      renderOutputs();
     }
   }
 

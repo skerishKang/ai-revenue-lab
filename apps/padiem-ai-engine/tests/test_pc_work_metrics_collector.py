@@ -305,7 +305,7 @@ def test_lifecycle_events_deduplicate_per_turn_and_freeze_after_finish():
     collector.mark_compaction()
     collector.finish("completed", "completed")
     result = collector.snapshot()
-    assert result["schema_version"] == 3
+    assert result["schema_version"] == 4
     assert result["stored_output_count"] == 2
     assert result["compaction_count"] == 2
     assert result["background_job_count"] == 1
@@ -330,9 +330,44 @@ def test_legacy_snapshot_remains_unmeasured_instead_of_zero_lifecycle_counters()
     row["schema_version"] = 1
     for key in ("stored_output_count", "compaction_count", "background_job_count",
                 "compaction_input_tokens_before", "compaction_input_tokens_after",
-                "compaction_tokens_saved"):
+                "compaction_tokens_saved",
+                "batch_count", "batch_steps", "batch_model_turns_saved"):
         row.pop(key)
     assert validate_pc_work_metrics(row) == row
+
+
+@pytest.mark.parametrize("key", ["batch_count", "batch_steps", "batch_model_turns_saved"])
+def test_v4_requires_the_batch_counters(key):
+    row = PcWorkMetricsCollector(TURN).snapshot()
+    del row[key]
+    with pytest.raises(PcWorkMetricsError):
+        validate_pc_work_metrics(row)
+
+
+def test_batch_evidence_must_agree_with_the_steps_it_counted():
+    collector = PcWorkMetricsCollector(TURN)
+    collector.mark_batch(3)
+    collector.mark_batch(1)
+    collector.finish("completed", "completed")
+    row = collector.snapshot()
+    assert (row["batch_count"], row["batch_steps"], row["batch_model_turns_saved"]) == (2, 4, 2)
+    # A batch cannot claim to have replaced more turns than it carried steps.
+    row["batch_model_turns_saved"] = 3
+    with pytest.raises(PcWorkMetricsError):
+        validate_pc_work_metrics(row)
+    row = collector.snapshot()
+    row["batch_steps"] = 1
+    with pytest.raises(PcWorkMetricsError):
+        validate_pc_work_metrics(row)
+
+
+def test_batch_measurement_stops_after_the_turn_is_frozen():
+    collector = PcWorkMetricsCollector(TURN)
+    collector.mark_batch(3)
+    collector.finish("completed", "completed")
+    frozen = collector.snapshot()
+    collector.mark_batch(5)
+    assert collector.snapshot() == frozen
 
 
 @pytest.mark.parametrize("key", ["stored_output_count", "compaction_count", "background_job_count"])

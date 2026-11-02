@@ -299,5 +299,10 @@ def test_the_screen_offers_one_more_page_at_a_time():
     locale = (static / "locale.js").read_text(encoding="utf-8")
     assert locale.count('"projects-more":') == 2  # ko + en
     css = (static / "padiem-foundation.css").read_text(encoding="utf-8")
-    assert ".project-more {" in css
-    assert "min-height: 44px" in css.split(".project-more {", 1)[1][:200]
+    # #5882 follow-up: the same "더 보기" rule now sizes the project, saved-answer
+    # and memory buttons, so the selector lists all three (and none loses 44px).
+    selector = ":is(.project-more, .output-more, .memory-more) {"
+    assert selector in css
+    assert "min-height: 44px" in css.split(selector, 1)[1][:200]
+    for button in (".output-more", ".memory-more"):
+        assert button in selector

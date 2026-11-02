@@ -1058,6 +1058,7 @@ async def pc_file_exchange_save(request: Request) -> JSONResponse:
         request,
         command=_pc_write_command(
             op="write",
+            root=root,
             target=root.rstrip("/") + "/" + relative,
             backup_dir=_pc_backup_dir(root, datetime.now(timezone.utc).strftime("%Y-%m-%d")),
             relative=relative,
@@ -1122,6 +1123,7 @@ async def pc_file_exchange_move(request: Request) -> JSONResponse:
         request,
         command=_pc_write_command(
             op="move",
+            root=root,
             target=root.rstrip("/") + "/" + relative,
             backup_dir=_pc_backup_dir(root, datetime.now(timezone.utc).strftime("%Y-%m-%d")),
             relative=relative,
@@ -1174,6 +1176,7 @@ async def pc_file_exchange_delete(request: Request) -> JSONResponse:
         request,
         command=_pc_write_command(
             op="delete",
+            root=root,
             target=root.rstrip("/") + "/" + relative,
             backup_dir=_pc_backup_dir(root, datetime.now(timezone.utc).strftime("%Y-%m-%d")),
             relative=relative,

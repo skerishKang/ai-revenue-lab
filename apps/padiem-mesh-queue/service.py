@@ -76,6 +76,7 @@ from starlette.routing import Route
 from app.d1_sqlite import SqliteD1
 from background_history import QueueHistoryStore
 from pc_output_store import PcOutputStore, PC_OUTPUT_METHODS
+from desktop_text_store import DesktopTextStore
 from app.mesh_device_presence_store import D1MeshDevicePresenceStore
 from app.mesh_device_drive_store import D1MeshDeviceDriveStore
 from app.mesh_device_drive_routes import (
@@ -95,7 +96,8 @@ from app.oracle_mesh_read_return_routes import (
 from app.pc_device_pairing_store import D1PcPairingStore
 
 from internal_store import (
-    DISPATCH_METHODS, DRIVE_METHODS, INTERNAL_STORE_PATH, PAIRING_METHODS, PRESENCE_METHODS,
+    DESKTOP_TEXT_METHODS, DISPATCH_METHODS, DRIVE_METHODS, INTERNAL_STORE_PATH,
+    PAIRING_METHODS, PRESENCE_METHODS,
     make_internal_handler,
 )
 from schema import open_queue
@@ -158,6 +160,8 @@ def store_resolvers():
         table[name] = by_holder("mesh_device_drive_store")
     for name in PC_OUTPUT_METHODS:
         table[name] = by_holder("pc_output_store")
+    for name in DESKTOP_TEXT_METHODS:
+        table[name] = by_holder("desktop_text_store")
     return table
 
 
@@ -256,6 +260,9 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
     output_root = output_directory or os.environ.get("PADIEM_OUTPUT_STORE_DIR") or str(
         pathlib.Path(db_path or DEFAULT_DB_PATH).parent / "pc-outputs")
     app.state.pc_output_store = PcOutputStore(output_root, history_store=app.state.history_store)
+    # #6460 step 2: typed text lives only here, until the executor takes it
+    # once; it is never written to the queue database.
+    app.state.desktop_text_store = DesktopTextStore()
     # The same composition the Worker root performs, run once here from files. An
     # unusable secret or map leaves the source None, and every channel route then
     # answers its documented 503 rather than serving an unauthenticated claim.

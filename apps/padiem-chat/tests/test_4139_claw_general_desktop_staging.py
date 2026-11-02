@@ -115,7 +115,10 @@ def test_general_desktop_request_stages_the_run_before_engine_dispatch(
         response = client.post(GENERAL_ROUTE_PATH, json={
             "messages": [{
                 "role": "user",
-                "content": "내 PC 화면을 캡처해서 확인해 주세요.",
+                # #6460 S1: a read-only capture now takes the direct desktop
+                # lane, so this Engine contract is exercised by the desktop turn
+                # that still belongs to it — one that names an input action.
+                "content": "내 PC 화면을 캡처한 뒤 메모장에 입력해 주세요.",
             }],
             "tier": "plus",
         })

@@ -127,6 +127,12 @@ PC_SEARCH_CONTENT_SCOPE = "claw.pc.search_contents"
 PC_READ_CHUNK_SCOPE = "claw.pc.read_file_chunk"
 PC_SEARCH_TOOL_IDS = frozenset({PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID})
 PC_FILE_TOOL_IDS = frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID})
+# #6460-5: the read family is what a batch may carry without any new authority.
+# These are the steps a person repeats by hand — find, list, open, open the next
+# page — and each one already reads inside a grant the run holds.
+PC_READ_FAMILY_TOOL_IDS = (
+    PC_FILE_TOOL_IDS | PC_SEARCH_TOOL_IDS | frozenset({PC_READ_CHUNK_TOOL_ID})
+)
 # #4434: the connected PC is written, moved and deleted as well as read. These
 # run with no approval step, so the pair of safety obligations is the backup that
 # precedes a destructive change and the record of where that backup landed.
@@ -141,6 +147,13 @@ PC_FILE_TOOL_ARGUMENT_KEYS: dict[str, frozenset[str]] = {
     PC_WRITE_FILE_TOOL_ID: frozenset({"path", "content"}),
     PC_MOVE_FILE_TOOL_ID: frozenset({"path", "destination"}),
     PC_DELETE_FILE_TOOL_ID: frozenset({"path"}),
+    # The batch wrapper names the argument shape of every step it may carry, so
+    # the read family appears here too. The declared-plan validator only reads
+    # this table for PC_FILE_TOOL_IDS and the write tools, so the new entries
+    # change nothing on that path.
+    PC_SEARCH_FILES_TOOL_ID: frozenset({"query", "path"}),
+    PC_SEARCH_CONTENT_TOOL_ID: frozenset({"query", "path"}),
+    PC_READ_CHUNK_TOOL_ID: frozenset({"path", "offset", "length"}),
 }
 #: Which `intent` a model may state on each tool. Intent can only agree with the
 #: tool it names; it never selects a different operation.
@@ -150,6 +163,9 @@ PC_FILE_TOOL_INTENTS: dict[str, frozenset[str]] = {
     PC_WRITE_FILE_TOOL_ID: frozenset({"write"}),
     PC_MOVE_FILE_TOOL_ID: frozenset({"move"}),
     PC_DELETE_FILE_TOOL_ID: frozenset({"delete"}),
+    PC_SEARCH_FILES_TOOL_ID: frozenset({"search_name"}),
+    PC_SEARCH_CONTENT_TOOL_ID: frozenset({"search_content"}),
+    PC_READ_CHUNK_TOOL_ID: frozenset({"read"}),
 }
 PC_DRIVE_COMMAND = "Get-PSDrive -PSProvider FileSystem | Select-Object Name,Root,Used,Free | ConvertTo-Json"
 CLAW_ENGINE_PC_DRIVE_URL = "https://padiem-chat.internal/internal/claw/engine-pc-drive"
@@ -234,6 +250,18 @@ def pc_file_arguments_acceptable(tool_id: str, arguments: dict[str, Any]) -> boo
         return False
     if tool_id == PC_WRITE_FILE_TOOL_ID and not isinstance(arguments.get("content"), str):
         return False
+    if tool_id in PC_SEARCH_TOOL_IDS:
+        query = arguments.get("query")
+        if not isinstance(query, str) or not query.strip() or len(query) > 512:
+            return False
+    if tool_id == PC_READ_CHUNK_TOOL_ID:
+        # A range is only a range when both bounds are real numbers, and the
+        # page stays inside the transport limit the standalone tool already has.
+        for name in ("offset", "length"):
+            if name in arguments and (type(arguments[name]) is not int or arguments[name] < 0):
+                return False
+        if "offset" not in arguments:
+            return False
     return True
 
 
@@ -1019,6 +1047,7 @@ __all__ = [
     "PC_DRIVES_TOOL_ID",
     "PC_FILE_TOOL_ARGUMENT_KEYS",
     "PC_FILE_TOOL_IDS",
+    "PC_READ_FAMILY_TOOL_IDS",
     "PC_FILE_TOOL_INTENTS",
     "PC_FILE_WRITE_TOOL_IDS",
     "PC_LIST_FILES_CANONICAL_TOOL_ID",

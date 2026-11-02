@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from kagent.pc_query_adapter import (
-    PC_FILE_TOOL_IDS, PC_FILE_WRITE_TOOL_IDS, PC_FILE_TOOL_ARGUMENT_KEYS,
+    PC_FILE_WRITE_TOOL_IDS, PC_READ_FAMILY_TOOL_IDS, PC_FILE_TOOL_ARGUMENT_KEYS,
     pc_file_arguments_acceptable,
 )
 
@@ -28,7 +28,7 @@ def preflight_pc_actions(
                 or not isinstance(action[0], str) or not isinstance(action[1], Mapping)):
             raise ValueError("Invalid PC composite action")
         tool_id, arguments = action[0], dict(action[1])
-        if (tool_id not in PC_FILE_TOOL_IDS | PC_FILE_WRITE_TOOL_IDS
+        if (tool_id not in PC_READ_FAMILY_TOOL_IDS | PC_FILE_WRITE_TOOL_IDS
                 or set(arguments) != PC_FILE_TOOL_ARGUMENT_KEYS[tool_id]
                 or not pc_file_arguments_acceptable(tool_id, arguments)):
             raise ValueError("Invalid PC composite action")
