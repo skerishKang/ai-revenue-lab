@@ -139,6 +139,9 @@ def create_app() -> Starlette:
     # Credential-slot status is a metadata read over the same slot names and the
     # same call ledger. It uses the same caller proof and never returns a value.
     from app.pilot.credential_slots_admin import router as credential_slots_router
+    # Owner write surface for the model catalog and credential slots. Same
+    # caller proof; the write itself happens where the env file lives.
+    from app.pilot.model_admin_ops import router as model_admin_ops_router
     from app.pilot.pc_work_metrics_routes import router as pc_work_metrics_router
 
     from app.pilot.ui import router as pilot_ui_router
@@ -151,6 +154,7 @@ def create_app() -> Starlette:
         *pc_work_metrics_router.routes,
         *call_ledger_admin_router.routes,
         *credential_slots_router.routes,
+        *model_admin_ops_router.routes,
     ]:
         new_route = StarletteRoute(
             path="/api/pilot" + route.path,

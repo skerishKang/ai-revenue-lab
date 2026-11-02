@@ -100,6 +100,10 @@ class SessionClaims:
 
     user_id: str
     canonical_session_id: str | None
+    # When this session was minted. ``None`` for a cookie minted before the
+    # claim existed; a surface that needs a *recent* login treats that as stale
+    # rather than guessing, so an old cookie can never satisfy it.
+    issued_at: int | None = None
 
 
 def create_session_token(
@@ -112,7 +116,10 @@ def create_session_token(
     if not settings.session_secret:
         raise AuthError(503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
     issued = int(time.time()) if now is None else now
-    payload: dict[str, Any] = {"v": 1, "uid": user_id, "exp": issued + settings.session_max_age_seconds}
+    payload: dict[str, Any] = {
+        "v": 1, "uid": user_id, "iat": issued,
+        "exp": issued + settings.session_max_age_seconds,
+    }
     if canonical_session_id is not None:
         payload["sid"] = canonical_session_id
     return _signed_token(
@@ -145,12 +152,15 @@ def decode_session_claims(
     uid = payload.get("uid")
     if not isinstance(uid, str) or not uid.startswith("usr_") or len(uid) > 80:
         return None
+    iat = payload.get("iat")
+    if iat is not None and (type(iat) is not int or iat < 0):
+        return None
     sid = payload.get("sid")
     if sid is None:
-        return SessionClaims(user_id=uid, canonical_session_id=None)
+        return SessionClaims(user_id=uid, canonical_session_id=None, issued_at=iat)
     if not isinstance(sid, str) or not _CANONICAL_SESSION_ID_RE.fullmatch(sid):
         return None
-    return SessionClaims(user_id=uid, canonical_session_id=sid)
+    return SessionClaims(user_id=uid, canonical_session_id=sid, issued_at=iat)
 
 
 def decode_session_token(settings: Settings, token: str | None, now: int | None = None) -> str | None:

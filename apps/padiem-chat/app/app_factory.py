@@ -73,6 +73,7 @@ from .credential_slots_routes import (
     SLOT_STATUS_ROUTE as CREDENTIAL_SLOTS_ROUTE,
     credential_slots_status,
 )
+from .model_admin_ext_routes import MODEL_ADMIN_ROUTES
 from .central_model_policy_write_routes import (
     central_model_change_preview, central_model_change_apply,
     central_model_rollback_preview, central_model_change_audit,
@@ -614,6 +615,10 @@ def create_app(
         Route("/api/admin/models/route-apply", central_model_route_apply, methods=["POST"]),
         Route("/api/admin/models/route-rollback-preview", central_model_route_rollback_preview, methods=["POST"]),
         Route(CREDENTIAL_SLOTS_ROUTE, credential_slots_status, methods=["GET"]),
+        *[
+            Route(path, handler, methods=[method])
+            for path, handler, method in MODEL_ADMIN_ROUTES
+        ],
         Route("/api/admin/session", platform_admin_session, methods=["GET"]),
         Route("/api/admin/roles", platform_admin_role_assign, methods=["POST"]),
         Route("/api/admin/roles/{user_id}", platform_admin_role_revoke, methods=["DELETE"]),
@@ -1442,6 +1447,10 @@ def create_app(
     # lane. Each entrypoint composes the matching source; absent means the
     # board reports unavailable instead of inventing an empty inventory.
     app.state.b14_slot_status_source = None
+    # Owner model-console writes (Provider registry, model registration, key
+    # slots) take the same lane as the slot board. Absent means every write
+    # route answers "unconfigured" instead of pretending the write landed.
+    app.state.b14_model_ops_source = None
     # Public, non-secret browser render origin. Unset means B66 account runtime
     # stays fully hidden/off; Production activation is a separate env/deploy gate.
     # Explicit trusted product policy only. No public API, environment bool,

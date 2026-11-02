@@ -8,7 +8,10 @@
   <title>모델 관리 · Padiem</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./admin-models.css">
+  <link rel="stylesheet" href="./credential-slots.css">
+  <link rel="stylesheet" href="./admin-model-ext.css">
   <script src="./admin-models.js" defer></script>
+  <script src="./admin-model-ext.js" defer></script>
 </head>
 <body>
   <div class="shell">
@@ -36,6 +39,87 @@
           <span class="small-count"><strong id="modelCount">—</strong>개 모델 조회</span>
         </div>
         <div class="notice" id="accessNotice" role="status" aria-live="polite" hidden></div>
+
+        <nav class="ext-tabs" id="extTabs" role="tablist" aria-label="모델 관리자 작업">
+          <button type="button" class="ext-tab" role="tab" id="tabPolicy" aria-selected="true" aria-controls="extPagePolicy" data-ext-tab="policy">모델·정책</button>
+          <button type="button" class="ext-tab" role="tab" id="tabProviders" aria-selected="false" aria-controls="extPageProviders" data-ext-tab="providers">프로바이더</button>
+          <button type="button" class="ext-tab" role="tab" id="tabSlots" aria-selected="false" aria-controls="extPageSlots" data-ext-tab="slots">키 슬롯</button>
+          <button type="button" class="ext-tab" role="tab" id="tabModels" aria-selected="false" aria-controls="extPageModels" data-ext-tab="models">모델 등록</button>
+        </nav>
+
+        <section class="panel ext-page" id="reauthPanel" hidden aria-labelledby="reauthHeading">
+          <div class="section-head"><h2 id="reauthHeading">다시 로그인</h2><span class="tiny-status">키 저장 전 확인</span></div>
+          <p class="route-note" id="reauthNote">키를 저장하려면 최근 5분 안에 로그인한 기록이 필요합니다. 비밀번호로 로그인하거나 Google 계정으로 다시 로그인한 뒤 저장을 눌러 주세요.</p>
+          <div class="ext-form">
+            <label for="reauthIdentifier">이메일 또는 아이디<input id="reauthIdentifier" autocomplete="username" spellcheck="false"></label>
+            <label for="reauthPassword">비밀번호<input id="reauthPassword" type="password" autocomplete="current-password"></label>
+          </div>
+          <div class="ext-actions">
+            <button type="button" class="btn primary" id="reauthSubmitBtn">비밀번호로 로그인</button>
+            <a class="btn" href="./auth/google/start">Google로 다시 로그인</a>
+            <button type="button" class="btn" id="reauthCloseBtn">닫기</button>
+          </div>
+          <div class="preview" id="reauthResult" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="panel ext-page" id="extPageProviders" data-ext-page="providers" hidden aria-labelledby="providersHeading">
+          <div class="section-head"><h2 id="providersHeading">프로바이더</h2><span class="tiny-status" id="providerStatus">확인 중</span></div>
+          <p class="route-note">B14가 호출하는 공급자 주소·허용 호스트·키 슬롯을 관리합니다. 저장하면 오버레이 파일에 기록되고 다음 요청부터 적용됩니다.</p>
+          <div class="ext-scroll"><table class="slot-table ext-table"><thead><tr><th>프로바이더</th><th>주소</th><th>키 슬롯</th><th>상태</th></tr></thead><tbody id="providerBody"><tr><td colspan="4" class="placeholder">불러오는 중입니다.</td></tr></tbody></table></div>
+          <details class="advanced" id="extAuditBox">
+            <summary>최근 작업 기록 <span class="advanced-meta" id="extAuditCount">—</span></summary>
+            <div id="extAudit" aria-live="polite"><p class="placeholder">불러오는 중입니다.</p></div>
+          </details>
+          <h3 class="ext-subhead">프로바이더 추가·수정</h3>
+          <div class="ext-form">
+            <label for="providerIdInput">프로바이더 ID<input id="providerIdInput" autocomplete="off" spellcheck="false" placeholder="예: example-ai"></label>
+            <label for="providerOriginInput">기본 주소 (https)<input id="providerOriginInput" autocomplete="off" spellcheck="false" placeholder="https:// 공급자 주소"></label>
+            <label for="providerHostsInput">허용 호스트 (쉼표)<input id="providerHostsInput" autocomplete="off" spellcheck="false" placeholder="api.example.com"></label>
+            <label for="providerSourceSelect">키 사용 방식<select id="providerSourceSelect"><option value="platform_secret">플랫폼 키 슬롯 사용</option><option value="none">키 없음</option></select></label>
+            <label for="providerSlotSelect">키 슬롯<select id="providerSlotSelect"></select></label>
+            <label class="ext-check" for="providerEnabledInput"><input type="checkbox" id="providerEnabledInput" checked>사용</label>
+          </div>
+          <div class="ext-actions">
+            <button type="button" class="btn primary" id="providerApplyBtn">프로바이더 저장</button>
+            <button type="button" class="btn" id="providerResetBtn">입력 지우기</button>
+          </div>
+          <div class="preview" id="providerResult" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="panel ext-page" id="extPageSlots" data-ext-page="slots" hidden aria-labelledby="slotsHeading">
+          <div class="section-head"><h2 id="slotsHeading">키 슬롯</h2><span class="tiny-status" id="slotsStatus">확인 중</span></div>
+          <p class="route-note">키 값은 저장 요청에만 쓰이고 응답·화면·감사 기록에 남지 않습니다. 배정표에 있는 슬롯만 저장할 수 있고, 저장 전 5분 이내 재로그인이 필요합니다. 기존 값은 저장 전에 백업됩니다.</p>
+          <div class="ext-scroll"><table class="slot-table ext-table"><thead><tr><th>슬롯</th><th>연결된 프로바이더</th><th>새 값</th><th>저장</th></tr></thead><tbody id="slotWriteBody"><tr><td colspan="4" class="placeholder">불러오는 중입니다.</td></tr></tbody></table></div>
+          <div class="preview" id="slotResult" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="panel ext-page" id="extPageModels" data-ext-page="models" hidden aria-labelledby="modelsHeading">
+          <div class="section-head"><h2 id="modelsHeading">모델 등록</h2><span class="tiny-status" id="modelsStatus">확인 중</span></div>
+          <p class="route-note">모델은 점검(실제 호출·한국어 응답·스트리밍)을 통과한 뒤 같은 내용으로만 등록됩니다. 내용을 고치면 다시 점검해야 합니다.</p>
+          <div class="ext-form">
+            <label for="modelIdInput">모델 ID<input id="modelIdInput" autocomplete="off" spellcheck="false" placeholder="provider/model-name"></label>
+            <label for="modelProviderSelect">프로바이더<select id="modelProviderSelect"></select></label>
+            <label for="modelProviderNameInput">공급자 표시 이름<input id="modelProviderNameInput" autocomplete="off"></label>
+            <label for="modelUpstreamInput">업스트림 모델명<input id="modelUpstreamInput" autocomplete="off" spellcheck="false"></label>
+            <label for="modelDisplayNameInput">모델 표시 이름<input id="modelDisplayNameInput" autocomplete="off"></label>
+            <label for="modelCapabilitiesInput">기능 (쉼표)<input id="modelCapabilitiesInput" value="chat" autocomplete="off"></label>
+            <label for="modelContextInput">컨텍스트 창<input id="modelContextInput" type="number" min="1" step="1" value="8192"></label>
+            <label for="modelInputPriceInput">입력 단가 (1M, USD)<input id="modelInputPriceInput" type="number" min="0" step="0.0001"></label>
+            <label for="modelOutputPriceInput">출력 단가 (1M, USD)<input id="modelOutputPriceInput" type="number" min="0" step="0.0001"></label>
+            <label for="modelSourceInput">가격 근거 URL<input id="modelSourceInput" autocomplete="off" spellcheck="false" placeholder="https://"></label>
+            <label for="modelCheckedInput">근거 확인일<input id="modelCheckedInput" type="date"></label>
+            <label class="ext-check" for="modelEnabledInput"><input type="checkbox" id="modelEnabledInput" checked>사용</label>
+          </div>
+          <div class="ext-actions">
+            <button type="button" class="btn" id="modelProbeBtn">점검</button>
+            <button type="button" class="btn primary" id="modelApplyBtn" disabled>등록</button>
+          </div>
+          <div class="preview" id="modelResult" aria-live="polite" hidden></div>
+          <h3 class="ext-subhead">등록된 모델</h3>
+          <div class="ext-scroll"><table class="slot-table ext-table"><thead><tr><th>모델</th><th>프로바이더</th><th>상태</th><th>관리</th></tr></thead><tbody id="modelAdminBody"><tr><td colspan="4" class="placeholder">불러오는 중입니다.</td></tr></tbody></table></div>
+          <h3 class="ext-subhead">퇴역한 모델</h3>
+          <div class="ext-scroll"><table class="slot-table ext-table"><thead><tr><th>모델 ID</th><th>관리</th></tr></thead><tbody id="retiredBody"><tr><td colspan="2" class="placeholder">불러오는 중입니다.</td></tr></tbody></table></div>
+        </section>
 
         <section class="route-panel" aria-labelledby="flowTitle">
           <div class="section-head compact"><h2 id="flowTitle">전체 흐름</h2><button type="button" id="flowInfoBtn" class="text-button">자세히 <span aria-hidden="true">ⓘ</span></button></div>

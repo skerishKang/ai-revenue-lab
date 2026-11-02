@@ -15,6 +15,8 @@ from .platform_secrets import (
 
 REGISTRY_PATH = Path(__file__).with_name("b14_models.json")
 REGISTRY_PATH_ENV = "B14_REGISTRY_PATH"
+REGISTRY_OVERLAY_PATH_ENV = "B14_REGISTRY_OVERLAY_PATH"
+_OVERLAY_SUFFIX = ".overrides.json"
 
 
 def registry_path() -> Path:
@@ -27,6 +29,21 @@ def registry_path() -> Path:
     """
     raw = os.environ.get(REGISTRY_PATH_ENV, "").strip()
     return Path(raw).expanduser() if raw else REGISTRY_PATH
+
+
+def overlay_path(base: Path | None = None) -> Path:
+    """The Owner-written overlay applied on top of the base registry.
+
+    The base file stays the shipped, source-controlled catalog. Everything the
+    Owner registers from the model console lands here, next to the base file, so
+    an application update never has to merge two human edits by hand. A host can
+    relocate it with ``B14_REGISTRY_OVERLAY_PATH``.
+    """
+    raw = os.environ.get(REGISTRY_OVERLAY_PATH_ENV, "").strip()
+    if raw:
+        return Path(raw).expanduser()
+    target = base or registry_path()
+    return target.with_name(target.stem + _OVERLAY_SUFFIX)
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
 _BINDING = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
 _GROUPS = ("plus", "pro", "max")
@@ -118,12 +135,174 @@ def _strict_keys(row: dict, keys: set, label: str) -> None:
     if not isinstance(row,dict) or set(row) != keys:
         raise ModelRegistryError(label + ": unexpected/missing keys")
 
-def read_registry(path: Path | None = None) -> dict:
+def _read_json(path: Path, label: str) -> dict:
     try:
-        data = json.loads((path or registry_path()).read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
-        raise ModelRegistryError("invalid B14 JSON registry") from exc
-    return validate_registry(data)
+        raise ModelRegistryError("invalid B14 JSON " + label) from exc
+    if not isinstance(data, dict):
+        raise ModelRegistryError("invalid B14 JSON " + label)
+    return data
+
+
+def merge_overlay(base: dict, overlay: dict) -> dict:
+    """Apply the Owner overlay to the base document.
+
+    Provider rows replace by id and model rows replace by id (new ids append).
+    A retired identity always wins: an id in ``retired_models`` is absent from
+    the effective catalog and from every group, whichever document named it.
+    Group membership is therefore derived from the effective catalog instead of
+    being a second hand-edited list that could disagree with it.
+    """
+    merged = json.loads(json.dumps(base))
+    if not overlay:
+        return merged
+    unknown = set(overlay) - {"schema_version", "providers", "models", "retired_models"}
+    if unknown:
+        raise ModelRegistryError("overlay: unexpected keys")
+    if "schema_version" in overlay and overlay["schema_version"] != 1:
+        raise ModelRegistryError("overlay: unsupported schema")
+
+    providers = overlay.get("providers", {})
+    if not isinstance(providers, dict):
+        raise ModelRegistryError("overlay: providers must be a mapping")
+    merged["providers"].update(json.loads(json.dumps(providers)))
+
+    models = overlay.get("models", [])
+    if not isinstance(models, list):
+        raise ModelRegistryError("overlay: models must be a list")
+    rows = {row.get("id"): row for row in merged["models"] if isinstance(row, dict)}
+    order = [row.get("id") for row in merged["models"] if isinstance(row, dict)]
+    for row in models:
+        if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+            raise ModelRegistryError("overlay: invalid model row")
+        if row["id"] not in rows:
+            order.append(row["id"])
+        rows[row["id"]] = json.loads(json.dumps(row))
+    overlay_retired = overlay.get("retired_models", [])
+    if not isinstance(overlay_retired, list) or not all(isinstance(x, str) for x in overlay_retired):
+        raise ModelRegistryError("overlay: retired_models must be a list of ids")
+    retired = set(base.get("retired_models") or []) | set(overlay_retired)
+    retired = [model_id for model_id in dict.fromkeys(retired) if isinstance(model_id, str)]
+    if len(retired) > 512:
+        raise ModelRegistryError("overlay: retired_models too long")
+    merged["models"] = [rows[model_id] for model_id in order if model_id not in retired]
+    if retired:
+        merged["retired_models"] = sorted(retired)
+    else:
+        merged.pop("retired_models", None)
+    registered = {row["id"] for row in merged["models"]}
+    merged["groups"] = {
+        group: [model_id for model_id in items if model_id in registered]
+        for group, items in merged["groups"].items()
+    }
+    return merged
+
+
+def read_registry(path: Path | None = None) -> dict:
+    """Return the effective registry: the base document plus the Owner overlay."""
+    base = path or registry_path()
+    merged = merge_overlay(_read_json(base, "registry"), read_overlay(base))
+    return validate_registry(merged)
+
+
+def read_overlay(path: Path | None = None) -> dict:
+    """Return the Owner overlay document, or ``{}`` when none is installed."""
+    target = overlay_path(path)
+    if not target.is_file():
+        return {}
+    return _read_json(target, "registry overlay")
+
+
+def overlay_state(path: Path | None = None) -> dict:
+    """Value-free shape of the overlay, for the Owner console."""
+    target = overlay_path(path)
+    if not target.is_file():
+        return {"present": False, "path": target.name, "providers": 0, "models": 0,
+                "retired_models": 0}
+    overlay = read_overlay(path)
+    return {
+        "present": True,
+        "path": target.name,
+        "providers": len(overlay.get("providers") or {}),
+        "models": len(overlay.get("models") or []),
+        "retired_models": len(overlay.get("retired_models") or []),
+    }
+
+
+def write_overlay(update: dict, path: Path | None = None) -> dict:
+    """Merge ``update`` into the overlay and install it in one validated step.
+
+    ``update`` carries only ``providers`` / ``models`` / ``retired_models``.
+    The effective document is validated before the overlay file is replaced, so
+    a rejected edit never becomes the thing the next boot reads.
+    """
+    if not isinstance(update, dict) or set(update) - {"providers", "models", "retired_models"}:
+        raise ModelRegistryError("overlay: invalid update")
+    base = path or registry_path()
+    current = read_overlay(base)
+    merged_overlay = {
+        "schema_version": 1,
+        "providers": dict(current.get("providers") or {}),
+        "models": [dict(row) for row in current.get("models") or []],
+        "retired_models": list(current.get("retired_models") or []),
+    }
+    merged_overlay["providers"].update(json.loads(json.dumps(update.get("providers") or {})))
+    rows = {row.get("id"): row for row in merged_overlay["models"] if isinstance(row, dict)}
+    order = [row.get("id") for row in merged_overlay["models"] if isinstance(row, dict)]
+    for row in update.get("models") or []:
+        if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+            raise ModelRegistryError("overlay: invalid model row")
+        if row["id"] not in rows:
+            order.append(row["id"])
+        rows[row["id"]] = json.loads(json.dumps(row))
+    if "retired_models" in update:
+        replacement = update["retired_models"]
+        if (not isinstance(replacement, list)
+                or not all(isinstance(x, str) for x in replacement)):
+            raise ModelRegistryError("overlay: retired_models must be a list of ids")
+        merged_overlay["retired_models"] = list(dict.fromkeys(replacement))
+    merged_overlay["models"] = [rows[model_id] for model_id in order if model_id in rows]
+    if not merged_overlay["providers"]:
+        merged_overlay.pop("providers")
+    if not merged_overlay["models"]:
+        merged_overlay.pop("models")
+    if not merged_overlay["retired_models"]:
+        merged_overlay.pop("retired_models")
+
+    effective = merge_overlay(_read_json(base, "registry"), merged_overlay)
+    validate_registry(effective)
+    target = overlay_path(base)
+    text = json.dumps(merged_overlay, ensure_ascii=False, indent=2) + "\n"
+    try:
+        handle, temp_path = tempfile.mkstemp(dir=str(target.parent), prefix=target.name + ".")
+        try:
+            with os.fdopen(handle, "w", encoding="utf-8", newline="\n") as stream:
+                stream.write(text)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.chmod(temp_path, 0o644)
+            os.replace(temp_path, target)
+        except BaseException:
+            try:
+                os.unlink(temp_path)
+            except OSError:
+                pass
+            raise
+    except OSError as exc:
+        raise ModelRegistryError("registry overlay write failed") from exc
+    return effective
+
+
+def install_registry() -> dict:
+    """Re-read the effective registry and reinstall it into the adapter registry.
+
+    The Owner console calls this after a write so the next request uses the new
+    catalog without a process restart, and the base JSON file is untouched.
+    """
+    data = read_registry()
+    install_models(data)
+    return data
 
 def write_registry(data: dict, path: Path | None = None) -> None:
     """Validate fully, then replace the file in one step.

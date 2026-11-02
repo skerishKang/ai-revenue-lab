@@ -1,0 +1,34 @@
+/* Owner write tabs on top of admin-models.css. Reuses .panel, .btn, .preview,
+   .route-note and the credential-slot table classes; adds only the tab strip
+   and the dense field grid the write forms need. */
+.ext-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;padding:5px;background:#eef3fa;border:1px solid #e2e9f3;border-radius:13px}
+.ext-tab{border:0;background:transparent;color:#5c7188;border-radius:9px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.ext-tab:hover{background:#e2eaf6;color:#2f4b6d}
+.ext-tab[aria-selected="true"]{background:var(--surface,#fff);color:#1d2d45;box-shadow:0 2px 8px #243f6714}
+.ext-tab:focus-visible{outline:2px solid #3976d7;outline-offset:2px}
+.ext-page{margin-bottom:16px}
+.ext-page[hidden]{display:none}
+.ext-subhead{margin:22px 0 10px;font-size:12px;color:#465c76}
+.ext-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
+.ext-form label{display:grid;gap:6px;font-size:11px;font-weight:650;color:#73849b;min-width:0}
+.ext-form input,.ext-form select{height:38px;border:1px solid #dee5ef;background:#fff;border-radius:10px;padding:0 11px;font-size:12px;color:#243b59;min-width:0;width:100%}
+.ext-form input:focus,.ext-form select:focus{outline:0;border-color:#8cabec;box-shadow:0 0 0 3px #eaf0ff}
+.ext-form input[type="checkbox"]{width:16px;height:16px}
+.ext-check{display:flex!important;align-items:center;gap:8px;align-self:end;height:38px;padding:0 2px}
+.ext-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.ext-actions .btn{margin-top:0;width:auto;padding:11px 16px}
+.ext-actions .btn.primary{width:auto}
+.ext-inline{display:flex;gap:6px;align-items:center;flex-wrap:wrap;min-width:170px}
+.ext-inline input{height:32px;font-size:11px;padding:0 9px}
+.ext-inline .btn{margin-top:0;width:auto;padding:8px 11px;font-size:11px}
+.ext-table td{vertical-align:middle}
+.ext-scroll{overflow-x:auto;border:1px solid #e8edf4;border-radius:12px;margin-top:12px}
+.ext-status{font-size:11px;color:#7d8ea3}
+.ext-status.is-good{color:#1d936e}
+.ext-status.is-warn{color:#b8731b}
+.ext-status.is-bad{color:#bb4f55}
+.ext-value{display:block;margin-top:6px;font-size:10px;color:#8e9bad}
+@media (max-width:720px){
+  .ext-form{grid-template-columns:1fr}
+  .ext-tabs{overflow-x:auto;flex-wrap:nowrap}
+}

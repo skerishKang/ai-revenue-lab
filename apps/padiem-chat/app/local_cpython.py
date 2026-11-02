@@ -465,6 +465,13 @@ def build_app():
                 settings.b14_base_url,
                 os.getenv("PADIEM_B14_SERVICE_PROOF_SECRET"),
             )
+            # Owner model console writes use the same origin and proof secret.
+            from .b14_model_ops_source import HttpsModelOpsSource
+
+            app.state.b14_model_ops_source = HttpsModelOpsSource(
+                settings.b14_base_url,
+                os.getenv("PADIEM_B14_SERVICE_PROOF_SECRET"),
+            )
 
     edge_required = os.getenv("PADIEM_COM2_EDGE_PROOF_REQUIRED", "").strip().lower() in {"1", "true"}
     connector_enabled = os.getenv("PADIEM_COM2_CONNECTOR_GATEWAY_ENABLED", "").strip().lower() in {"1", "true"}
