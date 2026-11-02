@@ -13,8 +13,12 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.catalog import CATALOG_BY_ID, CATALOG_MODELS
 from app.pilot.kilo_provider import KILO_NEMOTRON_MODEL_ID
+from app.pilot.model_registry_file import retired_model_ids
 from app.pilot.poolside_provider import POOLSIDE_MODEL_ID
 from app.pilot.sensenova_provider import SENSENOVA_MODEL_ID
+
+# Owner retirement is read from the same registry that installs the routes.
+RETIRED = retired_model_ids()
 
 
 @pytest.fixture()
@@ -106,21 +110,12 @@ def test_poolside_route_is_explicit_only_and_not_free(client):
     assert entry["auto_eligible"] is False
 
 
-def test_owner_deleted_five_not_in_registry(client):
-    excluded={"kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        "kilo/poolside-laguna-s-2.1-free","b-ai/qwen3.8-flash",
-        "infron/motif/motif-3","experiential/gpt-5.6-luna"}
-    assert excluded.isdisjoint({r["id"] for r in _registered_routes(client)})
+def test_owner_retired_models_are_not_registered(client):
+    assert RETIRED.isdisjoint({r["id"] for r in _registered_routes(client)})
 
 def test_other_registered_routes_are_not_implicitly_excluded(client):
     rows = {r["id"]: r for r in _registered_routes(client)}
     for model_id, route in rows.items():
-        if model_id not in {
-            "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-            "kilo/poolside-laguna-s-2.1-free",
-            "b-ai/qwen3.8-flash",
-            "infron/motif/motif-3",
-            "experiential/gpt-5.6-luna",
-        }:
+        if model_id not in RETIRED:
             # Negative on a blocklist is NOT positive customer authorization.
             assert route["owner_excluded"] is False

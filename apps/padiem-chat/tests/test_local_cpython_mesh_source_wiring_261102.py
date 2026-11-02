@@ -21,9 +21,14 @@ _APP_FILE = Path(local_cpython.__file__)
 def test_the_host_entry_uses_the_worker_env_builder():
     """The same env→source builder the Worker composes, on the CPython entry."""
     source = _APP_FILE.read_text(encoding="utf-8")
-    assert "build_oracle_mesh_return_source_from_env(os.environ)" in source
-    assert "oracle_mesh_return_source=oracle_mesh_return_source" in source
+    # The factory is loaded inside uvicorn's running loop; the builder must be
+    # awaited from startup, never asyncio.run() at factory time.
+    assert "await build_oracle_mesh_return_source_from_env(os.environ)" in source
+    assert "app.router.on_startup.append(_compose_oracle_mesh_return_source_on_startup)" in source
+    assert "async def _compose_oracle_mesh_return_source_on_startup(app=app):" in source
+    assert "oracle_mesh_return_source=None" in source
     assert "oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ)" in source
+    assert "asyncio.run(build_oracle_mesh_return_source_from_env" not in source
 
 
 def test_an_unconfigured_env_still_leaves_one_explicit_startup_line():

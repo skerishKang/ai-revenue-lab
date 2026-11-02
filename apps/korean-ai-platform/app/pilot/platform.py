@@ -169,8 +169,15 @@ def _request_headers(
     supports no runtime execution and no runtime auth handling (owner final
     retirement decision, 2026-10-07). Callers cannot supply or override any
     credential mode.
+
+    A Provider row's static ``extra_headers`` are applied here, which is what
+    makes a new OpenAI-compatible Provider a registry entry instead of a Python
+    module. The registry refuses any name that would replace the fixed
+    Content-Type or Authorization header, so this merge cannot widen auth.
     """
     headers = {"Content-Type": "application/json"}
+    for name, value in spec.extra_headers:
+        headers[name] = value
 
     if spec.credential_source == CredentialSource.NONE:
         return headers
