@@ -1554,6 +1554,12 @@ class Default(WorkerEntrypoint):
             worker_app.state.b14_slot_status_source = ServiceBindingSlotStatusSource(
                 b14_binding, b14_proof_secret,
             )
+            # Owner model console writes take the same binding and proof.
+            from app.b14_model_ops_source import ServiceBindingModelOpsSource
+
+            worker_app.state.b14_model_ops_source = ServiceBindingModelOpsSource(
+                b14_binding, b14_proof_secret,
+            )
         worker_app.state.identity_authority_service_bound = identity_binding is not None
         worker_app.state.google_oauth_workspace_truth = google_oauth_workspace_truth
         worker_app.state.google_oauth_service_bound = google_oauth_binding is not None
