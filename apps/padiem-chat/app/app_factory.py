@@ -69,6 +69,10 @@ from .central_model_control_routes import (
     central_model_admin_me, central_model_admin_snapshot,
     central_model_admin_preview,
 )
+from .credential_slots_routes import (
+    SLOT_STATUS_ROUTE as CREDENTIAL_SLOTS_ROUTE,
+    credential_slots_status,
+)
 from .central_model_policy_write_routes import (
     central_model_change_preview, central_model_change_apply,
     central_model_rollback_preview, central_model_change_audit,
@@ -609,6 +613,7 @@ def create_app(
         Route("/api/admin/models/route-preview", central_model_route_preview, methods=["POST"]),
         Route("/api/admin/models/route-apply", central_model_route_apply, methods=["POST"]),
         Route("/api/admin/models/route-rollback-preview", central_model_route_rollback_preview, methods=["POST"]),
+        Route(CREDENTIAL_SLOTS_ROUTE, credential_slots_status, methods=["GET"]),
         Route("/api/admin/session", platform_admin_session, methods=["GET"]),
         Route("/api/admin/roles", platform_admin_role_assign, methods=["POST"]),
         Route("/api/admin/roles/{user_id}", platform_admin_role_revoke, methods=["DELETE"]),
@@ -1433,6 +1438,10 @@ def create_app(
         app.state.b14_catalog_source = SimpleB14CatalogSource(_catalog_get_json)
     else:
         app.state.b14_catalog_source = None
+    # The owner credential board reads B14 slot metadata through the deployment
+    # lane. Each entrypoint composes the matching source; absent means the
+    # board reports unavailable instead of inventing an empty inventory.
+    app.state.b14_slot_status_source = None
     # Public, non-secret browser render origin. Unset means B66 account runtime
     # stays fully hidden/off; Production activation is a separate env/deploy gate.
     # Explicit trusted product policy only. No public API, environment bool,
