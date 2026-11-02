@@ -4,7 +4,7 @@
 그 파일로 **되돌아가는지**는 확인된 적이 없다. 백업이 "검증됐다"는 것과 "복원이 된다"는
 것은 다른 문제다.
 
-이 시험은 시험용 SQLite 파일에 마이그레이션 88개를 적용하고 사용자·대화·메시지·
+이 시험은 시험용 SQLite 파일에 마이그레이션 90개를 적용하고 사용자·대화·메시지·
 프로젝트·프로젝트 파일 행을 넣은 뒤,
 
 1. backup.py를 **실제로 실행**해 백업 파일을 만들고,
@@ -60,10 +60,10 @@ def _ledger_count(conn: sqlite3.Connection) -> int | None:
 
 
 def _seed(db_path: Path) -> dict[str, object]:
-    """마이그레이션 88개 + 사용자·대화·메시지·프로젝트·프로젝트 파일 몇 행."""
+    """마이그레이션 90개 + 사용자·대화·메시지·프로젝트·프로젝트 파일 몇 행."""
 
     applied = sorted(MIGRATIONS.glob("*.sql"))
-    assert len(applied) == 88, [path.name for path in applied][-3:]
+    assert len(applied) == 90, [path.name for path in applied][-3:]
 
     db = FileSqliteD1(db_path)
     user_id = "usr_" + "a" * 32

@@ -28,6 +28,10 @@ def _dev_env(monkeypatch, tmp_path):
     monkeypatch.setenv("PADIEM_CHAT_LIVE_ENABLED", "false")
     monkeypatch.setenv("PADIEM_CHAT_PUBLIC_BASE_URL", "http://127.0.0.1:8796")
     monkeypatch.setenv("PADIEM_CHAT_LOCAL_DATA_DIR", str(tmp_path))
+    # Pin the dev key so build_app never writes the process environment from
+    # inside a test: ``_ensure_session_secret`` exports a generated secret to
+    # os.environ, which would leak into later tests that compare Settings.
+    monkeypatch.setenv("PADIEM_CHAT_SESSION_SECRET", "test-local-secret-0123456789abcdef")
     monkeypatch.delenv("PADIEM_CHAT_CPYTHON_HOST", raising=False)
     monkeypatch.delenv("PADIEM_CHAT_SHARED_LOGIN_ENABLED", raising=False)
     for name in (
