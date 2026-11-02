@@ -74,6 +74,7 @@
       connectedChip: "내 PC 연결됨",
       connectChip: "연결하기",
       starterConnected: "● 내 PC 연결됨",
+      starterOffline: "○ PC 오프라인",
       starterDisconnected: "○ 연결 안 됨",
       // Fallbacks only. The shared connector vocabulary owns these four lines;
       // these exist for the moment before it loads, and say the same words.
@@ -101,6 +102,7 @@
       connectedChip: "My PC connected",
       connectChip: "Connect",
       starterConnected: "● My PC connected",
+      starterOffline: "○ PC offline",
       starterDisconnected: "○ Not connected",
       starterChecking: "Checking…",
       starterFailed: "Check failed · Try again",
@@ -230,8 +232,26 @@
     return state.links.filter((link) => link && link.state === "active");
   }
 
+  // #6694 (A): a link whose state is "active" is a pairing record, not a
+  // connection. The server enriches each link with the MeshCentral node's own
+  // connectivity (`online`) and the moment it was last actually connected
+  // (`last_seen_at`), read from the same presence receipt the dispatch lane
+  // trusts. Only a proven-online PC counts as connected.
+  function onlineLinks() {
+    return state.links.filter(
+      (link) => link && link.state === "active" && link.online === true);
+  }
+
+  function offlineLinks() {
+    return state.links.filter((link) => link && link.state === "active");
+  }
+
   function classifiedState() {
-    if (state.read === "ok") return activeLinks().length ? "connected" : "disconnected";
+    if (state.read === "ok") {
+      if (onlineLinks().length) return "connected";
+      if (offlineLinks().length) return "offline";
+      return "disconnected";
+    }
     if (state.read === "not_ready") return "preparing";
     if (state.read === "unavailable") return "unavailable";
     return "connecting";
@@ -244,7 +264,7 @@
   // session with no answer yet says it is still checking.
   function displayState() {
     const kind = classifiedState();
-    if (kind === "connected" || kind === "disconnected") return kind;
+    if (kind === "connected" || kind === "disconnected" || kind === "offline") return kind;
     if (kind === "connecting") return "checking";
     return state.everRead ? "failed" : "checking";
   }
@@ -317,6 +337,7 @@
         const shown = displayState();
         const fallback = {
           connected: t.starterConnected,
+          offline: t.starterOffline,
           disconnected: t.starterDisconnected,
           checking: t.starterChecking,
           failed: t.starterFailed,
@@ -548,20 +569,36 @@
     }
   }
 
-  function popoverStateLabel(link) {
-    // One colour-per-state vocabulary, the same words the Connectors card's
-    // pairing list uses, so a PC reads the same in both places.
-    const t = locale();
+  // #6694 (A): an active link whose MeshCentral node is offline reads as
+  // 오프라인, with the moment the node was last actually connected beside it.
+  function formatLastSeen(value) {
+    if (typeof value !== "string" || !value) return "";
+    const at = new Date(value);
+    if (Number.isNaN(at.getTime())) return "";
+    const pad = (n) => String(n).padStart(2, "0");
+    return at.getFullYear() + "-" + pad(at.getMonth() + 1) + "-" + pad(at.getDate())
+      + " " + pad(at.getHours()) + ":" + pad(at.getMinutes());
+  }
+
+  function rowStateLabel(link) {
     const labels = {
       active: ["연결됨", "Connected"],
+      offline: ["오프라인", "Offline"],
       paused: ["멈춤", "Paused"],
       pending_verification: ["확인 대기 중", "Waiting"],
       revoked: ["연결 해제", "Revoked"],
     };
-    const pair = labels[link.state];
-    if (!pair) return link.state || "";
-    return (document.documentElement.lang || "ko").toLowerCase().startsWith("en")
-      ? pair[1] : pair[0];
+    const stateKey = link.state === "active" && link.online !== true ? "offline" : link.state;
+    const pair = labels[stateKey];
+    const english = (document.documentElement.lang || "ko").toLowerCase().startsWith("en");
+    let label = pair ? (english ? pair[1] : pair[0]) : (link.state || "");
+    if (stateKey === "offline") {
+      const lastSeen = formatLastSeen(link.last_seen_at);
+      if (lastSeen) {
+        label += english ? " · last seen " + lastSeen : " · 마지막 접속 " + lastSeen;
+      }
+    }
+    return label;
   }
 
   function paintPopover() {
@@ -570,7 +607,8 @@
     v.title.textContent = vocabName("computer", t.popoverTitle);
     v.empty.textContent = t.popoverEmpty;
     v.list.replaceChildren();
-    const shown = state.links.filter((link) => link && link.state !== "revoked");
+    const shown = state.links.filter(
+      (link) => link && link.state !== "revoked" && link.state !== "replaced");
     v.drives.textContent = t.popoverDrives;
     v.drives.hidden = !shown.length || !document.getElementById("clawDeviceManagerToggle");
     if (!shown.length) {
@@ -582,8 +620,9 @@
       const row = element("li", "pc-pairing-link");
       const name = element("span", "pc-pairing-name", link.label || t.unnamed);
       name.title = name.textContent;
-      const badge = element("span", "pc-pairing-state", popoverStateLabel(link));
-      badge.dataset.state = String(link.state || "");
+      const badge = element("span", "pc-pairing-state", rowStateLabel(link));
+      badge.dataset.state = String(
+        link.state === "active" && link.online !== true ? "offline" : (link.state || ""));
       row.append(name, badge);
       v.list.append(row);
     }

@@ -18,8 +18,12 @@
 
   // The four states. A surface that has one of these states shows exactly
   // this line; no surface invents its own sentence for the same state.
+  // `offline` is the fifth line #6694 added: a PC whose pairing record is
+  // active but whose MeshCentral agent is not connected right now. It is a
+  // state of a linked PC, not a failure to read one.
   const STATUS = Object.freeze({
     connected: Object.freeze({ ko: "● 연결됨", en: "● Connected" }),
+    offline: Object.freeze({ ko: "○ PC 오프라인", en: "○ PC offline" }),
     disconnected: Object.freeze({ ko: "○ 연결 안 됨", en: "○ Not connected" }),
     checking: Object.freeze({ ko: "확인 중…", en: "Checking…" }),
     failed: Object.freeze({ ko: "확인 실패 · 다시 시도", en: "Check failed · Try again" }),

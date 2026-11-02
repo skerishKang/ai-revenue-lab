@@ -30,12 +30,14 @@
     ko: {
       connect: "컴퓨터 연결",
       connected: "PC 연결됨",
+      offline: "PC 오프라인",
       connecting: "연결 확인 중",
       disconnected: "컴퓨터 미연결",
       check: "상태 확인 불가",
       preparing: "준비 중",
       connectHint: "컴퓨터가 연결되어 있지 않습니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
       connectedHint: "컴퓨터가 연결되어 있습니다. 클릭하면 연결된 컴퓨터 정보를 확인합니다.",
+      offlineHint: "PC 연결 기록은 있지만 지금 오프라인입니다. PC를 켜거나 에이전트를 확인한 뒤 클릭하면 상태를 다시 확인합니다.",
       connectingHint: "컴퓨터 연결 상태를 확인하는 중입니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
       checkHint: "컴퓨터 연결 상태를 확인하지 못했습니다. 클릭하면 연결 상태를 다시 확인합니다.",
       executableHint: "PC 실행 대상은 확인되었지만 온라인 상태는 확인되지 않았습니다. 클릭하면 연결 상태를 다시 확인합니다.",
@@ -44,12 +46,14 @@
     en: {
       connect: "PC connect",
       connected: "PC connected",
+      offline: "PC offline",
       connecting: "Checking…",
       disconnected: "PC not connected",
       check: "Status unavailable",
       preparing: "Coming soon",
       connectHint: "No computer is connected. Click to open the computer connection guide.",
       connectedHint: "A computer is connected. Click to review the connected computer.",
+      offlineHint: "The PC has a pairing record but is offline right now. Click to check the state again after powering it on.",
       connectingHint: "Checking the computer connection status. Click to open the computer connection guide.",
       checkHint: "The computer connection status could not be confirmed. Click to check it again.",
       executableHint: "The PC is an execution target, but its online state is not confirmed. Click to check it again.",
@@ -113,6 +117,10 @@
     const mark = document.createElementNS(SVG_NS, "path");
     if (state === "connected") {
       mark.setAttribute("d", "M7.5 10.5l3 3 6-6");
+    } else if (state === "offline") {
+      // A state, not a failure: one hollow dash inside the screen - the PC is
+      // known and linked, just not connected right now (#6694 A).
+      mark.setAttribute("d", "M8.5 10.5h7");
     } else if (state === "connecting" || state === "preparing") {
       const circle = document.createElementNS(SVG_NS, "circle");
       circle.setAttribute("cx", "12");
@@ -183,6 +191,7 @@
     function hintFor(next) {
       const t = locale();
       if (next === "connected") return t.connectedHint;
+      if (next === "offline") return t.offlineHint;
       if (next === "connecting") return t.connectingHint;
       if (next === "unavailable") return executableReady ? t.executableHint : t.checkHint;
       if (next === "preparing") return t.preparingHint;
@@ -192,6 +201,7 @@
     function labelFor(next) {
       const t = locale();
       if (next === "connected") return vocabStatus("connected", t.connected);
+      if (next === "offline") return vocabStatus("offline", t.offline);
       if (next === "connecting") return vocabStatus("checking", t.connecting);
       if (next === "disconnected") return vocabStatus("disconnected", t.disconnected);
       if (next === "unavailable") return vocabStatus("failed", t.check);

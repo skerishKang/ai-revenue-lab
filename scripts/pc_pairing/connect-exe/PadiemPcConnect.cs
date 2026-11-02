@@ -84,7 +84,7 @@ namespace Padiem.Connect
         static readonly Regex InstallTag =
             new Regex("^[A-Za-z0-9_-]{1,64}$", RegexOptions.CultureInvariant);
         static readonly Regex MachineWord =
-            new Regex("^[A-Za-z0-9._-]{1,64}$", RegexOptions.CultureInvariant);
+            new Regex("^[A-Za-z0-9._\\-]{1,128}$", RegexOptions.CultureInvariant);
 
         const int ExitOk = 0;
         const int ExitUsage = 2;
@@ -198,7 +198,7 @@ namespace Padiem.Connect
             {
                 Say("이 PC에는 에이전트가 이미 설치되어 있습니다. 같은 서비스 이름으로 갱신 설치합니다(중복 서비스 없음).");
             }
-            string name = AgentName(tag, FixedDriveLetters(), Environment.MachineName);
+            string name = AgentName(tag, FixedDriveLetters(), FullMachineName());
             string durable = DurableAgentPath();
             string installerArguments = "-install --agentName=\"" + name + "\"";
             if (options.DryRun)
@@ -353,12 +353,33 @@ namespace Padiem.Connect
             if (!string.IsNullOrEmpty(tag))
             {
                 Console.WriteLine("CONNECT_EXE_CHECK_NAME=" +
-                    AgentName(tag, FixedDriveLetters(), Environment.MachineName));
+                    AgentName(tag, FixedDriveLetters(), FullMachineName()));
             }
             return ExitOk;
         }
 
         // ---- the four facts the installer needs --------------------------
+
+        static string FullMachineName()
+        {
+            // The whole name Windows gave this machine, not the 15-character
+            // NetBIOS form Environment.MachineName returns: a computer named
+            // "PADIEM-COMMAND-CENTER" reports "PADIEM-COMMAND-" through that
+            // property, and the server then stores a truncated name as the
+            // link's first label. Dns.GetHostName() answers with the DNS host
+            // name - the same string a UNC share path names - and falls back to
+            // Environment.MachineName when it cannot be read.
+            try
+            {
+                string dns = Dns.GetHostName();
+                if (!string.IsNullOrEmpty(dns))
+                {
+                    return dns;
+                }
+            }
+            catch (Exception) { }
+            return Environment.MachineName;
+        }
 
         static string AgentName(string tag, List<string> letters, string machine)
         {

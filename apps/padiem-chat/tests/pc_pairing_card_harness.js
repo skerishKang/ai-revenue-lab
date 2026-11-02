@@ -146,6 +146,8 @@ const LINK = {
   mesh_node_id: NODE_ID,
   label: "집 PC",
   state: "active",
+  online: true,
+  last_seen_at: "2026-11-02T10:30:00Z",
   roots: [{ root_ref: "pcroot_0123456789abcdef", label: "견적", path: "C:/Users/me/견적",
             state: "active", approved_at: "2026-10-27T01:00:00Z" }],
 };
@@ -154,6 +156,30 @@ const PAUSED_LINK = {
   mesh_node_id: "node/meshdomain/mesh-pc-10",
   label: "회사 노트북",
   state: "paused",
+  online: false,
+  last_seen_at: "2026-11-02T09:45:00Z",
+  roots: [],
+};
+
+const OFFLINE_LINK = {
+  link_id: "pclink_cccccccccccccccccccccccccccccccc",
+  mesh_node_id: "node/meshdomain/mesh-pc-11",
+  label: "사무실 PC",
+  state: "active",
+  online: false,
+  last_seen_at: "2026-11-02T09:00:00Z",
+  roots: [],
+};
+
+// #6694 (C): the older record of a computer that was re-paired under a new
+// node. It stays in the server's list; the card shows the one live line.
+const REPLACED_LINK = {
+  link_id: "pclink_dddddddddddddddddddddddddddddddd",
+  mesh_node_id: "node/meshdomain/mesh-pc-12",
+  label: "교체된 PC",
+  state: "replaced",
+  superseded_at: "2026-11-02T08:00:00Z",
+  superseded_by: "pclink_0123456789abcdef0123456789abcdef",
   roots: [],
 };
 
@@ -242,7 +268,7 @@ async function main() {
 
   // -- the list: two PCs, one row menu each, and what stays off the screen ---
   const listed = makeDom({
-    "GET *": { status: 200, body: { ok: true, links: [LINK, PAUSED_LINK], codes: [] } },
+    "GET *": { status: 200, body: { ok: true, links: [LINK, PAUSED_LINK, OFFLINE_LINK, REPLACED_LINK], codes: [] } },
     [`DELETE /api/pc/pairings/${LINK.link_id}`]: { status: 200, body: { ok: true, revoked: true } },
     [`POST /api/pc/pairings/${LINK.link_id}/pause`]: { status: 200,
       body: { ok: true, link: { ...LINK, paused: true } } },
@@ -255,9 +281,12 @@ async function main() {
   });
   await settle();
   const shown = listed.card.ids().find((n) => n.attrs.id === "pcPairingSection");
-  check("two PCs are listed with their server state badges",
+  check("the PCs are listed with their states; a replaced record stays hidden",
     shown.allText().includes("집 PC") && shown.allText().includes("연결됨")
-    && shown.allText().includes("회사 노트북") && shown.allText().includes("멈춤"),
+    && shown.allText().includes("회사 노트북") && shown.allText().includes("멈춤")
+    && shown.allText().includes("사무실 PC") && shown.allText().includes("오프라인")
+    && shown.allText().includes("마지막 접속")
+    && !shown.allText().includes("교체된 PC"),
     shown.allText());
   check("the mesh node identity never reaches the screen",
     !shown.allText().includes("node/meshdomain")

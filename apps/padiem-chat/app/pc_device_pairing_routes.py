@@ -25,6 +25,7 @@ from starlette.responses import JSONResponse, Response
 
 from .auth_routes import current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .claw_local_access_source import MESH_PRESENCE_MAX_AGE_SECONDS
 from .pc_pairing_connect_exe_asset import connect_exe_bytes
 from .pc_pairing_agent_install import render_agent_install_block
 from .pc_scope_cache import invalidate_owner_scope
@@ -257,6 +258,55 @@ async def pc_pairing_issue(request: Request) -> JSONResponse:
     }, 201)
 
 
+def _parse_iso(value: Any) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo is not None else None
+
+
+async def _presence_view(store: Any, *, device_id: str, now: datetime) -> dict[str, Any]:
+    """MeshCentral's own node connectivity for the owner's PC list (#6694 A).
+
+    A link's `state:'active'` is a pairing record, not a connection: the agent
+    it named can be uninstalled while the row stays active forever. The
+    liveness answer lives in the same server-recorded Mesh presence receipt
+    the local-access lane already reads (`mesh_device_presence`, written from
+    the executor's poll): `connected` is MeshCentral's node connection fact
+    and the receipt is trusted only inside the staleness bound that lane
+    already uses. This is display evidence for the owner's list - it creates
+    no execution grant, and dispatch keeps asking its own questions.
+
+    A missing or unreadable receipt is reported as not online, the same
+    fail-closed answer the device directory gives a linked PC nothing has
+    observed: never shown as connected without evidence.
+    """
+    row = None
+    if store is not None and callable(getattr(store, "load", None)):
+        try:
+            row = store.load(device_id=device_id)
+            if inspect.isawaitable(row):
+                row = await row
+        except Exception:
+            row = None
+    if not isinstance(row, dict) or row.get("device_id") != device_id:
+        return {"online": False, "last_seen_at": None}
+    connected = row.get("connected") is True
+    observed = _parse_iso(row.get("received_at"))
+    online = False
+    if connected and observed is not None:
+        age = (now - observed).total_seconds()
+        online = 0 <= age <= MESH_PRESENCE_MAX_AGE_SECONDS
+    last_seen = row.get("last_connected_at")
+    return {
+        "online": online,
+        "last_seen_at": last_seen if isinstance(last_seen, str) and last_seen else None,
+    }
+
+
 async def pc_pairing_list(request: Request) -> JSONResponse:
     """This account's PC links and its still-pending codes."""
     user_id = current_user_id(request)
@@ -271,6 +321,15 @@ async def pc_pairing_list(request: Request) -> JSONResponse:
     codes, refused = await _await_store(store.list_codes, user_id=user_id, now=_now())
     if refused is not None:
         return refused
+    presence = getattr(request.app.state, "mesh_device_presence_store", None)
+    now = _now()
+    for link in links:
+        node = link.get("mesh_node_id") if isinstance(link, dict) else None
+        if not isinstance(node, str) or not node:
+            continue
+        view = await _presence_view(presence, device_id=node, now=now)
+        link["online"] = view["online"]
+        link["last_seen_at"] = view["last_seen_at"]
     return _json({"ok": True, "links": links, "codes": codes}, 200)
 
 
@@ -576,10 +635,14 @@ _INSTALL_SCRIPT_TEMPLATE = (
     "  # the tag decides the account, the bracketed letters are this PC's own\n"
     "  # drives, and the trailing word is the name Windows gave the machine -\n"
     "  # which becomes the link's first name unless the owner renames it.\n"
-    "  $reported = $PairingTag + \" \" + $env:COMPUTERNAME\n"
+    "  # Dns.GetHostName() is the whole DNS name; $env:COMPUTERNAME is the\n"
+    "  # 15-character NetBIOS form and would store a truncated name.\n"
+    "  $machine = try { [System.Net.Dns]::GetHostName() } catch { $env:COMPUTERNAME }\n"
+    "  if (-not $machine) { $machine = $env:COMPUTERNAME }\n"
+    "  $reported = $PairingTag + \" \" + $machine\n"
     "  $letters = @(Get-PadiemDriveLetters)\n"
     "  if ($letters.Count -gt 0) {\n"
-    "    $reported = $PairingTag + \" [\" + ($letters -join \" \") + \"] \" + $env:COMPUTERNAME\n"
+    "    $reported = $PairingTag + \" [\" + ($letters -join \" \") + \"] \" + $machine\n"
     "  }\n"
     "  if (-not (Install-PadiemAgentService -SourceExe $agent -AgentName $reported)) {\n"
     "    Write-Host \"에이전트 설치를 마치지 못했습니다. 잠시 후 다시 시도해 주세요.\"\n"

@@ -86,14 +86,21 @@ class D1MeshDevicePresenceStore:
             raise MeshDevicePresenceStoreError("presence source invalid")
         generation = (None if source == "mesh" and credential_generation is None
                       else _generation(credential_generation))
+        # #6694 (A): a connected beat also stamps the moment the node was last
+        # actually seen connected; a disconnected beat keeps the old value, so
+        # an offline row can still name its last contact.
+        last_connected = stamp if connected else None
         await self._run(
             "INSERT INTO mesh_device_presence "
-            "(device_id, connected, received_at, credential_generation, source) "
-            "VALUES (?, ?, ?, ?, ?) "
+            "(device_id, connected, received_at, credential_generation, source, "
+            " last_connected_at) VALUES (?, ?, ?, ?, ?, ?) "
             "ON CONFLICT(device_id) DO UPDATE SET "
             "connected=excluded.connected, received_at=excluded.received_at, "
-            "credential_generation=excluded.credential_generation, source=excluded.source",
-            device, 1 if connected else 0, stamp, generation, source,
+            "credential_generation=excluded.credential_generation, source=excluded.source, "
+            "last_connected_at=CASE WHEN excluded.connected=1 "
+            "THEN excluded.last_connected_at "
+            "ELSE mesh_device_presence.last_connected_at END",
+            device, 1 if connected else 0, stamp, generation, source, last_connected,
         )
         stored = await self.load(device)
         return (
@@ -107,8 +114,8 @@ class D1MeshDevicePresenceStore:
     async def load(self, device_id: str) -> dict[str, Any] | None:
         device = _device(device_id)
         row = await self._first(
-            "SELECT device_id, connected, received_at, credential_generation, source "
-            "FROM mesh_device_presence WHERE device_id=?",
+            "SELECT device_id, connected, received_at, credential_generation, source, "
+            "last_connected_at FROM mesh_device_presence WHERE device_id=?",
             device,
         )
         if not isinstance(row, dict):
@@ -117,6 +124,7 @@ class D1MeshDevicePresenceStore:
         generation = row.get("credential_generation")
         source = row.get("source")
         received_at = row.get("received_at")
+        last_connected_at = row.get("last_connected_at")
         if (
             row.get("device_id") != device
             or connected not in (0, 1)
@@ -126,6 +134,7 @@ class D1MeshDevicePresenceStore:
             or source not in ("broker", "mesh")
             or not (source == "mesh" and generation is None or
                     type(generation) is int and 1 <= generation <= _MAX_GENERATION)
+            or not (last_connected_at is None or isinstance(last_connected_at, str))
         ):
             return None
         return {
@@ -134,6 +143,11 @@ class D1MeshDevicePresenceStore:
             "received_at": received_at,
             "credential_generation": generation,
             "source": source,
+            # When the node is connected right now, this is the same moment as
+            # `received_at`; when it is not, it is the last connected beat.
+            "last_connected_at": (
+                received_at if connected == 1 else (last_connected_at or None)
+            ),
         }
 
 

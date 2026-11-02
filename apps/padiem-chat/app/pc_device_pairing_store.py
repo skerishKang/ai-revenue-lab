@@ -72,6 +72,11 @@ _NAME_DRIVES_RE = re.compile(r"\[\s*([A-Za-z](?:[ \t]+[A-Za-z])*)\s*\]")
 _STATE_ACTIVE = "active"
 _STATE_PENDING_VERIFICATION = "pending_verification"
 _STATE_REVOKED = "revoked"
+#: A superseded link keeps `state='revoked'` (the table's own CHECK vocabulary,
+#: unchanged by migration 089) and is stamped with `superseded_at`; the public
+#: projection names that shape `replaced` so a record can say "a newer link for
+#: this same computer took over" without a second state column.
+_STATE_REPLACED = "replaced"
 
 
 class PcPairingError(RuntimeError):
@@ -361,6 +366,45 @@ def tag_from_agent_name(value: Any) -> str | None:
     return found[0]
 
 
+#: One Windows computer name, as the install lane reports it: a single word of
+#: letters, digits, dots, underscores or hyphens. An owner's alias ("집 PC",
+#: "my office") is not a machine name and never decides sameness.
+_MACHINE_NAME_RE = re.compile(r"^[0-9A-Za-z][0-9A-Za-z._-]{0,127}$")
+
+
+def machine_key(value: Any) -> str | None:
+    """The sameness key of one Windows computer name, or ``None``.
+
+    Two install lanes produced the two names of one physical computer in
+    #6694 (B): the whole DNS name ("PADIEM-COMMAND-CENTER") and the
+    15-character NetBIOS form Windows keeps for itself
+    ("PADIEM-COMMAND-"). Windows itself folds every computer name into its
+    first 15 uppercased characters - the NetBIOS name space - so that same
+    fold is what "is this the same machine" compares. A shorter name than
+    15 characters compares as itself, which is exactly Windows' own rule.
+    Anything that is not shaped like one computer name answers ``None`` and
+    decides nothing.
+    """
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if _MACHINE_NAME_RE.fullmatch(text) is None:
+        return None
+    return text.upper()[:15]
+
+
+def label_machine_key(value: Any) -> str | None:
+    """The sameness key of the machine-name part of a stored link label.
+
+    A label carries up to two names joined by `_NAME_SEPARATOR`; only the
+    first (the machine's own) can say which physical computer the row was
+    about. An alias-only or absent label answers ``None``.
+    """
+    if not isinstance(value, str):
+        return None
+    return machine_key(value.split(_NAME_SEPARATOR)[0])
+
+
 def drives_from_agent_name(value: Any) -> list[str]:
     """The drive letters one installing PC named beside its tag, or nothing.
 
@@ -409,6 +453,12 @@ def _active(roots: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def _public_link(row: dict[str, Any]) -> dict[str, Any]:
     paused = bool(row.get("paused_at"))
+    state = "paused" if paused else row["state"]
+    # #6694 (C): a superseded row keeps state='revoked' in the table (the
+    # column's CHECK vocabulary is unchanged) and says `replaced` here - the
+    # owner's list keeps the record, marked as the computer's older link.
+    if row.get("superseded_at") and state == _STATE_REVOKED:
+        state = _STATE_REPLACED
     return {
         "link_id": row["link_id"],
         "mesh_node_id": row["mesh_node_id"],
@@ -416,7 +466,8 @@ def _public_link(row: dict[str, Any]) -> dict[str, Any]:
         # A paused link still exists and keeps its folder grants, so the listing
         # names the state the owner is actually looking at. The execution reads
         # (`links_for_owner`, `device_scope`, `link_for`) drop the row instead.
-        "state": "paused" if paused else row["state"],
+        "state": state,
+        "superseded_at": row.get("superseded_at") or None,
         "paused": paused,
         "paused_at": row.get("paused_at"),
         "roots": [
@@ -601,6 +652,10 @@ class D1PcPairingStore:
         link = await self._claim_link(
             owner=owner, node=node, label=label, code_id=row["code_id"],
             moment=moment, verified=verified,
+            # The claim's label is the PC's own name for itself when it has
+            # one; `machine_key` refuses anything that is not shaped like one
+            # Windows computer name, so an alias never decides sameness.
+            machine=label if isinstance(label, str) else None,
         )
         return await self._seed_drives(owner=owner, link=link, drives=drives, moment=moment)
 
@@ -630,12 +685,18 @@ class D1PcPairingStore:
 
     async def _claim_link(
         self, *, owner: str, node: str, label: Any, code_id: str, moment: str,
-        verified: bool,
+        verified: bool, machine: Any = None,
     ) -> dict[str, Any]:
         """Create or refresh the (owner, node) link for one consumed code.
 
         Shared by the browser-side claim and the server-side tag completion, so
         the two cannot drift into two different link shapes.
+
+        `machine` is the Windows computer name the claiming PC reported about
+        itself, when the channel carried one. It never changes identity - the
+        row stays keyed by `(user_id, mesh_node_id)` - it only settles which of
+        the owner's older rows for the SAME physical computer this new link
+        replaces (#6694 C).
         """
         existing = await self._first(
             "SELECT * FROM pc_device_links WHERE user_id=? AND mesh_node_id=?", owner, node,
@@ -644,10 +705,12 @@ class D1PcPairingStore:
         if isinstance(existing, dict) and existing.get("link_id"):
             if existing.get("state") == _STATE_REVOKED:
                 # A re-pair after a revoke is a fresh grant: roots do not come
-                # back, because the owner revoked them with the link (R5).
+                # back, because the owner revoked them with the link (R5). The
+                # supersede stamps clear with the rest: this row is live again.
                 await self._run(
                     "UPDATE pc_device_links SET state=?, label=?, roots_json='[]', "
-                    "pairing_code_id=?, updated_at=?, revoked_at=NULL WHERE link_id=?",
+                    "pairing_code_id=?, updated_at=?, revoked_at=NULL, "
+                    "superseded_at=NULL, superseded_by=NULL WHERE link_id=?",
                     state, _label(label), code_id, moment, existing["link_id"],
                 )
             elif existing.get("state") == _STATE_PENDING_VERIFICATION and verified is True:
@@ -655,7 +718,8 @@ class D1PcPairingStore:
                 # claim that names no label keeps the label the owner chose.
                 await self._run(
                     "UPDATE pc_device_links SET state=?, label=COALESCE(?, label), "
-                    "updated_at=? WHERE link_id=?",
+                    "updated_at=?, superseded_at=NULL, superseded_by=NULL "
+                    "WHERE link_id=?",
                     _STATE_ACTIVE, _label(label), moment, existing["link_id"],
                 )
             stored = await self._read_link(owner, existing["link_id"])
@@ -671,7 +735,48 @@ class D1PcPairingStore:
             stored = await self._read_link(owner, link_id)
         if stored is None:
             raise PcPairingError("pairing link not stored")
+        if machine is not None and (not isinstance(existing, dict) or not existing.get("link_id")):
+            # A brand-new link for a computer the owner already had rows for:
+            # the older rows become `replaced`, never deleted.
+            await self._supersede_same_machine(owner=owner, keep=stored, machine=machine, moment=moment)
+            stored = await self._read_link(owner, stored["link_id"]) or stored
         return stored
+
+    async def _supersede_same_machine(
+        self, *, owner: str, keep: dict[str, Any], machine: Any, moment: str,
+    ) -> None:
+        """Mark the owner's older links for this same computer as replaced.
+
+        The sameness criterion is the Windows computer name, folded the way
+        Windows itself folds it (`machine_key`): a machine reinstalling its
+        agent arrives under a new Mesh node id but the same name, and the old
+        row is exactly the ghost the #6694 (A) report showed - "connected"
+        with no agent behind it. Only rows that are still live for this owner
+        are stamped; another account's link on the same machine is untouched
+        (the table is many accounts to one PC by design), and a plain revoked
+        row stays revoked without the stamp.
+        """
+        key = machine_key(machine)
+        if key is None:
+            return
+        rows = await self._all(
+            "SELECT link_id, mesh_node_id, label FROM pc_device_links "
+            "WHERE user_id=? AND state IN (?, ?) LIMIT 100",
+            owner, _STATE_ACTIVE, _STATE_PENDING_VERIFICATION,
+        )
+        for row in rows:
+            if not isinstance(row, dict) or not row.get("link_id"):
+                continue
+            if row["link_id"] == keep["link_id"] or row.get("mesh_node_id") == keep["mesh_node_id"]:
+                continue
+            if label_machine_key(row.get("label")) != key:
+                continue
+            await self._run(
+                "UPDATE pc_device_links SET state=?, superseded_at=?, "
+                "superseded_by=?, updated_at=? WHERE link_id=? AND state IN (?, ?)",
+                _STATE_REVOKED, moment, keep["link_id"], moment, row["link_id"],
+                _STATE_ACTIVE, _STATE_PENDING_VERIFICATION,
+            )
 
     async def complete_claim_from_observation(
         self, *, agent_name: Any, mesh_node_id: Any, now: datetime,
@@ -738,6 +843,10 @@ class D1PcPairingStore:
         link = await self._claim_link(
             owner=owner, node=node, label=None, code_id=row["code_id"],
             moment=moment, verified=True,
+            # #6694 (B)/(C): the machine word in the observed agent name is
+            # the PC's own Windows name - the value that decides which older
+            # row of this same computer this fresh link replaces.
+            machine=pc_name_from_agent_name(agent_name),
         )
         # A PC that named itself keeps that name; an owner who already renamed
         # it is never overwritten, and a name that was only decoration is no
@@ -954,7 +1063,8 @@ class D1PcPairingStore:
     async def _read_link(self, user_id: str, link_id: str) -> dict[str, Any] | None:
         row = await self._first(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "pairing_code_id, created_at, updated_at, revoked_at, paused_at "
+            "pairing_code_id, created_at, updated_at, revoked_at, paused_at, "
+            "superseded_at, superseded_by "
             "FROM pc_device_links WHERE user_id=? AND link_id=?",
             user_id, link_id,
         )
@@ -967,8 +1077,10 @@ class D1PcPairingStore:
         owner = _user_id(user_id)
         rows = await self._all(
             "SELECT link_id, user_id, mesh_node_id, label, state, roots_json, "
-            "created_at, updated_at, paused_at FROM pc_device_links WHERE user_id=? "
-            "AND state!='revoked' ORDER BY created_at DESC LIMIT 100",
+            "created_at, updated_at, paused_at, superseded_at "
+            "FROM pc_device_links WHERE user_id=? "
+            "AND (state!='revoked' OR superseded_at IS NOT NULL) "
+            "ORDER BY created_at DESC LIMIT 100",
             owner,
         )
         links: list[dict[str, Any]] = []
@@ -1287,7 +1399,9 @@ __all__ = [
     "drive_root",
     "drives_from_agent_name",
     "canonical_label",
+    "label_machine_key",
     "link_named_in",
+    "machine_key",
     "name_tokens",
     "pc_name_from_agent_name",
     "tag_from_agent_name",
