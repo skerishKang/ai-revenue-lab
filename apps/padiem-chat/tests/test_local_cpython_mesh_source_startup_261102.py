@@ -76,3 +76,31 @@ def test_startup_without_mesh_env_stays_unconfigured_with_one_line(
     out = capsys.readouterr().out
     assert "[local] oracle_mesh_source_unconfigured=env_binding_unavailable" in out
     assert "[local] oracle_mesh_return_source=mesh_env_configured" not in out
+
+
+def test_the_write_freeze_wrapper_does_not_steal_the_state_target(
+    monkeypatch, tmp_path, capsys
+):
+    """Production sets PADIEM_CHAT_MAINTENANCE_SENTINEL, so build_app returns
+    the write-freeze wrapper. Its inner Starlette app is the state owner; the
+    startup handler must update that object, never the wrapper."""
+    from app.maintenance_mode import MaintenanceModeMiddleware
+
+    _dev_env(monkeypatch, tmp_path)
+    for name, value in MESH_ENV.items():
+        monkeypatch.setenv(name, value)
+    monkeypatch.setenv("PADIEM_CHAT_MAINTENANCE_SENTINEL", str(tmp_path / "maintenance.flag"))
+
+    async def scenario():
+        outer = local_cpython.build_app()
+        assert isinstance(outer, MaintenanceModeMiddleware)
+        inner = outer._app
+        await inner.router.startup()
+        try:
+            return bool(getattr(inner.state.oracle_mesh_return_source, "configured", False))
+        finally:
+            await inner.router.shutdown()
+
+    assert asyncio.run(scenario()) is True
+    out = capsys.readouterr().out
+    assert "[local] oracle_mesh_return_source=mesh_env_configured" in out

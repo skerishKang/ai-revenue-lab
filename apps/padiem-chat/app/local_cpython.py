@@ -305,7 +305,10 @@ def build_app():
         oracle_mesh_legacy_map_lane=legacy_map_lane_enabled(os.environ),
     )
 
-    async def _compose_oracle_mesh_return_source_on_startup():
+    # apply_write_freeze below rebinds ``app`` to the ASGI wrapper; bind the
+    # Starlette app in the handler default so startup still updates the state
+    # object requests read (the wrapper itself has no .state).
+    async def _compose_oracle_mesh_return_source_on_startup(app=app):
         source = await build_oracle_mesh_return_source_from_env(os.environ)
         if source is None:
             # The builder logs the fixed reason through
