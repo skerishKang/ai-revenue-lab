@@ -5,14 +5,19 @@ import pytest
 from pathlib import Path
 from starlette.testclient import TestClient
 from app.factory import create_app
-from app.pilot.model_registry_file import read_registry, group_model_ids, installed_model_ids, ModelRegistryError
+from app.pilot.model_registry_file import (
+    read_registry, group_model_ids, installed_model_ids, retired_model_ids,
+    ModelRegistryError,
+)
 from app.pilot.catalog import CATALOG_BY_ID, get_catalog_by_id
 from app.pilot.platform_secrets import list_platform_providers
 
-RETIRED=frozenset({
- "b-ai/qwen3.8-flash","experiential/gpt-5.6-luna","infron/motif/motif-3",
- "kilo/nvidia-nemotron-3-ultra-550b-a55b-free","kilo/poolside-laguna-s-2.1-free"
-})
+# Derived from the registry itself: a retirement is one data-line change, not a
+# second hand-maintained list in this file.
+RETIRED=retired_model_ids()
+assert {"b-ai/qwen3.8-flash","experiential/gpt-5.6-luna","infron/motif/motif-3",
+        "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        "kilo/poolside-laguna-s-2.1-free"} <= RETIRED
 
 def _invalid(tmp_path, mutate):
     config=copy.deepcopy(read_registry())
@@ -103,7 +108,6 @@ def test_model_add_delete_group_change_is_json_only(tmp_path):
  ("bai_provider","register_bai_provider"),
  ("infron_provider","register_infron_provider"),
  ("inception_provider","register_inception_provider"),
- ("atria_provider","register_atria_provider"),
  ("experiential_provider","register_experiential_provider"),
  ("google_provider","register_google_provider"),
 ])

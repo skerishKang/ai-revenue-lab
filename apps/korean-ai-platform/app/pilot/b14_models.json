@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "comment": "Single owner-approved B14 model register; groups are intentionally empty until assigned by owner. Never store API key values.",
+  "comment": "Single owner-approved B14 model register; groups are intentionally empty until assigned by owner. retired_models are exact ids the owner removed: they may never be registered again. Never store API key values.",
   "providers": {
     "agnes-ai": {
       "base_origin": "https://apihub.agnes-ai.com/v1",
@@ -581,5 +581,18 @@
     "plus": [],
     "pro": [],
     "max": []
-  }
+  },
+  "retired_models": [
+    "b-ai/qwen3.8-flash",
+    "experiential/gpt-5.6-luna",
+    "infron/motif/motif-3",
+    "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+    "kilo/poolside-laguna-s-2.1-free",
+    "kilo/stepfun/step-3.7-flash",
+    "kilo/stepfun-step-3.7-flash",
+    "stepfun/step-3.7-flash",
+    "thinkingmachines/inkling-small:free",
+    "kilo/thinkingmachines/inkling-small:free",
+    "kilo/thinkingmachines-inkling-small-free"
+  ]
 }

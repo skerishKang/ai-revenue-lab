@@ -14,19 +14,17 @@ from typing import Any, Iterable
 
 ROOT = Path(__file__).resolve().parents[2]
 CANONICAL_REGISTRY = ROOT / "apps/korean-ai-platform/app/pilot/b14_models.json"
-OWNER_RETIRED = frozenset({
-    "b-ai/qwen3.8-flash",
-    "experiential/gpt-5.6-luna",
-    "infron/motif/motif-3",
-    "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-    "kilo/poolside-laguna-s-2.1-free",
-    "kilo/stepfun/step-3.7-flash",
-    "kilo/stepfun-step-3.7-flash",
-    "stepfun/step-3.7-flash",
-    "thinkingmachines/inkling-small:free",
-    "kilo/thinkingmachines/inkling-small:free",
-    "kilo/thinkingmachines-inkling-small-free",
-})
+# Owner-retired identities are derived from the same registry every other
+# retirement surface reads, so retiring a model stays a one-line data change.
+def _registry_retired_ids(path: Path = CANONICAL_REGISTRY) -> frozenset[str]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    rows = data.get("retired_models", [])
+    if not isinstance(rows, list) or not all(isinstance(x, str) and x for x in rows):
+        raise ValueError("registry_retired_models_invalid")
+    return frozenset(rows)
+
+
+OWNER_RETIRED = _registry_retired_ids()
 # Historical #2676 benchmark selectors. These must NOT form an independent
 # evaluation allowlist after the 2026-10-08 Owner registry migration.
 HISTORICAL_SELECTORS = {
@@ -39,8 +37,10 @@ HISTORICAL_SELECTORS = {
 MAX_EVALUATION_BATCH = 16
 
 
-def _disallowed_model_id(model_id: str) -> bool:
-    if model_id in OWNER_RETIRED:
+def _disallowed_model_id(model_id: str, retired: frozenset[str] | None = None) -> bool:
+    if retired is None:
+        retired = OWNER_RETIRED
+    if model_id in retired:
         return True
     lowered = model_id.lower()
     # The Owner removed ALL Kilo-routed Laguna aliases, regardless of how
@@ -64,6 +64,8 @@ def load_current_models(path: Path = CANONICAL_REGISTRY) -> dict[str, dict[str, 
     rows = data.get("models")
     if not isinstance(providers, dict) or not isinstance(rows, list):
         raise ValueError("registry_shape_invalid")
+    # The canonical baseline plus any retirement the checked file itself adds.
+    retired = OWNER_RETIRED | _registry_retired_ids(path)
     allowed: dict[str, dict[str, Any]] = {}
     seen_ids: set[str] = set()
     for row in rows:
@@ -77,7 +79,7 @@ def load_current_models(path: Path = CANONICAL_REGISTRY) -> dict[str, dict[str, 
         if model_id in seen_ids:
             raise ValueError("registry_duplicate_model_id")
         seen_ids.add(model_id)
-        if _disallowed_model_id(model_id) or _disallowed_model_id(upstream):
+        if _disallowed_model_id(model_id, retired) or _disallowed_model_id(upstream, retired):
             raise ValueError("owner_retired_model_in_registry")
         provider = providers.get(provider_id)
         if not isinstance(provider, dict):

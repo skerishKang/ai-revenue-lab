@@ -53,6 +53,9 @@ class PlatformProviderSpec:
     base_origin: str
     allowed_hosts: tuple[str, ...] = ()
     enabled: bool = True
+    # Static, non-secret request headers declared by the registry row. The auth
+    # header is built by the adapter and can never be replaced from here.
+    extra_headers: tuple[tuple[str, str], ...] = ()
 
     def __post_init__(self) -> None:
         if not self.provider_id:
@@ -67,6 +70,13 @@ class PlatformProviderSpec:
         _validate_origin(self.base_origin, self.allowed_hosts)
         if not self.allowed_hosts:
             raise ValueError("platform providers must declare allowed_hosts")
+        for pair in self.extra_headers:
+            if (
+                not isinstance(pair, tuple)
+                or len(pair) != 2
+                or not all(isinstance(part, str) and part for part in pair)
+            ):
+                raise ValueError("extra_headers must be name/value string pairs")
 
 
 _PLATFORM_PROVIDERS: dict[str, PlatformProviderSpec] = {}
@@ -81,6 +91,11 @@ def register_platform_provider(spec: PlatformProviderSpec) -> None:
     """
     global _PLATFORM_PROVIDERS
     _PLATFORM_PROVIDERS[spec.provider_id] = spec
+
+
+def unregister_platform_provider(provider_id: str) -> None:
+    """Drop one process-local registration (the onboarding probe's cleanup)."""
+    _PLATFORM_PROVIDERS.pop(provider_id, None)
 
 
 def get_platform_provider(provider_id: str) -> PlatformProviderSpec | None:
